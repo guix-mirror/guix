@@ -90,6 +90,11 @@
              "-fFFI" "-fGMP")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'update-constraints
+           (lambda _
+             (substitute* "idris.cabal"
+               (("ansi-terminal < 0\\.9") "ansi-terminal < 0.10"))
+             #t))
          (add-before 'configure 'set-cc-command
            (lambda _
              (setenv "CC" "gcc")
