@@ -342,6 +342,15 @@ only provides @code{MPI_THREAD_FUNNELED}.")))
      ;; Allow oversubscription in case there are less physical cores available
      ;; in the build environment than the package wants while testing.
      (setenv "OMPI_MCA_rmaps_base_mapping_policy" "core:OVERSUBSCRIBE")
+
+     ;; UCX sometimes outputs uninteresting warnings such as:
+     ;;
+     ;;   mpool.c:38   UCX  WARN  object 0x7ffff44fffc0 was not returned to mpool ucp_am_bufs
+     ;;
+     ;; These in turn leads to failures of test suites that capture and
+     ;; compare stdout, such as that of 'hdf5-parallel-openmpi'.  Thus, tell
+     ;; UCX to not emit those warnings.
+     (setenv "UCX_LOG_LEVEL" "error")
      #t))
 
 (define-public intel-mpi-benchmarks
