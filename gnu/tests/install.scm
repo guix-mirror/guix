@@ -267,7 +267,7 @@ packages defined in installation-os."
 
 (define* (qemu-command/writable-image image #:key (memory-size 256))
   "Return as a monadic value the command to run QEMU on a writable copy of
-IMAGE, a disk image.  The QEMU VM is has access to MEMORY-SIZE MiB of RAM."
+IMAGE, a disk image.  The QEMU VM has access to MEMORY-SIZE MiB of RAM."
   (mlet %store-monad ((system (current-system)))
     (return #~(let ((image #$image))
                 ;; First we need a writable copy of the image.
