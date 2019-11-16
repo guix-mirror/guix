@@ -32,6 +32,7 @@
 ;;; Copyright © 2018 Amin Bandali <bandali@gnu.org>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Steve Sprang <scs@stevesprang.com>
+;;; Copyright © 2019 Robert Smith <robertsmith@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5242,3 +5243,42 @@ fields of knowledge.")
     (home-page "http://speedcrunch.org/")
     (license license:gpl2+)))
 
+(define-public minisat
+  ;; This is the last commit which is available upstream, no
+  ;; release happened since 2010.
+  (let ((commit "37dc6c67e2af26379d88ce349eb9c4c6160e8543")
+        (revision "1"))
+    (package
+      (name "minisat")
+      (version (string-append "2.2.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/niklasso/minisat.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "091hf3qkm197s5r7xcr3m07xsdwyz2rqk1hc9kj0hn13imz09irq"))
+         (patches
+          (search-patches "minisat-friend-declaration.patch"
+                          "minisat-install.patch"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:make-flags (list (string-append "prefix=" %output))
+         #:tests? #f ;no check target
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure))))
+      (inputs
+       `(("zlib:static" ,zlib "static")
+         ("zlib" ,zlib)))
+      (synopsis
+       "Small, yet efficient, SAT solver")
+      (description
+       "MiniSat is a minimalistic, open-source SAT solver, developed to help
+researchers and developers alike to get started on SAT.")
+      (home-page
+       "http://minisat.se/MiniSat.html")
+      (license license:expat))))
