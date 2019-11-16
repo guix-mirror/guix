@@ -158,7 +158,7 @@ itself as well as other components maintained by the LXQt project.")
 (define-public libqtxdg
   (package
     (name "libqtxdg")
-    (version "3.3.1")
+    (version "3.4.0")
     (source
      (origin
        (method url-fetch)
@@ -166,7 +166,7 @@ itself as well as other components maintained by the LXQt project.")
              "https://github.com/lxqt/libqtxdg/releases/download/"
              version "/libqtxdg-" version ".tar.xz"))
        (sha256
-        (base32 "1mnnq8vbf5xjlrzajzfkay0yzzxri0zz0xi8x8rmxpw38xmglq8h"))))
+        (base32 "0vmn59653dmy79mnbnibhdq9jmh11091zkfx0y0qh58rj2xvpdbv"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
@@ -181,10 +181,12 @@ itself as well as other components maintained by the LXQt project.")
              #t)))))
     (propagated-inputs
      ;; required by Qt5XdgIconLoader.pc
-     `(("qtbase" ,qtbase)
+     `(("glib" ,glib)
+       ("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)))
     (native-inputs
-     `(("lxqt-build-tools" ,lxqt-build-tools)))
+     `(("lxqt-build-tools" ,lxqt-build-tools)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://github.com/lxqt/libqtxdg")
     (synopsis "Qt implementation of freedesktop.org xdg specifications")
     (description "Libqtxdg implements the freedesktop.org xdg specifications
@@ -415,14 +417,15 @@ configuration of both LXQt and the underlying operating system.")
 (define-public lxqt-globalkeys
   (package
     (name "lxqt-globalkeys")
-    (version "0.14.1")
+    (version "0.14.3")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
-                           version "/" name "-" version ".tar.xz"))
+       (uri (string-append "https://github.com/lxqt/lxqt-globalkeys/"
+                           "releases/download/" version "/"
+                           "lxqt-globalkeys-" version ".tar.xz"))
        (sha256
-        (base32 "0m6svwy20bfy9d21g5l0qzjndph3rd8zqagmqgdjzjhh3lxwrsrk"))))
+        (base32 "0mgl05qxvq4pdqvcw34i2cbyy87x605wy3np62mrbbb1kdfjrfg6"))))
     (build-system cmake-build-system)
     (inputs
      `(("kwindowsystem" ,kwindowsystem)
@@ -1278,6 +1281,52 @@ easily publishing them on internet image hosting services.")
      "This package provides a Qt graphical interface to archiving programs
 like @command{tar} and @command{zip}.")
     (license license:gpl2+)))
+
+(define-public lxqt-connman-applet
+  ;; since the main developers didn't release any version yet,  their 
+  ;; latest commit on `master` branch at the moment used for this version.
+  (let ((commit "3db374eebd8d851f68a50fc5d1ef5fa9478c275e")
+        (revision "0"))
+    (package
+      (name "lxqt-connman-applet")
+      (version (git-version "0.14.1" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+            (url (string-append "https://github.com/lxqt/" name ".git"))
+            (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256 (base32 "1brkyzjmpa7hiv8p8rvmkcgagchh2zn71ry4pjiplga05as3jc11"))))
+      (build-system cmake-build-system)
+      (inputs
+        `(("kwindowsystem" ,kwindowsystem)
+          ("qtbase" ,qtbase)
+          ("qtsvg" ,qtsvg)
+          ("liblxqt" ,liblxqt)
+          ("qtx11extras" ,qtx11extras)
+          ("libqtxdg" ,libqtxdg)))
+      (native-inputs
+        `(("lxqt-build-tools" ,lxqt-build-tools)
+          ("qtlinguist" ,qttools)))
+      (arguments
+        `(#:tests? #f                   ; no tests
+          #:phases
+            (modify-phases %standard-phases
+              (add-after 'unpack 'patch-translations-dir
+                (lambda* (#:key outputs #:allow-other-keys)
+                  (substitute* "CMakeLists.txt"
+                    (("\\$\\{LXQT_TRANSLATIONS_DIR\\}")
+                     (string-append (assoc-ref outputs "out")
+                                    "/share/lxqt/translations"))
+                    (("\\$\\{LXQT_ETC_XDG_DIR\\}") "etc/xdg"))
+                  #t)))))
+      (home-page "https://github.com/lxqt/lxqt-connman-applet")
+      (synopsis "System-tray applet for connman")
+      (description "This package provides a Qt-based system-tray applet for
+the network management tool Connman, originally developed for the LXQT
+desktop.")
+      (license license:lgpl2.1+))))
 
 ;; The LXQt Desktop Environment
 

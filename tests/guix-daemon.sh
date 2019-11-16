@@ -94,6 +94,27 @@ done
 
 kill "$daemon_pid"
 
+# Make sure 'profiles/per-user' is created when connecting over TCP.
+
+orig_GUIX_STATE_DIRECTORY="$GUIX_STATE_DIRECTORY"
+GUIX_STATE_DIRECTORY="$GUIX_STATE_DIRECTORY-2"
+
+guix-daemon --disable-chroot --listen="localhost:9877" &
+daemon_pid=$!
+
+GUIX_DAEMON_SOCKET="guix://localhost:9877"
+export GUIX_DAEMON_SOCKET
+
+test ! -d "$GUIX_STATE_DIRECTORY/profiles/per-user"
+
+guix build guile-bootstrap -d
+
+test -d "$GUIX_STATE_DIRECTORY/profiles/per-user/$USER"
+
+kill "$daemon_pid"
+unset GUIX_DAEMON_SOCKET
+GUIX_STATE_DIRECTORY="$orig_GUIX_STATE_DIRECTORY"
+
 # Check the failed build cache.
 
 guix-daemon --no-substitutes --listen="$socket" --disable-chroot	\

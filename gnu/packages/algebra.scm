@@ -202,6 +202,7 @@ the real span of the lattice.")
        (uri (git-reference
              (url "https://github.com/fplll/fpylll.git")
              (commit (string-append version "dev"))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "01x2sqdv0sbjj4g4waj0hj4rcn4bq7h17442xaqwbznym9azmn9w"))))
@@ -345,7 +346,7 @@ precision.")
 (define-public giac
   (package
     (name "giac")
-    (version "1.5.0-65")
+    (version "1.5.0-69")
     (source (origin
               (method url-fetch)
               ;; "~parisse/giac" is not used because the maintainer regularly
@@ -357,7 +358,7 @@ precision.")
                                   "source/giac_" version ".tar.gz"))
               (sha256
                (base32
-                "1g2fp9vgy0gqjmi6mlc3ldfn8ryq3h4mfd7rcq5hs6ry21hblv30"))))
+                "05l1qa2kfmvsbp0iqjmg3ixkcqa3h9ry1mjpcps52bxw05s3k1z9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
@@ -484,7 +485,7 @@ fast arithmetic.")
 (define-public arb
   (package
     (name "arb")
-    (version "2.16.0")
+    (version "2.17.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -493,7 +494,7 @@ fast arithmetic.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0478671wfwy3gl26sbxh1jq1ih36z4k72waa8y2y2lvn649gb7cd"))))
+                "05lpy3hkl5f8ik19aw40cqydrb932xaf2n8hbq9ib5dnk7f010p1"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("flint" ,flint)))               ; flint.h is included by arf.h
@@ -509,8 +510,8 @@ fast arithmetic.")
                    (flint (assoc-ref inputs "flint"))
                    (gmp (assoc-ref inputs "gmp"))
                    (mpfr (assoc-ref inputs "mpfr")))
-               ;; do not pass "--enable-fast-install", which makes the
-               ;; homebrew configure process fail
+               ;; Do not pass "--enable-fast-install", which makes the
+               ;; homebrew configure process fail.
                (invoke "./configure"
                        (string-append "--prefix=" out)
                        (string-append "--with-flint=" flint)
@@ -523,7 +524,7 @@ arithmetic.  It supports efficient high-precision computation with
 polynomials, power series, matrices and special functions over the
 real and complex numbers, with automatic, rigorous error control.")
     (license license:lgpl2.1+)
-    (home-page "http://fredrikj.net/arb/")))
+    (home-page "http://arblib.org")))
 
 (define-public python-flint
   (package
@@ -996,7 +997,7 @@ features, and more.")
 (define-public xtensor
   (package
     (name "xtensor")
-    (version "0.20.9")
+    (version "0.20.10")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1004,7 +1005,7 @@ features, and more.")
                     (commit version)))
               (sha256
                (base32
-                "1rw04bdi7mzp362dhkxr9m4rafnvb47xjsi9p3fp4vfif8v0jij8"))
+                "1fmv2hpx610xwhxrndfsfvlbqfyk4l3gi5q5d7pa9m82kblxjj9l"))
               (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (native-inputs

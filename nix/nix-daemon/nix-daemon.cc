@@ -613,6 +613,17 @@ static void performOp(bool trusted, unsigned int clientVersion,
                     || name == "build-repeat"
                     || name == "multiplexed-build-output")
                     settings.set(name, value);
+		else if (name == "user-name"
+                         && settings.clientUid == (uid_t) -1) {
+                    /* Create the user profile.  This is necessary if
+                       clientUid = -1, for instance because the client
+                       connected over TCP.  */
+                    struct passwd *pw = getpwnam(value.c_str());
+                    if (pw != NULL)
+                        store->createUser(value, pw->pw_uid);
+                    else
+                        printMsg(lvlInfo, format("user name %1% not found") % value);
+		}
                 else
                     settings.set(trusted ? name : "untrusted-" + name, value);
             }
@@ -731,7 +742,7 @@ static void performOp(bool trusted, unsigned int clientVersion,
 }
 
 
-static void processConnection(bool trusted)
+static void processConnection(bool trusted, uid_t userId)
 {
     canSendStderr = false;
     _writeToStderr = tunnelStderr;
@@ -777,6 +788,15 @@ static void processConnection(bool trusted)
 
         /* Open the store. */
         store = std::shared_ptr<StoreAPI>(new LocalStore(reserveSpace));
+
+	if (userId != (uid_t) -1) {
+            /* Create the user profile.  */
+            struct passwd *pw = getpwuid(userId);
+            if (pw != NULL && pw->pw_name != NULL)
+                store->createUser(pw->pw_name, userId);
+            else
+                printMsg(lvlInfo, format("user with UID %1% not found") % userId);
+	}
 
         stopWork();
         to.flush();
@@ -963,7 +983,7 @@ static void acceptConnection(int fdSocket)
                 /* Handle the connection. */
                 from.fd = remote;
                 to.fd = remote;
-                processConnection(trusted);
+                processConnection(trusted, clientUid);
 
                 exit(0);
             }, false, "unexpected build daemon error: ", true);

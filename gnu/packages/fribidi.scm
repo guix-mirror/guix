@@ -27,6 +27,7 @@
 
 (define-public fribidi
   (package
+    (replacement fribidi/fixed)
     (name "fribidi")
     (version "1.0.7")
     (source
@@ -47,3 +48,10 @@ Algorithm.  This algorithm is used to properly display text in left-to-right
 or right-to-left ordering as necessary.")
     (home-page "https://github.com/fribidi/fribidi")
     (license lgpl2.1+)))
+
+(define fribidi/fixed
+  (package
+    (inherit fribidi)
+    (source
+      (origin (inherit (package-source fribidi))
+              (patches (search-patches "fribidi-CVE-2019-18397.patch"))))))

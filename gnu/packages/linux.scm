@@ -100,6 +100,7 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages rrdtool)
   #:use-module (gnu packages samba)
@@ -183,37 +184,31 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
 
 (define deblob-scripts-5.3
   (linux-libre-deblob-scripts
-   "5.3.4"
+   "5.3.6"
    (base32 "15n09zq38d69y1wl28s3nasf3377qp2yil5b887zpqrm00dif7i4")
    (base32 "0nrimraf46nf6y1hwkg29fyl0a83wnj0mwq54ggxvffn9gk5h9pa")))
 
-(define deblob-scripts-5.2
-  (linux-libre-deblob-scripts
-   "5.2.19"
-   (base32 "076fwxlm6jq6z4vg1xq3kr474zz7qk71r90sf9dnfia3rw2pb4fa")
-   (base32 "1vghzpvlsvz5q8baxjza8jdryjmcx61g2pmnm6dd1k7glr6jy1a9")))
-
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
-   "4.19.77"
+   "4.19.79"
    (base32 "02zs405awaxydbapka4nz8h6lmnc0dahgczqsrs5s2bmzjyyqkcy")
    (base32 "1fyacg28aym6virxyn7wk99qil2fjbks3iwm7p3hxy51pccn34za")))
 
 (define deblob-scripts-4.14
   (linux-libre-deblob-scripts
-   "4.14.147"
+   "4.14.149"
    (base32 "091jk9jkn9jf39bxpc7395bhcb7p96nkg3a8047380ki06lnfxh6")
    (base32 "0x9nd3hnyrm753cbgdqmy92mbnyw86w64g4hvyibnkpq5n7s3z9n")))
 
 (define deblob-scripts-4.9
   (linux-libre-deblob-scripts
-   "4.9.195"
+   "4.9.196"
    (base32 "1wvldzlv7q2xdbadas87dh593nxr4a8p5n0f8zpm72lja6w18hmg")
    (base32 "0is8gn4qdd7h5l6lacvhqdch26lmrbgxfm8ab7fx8n85ha7y358w")))
 
 (define deblob-scripts-4.4
   (linux-libre-deblob-scripts
-   "4.4.194"
+   "4.4.196"
    (base32 "0x2j1i88am54ih2mk7gyl79g25l9zz4r08xhl482l3fvjj2irwbw")
    (base32 "12ac4g3ky8yma8sylmxvvysqvd4hnaqjiwmxrxb6wlxggfd7zkbx")))
 
@@ -357,50 +352,42 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-(define-public linux-libre-5.3-version "5.3.4")
+(define-public linux-libre-5.3-version "5.3.11")
 (define-public linux-libre-5.3-pristine-source
   (let ((version linux-libre-5.3-version)
-        (hash (base32 "0vi4bgcr921z5l6fbcrcgmhaji5gl2avpmp7njna6v0f7sxism0r")))
+        (hash (base32 "1dxfh0l4inpjd17pyxfsskjsphs43r8lg6nhhr3y4whxdna5cwbf")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.3)))
 
-(define-public linux-libre-5.2-version "5.2.19")
-(define-public linux-libre-5.2-pristine-source
-  (let ((version linux-libre-5.2-version)
-        (hash (base32 "12mi857lyd5vj8qhj2f505hqnwzsnd829hxd78n9kk88iv1f966y")))
-   (make-linux-libre-source version
-                            (%upstream-linux-source version hash)
-                            deblob-scripts-5.2)))
-
-(define-public linux-libre-4.19-version "4.19.77")
+(define-public linux-libre-4.19-version "4.19.84")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "1agksl35amjzc6g6d9zjwz6p5qir2cligb5c1d9s2bag9766jav1")))
+        (hash (base32 "0q06mhz170x1lkx6c6qdh82rcnsj03q6f2m28aqhmc4wc694m2w6")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.147")
+(define-public linux-libre-4.14-version "4.14.154")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "04jvp05spszcxmkdsl21dylbcf76ns9bwxf1zlk4x7cxiil97mwg")))
+        (hash (base32 "00q662s8mgnzqfgk5gkzqfv9ws3vryf28blbq1zxcy4s6wj4mpl6")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.195")
+(define-public linux-libre-4.9-version "4.9.201")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "0s4xj8f1dpnz3fbrqmgwq02smhcrq1ni8hgn2bbfqvm15lm5dgjl")))
+        (hash (base32 "125xmh5h1zmfniidpjljny53qkl4phpxaali69i66lajscxx8grq")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.194")
+(define-public linux-libre-4.4-version "4.4.201")
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "0kvlp2v4nvkilaanhpgwf8dkyfj24msaw0m38rbc4y51y69yhqvz")))
+        (hash (base32 "120kci4kmc48zcw16lhxmh71kaxm9ac5qxik36q3a20czg28b2m7")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -435,12 +422,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 (define-public linux-libre-5.3-source
   (source-with-patches linux-libre-5.3-pristine-source
-                       (list (search-patch "linux-libre-active-entropy.patch")
-                             %boot-logo-patch
-                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
-
-(define-public linux-libre-5.2-source
-  (source-with-patches linux-libre-5.2-pristine-source
                        (list (search-patch "linux-libre-active-entropy.patch")
                              %boot-logo-patch
                              %linux-libre-arm-export-__sync_icache_dcache-patch)))
@@ -538,10 +519,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 (define-public linux-libre-headers-5.3
   (make-linux-libre-headers* linux-libre-5.3-version
                              linux-libre-5.3-source))
-
-(define-public linux-libre-headers-5.2
-  (make-linux-libre-headers* linux-libre-5.2-version
-                             linux-libre-5.2-source))
 
 (define-public linux-libre-headers-4.19
   (make-linux-libre-headers* linux-libre-4.19-version
@@ -804,12 +781,6 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-source          linux-libre-5.3-source)
 (define-public linux-libre                 linux-libre-5.3)
 
-(define-public linux-libre-5.2
-  (make-linux-libre* linux-libre-5.2-version
-                     linux-libre-5.2-source
-                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
-                     #:configuration-file kernel-config))
-
 (define-public linux-libre-4.19
   (make-linux-libre* linux-libre-4.19-version
                      linux-libre-4.19-source
@@ -968,6 +939,52 @@ and should be used with caution, especially on untested models.")
 between the CDemu userspace daemon and linux kernel.")
     (license license:gpl2+)))
 
+(define-public ddcci-driver-linux
+  (package
+    (name "ddcci-driver-linux")
+    (version "0.3.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://gitlab.com/ddcci-driver-linux/ddcci-driver-linux.git")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0vkkja3ykjil783zjpwp0vz7jy2fp9ccazzi3afd4fjk8gldin7f"))))
+    (build-system linux-module-build-system)
+    (arguments
+     `(#:tests? #f                               ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda args
+             (for-each
+              (lambda (module)
+                (with-directory-excursion module
+                  (apply (assoc-ref %standard-phases 'build) args)))
+              '("ddcci" "ddcci-backlight"))
+             #t))
+         (replace 'install
+           (lambda args
+             (for-each
+              (lambda (module)
+                (with-directory-excursion module
+                  (apply (assoc-ref %standard-phases 'install) args)))
+              '("ddcci" "ddcci-backlight"))
+             #t)))))
+    (home-page "https://gitlab.com/ddcci-driver-linux/ddcci-driver-linux")
+    (synopsis "Pair of Linux kernel drivers for DDC/CI monitors")
+    (description "This package provides two Linux kernel drivers, ddcci and
+ddcci-backlight, that allows the control of DDC/CI monitors through the sysfs
+interface.  The ddcci module creates a character device for each DDC/CI
+monitors in @file{/dev/bus/ddcci/[I²C busnumber]}.  While the ddcci-backlight
+module allows the control of the backlight level or luminance property when
+supported under @file{/sys/class/backlight/}.")
+    (license license:gpl2+)))
+
 
 ;;;
 ;;; Pluggable authentication modules (PAM).
@@ -1045,20 +1062,18 @@ at login.  Local and dynamic reconfiguration are its key features.")
 (define-public psmisc
   (package
     (name "psmisc")
-    (version "23.2")
+    (version "23.3")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://sourceforge/psmisc/psmisc devel/psmisc-"
+      (uri (string-append "mirror://sourceforge/psmisc/psmisc/psmisc-"
                           version ".tar.xz"))
       (sha256
-       (base32
-        "0s1kjhrik0wzqbm7hv4gkhywhjrwhp9ajw0ad05fwharikk6ah49"))))
+       (base32 "16i7qzjmm6g0lzha8yzpfrlcxnvkgh95hkq9gdjd4zmzb8d0wxa1"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)))
     (home-page "https://gitlab.com/psmisc/psmisc")
-    (synopsis
-     "Small utilities that use the proc file system")
+    (synopsis "Small utilities that use the proc file system")
     (description
      "This PSmisc package is a set of some small useful utilities that
 use the proc file system.  We're not about changing the world, but
@@ -1072,8 +1087,8 @@ providing the system administrator with some help in common tasks.")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/"
-                                  name "/v" (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "util-linux/v" (version-major+minor version) "/"
+                                  "util-linux-" version ".tar.xz"))
               (sha256
                (base32
                 "1db2kydkwjmvgd1glkcba3adhidxw0f1x735dcjdpdjjf869sgvl"))
@@ -2089,14 +2104,14 @@ devices.  It replaces @code{iwconfig}, which is deprecated.")
 (define-public powertop
   (package
     (name "powertop")
-    (version "2.10")
+    (version "2.11")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://01.org/sites/default/files/downloads/"
-                           "powertop-v" version ".tar.gz"))
+                           "powertop-v" version "-1-g7ef7f79.tar_0.gz"))
        (sha256
-        (base32 "0xaazqccyd42v2q532dxx40nqhb9sfsa6cyx8641rl57mfg4bdyk"))))
+        (base32 "0kynypj5cydfbma0ssblq1k4m1arixc1s2vf0ybv8y2gg09wjs5f"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -3004,7 +3019,7 @@ country-specific regulations for the wireless spectrum.")
 (define-public lm-sensors
   (package
     (name "lm-sensors")
-    (version "3.5.0")
+    (version "3.6.0")
     (source
      (origin
        (method git-fetch)
@@ -3014,7 +3029,7 @@ country-specific regulations for the wireless spectrum.")
                                          (string-split version #\.) "-")))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1mdrnb9r01z1xfdm6dpkywvf9yy9a4yzb59paih9sijwmigv19fj"))
+        (base32 "1ipf6wjx037sqyhy0r5jh4983h216anq9l68ckn2x5c3qc4wfmzn"))
        (patches (search-patches "lm-sensors-hwmon-attrs.patch"))))
     (build-system gnu-build-system)
     (inputs `(("rrdtool" ,rrdtool)
@@ -3025,10 +3040,10 @@ country-specific regulations for the wireless spectrum.")
                      ("flex" ,flex)
                      ("bison" ,bison)
                      ("which" ,which)))
-    (outputs '("lib"              ;avoid perl in closure
+    (outputs '("lib"                    ; avoid perl in closure
                "out"))
     (arguments
-     `(#:tests? #f  ; no 'check' target
+     `(#:tests? #f                      ; no 'check' target
        #:make-flags (list (string-append "PREFIX=" %output)
                           (string-append "ETCDIR=" (assoc-ref %outputs "lib") "/etc")
                           (string-append "INCLUDEDIR="
@@ -3943,7 +3958,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "5.2.2")
+    (version "5.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -3951,7 +3966,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "1imivxjppi8zl27gn472pwpk8bg5dijkbyi340by31vhy7dj24w2"))))
+                "0f6s1iwiqbncrvxp74k50s88x6zqf85sjxg04kyni82l1vk1m8xz"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"
@@ -4348,7 +4363,7 @@ The package provides additional NTFS tools.")
 (define-public rdma-core
   (package
     (name "rdma-core")
-    (version "22.3")
+    (version "26.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/linux-rdma/rdma-core"
@@ -4356,15 +4371,27 @@ The package provides additional NTFS tools.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0jgp1xh328x0kr6lkn4vq71cc627zd05wczr74b3j3151flhj828"))))
+                "14raqwx4pkzghiwkx1v0dq338f7xqqx8rnsxlpdnngvjy1p5l79j"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f ; no tests
+     `(#:tests? #f ; no tests
        ;; Upstream uses the "ninja" build system and encourage distros
        ;; to do the same for consistency. They also recommend using the
        ;; "Release" build type.
        #:build-type "Release"
-       #:configure-flags (list "-GNinja")
+       #:configure-flags (list "-GNinja"
+
+                               (string-append "-DRST2MAN_EXECUTABLE="
+                                              (assoc-ref %build-inputs
+                                                         "python-docutils")
+                                              "/bin/rst2man.py")
+
+                               ;; On some configurations, the
+                               ;; IB_USER_MAD_REGISTER_AGENT ioctl, which is
+                               ;; used by default, would return ENODEV.  To
+                               ;; avoid that, use 'write' instead of ioctls,
+                               ;; as suggested in 'CMakeList.txt'.
+                               "-DIOCTL_MODE=write")
        #:phases
        (modify-phases %standard-phases
          (replace 'build
@@ -4377,7 +4404,8 @@ The package provides additional NTFS tools.")
     (native-inputs
      `(("ninja" ,ninja)
        ("pkg-config" ,pkg-config)
-       ("python" ,python-wrapper)))
+       ("python" ,python-wrapper)
+       ("python-docutils" ,python-docutils)))     ;for 'rst2man'
     (inputs
      `(("libnl" ,libnl)
        ("udev" ,eudev)))
@@ -4456,7 +4484,7 @@ The collection contains a set of bandwidth and latency benchmark such as:
   (package
     (name "rng-tools")
     (home-page "https://github.com/nhorman/rng-tools")
-    (version "6.7")
+    (version "6.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url home-page)
@@ -4464,7 +4492,7 @@ The collection contains a set of bandwidth and latency benchmark such as:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "19f75m6mzg8h7b4snzg7d6ypvkz6nq32lrpi9ja95gqz4wsd18a5"))))
+                "1clm9i9xg3j79q0d6vinn6dx0nwh1fvzcmkqpcbay7mwsgkknvw2"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Avoid using OpenSSL, curl, and libxml2, reducing the closure by 166 MiB.
@@ -5002,16 +5030,16 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
 (define-public light
   (package
     (name "light")
-    (version "1.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                     "https://github.com/haikarainen/light/archive/v"
-                     version ".tar.gz"))
-              (sha256
-               (base32
-                "1gfvsw7gh5pis733l7j54vzp272pvjyzbg8a0pvapfmg0s7mip97"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (version "1.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/haikarainen/light.git")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "0zrjipd392bzjvxx0rjrb0cgi0ix1d83fwgw1mcy8kc4d16cgyjg"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -5565,6 +5593,7 @@ libraries, which are often integrated directly into libfabric.")
                  "psm-ldflags.patch"  ; build shared lib with LDFLAGS
                  "psm-repro.patch"))))  ; reproducibility
     (build-system gnu-build-system)
+    (outputs '("out" "debug"))
     (inputs `(("libuuid" ,util-linux)))
     (arguments
      '(#:make-flags `("PSM_USE_SYS_UUID=1" "CC=gcc" "WERROR="
@@ -5765,7 +5794,7 @@ privileges.")
 (define-public psm2
   (package
     (name "psm2")
-    (version "10.3-46")
+    (version "11.2.86")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5774,7 +5803,7 @@ privileges.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0wadphv4rl5p38x6a3dgpbijlzqdvcn02cfafnp72nh9faz0zvlx"))))
+                "1hiqzcmc97lzhaqjva82vf8irgg038cciypsv2brw90ak09n6vwf"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
@@ -5897,7 +5926,7 @@ management tools in userspace.")
     (arguments
      `(#:import-path "github.com/vishvananda/netlink"))
     (native-inputs
-     `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)
+     `(("go-golang-org-x-sys" ,go-golang-org-x-sys)
        ("go-netns" ,go-netns)))
     (home-page "https://github.com/vishvananda/netlink")
     (synopsis "Simple netlink library for Go")
@@ -5910,7 +5939,7 @@ IP addresses and routes, and configure IPsec.")
 (define-public xfsprogs
   (package
     (name "xfsprogs")
-    (version "4.20.0")
+    (version "5.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5918,17 +5947,32 @@ IP addresses and routes, and configure IPsec.")
                     "xfsprogs-" version ".tar.gz"))
               (sha256
                (base32
-                "0ss0r6jlxxinf9fhpc0fgf7b89n9mzirpa85xxjmi1ix9l6cls6x"))))
+                "0q5xd4gb9g83h82mg68cx616ifzl8qkzzlgg5xna698117ph3wky"))))
     (build-system gnu-build-system)
+    (outputs (list "out" "python"))
     (arguments
-     `(#:tests? #f    ;kernel/user integration tests are in package "xfstests"
-       #:phases (modify-phases %standard-phases
-                  (add-after 'install 'install-headers
-                    (lambda _
-                      (invoke "make" "install-dev"))))))
+     `(#:tests? #f   ; kernel/user integration tests are in package "xfstests"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'separate-python-output
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out    (assoc-ref outputs "out"))
+                   (python (assoc-ref outputs "python")))
+               (for-each
+                (lambda (script)
+                  (mkdir-p (string-append python (dirname script)))
+                  (rename-file (string-append out script)
+                               (string-append python script)))
+                (list "/sbin/xfs_scrub_all"))
+               #t)))
+         (add-after 'install 'install-headers
+           (lambda _
+             (invoke "make" "install-dev"))))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("util-linux" ,util-linux)))
+    (inputs
+     `(("python" ,python-wrapper)))
     (home-page "https://xfs.wiki.kernel.org/")
     (synopsis "XFS file system tools")
     (description "This package provides commands to create and check XFS

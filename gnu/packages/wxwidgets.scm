@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +43,7 @@
   #:use-module (gnu packages video)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xorg)
@@ -164,6 +166,66 @@ and many other languages.")
                         "gtk+"
                         (package-inputs wxwidgets-3.1))))
            (name "wxwidgets-gtk2")))
+
+(define-public python-wxpython
+  (package
+    (name "python-wxpython")
+    (version "4.0.7.post1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "wxPython" version))
+       (sha256
+        (base32
+         "1jppcr3n428m8pgwb9q3g0iiqydxd451ncri4njk8b53xsiflhys"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove bundled wxwidgets
+           (delete-file-recursively "ext/wxWidgets")
+           #t))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "WXWIN" (assoc-ref inputs "wxwidgets"))
+             ;; Copy the waf executable to the source directory since it needs
+             ;; to be in a writable directory.
+             (copy-file (string-append (assoc-ref inputs "python-waf") "/bin/waf")
+                        "bin/waf")
+             (setenv "WAF" "bin/waf")
+             ;; The build script tries to copy license files from the
+             ;; wxwidgets source tree. Prevent it.
+             (substitute* "wscript"
+               (("updateLicenseFiles\\(cfg\\)" all)
+                (string-append "#" all)))
+             ;; The build script tries to write to demo/version.py. So, we set
+             ;; correct write permissions.
+             (chmod "demo/version.py" #o644)
+             ;; Build only the python bindings, not wxwidgets also.
+             (substitute* "setup.py"
+               (("'build']") "'build_py', '--use_syswx']"))
+             #t)))))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("wxwidgets" ,wxwidgets)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-waf" ,python-waf)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-pillow" ,python-pillow)
+       ("python-six" ,python-six)))
+    (home-page "http://wxPython.org/")
+    (synopsis "Cross platform GUI toolkit for Python")
+    (description "wxPython is a cross-platform GUI toolkit for the Python
+programming language.  It is implemented as a set of Python extension modules
+that wrap the GUI components of the popular wxWidgets cross platform C++
+library.  In most cases, wxPython uses the native widgets on each platform to
+provide a 100% native look and feel for the application.")
+    (license l:wxwindows3.1+)))
 
 (define-public python2-wxpython
   (package

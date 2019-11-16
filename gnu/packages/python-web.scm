@@ -13,7 +13,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2016, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2015, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
@@ -30,6 +30,7 @@
 ;;; Copyright © 2019 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2019 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -62,6 +63,7 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sphinx)
@@ -302,6 +304,34 @@ other HTTP libraries.")
 
 (define-public python2-httplib2
   (package-with-python2 python-httplib2))
+
+(define-public httpie
+  (package
+    (name "httpie")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "httpie" version))
+       (sha256
+        (base32
+         "103fcigpxf4nqmrdqjnyz7d9n4n16906slwmmqqc0gkxv8hnw6vd"))))
+    (build-system python-build-system)
+    (arguments
+     ;; The tests attempt to access external web servers, so we cannot run them.
+     '(#:tests? #f))
+    (propagated-inputs
+     `(("python-colorama" ,python-colorama)
+       ("python-pygments" ,python-pygments)
+       ("python-requests" ,python-requests)))
+    (home-page "https://httpie.org/")
+    (synopsis "cURL-like tool for humans")
+    (description
+     "A command line HTTP client with an intuitive UI, JSON support,
+syntax highlighting, wget-like downloads, plugins, and more.  It consists of
+a single http command designed for painless debugging and interaction with
+HTTP servers, RESTful APIs, and web services.")
+    (license license:bsd-3)))
 
 (define-public python-html2text
   (package
@@ -817,21 +847,18 @@ connection to each user.")
 (define-public python-tornado-http-auth
   (package
     (name "python-tornado-http-auth")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tornado-http-auth" version))
        (sha256
-        (base32
-         "0znrgqd7k2s4ia474xizi6h3061zj4sn5n6cq76bkwl3wwshifn5"))))
+        (base32 "0hyc5f0a09i5yb99pk4bxpg6w9ichbrb5cv7hc9hff7rxd8w0v0x"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-tornado" ,python-tornado)))
-    (home-page
-     "https://github.com/gvalkov/tornado-http-auth")
-    (synopsis
-     "Digest and basic authentication module for Tornado")
+    (home-page "https://github.com/gvalkov/tornado-http-auth")
+    (synopsis "Digest and basic authentication module for Tornado")
     (description
      "Provides support for adding authentication to services using the Tornado
 web framework, either via the basic or digest authentication schemes.")
@@ -1610,14 +1637,13 @@ Amazon Web Services (AWS) API.")
 (define-public python-wsgiproxy2
   (package
     (name "python-wsgiproxy2")
-    (version "0.4.5")
+    (version "0.4.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "WSGIProxy2" version ".tar.gz"))
        (sha256
-        (base32
-         "19d9dva282vfjs784i0zkxp078lxfz4h3f621z30ij9wbf5rba6a"))))
+        (base32 "16jch5nic0hia28lps3c678s9s9mjdq8n87igxncjg0rpi5adqnf"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-webtest" ,python-webtest)))
@@ -1987,7 +2013,7 @@ provide an easy-to-use Python interface for building OAuth1 and OAuth2 clients."
 (define-public python-cachecontrol
   (package
     (name "python-cachecontrol")
-    (version "0.11.6")
+    (version "0.12.5")
     (source
      (origin
        (method git-fetch)
@@ -1998,25 +2024,12 @@ provide an easy-to-use Python interface for building OAuth1 and OAuth2 clients."
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0pb16bzbkk99nh317xyfk8fxc2ngimsbz7lz9pxsw8c82n83d4dh"))))
+         "03lgc65sl04n0cgzmmgg99bk83f9i6k8yrmcd4hpl46q1pymn0kz"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _
-             ;; Drop test that requires internet access.
-             (delete-file "tests/test_regressions.py")
-             (setenv "PYTHONPATH"
-                     (string-append (getcwd) "/build/lib:"
-                                    (getenv "PYTHONPATH")))
-             (invoke "py.test" "-vv")
-             #t)))))
-    (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-redis" ,python-redis)
-       ("python-webtest" ,python-webtest)
-       ("python-mock" ,python-mock)))
+     ;; Versions > 0.11.6 depend on CherryPy for testing.
+     ;; It's too much work to package CherryPy for now.
+     `(#:tests? #f))
     (propagated-inputs
      `(("python-requests" ,python-requests)
        ("python-lockfile" ,python-lockfile)))
@@ -2616,7 +2629,7 @@ for Flask programs that are using @code{python-alembic}.")
 (define-public python-genshi
   (package
     (name "python-genshi")
-    (version "0.7.1")
+    (version "0.7.2")
     (source
      (origin
        (method git-fetch)
@@ -2625,7 +2638,7 @@ for Flask programs that are using @code{python-alembic}.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01fx8fnpay5w048ppyjivg2dgfpp5rybn07y3pfsgj2knram3nhl"))))
+        (base32 "06rch30x10l105k5b6rahd839lkhmgrzn6691wbci0cb2fzps32w"))))
     (build-system python-build-system)
     (home-page "https://genshi.edgewall.org/")
     (synopsis "Toolkit for generation of output for the web")
@@ -3275,3 +3288,69 @@ library to create slugs from unicode strings while keeping it DRY.")
     (description "Generate complex HTML+JS pages with Python")
     (license license:expat)))
 
+(define-public python-tinycss2
+  (package
+    (name "python-tinycss2")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "tinycss2" version))
+       (sha256
+        (base32 "1kw84y09lggji4krkc58jyhsfj31w8npwhznr7lf19d0zbix09v4"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (invoke "pytest"))))))
+    (propagated-inputs
+     `(("python-webencodings" ,python-webencodings)))
+    (native-inputs
+     `(("python-pytest-flake8" ,python-pytest-flake8)
+       ("python-pytest-isort" ,python-pytest-isort)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://tinycss2.readthedocs.io/")
+    (synopsis "Low-level CSS parser for Python")
+    (description "@code{tinycss2} can parse strings, return Python objects
+representing tokens and blocks, and generate CSS strings corresponding to
+these objects.
+
+Based on the CSS Syntax Level 3 specification, @code{tinycss2} knows the
+grammar of CSS but doesn’t know specific rules, properties or values supported
+in various CSS modules.")
+    (license license:bsd-3)))
+
+(define-public python-cssselect2
+  (package
+    (name "python-cssselect2")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cssselect2" version))
+       (sha256
+        (base32 "0skymzb4ncrm2zdsy80f53vi0arf776lvbp51hzh4ayp1il5lj3h"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (invoke "pytest"))))))
+    (propagated-inputs
+     `(("python-tinycss2" ,python-tinycss2)))
+    (native-inputs
+     `(("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-flake8" ,python-pytest-flake8)
+       ("python-pytest-isort" ,python-pytest-isort)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://cssselect2.readthedocs.io/")
+    (synopsis "CSS selectors for Python ElementTree")
+    (description "@code{cssselect2} is a straightforward implementation of
+CSS3 Selectors for markup documents (HTML, XML, etc.) that can be read by
+ElementTree-like parsers (including cElementTree, lxml, html5lib, etc.).
+
+Unlike the Python package @code{cssselect}, it does not translate selectors to
+XPath and therefore does not have all the correctness corner cases that are
+hard or impossible to fix in cssselect.")
+    (license license:bsd-3)))

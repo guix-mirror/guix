@@ -389,7 +389,7 @@ contains supporting code for evaluation and parameter tuning.")
 PYTHONCFLAGS =-I~a/include/python~am/ -I~a/lib/python~a/site-packages/numpy/core/include
 LIBS = -lpython~am -lfaiss
 SHAREDFLAGS = -shared -fopenmp
-CXXFLAGS = -fpermissive -std=c++11 -fopenmp -fPIC
+CXXFLAGS = -fpermissive -fopenmp -fPIC
 CPUFLAGS = ~{~a ~}~%"
                            (assoc-ref inputs "python*") python-version
                            (assoc-ref inputs "python-numpy") python-version

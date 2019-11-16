@@ -63,7 +63,8 @@ To do so:
   - Re-run the 'configure' script passing it the option
     '--localstatedir=/somewhere', where '/somewhere' is the 'localstatedir'
     value of the currently installed Guix (failing to do that would lead the
-    new Guix to consider the store to be empty!).
+    new Guix to consider the store to be empty!).  We recommend to use the
+    value '/var'.
 
   - Run "make", "make check", and "make install".
 

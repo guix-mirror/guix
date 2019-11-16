@@ -53,14 +53,15 @@
   (package
     (name "cereal")
     (version "1.2.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/USCiLab/cereal/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0kj32h3j2128anig0g9gzw82kfyd5xqfkwq6vdyv900jx8i1qckx"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/USCiLab/cereal.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1vxkrsnxkiblzi1z61vfix167c184fy868sgwj2dxxgbgjcq2nrh"))))
     (build-system cmake-build-system)
     (arguments
      `(;; The only included tests are portability tests requiring
@@ -259,34 +260,19 @@ that implements both the msgpack and msgpack-rpc specifications.")
 (define-public yaml-cpp
   (package
     (name "yaml-cpp")
-    (version "0.6.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/jbeder/yaml-cpp/archive/"
-                    "yaml-cpp-" version ".tar.gz"))
-              (sha256
-               (base32
-                "01gxn7kc8pzyh4aadjxxzq8cignmbwmm9rfrsmgqfg9w2q75dn74"))))
+    (version "0.6.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jbeder/yaml-cpp.git")
+             (commit (string-append "yaml-cpp-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ykkxzxcwwiv8l8r697gyqh1nl582krpvi7m7l6b40ijnk4pw30s"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'dont-install-gtest-libraries
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (with-directory-excursion
-                 (string-append out "/include")
-                 (delete-file-recursively "gtest")
-                 (delete-file-recursively "gmock"))
-               (with-directory-excursion
-                 (string-append out "/lib")
-                 (for-each (lambda (file)
-                             (delete-file file))
-                           '("libgmock.so" "libgmock_main.so"
-                             "libgtest.so" "libgtest_main.so"))))
-             #t)))))
+     '(#:configure-flags '("-DYAML_BUILD_SHARED_LIBS=ON")))
     (native-inputs
      `(("python" ,python)))
     (home-page "https://github.com/jbeder/yaml-cpp")
@@ -523,6 +509,3 @@ game development and other performance-critical applications.")
     (description "This package provides a Python wrapper library to the
 Apache Arrow-based Feather binary columnar serialization data frame format.")
     (license license:asl2.0)))
-
-(define-public python2-feather-format
-  (package-with-python2 python-feather-format))

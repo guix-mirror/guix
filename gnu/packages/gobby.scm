@@ -47,9 +47,7 @@
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
-     `(#:configure-flags
-       '("CXXFLAGS=-std=c++11")         ; required by libsigc++
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'configure 'update-gnutls-api
            (lambda _
@@ -88,9 +86,6 @@
      `(("libsigc++" ,libsigc++)
        ("gnutls" ,gnutls)
        ("libnet6" ,libnet6)))
-    (arguments
-     ;; Required by libsigc++.
-     `(#:configure-flags '("CXXFLAGS=-std=c++11")))
     (home-page "https://gobby.github.io/")
     (synopsis "Library for building collaborative editors")
     (description

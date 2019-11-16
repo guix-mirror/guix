@@ -99,6 +99,10 @@ has strong support for macros.")
                (base32
                 "0gv0slmm0qpq91za3v2v9glff3il594x5xsrbgab7xcmnh0ndkix"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:parallel-tests? #f))           ; Some tests fail
+                                        ; non-deterministically when run in
+                                        ; parallel
     (inputs
      `(("python" ,python-wrapper)
        ("xmlto" ,xmlto)))

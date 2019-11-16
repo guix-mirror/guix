@@ -216,6 +216,68 @@ standard Go idioms.")
     (home-page "http://labix.org/mgo")
     (license license:bsd-2)))
 
+(define-public ephemeralpg
+  (package
+    (name "ephemeralpg")
+    (version "2.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://eradman.com/ephemeralpg/code/ephemeralpg-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1dpfxsd8a52psx3zlfbqkw53m35w28qwyb87a8anz143x6gnkkr4"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'check
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The intention for one test is to test without PostgreSQL on
+             ;; the $PATH, so replace the test $PATH with just the util-linux
+             ;; bin, which contains getopt. It will hopefully be possible to
+             ;; remove this for releases after 2.8.
+             (substitute* "test.rb"
+               (("/bin:/usr/bin")
+                (string-append (assoc-ref inputs "util-linux")
+                               "/bin")))
+             ;; Set the LC_ALL=C as some tests use sort, and the locale
+             ;; affects the order. It will hopefully be possible to remove
+             ;; this for releases after 2.8.
+             (setenv "LC_ALL" "C")
+             (invoke "ruby" "test.rb")
+             #t))
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/pg_tmp")
+                 `("PATH" ":" prefix
+                   (,(string-append (assoc-ref inputs "util-linux")
+                                    "/bin")
+                    ,(string-append (assoc-ref inputs "postgresql")
+                                    "/bin")
+                    ;; For getsocket
+                    ,(string-append out "/bin")))))
+             #t)))))
+    (inputs
+     `(("postgresql" ,postgresql)
+       ("util-linux" ,util-linux)))
+    (native-inputs
+     `(("ruby" ,ruby)))
+    (home-page "http://eradman.com/ephemeralpg/")
+    (synopsis "Run temporary PostgreSQL databases")
+    (description
+     "@code{pg_tmp} creates temporary PostgreSQL databases, suitable for tasks
+like running software test suites.  Temporary databases created with
+@code{pg_tmp} have a limited shared memory footprint and are automatically
+garbage-collected after a configurable number of seconds (the default is
+60).")
+    (license license:isc)))
+
 (define-public es-dump-restore
   (package
     (name "es-dump-restore")
@@ -262,7 +324,7 @@ ElasticSearch server")
      `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON" "-DLEVELDB_BUILD_TESTS=ON")))
     (inputs
      `(("snappy" ,snappy)))
-    (home-page "http://leveldb.org/")
+    (home-page "https://github.com/google/leveldb")
     (synopsis "Fast key-value storage library")
     (description
      "LevelDB is a fast key-value storage library that provides an ordered
@@ -377,14 +439,13 @@ the API, and provides features such as:
 (define-public python-pylibmc
   (package
     (name "python-pylibmc")
-    (version "1.6.0")
+    (version "1.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pylibmc" version))
        (sha256
-        (base32
-         "1n6nvvhl0g52gpzzwdj1my6049xljkfwyxxygnwda9smrbj7pyay"))))
+        (base32 "1sg7d9j0v6g3xg3finf4l1hb72c13vcyyi6rqrc9shbx903d93ca"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -400,10 +461,8 @@ the API, and provides features such as:
      `(("libmemcached" ,libmemcached)
        ("zlib" ,zlib)
        ("cyrus-sasl" ,cyrus-sasl)))
-    (home-page
-     "http://sendapatch.se/projects/pylibmc/")
-    (synopsis
-     "Python client for memcached")
+    (home-page "http://sendapatch.se/projects/pylibmc/")
+    (synopsis "Python client for memcached")
     (description
      "@code{pylibmc} is a client in Python for memcached.  It is a wrapper
 around TangentOrg’s libmemcached library, and can be used as a drop-in
@@ -439,7 +498,7 @@ replacement for the code@{python-memcached} library.")
                 (search-patch "mongodb-support-unknown-linux-distributions.patch")))))
     (build-system scons-build-system)
     (inputs
-     `(("openssl" ,openssl)
+     `(("openssl" ,openssl-1.0)
        ("pcre" ,pcre)
         ,@(match (%current-system)
             ((or "x86_64-linux" "aarch64-linux" "mips64el-linux")
@@ -479,6 +538,15 @@ replacement for the code@{python-memcached} library.")
                 ,(format #f "--jobs=~a" (parallel-job-count))
                 "--ssl")))
          (modify-phases %standard-phases
+           (add-after 'unpack 'patch
+             (lambda _
+               ;; Remove use of GNU extensions in parse_number_test.cpp, to
+               ;; allow compiling with GCC 7 or later
+               ;; https://jira.mongodb.org/browse/SERVER-28063
+               (substitute* "src/mongo/base/parse_number_test.cpp"
+                 (("0xabcab\\.defdefP-10")
+                  "687.16784283419838"))
+               #t))
            (add-after 'unpack 'scons-propagate-environment
              (lambda _
                ;; Modify the SConstruct file to arrange for
@@ -1156,17 +1224,15 @@ for example from a shell script.")
 (define-public sqitch
   (package
     (name "sqitch")
-    (version "0.9999")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "mirror://cpan/authors/id/D/DW/DWHEELER/App-Sqitch-"
-             version
-             ".tar.gz"))
+             "mirror://cpan/authors/id/D/DW/DWHEELER/App-Sqitch-v"
+             version ".tar.gz"))
        (sha256
-        (base32
-         "1cvj8grs3bzc4g7dw1zc26g4biv1frav18sq0fkvi2kk0q1aigzm"))))
+        (base32 "0p4wraqiscvwmmsvfqfy65blgsilwpvd9zj4d2zvm2xdx70ncr7l"))))
     (build-system perl-build-system)
     (arguments
      '(#:phases
@@ -1210,7 +1276,6 @@ for example from a shell script.")
        ("perl-dbi" ,perl-dbi)
        ("perl-devel-stacktrace" ,perl-devel-stacktrace)
        ("perl-encode-locale" ,perl-encode-locale)
-       ("perl-file-homedir" ,perl-file-homedir)
        ("perl-hash-merge" ,perl-hash-merge)
        ("perl-ipc-run3" ,perl-ipc-run3)
        ("perl-ipc-system-simple" ,perl-ipc-system-simple)
@@ -2287,7 +2352,7 @@ implementation for Python.")
        #:configure-flags '("--without-internal-zlib"
                            "--with-readline")))
     (inputs
-     `(("openssl" ,openssl)
+     `(("openssl" ,openssl-1.0)
        ("net-tools" ,net-tools)
        ("readline" ,readline)
        ("zlib" ,zlib)))
@@ -2938,7 +3003,7 @@ transforms idiomatic python function calls to well-formed SQL queries.")
     (native-inputs
      `(("go-github.com-howeyc-gopass" ,go-github.com-howeyc-gopass)
        ("go-github.com-jessevdk-go-flags" ,go-github.com-jessevdk-go-flags)
-       ("go-golang.org-x-crypto-ssh-terminal" ,go-golang.org-x-crypto-ssh-terminal)
+       ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
        ("go-gopkg.in-mgo.v2" ,go-gopkg.in-mgo.v2)
        ("go-gopkg.in-tomb.v2" ,go-gopkg.in-tomb.v2)
        ("go-github.com-nsf-termbox-go" ,go-github.com-nsf-termbox-go)
@@ -3088,13 +3153,13 @@ NumPy, and other traditional Python scientific computing packages.")
 (define-public python-crate
   (package
     (name "python-crate")
-    (version "0.23.0")
+    (version "0.23.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "crate" version))
               (sha256
                (base32
-                "0s3s7yg4m2zflg9q96aibwb5hizsn10ql63fsj6h5z624qkavnlp"))))
+                "0ngmlvi320c5gsxab0s7qgq0ck4jdlcwvb6lbjhnfprafdp56vvx"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-urllib3" ,python-urllib3)))

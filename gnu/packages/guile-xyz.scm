@@ -41,6 +41,7 @@
 (define-module (gnu packages guile-xyz)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages aspell)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
@@ -778,6 +779,7 @@ messaging library.")
          (uri (git-reference
                (url "https://github.com/jerry40/guile-kernel")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "0aj04853bqm47ivfcmrgpb7w3wkis847kc7qrwsa5zcn9h38qh2f"))))
@@ -1594,14 +1596,14 @@ many readers as needed).")
 (define-public guile-ncurses
   (package
     (name "guile-ncurses")
-    (version "2.2")
+    (version "3.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/guile-ncurses/guile-ncurses-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1wvggbr4xv8idh1hzd8caj4xfp4pln78a7w1wqzd4zgzwmnzxr2f"))))
+               "038xbffalhymg26lvmzgf7ljilxz2f2zmqg5r5nfzbipfbprwjhf"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
               ("guile" ,guile-2.2)))
@@ -1856,11 +1858,14 @@ interface for reading articles in any format.")
     (version "1.3.0")
     (home-page "https://github.com/aconchillo/guile-redis")
     (source (origin
-              (method url-fetch)
-              (uri (string-append home-page "/archive/" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url home-page)
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1li70a2716my9q9zfq0qn2x5d1cir9k2vx0jm9glm464yaf1vj39"))))
+                "14izs8daxh7pb7vwpxi5g427qa31137jkaxrb1cy5rpjkwchy723"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -1974,6 +1979,7 @@ format is also supported.")
                 (uri (git-reference
                       (url "https://git.elephly.net/software/guile-picture-language.git")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "1ydvw9dvssdvlvhh1dr8inyzy2x6m41qgp8hsivca1xysr4gc23a"))))
@@ -1994,40 +2000,38 @@ The picture values can directly be displayed in Geiser.")
       (license license:lgpl3+))))
 
 (define-public guile-studio
-  (let ((commit "4d63f3d684f61bf83566745e8572496cdf6daad0")
-        (revision "2"))
+  (let ((commit "98fbbbd08de396cd8a0e45f2a4badf1c733a5772")
+        (revision "3"))
     (package
       (name "guile-studio")
-      (version (git-version "0" revision commit))
+      (version (git-version "0.0.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                       (url "https://git.elephly.net/software/guile-studio.git")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1d3hhw3c3mk5i87xvfqa643674f08j1jd1rc1pl534gydz529vd5"))))
+                  "0rxl5gv2mavycwkl33lcwyb3z71j2f4zyzk60k7vl3hzszpr08iq"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f                      ; there are none
+         #:make-flags
+         (list (string-append "ICONS_DIR="
+                              (assoc-ref %build-inputs "adwaita-icon-theme")
+                              "/share/icons/Adwaita/")
+               (string-append "PICT_DIR="
+                              (assoc-ref %build-inputs "guile-picture-language"))
+               (string-append "EMACS_DIR="
+                              (assoc-ref %build-inputs "emacs"))
+               (string-append "GUILE_DIR="
+                              (assoc-ref %build-inputs "guile"))
+               (string-join (cons "INPUTS=" (map cdr %build-inputs)))
+               (string-append "PREFIX=" (assoc-ref %outputs "out")))
          #:phases
          (modify-phases %standard-phases
            (delete 'configure)
-           (replace 'build
-             (lambda* (#:key source inputs outputs #:allow-other-keys)
-               (let* ((out   (assoc-ref outputs "out"))
-                      (bin   (string-append out "/bin/"))
-                      (share (string-append out "/share/")))
-                 (mkdir-p share)
-                 (mkdir-p bin)
-                 (apply invoke "guile" "-s" "guile-studio-configure.scm"
-                        out
-                        (assoc-ref inputs "emacs")
-                        (assoc-ref inputs "guile-picture-language")
-                        (string-append (assoc-ref inputs "adwaita-icon-theme")
-                                       "/share/icons/Adwaita/")
-                        (map cdr inputs))
-                 #t)))
            (delete 'install))))
       (inputs
        `(("guile" ,guile-2.2)
@@ -2039,6 +2043,8 @@ The picture values can directly be displayed in Geiser.")
          ("emacs-smart-mode-line" ,emacs-smart-mode-line)
          ("emacs-paren-face" ,emacs-paren-face)
          ("adwaita-icon-theme" ,adwaita-icon-theme)))
+      (native-inputs
+       `(("texinfo" ,texinfo)))
       (home-page "https://gnu.org/software/guile")
       (synopsis "IDE for Guile")
       (description
@@ -2609,3 +2615,47 @@ bindings to Vigra C (a C wrapper to most of the Vigra functionality) and is
 enriched with pure Guile Scheme algorithms, all accessible through a nice,
 clean and easy to use high level API.")
     (license license:gpl3+)))
+
+(define-public guile-ffi-fftw
+  (let ((commit "95d7ffb55860f3163c5283ecec1ef43bc3d174dd")
+        (revision "1"))
+    (package
+      (name "guile-ffi-fftw")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/lloda/guile-ffi-fftw.git")
+                      (commit commit)))
+                (file-name (git-file-name "guile-ffi-fftw" version))
+                (sha256
+                 (base32
+                  "0v9vk9cr4x9gn36lihi9gfkxyiqak0i598v5li6qw8bg95004p49"))))
+      (build-system guile-build-system)
+      (arguments
+       `(#:source-directory "mod"
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'prepare-build
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "mod/ffi/fftw.scm"
+                 (("\\(getenv \"GUILE_FFI_FFTW_LIBFFTW3_PATH\"\\)")
+                  (format #f "\"~a/lib\"" (assoc-ref inputs "fftw"))))
+               #t))
+           (add-after 'build 'check
+             (lambda _
+               (invoke "guile" "-L" "mod"
+                       "-s" "test/test-ffi-fftw.scm"))))))
+      (inputs
+       `(("fftw" ,fftw)
+         ("guile" ,guile-2.2)))
+      (home-page "https://github.com/lloda/guile-ffi-fftw/")
+      (synopsis "Access FFTW through Guile's FFI")
+      (description "This is a minimal set of Guile FFI bindings for the FFTW
+library's ‘guru interface’.  It provides two functions: @code{fftw-dft! rank
+sign in out} and @code{fftw-dft rank sign in}.  These bindings being minimal,
+there is no support for computing & reusing plans, or split r/i transforms, or
+anything other than straight complex DFTs.")
+      ;; TODO: This might actually be LGPLv3+
+      ;; See https://github.com/lloda/guile-ffi-fftw/issues/1
+      (license license:gpl3+))))

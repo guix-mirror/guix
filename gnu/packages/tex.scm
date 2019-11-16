@@ -1002,6 +1002,7 @@ symbol fonts.")
      (origin
        (method svn-fetch)
        (uri (texlive-ref "latex" "mflogo"))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
          "15i2ib6nvhf31g1b92c6njf7n0g29znlq7hbfp9ii7qabhcwwvrj"))))
@@ -6229,15 +6230,15 @@ and Karl Berry.")
 (define-public lyx
   (package
     (name "lyx")
-    (version "2.3.2-2")
+    (version "2.3.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://ftp.lyx.org/pub/lyx/stable/"
+              (uri (string-append "https://ftp.lyx.org/pub/lyx/stable/"
                                   (version-major+minor version) ".x/"
-                                  name "-" version ".tar.gz"))
+                                  "lyx-" version ".tar.gz"))
               (sha256
                (base32
-                "0vr0qwis6rhind6azfa270hqxci7rj8qb1kk5x6lm80mc34nvrqi"))
+                "0j3xincwmsscfgv13g3z6h4kx1qfzgg8x71fs393akcdxsh2g07c"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -6303,19 +6304,15 @@ and Karl Berry.")
        ("hunspell" ,hunspell)           ; Note: Could also use aspell instead.
        ("libx11" ,libx11)
        ("mythes" ,mythes)
-       ("python" ,python-2)
+       ("python" ,python)
        ("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)
        ("zlib" ,zlib)))
     (propagated-inputs
      `(("texlive" ,(texlive-union (list texlive-fonts-ec)))))
-    ;; FIXME: Python 3.7.0 cannot be used because the test infrastructure
-    ;; "requires a bytes-like object, not 'str'".  This may be fixed with
-    ;; upgrades to Python.
     (native-inputs
-     `(("python" ,python-2)
-       ("pkg-config" ,pkg-config)
-       ("bc" ,bc)))
+     `(("python" ,python)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://www.lyx.org/")
     (synopsis "Document preparation system with GUI")
     (description "LyX is a document preparation system.  It excels at letting
@@ -6473,6 +6470,7 @@ page, a new page will be started.")
      (origin
        (method svn-fetch)
        (uri (texlive-ref "latex" "changepage"))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
          "1rpw8xg5p4jsyh236jma9dz3l29wjx4062f154b3wak5yjcxyxyb"))))
@@ -7004,6 +7002,7 @@ effects, varying slide transitions and animations.")
      (origin
        (method svn-fetch)
        (uri (texlive-ref "latex" "xmpincl"))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
          "0lq3dfb4fsw955gjwllnk7cg00ciq5mva64mlpbva6g2jz117734"))))
@@ -7026,6 +7025,7 @@ the file to which it applies.")
      (origin
        (method svn-fetch)
        (uri (texlive-ref "latex" "pdfx"))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
          "0ikxg8yzq78hy5b9x13d4nah46d0yvmwlqmdri06pygbx116dcac"))))
@@ -7226,6 +7226,7 @@ are part of the LaTeX required tools distribution, comprising the packages:
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "xkeyval"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0wancavix39j240pd8m9cgmwsijwx6jd6n54v8wg0x2rk5m44myp"))))
@@ -7305,6 +7306,7 @@ keys.")
      (origin
        (method svn-fetch)
        (uri (texlive-ref "latex" "standalone"))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
          "192ydxcn8ir96q8qwvnppksmqf5i0p50i0wz6iqazbwmh3dqxpx4"))))
@@ -7372,6 +7374,7 @@ package to handle all of the possible unit-related needs of LaTeX users.")
      (origin
        (method svn-fetch)
        (uri (texlive-ref "latex" "booktabs"))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
          "1dqid48vgh25wmw8xzmx6x3pfgz1y9f0r8aza1yxq2mjny5yf68x"))))

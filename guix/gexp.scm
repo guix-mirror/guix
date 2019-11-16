@@ -654,6 +654,31 @@ names and file names suitable for the #:allowed-references argument to
   (load-path           lowered-gexp-load-path)    ;list of store items
   (load-compiled-path  lowered-gexp-load-compiled-path)) ;list of store items
 
+(define* (imported+compiled-modules modules system
+                                    #:key (extensions '())
+                                    deprecation-warnings guile
+                                    (module-path %load-path))
+  "Return a pair where the first element is the imported MODULES and the
+second element is the derivation to compile them."
+  (mcached equal?
+           (mlet %store-monad ((modules  (if (pair? modules)
+                                             (imported-modules modules
+                                                               #:system system
+                                                               #:module-path module-path)
+                                             (return #f)))
+                               (compiled (if (pair? modules)
+                                             (compiled-modules modules
+                                                               #:system system
+                                                               #:module-path module-path
+                                                               #:extensions extensions
+                                                               #:guile guile
+                                                               #:deprecation-warnings
+                                                               deprecation-warnings)
+                                             (return #f))))
+             (return (cons modules compiled)))
+           modules
+           system extensions guile deprecation-warnings module-path))
+
 (define* (lower-gexp exp
                      #:key
                      (module-path %load-path)
@@ -719,20 +744,15 @@ derivations--e.g., code evaluated for its side effects."
                                        (lambda (obj)
                                          (lower-object obj system))
                                        extensions))
-                       (modules  (if (pair? %modules)
-                                     (imported-modules %modules
-                                                       #:system system
-                                                       #:module-path module-path)
-                                     (return #f)))
-                       (compiled (if (pair? %modules)
-                                     (compiled-modules %modules
-                                                       #:system system
-                                                       #:module-path module-path
-                                                       #:extensions extensions
-                                                       #:guile guile
-                                                       #:deprecation-warnings
-                                                       deprecation-warnings)
-                                     (return #f))))
+                       (modules+compiled (imported+compiled-modules
+                                          %modules system
+                                          #:extensions extensions
+                                          #:deprecation-warnings
+                                          deprecation-warnings
+                                          #:guile guile
+                                          #:module-path module-path))
+                       (modules ->  (car modules+compiled))
+                       (compiled -> (cdr modules+compiled)))
     (define load-path
       (search-path modules exts
                    (string-append "/share/guile/site/" effective-version)))

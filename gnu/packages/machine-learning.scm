@@ -1302,7 +1302,7 @@ Python.")
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("protobuf" ,protobuf-next)
+     `(("protobuf" ,protobuf)
        ("python" ,python-wrapper)))
     (home-page "https://grpc.io")
     (synopsis "High performance universal RPC framework")
@@ -1607,8 +1607,8 @@ INSTALL_RPATH " (assoc-ref outputs "out") "/lib)\n")))
                #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("protobuf:native" ,protobuf-next) ; protoc
-       ("protobuf:src" ,(package-source protobuf-next))
+       ("protobuf:native" ,protobuf-3.6) ; protoc
+       ("protobuf:src" ,(package-source protobuf-3.6))
        ("eigen:src" ,(package-source eigen-for-tensorflow))
        ;; install_pip_packages.sh wants setuptools 39.1.0 specifically.
        ("python-setuptools" ,python-setuptools-for-tensorflow)
@@ -1735,7 +1735,7 @@ INSTALL_RPATH " (assoc-ref outputs "out") "/lib)\n")))
        ("python-gast" ,python-gast)
        ("python-grpcio" ,python-grpcio)
        ("python-numpy" ,python-numpy)
-       ("python-protobuf" ,python-protobuf-next)
+       ("python-protobuf" ,python-protobuf-3.6)
        ("python-six" ,python-six)
        ("python-termcolo" ,python-termcolor)
        ("python-wheel" ,python-wheel)))
@@ -1751,7 +1751,7 @@ INSTALL_RPATH " (assoc-ref outputs "out") "/lib)\n")))
        ("jsoncpp" ,jsoncpp-for-tensorflow)
        ("snappy" ,snappy)
        ("sqlite" ,sqlite)
-       ("protobuf" ,protobuf-next)
+       ("protobuf" ,protobuf-3.6)
        ("python" ,python-wrapper)
        ("zlib" ,zlib)))
     (home-page "https://tensorflow.org")
@@ -2051,3 +2051,39 @@ includes an implementation of Global Refinement of Random Forest.")
 
 (define-public ecl-cl-random-forest
   (sbcl-package->ecl-package sbcl-cl-random-forest))
+
+(define-public gloo
+  (let ((version "0.0.0") ; no proper version tag
+        (commit "ca528e32fea9ca8f2b16053cff17160290fc84ce")
+        (revision "0"))
+    (package
+      (name "gloo")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/facebookincubator/gloo.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1q9f80zy75f6njrzrqkmhc0g3qxs4gskr7ns2jdqanxa2ww7a99w"))))
+      (build-system cmake-build-system)
+      (native-inputs
+       `(("googletest" ,googletest)))
+      (arguments
+       `(#:configure-flags '("-DBUILD_TEST=1")
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda _
+               (invoke "make" "gloo_test")
+               #t)))))
+      (synopsis "Collective communications library")
+      (description
+       "Gloo is a collective communications library.  It comes with a
+number of collective algorithms useful for machine learning applications.
+These include a barrier, broadcast, and allreduce.")
+      (home-page "https://github.com/facebookincubator/gloo")
+      (license license:bsd-3))))

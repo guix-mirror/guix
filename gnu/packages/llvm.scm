@@ -201,10 +201,12 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
                    'unpack 'set-glibc-file-names
                    (lambda* (#:key inputs #:allow-other-keys)
                      (let ((libc (assoc-ref inputs "libc"))
-                           (compiler-rt (assoc-ref inputs "clang-runtime")))
-                       (case (string->number ,(version-major
-                                               (package-version clang-runtime)))
-                         ((or 6 7)
+                           (compiler-rt (assoc-ref inputs "clang-runtime"))
+                           (version
+                            (string->number
+                             ,(version-major (package-version clang-runtime)))))
+                       (cond
+                         ((> version 3)
                           ;; Link to libclang_rt files from clang-runtime.
                           (substitute* "lib/Driver/ToolChain.cpp"
                             (("getDriver\\(\\)\\.ResourceDir")
@@ -220,7 +222,7 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
                             ;; allow crt1.o & co. to be found.
                             (("@GLIBC_LIBDIR@")
                              (string-append libc "/lib"))))
-                         ((3)
+                         (else
                           (substitute* "lib/Driver/Tools.cpp"
                             ;; Patch the 'getLinuxDynamicLinker' function so that
                             ;; it uses the right dynamic linker file name.
@@ -321,6 +323,7 @@ use with Clang, targeting C++11, C++14 and above.")
        (uri (git-reference
              (url "https://github.com/llvm/llvm-project.git")
              (commit (string-append "llvmorg-" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "052h16wjcnqginzp7ki4il2xmm25v9nyk0wcz7cg03gbryhl7aqa"))))

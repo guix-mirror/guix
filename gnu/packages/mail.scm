@@ -28,6 +28,7 @@
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -320,21 +321,30 @@ to run without any changes.")
 (define-public fetchmail
   (package
     (name "fetchmail")
-    (version "6.3.26")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://sourceforge/fetchmail/branch_6.3/fetchmail-"
-                                 version ".tar.xz"))
-             (sha256
-              (base32
-               "0l78ayvi9dm8hd190gl139cs2xqsrf7r9ncilslw20mgvd6cbd3r"))))
+    (version "6.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/fetchmail/branch_"
+                           (version-major+minor version) "/"
+                           "fetchmail-" version ".tar.xz"))
+       (sha256
+        (base32 "1859wvfc9fq72mwp4njdiy0x89hnddlfr3nix71qqglcs0fz2crz"))))
     (build-system gnu-build-system)
     (inputs
      `(("openssl" ,openssl)))
     (arguments
-     `(#:configure-flags (list (string-append "--with-ssl="
-                                              (assoc-ref %build-inputs "openssl")))))
-    (home-page "http://www.fetchmail.info/")
+     `(#:configure-flags
+       (list (string-append "--with-ssl="
+                            (assoc-ref %build-inputs "openssl")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'create-test-environment
+           (lambda _
+             ;; Fix ‘Cannot find absolute path for user's home directory’.
+             (setenv "HOME" "/tmp")
+             #t)))))
+    (home-page "https://www.fetchmail.info/")
     (synopsis "Remote-mail retrieval and forwarding utility")
     (description
      "Fetchmail is a full-featured, robust, well-documented remote-mail
@@ -392,15 +402,16 @@ operating systems.")
 (define-public neomutt
   (package
     (name "neomutt")
-    (version "20180716")
+    (version "20191102")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/" name "/" name
-                           "/archive/" name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/neomutt/neomutt.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0072in2d6znwqq461shsaxlf40r4zr7w3j9848qvm4xlh1lq52dx"))))
+        (base32 "0x5f9zbvxsxg5y2ir4xq4xw1q2snaxkidhdyhcxw5ljw3qqwhlyq"))))
     (build-system gnu-build-system)
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
@@ -408,11 +419,11 @@ operating systems.")
        ("gpgme" ,gpgme)
        ("ncurses" ,ncurses)
        ("gnutls" ,gnutls)
-       ("openssl" ,openssl) ;For smime
+       ("openssl" ,openssl)             ; for S/MIME
        ("perl" ,perl)
        ("kyotocabinet" ,kyotocabinet)
        ("libxslt" ,libxslt)
-       ("libidn" ,libidn)
+       ("libidn2" ,libidn2)
        ("libxml2" ,libxml2)
        ("lmdb" ,lmdb)
        ("notmuch" ,notmuch)))
@@ -425,11 +436,11 @@ operating systems.")
        ("w3m" ,w3m)
        ("tcl" ,tcl)))
     (arguments
-     `(#:tests? #f
+     `(#:test-target "test"
        #:configure-flags
        (list "--gpgme"
 
-             ;; database, implies header caching
+             ;; Database, implies header caching.
              "--disable-tokyocabinet"
              "--disable-qdbm"
              "--disable-bdb"
@@ -447,11 +458,12 @@ operating systems.")
 
              "--smime"
              "--notmuch"
-             "--idn"
+             "--disable-idn"
+             "--idn2"
 
              ;; If we do not set this, neomutt wants to check
              ;; whether the path exists, which it does not
-             ;; in the chroot. The workaround is this.
+             ;; in the chroot.
              "--with-mailpath=/var/mail"
 
              "--with-ui=ncurses"
@@ -464,13 +476,6 @@ operating systems.")
        (modify-phases %standard-phases
          ;; TODO: autosetup is meant to be included in the source,
          ;; but we should package autosetup and use our own version of it.
-         (add-before 'configure 'fix-sasl-test
-           (lambda _
-             ;; Upstream suggestion to fix the failing sasl autosetup test.
-             (substitute* "auto.def"
-               (("cc-with \\[list -cflags -I\\$prefix/include -libs")
-                "cc-with [list -includes stddef.h -cflags -I$prefix/include -libs"))
-             #t))
          (replace 'configure
            (lambda* (#:key outputs inputs configure-flags #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -849,14 +854,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.29.1")
+    (version "0.29.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0rg3rwghd3wivf3bmqcqpkkd5c779ld5hi363zjcw5fl6a7gqilq"))))
+                "1pjmrnbn0iavm5pnw7wgfw5d6hg5i6miqfa6s7s4027vn94n3nhv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -1089,7 +1094,7 @@ compresses it.")
 (define-public claws-mail
   (package
     (name "claws-mail")
-    (version "3.17.3")
+    (version "3.17.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1097,7 +1102,7 @@ compresses it.")
                     ".tar.xz"))
               (sha256
                (base32
-                "1wnj6c9cbmhphs2l6wfvndkk2g08rmxw0sl2c8k1k008dxd1ykjh"))))
+                "00mfhaac16sv67rwiq98hr4nl5zmd1h2afswwwksdcsi3q9x23jr"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("bogofilter" ,bogofilter)
@@ -1197,7 +1202,7 @@ delivery.")
 (define-public exim
   (package
     (name "exim")
-    (version "4.92.2")
+    (version "4.92.3")
     (source
      (origin
        (method url-fetch)
@@ -1206,7 +1211,8 @@ delivery.")
                   (string-append "https://ftp.exim.org/pub/exim/exim4/old/exim-"
                                  version ".tar.bz2")))
        (sha256
-        (base32 "1xnc5rdcg5mcrvjqp506a9frmcr89jwsh4c5vbks46awyz1rfzsm"))))
+        (base32
+         "0d0h0j9pl3yf089sc59ia60m3dqnkb3qh1qaz6vxfg2ja2mnm5i9"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb-5.3) ; ‘#error Version 6 and later BDB API is not supported’
@@ -1285,7 +1291,7 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.3.7.2")
+    (version "2.3.8")
     (source
      (origin
        (method url-fetch)
@@ -1293,8 +1299,7 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            "dovecot-" version ".tar.gz"))
        (sha256
-        (base32
-         "0q0jgcv3ni2znkgyhc966ffphj1wk73y76wssh0yciqafs2f0v36"))))
+        (base32 "0jdng27hqqagjy6v7ymd0xflbv5dbc1rhh450nk39ar6pw1qsxy5"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1822,13 +1827,13 @@ maintained.")
 (define-public khard
   (package
     (name "khard")
-    (version "0.13.0")
+    (version "0.15.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "1lyjiskc6ckjjylzr04dnm66p3cnn7vlysw9c27qls3y3ywx14zw"))))
+                "18ba2xgfq8sw0bg6xmlfjpizid1hkzgswcfcc54gl21y2dwfda2w"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1839,6 +1844,8 @@ maintained.")
                     (doc (string-append out "/share/doc/khard")))
                (copy-recursively "misc/khard" doc)
                #t))))))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
     (propagated-inputs
      `(("python-atomicwrites" ,python-atomicwrites)
        ("python-configobj" ,python-configobj)
@@ -1919,7 +1926,7 @@ Authentication-Results header seen in the wild.")
 (define-public perl-mail-dkim
   (package
     (name "perl-mail-dkim")
-    (version "0.57")
+    (version "0.58")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1928,7 +1935,7 @@ Authentication-Results header seen in the wild.")
                      ".tar.gz"))
               (sha256
                (base32
-                "0fmfhwn4sh98w62rc8j584l23vlhr7vii8glm2njx14f81a56lvb"))))
+                "0cgkal65qqcy57b21lgij90ba36wl66byw9i76g5yhwaa8ms8hqa"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-crypt-openssl-rsa" ,perl-crypt-openssl-rsa)
@@ -2270,20 +2277,22 @@ e-mails with other systems speaking the SMTP protocol.")
 (define-public opensmtpd-next
   (package
     (name "opensmtpd-next")
-    (version "6.4.2p1")
+    (version "6.6.1p1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.opensmtpd.org/archives/"
                            "opensmtpd-" version ".tar.gz"))
        (sha256
-        (base32 "0pgv080ai7d98l9340jadp9wjiaqj2qvgpqhilcz0kps2mdiawbd"))))
+        (base32 "1ngil8j13m2rq07g94j4yjr6zmaimzy8wbfr17shi7rxnazys6zb"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)
        ("libasr" ,libasr)
        ("libevent" ,libevent)
-       ("libressl" ,libressl)
+       ;; XXX Upstream recommends LibreSSL, which doesn't support TLS 1.3 yet,
+       ;; and requires a development release (3.0.2).  Use OpenSSL instead.
+       ("openssl" ,openssl)
        ("linux-pam" ,linux-pam)
        ("zlib" ,zlib)))
     (native-inputs

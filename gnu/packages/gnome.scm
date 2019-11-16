@@ -41,6 +41,7 @@
 ;;; Copyright © 2019 Jonathan Frederickson <jonathan@terracrypt.net>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -568,9 +569,17 @@ and keep up to date translations of documentation.")
                (base32
                 "1365fabz3q7n3bl775z82m1nzg18birxxyd7l2ssbbkqrx3h7wgi"))))
     (build-system meson-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin")
-       ("gtk+" ,gtk+ "bin")             ; gtk-update-icon-cache
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("docbook-xml" ,docbook-xml)
@@ -771,7 +780,7 @@ forgotten when the session ends.")
 (define-public evince
   (package
     (name "evince")
-    (version "3.30.2")
+    (version "3.34.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -779,7 +788,7 @@ forgotten when the session ends.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0k7jln6dpg4bpv61niicjzkzyq6fhb3yfld7pc8ck71c8pmvsnx9"))))
+               "1pr6fvbaam1mzxjwyqd53hcxzdjzf73idn10j4j7n54nwg6hgr45"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--disable-nautilus")
@@ -2061,17 +2070,17 @@ Hints specification (EWMH).")
 (define-public goffice
   (package
     (name "goffice")
-    (version "0.10.44")
+    (version "0.10.46")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/goffice/"
                                   (version-major+minor version)  "/"
-                                  name "-" version ".tar.xz"))
+                                  "goffice-" version ".tar.xz"))
               (sha256
-               (base32 "1fd7cm6j0g0mqgpqs4y22b4gd2ll4mcyvg4d0q22d5ndjapl4q3d"))))
+               (base32 "1a8kba36zwzr0ilafc0d1nsxxma1qibviiifd0jhbxp180x6v385"))))
     (build-system gnu-build-system)
     (outputs '("out"
-               "doc"))                            ;4.0 MiB of gtk-doc
+               "doc"))                  ; 4.0 MiB of gtk-doc
     (arguments
      '(#:configure-flags (list (string-append "--with-html-dir="
                                               (assoc-ref %outputs "doc")
@@ -2125,7 +2134,7 @@ Hints specification (EWMH).")
 (define-public gnumeric
   (package
     (name "gnumeric")
-    (version "1.12.45")
+    (version "1.12.46")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gnumeric/"
@@ -2133,7 +2142,7 @@ Hints specification (EWMH).")
                                   "gnumeric-" version ".tar.xz"))
               (sha256
                (base32
-                "0c8dl1kvnj3g32qy3s92qpqpqfy0in59cx005gjvvzsflahav61h"))))
+                "1qdmw2dp7rmq8fmjapgwaks7ajh270wm6kyvlxlzwbgmg8vngp4z"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(;; The gnumeric developers don't worry much about failing tests.
@@ -2222,7 +2231,7 @@ engineering.")
 (define-public seahorse
   (package
     (name "seahorse")
-    (version "3.30")
+    (version "3.30.1.1")
     (source
      (origin
        (method url-fetch)
@@ -2231,8 +2240,19 @@ engineering.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "1sbj1czlx1fakm72dwgbn0bwm12j838yaky4mkf6hf8j8afnxmzp"))))
-    (build-system glib-or-gtk-build-system)
+         "12x7xmwh62yl0ax90v8nkx3jqzviaz9hz2g56yml78wzww20gawy"))
+       (patches (search-patches
+                 "seahorse-gkr-use-0-on-empty-flags.patch"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "build-aux/meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t)))))
     (inputs
      `(("gtk+" ,gtk+)
        ("gcr" ,gcr)
@@ -2240,13 +2260,15 @@ engineering.")
        ("gpgme" ,gpgme)
        ("openldap" ,openldap)
        ("openssh" ,openssh)
+       ("avahi" ,avahi)
        ("libsecret" ,libsecret)
        ("libsoup" ,libsoup)))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)
+       ("vala" ,vala)
        ("xmllint" ,libxml2)))
     (home-page "https://launchpad.net/gnome-themes-standard")
     (synopsis "Manage encryption keys and passwords in the GNOME keyring")
@@ -2338,7 +2360,7 @@ editors, IDEs, etc.")
   (package
     (inherit vte)
     (name "vte-ng")
-    (version "0.56.2.a")
+    (version "0.58.2.a")
     (home-page "https://github.com/thestinger/vte-ng")
     (source (origin
               (method git-fetch)
@@ -2346,20 +2368,13 @@ editors, IDEs, etc.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1lmba6i0abifmvvfb1q63ql6zh6d38148kp6skmkggiib2hi5dki"))))
+                "0rnm5c6m3abbm81jsfdas0y80z299ny54gr4syn4bfrms3s4g19l"))))
+    (build-system meson-build-system)
     (native-inputs
      `(("gtk-doc" ,gtk-doc)
-       ("gperf" ,gperf)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
        ,@(package-native-inputs vte)))
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (replace 'bootstrap
-                    (lambda _
-                      (setenv "NOCONFIGURE" "true")
-                      (invoke "sh" "autogen.sh"))))))
+     `(#:configure-flags '("-Ddocs=true")))
   (synopsis "Enhanced VTE terminal widget")
   (description
    "VTE is a library (libvte) implementing a terminal emulator widget for
@@ -3016,15 +3031,14 @@ keyboard shortcuts.")
 (define-public colord
   (package
     (name "colord")
-    (version "1.4.3")
+    (version "1.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.freedesktop.org/software/colord/releases/"
-                           name "-" version ".tar.xz"))
+                           "colord-" version ".tar.xz"))
        (sha256
-        (base32
-         "1xwxahg9mgmapc16xkb4kgmc40zpadrwav33xqmn6cgaw6g6d3ls"))))
+        (base32 "19f0938fr7nvvm3jr263dlknaq7md40zrac2npfyz25zc00yh3ws"))))
     (build-system meson-build-system)
     (arguments
      '(;; FIXME: One test fails:
@@ -3039,13 +3053,12 @@ keyboard shortcuts.")
                                ;; Wants to install to global completion dir;
                                ;; punt.
                                "-Dbash_completion=false"
-                               ;; colord-gtk not packaged yet.
-                               "-Dsession_example=false"
                                "-Ddaemon_user=colord"
                                "-Dsane=true"
-                               ;; Requires spotread
+                               "-Dvapi=true"
+                               ;; Requires spotread.
                                "-Dargyllcms_sensor=false"
-                               ;; TODO: Requires docbook2x
+                               ;; TODO: Requires docbook2x.
                                "-Dman=false")
        #:phases
        (modify-phases %standard-phases
@@ -3054,27 +3067,37 @@ keyboard shortcuts.")
              (substitute* "rules/meson.build"
                (("udev.get_pkgconfig_variable\\('udevdir'\\)")
                 (string-append "'" (assoc-ref outputs "out") "/lib/udev'")))
-             #t)))))
+             #t))
+         (add-before 'configure 'set-sqlite3-file-name
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; "colormgr dump" works by invoking the "sqlite3" command.
+             ;; Record its absolute file name.
+             (let ((sqlite (assoc-ref inputs "sqlite")))
+               (substitute* "client/cd-util.c"
+                 (("\"sqlite3\"")
+                  (string-append "\"" sqlite "/bin/sqlite3\"")))
+               #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("glib:bin" ,glib "bin") ; for glib-compile-resources, etc.
+     `(("glib:bin" ,glib "bin")         ; for glib-compile-resources, etc.
        ("gobject-introspection" ,gobject-introspection)
        ("gtk-doc" ,gtk-doc)
+       ("intltool" ,intltool)
        ("libtool" ,libtool)
-       ("intltool" ,intltool)))
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
     (propagated-inputs
      ;; colord.pc refers to all these.
      `(("glib" ,glib)
-       ("udev" ,eudev)
-       ("lcms" ,lcms)))
+       ("lcms" ,lcms)
+       ("udev" ,eudev)))
     (inputs
      `(("dbus-glib" ,dbus-glib)
        ("gusb" ,gusb)
        ("libgudev" ,libgudev)
        ("libusb" ,libusb)
-       ("sqlite" ,sqlite)
        ("polkit" ,polkit)
        ("python" ,python-wrapper)
+       ("sqlite" ,sqlite)
        ("sane-backends" ,sane-backends)))
     (home-page "https://www.freedesktop.org/software/colord/")
     (synopsis "Color management service")
@@ -3449,12 +3472,20 @@ both a traditional UI or a modern UI with a GtkHeaderBar.")
                (base32
                 "036sddvhs0blqpc2ixmjdl9vxynvkn5jpgn0jxr1fxcm4rh3q07a"))))
     (build-system meson-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t)))))
     (native-inputs
      `(("intltool" ,intltool)
        ("itstool" ,itstool)
        ("gobject-introspection" ,gobject-introspection)
        ("glib:bin" ,glib "bin") ; for glib-mkmenus
-       ("gtk+:bin" ,gtk+ "bin")  ; for gtk-update-icon-cache
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("amtk" ,amtk)
@@ -3916,7 +3947,6 @@ for application developers.")
        ("desktop-file-utils" ,desktop-file-utils)
        ("gobject-introspection" ,gobject-introspection)
        ("glib:bin" ,glib "bin")                   ;for 'glib-mkenums'
-       ("gtk:bin" ,gtk+ "bin")                    ;for 'gtk-update-icon-cache'
        ("intltool" ,intltool)
        ("itstool" ,itstool)
        ("xmllint" ,libxml2)))
@@ -3972,6 +4002,12 @@ for application developers.")
 
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t))
          (add-before
           'install 'disable-cache-generation
           (lambda _
@@ -4105,6 +4141,12 @@ supports playlists, song ratings, and any codecs installed through gstreamer.")
                            (assoc-ref %outputs "out") "/lib/eog"))
       #:phases
       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t))
         (add-after 'install 'wrap-eog
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out               (assoc-ref outputs "out"))
@@ -4118,7 +4160,6 @@ supports playlists, song ratings, and any codecs installed through gstreamer.")
     `(("intltool" ,intltool)
       ("itstool" ,itstool)
       ("glib" ,glib "bin")
-      ("gtk+:bin" ,gtk+ "bin") ; for gtk-update-icon-cache
       ("gobject-introspection" ,gobject-introspection)
       ("pkg-config" ,pkg-config)
       ("xmllint" ,libxml2)))
@@ -4288,12 +4329,14 @@ DAV, and others.")
     (name "gusb")
     (version "0.3.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/hughsie/libgusb/archive/"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/hughsie/libgusb.git")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1wa9787ww7s1kl9jml6kiyrjgimlgagq4jmgdj7xcpsx83w10qxk"))))
+                "002pg0p4qzzk5dkyiynm483ir26zxrn4k71c7f6j85mfsdzbgli7"))))
     (build-system meson-build-system)
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
@@ -4318,54 +4361,41 @@ USB transfers with your high-level application or system daemon.")
 (define-public simple-scan
   (package
     (name "simple-scan")
-    (version "3.24.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://launchpad.net/simple-scan/"
-                                  (version-major+minor version) "/"
-                                  version "/+download/simple-scan-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "1czg21cdbd2fgqylxfnzfhhzy69gycf816d5bbaq6hb62hmq7bjy"))))
-    (build-system glib-or-gtk-build-system)
+    (version "3.34.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/simple-scan/"
+                           (version-major+minor version) "/"
+                           "simple-scan-" version ".tar.xz"))
+       (sha256
+        (base32 "0glzskxdc7p9z7nwcakqc7qzij4l79adlvvb2cj5fmis731zw9yq"))))
+    (build-system meson-build-system)
+    ;; TODO: Fix icons in home screen, About dialogue, and scan menu.
+    (arguments
+     '(#:glib-or-gtk? #t))
     (inputs
      `(("gtk" ,gtk+)
        ("zlib" ,zlib)
        ("cairo" ,cairo)
+       ("colord" ,colord)
        ("gdk-pixbuf" ,gdk-pixbuf)
        ("gusb" ,gusb)
        ("libsane" ,sane-backends)))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("itstool" ,itstool)
-       ("colord" ,colord)
-       ("glib" ,glib "bin")                       ; glib-compile-schemas, etc.
+       ("glib" ,glib "bin")             ; glib-compile-schemas, etc.
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)
        ("xmllint" ,libxml2)))
-    (arguments
-     '(#:configure-flags '("--disable-packagekit")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'clean
-                    (lambda _
-                      ;; Remove a left-over reference to PackageKit.
-
-                      ;; https://bugs.launchpad.net/simple-scan/+bug/1462769
-
-                      ;; There are some generated C files erroneously
-                      ;; included in the source distribution, and this
-                      ;; one breaks the build by referring to a
-                      ;; non-existent header (packagekit.h)
-                      (delete-file "src/ui.c"))))))
-    (home-page "https://launchpad.net/simple-scan")
+    (home-page "https://gitlab.gnome.org/GNOME/simple-scan")
     (synopsis "Document and image scanner")
-    (description "Simple Scan is an easy-to-use application, designed to let
-users connect their scanner and quickly have the image/document in an
-appropriate format.  Simple Scan is basically a frontend for SANE - which is
-the same backend as XSANE uses. This means that all existing scanners will
-work and the interface is well tested.")
+    (description
+     "Document Scanner is an easy-to-use application that lets you connect your
+scanner and quickly capture images and documents in an appropriate format.  It
+supports any scanner for which a suitable SANE driver is available, which is
+almost all of them.")
     (license license:gpl3+)))
 
 (define-public eolie
@@ -4385,6 +4415,12 @@ work and the interface is well tested.")
      `(#:glib-or-gtk? #t
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t))
          (add-after 'wrap 'wrap-more
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
@@ -4407,8 +4443,7 @@ work and the interface is well tested.")
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)
        ("python" ,python)
-       ("glib:bin" ,glib "bin")
-       ("gtk+" ,gtk+ "bin")))
+       ("glib:bin" ,glib "bin")))
     (inputs
      `(("gobject-introspection" ,gobject-introspection)
        ("glib-networking" ,glib-networking)
@@ -4454,6 +4489,14 @@ a secret password store, an adblocker, and a modern UI.")
      ;;   FAIL
      '(#:tests? #f
        #:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t)))
        #:configure-flags
        ;; Otherwise, the RUNPATH will lack the final 'epiphany' path component.
        (list (string-append "-Dc_link_args=-Wl,-rpath="
@@ -4463,7 +4506,6 @@ a secret password store, an adblocker, and a modern UI.")
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
        ("glib:bin" ,glib "bin") ; for glib-mkenums
-       ("gtk+:bin" ,gtk+ "bin") ; for gtk-update-icon-cache
        ("intltool" ,intltool)
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)
@@ -4995,15 +5037,15 @@ powerful general purpose text editor.")
 (define-public zenity
   (package
     (name "zenity")
-    (version "3.30.0")
+    (version "3.32.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/zenity/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "zenity-" version ".tar.xz"))
               (sha256
                (base32
-                "1wipnp46pd238z9ck5rsckbaw7yla6c936fswq5w94k4c6bgcplr"))))
+                "15fdh8xfdhnwcynyh4byx3mrjxbyprqnwxzi7qn3g5wwaqryg1p7"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -5486,7 +5528,8 @@ services.")
 (define-public network-manager-openvpn
   (package
     (name "network-manager-openvpn")
-    (version "1.8.4")
+    ;; Updating?  Check whether network-manager-applet still needs libnm_gtk.
+    (version "1.8.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5495,7 +5538,7 @@ services.")
                     "/NetworkManager-openvpn-" version ".tar.xz"))
               (sha256
                (base32
-                "0gyrv46h9k17qym48qacq4zpxbap6hi17shn921824zm98m2bdvr"))))
+                "1vri49yff4lj13dnzkpq9nx3a4z1bmbrv807r151plj8m1mwhg5g"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-absolute-paths" "--localstatedir=/var")
@@ -5633,7 +5676,12 @@ Compatible with Cisco VPN concentrators configured to use IPsec.")
 to @acronym{VPNs, virtual private networks} via OpenConnect, an open client for
 Cisco's AnyConnect SSL VPN.")
     (license license:gpl2+)
-    (properties `((upstream-name . "NetworkManager-openconnect")))))
+    (properties `((upstream-name . "NetworkManager-openconnect")
+
+                  ;; The 'etc/dbus-1/system.d/nm-openconnect-service.conf'
+                  ;; file refers to account "nm-openconnect".  Specify it here
+                  ;; so that 'network-manager-service-type' creates it.
+                  (user-accounts . ("nm-openconnect"))))))
 
 (define-public mobile-broadband-provider-info
   (package
@@ -5659,18 +5707,21 @@ Cisco's AnyConnect SSL VPN.")
 (define-public network-manager-applet
   (package
     (name "network-manager-applet")
-    (version "1.8.18")
+    (version "1.8.24")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/network-manager-applet/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "network-manager-applet-" version ".tar.xz"))
               (sha256
                (base32
-                "0y31g0lxr93370xi74hbpvcy9m81n5wdkdhq8xy2nqp0y4219p13"))))
+                "1gzvz4wfqfsfclqg56y954al8x6fmz71cnxlx1i4nqr7a25bp2qi"))))
     (build-system meson-build-system)
     (arguments
-     '(#:glib-or-gtk? #t))
+     '(#:configure-flags
+       ;; ‘Nobody should be using this’ but network-manager-openvpn 1.8.10 does.
+       (list "-Dlibnm_gtk=true")
+       #:glib-or-gtk? #t))
     (native-inputs
      `(("intltool" ,intltool)
        ("glib:bin" ,glib "bin") ; for glib-compile-resources, etc.
@@ -6670,6 +6721,7 @@ associations for GNOME.")
        ("gnome-default-applications" ,gnome-default-applications)
        ("gnome-keyring"             ,gnome-keyring)
        ("gnome-online-accounts"     ,gnome-online-accounts)
+       ("gnome-screenshot"          ,gnome-screenshot)
        ("gnome-session"             ,gnome-session)
        ("gnome-settings-daemon"     ,gnome-settings-daemon)
        ("gnome-shell"               ,gnome-shell)
@@ -7062,42 +7114,10 @@ functionality and behavior.")
     (home-page "https://extensions.gnome.org/")
     (license license:gpl3+)))
 
-(define-public numix-theme
-  (package
-    (name "numix-theme")
-    (version "2.6.7")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/numixproject/numix-gtk-theme.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "12mw0kr0kkvg395qlbsvkvaqccr90cmxw5rrsl236zh43kj8grb7"))))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:make-flags (list (string-append "DESTDIR=" (assoc-ref %outputs "out")))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (delete 'check))))
-    (native-inputs
-     `(("glib:bin" ,glib "bin")             ; for glib-compile-schemas
-       ("gnome-shell" ,gnome-shell)
-       ("gtk+" ,gtk+)
-       ("xmllint" ,libxml2)
-       ("ruby-sass" ,ruby-sass)))
-    (synopsis "Flat theme with light and dark elements")
-    (description "Numix is a modern flat theme with a combination of light and
-dark elements.  It supports GNOME, Unity, Xfce, and Openbox.")
-    (home-page "https://numixproject.github.io")
-    (license license:gpl3+)))
-
 (define-public arc-theme
   (package
     (name "arc-theme")
-    (version "20181022")
+    (version "20190917")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7106,7 +7126,7 @@ dark elements.  It supports GNOME, Unity, Xfce, and Openbox.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "08951dk1irfadwpr3p323a4fprmxg53rk2r2niwq3v62ryhi3663"))))
+                "1qgpk4p2hi5hd4yy0hj93kq1vs0b32wb8qkaj1wi90c8gwddq5wa"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -7679,7 +7699,7 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
 (define-public gspell
   (package
     (name "gspell")
-    (version "1.8.1")
+    (version "1.8.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -7687,7 +7707,7 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1rdv873ixhwr15jwgc2z6k6y0hj353fqnwsy7zkh0c30qwiiv6l1"))
+                "1miybm1z5cl91i25l7mfqlxhv7j8yy8rcgi0s1bgbb2vm71rb4dv"))
               (patches (search-patches "gspell-dash-test.patch"))))
     (build-system glib-or-gtk-build-system)
     (arguments
@@ -7782,16 +7802,15 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
 (define-public lollypop
   (package
     (name "lollypop")
-    (version "1.1.3.1")
+    (version "1.2.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gitlab.gnome.org/World/lollypop/uploads/"
-                           "5a7cd7c72b6d83ae08d0c54c4691f9df/"
-                           name "-" version ".tar.xz"))
+                           "08f973788c7ca46d9285eec2ac818edb/"
+                           "lollypop-" version ".tar.xz"))
        (sha256
-        (base32
-         "1r5wn0bja9psz6nr1rcaysdkkwz84rbyzpdfw66cxa6wiy52pkjm"))))
+        (base32 "0hvq6m4i62i0m63bg4gzpfb9rv1fk6vq5jl2g3ppcgm4srmfm77j"))))
     (build-system meson-build-system)
     (arguments
      `(#:imported-modules ((guix build python-build-system)
@@ -7807,8 +7826,10 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
                (wrap-program (string-append out "/bin/lollypop")
                  `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
              #t))
-         (add-after 'install 'wrap
-           (@@ (guix build python-build-system) wrap)))))
+         (add-after 'install 'wrap-python
+           (@@ (guix build python-build-system) wrap))
+         (add-after 'install 'wrap-glib-or-gtk
+           (@@ (guix build glib-or-gtk-build-system) wrap-all-programs)))))
     (native-inputs
      `(("intltool" ,intltool)
        ("itstool" ,itstool)
@@ -7817,6 +7838,7 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("gobject-introspection" ,gobject-introspection)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gst-plugins-base" ,gst-plugins-base)
        ("libnotify" ,libnotify)
        ("libsecret" ,libsecret)
@@ -7826,7 +7848,7 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
        ("python-gst" ,python-gst)
        ("python-pil" ,python-pillow)
        ("python-pycairo" ,python-pycairo)
-       ("python-pygobject" ,python-pygobject)
+       ("python-pygobject" ,python-pygobject-3.34)
        ("python-pylast" ,python-pylast)
        ("totem-pl-parser" ,totem-pl-parser)
        ("webkitgtk" ,webkitgtk)))
@@ -8394,4 +8416,108 @@ intefaces for mobile devices using GTK+.")
 access library.  It only implements the core plumbing functions, not really the
 higher level porcelain stuff.")
     (home-page "https://wiki.gnome.org/Projects/Libgit2-glib")
+    (license license:gpl2+)))
+
+(define-public gitg
+  (package
+    (name "gitg")
+    (version "3.32.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0npg4kqpwl992fgjd2cn3fh84aiwpdp9kd8z7rw2xaj2iazsm914"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-post-install-partially
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("'python'") ; there are no python sources to compile
+                (string-append "'" (which "true") "'"))
+               (("gtk-update-icon-cache") (which "true")))
+             #t))
+         (add-after 'unpack 'fix-test-sources
+           (lambda _
+             (substitute* "tests/libgitg/test-commit.vala"
+               (("/bin/bash") (which "bash")))
+             #t))
+         (add-after 'glib-or-gtk-wrap 'wrap-typelib
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((prog (string-append (assoc-ref outputs "out")
+                                        "/bin/gitg")))
+               (wrap-program prog
+                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
+               #t))))))
+    (inputs
+     `(("glib" ,glib)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)
+       ("gtkspell3" ,gtkspell3)
+       ("gtksourceview" ,gtksourceview-3)
+       ("json-glib" ,json-glib)
+       ("libdazzle" ,libdazzle)
+       ("libgee" ,libgee)
+       ("libgit2" ,libgit2) ; propagated by libgit2-glib
+       ("libgit2-glib" ,libgit2-glib)
+       ("libpeas" ,libpeas)
+       ("libsecret" ,libsecret)
+       ("libsoup" ,libsoup)
+       ("libxml2" ,libxml2)))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("gtk+:bin" ,gtk+ "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (synopsis "Graphical user interface for git")
+    (description
+     "gitg is a graphical user interface for git.  It aims at being a small,
+fast and convenient tool to visualize the history of git repositories.
+Besides visualization, gitg also provides several utilities to manage your
+repository and commit your work.")
+    (home-page "https://wiki.gnome.org/Apps/Gitg")
+    (license license:gpl2+)))
+
+(define-public gnome-mahjongg
+  (package
+    (name "gnome-mahjongg")
+    (version "3.35.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.gnome.org/GNOME/gnome-mahjongg.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "019a66a4m5w4kkb0sm6gxj0wi54n06zdxdlmyqw7h8kbakjizv7l"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t))
+    (native-inputs
+     `(("appstream-glib" ,appstream-glib)
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin") ;; For glib-compile-resources
+       ("gtk+" ,gtk+ "bin")     ;; For gtk-update-icon-cache
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (propagated-inputs
+     `(("dconf" ,dconf)))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("librsvg" ,librsvg)))
+    (synopsis "Mahjongg tile-matching game")
+    (description "GNOME Mahjongg is a game based on the classic Chinese
+tile-matching game Mahjong.  It features multiple board layouts, tile themes,
+and a high score table.")
+    (home-page "https://wiki.gnome.org/Apps/Mahjongg")
     (license license:gpl2+)))

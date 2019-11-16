@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 HiPhish <hiphish@posteo.de>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;;
@@ -234,13 +234,14 @@ with the editor vim.")))
     (version "2.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/Shougo/neocomplete.vim/"
-                           "archive/ver." version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/Shougo/neocomplete.vim")
+              (commit (string-append "ver." version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1307gbrdwam2akq9w2lpijc41740i4layk2qkd9sjkqxfch5lni2"))))
+         "1h6sci5mhdfg6sjsjpi8l5li02hg858zcayiwl60y9j2gqnd18lv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -483,7 +484,7 @@ trouble using them, because you do not have to remember each snippet name.")
 (define-public vim-fugitive
   (package
     (name "vim-fugitive")
-    (version "3.0")
+    (version "3.1")
     (source
       (origin
         (method git-fetch)
@@ -493,7 +494,7 @@ trouble using them, because you do not have to remember each snippet name.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "0ghh8a9xysc3njqql1khhl2dkhymz93snpwqp2apm7pka6l893bc"))))
+          "0d9jhmidmy5c60iy9x47gqr675n5wp9wrzln83r8ima1fz7vvbgs"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
@@ -609,7 +610,7 @@ and powerline symbols, etc.")
 (define-public vim-syntastic
   (package
     (name "vim-syntastic")
-    (version "3.9.0")
+    (version "3.10.0")
     (source
      (origin
        (method git-fetch)
@@ -618,8 +619,7 @@ and powerline symbols, etc.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "121a1mxgfng2y5zmivyyk02mca8pyw72crivf4f1q9nhn0barf57"))))
+        (base32 "0j91f72jaz1s6aw1hpjiz30vk2ds2aqd9gisk91grsldy6nz6hhz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -735,7 +735,7 @@ are detected, the user is notified.")))
 (define-public neovim
   (package
     (name "neovim")
-    (version "0.4.2")
+    (version "0.4.3")
     (source
      (origin
        (method git-fetch)
@@ -744,8 +744,7 @@ are detected, the user is notified.")))
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "13w446plvgl219lhj29jyimhiqvs1y1byrz4qpdmxgyddmx9xqss"))))
+        (base32 "03p7pic7hw9yxxv7fbgls1f42apx3lik2k6mpaz1a109ngyc5kaj"))))
     (build-system cmake-build-system)
     (arguments
      `(#:modules ((srfi srfi-26)
@@ -775,7 +774,15 @@ are detected, the user is notified.")))
                        (string-join (map lua-path-spec lua-inputs) ";"))
                (setenv "LUA_CPATH"
                        (string-join (map lua-cpath-spec lua-inputs) ";"))
-               #t))))))
+               #t)))
+         (add-after 'unpack 'prevent-embedding-gcc-store-path
+           (lambda _
+             ;; nvim remembers its build options, including the compiler with
+             ;; its complete path.  This adds gcc to the closure of nvim, which
+             ;; doubles its size.  We remove the refirence here.
+             (substitute* "cmake/GetCompileFlags.cmake"
+               (("\\$\\{CMAKE_C_COMPILER\\}") "/gnu/store/.../bin/gcc"))
+             #t)))))
     (inputs
      `(("libuv" ,libuv)
        ("msgpack" ,msgpack)

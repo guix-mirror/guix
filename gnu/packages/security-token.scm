@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018, 2019 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
@@ -35,6 +35,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system python)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages check)
   #:use-module (gnu packages docbook)
@@ -454,6 +455,86 @@ talk to a U2F device and perform the U2F Register and U2F Authenticate
 operations.")
     ;; Most files are LGPLv2.1+, but some files are GPLv3+.
     (license (list license:lgpl2.1+ license:gpl3+))))
+
+(define-public libu2f-server
+  (package
+    (name "libu2f-server")
+    (version "1.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri
+               (git-reference
+                (url "https://github.com/Yubico/libu2f-server.git")
+                (commit (string-append "libu2f-server-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1nmsfq372zza5y6j13ydincjf324bwfcjg950vykh166xkp6wiic"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--enable-gtk-doc"
+             "--enable-tests")))
+    (inputs
+     `(("json-c" ,json-c)
+       ("libressl" ,libressl)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("check" ,check)
+       ("gengetopt" ,gengetopt)
+       ("help2man" ,help2man)
+       ("pkg-config" ,pkg-config)
+       ("gtk-doc" ,gtk-doc)
+       ("which" ,which)))
+    (home-page "https://developers.yubico.com/libu2f-server/")
+    ;; TRANSLATORS: The U2F protocol has a "server side" and a "host side".
+    (synopsis "U2F server-side C library")
+    (description
+     "This is a C library that implements the server-side of the
+@dfn{Universal 2nd Factor} (U2F) protocol.  More precisely, it provides an API
+for generating the JSON blobs required by U2F devices to perform the U2F
+Registration and U2F Authentication operations, and functionality for
+verifying the cryptographic operations.")
+    (license license:bsd-2)))
+
+(define-public pam-u2f
+  (package
+    (name "pam-u2f")
+    (version "1.0.8")
+    (source (origin
+              (method git-fetch)
+              (uri
+               (git-reference
+                (url "https://github.com/Yubico/pam-u2f.git")
+                (commit (string-append "pam_u2f-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "04d9davyi33gqbvga1rvh9fijp6f16mx2xmnn4n61rnhcn2jac98"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-pam-dir="
+                            (assoc-ref %outputs "out") "/lib/security"))))
+    (inputs
+     `(("libu2f-host" ,libu2f-host)
+       ("libu2f-server" ,libu2f-server)
+       ("linux-pam" ,linux-pam)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("asciidoc" ,asciidoc)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://developers.yubico.com/pam-u2f/")
+    (synopsis "PAM module for U2F authentication")
+    (description
+     "This package provides a module implementing PAM over U2F, providing an
+easy way to integrate the YubiKey (or other U2F compliant authenticators) into
+your existing infrastructure.")
+    (license license:bsd-2)))
 
 (define-public python-fido2
   (package

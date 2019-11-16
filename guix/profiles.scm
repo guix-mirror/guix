@@ -1732,7 +1732,8 @@ because the NUMBER is zero.)"
   (string-append %profile-directory "/guix-profile"))
 
 (define (ensure-profile-directory)
-  "Attempt to create /…/profiles/per-user/$USER if needed."
+  "Attempt to create /…/profiles/per-user/$USER if needed.  Nowadays this is
+taken care of by the daemon."
   (let ((s (stat %profile-directory #f)))
     (unless (and s (eq? 'directory (stat:type s)))
       (catch 'system-error

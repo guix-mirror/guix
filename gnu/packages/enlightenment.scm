@@ -25,10 +25,12 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
@@ -67,7 +69,7 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.23.1")
+    (version "1.23.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -75,7 +77,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "0q9g4j7k10s1a8rv2ca9v9lydh7ml3zsrqvgncc4qhvdl76208nn"))))
+                "14yljnnmb89s8j6ip08ip5d01zkgzbzr1h4fr4bwk9lh8r59x3ds"))))
     (build-system meson-build-system)
     (native-inputs
      `(("check" ,check)
@@ -297,6 +299,11 @@ Libraries with some extra bells and whistles.")
        #:phases
        (modify-phases %standard-phases
          (delete 'bootstrap) ; We don't want to run the autogen script.
+         (add-after 'unpack 'fix-dot-desktop-creation
+           (lambda _
+             (substitute* "data/session/meson.build"
+               (("HAVE_WAYLAND'.*") "HAVE_WAYLAND') == true\n"))
+             #t))
          (add-before 'configure 'set-system-actions
            (lambda* (#:key inputs #:allow-other-keys)
             (setenv "HOME" "/tmp")
@@ -305,6 +312,7 @@ Libraries with some extra bells and whistles.")
                    (utils     (assoc-ref inputs "util-linux"))
                    (libc      (assoc-ref inputs "libc"))
                    (bluez     (assoc-ref inputs "bluez"))
+                   (bc        (assoc-ref inputs "bc"))
                    (efl       (assoc-ref inputs "efl")))
                ;; We need to patch the path to 'base.lst' to be able
                ;; to switch the keyboard layout in E.
@@ -325,6 +333,8 @@ Libraries with some extra bells and whistles.")
                   (string-append efl "/bin/edje_cc -v %s %s %s\"")))
                (substitute* "src/modules/everything/evry_plug_apps.c"
                  (("/usr/bin/") ""))
+               (substitute* "src/modules/everything/evry_plug_calc.c"
+                 (("bc -l") (string-append bc "/bin/bc -l")))
                (substitute* "data/etc/meson.build"
                  (("/bin/mount") (string-append utils "/bin/mount"))
                  (("/bin/umount") (string-append utils "/bin/umount"))
@@ -342,6 +352,7 @@ Libraries with some extra bells and whistles.")
        ("util-linux" ,util-linux)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
+       ("bc" ,bc)
        ("bluez" ,bluez)
        ("dbus" ,dbus)
        ("efl" ,efl)
@@ -361,6 +372,19 @@ file manager, wide range of configuration options, plugin system allowing to
 unload unused functionality, with support for touchscreen and suitable for
 embedded systems.")
     (license license:bsd-2)))
+
+(define-public enlightenment-wayland
+  (package
+    (inherit enlightenment)
+    (name "enlightenment-wayland")
+    (arguments
+     (substitute-keyword-arguments (package-arguments enlightenment)
+       ((#:configure-flags flags)
+        `(cons* "-Dwl=true" ,flags))))
+    (inputs
+     `(("wayland-protocols" ,wayland-protocols)
+       ("xorg-server-xwayland" ,xorg-server-xwayland)
+       ,@(package-inputs enlightenment)))))
 
 (define-public python-efl
   (package

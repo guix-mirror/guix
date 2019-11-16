@@ -4,6 +4,7 @@
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,12 +28,14 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages check)
   #:use-module (gnu packages code)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web))
@@ -252,7 +255,7 @@ intuitive syntax and trivial integration.")
 (define-public xtl
   (package
     (name "xtl")
-    (version "0.6.7")
+    (version "0.6.8")
     (source (origin
               (method git-fetch)
               (uri
@@ -261,7 +264,7 @@ intuitive syntax and trivial integration.")
                 (commit version)))
               (sha256
                (base32
-                "0dds2fzyis42b1c3biqr3ir9l96csyyfkwrkm3fqjksdhgdklzmj"))
+                "13gm8vm1b9nzvlcc632f9khnjw1xdjqj6c7k51r173y1hlk0div7"))
               (file-name (git-file-name name version))))
     (native-inputs
      `(("googletest" ,googletest)
@@ -313,3 +316,62 @@ code analysis and supports cross references, hierarchies, completion and
 syntax highlighting.  @code{ccls} is derived from @code{cquery} which is not
 maintained anymore.")
     (license license:asl2.0)))
+
+(define-public gperftools
+  (package
+    (name "gperftools")
+    (version "2.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gperftools/gperftools")
+             (commit (string-append "gperftools-" version))))
+       (sha256
+        (base32 "0amvwrzn5qc0b0jpxpy5g6zkmj97zjh4hhjrd130hsg2lwwcwhy1"))
+       (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ;; For tests:
+       ("perl" ,perl)))
+    (home-page "https://github.com/gperftools/gperftools")
+    (synopsis "Multi-threaded malloc() and performance analysis tools for C++")
+    (description
+     "@code{gperftools} is a collection of a high-performance multi-threaded
+malloc() implementation plus some thread-friendly performance analysis
+tools:
+
+@itemize
+@item tcmalloc,
+@item heap profiler,
+@item heap checker,
+@item CPU checker.
+@end itemize\n")
+    (license license:bsd-3)))
+
+(define-public cpplint
+  (package
+    (name "cpplint")
+    (version "1.4.4")
+    (source
+     (origin
+       (method git-fetch)
+       ;; Fetch from github instead of pypi, since the test cases are not in
+       ;; the pypi archive.
+       (uri (git-reference
+             (url "https://github.com/cpplint/cpplint")
+             (commit version)))
+       (sha256
+        (base32 "1ns9wbizr10w7rpyp106d7ip68s5nyskr54vw9bij11sci9z0v3j"))
+       (file-name (git-file-name name version))))
+    (build-system python-build-system)
+    (home-page "https://github.com/cpplint/cpplint")
+    (synopsis "Static code checker for C++")
+    (description "@code{cpplint} is a command-line tool to check C/C++ files
+for style issues following Google’s C++ style guide.  While Google maintains
+it's own version of the tool, this is a fork that aims to be more responsive
+and make @code{cpplint} usable in wider contexts.")
+    (license license:bsd-3)))

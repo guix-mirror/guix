@@ -171,7 +171,7 @@ standard output device and then enters a new line.")
           (home-page #f)
           (license license:public-domain)))
        (profile (profile-derivation (packages->manifest
-                                     (list guile-2.2 guile-json
+                                     (list guile-2.2 guile-json-3
                                            guest-script-package))
                                     #:hooks '()
                                     #:locales? #f))

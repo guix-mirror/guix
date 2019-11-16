@@ -33,7 +33,7 @@
 (define-public dunst
   (package
     (name "dunst")
-    (version "1.3.2")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -42,7 +42,7 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "12nj8qw3y3nl8sm24wizy2a7k06v1p88bnz1xr9l39h527xyidma"))))
+                "1zmx30qp2s9ca4q70j9ny4aq97pp442j9vfvsyihfcxgks6gwqqm"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no check target

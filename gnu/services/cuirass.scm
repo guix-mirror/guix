@@ -164,6 +164,7 @@
   (let ((cache (cuirass-configuration-cache-directory config))
         (db    (dirname (cuirass-configuration-database config)))
         (user  (cuirass-configuration-user config))
+        (log   "/var/log/cuirass")
         (group (cuirass-configuration-group config)))
     (with-imported-modules '((guix build utils))
       #~(begin
@@ -171,11 +172,13 @@
 
           (mkdir-p #$cache)
           (mkdir-p #$db)
+          (mkdir-p #$log)
 
           (let ((uid (passwd:uid (getpw #$user)))
                 (gid (group:gid (getgr #$group))))
             (chown #$cache uid gid)
-            (chown #$db uid gid))))))
+            (chown #$db uid gid)
+            (chown #$log uid gid))))))
 
 (define (cuirass-log-rotations config)
   "Return the list of log rotations that corresponds to CONFIG."

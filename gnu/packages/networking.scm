@@ -31,6 +31,8 @@
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2019 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2019 Tonton <tonton@riseup.net>
+;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -594,14 +596,14 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "3.0.5")
+    (version "3.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.wireshark.org/download/src/wireshark-"
                            version ".tar.xz"))
        (sha256
-        (base32 "087qv7nd7zlbckvcs37fkkg7v0mw0hjd5yfbghqym764fpjgqlf5"))))
+        (base32 "0gp3qg0280ysrsaa97yfazka8xcyrspsrw8bfgqxnpf1l0i40zx8"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -1026,16 +1028,17 @@ reconfigured.")
 (define-public perl-danga-socket
   (package
     (name "perl-danga-socket")
-    (version "1.61")
+    (version "1.62")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/B/BR/BRADFITZ/"
+       (uri (string-append "mirror://cpan/authors/id/N/NM/NML/"
                            "Danga-Socket-" version ".tar.gz"))
        (sha256
-        (base32
-         "0nciapvxnc922ms304af0vavz1kgyr45ard8wc659k9srqar4hwf"))))
+        (base32 "0x4bvirmf0kphks19jwgva00zz73zx344218dfaiv8gigrw3yg4m"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-tcp" ,perl-test-tcp)))
     (propagated-inputs
      `(("perl-sys-syscall" ,perl-sys-syscall)))
     (home-page "https://metacpan.org/release/Danga-Socket")
@@ -1077,7 +1080,7 @@ private (reserved).")
 (define-public perl-net-dns
  (package
   (name "perl-net-dns")
-  (version "1.20")
+  (version "1.21")
   (source
     (origin
       (method url-fetch)
@@ -1088,7 +1091,7 @@ private (reserved).")
         (string-append "mirror://cpan/authors/id/N/NL/NLNETLABS/Net-DNS-"
                        version ".tar.gz")))
       (sha256
-       (base32 "06z09igd42s0kg2ps5k7vpypg77zswfryqzbyalbllvjd0mnknbz"))))
+       (base32 "0yknrsh0wqr9s43c0wf3dyzrsi2r7k0v75hay74gqkq850xy3vyx"))))
   (build-system perl-build-system)
   (inputs
     `(("perl-digest-hmac" ,perl-digest-hmac)))
@@ -2641,3 +2644,76 @@ Supplicant.  It optimizes resource utilization by not depending on any external
 libraries and instead utilizing features provided by the Linux kernel to the
 maximum extent possible.")
     (license license:lgpl2.1+)))
+
+(define-public batctl
+  (package
+   (name "batctl")
+   (version "2019.3")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "https://downloads.open-mesh.org/batman/releases/batman-adv-"
+                         version "/batctl-" version ".tar.gz"))
+     (sha256
+      (base32
+       "0307a01n72kg7vcm60mi8jna6bydiin2cr3ylrixra1596hkzn9b"))))
+   (inputs
+    `(("libnl" ,libnl)))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
+   (build-system gnu-build-system)
+   (arguments
+    `(#:tests? #f
+      ;; Batctl only has a makefile. Thus we disable tests and
+      ;; configuration, passing in a few make-flags.
+      #:phases (modify-phases %standard-phases (delete 'configure))
+      #:make-flags
+      (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+            (string-append "PKG_CONFIG=" (assoc-ref %build-inputs "pkg-config")
+                           "/bin/pkg-config")
+            "CC=gcc")))
+   (home-page "https://www.open-mesh.org/projects/batman-adv/wiki/Wiki")
+   (synopsis "Management tool for the mesh networking BATMAN protocol")
+   (description "This package provides a control tool for the
+B.A.T.M.A.N. mesh networking routing protocol provided by the Linux kernel
+module @code{batman-adv}, for Layer 2.")
+   (license license:gpl2+)))
+
+(define-public pagekite
+  (package
+    (name "pagekite")
+    (version "1.0.0.190721")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pagekite.net/pk/src/pagekite-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "0y4vaqd3pjr6if8jcnhjwignkxgrajmnx1rd1p37anj8xjg7l8zh"))))
+    (build-system python-build-system)
+    (arguments
+     ;; Python 3 support is a work-in-progress and should come soon:
+     ;; https://github.com/pagekite/PyPagekite/issues/40
+     ;; https://github.com/pagekite/PyPagekite/pull/71
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-man-page
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (man (string-append out "/share/man")))
+               (invoke "make"
+                       (string-append "PYTHONPATH=" (getenv "PYTHONPATH"))
+                       "doc/pagekite.1")
+               (install-file "doc/pagekite.1" (string-append man "/man1"))
+               #t))))))
+    (inputs
+     `(("python2-socksipychain" ,python2-socksipychain)))
+    (home-page "https://pagekite.net/")
+    (synopsis "Make localhost servers publicly visible")
+    (description
+     "PageKite implements a tunneled reverse proxy which makes it easy to make
+a service (such as an HTTP or SSH server) on localhost visible to the wider
+Internet, even behind NAT or restrictive firewalls.  A managed front-end relay
+service is available at @url{https://pagekite.net/}, or you can run your own.")
+    (license license:agpl3+)))

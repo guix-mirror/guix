@@ -176,8 +176,8 @@ server.")
   (delete-after
    (non-negative-integer 0)
    "Getmail will delete messages this number of days after seeing them, if
-they have not been delivered.  This means messages will be left on the server
-this number of days after delivering them.  A value of @samp{0} disabled this
+they have been delivered.  This means messages will be left on the server this
+number of days after delivering them.  A value of @samp{0} disabled this
 feature.")
   (delete-bigger-than
    (non-negative-integer 0)

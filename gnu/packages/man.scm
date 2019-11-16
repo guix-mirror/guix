@@ -60,14 +60,14 @@ a flexible and convenient way.")
 (define-public man-db
   (package
     (name "man-db")
-    (version "2.8.5")
+    (version "2.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/man-db/man-db-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1hgnfcgbllmws8cs6zaxklq8b69i05zynxi87f3zxw9lfms54kdn"))))
+                "0qg2sdn8mayya0ril484iz1r7hi46l68d2d80cr6lvc7x3csqjjx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -162,7 +162,7 @@ the traditional flat-text whatis databases.")
 (define-public man-pages
   (package
     (name "man-pages")
-    (version "5.02")
+    (version "5.03")
     (source
      (origin
        (method url-fetch)
@@ -172,7 +172,7 @@ the traditional flat-text whatis databases.")
               (string-append "mirror://kernel.org/linux/docs/man-pages/Archive/"
                              "man-pages-" version ".tar.xz")))
        (sha256
-        (base32 "1s4pdz2pwf0kvhdwx2s6lqn3xxzi38yz5jfyq5ymdmswc9gaiyn2"))))
+        (base32 "082i9258rl9xxjgpxpz3v8jcwk96dsk704ki9h9lq7q8z7m3mqbz"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))
@@ -253,15 +253,11 @@ automatically.")
        "00zc3rzj97gscby31djlqyczvqpyhrl66i44czwzmmn7rc5j03m1"))))
    (build-system gnu-build-system)
    (arguments
-    `(#:make-flags '("CC=gcc")
+    `(#:make-flags
+      (list "CC=gcc" (string-append "PREFIX=" (assoc-ref %outputs "out")))
       #:phases
       (modify-phases %standard-phases
-        (delete 'configure)
-        (add-before 'install 'hardcode-paths
-          (lambda* (#:key outputs #:allow-other-keys)
-            (substitute* "Makefile"
-                         (("/usr/local") (assoc-ref outputs "out")))
-            #t)))))
+        (delete 'configure))))
    (home-page "https://git.sr.ht/~sircmpwn/scdoc")
    (synopsis "Simple man page generator")
    (description "scdoc is a simple man page generator written for POSIX systems

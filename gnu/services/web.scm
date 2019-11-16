@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
@@ -9,6 +9,7 @@
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2017, 2018, 2019 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -95,6 +96,7 @@
             nginx-configuration-upstream-blocks
             nginx-configuration-server-names-hash-bucket-size
             nginx-configuration-server-names-hash-bucket-max-size
+            nginx-configuration-modules
             nginx-configuration-extra-content
             nginx-configuration-file
 
@@ -522,6 +524,7 @@
                                  (default #f))
   (server-names-hash-bucket-max-size nginx-configuration-server-names-hash-bucket-max-size
                                      (default #f))
+  (modules nginx-configuration-modules (default '()))
   (extra-content nginx-configuration-extra-content
                  (default ""))
   (file          nginx-configuration-file         ;#f | string | file-like
@@ -541,6 +544,9 @@ of index files."
  (map (match-lambda
         ((? string? str) (list str " ")))
       names))
+
+(define (emit-load-module module)
+  (list "load_module " module ";\n"))
 
 (define emit-nginx-location-config
   (match-lambda
@@ -615,12 +621,14 @@ of index files."
                  server-blocks upstream-blocks
                  server-names-hash-bucket-size
                  server-names-hash-bucket-max-size
+                 modules
                  extra-content)
    (apply mixed-text-file "nginx.conf"
           (flatten
            "user nginx nginx;\n"
            "pid " run-directory "/pid;\n"
            "error_log " log-directory "/error.log info;\n"
+           (map emit-load-module modules)
            "http {\n"
            "    client_body_temp_path " run-directory "/client_body_temp;\n"
            "    proxy_temp_path " run-directory "/proxy_temp;\n"
@@ -1039,13 +1047,24 @@ a webserver.")
          (shell (file-append shadow "/sbin/nologin")))))
 
 (define %hpcguix-web-activation
-  #~(begin
-      (use-modules (guix build utils))
-      (let ((home-dir "/var/cache/guix/web")
-            (user (getpwnam "hpcguix-web")))
-        (mkdir-p home-dir)
-        (chown home-dir (passwd:uid user) (passwd:gid user))
-        (chmod home-dir #o755))))
+  (with-imported-modules '((guix build utils))
+    #~(begin
+        (use-modules (guix build utils)
+                     (ice-9 ftw))
+
+        (let ((home-dir "/var/cache/guix/web")
+              (user (getpwnam "hpcguix-web")))
+          (mkdir-p home-dir)
+          (chown home-dir (passwd:uid user) (passwd:gid user))
+          (chmod home-dir #o755)
+
+          ;; Remove stale 'packages.json.lock' file (and other lock files, if
+          ;; any) since that would prevent 'packages.json' from being updated.
+          (for-each (lambda (lock)
+                      (delete-file (string-append home-dir "/" lock)))
+                    (scandir home-dir
+                             (lambda (file)
+                               (string-suffix? ".lock" file))))))))
 
 (define %hpcguix-web-log-file
   "/var/log/hpcguix-web.log")
@@ -1425,7 +1444,7 @@ ADMINS = [
 
 DEBUG = " #$(if debug? "True" "False") "
 
-ENABLE_REST_API = " #$(if enable-xmlrpc? "True" "False") "
+ENABLE_REST_API = " #$(if enable-rest-api? "True" "False") "
 ENABLE_XMLRPC = " #$(if enable-xmlrpc? "True" "False") "
 
 FORCE_HTTPS_LINKS = " #$(if force-https-links? "True" "False") "

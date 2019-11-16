@@ -269,10 +269,6 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
              "-DWITH_CAROTENE=OFF" ; only visible on arm/aarch64
              "-DENABLE_PRECOMPILED_HEADERS=OFF"
 
-             ;; FIXME: OpenEXR requires C++11 or later.  Remove this when
-             ;; the default compiler is GCC 7.
-             "-DCMAKE_CXX_FLAGS=-std=gnu++11"
-
              ;; CPU-Features:
              ;; See cmake/OpenCVCompilerOptimizations.cmake
              ;; (CPU_ALL_OPTIMIZATIONS) for a list of all optimizations
@@ -729,8 +725,7 @@ combine the information contained in both.")
              "-DSNAP_VERSION_GIT_BRANCH=release"
              "-DSNAP_VERSION_GIT_TIMESTAMP=0"
              "-DSNAP_PACKAGE_QT_PLUGINS=OFF"
-             "-DCMAKE_POSITION_INDEPENDENT_CODE=ON"
-             "-DCMAKE_CXX_FLAGS=-std=gnu++11 -fpermissive")
+             "-DCMAKE_POSITION_INDEPENDENT_CODE=ON")
        #:phases
        (modify-phases %standard-phases
          ;; During the installation phase all libraries provided by all

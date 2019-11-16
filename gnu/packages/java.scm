@@ -3,13 +3,13 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2019 Carlo Zancanaro <carlo@zancanaro.id.au>
-;;; Copyright © 2017, 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2017, 2018, 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
-;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2320,6 +2320,114 @@ new Date();"))
      `(("java-junit" ,java-junit)
        ,@(package-inputs ant/java8)))))
 
+(define-public java-openjfx-build
+  (package
+    (name "java-openjfx-build")
+    ;; This is a java-8 version
+    (version "8.202")
+    (source (origin
+              (method hg-fetch)
+              (uri (hg-reference
+                     (url "http://hg.openjdk.java.net/openjfx/8u-dev/rt")
+                     (changeset (string-append
+                                  (string-join (string-split version #\.) "u")
+                                  "-ga"))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0yg38mwpivswccv9n96k06x3iv82i4px1a9xg9l8dswzwmfj259f"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-openjfx.jar"
+       #:source-dir "buildSrc/src/main/java"
+       #:test-dir "buildSrc/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'generate-jsl-parser
+           (lambda _
+             (invoke "antlr3" "-o"
+                     "buildSrc/src/main/java/com/sun/scenario/effect/compiler"
+                     "buildSrc/src/main/antlr/JSL.g"))))))
+    (inputs
+     `(("antlr3" ,antlr3)
+       ("java-stringtemplate" ,java-stringtemplate)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "https://openjfx.io")
+    (synopsis "Graphical application toolkit in Java")
+    (description "OpenJFX is a client application platform for desktop,
+mobile and embedded systems built on Java.  Its goal is to produce a
+modern, efficient, and fully featured toolkit for developing rich client
+applications.  This package contains base classes for the OpenJFX
+distribution and helper classes for building other parts of the
+distribution.")
+    (license license:gpl2))) ;gpl2 only, with classpath exception
+
+(define-public java-openjfx-base
+  (package (inherit java-openjfx-build)
+    (name "java-openjfx-base")
+    (arguments
+     `(#:jar-name "java-openjfx-base.jar"
+       #:source-dir "modules/base/src/main/java:modules/base/src/main/java8:modules/base/src/main/version-info"
+       #:test-dir "modules/base/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'remove-empty-file
+           (lambda _
+             (with-directory-excursion "modules/base/src/test/java"
+               ;; These files are completely commented, but junit expects them to
+               ;; contain a class, so tests fail.
+               (delete-file
+                 "com/sun/javafx/property/adapter/PropertyDescriptorTest.java")
+               (delete-file
+                 "com/sun/javafx/property/adapter/ReadOnlyPropertyDescriptorTest.java")
+               (delete-file "javafx/beans/property/PropertiesTest.java")
+               (delete-file
+                 "javafx/beans/property/adapter/ReadOnlyJavaBeanPropertyBuilder_General_Test.java")
+               ;; This one fails
+               (delete-file "com/sun/javafx/runtime/VersionInfoTest.java"))
+             #t)))))
+    (propagated-inputs
+     `(("java-openjfx-build" ,java-openjfx-build)))
+    (description "OpenJFX is a client application platform for desktop,
+mobile and embedded systems built on Java.  Its goal is to produce a
+modern, efficient, and fully featured toolkit for developing rich client
+applications.  This package contains base classes for the OpenJFX
+distribution.")))
+
+(define-public java-openjfx-graphics
+  (package (inherit java-openjfx-build)
+    (name "java-openjfx-graphics")
+    (arguments
+     `(#:jar-name "java-openjfx-graphics.jar"
+       #:source-dir "modules/graphics/src/main/java"
+       #:tests? #f; require X
+       #:test-dir "modules/graphics/src/test"))
+    (propagated-inputs
+     `(("java-openjfx-base" ,java-openjfx-base)
+       ("java-swt" ,java-swt)))
+    (description "OpenJFX is a client application platform for desktop,
+mobile and embedded systems built on Java.  Its goal is to produce a
+modern, efficient, and fully featured toolkit for developing rich client
+applications.  This package contains graphics-related classes for the
+OpenJFX distribution.")))
+
+(define-public java-openjfx-media
+  (package (inherit java-openjfx-build)
+    (name "java-openjfx-media")
+    (propagated-inputs
+     `(("java-openjxf-graphics" ,java-openjfx-graphics)))
+    (arguments
+     `(#:jar-name "java-openjfx-media.jar"
+       #:source-dir "modules/media/src/main/java"
+       #:tests? #f)); no tests
+    (description "OpenJFX is a client application platform for desktop,
+mobile and embedded systems built on Java.  Its goal is to produce a
+modern, efficient, and fully featured toolkit for developing rich client
+applications.  This package contains media-related classes for the
+OpenJFX distribution.")))
+
 (define-public javacc-4
   (package
     (name "javacc")
@@ -2394,7 +2502,27 @@ debugging, etc.")
        #:test-target "test"
        #:phases
        (modify-phases %standard-phases
-         (replace 'install (install-jars "target")))))
+         (replace 'install (install-jars "target"))
+         (add-after 'install 'install-bin
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (dir (string-append out "/share/java"))
+                    (bin (string-append out "/bin"))
+                    (javacc (string-append bin "/javacc")))
+               (mkdir-p bin)
+               (with-output-to-file javacc
+                 (lambda _
+                   (display
+                     (string-append "#!/bin/sh\n"
+                                    (assoc-ref inputs "jdk") "/bin/java"
+                                    " -cp " dir "/javacc.jar" " `basename $0`" " $*"))))
+               (chmod javacc #o755)
+               ;; symlink to different names to affect the first argument and
+               ;; change the behavior of the jar file.
+               (symlink javacc (string-append bin "/jjdoc"))
+               (symlink javacc (string-append bin "/jjtree"))
+               #t))))))
+
     (native-inputs
      `(("javacc" ,javacc-4)))))
 
@@ -4981,6 +5109,115 @@ expressions to graphs of objects of all kinds: JavaBeans, Maps, Servlet
 contexts, DOM etc, including mixtures thereof.")
     (license license:asl2.0)))
 
+(define-public java-commons-pool
+  (package
+    (name "java-commons-pool")
+    (version "2.6.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/pool/source/"
+                                  "commons-pool2-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "1fi1hgqmq01bs6azbj3sfswxzadp2r8sjjfiq6ryilz1m50kvrv6"))))
+    (arguments
+     `(#:jar-name "common-pool.jar"
+       #:source-dir "src/main/java"
+       #:test-exclude
+       (list "**/PerformanceTest.java")))
+    (build-system ant-build-system)
+    (inputs
+     `(("java-cglib" ,java-cglib)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-asm" ,java-asm)
+       ("java-objenesis" ,java-objenesis)))
+    (home-page "https://commons.apache.org/proper/commons-pool/")
+    (synopsis "Object-pooling API in Java")
+    (description "The commons-pool package provides an object-pooling API
+and a number of object pool implementations.  This package defines a
+handful of pooling interfaces and some base classes that may be useful when
+creating new pool implementations.")
+    (license license:asl2.0)))
+
+(define-public java-commons-dbcp
+  (package
+    (name "java-commons-dbcp")
+    (version "2.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/dbcp/source/"
+                                  "commons-dbcp2-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "0axbvcbnf2l70fc3ybrlp3siw2w4ka9mia2pnx4py8gz54cpw3rc"))))
+    (arguments
+     `(#:source-dir "src/main/java"
+       #:jar-name "java-commons-dbcp.jar"
+       #:tests? #f)); requires apache-geronimo
+    (inputs
+     `(("java-commons-pool" ,java-commons-pool)
+       ("java-commons-logging" ,java-commons-logging-minimal)
+       ("java-jboss-transaction-api-spec" ,java-jboss-transaction-api-spec)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (build-system ant-build-system)
+    (home-page "https://commons.apache.org/proper/commons-dbcp/")
+    (synopsis "Database Connection Pool for Java")
+    (description "Commons-dbcp allows you to share a pool of database
+connections between users.  Creating a new connection for each user can be
+time consuming and even unfeasible when the number of simultaneous users is
+very large.  This package provides a way to share a poole of connections to
+reduce that load.")
+    (license license:asl2.0)))
+
+(define-public java-commons-jcs
+  (package
+    (name "java-commons-jcs")
+    (version "2.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/jcs/source/"
+                                  "commons-jcs-dist-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "0syhq2npjbrl0azqfjm0gvash1qd5qjy4qmysxcrqjsk0nf9fa1q"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "commons-jcs.jar"
+       #:source-dir "commons-jcs-core/src/main/java"
+       #:test-dir "commons-jcs-core/src/test"
+       #:tests? #f; requires hsqldb
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'prepare
+           (lambda _
+             (with-directory-excursion
+               "commons-jcs-core/src/main/java/org/apache/commons/jcs"
+               (substitute*
+                 "auxiliary/disk/jdbc/dsfactory/SharedPoolDataSourceFactory.java"
+                 (("commons.dbcp") "commons.dbcp2")
+                 ((".*\\.setMaxActive.*") ""))
+               ;;; Remove dependency on velocity-tools
+               (delete-file "admin/servlet/JCSAdminServlet.java"))
+             #t)))))
+    (propagated-inputs
+     `(("java-classpathx-servletapi" ,java-classpathx-servletapi)
+       ("java-commons-logging-minimal" ,java-commons-logging-minimal)
+       ("java-commons-httpclient" ,java-commons-httpclient)
+       ("java-commons-dbcp" ,java-commons-dbcp)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "https://commons.apache.org/proper/commons-jcs/")
+    (synopsis "Distributed caching system in Java")
+    (description "JCS is a distributed caching system written in Java.  It
+is intended to speed up applications by providing a means to manage cached
+data of various dynamic natures.  Like any caching system, JCS is most useful
+for high read, low put applications.  Latency times drop sharply and
+bottlenecks move away from the database in an effectively cached system.")
+    (license license:asl2.0)))
+
 (define-public java-jsr250
   (package
     (name "java-jsr250")
@@ -6742,14 +6979,16 @@ import org.antlr.grammar.v3.ANTLRTreePrinter;"))
          (add-before 'build 'fix-build-xml
            (lambda _
              (substitute* "build.xml"
-               (("<exec") "<copy todir=\"${classes.dir}\">
+               (("target name=\"compile\">")
+                "target name=\"compile\">
+<copy todir=\"${classes.dir}\">
 <fileset dir=\"tool/src/main/resources\">
 <include name=\"**/*.stg\"/>
 <include name=\"**/*.st\"/>
 <include name=\"**/*.sti\"/>
 <include name=\"**/STLexer.tokens\"/>
 </fileset>
-</copy><exec"))
+</copy>"))
              #t)))))
     (native-inputs
      `(("antlr" ,antlr2)
@@ -6855,14 +7094,16 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))
          (add-before 'build 'fix-build-xml
            (lambda _
              (substitute* "build.xml"
-               (("<exec") "<copy todir=\"${classes.dir}\">
+               (("target name=\"compile\">")
+                "target name=\"compile\">
+<copy todir=\"${classes.dir}\">
 <fileset dir=\"tool/src/main/resources\">
 <include name=\"**/*.stg\"/>
 <include name=\"**/*.st\"/>
 <include name=\"**/*.sti\"/>
 <include name=\"**/STLexer.tokens\"/>
 </fileset>
-</copy><exec"))
+</copy>"))
              #t)))))
     (native-inputs
      `(("antlr" ,antlr2)
@@ -6874,7 +7115,7 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))
        ("antlr" ,antlr2)
        ("antlr3" ,antlr3-3.1)))))
 
-(define antlr3-3.1
+(define-public antlr3-3.1
   (package
     (inherit antlr3)
     (version "3.1")
@@ -6932,14 +7173,16 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))
          (add-before 'build 'fix-build-xml
            (lambda _
              (substitute* "build.xml"
-               (("<exec") "<copy todir=\"${classes.dir}\">
+               (("target name=\"compile\">")
+                "target name=\"compile\">
+<copy todir=\"${classes.dir}\">
 <fileset dir=\"src\">
 <include name=\"**/*.stg\"/>
 <include name=\"**/*.st\"/>
 <include name=\"**/*.sti\"/>
 <include name=\"**/STLexer.tokens\"/>
 </fileset>
-</copy><exec"))
+</copy>"))
              #t)))))
     (native-inputs
      `(("antlr" ,antlr2)))
@@ -10819,14 +11062,16 @@ OSGi Service Registry is a goal of this project.")
 (define-public java-eclipse-sisu-plexus
   (package
     (name "java-eclipse-sisu-plexus")
-    (version "0.3.3")
+    (version "0.3.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/eclipse/sisu.plexus/"
-                                  "archive/releases/" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/eclipse/sisu.plexus.git")
+                     (commit (string-append "releases/" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0lbj7nxy5j0z71k407zbb82icfqh7midrfk0fb3fa3jzdjz0d9d9"))
+                "17mjlajnsqnk07cc58h1qpxrif85yb2m2y0pyba48yjjgikk8r9f"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -11222,3 +11467,206 @@ the application using Java to Lisp integration APIs.")
                    license:bsd-3
                    ;; jfli is released under CPL 1.0
                    license:cpl1.0))))
+
+(define-public java-jsonp-api
+  (package
+    (name "java-jsonp-api")
+    (version "1.1.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/eclipse-ee4j/jsonp")
+                     (commit (string-append version "-RELEASE"))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0nxq16lrx7i87hgyj5rzcwilvr67h0i299gygfn8f5vs4n7n59vy"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jsonp-api.jar"
+       #:tests? #f
+       #:source-dir "api/src/main/java"
+       #:test-dir "api/src/test"))
+    (home-page "https://eclipse-ee4j.github.io/jsonp/")
+    (synopsis "JSON Processing in Java")
+    (description "JSON Processing (JSON-P) is a Java API to process (e.g.
+parse, generate, transform and query) JSON messages.  It produces and
+consumes JSON text in a streaming fashion (similar to StAX API for XML)
+and allows to build a Java object model for JSON text using API classes
+(similar to DOM API for XML).")
+    ;; either gpl2 only with classpath exception, or epl2.0.
+    (license (list license:gpl2
+                   license:epl2.0))))
+
+(define-public java-jsonp-impl
+  (package
+    (inherit java-jsonp-api)
+    (name "java-jsonp-impl")
+    (arguments
+     `(#:jar-name "jsonp-impl.jar"
+       #:tests? #f
+       #:source-dir "impl/src/main/java"
+       #:test-dir "impl/src/test"))
+    (propagated-inputs
+     `(("java-jsonp-api" ,java-jsonp-api)))
+    (description "JSON Processing (JSON-P) is a Java API to process (e.g.
+parse, generate, transform and query) JSON messages.  This package contains
+a reference implementation of that API.")))
+
+(define-public java-xmp
+  (package
+    (name "java-xmp")
+    (version "5.1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.macromedia.com/pub/developer"
+                                  "/xmp/sdk/XMPCoreJava-" version ".zip"))
+              (sha256
+               (base32
+                "14nai2mmsg7l5ya2y5mx4w4lr1az3sk2fjz6hiy4zdrsavgvl1g7"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:build-target "build"
+       #:tests? #f; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "XMPCore")
+             #t))
+         (add-before 'build 'fix-timestamp
+           (lambda _
+             (substitute* "build.xml"
+               (("\\$\\{BuildDate\\}") "1970 Jan 01 00:00:00-GMT"))
+             #t))
+         (replace 'install
+           (install-jars "."))
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (copy-recursively
+               "docs"
+               (string-append (assoc-ref outputs "out") "/share/doc/java-xmp"))
+             #t)))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://www.adobe.com/devnet/xmp.html")
+    (synopsis "Extensible Metadat Platform (XMP) support in Java")
+    (description "Adobe's Extensible Metadata Platform (XMP) is a labeling
+technology that allows you to embed data about a file, known as metadata,
+into the file itself.  The XMP Toolkit for Java is based on the C++ XMPCore
+library and the API is similar.")
+    (license license:bsd-3)))
+
+(define-public java-metadata-extractor
+  (package
+    (name "java-metadata-extractor")
+    (version "2.11.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/drewnoakes/metadata-extractor")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "06yrq0swrl1r40yjbk5kqzjxr04jlkq9lfi711jvfgjf5kp2qinj"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "metadata-extractor.jar"
+       #:source-dir "Source"
+       #:test-dir "Tests"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-test-dir
+           (lambda _
+             (substitute* "build.xml"
+               (("/java\">") "\">"))
+             #t)))))
+    (propagated-inputs
+     `(("java-xmp" ,java-xmp)))
+    (native-inputs
+     `(("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-junit" ,java-junit)))
+    (home-page "https://github.com/drewnoakes/metadata-extractor")
+    (synopsis "Extract metadata from image and video files")
+    (description "Metadata-extractor is a straightforward Java library for
+reading metadata from image files.  It is able to read metadata in Exif,
+IPTC, XMP, ICC and more formats.")
+    (license license:asl2.0)))
+
+(define-public java-svg-salamander
+  (package
+    (name "java-svg-salamander")
+    (version "1.1.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/blackears/svgSalamander")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1zv3kjdkf6iqf02x6ln76254y634j2ji448y706a65lsbfjmmicf"))
+              (modules '((guix build utils)))
+              (snippet
+                `(for-each delete-file (find-files "." ".*.jar")))
+              (patches
+                (search-patches "java-svg-salamander-Fix-non-det.patch"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "svg-core")
+             #t))
+         (add-before 'build 'copy-jars
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-file (car (find-files (assoc-ref inputs "javacc") "\\.jar$"))
+                        "../libraries/javacc.jar")
+             (copy-file (car (find-files (assoc-ref inputs "ant") "ant\\.jar$"))
+                        "../libraries/ant.jar")
+             #t))
+         (replace 'install
+           (install-jars "dist")))))
+    (native-inputs
+     `(("javacc" ,javacc)))
+    (home-page "https://github.com/blackears/svgSalamander")
+    (synopsis "SVG engine for Java")
+    (description "SVG Salamander is an SVG engine for Java that's designed
+to be small, fast, and allow programmers to use it with a minimum of fuss.
+It's in particular targeted for making it easy to integrate SVG into Java
+games and making it much easier for artists to design 2D game content - from
+rich interactive menus to charts and graphcs to complex animations.")
+    (license license:bsd-2)))
+
+(define-public java-jboss-transaction-api-spec
+  (package
+    (name "java-jboss-transaction-api-spec")
+    (version "1.2+1.1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/jboss/jboss-transaction-api_spec")
+                     (commit "jboss-transaction-api_1.2_spec-1.1.1.Final")))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1xbfq5hvb86izflydxrqqv3k26c1ba2m0ap6m97shqrsdi9by4wy"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-jboss-transaction-api_spec.jar"
+       #:source-dir "src/main/java"
+       #:tests? #f)); no tests
+    (inputs
+     `(("java-cdi-api" ,java-cdi-api)
+       ("java-jboss-interceptors-api-spec" ,java-jboss-interceptors-api-spec)))
+    (home-page "https://github.com/jboss/jboss-transaction-api_spec")
+    (synopsis "Generic transaction management API in Java")
+    (description "Java-jboss-transaction-api-spec implements the Transactions
+API.  A transaction is a unit of work containing one or more operations
+involving one or more shared resources having ACID (Atomicity, Consistency,
+Isolation and Durability) properties.")
+    ;; either gpl2 only with classpath exception or cddl.
+    (license (list license:gpl2 license:cddl1.0))))

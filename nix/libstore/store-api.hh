@@ -289,6 +289,10 @@ public:
     /* Check the integrity of the Nix store.  Returns true if errors
        remain. */
     virtual bool verifyStore(bool checkContents, bool repair) = 0;
+
+    /* Create a profile for the given user.  This is done by the daemon
+       because the 'profiles/per-user' directory is not writable by users.  */
+    virtual void createUser(const std::string & userName, uid_t userId) = 0;
 };
 
 

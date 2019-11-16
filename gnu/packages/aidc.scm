@@ -130,8 +130,7 @@ C/C++ programs to use its capabilities without restrictions or overhead.")
                                "--with-python=auto"
                                (string-append "--with-dbusconfdir="
                                               (assoc-ref %outputs "out")
-                                              "/etc")
-                               "CXXFLAGS=-std=c++11")))
+                                              "/etc"))))
     (native-inputs
      `(("glib" ,glib "bin")
        ("pkg-config" ,pkg-config)))

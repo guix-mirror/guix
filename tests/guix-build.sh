@@ -226,6 +226,10 @@ rmdir "$result"
 # Cross building.
 guix build coreutils --target=mips64el-linux-gnu --dry-run --no-substitutes
 
+# Likewise, but with '-e' (see <https://bugs.gnu.org/38093>).
+guix build --target=arm-linux-gnueabihf --dry-run \
+     -e '(@ (gnu packages base) coreutils)'
+
 # Replacements.
 drv1=`guix build guix --with-input=guile@2.0=guile@2.2 -d`
 drv2=`guix build guix -d`

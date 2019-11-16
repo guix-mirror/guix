@@ -775,18 +775,34 @@ TARGET-TYPE; return the root service adjusted accordingly."
                    (eq? (service-kind service) target-type))
                  services)
     ((sink)
-     (let loop ((sink sink))
-       (let* ((dependents (map loop (dependents sink)))
-              (extensions (map (apply-extension sink) dependents))
-              (extend     (service-type-extend (service-kind sink)))
-              (compose    (service-type-compose (service-kind sink)))
-              (params     (service-value sink)))
-         ;; We distinguish COMPOSE and EXTEND because PARAMS typically has a
-         ;; different type than the elements of EXTENSIONS.
-         (if extend
-             (service (service-kind sink)
-                      (extend params (compose extensions)))
-             sink))))
+     ;; Use the state monad to keep track of already-visited services in the
+     ;; graph and to memoize their value once folded.
+     (run-with-state
+         (let loop ((sink sink))
+           (mlet %state-monad ((visited (current-state)))
+             (match (vhash-assq sink visited)
+               (#f
+                (mlet* %state-monad
+                    ((dependents (mapm %state-monad loop (dependents sink)))
+                     (visited    (current-state))
+                     (extensions -> (map (apply-extension sink) dependents))
+                     (extend     -> (service-type-extend (service-kind sink)))
+                     (compose    -> (service-type-compose (service-kind sink)))
+                     (params     -> (service-value sink))
+                     (service
+                      ->
+                      ;; Distinguish COMPOSE and EXTEND because PARAMS typically
+                      ;; has a different type than the elements of EXTENSIONS.
+                      (if extend
+                          (service (service-kind sink)
+                                   (extend params (compose extensions)))
+                          sink)))
+                  (mbegin %state-monad
+                    (set-current-state (vhash-consq sink service visited))
+                    (return service))))
+               ((_ . service)                     ;SINK was already visited
+                (return service)))))
+       vlist-null))
     (()
      (raise
       (condition (&missing-target-service-error

@@ -44,7 +44,8 @@
   #:use-module (guix derivations)
   #:use-module (guix build-system)
   #:use-module (guix serialization)
-  #:use-module ((guix licenses) #:select (license? license-name))
+  #:use-module ((guix licenses)
+                #:select (license? license-name license-uri))
   #:use-module ((guix build syscalls)
                 #:select (free-disk-space terminal-columns
                                           terminal-rows))
@@ -69,6 +70,7 @@
   #:autoload   (system base compile) (compile-file)
   #:autoload   (system repl repl)  (start-repl)
   #:autoload   (system repl debug) (make-debug stack->vector)
+  #:autoload   (web uri) (encode-and-join-uri-path)
   #:use-module (texinfo)
   #:use-module (texinfo plain-text)
   #:use-module (texinfo string-utils)
@@ -107,6 +109,9 @@
             string->recutils
             package->recutils
             package-specification->name+version+output
+
+            supports-hyperlinks?
+            location->hyperlink
 
             relevance
             package-relevance
@@ -1234,10 +1239,42 @@ followed by \"+ \", which makes for a valid multi-line field value in the
                       '()
                       str)))
 
+(define (hyperlink uri text)
+  "Return a string that denotes a hyperlink using an OSC escape sequence as
+documented at
+<https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda>."
+  (string-append "\x1b]8;;" uri "\x1b\\"
+                 text "\x1b]8;;\x1b\\"))
+
+(define (supports-hyperlinks? port)
+  "Return true if PORT is a terminal that supports hyperlink escapes."
+  ;; Note that terminals are supposed to ignore OSC escapes they don't
+  ;; understand (this is the case of xterm as of version 349, for instance.)
+  ;; However, Emacs comint as of 26.3 does not ignore it and instead lets it
+  ;; through, hence the 'INSIDE_EMACS' special case below.
+  (and (isatty?* port)
+       (not (getenv "INSIDE_EMACS"))))
+
+(define (location->hyperlink location)
+  "Return a string corresponding to LOCATION, with escapes for a hyperlink."
+  (let ((str  (location->string location))
+        (file (if (string-prefix? "/" (location-file location))
+                  (location-file location)
+                  (search-path %load-path (location-file location)))))
+    (if file
+        (hyperlink (string-append "file://" (gethostname)
+                                  (encode-and-join-uri-path
+                                   (string-split file #\/)))
+                   str)
+        str)))
+
 (define* (package->recutils p port #:optional (width (%text-width))
-                            #:key (extra-fields '()))
+                            #:key
+                            (hyperlinks? (supports-hyperlinks? port))
+                            (extra-fields '()))
   "Write to PORT a `recutils' record of package P, arranging to fit within
-WIDTH columns.  EXTRA-FIELDS is a list of symbol/value pairs to emit."
+WIDTH columns.  EXTRA-FIELDS is a list of symbol/value pairs to emit.  When
+HYPERLINKS? is true, emit hyperlink escape sequences when appropriate."
   (define width*
     ;; The available number of columns once we've taken into account space for
     ;; the initial "+ " prefix.
@@ -1265,7 +1302,8 @@ WIDTH columns.  EXTRA-FIELDS is a list of symbol/value pairs to emit."
             (((labels inputs . _) ...)
              (dependencies->recutils (filter package? inputs)))))
   (format port "location: ~a~%"
-          (or (and=> (package-location p) location->string)
+          (or (and=> (package-location p)
+                     (if hyperlinks? location->hyperlink location->string))
               (G_ "unknown")))
 
   ;; Note: Starting from version 1.6 or recutils, hyphens are not allowed in
@@ -1278,7 +1316,11 @@ WIDTH columns.  EXTRA-FIELDS is a list of symbol/value pairs to emit."
              (string-join (map license-name licenses)
                           ", "))
             ((? license? license)
-             (license-name license))
+             (let ((text (license-name license))
+                   (uri  (license-uri license)))
+               (if (and hyperlinks? uri (string-prefix? "http" uri))
+                   (hyperlink uri text)
+                   text)))
             (x
              (G_ "unknown"))))
   (format port "synopsis: ~a~%"
@@ -1398,11 +1440,13 @@ them.  If PORT is a terminal, print at most a full screen of results."
   (let loop ((matches matches))
     (match matches
       (((package . score) rest ...)
-       (let ((text (call-with-output-string
-                     (lambda (port)
-                       (print package port
-                              #:extra-fields
-                              `((relevance . ,score)))))))
+       (let* ((links? (supports-hyperlinks? port))
+              (text   (call-with-output-string
+                        (lambda (port)
+                          (print package port
+                                 #:hyperlinks? links?
+                                 #:extra-fields
+                                 `((relevance . ,score)))))))
          (if (and max-rows
                   (> (port-line port) first-line) ;print at least one result
                   (> (+ 4 (line-count text) (port-line port))

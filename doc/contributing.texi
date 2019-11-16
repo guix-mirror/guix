@@ -94,7 +94,8 @@ more information.
 Then, run @command{./configure} as usual.  Make sure to pass
 @code{--localstatedir=@var{directory}} where @var{directory} is the
 @code{localstatedir} value used by your current installation (@pxref{The
-Store}, for information about this).
+Store}, for information about this).  We recommend to use the value
+@code{/var}.
 
 Finally, you have to invoke @code{make check} to run tests
 (@pxref{Running the Test Suite}).  If anything

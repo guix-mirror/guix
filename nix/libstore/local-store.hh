@@ -180,6 +180,8 @@ public:
 
     void setSubstituterEnv();
 
+    void createUser(const std::string & userName, uid_t userId);
+
 private:
 
     Path schemaPath;

@@ -47,7 +47,6 @@ bootstrap libc."
                 (install-file (pk 'src (string-append kernel-headers "/include/linux/" file))
                               (pk 'dest (string-append incdir "/linux"))))
               '(
-                "a.out.h"               ; for 2.2.5
                 "atalk.h"               ; for 2.2.5
                 "errno.h"
                 "falloc.h"

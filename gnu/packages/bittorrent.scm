@@ -110,7 +110,7 @@
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://www.transmissionbt.com/")
+    (home-page "https://transmissionbt.com/")
     (synopsis "Fast and easy BitTorrent client")
     (description
      "Transmission is a BitTorrent client that comes with graphical,
@@ -400,18 +400,7 @@ and will take advantage of multiple processor cores where possible.")
              "--enable-tests")
        #:make-flags (list
                      (string-append "LDFLAGS=-Wl,-rpath="
-                                    (assoc-ref %outputs "out") "/lib"))
-       #:phases (modify-phases %standard-phases
-           (add-after 'unpack 'compile-python-c++11
-             (lambda _
-               ;; Make sure the Python bindings are compiled in C++ mode to
-               ;; avoid undefined references as mentioned in
-               ;; <https://github.com/qbittorrent/qBittorrent/issues/638>.
-               ;; XXX: This can be removed for 1.2+.
-               (substitute* "bindings/python/setup.py"
-                 (("\\+ target_specific\\(\\)\\,")
-                  "+ target_specific() + ['-std=c++11'],"))
-               #t)))))
+                                    (assoc-ref %outputs "out") "/lib"))))
     (inputs `(("boost" ,boost)
               ("openssl" ,openssl)))
     (native-inputs `(("python" ,python-2)
@@ -427,7 +416,7 @@ desktops.")
 (define-public qbittorrent
   (package
     (name "qbittorrent")
-    (version "4.1.6")
+    (version "4.1.9.1")
     (source
      (origin
        (method git-fetch)
@@ -436,7 +425,7 @@ desktops.")
              (commit (string-append "release-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1y9kv84sy5fg64wbl4xpm8qh0hjba7ibk045cazp0m736rjmxk8c"))))
+        (base32 "19zgqlby7i1kr20wa4zd99qzd062a879xxxbmlf40rnqiqy4bhyi"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

@@ -180,14 +180,14 @@ colors, styles, options and details.")
 (define-public asymptote
   (package
     (name "asymptote")
-    (version "2.55")
+    (version "2.59")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/asymptote/"
                                   version "/asymptote-" version ".src.tgz"))
               (sha256
                (base32
-                "07704k1p9bzchv7r8x6sj22gcphdyjmj6caa3y83r7gk0r9xi56c"))))
+                "15riihmfmlh8skdssqkl0yv06hc6sw6pbr6jzsfvhcwdmlbsvh33"))))
     (build-system gnu-build-system)
     ;; Note: The 'asy' binary retains a reference to docdir for use with its
     ;; "help" command in interactive mode, so adding a "doc" output is not
@@ -241,7 +241,7 @@ colors, styles, options and details.")
                (("#include <primitives.h>") "#include \"primitives.h\""))
              (invoke "touch" "prc/config.h")))
          (add-after 'unpack 'move-info-location
-           ;; Build process install info file in the unusual
+           ;; Build process installs info file in the unusual
            ;; "%out/share/info/asymptote/" location.  Move it to
            ;; "%out/share/info/" so it appears in the top-level directory.
            (lambda _

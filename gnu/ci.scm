@@ -54,7 +54,8 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
-  #:export (hydra-jobs))
+  #:export (channel-instance->package
+            hydra-jobs))
 
 ;;; Commentary:
 ;;;

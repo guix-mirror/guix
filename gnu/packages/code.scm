@@ -321,18 +321,21 @@ features that are not supported by the standard @code{stdio} implementation.")
   (package
     (name "withershins")
     (version "0.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/cameronwhite/withershins/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "08z3lyvswx7sad10637vfpwglbcbgzzcpfihw0x8lzr74f3b70bh"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cameronwhite/withershins.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1cviqvbbcwljm1zx12j6511hazr3kscwrvcyifrkfi4fpy5z985m"))))
     (build-system cmake-build-system)
     (arguments
      `(#:out-of-source? #f
+       #:configure-flags
+       ;; XXX A (justified!) misleading-indentation error breaks the build.
+       (list "-DENABLE_WERROR=OFF")
        #:phases
        (modify-phases %standard-phases
          (add-after
@@ -432,7 +435,6 @@ functionality such as HTML output.")
      '(#:build-type "RelWithDebInfo"
        #:configure-flags
        '("-DRTAGS_NO_ELISP_FILES=1"
-         "-DCMAKE_CXX_FLAGS=-std=c++11"
          "-DBUILD_TESTING=FALSE")
        #:tests? #f))
     (native-inputs
@@ -460,30 +462,24 @@ importantly we give you proper follow-symbol and find-references support.")
     (version "0.9.20140503")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/pagekite/Colormake/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pagekite/Colormake.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "08ldss9zd8ls6bjahvxhffpsjcysifr720yf3jz9db2mlklzmyd3"))))
+        (base32 "1f9v5s0viq4yc9iv6701h3pv7j21zz1ckl37lpp9hsnliiizv03p"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("bash" ,bash)
-       ("gzip" ,gzip)
-       ("perl" ,perl)
-       ("tar" ,tar)))
+       ("perl" ,perl)))
     (arguments
      `(#:modules ((guix build utils))
        #:builder
        (begin
          (use-modules (guix build utils))
-         ;; bootstrap
-         (setenv "PATH" (string-append
-                         (assoc-ref %build-inputs "tar") "/bin" ":"
-                         (assoc-ref %build-inputs "gzip") "/bin"))
-         (invoke "tar" "xvf" (assoc-ref %build-inputs "source"))
-         (chdir (string-append (string-capitalize ,name) "-" ,version))
+         (copy-recursively (assoc-ref %build-inputs "source") "source")
+         (chdir "source")
          (patch-shebang  "colormake.pl"
                          (list (string-append (assoc-ref %build-inputs "perl")
                                               "/bin")))
@@ -504,7 +500,7 @@ importantly we give you proper follow-symbol and find-references support.")
                             "clmake-short" "colormake.pl")
                           bin)
            #t))))
-    (home-page "http://bre.klaki.net/programs/colormake/")
+    (home-page "https://bre.klaki.net/programs/colormake/")
     (synopsis "Wrapper around @command{make} to produce colored output")
     (description "This package provides a wrapper around @command{make} to
 produce colored output.")
@@ -514,14 +510,15 @@ produce colored output.")
   (package
     (name "makefile2graph")
     (version "1.5.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/lindenb/" name
-                                  "/archive/v" version ".tar.gz"))
-              (sha256
-               (base32
-                "0h1vchkpmm9h6s87p5nf0ksjxcmsxpx8k62a508w428n570wcr4l"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/lindenb/makefile2graph.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1gjfk3d8qg3cla7qd2y7r9s03whlfwy83q8k76xfcnqrjjfavdgk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "test"

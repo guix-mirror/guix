@@ -13,6 +13,7 @@
 ;;; Copyright © 2018 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,6 +47,7 @@
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages lsof)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages password-utils)
   #:use-module (gnu packages perl)
@@ -131,7 +133,7 @@ communication, encryption, decryption, signatures, etc.")
 (define-public signify
   (package
     (name "signify")
-    (version "26")
+    (version "27")
     (home-page "https://github.com/aperezdc/signify")
     (source (origin
               (method url-fetch)
@@ -139,7 +141,7 @@ communication, encryption, decryption, signatures, etc.")
                                   "/download/v" version "/signify-" version ".tar.xz"))
               (sha256
                (base32
-                "16sl1yq5bbsads5q4a0fbrf31b0x8r1hi4wagl90nbrhrca98baw"))))
+                "0ngjsqz95yb0knlw9zs02fnclif40s63r1mydgiv17ii3mds82df"))))
     (build-system gnu-build-system)
     ;; TODO Build with libwaive (described in README.md), to implement something
     ;; like OpenBSD's pledge().
@@ -209,6 +211,15 @@ OpenBSD tool of the same name.")
              (mkdir-p "vendor/github.com/google/googletest")
              (copy-recursively (assoc-ref inputs "googletest-source")
                                "vendor/github.com/google/googletest")
+             #t))
+         (add-before 'configure 'patch-CMakeLists.txt
+           (lambda _
+             ;; Prevent CMake from adding libc on the system include path.
+             ;; Otherwise it will interfere with the libc used by GCC and
+             ;; ultimately cause #include_next errors.
+             (substitute* "CMakeLists.txt"
+               (("include_directories \\(SYSTEM \\$\\{Intl_INCLUDE_DIRS\\}\\)")
+                ""))
              #t))
          (add-before 'check 'make-unittests
            (lambda _
@@ -329,14 +340,15 @@ no man page, refer to the home page for usage details.")
 (define-public tomb
   (package
     (name "tomb")
-    (version "2.6")
+    (version "2.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.dyne.org/tomb/"
                                   "Tomb-" version ".tar.gz"))
               (sha256
                (base32
-                "1sr3jcn96mciyn8xd0amd1jzamxxzpybakf8an7laf26gjim1dh2"))))
+                "0x3al02796vx1cvy6y6h685c367qx70dwv471g0hmks2gr10f0cn"))
+              (patches (search-patches "tomb-fix-errors-on-open.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("sudo" ,sudo)))   ;presence needed for 'check' phase
     (inputs
@@ -345,6 +357,7 @@ no man page, refer to the home page for usage details.")
        ("cryptsetup" ,cryptsetup)
        ("e2fsprogs" ,e2fsprogs)         ;for mkfs.ext4
        ("gettext" ,gettext-minimal)     ;used at runtime
+       ("lsof" ,lsof)
        ("mlocate" ,mlocate)
        ("pinentry" ,pinentry)
        ("qrencode" ,qrencode)
@@ -352,6 +365,10 @@ no man page, refer to the home page for usage details.")
        ("util-linux" ,util-linux)))
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       ;; The "sudo" input is needed only to satisfy dependency checks in the
+       ;; 'check' phase.  The "sudo" used at runtime should come from the
+       ;; system's setuid-programs, so ensure no reference is kept.
+       #:disallowed-references (,sudo)
        ;; TODO: Build and install gtk and qt trays
        #:phases
        (modify-phases %standard-phases
@@ -370,8 +387,8 @@ no man page, refer to the home page for usage details.")
                     ,@(map (lambda (program)
                              (or (and=> (which program) dirname)
                                  (error "program not found:" program)))
-                           '("seq" "mkfs.ext4" "pinentry" "sudo"
-                             "gpg" "cryptsetup" "gettext"
+                           '("seq" "mkfs.ext4" "pinentry"
+                             "gpg" "cryptsetup" "gettext" "lsof"
                              "qrencode" "steghide" "findmnt")))))
                #t)))
          (delete 'check)
@@ -724,14 +741,14 @@ SHA256, SHA512, SHA3, AICH, ED2K, Tiger, DC++ TTH, BitTorrent BTIH, GOST R
 (define-public botan
   (package
     (name "botan")
-    (version "2.7.0")
+    (version "2.12.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://botan.randombit.net/releases/"
-                                  "Botan-" version ".tgz"))
+                                  "Botan-" version ".tar.xz"))
               (sha256
                (base32
-                "142aqabwc266jxn8wrp0f1ffrmcvdxwvyh8frb38hx9iaqazjbg4"))))
+                "1ada3ga7b0z4m0vjmxlvfi4nsic2l8kjcy85jwss3z2i58a5y0vy"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -740,12 +757,17 @@ SHA256, SHA512, SHA3, AICH, ED2K, Tiger, DC++ TTH, BitTorrent BTIH, GOST R
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref %outputs "out"))
                     (lib (string-append out "/lib")))
+               ;; Upstream tests and benchmarks with -O3.
+               (setenv "CXXFLAGS" "-O3")
                (invoke "python" "./configure.py"
                        (string-append "--prefix=" out)
                        ;; Otherwise, the `botan` executable cannot find
                        ;; libbotan.
                        (string-append "--ldflags=-Wl,-rpath=" lib)
+
+                       "--with-os-feature=getentropy"
                        "--with-rst2man"
+
                        ;; Recommended by upstream
                        "--with-zlib" "--with-bzip2" "--with-sqlite3"))))
          (replace 'check
@@ -937,6 +959,7 @@ utility/testing functions.")
               (uri (git-reference
                      (url "https://github.com/vstakhov/hpenc")
                      (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1fb5yi3d2k8kd4zm7liiqagpz610y168xrr1cvn7cbq314jm2my1"))))
@@ -974,3 +997,36 @@ pre-shared keys out of band.  It is designed to handle large amounts of data
 quickly by using all your CPU cores and hardware acceleration.")
     (home-page "https://github.com/vstakhov/hpenc")
     (license license:bsd-3)))
+
+(define-public minisign
+  (package
+    (name "minisign")
+    (version "0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/jedisct1/minisign/releases/download/"
+                       version "/minisign-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10hhgwxf9rcdlr00shrkcyxndrc22dh5lj8k5z27xg3nc0jba3hk"))))
+    (build-system cmake-build-system)
+    (arguments
+     ; No test suite
+     `(#:tests? #f))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libsodium" ,libsodium)))
+    (home-page "https://jedisct1.github.io/minisign")
+    (synopsis "Tool to sign files and verify signatures")
+    (description
+     "Minisign is a dead simple tool to sign files and verify signatures.  It is
+portable, lightweight, and uses the highly secure Ed25519 public-key signature
+system.  Signature written by minisign can be verified using OpenBSD's
+signify tool: public key files and signature files are compatible.  However,
+minisign uses a slightly different format to store secret keys.  Minisign
+signatures include trusted comments in addition to untrusted comments.
+Trusted comments are signed, thus verified, before being displayed.")
+    (license license:isc)))

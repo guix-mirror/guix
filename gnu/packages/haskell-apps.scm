@@ -11,6 +11,8 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2019 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015 John Soo <jsoo1@asu.edu>
+;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -245,19 +247,18 @@ unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
 (define-public git-annex
   (package
     (name "git-annex")
-    (version "7.20191009")
+    (version "7.20191114")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/"
                            "git-annex/git-annex-" version ".tar.gz"))
        (sha256
-        (base32
-         "10ycvjl9b3aa81zdz239ngjbbambfjrzds1a23wdlbjkn12nsg4g"))))
+        (base32 "1afrn5g3b80f3n6ncfph6pmf9jdpc7a6ay55k2pmkn96pyv4hfmm"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags
-       '("--flags=-Android -Assistant -Pairing -S3 -Webapp -WebDAV")
+       '("--flags=-Android -Assistant -Pairing -Webapp -WebDAV")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-shell-for-tests
@@ -318,6 +319,7 @@ unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
      `(("curl" ,curl)
        ("ghc-aeson" ,ghc-aeson)
        ("ghc-async" ,ghc-async)
+       ("ghc-aws" ,ghc-aws)
        ("ghc-bloomfilter" ,ghc-bloomfilter)
        ("ghc-byteable" ,ghc-byteable)
        ("ghc-case-insensitive" ,ghc-case-insensitive)
@@ -497,6 +499,64 @@ with CSS and mouseover annotations, XHTML 1.0 with inline CSS styling, LaTeX,
 and mIRC chat codes.")
     (license license:bsd-3)))
 
+(define-public kmonad
+  (package
+    (name "kmonad")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/david-janssen/kmonad.git")
+             (commit "06d7b8c709efa695be35df9bde91275cbb2ba099")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1rjr4h5yq63x3kad6yn4p8v26389sd9dgr5n2w73s1chafapzwwd"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'haddock)             ; Haddock fails to generate docs
+         (add-after 'install 'install-udev-rules
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (rules (string-append out "/lib/udev/rules.d")))
+               (mkdir-p rules)
+               (call-with-output-file (string-append rules "/70-kmonad.rules")
+                 (lambda (port)
+                   (display
+                    (string-append
+                     "KERNEL==\"uinput\", MODE=\"0660\", "
+                     "GROUP=\"input\", OPTIONS+=\"static_node=uinput\"\n")
+                    port)))
+               #t)))
+         (add-after 'install-udev-rules 'install-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/kmonad-" ,version)))
+               (install-file "README.md" doc)
+               (copy-recursively "doc" doc)
+               (copy-recursively "example" (string-append doc "/example"))
+               #t))))))
+    (inputs
+     `(("ghc-cereal" ,ghc-cereal)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-lens" ,ghc-lens)
+       ("ghc-megaparsec" ,ghc-megaparsec-7)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
+       ("ghc-unagi-chan" ,ghc-unagi-chan)
+       ("ghc-unliftio" ,ghc-unliftio)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+    (home-page "https://github.com/david-janssen/kmonad")
+    (synopsis "Advanced keyboard manager")
+    (description "KMonad is a keyboard remapping utility that supports
+advanced functionality, such as custom keymap layers and modifiers, macros,
+and conditional mappings that send a different keycode when tapped or held.
+By operating at a lower level than most similar tools, it supports X11,
+Wayland, and Linux console environments alike.")
+    (license license:expat)))
+
 (define-public raincat
   (package
     (name "raincat")
@@ -504,7 +564,7 @@ and mIRC chat codes.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://hackage.haskell.org/package/Raincat/"
+       (uri (string-append "mirror://hackage/package/Raincat/"
                            "Raincat-" version ".tar.gz"))
        (sha256
         (base32
@@ -538,6 +598,37 @@ play inspired from classics Lemmings and The Incredible Machine.  The project
 proved to be an excellent learning experience for the programmers.  Everything
 is programmed in Haskell.")
     (license license:bsd-3)))
+
+(define-public scroll
+  (package
+    (name "scroll")
+    (version "1.20180421")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://hackage.haskell.org/package/scroll/scroll-"
+               version ".tar.gz"))
+        (sha256
+         (base32
+          "0apzrvf99rskj4dbmn57jjxrsf19j436s8a09m950df5aws3a0wj"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-data-default" ,ghc-data-default)
+       ("ghc-ifelse" ,ghc-ifelse)
+       ("ghc-monad-loops" ,ghc-monad-loops)
+       ("ghc-ncurses" ,ghc-ncurses)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
+       ("ghc-random" ,ghc-random)
+       ("ghc-vector" ,ghc-vector)))
+    (home-page "https://joeyh.name/code/scroll/")
+    (synopsis "scroll(6), a roguelike game")
+    (description
+     "You're a bookworm that's stuck on a scroll.  You have to dodge between
+words and use spells to make your way down the page as the scroll is read.  Go
+too slow and you'll get wound up in the scroll and crushed.")
+    (license license:gpl2)))
 
 (define-public shellcheck
   (package

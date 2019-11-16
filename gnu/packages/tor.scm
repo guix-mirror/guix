@@ -158,7 +158,7 @@ networks.")
 (define-public onionshare
   (package
     (name "onionshare")
-    (version "2.1")
+    (version "2.2")
     (source
       (origin
         (method git-fetch)
@@ -167,7 +167,7 @@ networks.")
               (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "1lx21p12888qnbhsyin4lrnn4xizb39ldk77r71y53hn8mfxi54z"))))
+         (base32 "0m8ygxcyp3nfzzhxs2dfnpqwh1vx0aws44lszpnnczz4fks3a5j4"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -181,7 +181,7 @@ networks.")
                (substitute* "setup.py"
                  ;; For the nautilus plugin.
                  (("/usr/share/nautilus") "share/nautilus"))
-               (substitute* "install/onionshare.desktop"
+               (substitute* "install/org.onionshare.OnionShare.desktop"
                  (("/usr") out))
                #t)))
          (delete 'check)
@@ -196,6 +196,7 @@ networks.")
     (inputs
      `(("python-pycrypto" ,python-pycrypto)
        ("python-flask" ,python-flask)
+       ("python-flask-httpauth" ,python-flask-httpauth)
        ("python-nautilus" ,python-nautilus)
        ("python-sip" ,python-sip)
        ("python-stem" ,python-stem)
@@ -203,15 +204,15 @@ networks.")
        ("python-pyqt" ,python-pyqt)))
     (home-page "https://onionshare.org/")
     (synopsis "Securely and anonymously share files")
-    (description "OnionShare lets you securely and anonymously share files of
-any size.  It works by starting a web server, making it accessible as a Tor
-hidden service, and generating an unguessable URL to access and download the
-files.  It doesn't require setting up a server on the internet somewhere or
-using a third party filesharing service.  You host the file on your own computer
-and use a Tor hidden service to make it temporarily accessible over the
-internet.  The other user just needs to use Tor Browser to download the file
-from you.")
-    (license license:gpl3+)))
+    (description "OnionShare is a tool for securely and anonymously sending
+and receiving files using Tor onion services.  It works by starting a web
+server directly on your computer and making it accessible as an unguessable
+Tor web address that others can load in a Tor-enabled web browser to download
+files from you, or upload files to you.  It doesn't require setting up a
+separate server, using a third party file-sharing service, or even logging
+into an account.")
+    ;; Bundled, minified jquery is expat licensed.
+    (license (list license:gpl3+ license:expat))))
 
 (define-public nyx
   (package

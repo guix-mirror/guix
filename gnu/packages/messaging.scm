@@ -15,6 +15,7 @@
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
+;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -772,14 +773,14 @@ a graphical desktop environment like GNOME.")
 (define-public prosody
   (package
     (name "prosody")
-    (version "0.11.2")
+    (version "0.11.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://prosody.im/downloads/source/"
                                   "prosody-" version ".tar.gz"))
               (sha256
                (base32
-                "0ca8ivqb4hxqka08pwnaqi1bqxrdl8zw47g6z7nw9q5r57fgc4c9"))))
+                "11xz4milv2962qf75vrdwsvd8sy2332nf69202rmvz5989pvvnng"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ;tests require "busted"
@@ -1558,7 +1559,7 @@ is also scriptable and extensible via Guile.")
 (define-public libmesode
   (package
     (name "libmesode")
-    (version "0.9.2")
+    (version "0.9.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1567,7 +1568,7 @@ is also scriptable and extensible via Guile.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "06f5nfaypvxrbsinxa1k2vrxrs7kqmg38g4wwwk5d63hpn1pj8ak"))))
+                "0xzfg1xx88cn36352nnjlb1p7xyw32yqkhjzq10px88iaaqz1vv0"))))
     (build-system gnu-build-system)
     (inputs
      `(("expat" ,expat)
@@ -1582,21 +1583,22 @@ is also scriptable and extensible via Guile.")
 XMPP Client.  In particular, libmesode provides extra TLS functionality such as
 manual SSL certificate verification.")
     (home-page "https://github.com/boothj5/libmesode")
-    ;; Dual licensed.
+    ;; Dual-licensed.
     (license (list license:gpl3+ license:x11))))
 
 (define-public libstrophe
   (package
     (name "libstrophe")
-    (version "0.9.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/strophe/libstrophe/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0vxfcyfnhnlaj6spm2b0ljw5i3knbphy6mvzpl5zv9b52ny4b08m"))))
+    (version "0.9.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/strophe/libstrophe.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1g1l0w9z9hdy5ncdvd9097gi7k7783did6py5h9camlpb2fnk5mk"))))
     (build-system gnu-build-system)
     (inputs
      `(("expat" ,expat)
@@ -1611,43 +1613,54 @@ manual SSL certificate verification.")
 almost no external dependencies, only an XML parsing library (expat or libxml
 are both supported).")
     (home-page "http://strophe.im/libstrophe")
-    ;; Dual licensed.
+    ;; Dual-licensed.
     (license (list license:gpl3+ license:x11))))
 
 (define-public profanity
-    (package
-        (name "profanity")
-        (version "0.5.1")
-        (source (origin
-                  (method url-fetch)
-                  (uri (string-append "http://www.profanity.im/profanity-"
-                                      version ".tar.gz"))
-                  (sha256
-                   (base32
-                     "1f7ylw3mhhnii52mmk40hyc4kqhpvjdr3hmsplzkdhsfww9kflg3"))))
-        (build-system gnu-build-system)
-        (inputs
-         `(("curl" ,curl)
-           ("expat" ,expat)
-           ("glib" ,glib)
-           ("gpgme" ,gpgme)
-           ("libmesode" ,libmesode)
-           ("libotr" ,libotr)
-           ("ncurses" ,ncurses)
-           ("openssl" ,openssl)
-           ("readline" ,readline)))
-        (native-inputs
-         `(("autoconf" ,autoconf)
-           ("autoconf-archive" ,autoconf-archive)
-           ("automake" ,automake)
-           ("cmocka" ,cmocka)
-           ("libtool" ,libtool)
-           ("pkg-config" ,pkg-config)))
-        (synopsis "Console-based XMPP client")
-        (description "Profanity is a console based XMPP client written in C
+  (package
+    (name "profanity")
+    (version "0.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://profanity-im.github.io/profanity-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0nxh81j8ky0fzv47pip1jb7rs5rrin3jx0f3h632bvpjiya45r1z"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (list "--enable-c-plugins"
+             "--enable-otr"
+             "--enable-omemo"
+             "--enable-pgp"
+             "--enable-icons"
+             "--enable-notifications")))
+    (inputs
+     `(("curl" ,curl)
+       ("expat" ,expat)
+       ("glib" ,glib)
+       ("gpgme" ,gpgme)
+       ("libmesode" ,libmesode)
+       ("libotr" ,libotr)
+       ("ncurses" ,ncurses)
+       ("openssl" ,openssl)
+       ("readline" ,readline)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("autoconf-archive" ,autoconf-archive)
+       ("automake" ,automake)
+       ("cmocka" ,cmocka)
+       ("gtk+" ,gtk+-2)
+       ("libnotify" ,libnotify)
+       ("libtool" ,libtool)
+       ("libsignal-protocol-c" ,libsignal-protocol-c)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Console-based XMPP client")
+    (description "Profanity is a console based XMPP client written in C
 using ncurses and libmesode, inspired by Irssi.")
-        (home-page "http://www.profanity.im")
-        (license license:gpl3+)))
+    (home-page "https://profanity-im.github.io")
+    (license license:gpl3+)))
 
 (define-public libircclient
   (package
@@ -1779,25 +1792,23 @@ QMatrixClient project.")
        ("qtdeclarative" ,qtdeclarative)
        ("qtmultimedia" ,qtmultimedia)
        ("qtquickcontrols" ,qtquickcontrols)
+       ("qtquickcontrols2" ,qtquickcontrols2)
        ("qtsvg" ,qtsvg)
        ("qttools" ,qttools)))
     (arguments
      `(#:tests? #f                      ; no tests
+       #:modules ((guix build cmake-build-system)
+                  (guix build qt-utils)
+                  (guix build utils))
+       #:imported-modules (,@%cmake-build-system-modules
+                           (guix build qt-utils))
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-program
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (wrap-program (string-append (assoc-ref outputs "out")
-                                          "/bin/quaternion")
-               `("QT_PLUGIN_PATH" ":" prefix
-                 (,(string-append (assoc-ref inputs "qtsvg")
-                                  "/lib/qt5/plugins")))
-               `("QML2_IMPORT_PATH" ":" prefix
-                 ,(map (lambda (label)
-                         (string-append (assoc-ref inputs label)
-                                        "/lib/qt5/qml"))
-                       '("qtdeclarative" "qtquickcontrols"))))
-             #t)))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-qt-program out "quaternion")
+               #t))))))
     (home-page "https://matrix.org/docs/projects/client/quaternion.html")
     (synopsis "Graphical client for the Matrix instant messaging protocol")
     (description "Quaternion is a Qt5 desktop client for the Matrix instant
@@ -1833,7 +1844,7 @@ QMatrixClient project.")
        ("python-async-timeout" ,python-async-timeout)
        ("python-configargparse" ,python-configargparse)
        ("python-mechanicalsoup" ,python-mechanicalsoup)
-       ("python-protobuf" ,python-protobuf)
+       ("python-protobuf" ,python-protobuf-3.6)
        ("python-readlike" ,python-readlike)
        ("python-reparser" ,python-reparser)
        ("python-requests" ,python-requests)
@@ -1855,7 +1866,7 @@ messaging that aren’t available to clients that connect over XMPP.")
 (define-public telegram-purple
   (package
     (name "telegram-purple")
-    (version "1.4.1")
+    (version "1.4.2")
     (home-page "https://github.com/majn/telegram-purple")
     (source (origin
               (method git-fetch)
@@ -1865,7 +1876,7 @@ messaging that aren’t available to clients that connect over XMPP.")
                     (recursive? #t)))
               (sha256
                (base32
-                "0xlmqnlp2dqkgsq052d6dwgvqbwch2w0dnwpjslk5na4ih3lfr7k"))
+                "0imbzhhq9qbj6gvkckrnjhls2vvmmy8db7l6gsd7lng2pbfcn522"))
               (modules '((guix build utils)))
               (snippet
                '(begin

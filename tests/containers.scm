@@ -269,6 +269,7 @@
                       (lset= string=? (cons* "." ".." (map basename reqs))
                              (pk (call-with-input-file result read))))))))))
 
+(skip-if-unsupported)
 (test-assert "eval/container, non-empty load path"
   (call-with-temporary-directory
    (lambda (directory)

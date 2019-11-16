@@ -3,7 +3,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2017 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -47,8 +47,8 @@
   #:use-module (guix build-system gnu))
 
 (define-public cuirass
-  (let ((commit "d27ff21e430cd38b02bd70a0dc8d60c9c2736f83")
-        (revision "24"))
+  (let ((commit "e20ff86d97f7dd92dad140b5919e3cbdf2fb1ce6")
+        (revision "26"))
     (package
       (name "cuirass")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -60,13 +60,15 @@
                 (file-name (string-append name "-" version))
                 (sha256
                  (base32
-                  "166xl9zfy7dm645fk2ln45bvw0y0gy0xw8fb7mprbjz8v95dh27p"))))
+                  "1c3rcfmx7vm13x3nid9xbl18rrqljh5vb71qxps4yqid75br4hrb"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
                     (guix build gnu-build-system)
                     (ice-9 rdelim)
                     (ice-9 popen))
+
+         #:configure-flags '("--localstatedir=/var") ;for /var/log/cuirass
 
          #:phases
          (modify-phases %standard-phases

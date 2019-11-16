@@ -1,0 +1,21 @@
+PSM2 is the only valid implementation for OmniPath (OPA).  UCX also
+supports OmniPath, but it does so via Verbs, thus getting much lower
+performance (typically 3 GiB/s instead of 10 GiB/s).
+
+To work around that, give the mtl_psm2 component a higher priority
+than the pml_ucx component.
+
+See <https://www.mail-archive.com/users@lists.open-mpi.org/msg33581.html>.
+
+--- openmpi-4.0.2/ompi/mca/mtl/psm2/mtl_psm2_component.c	2019-11-15 17:06:15.142076840 +0100
++++ openmpi-4.0.2/ompi/mca/mtl/psm2/mtl_psm2_component.c	2019-11-15 17:06:22.242009379 +0100
+@@ -126,7 +126,7 @@ ompi_mtl_psm2_component_register(void)
+         setenv("PSM2_DEVICES", "self,shm", 0);
+     }
+ 
+-    param_priority = 40;
++    param_priority = 55;
+     (void) mca_base_component_var_register (&mca_mtl_psm2_component.super.mtl_version,
+                                             "priority", "Priority of the PSM2 MTL component",
+                                             MCA_BASE_VAR_TYPE_INT, NULL, 0, 0,
+

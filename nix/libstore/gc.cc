@@ -620,10 +620,9 @@ void LocalStore::collectGarbage(const GCOptions & options, GCResults & results)
 
     foreach (Roots::iterator, i, rootMap) state.roots.insert(i->second);
 
-    /* Add additional roots returned by the program specified by the
-       NIX_ROOT_FINDER environment variable.  This is typically used
-       to add running programs to the set of roots (to prevent them
-       from being garbage collected). */
+    /* Add additional roots returned by 'guix gc --list-busy'.  This is
+       typically used to add running programs to the set of roots (to prevent
+       them from being garbage collected). */
     if (!options.ignoreLiveness)
         addAdditionalRoots(*this, state.roots);
 

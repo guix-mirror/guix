@@ -66,6 +66,8 @@ Copyright @copyright{} 2019 Josh Holland@*
 Copyright @copyright{} 2019 Diego Nicola Barbato@*
 Copyright @copyright{} 2019 Ivan Petkov@*
 Copyright @copyright{} 2019 Jakob L. Kreuze@*
+Copyright @copyright{} 2019 Kyle Andrews@*
+Copyright @copyright{} 2019 Alex Griffin@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -196,6 +198,7 @@ Package Management
 * Invoking guix gc::            Running the garbage collector.
 * Invoking guix pull::          Fetching the latest Guix and distribution.
 * Channels::                    Customizing the package collection.
+* Invoking guix time-machine::  Running an older revision of Guix.
 * Inferiors::                   Interacting with another revision of Guix.
 * Invoking guix describe::      Display information about your Guix revision.
 * Invoking guix archive::       Exporting and importing store files.
@@ -791,8 +794,9 @@ When configuring Guix on a system that already has a Guix installation,
 be sure to specify the same state directory as the existing installation
 using the @code{--localstatedir} option of the @command{configure}
 script (@pxref{Directory Variables, @code{localstatedir},, standards,
-GNU Coding Standards}).  The @command{configure} script protects against
-unintended misconfiguration of @var{localstatedir} so you do not
+GNU Coding Standards}).  Usually, this @var{localstatedir} option is
+set to the value @file{/var}.  The @command{configure} script protects
+against unintended misconfiguration of @var{localstatedir} so you do not
 inadvertently corrupt your store (@pxref{The Store}).
 
 @node Running the Test Suite
@@ -2110,7 +2114,7 @@ ifconfig -a
 @dots{} or, using the GNU/Linux-specific @command{ip} command:
 
 @example
-ip a
+ip address
 @end example
 
 @c https://cgit.freedesktop.org/systemd/systemd/tree/src/udev/udev-builtin-net_id.c#n20
@@ -2126,6 +2130,13 @@ To configure a wired network run the following command, substituting
 
 @example
 ifconfig @var{interface} up
+@end example
+
+@noindent
+@dots{} or, using the GNU/Linux-specific @command{ip} command:
+
+@example
+ip link set @var{interface} up
 @end example
 
 @item Wireless connection
@@ -2540,6 +2551,7 @@ guix install emacs-guix
 * Invoking guix gc::            Running the garbage collector.
 * Invoking guix pull::          Fetching the latest Guix and distribution.
 * Channels::                    Customizing the package collection.
+* Invoking guix time-machine::  Running an older revision of Guix.
 * Inferiors::                   Interacting with another revision of Guix.
 * Invoking guix describe::      Display information about your Guix revision.
 * Invoking guix archive::       Exporting and importing store files.
@@ -3666,6 +3678,21 @@ descriptions, and deploys it.  Source code is downloaded from a
 @uref{https://git-scm.com, Git} repository, by default the official
 GNU@tie{}Guix repository, though this can be customized.
 
+Specifically, @command{guix pull} downloads code from the @dfn{channels}
+(@pxref{Channels}) specified by one of the followings, in this order:
+
+@enumerate
+@item
+the @option{--channels} option;
+@item
+the user's @file{~/.config/guix/channels.scm} file;
+@item
+the system-wide @file{/etc/guix/channels.scm} file;
+@item
+the built-in default channels specified in the @code{%default-channels}
+variable.
+@end enumerate
+
 On completion, @command{guix package} will use packages and package
 versions from this just-retrieved copy of Guix.  Not only that, but all
 the Guix commands and Scheme modules will also be taken from that latest
@@ -3763,7 +3790,8 @@ configuration in the @file{~/.config/guix/channels.scm} file or using the
 @item --channels=@var{file}
 @itemx -C @var{file}
 Read the list of channels from @var{file} instead of
-@file{~/.config/guix/channels.scm}.  @var{file} must contain Scheme code that
+@file{~/.config/guix/channels.scm} or @file{/etc/guix/channels.scm}.
+@var{file} must contain Scheme code that
 evaluates to a list of channel objects.  @xref{Channels}, for more
 information.
 
@@ -4126,7 +4154,10 @@ say, on another machine, by providing a channel specification in
 @end lisp
 
 The @command{guix describe --format=channels} command can even generate this
-list of channels directly (@pxref{Invoking guix describe}).
+list of channels directly (@pxref{Invoking guix describe}).  The resulting
+file can be used with the -C options of @command{guix pull}
+(@pxref{Invoking guix pull}) or @command{guix time-machine}
+(@pxref{Invoking guix time-machine}).
 
 At this point the two machines run the @emph{exact same Guix}, with access to
 the @emph{exact same packages}.  The output of @command{guix build gimp} on
@@ -4139,6 +4170,61 @@ This gives you super powers, allowing you to track the provenance of binary
 artifacts with very fine grain, and to reproduce software environments at
 will---some sort of ``meta reproducibility'' capabilities, if you will.
 @xref{Inferiors}, for another way to take advantage of these super powers.
+
+@node Invoking guix time-machine
+@section Invoking @command{guix time-machine}
+
+@cindex @command{guix time-machine}
+@cindex pinning, channels
+@cindex replicating Guix
+@cindex reproducibility, of Guix
+
+The @command{guix time-machine} command provides access to other
+revisions of Guix, for example to install older versions of packages,
+or to reproduce a computation in an identical environment.  The revision
+of Guix to be used is defined by a commit or by a channel
+description file created by @command{guix describe}
+(@pxref{Invoking guix describe}).
+
+The general syntax is:
+
+@example
+guix time-machine @var{options}@dots{} -- @var{command} @var {arg}@dots{}
+@end example
+
+where @var{command} and @var{arg}@dots{} are passed unmodified to the
+@command{guix} command if the specified revision.  The @var{options} that define
+this revision are the same as for @command{guix pull} (@pxref{Invoking guix pull}):
+
+@table @code
+@item --url=@var{url}
+@itemx --commit=@var{commit}
+@itemx --branch=@var{branch}
+Use the @code{guix} channel from the specified @var{url}, at the
+given @var{commit} (a valid Git commit ID represented as a hexadecimal
+string), or @var{branch}.
+
+@item --channels=@var{file}
+@itemx -C @var{file}
+Read the list of channels from @var{file}.  @var{file} must contain
+Scheme code that evaluates to a list of channel objects.
+@xref{Channels} for more information.
+@end table
+
+As for @command{guix pull}, the absence of any options means that the
+the latest commit on the master branch will be used. The command
+
+@example
+guix time-machine -- build hello
+@end example
+
+will thus build the package @code{hello} as defined in the master branch,
+which is in general a newer revison of Guix than you have installed.
+Time travel works in both directions!
+
+Note that @command{guix time-machine} can trigger builds of channels and
+their dependencies, and these are controlled by the standard build
+options (@pxref{Common Build Options}).
 
 @node Inferiors
 @section Inferiors
@@ -5661,9 +5747,6 @@ The URL to the home-page of the package, as a string.
 @item @code{supported-systems} (default: @var{%supported-systems})
 The list of systems supported by the package, as strings of the form
 @code{architecture-kernel}, for example @code{"x86_64-linux"}.
-
-@item @code{maintainers} (default: @code{'()})
-The list of maintainers of the package, as @code{maintainer} objects.
 
 @item @code{location} (default: source location of the @code{package} form)
 The source location of the package.  It is useful to override this when
@@ -8297,6 +8380,11 @@ The returned source tarball is the result of applying any patches and
 code snippets specified in the package @code{origin} (@pxref{Defining
 Packages}).
 
+Note that @command{guix build -S} compiles the sources only of the
+specified packages.  They do not include the sources of statically
+linked dependencies and by themselves are insufficient for reproducing
+the packages.
+
 @item --sources
 Fetch and return the source of @var{package-or-derivation} and all their
 dependencies, recursively.  This is a handy way to obtain a local copy
@@ -9487,7 +9575,7 @@ that limit has been reset.
 @cindex CVE, Common Vulnerabilities and Exposures
 Report known vulnerabilities found in the Common Vulnerabilities and
 Exposures (CVE) databases of the current and past year
-@uref{https://nvd.nist.gov/download.cfm#CVE_FEED, published by the US
+@uref{https://nvd.nist.gov/vuln/data-feeds, published by the US
 NIST}.
 
 To view information about a particular vulnerability, visit pages such as:
@@ -9504,7 +9592,7 @@ where @code{CVE-YYYY-ABCD} is the CVE identifier---e.g.,
 @code{CVE-2015-7554}.
 
 Package developers can specify in package recipes the
-@uref{https://nvd.nist.gov/cpe.cfm,Common Platform Enumeration (CPE)}
+@uref{https://nvd.nist.gov/products/cpe,Common Platform Enumeration (CPE)}
 name and version of the package when they differ from the name or version
 that Guix uses, as in this example:
 
@@ -9886,7 +9974,18 @@ The package dependency graph is largely architecture-independent, but there
 are some architecture-dependent bits that this option allows you to visualize.
 @end table
 
+On top of that, @command{guix graph} supports all the usual package
+transformation options (@pxref{Package Transformation Options}).  This
+makes it easy to view the effect of a graph-rewriting transformation
+such as @option{--with-input}.  For example, the command below outputs
+the graph of @code{git} once @code{openssl} has been replaced by
+@code{libressl} everywhere in the graph:
 
+@example
+guix graph git --with-input=openssl=libressl
+@end example
+
+So many possibilities, so much fun!
 
 @node Invoking guix publish
 @section Invoking @command{guix publish}
@@ -10094,7 +10193,7 @@ of the @code{operating-system} declaration (@pxref{guix-publish-service-type,
 @code{guix-publish-service-type}}).
 
 If you are instead running Guix on a ``foreign distro'', follow these
-instructions:”
+instructions:
 
 @itemize
 @item
@@ -10549,7 +10648,6 @@ $ sudo guix processes | \
 ClientPID: 19419
 ClientCommand: cuirass --cache-directory /var/cache/cuirass @dots{}
 @end example
-
 
 @node System Configuration
 @chapter System Configuration
@@ -13940,6 +14038,52 @@ Package object of the Open vSwitch.
 @end table
 @end deftp
 
+@defvr {Scheme Variable} pagekite-service-type
+This is the service type for the @uref{https://pagekite.net, PageKite} service,
+a tunneling solution for making localhost servers publicly visible, even from
+behind NAT or restrictive firewalls.  The value for this service type is a
+@code{pagekite-configuration} record.
+
+Here's an example exposing the local HTTP and SSH daemons:
+
+@lisp
+(service pagekite-service-type
+         (pagekite-configuration
+           (kites '("http:@@kitename:localhost:80:@@kitesecret"
+                    "raw/22:@@kitename:localhost:22:@@kitesecret"))
+           (extra-file "/etc/pagekite.rc")))
+@end lisp
+@end defvr
+
+@deftp {Data Type} pagekite-configuration
+Data type representing the configuration of PageKite.
+
+@table @asis
+@item @code{package} (default: @var{pagekite})
+Package object of PageKite.
+
+@item @code{kitename} (default: @code{#f})
+PageKite name for authenticating to the frontend server.
+
+@item @code{kitesecret} (default: @code{#f})
+Shared secret for authenticating to the frontend server.  You should probably
+put this inside @code{extra-file} instead.
+
+@item @code{frontend} (default: @code{#f})
+Connect to the named PageKite frontend server instead of the
+@uref{https://pagekite.net,,pagekite.net} service.
+
+@item @code{kites} (default: @code{'("http:@@kitename:localhost:80:@@kitesecret")})
+List of service kites to use.  Exposes HTTP on port 80 by default. The format
+is @code{proto:kitename:host:port:secret}.
+
+@item @code{extra-file} (default: @code{#f})
+Extra configuration file to read, which you are expected to create manually.
+Use this to add additional options and manage shared secrets out-of-band.
+
+@end table
+@end deftp
+
 @node X Window
 @subsection X Window
 
@@ -13990,6 +14134,9 @@ When @code{auto-login?} is false, GDM presents a log-in screen.
 
 When @code{auto-login?} is true, GDM logs in directly as
 @code{default-user}.
+
+@item @code{debug?} (default: @code{#f})
+When true, GDM writes debug messages to its log.
 
 @item @code{gnome-shell-assets} (default: ...)
 List of GNOME Shell assets needed by GDM: icon theme, fonts, etc.
@@ -14196,16 +14343,43 @@ Relogin after logout.
 
 @cindex login manager
 @cindex X11 login
-@deffn {Scheme Procedure} sddm-service config
-Return a service that spawns the SDDM graphical login manager for config of
-type @code{<sddm-configuration>}.
+@defvr {Scheme Variable} sddm-service-type
+This is the type of the service to run the
+@uref{https://github.com/sddm/sddm,SSDM display manager}.  Its value
+must be a @code{sddm-configuration} record (see below).
 
-@example
-  (sddm-service (sddm-configuration
-                 (auto-login-user "Alice")
-                 (auto-login-session "xfce.desktop")))
-@end example
-@end deffn
+Here's an example use:
+
+@lisp
+(service sddm-service-type
+         (sddm-configuration
+           (auto-login-user "alice")
+           (auto-login-session "xfce.desktop")))
+@end lisp
+@end defvr
+
+@deftp {Data Type} sddm-configuration
+This data type represents the configuration of the SDDM login manager.
+The available fields are:
+
+@table @asis
+@item @code{sddm} (default: @code{sddm})
+The SDDM package to use.
+
+@item @code{display-server} (default: @code{"x11"})
+This must be either @code{"x11"} or @code{"wayland"}.
+
+@c FIXME: Add more fields.
+
+@item @code{auto-login-user} (default: @code{""})
+If non-empty, this is the user account under which to log in
+automatically.
+
+@item @code{auto-login-session} (default: @code{""})
+If non-empty, this is the @file{.desktop} file name to use as the
+auto-login session.
+@end table
+@end deftp
 
 @cindex Xorg, configuration
 @deftp {Data Type} xorg-configuration
@@ -15487,8 +15661,9 @@ notifications and ways to mount/unmount disks.  Programs that talk to UDisks
 include the @command{udisksctl} command, part of UDisks, and GNOME Disks.
 @end deffn
 
-@deffn {Scheme Procedure} colord-service [#:colord @var{colord}]
-Return a service that runs @command{colord}, a system service with a D-Bus
+@deffn {Scheme Variable} colord-service-type
+This is the type of the service that runs @command{colord}, a system
+service with a D-Bus
 interface to manage the color profiles of input and output devices such as
 screens and scanners.  It is notably used by the GNOME Color Manager graphical
 tool.  See @uref{https://www.freedesktop.org/software/colord/, the colord web
@@ -17417,7 +17592,7 @@ Defaults to @samp{#f}.
 
 @deftypevr {@code{getmail-options-configuration} parameter} non-negative-integer delete-after
 Getmail will delete messages this number of days after seeing them, if
-they have not been delivered.  This means messages will be left on the
+they have been delivered.  This means messages will be left on the
 server this number of days after delivering them.  A value of @samp{0}
 disabled this feature.
 
@@ -19702,6 +19877,17 @@ use the size of the processors cache line.
 @item @code{server-names-hash-bucket-max-size} (default: @code{#f})
 Maximum bucket size for the server names hash tables.
 
+@item @code{modules} (default: @code{'()})
+List of nginx dynamic modules to load.  This should be a list of file
+names of loadable modules, as in this example:
+
+@lisp
+(modules
+ (list
+  (file-append nginx-accept-language-module "\
+/etc/nginx/modules/ngx_http_accept_language_module.so")))
+@end lisp
+
 @item @code{extra-content} (default: @code{""})
 Extra content for the @code{http} block.  Should be string or a string
 valued G-expression.
@@ -21005,6 +21191,44 @@ The list of knot-zone-configuration used by this configuration.
 
 @end table
 @end deftp
+
+@subsubheading Knot Resolver Service
+
+@deffn {Scheme Variable} knot-resolver-service-type
+This this the type of the knot resolver service, whose value should be
+an @code{knot-resolver-configuration} object as in this example:
+
+@lisp
+(service knot-resolver-service-type
+         (knot-resolver-configuration
+           (kresd-config-file (plain-file "kresd.conf" "
+net.listen('192.168.0.1', 5353)
+user('knot-resolver', 'knot-resolver')
+modules = @{ 'hints > iterate', 'stats', 'predict' @}
+cache.size = 100 * MB
+"))))
+@end lisp
+
+For more information, refer its @url{https://knot-resolver.readthedocs.org/en/stable/daemon.html#configuration, manual}.
+@end deffn
+
+@deftp {Data Type} knot-resolver-configuration
+Data type representing the configuration of knot-resolver.
+
+@table @asis
+@item @code{package} (default: @var{knot-resolver})
+Package object of the knot DNS resolver.
+
+@item @code{kresd-config-file} (default: %kresd.conf)
+File-like object of the kresd configuration file to use, by default it
+will listen on @code{127.0.0.1} and @code{::1}.
+
+@item @code{garbage-collection-interval} (default: 1000)
+Number of milliseconds for @code{kres-cache-gc} to periodically trim the cache.
+
+@end table
+@end deftp
+
 
 @subsubheading Dnsmasq Service
 
@@ -22351,8 +22575,68 @@ The port to run mpd on.
 The address that mpd will bind to.  To use a Unix domain socket,
 an absolute path can be specified here.
 
+@item @code{outputs} (default: @code{"(list (mpd-output))"})
+The audio outputs that MPD can use.  By default this is a single output using pulseaudio.
+
 @end table
 @end deftp
+
+@deftp {Data Type} mpd-output
+Data type representing an @command{mpd} audio output.
+
+@table @asis
+@item @code{name} (default: @code{"MPD"})
+The name of the audio output.
+
+@item @code{type} (default: @code{"pulse"})
+The type of audio output.
+
+@item @code{enabled?} (default: @code{#t})
+Specifies whether this audio output is enabled when MPD is started.  By
+default, all audio outputs are enabled.  This is just the default
+setting when there is no state file; with a state file, the previous
+state is restored.
+
+@item @code{tags?} (default: @code{#t})
+If set to @code{#f}, then MPD will not send tags to this output.  This
+is only useful for output plugins that can receive tags, for example the
+@code{httpd} output plugin.
+
+@item @code{always-on?} (default: @code{#f})
+If set to @code{#t}, then MPD attempts to keep this audio output always
+open. This may be useful for streaming servers, when you don’t want to
+disconnect all listeners even when playback is accidentally stopped.
+
+@item @code{mixer-type}
+This field accepts a symbol that specifies which mixer should be used
+for this audio output: the @code{hardware} mixer, the @code{software}
+mixer, the @code{null} mixer (allows setting the volume, but with no
+effect; this can be used as a trick to implement an external mixer
+External Mixer) or no mixer (@code{none}).
+
+@item @code{extra-options} (default: @code{'()"})
+An association list of option symbols to string values to be appended to
+the audio output configuration.
+
+@end table
+@end deftp
+
+The following example shows a configuration of @code{mpd} that provides
+an HTTP audio streaming output.
+
+@lisp
+(service mpd-service-type
+         (mpd-configuration
+           (outputs
+             (list (mpd-output
+                     (name "streaming")
+                     (type "httpd")
+                     (mixer-type 'null)
+                     (extra-options
+                      `((encoder . "vorbis")
+                        (port    . "8080"))))))))
+@end lisp
+
 
 @node Virtualization Services
 @subsection Virtualization services
@@ -24549,6 +24833,10 @@ The type of device to connect to.  Run @command{inputattach --help}, from the
 @item @code{device} (default: @code{"/dev/ttyS0"})
 The device file to connect to the device.
 
+@item @code{baud-rate} (default: @code{#f})
+Baud rate to use for the serial connection.
+Should be a number or @code{#f}.
+
 @item @code{log-file} (default: @code{#f})
 If true, this must be the name of a file to log messages to.
 @end table
@@ -25976,12 +26264,10 @@ The object of the operating system configuration to deploy.
 
 @item @code{environment}
 An @code{environment-type} describing how the machine should be provisioned.
-At the moment, the only supported value is
-@code{managed-host-environment-type}.
 
 @item @code{configuration} (default: @code{#f})
 An object describing the configuration for the machine's @code{environment}.
-If the @code{environment} has a default configuration, @code{#f} maybe used.
+If the @code{environment} has a default configuration, @code{#f} may be used.
 If @code{#f} is used for an environment with no default configuration,
 however, an error will be thrown.
 @end table
@@ -26006,6 +26292,26 @@ keyring.
 @item @code{identity} (default: @code{#f})
 If specified, the path to the SSH private key to use to authenticate with the
 remote host.
+@end table
+@end deftp
+
+@deftp {Data Type} digital-ocean-configuration
+This is the data type describing the Droplet that should be created for a
+machine with an @code{environment} of @code{digital-ocean-environment-type}.
+
+@table @asis
+@item @code{ssh-key}
+The path to the SSH private key to use to authenticate with the remote
+host. In the future, this field may not exist.
+@item @code{tags}
+A list of string ``tags'' that uniquely identify the machine. Must be given
+such that no two machines in the deployment have the same set of tags.
+@item @code{region}
+A Digital Ocean region slug, such as @code{"nyc3"}.
+@item @code{size}
+A Digital Ocean size slug, such as @code{"s-1vcpu-1gb"}
+@item @code{enable-ipv6?}
+Whether or not the droplet should be created with IPv6 networking.
 @end table
 @end deftp
 

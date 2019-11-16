@@ -29,6 +29,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system meson)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
@@ -49,22 +50,30 @@
 (define-public babl
   (package
     (name "babl")
-    (version "0.1.66")
+    (version "0.1.72")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://download.gimp.org/pub/babl/"
                                         (version-major+minor version)
-                                        "/babl-" version ".tar.bz2")
+                                        "/babl-" version ".tar.xz")
                          (string-append "https://ftp.gtk.org/pub/babl/"
                                         (version-major+minor version)
-                                        "/babl-" version ".tar.bz2")
+                                        "/babl-" version ".tar.xz")
                          (string-append "ftp://ftp.gtk.org/pub/babl/"
                                         (version-major+minor version)
-                                        "/babl-" version ".tar.bz2")))
+                                        "/babl-" version ".tar.xz")))
               (sha256
                (base32
-                "0qx1dwbinxihwl2lmxi60qiqi402jlrdcnixx14kk6j88n9xi79n"))))
-    (build-system gnu-build-system)
+                "0hkagjrnza77aasa1kss5hvy37ndm50y6i7hkdn2z8hzgc4i3qb4"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-Denable-gir=false")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     ;; Propagated to satisfy ‘babl.pc’.
+     `(("lcms" ,lcms)))
     (home-page "http://gegl.org/babl/")
     (synopsis "Image pixel format conversion library")
     (description
@@ -80,18 +89,25 @@ provided, as well as a framework to add new color models and data types.")
 (define-public gegl
   (package
     (name "gegl")
-    (version "0.4.16")
+    (version "0.4.18")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://download.gimp.org/pub/gegl/"
                                         (string-take version 3)
-                                        "/gegl-" version ".tar.bz2")))
+                                        "/gegl-" version ".tar.xz")
+                         (string-append "https://ftp.gtk.org/pub/gegl/"
+                                        (version-major+minor version)
+                                        "/gegl-" version ".tar.xz")
+                         (string-append "ftp://ftp.gtk.org/pub/gegl/"
+                                        (version-major+minor version)
+                                        "/gegl-" version ".tar.xz")))
               (sha256
                (base32
-                "0njydcr6qdmfzh4fxx544681qxdpf7y6b2f47jcypn810dlxy4h1"))))
-    (build-system gnu-build-system)
+                "0r6akqnrkvxizyhyi8sv40mxm7j4bcwjb6mqjpxy0zzbbfsdyin9"))))
+    (build-system meson-build-system)
     (arguments
-     '(#:configure-flags '("LDFLAGS=-lm")))
+     `(#:configure-flags
+       (list "-Dintrospection=false")))
     ;; These are propagated to satisfy 'gegl-0.4.pc'.
     (propagated-inputs
      `(("babl" ,babl)
@@ -118,7 +134,7 @@ buffers.")
 (define-public gimp
   (package
     (name "gimp")
-    (version "2.10.12")
+    (version "2.10.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.gimp.org/pub/gimp/v"
@@ -126,7 +142,7 @@ buffers.")
                                   "/gimp-" version ".tar.bz2"))
               (sha256
                (base32
-                "0wdcr8d2ink4swn5r4v13bsiya6s3xm4ya97sdbhs4l40y7bb03x"))))
+                "0m6wdnfvsxyhimdd4v3351g4r1fklllnbipbwcfym3h7q88hz6yz"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ; 9 MiB of gtk-doc HTML

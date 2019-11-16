@@ -27,6 +27,8 @@
 ;;; Copyright © 2018 Nam Nguyen <namn@berkeley.edu>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;; Copyright © 2019 Kyle Andrews <kyle.c.andrews@gmail.com>
+;;; Copyright © 2019 Josh Holland <josh@inv.alid.pw>
+;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -189,6 +191,43 @@ for various multi-screen setups.  Autorandr automatically detects the profiles
 that can be activated based on the connected hardware.  Hook scripts can be
 used to further tweak the behaviour of the different profiles.")
       (license license:gpl3+))))
+
+(define-public bemenu
+  (package
+    (name "bemenu")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Cloudef/bemenu.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0piax49az5kp96r1g6dcgj87fi6p4jl286wlkxsdvljzpkn8q6gv"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags '("-DBEMENU_WAYLAND_RENDERER=ON")))
+    (inputs
+     `(("cairo" ,cairo)
+       ("libx11" ,libx11)
+       ("libxkbcomon" ,libxkbcommon)
+       ("libxinerama" ,libxinerama)
+       ("ncurses" ,ncurses)
+       ("pango" ,pango)
+       ("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)))
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/Cloudef/bemenu")
+    (synopsis "Dynamic menu library and client program inspired by dmenu")
+    (description
+     "bemenu is a dynamic menu which allows the user to flexibly select from a
+list of options (usually programs to launch).  It renders the menu graphically
+with X11 or Wayland, or in a text terminal with ncurses.")
+    (license (list license:gpl3+        ; client program[s] and other sources
+                   license:lgpl3+))))   ; library and bindings
 
 (define-public xclip
   (package
@@ -514,7 +553,7 @@ move windows, switch between desktops, etc.).")
 (define-public scrot
   (package
     (name "scrot")
-    (version "0.9")
+    (version "1.2")
     (source
      (origin
        (method git-fetch)
@@ -524,14 +563,17 @@ move windows, switch between desktops, etc.).")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1dg0pnmk09p7zlbyxv7d40vf54amrv73y976ds5p7096x6lmlndy"))))
+        (base32 "08gkdby0ysx2mki57z81zlm7vfnq9c1gq692xw67cg5vv2p3320w"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
+       ("autoconf-archive" ,autoconf-archive)
        ("automake" ,automake)))
     (inputs
      `(("giblib" ,giblib)
-       ("libx11" ,libx11)))
+       ("libx11" ,libx11)
+       ("libXcursor" ,libxcursor)
+       ("libXfixes" ,libxfixes)))
     (home-page "https://github.com/resurrecting-open-source-projects/scrot")
     (synopsis "Command-line screen capture utility for X Window System")
     (description
@@ -695,6 +737,7 @@ to find buttons, etc, on the screen to click on.")
               (method git-fetch)
               (uri (git-reference (url home-page)
                                   (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "0vp8ja68hpmqkl61zyjar3czhmny1hbm74m8f393incfz1ymr3i8"))))
@@ -962,7 +1005,7 @@ Escape key when Left Control is pressed and released on its own.")
 (define-public libwacom
   (package
     (name "libwacom")
-    (version "0.33")
+    (version "1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -970,8 +1013,10 @@ Escape key when Left Control is pressed and released on its own.")
                     "libwacom-" version "/libwacom-" version ".tar.bz2"))
               (sha256
                (base32
-                "1wnv34y7m9l6avlvwqvfrnksfnsz1lbgb412dn6s7x1h3wvs7y4l"))))
+                "00lyv419ijyng6ak5vpw0swnn4qg6lbfh7zysf92wcvn6rcq7d4c"))))
     (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-static")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -995,7 +1040,7 @@ Wacom tablet applet.")
 (define-public xf86-input-wacom
   (package
     (name "xf86-input-wacom")
-    (version "0.36.1")
+    (version "0.38.0")
     (source
      (origin
        (method url-fetch)
@@ -1004,8 +1049,7 @@ Wacom tablet applet.")
              "xf86-input-wacom-" version "/"
              "xf86-input-wacom-" version ".tar.bz2"))
        (sha256
-        (base32
-         "029y8varbricba2dzhzhy0ndd7lbfif411ca8c3wxzni9qmbj1ij"))))
+        (base32 "0w53hv3g7d5vv328x04wb57sa1lyv2h631c37csp1drfp7ghikd1"))))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-sdkdir="
@@ -1415,6 +1459,7 @@ XCB util-xrm module provides the following libraries:
               (uri (git-reference
                     (url home-page)
                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "05fzdjmhiafgi2jf0k41i3nm0837a78sb6yv59cwc23nla8g0bhr"))

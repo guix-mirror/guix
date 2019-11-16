@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2014, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2014, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2014, 2017 John Darrington <jmd@gnu.org>
@@ -973,11 +973,7 @@ supplies a generic doubly-linked list and some string functions.")
             ;; We need '-fpermissive' for Source/FreeImage.h.
             ;; libjxr doesn't have a pkg-config file.
             (string-append "CFLAGS+=-O2 -fPIC -fvisibility=hidden -fpermissive "
-                           "-I" (assoc-ref %build-inputs "libjxr") "/include/jxrlib "
-
-                           ;; FIXME: OpenEXR 2.4.0 requires C++11 or later.
-                           ;; Remove when the default compiler is > GCC 5.
-                           "-std=gnu++11"))
+                           "-I" (assoc-ref %build-inputs "libjxr") "/include/jxrlib"))
       #:tests? #f)) ; no check target
    (native-inputs
     `(("pkg-config" ,pkg-config)
@@ -1291,7 +1287,7 @@ ISO/IEC 15444-1).")
 (define-public zimg
   (package
     (name "zimg")
-    (version "2.5")
+    (version "2.9.2")
     (source
       (origin
         (method git-fetch)
@@ -1300,8 +1296,7 @@ ISO/IEC 15444-1).")
               (commit (string-append "release-" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32
-          "05krggiifbl6hyg2j3z8qz2k7si84g1qg9snhsnf1ml7mrhqhhlr"))))
+         (base32 "0jlgrlfs9maixd8mx7gk2kfawz8ixnihkxi7vhyzfy1gq49vmxm2"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -1676,14 +1671,14 @@ Features:
 (define-public r-jpeg
   (package
    (name "r-jpeg")
-   (version "0.1-8")
+   (version "0.1-8.1")
    (source
      (origin
        (method url-fetch)
        (uri (cran-uri "jpeg" version))
        (sha256
         (base32
-         "05hawv5qcb82ljc1l2nchx1wah8mq2k2kfkhpzyww554ngzbwcnh"))))
+         "1a8mi70x79a691r40yiw684jkg1mr9n8agkxlcksxcnrdybs9c0x"))))
    (build-system r-build-system)
    (inputs `(("libjpeg" ,libjpeg)))
    (home-page "http://www.rforge.net/jpeg/")

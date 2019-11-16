@@ -3,6 +3,7 @@
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -151,6 +152,36 @@ of the project to ensure it renders properly.")
     (description
      "This package provides a pytest plugin for efficiently checking PEP8
 compliance.")
+    (license license:bsd-3)))
+
+(define-public python-pytest-isort
+  (package
+    (name "python-pytest-isort")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-isort" version))
+       (sha256
+        (base32 "06myn5hhxs5yp8dqr1yjsgcnnxnsrvsqannm00bvaw0qml6ydzjb"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (setenv "PYTHONPATH"
+                     (string-append (getcwd) ":"
+                                    (getenv "PYTHONPATH")))
+             (invoke "pytest"))))))
+    (propagated-inputs
+     `(("python-isort" ,python-isort)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/moccu/pytest-isort/")
+    (synopsis "Pytest plugin to check import ordering using isort")
+    (description
+     "This package provides a pytest plugin to check import ordering using
+isort.")
     (license license:bsd-3)))
 
 (define-public python-pytest-shutil

@@ -6,9 +6,10 @@
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
-;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2018, 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages geo)
+  #:use-module (guix build-system ant)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
@@ -36,6 +38,7 @@
   #:use-module (guix build-system r)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix svn-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -54,6 +57,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages java)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
@@ -122,6 +126,12 @@ topology functions.")
      `(#:glib-or-gtk? #t
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
@@ -151,8 +161,7 @@ topology functions.")
                                                  ,geocode-glib-path)))
                #t))))))
     (native-inputs
-     `(("gtk+" ,gtk+ "bin") ; gtk-update-icon-cache
-       ("gobject-introspection" ,gobject-introspection)
+     `(("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
@@ -634,14 +643,14 @@ utilities for data translation and processing.")
 (define-public postgis
   (package
     (name "postgis")
-    (version "2.4.4")
+    (version "2.4.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.osgeo.org/postgis/source/postgis-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1hm8migjb53cymp4qvg1h20yqllmy9f7x0awv5450391i6syyqq6"))))
+                "0nanza15xzfhbpbq49p1xqz96dgbsam5332y9zj6snmz2mq685ll"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -997,3 +1006,210 @@ XyGrib is the continuation of the zyGrib software package with a new team of
 volunteers.")
     (home-page "https://opengribs.org")
     (license license:gpl3+)))
+
+(define-public libspatialindex
+  (package
+    (name "libspatialindex")
+    (version "1.8.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download.osgeo.org/libspatialindex/"
+                           "spatialindex-src-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vxzm7kczwnb6qdmc0hb00z8ykx11zk3sb68gc7rch4vrfi4dakw"))))
+    (build-system gnu-build-system)
+    (home-page "https://libspatialindex.org")
+    (synopsis "Spatial indexing library")
+    (description "The purpose of this library is to provide:
+
+@itemize
+ @item An extensible framework that will support robust spatial indexing
+methods.
+ @item Support for sophisticated spatial queries.  Range, point location,
+ nearest neighbor and k-nearest neighbor as well as parametric queries (defined
+by spatial constraints) should be easy to deploy and run.
+ @item Easy to use interfaces for inserting, deleting and updating information.
+ @item Wide variety of customization capabilities.  Basic index and storage
+characteristics like the page size, node capacity, minimum fan-out, splitting
+algorithm, etc. should be easy to customize.
+ @item Index persistence.  Internal memory and external memory structures
+should be supported.  Clustered and non-clustered indices should be easy to be
+persisted.
+@end itemize
+")
+    (license license:expat)))
+
+(define-public java-jmapviewer
+  (package
+    (name "java-jmapviewer")
+    (version "2.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://svn.openstreetmap.org/applications/"
+                                  "viewer/jmapviewer/releases/" version
+                                  "/JMapViewer-" version "-Source.zip"))
+              (sha256
+               (base32
+                "08hbqsbs859v4m5d90560fdifavd1apnpz9v9iry1v31dsvy5707"))))
+    (build-system ant-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (arguments
+     `(#:build-target "pack"
+       #:tests? #f; No tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'clean
+           (lambda* _
+             (invoke "ant" "clean")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((dir (string-append (assoc-ref outputs "out") "/share/java/")))
+               (mkdir-p dir)
+               (copy-file "JMapViewer.jar" (string-append dir "JMapViewer.jar"))))))))
+    (home-page "https://wiki.openstreetmap.org/wiki/JMapViewer")
+    (synopsis "OSM map integration in Java")
+    (description "JMapViewer is a Java component which allows to easily
+integrate an OSM map view into your Java application.  It is maintained as
+an independent project by the JOSM team.")
+    (license license:gpl2)))
+
+(define-public josm
+  (package
+    (name "josm")
+    (version "15492")
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                     (url "https://josm.openstreetmap.de/svn/trunk")
+                     (revision (string->number version))
+                     (recursive? #f)))
+              (sha256
+               (base32
+                "12xkwcv77as30a61w1c8a0i2b0kiiks71d487gbdfv7azlj4vqia"))
+              (file-name (string-append name "-" version "-checkout"))
+              (modules '((guix build utils)))
+            (snippet
+             '(begin
+		(for-each delete-file (find-files "." ".*.jar$"))
+                #t))))
+    (build-system ant-build-system)
+    (native-inputs
+     `(("javacc" ,javacc)))
+    (inputs
+     `(("java-commons-jcs" ,java-commons-jcs)
+       ("java-commons-compress" ,java-commons-compress)
+       ("java-jmapviewer" ,java-jmapviewer)
+       ("java-jsonp-api" ,java-jsonp-api)
+       ("java-jsonp-impl" ,java-jsonp-impl); runtime dependency
+       ("java-metadata-extractor" ,java-metadata-extractor)
+       ("java-openjfx-media" ,java-openjfx-media)
+       ("java-signpost-core" ,java-signpost-core)
+       ("java-svg-salamander" ,java-svg-salamander)))
+    (arguments
+     `(#:tests? #f
+       #:jar-name "josm.jar"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'rm-build.xml
+           (lambda* _
+             (delete-file "build.xml")
+             #t))
+         (add-before 'build 'fix-revision
+           (lambda* _
+             (with-output-to-file "REVISION.XML"
+               (lambda _
+                 (display
+                   (string-append "<info><entry><commit revision=\"" ,version "\">"
+                                  "<date>1970-01-01 00:00:00 +0000</date>"
+                                  "</commit></entry></info>"))))
+             #t))
+         (add-before 'build 'fix-classpath
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CLASSPATH"
+                     (string-join
+                       (filter
+                         (lambda (s)
+                           (let ((source (assoc-ref inputs "source")))
+                             (not (equal? (substring s 0 (string-length source)) source))))
+                         (string-split (getenv "CLASSPATH") #\:))
+                       ":"))
+             #t))
+         (add-before 'build 'generate-parser
+           (lambda* _
+             (let* ((dir "src/org/openstreetmap/josm/gui/mappaint/mapcss")
+                    (out (string-append dir "/parsergen"))
+                    (file (string-append dir "/MapCSSParser.jj")))
+               (mkdir-p "src/org/openstreetmap/josm/gui/mappaint/mapcss/parsergen")
+               (invoke "javacc" "-DEBUG_PARSER=false"
+                       "-DEBUG_TOKEN_MANAGER=false" "-JDK_VERSION=1.8"
+                       "-GRAMMAR_ENCODING=UTF-8"
+                       (string-append "-OUTPUT_DIRECTORY=" out)
+                       file))
+             #t))
+         (add-after 'build 'generate-epsg
+           (lambda _
+             (system* "javac" "scripts/BuildProjectionDefinitions.java"
+                      "-cp" "build/classes")
+             (mkdir-p "data/projection")
+             (with-output-to-file "data/projection/custom-epsg"
+               (lambda _ (display "")))
+             (invoke "java" "-cp" "build/classes:scripts:."
+                     "BuildProjectionDefinitions" ".")
+             #t))
+         (add-after 'generate-epsg 'copy-data
+           (lambda _
+             (mkdir-p "build/classes")
+             (rename-file "data" "build/classes/data")
+             #t))
+         (add-before 'install 'regenerate-jar
+           (lambda _
+             ;; We need to regenerate the jar file to add data.
+             (delete-file "build/jar/josm.jar")
+             (invoke "jar" "-cf" "build/jar/josm.jar" "-C"
+                     "build/classes" ".")
+             #t))
+         (add-before 'build 'copy-styles
+           (lambda _
+             (mkdir-p "build/classes")
+             (rename-file "styles" "build/classes/styles")
+             #t))
+         (add-before 'build 'copy-images
+           (lambda _
+             (mkdir-p "build/classes")
+             (rename-file "images" "build/classes/images")
+             #t))
+         (add-before 'build 'copy-revision
+           (lambda _
+             (mkdir-p "build/classes")
+             (with-output-to-file "build/classes/REVISION"
+               (lambda _
+                 (display
+                   (string-append "Revision: " ,version "\n"
+                                  "Is-Local-Build: true\n"
+                                  "Build-Date: 1970-01-01 00:00:00 +0000\n"))))
+             #t))
+         (add-after 'install 'install-bin
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (mkdir-p bin)
+               (with-output-to-file (string-append bin "/josm")
+                 (lambda _
+                   (display
+                     (string-append "#!/bin/sh\n"
+                                    (assoc-ref inputs "jdk") "/bin/java"
+                                    " -cp " out "/share/java/josm.jar:"
+                                    (getenv "CLASSPATH")
+                                    " org.openstreetmap.josm.gui.MainApplication"))))
+               (chmod (string-append bin "/josm") #o755))
+             #t)))))
+    (home-page "https://josm.openstreetmap.de")
+    (synopsis "OSM editor")
+    (description "JOSM is an extensible editor for OpenStreetMap (OSM).  It
+supports loading GPX tracks, background imagery and OSM data from local
+sources as well as from online sources and allows to edit the OSM data (nodes,
+ways, and relations) and their metadata tags.")
+    (license license:gpl2+)))

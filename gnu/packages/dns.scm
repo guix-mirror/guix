@@ -34,7 +34,9 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages datastructures)
@@ -46,6 +48,7 @@
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages networking)
@@ -54,6 +57,7 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
@@ -65,6 +69,7 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system trivial))
 
 (define-public dnsmasq
@@ -109,7 +114,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
 (define-public isc-bind
   (package
     (name "bind")
-    (version "9.14.6")
+    (version "9.14.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -117,7 +122,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
                     "/bind-" version ".tar.gz"))
               (sha256
                (base32
-                "1zpd47ckn5lf4qbscfkj7krngwn2gwsp961v5401h3lhxm0a0rw9"))))
+                "07998nx0yv3xy8c62b1ira9qygsgvpljwcgb47ypzxq8b57gb86f"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs
@@ -273,21 +278,33 @@ the two.")
 (define-public libasr
   (package
     (name "libasr")
-    (version "201602131606")
+    (version "1.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.opensmtpd.org/archives/"
-                           name "-" version ".tar.gz"))
+                           "libasr-" version ".tar.gz"))
        (sha256
-        (base32
-         "18kdmbjsxrfai16d66qslp48b1zf7gr8him2jj5dcqgbsl44ls75"))))
+        (base32 "13fn4sr4vlcx1xijpl26nmnxawyls4lr5q3mi11jdm76f80qxn4w"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'bootstrap
+           ;; ‘GNU build system bootstrapping not needed’, the default lies.
+           (lambda _
+             (invoke "sh" "./bootstrap")))
+         (add-after 'install 'install-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "src/asr_run.3"
+                             (string-append out "/share/man/man3"))
+               #t))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("pkg-config" ,pkg-config)
-       ("groff" ,groff)))
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://www.opensmtpd.org")
     (synopsis "Asynchronous resolver library by the OpenBSD project")
     (description
@@ -373,14 +390,14 @@ to result in system-wide compromise.")
 (define-public unbound
   (package
     (name "unbound")
-    (version "1.9.3")
+    (version "1.9.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.unbound.net/downloads/unbound-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1ykdy62sgzv33ggkmzwx2h0ifm7hyyxyfkb4zckv7gz4f28xsm8v"))))
+        (base32 "1c2bjm13x8bkw0ds1mhn9ivd2gzmfrb0x5y76bkz09a04bxjagix"))))
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (native-inputs
@@ -649,6 +666,73 @@ synthesis, and on-the-fly re-configuration.")
       license:lgpl2.0+              ; parts of scr/contrib/ucw
       license:public-domain         ; src/contrib/fnv and possibly murmurhash3
       license:gpl3+))))             ; everything else
+
+(define-public knot-resolver
+  (package
+    (name "knot-resolver")
+    (version "4.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://secure.nic.cz/files/knot-resolver/"
+                                  "knot-resolver-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0n0llpclhparq9wbcrymxkl5d03c4y4p3shcbdxfv6j22vzqvdh3"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-Dmanaged_ta=disabled"    ; We'll manage the DNS root data ourself.
+         "-Ddoc=enabled")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-doc
+           (lambda _
+             (invoke "ninja" "doc")))
+         (add-after 'install 'wrap-binary
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lua-* (map cdr (filter
+                                     (lambda (input)
+                                       (string-prefix? "lua-" (car input)))
+                                     inputs)))
+                    (lua-path (lambda (p)
+                                (string-append p "/share/lua/5.1/?.lua")))
+                    (lua-cpath (lambda (p)
+                                 (string-append p "/lib/lua/5.1/?.so"))))
+               (wrap-program (string-append out "/sbin/kresd")
+                 `("LUA_PATH" ";" prefix ,(map lua-path lua-*))
+                 `("LUA_CPATH" ";" prefix ,(map lua-cpath lua-*)))
+               #t))))))
+    (native-inputs
+     `(("cmocka" ,cmocka)               ; for unit tests
+       ("doxygen" ,doxygen)
+       ("protobuf-c" ,protobuf-c)
+       ("pkg-config" ,pkg-config)
+       ("python-breathe" ,python-breathe)
+       ("python-sphinx" ,python-sphinx)
+       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)))
+    (inputs
+     `(("fstrm" ,fstrm)
+       ("gnutls" ,gnutls)
+       ("knot" ,knot)
+       ("libuv" ,libuv)
+       ("lmdb" ,lmdb)
+       ("luajit" ,luajit)
+       ;; TODO: Add optional lua modules: basexx, cqueues and psl.
+       ("lua-bitop" ,lua5.1-bitop)
+       ("lua-filesystem" ,lua5.1-filesystem)
+       ("lua-sec" ,lua5.1-sec)
+       ("lua-socket" ,lua5.1-socket)))
+    (home-page "https://www.knot-resolver.cz/")
+    (synopsis "Caching validating DNS resolver")
+    (description
+     "Knot Resolver is a caching full resolver implementation written in C and
+LuaJIT, both a resolver library and a daemon.")
+    (license (list license:gpl3+
+                   ;; Some 'contrib' files are under MIT, CC0 and LGPL2.
+                   license:expat
+                   license:cc0
+                   license:lgpl2.0))))
 
 (define-public ddclient
   (package

@@ -303,13 +303,13 @@ random access nor for in-place modification.")
     (version "1.1.15")
     (source
      (origin
-       (method url-fetch)
-       (file-name (string-append name "-" version ".tar.gz"))
-       (uri (string-append "https://github.com/miekg/rdup/archive/"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/miekg/rdup.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1jr91hgcf0rrpanqlwws72ql9db6d6grs2i122ki1s4bx0vqqyvq"))))
+        (base32 "0bzyv6qmnivxnv9nw7lnfn46k0m1dlxcjj53zcva6v8y8084l1iw"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -319,11 +319,14 @@ random access nor for in-place modification.")
        ;; For tests.
        ("dejagnu" ,dejagnu)))
     (inputs
+     ;; XXX Compiling with nettle (encryption) support requires patching out
+     ;; -Werror from GNUmakefile.in.  Then, rdup-tr-{en,de}crypt tests fail:
+     ;; free(): invalid pointer
+     ;; ** rdup-tr: SIGPIPE received, exiting
      `(("glib" ,glib)
        ("pcre" ,pcre)
        ("libarchive" ,libarchive)
-       ("mcrypt" ,mcrypt)
-       ("nettle" ,nettle)))
+       ("mcrypt" ,mcrypt)))
     (arguments
      `(#:parallel-build? #f             ;race conditions
        #:phases
@@ -338,6 +341,13 @@ random access nor for in-place modification.")
                 (string-append delimiter (which "mcrypt") " "))
                ;; Avoid frivolous dependency on ‘which’ with a shell builtin.
                (("which") "command -v"))
+             #t))
+         (add-before 'check 'disable-encryption-tests
+           (lambda _
+             (for-each delete-file
+                       (list "testsuite/rdup/rdup.rdup-tr-crypt.exp"
+                             "testsuite/rdup/rdup.rdup-tr-decrypt.exp"
+                             "testsuite/rdup/rdup.rdup-tr-encrypt.exp"))
              #t))
          (add-before 'check 'pre-check
            (lambda _
@@ -721,63 +731,6 @@ NTFS volumes using @code{ntfs-3g}, preserving NTFS-specific attributes.")
     (license (list license:gpl3+
                    license:lgpl3+
                    license:cc0))))
-
-(define-public obnam
-  (package
-    (name "obnam")
-    (version "1.21")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "http://code.liw.fi/debian/pool/main/o/obnam/obnam_"
-             version ".orig.tar.xz"))
-       (sha256
-        (base32
-         "0qlipsq50hca71zc0dp1mg9zs12qm0sbblw7qfzl0hj6mk2rv1by"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'check
-                  (lambda _
-                    (substitute* "obnamlib/vfs_local_tests.py"
-                      ;; Check for the nobody user instead of root.
-                      (("self.fs.get_username\\(0\\), 'root'")
-                       "self.fs.get_username(65534), 'nobody'")
-                      ;; Disable tests checking for root group.
-                      (("self.fs.get_groupname\\(0\\)") "'root'"))
-                    (substitute* "obnamlib/vfs_local.py"
-                      ;; Don't cover get_groupname function.
-                      (("def get_groupname\\(self, gid\\):")
-                       "def get_groupname(self, gid):  # pragma: no cover"))
-                    ;; Can't run network tests.
-                    (invoke "./check" "--unit-tests"))))))
-    (inputs
-     `(("python2-cliapp" ,python2-cliapp)
-       ("python2-larch" ,python2-larch)
-       ("python2-paramiko" ,python2-paramiko)
-       ("python2-pyaml" ,python2-pyaml)
-       ("python2-tracing" ,python2-tracing)
-       ("python2-ttystatus" ,python2-ttystatus)))
-    (native-inputs
-     `(("gnupg" ,gnupg)
-       ("python2-coverage" ,python2-coverage)
-       ("python2-coverage-test-runner" ,python2-coverage-test-runner)
-       ("python2-pep8" ,python2-pep8)
-       ("python2-pylint" ,python2-pylint)))
-    (home-page "https://obnam.org/")
-    (synopsis "Retired backup program")
-    (description
-     "Warning: @uref{https://blog.liw.fi/posts/2017/08/13/retiring_obnam/,
-the Obnam project is retired}.  You should use another backup solution instead.
-
-Obnam was an easy, secure backup program.  Features included snapshot backups,
-data de-duplication and encrypted backups using GnuPG.  Backups can be stored on
-local hard disks, or online via the SSH SFTP protocol.  The backup server, if
-used, does not require any special software, on top of SSH.")
-    (license license:gpl3+)))
 
 (define-public dirvish
   (package

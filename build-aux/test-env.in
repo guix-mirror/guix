@@ -50,10 +50,8 @@ then
     # it or its parent directories.  See <http://bugs.gnu.org/17935>.
     NIX_STORE_DIR="`cd "@GUIX_TEST_ROOT@/store"; pwd -P`"
 
-    NIX_LOCALSTATE_DIR="@GUIX_TEST_ROOT@/var"
     GUIX_LOG_DIRECTORY="@GUIX_TEST_ROOT@/var/log/guix"
     GUIX_DATABASE_DIRECTORY="@GUIX_TEST_ROOT@/db"
-    NIX_ROOT_FINDER="@abs_top_builddir@/nix/scripts/list-runtime-roots"
 
     # Choose a PID-dependent name to allow for parallel builds.  Note
     # that the directory name must be chosen so that the socket's file
@@ -97,8 +95,8 @@ then
     NIXPKGS="@NIXPKGS@"
 
     export NIX_IGNORE_SYMLINK_STORE NIX_STORE_DIR		\
-	NIX_LOCALSTATE_DIR GUIX_LOG_DIRECTORY GUIX_STATE_DIRECTORY GUIX_DATABASE_DIRECTORY	\
-	NIX_ROOT_FINDER GUIX_BINARY_SUBSTITUTE_URL		\
+	GUIX_LOG_DIRECTORY GUIX_STATE_DIRECTORY GUIX_DATABASE_DIRECTORY	\
+	GUIX_BINARY_SUBSTITUTE_URL				\
         GUIX_ALLOW_UNAUTHENTICATED_SUBSTITUTES			\
         GUIX_CONFIGURATION_DIRECTORY XDG_CACHE_HOME NIXPKGS
 

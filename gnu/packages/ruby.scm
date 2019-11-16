@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
@@ -18,6 +18,7 @@
 ;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
 ;;; Copyright © 2019 Collin J. Doering <collin@rekahsoft.ca>
+;;; Copyright © 2019 Diego N. Barbato <dnbarbato@posteo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3680,13 +3681,13 @@ to reproduce user environments.")
 (define-public ruby-nokogiri
   (package
     (name "ruby-nokogiri")
-    (version "1.10.4")
+    (version "1.10.5")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "nokogiri" version))
               (sha256
                (base32
-                "0nmdrqqz1gs0fwkgzxjl4wr554gr8dc1fkrqjc2jpsvwgm41rygv"))))
+                "185g3dwba73jqxjr94bd2zk6fil6n9hmcfnfyzh3p1w47vm296r7"))))
     (build-system ruby-build-system)
     (arguments
      ;; Tests fail because Nokogiri can only test with an installed extension,
@@ -7170,27 +7171,22 @@ call.")
 (define-public ruby-concurrent
   (package
     (name "ruby-concurrent")
-    (version "1.0.5")
+    (version "1.1.5")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; Download from GitHub because the rubygems version does not contain
        ;; Rakefile.
-       (uri (string-append
-             "https://github.com/ruby-concurrency/concurrent-ruby/archive/v"
-             version
-             ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+             (url "https://github.com/ruby-concurrency/concurrent-ruby")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0qhv0qzsby4iijgwa4s9r88zj8123pmyz1dwaqzdk57xgqll9pny"))
-       ;; Exclude failing test reported at
-       ;; https://github.com/ruby-concurrency/concurrent-ruby/issues/534
-       (patches (search-patches "ruby-concurrent-ignore-broken-test.patch"
-                                "ruby-concurrent-test-arm.patch"))))
+         "193q2k47vk7qdvv9hlhmmdxgy91xl4imapyk1ijdg9vgf46knyzj"))))
     (build-system ruby-build-system)
     (arguments
-     `(#:test-target "spec"
+     `(#:test-target "ci"
        #:phases
        (modify-phases %standard-phases
          (add-before 'replace-git-ls-files 'remove-extra-gemspecs
@@ -7200,15 +7196,31 @@ call.")
              (delete-file "concurrent-ruby-edge.gemspec")
              (delete-file "concurrent-ruby-ext.gemspec")
              #t))
-         (add-before 'build 'replace-git-ls-files2
+         (replace 'replace-git-ls-files
            (lambda _
-             (substitute* "support/file_map.rb"
-               (("git ls-files") "find * |sort"))
+             ;; XXX: The default substitution made by this phase is not fully
+             ;; compatible with "git ls-files".  The latter produces file names
+             ;; such as "lib/foo", whereas ruby-build-system uses "find . [...]"
+             ;; which gives "./lib/foo".  That difference in turn breaks the
+             ;; comparison against a glob pattern in this script.
+             (substitute* "concurrent-ruby.gemspec"
+               (("git ls-files") "find * -type f | sort"))
              #t))
-         (add-before 'check 'rake-compile
-           ;; Fix the test error described at
-           ;; https://github.com/ruby-concurrency/concurrent-ruby/pull/408
-           (lambda _ (invoke "rake" "compile")))
+         (add-before 'build 'remove-jar-from-gemspec
+           (lambda _
+             ;; The gemspec wants to include a JAR file that we do not build
+             ;; nor need.
+             (substitute* "concurrent-ruby.gemspec"
+               (("'lib/concurrent/concurrent_ruby.jar'")
+                ""))
+             #t))
+         (add-before 'build 'remove-rake_compiler_dock-dependency
+           (lambda _
+             ;; This library is only used when building for non-MRI targets.
+             (substitute* "Rakefile"
+               (("require 'rake_compiler_dock'")
+                ""))
+             #t))
          (add-before 'check 'remove-timecop-dependency
            ;; Remove timecop-dependent tests as having timecop as a depedency
            ;; causes circular depedencies.
@@ -8771,18 +8783,17 @@ then check out http://127.0.0.1:1080 to see the mail.")
 (define-public ruby-backport
   (package
     (name "ruby-backport")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
      (origin
-       ;; The gem does not include test code, so fetch from the Git repository
+       ;; The gem does not include test code, so fetch from the Git repository.
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/castwide/backport.git")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0ii3y1wx1n48nd2mhlv0v61b2m21h7dg30if9vc2idza7k4afyw8"))))
+        (base32 "18fpg1n7n2z02ykz9v1x1q0cqa2lvivf8ygka768s01q1r9wfwv2"))))
     (build-system ruby-build-system)
     (arguments
      `(#:test-target "spec"))
@@ -8953,4 +8964,30 @@ application.")
 programming: intellisense, diagnostics, inline documentation, and type
 checking.")
     (home-page "https://solargraph.org/")
+    (license license:expat)))
+
+(define-public ruby-wayback-machine-downloader
+  (package
+    (name "ruby-wayback-machine-downloader")
+    (version "2.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri
+             "wayback_machine_downloader"
+             version))
+       (sha256
+        (base32
+         "12kb1qmvmmsaihqab1prn6cmynkn6cgb4vf41mgv22wkcgv5wgk2"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; no tests
+    (synopsis "Download archived websites from the Wayback Machine")
+    (description
+     "Wayback Machine Downloader is a command line tool for downloading
+websites from the Internet Archive's Wayback Machine (archive.org).
+It allows fine grained control over what to download by specifying
+which snapshots to consider and what files to include.")
+    (home-page
+     "https://github.com/hartator/wayback-machine-downloader")
     (license license:expat)))

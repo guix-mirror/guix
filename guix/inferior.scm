@@ -89,6 +89,7 @@
             gexp->derivation-in-inferior
 
             %inferior-cache-directory
+            cached-channel-instance
             inferior-for-channels))
 
 ;;; Commentary:
@@ -110,11 +111,11 @@
   (packages inferior-package-promise)            ;promise of inferior packages
   (table    inferior-package-table))             ;promise of vhash
 
-(define (inferior-pipe directory command)
+(define* (inferior-pipe directory command error-port)
   "Return an input/output pipe on the Guix instance in DIRECTORY.  This runs
 'DIRECTORY/COMMAND repl' if it exists, or falls back to some other method if
 it's an old Guix."
-  (let ((pipe (with-error-to-port (%make-void-port "w")
+  (let ((pipe (with-error-to-port error-port
                 (lambda ()
                   (open-pipe* OPEN_BOTH
                               (string-append directory "/" command)
@@ -125,19 +126,21 @@ it's an old Guix."
 
           ;; Older versions of Guix didn't have a 'guix repl' command, so
           ;; emulate it.
-          (open-pipe* OPEN_BOTH "guile"
-                      "-L" (string-append directory "/share/guile/site/"
-                                          (effective-version))
-                      "-C" (string-append directory "/share/guile/site/"
-                                          (effective-version))
-                      "-C" (string-append directory "/lib/guile/"
-                                          (effective-version) "/site-ccache")
-                      "-c"
-                      (object->string
-                       `(begin
-                          (primitive-load ,(search-path %load-path
-                                                        "guix/repl.scm"))
-                          ((@ (guix repl) machine-repl))))))
+          (with-error-to-port error-port
+            (lambda ()
+              (open-pipe* OPEN_BOTH "guile"
+                          "-L" (string-append directory "/share/guile/site/"
+                                              (effective-version))
+                          "-C" (string-append directory "/share/guile/site/"
+                                              (effective-version))
+                          "-C" (string-append directory "/lib/guile/"
+                                              (effective-version) "/site-ccache")
+                          "-c"
+                          (object->string
+                           `(begin
+                              (primitive-load ,(search-path %load-path
+                                                            "guix/repl.scm"))
+                              ((@ (guix repl) machine-repl))))))))
         pipe)))
 
 (define* (port->inferior pipe #:optional (close close-port))
@@ -161,11 +164,13 @@ inferior."
     (_
      #f)))
 
-(define* (open-inferior directory #:key (command "bin/guix"))
+(define* (open-inferior directory
+                        #:key (command "bin/guix")
+                        (error-port (%make-void-port "w")))
   "Open the inferior Guix in DIRECTORY, running 'DIRECTORY/COMMAND repl' or
 equivalent.  Return #f if the inferior could not be launched."
   (define pipe
-    (inferior-pipe directory command))
+    (inferior-pipe directory command error-port))
 
   (port->inferior pipe close-pipe))
 
@@ -631,6 +636,58 @@ failing when GUIX is too old and lacks the 'guix repl' command."
   (make-parameter (string-append (cache-directory #:ensure? #f)
                                  "/inferiors")))
 
+(define* (cached-channel-instance store
+                                  channels
+                                  #:key
+                                  (cache-directory (%inferior-cache-directory))
+                                  (ttl (* 3600 24 30)))
+  "Return a directory containing a guix filetree defined by CHANNELS, a list of channels.
+The directory is a subdirectory of CACHE-DIRECTORY, where entries can be reclaimed after TTL seconds.
+This procedure opens a new connection to the build daemon."
+  (define instances
+    (latest-channel-instances store channels))
+
+  (define key
+    (bytevector->base32-string
+     (sha256
+      (string->utf8
+       (string-concatenate (map channel-instance-commit instances))))))
+
+  (define cached
+    (string-append cache-directory "/" key))
+
+  (define (base32-encoded-sha256? str)
+    (= (string-length str) 52))
+
+  (define (cache-entries directory)
+    (map (lambda (file)
+           (string-append directory "/" file))
+         (scandir directory base32-encoded-sha256?)))
+
+  (define symlink*
+    (lift2 symlink %store-monad))
+
+  (define add-indirect-root*
+    (store-lift add-indirect-root))
+
+  (mkdir-p cache-directory)
+  (maybe-remove-expired-cache-entries cache-directory
+                                      cache-entries
+                                      #:entry-expiration
+                                      (file-expiration-time ttl))
+
+  (if (file-exists? cached)
+      cached
+      (run-with-store store
+        (mlet %store-monad ((profile
+                             (channel-instances->derivation instances)))
+          (mbegin %store-monad
+            (show-what-to-build* (list profile))
+            (built-derivations (list profile))
+            (symlink* (derivation->output-path profile) cached)
+            (add-indirect-root* cached)
+            (return cached))))))
+
 (define* (inferior-for-channels channels
                                 #:key
                                 (cache-directory (%inferior-cache-directory))
@@ -641,48 +698,10 @@ procedure opens a new connection to the build daemon.
 
 This is a convenience procedure that people may use in manifests passed to
 'guix package -m', for instance."
-  (with-store store
-    (let ()
-      (define instances
-        (latest-channel-instances store channels))
-
-      (define key
-        (bytevector->base32-string
-         (sha256
-          (string->utf8
-           (string-concatenate (map channel-instance-commit instances))))))
-
-      (define cached
-        (string-append cache-directory "/" key))
-
-      (define (base32-encoded-sha256? str)
-        (= (string-length str) 52))
-
-      (define (cache-entries directory)
-        (map (lambda (file)
-               (string-append directory "/" file))
-             (scandir directory base32-encoded-sha256?)))
-
-      (define symlink*
-        (lift2 symlink %store-monad))
-
-      (define add-indirect-root*
-        (store-lift add-indirect-root))
-
-      (mkdir-p cache-directory)
-      (maybe-remove-expired-cache-entries cache-directory
-                                          cache-entries
-                                          #:entry-expiration
-                                          (file-expiration-time ttl))
-
-      (if (file-exists? cached)
-          (open-inferior cached)
-          (run-with-store store
-            (mlet %store-monad ((profile
-                                 (channel-instances->derivation instances)))
-              (mbegin %store-monad
-                (show-what-to-build* (list profile))
-                (built-derivations (list profile))
-                (symlink* (derivation->output-path profile) cached)
-                (add-indirect-root* cached)
-                (return (open-inferior cached)))))))))
+  (define cached
+    (with-store store
+      (cached-channel-instance store
+                               channels
+                               #:cache-directory cache-directory
+                               #:ttl ttl)))
+  (open-inferior cached))

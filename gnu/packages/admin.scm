@@ -19,7 +19,7 @@
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -1128,7 +1128,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.27")
+    (version "1.8.29")
     (source (origin
               (method url-fetch)
               (uri
@@ -1138,7 +1138,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "1h1f7v9pv0rzp14cxzv8kaa8mdd717fbqv83l7c5dvvi8jwnisvv"))
+                "0z4wyadh9cks17gdpfgx4kvbrlnyb6nai2sd6chk7qh4jsngylyf"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1184,6 +1184,12 @@ system administrator.")
                (("\\$\\(DESTDIR\\)\\$\\(vardir\\)")
                 ;; Don't try to create /var/db/sudo.
                 "$(TMPDIR)/dummy"))
+
+             ;; ‘Checking existing [/etc/]sudoers file for syntax errors’ is
+             ;; not the task of the build system, and fails.
+             (substitute* "plugins/sudoers/Makefile.in"
+               (("^pre-install:" match)
+                (string-append match "\ndisabled-" match)))
              #t)))
 
        ;; XXX: The 'testsudoers' test series expects user 'root' to exist, but
@@ -1593,6 +1599,7 @@ system is under heavy load.")
               (uri (git-reference
                     (url "https://github.com/dharple/detox.git")
                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1dd608c7g65s5lj02cddvani3q9kzirddgkjqa22ap9d4f8b9xgr"))))
@@ -1839,13 +1846,13 @@ of supported upstream metrics systems simultaneously.")
 (define-public ansible
   (package
     (name "ansible")
-    (version "2.8.1")
+    (version "2.8.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ansible" version))
        (sha256
-        (base32 "0ia4x17ywym3r1m96ar4h0wc2xlylhbjp6x4wzwkh4p2i0x1vmg1"))))
+        (base32 "11k94ifp42psivzx147xwbmq1ak7qnjdgkb6c1xz53nfapkh754f"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-bcrypt" ,python-bcrypt)
@@ -1880,21 +1887,16 @@ import re
 sys.argv[0] = re.sub(r'\\.([^/]*)-real$', r'\\1', sys.argv[0])
 ")))
              #t))
-         (add-after 'wrap 'fix-symlinks
+         (add-after 'install 'replace-symlinks
            (lambda* (#:key outputs #:allow-other-keys)
+             ;; Replace symlinks with duplicate copies of the ansible
+             ;; executable.
              (let ((out (assoc-ref outputs "out")))
                (for-each
                 (lambda (subprogram)
-                  ;; The symlinks point to the ansible wrapper script. Make
-                  ;; them point to the real executable (.ansible-real).
-                  (delete-file (string-append out "/bin/.ansible-" subprogram "-real"))
-                  (symlink (string-append out "/bin/.ansible-real")
-                           (string-append out "/bin/.ansible-" subprogram "-real"))
-                  ;; The wrapper scripts of the symlinks invoke the ansible
-                  ;; wrapper script. Fix them to invoke the correct executable.
-                  (substitute* (string-append out "/bin/ansible-" subprogram)
-                    (("/bin/ansible")
-                     (string-append "/bin/.ansible-" subprogram "-real"))))
+                  (delete-file (string-append out "/bin/ansible-" subprogram))
+                  (copy-file (string-append out "/bin/ansible")
+                             (string-append out "/bin/ansible-" subprogram)))
                 (list "config" "console" "doc" "galaxy"
                       "inventory" "playbook" "pull" "vault")))
              #t)))))
@@ -2420,13 +2422,13 @@ a new command using the matched rule, and runs it.")
 (define-public di
   (package
     (name "di")
-    (version "4.47.1")
+    (version "4.47.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gentoo.com/di/di-" version ".tar.gz"))
        (sha256
-        (base32 "1bdbl9k3gqf4h6g21difqc0w17pjid6r587y19wi37vx36aava7f"))))
+        (base32 "1g97pp2hznskqlkhl6ppyzgdmv878bcqiwh633kdnm70d1pvh192"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; obscure test failures
@@ -2611,22 +2613,24 @@ Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
                                           environment-variable-names)
                (for-each
                 (lambda (env-name)
-                  (let* ((env-value (getenv env-name))
-                         (search-path (search-path-as-string->list env-value))
-                         (new-search-path (filter filter-predicate
-                                                  search-path))
-                         (new-env-value (list->search-path-as-string
-                                         new-search-path ":")))
-                    (setenv env-name new-env-value)))
+                  (when (getenv env-name)
+                    (let* ((env-value (getenv env-name))
+                           (search-path (search-path-as-string->list env-value))
+                           (new-search-path (filter filter-predicate
+                                                    search-path))
+                           (new-env-value (list->search-path-as-string
+                                           new-search-path ":")))
+                      (setenv env-name new-env-value))))
                 environment-variable-names))
+             (setenv "CROSS_CPATH" (getenv "CPATH"))
              (setenv "CROSS_C_INCLUDE_PATH" (getenv "C_INCLUDE_PATH"))
              (setenv "CROSS_CPLUS_INCLUDE_PATH" (getenv "CPLUS_INCLUDE_PATH"))
              (setenv "CROSS_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
              (filter-environment! cross?
-              '("CROSS_C_INCLUDE_PATH" "CROSS_CPLUS_INCLUDE_PATH"
+              '("CROSS_CPATH" "CROSS_C_INCLUDE_PATH" "CROSS_CPLUS_INCLUDE_PATH"
                 "CROSS_LIBRARY_PATH"))
              (filter-environment! (lambda (e) (not (cross? e)))
-              '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH"
+              '("CPATH" "C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH"
                 "LIBRARY_PATH"))
              #t))
          (replace 'build
@@ -2831,6 +2835,7 @@ tool for remote execution and deployment.")
               (uri (git-reference
                     (url "https://github.com/dylanaraps/neofetch")
                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "022xzn9jk18k2f4b6011d8jk5nbl84i3mw3inlz4q52p2hvk8fch"))))

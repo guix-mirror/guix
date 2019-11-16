@@ -291,7 +291,7 @@ more.")
 (define-public cgal
   (package
     (name "cgal")
-    (version "4.8.1")
+    (version "4.14.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -299,19 +299,15 @@ more.")
                     "CGAL-" version "/CGAL-" version ".tar.xz"))
               (sha256
                (base32
-                "1c41yzl2jg3d6zx5k0iccwqwibp950q7dr7z7pp4xi9wlph3c87s"))))
+                "08lrp3hfwdypggz4138bnkh6bjxn441zg2y9xnq5mrjfc5ini6w1"))))
     (build-system cmake-build-system)
     (arguments
-     '(;; "RelWithDebInfo" is not supported.
-       #:build-type "Release"
-
-       ;; No 'test' target.
-       #:tests? #f))
+     '(#:tests? #f))                    ; no test target
     (inputs
      `(("mpfr" ,mpfr)
        ("gmp" ,gmp)
        ("boost" ,boost)))
-    (home-page "http://cgal.org/")
+    (home-page "https://www.cgal.org/")
     (synopsis "Computational geometry algorithms library")
     (description
      "CGAL provides easy access to efficient and reliable geometric algorithms
@@ -433,23 +429,31 @@ graphics.")
                   #t))))
     (build-system cmake-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'change-directory
            (lambda _
              (chdir "OpenEXR")
              #t))
-         (add-after 'change-directory 'disable-broken-test
-           ;; This test fails on i686. Upstream developers suggest that
-           ;; this test is broken on i686 and can be safely disabled:
-           ;; https://github.com/openexr/openexr/issues/67#issuecomment-21169748
+         (add-before 'check 'increase-test-timeout
            (lambda _
-             (substitute* "IlmImfTest/main.cpp"
-               (("#include \"testOptimizedInterleavePatterns.h\"")
-                 "//#include \"testOptimizedInterleavePatterns.h\"")
-               (("TEST \\(testOptimizedInterleavePatterns")
-                 "//TEST (testOptimizedInterleavePatterns"))
-             #t)))))
+             ;; On armhf-linux, we need to override the CTest default
+             ;; timeout of 1500 seconds for the OpenEXR.IlmImf test.
+             (setenv "CTEST_TEST_TIMEOUT" "2000")
+             #t))
+         ,@(if (not (target-64bit?))
+               `((add-after 'change-directory 'disable-broken-test
+                   ;; This test fails on i686. Upstream developers suggest that
+                   ;; this test is broken on i686 and can be safely disabled:
+                   ;; https://github.com/openexr/openexr/issues/67#issuecomment-21169748
+                   (lambda _
+                     (substitute* "IlmImfTest/main.cpp"
+                       ((".*testOptimizedInterleavePatterns.*") "")
+                       ;; This test is broken in 2.4.0 and will be fixed in a later
+                       ;; release: <https://github.com/openexr/openexr/issues/571>.
+                       ((".*testLargeDataWindowOffsets.*") ""))
+                     #t)))
+               '()))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (propagated-inputs
@@ -665,7 +669,6 @@ virtual reality, scientific visualization and modeling.")
        (list "COMPILED_BY=Guix"
              (string-append "--with-boost-libdir="
                             (assoc-ref %build-inputs "boost") "/lib")
-             "CXXFLAGS=-std=c++11"
              "--disable-optimiz-arch")
        #:phases
        (modify-phases %standard-phases
@@ -1026,12 +1029,13 @@ requirements.")
 (define-public opensubdiv
   (package
     (name "opensubdiv")
-    (version "3_4_0")
+    (version "3.4.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/PixarAnimationStudios/OpenSubdiv")
-                     (commit (string-append "v" version))))
+                    (url "https://github.com/PixarAnimationStudios/OpenSubdiv")
+                    (commit (string-append "v" (string-join (string-split version #\.)
+                                                            "_")))))
               (file-name (git-file-name name version))
               (sha256
                (base32

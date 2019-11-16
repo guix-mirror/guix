@@ -51,11 +51,6 @@
 #include <sched.h>
 #endif
 
-/* In GNU libc 2.11, <sys/mount.h> does not define `MS_PRIVATE', but
-   <linux/fs.h> does.  */
-#if !defined MS_PRIVATE && defined HAVE_LINUX_FS_H
-#include <linux/fs.h>
-#endif
 
 #define CHROOT_ENABLED HAVE_CHROOT && HAVE_SYS_MOUNT_H && defined(MS_BIND) && defined(MS_PRIVATE) && defined(CLONE_NEWNS) && defined(SYS_pivot_root)
 
@@ -947,6 +942,11 @@ void DerivationGoal::killChild()
         assert(pid == -1);
     }
 
+    /* If there was a build hook involved, remove it from the worker's
+       children.  */
+    if (hook && hook->pid != -1) {
+	worker.childTerminated(hook->pid);
+    }
     hook.reset();
 }
 

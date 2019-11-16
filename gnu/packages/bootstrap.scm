@@ -33,6 +33,7 @@
   #:use-module ((guix derivations)
                 #:select (derivation derivation-input derivation->output-path))
   #:use-module ((guix utils) #:select (gnu-triplet->nix-system))
+  #:use-module ((guix gexp) #:select (lower-object))
   #:use-module (guix memoization)
   #:use-module (guix i18n)
   #:use-module (srfi srfi-1)
@@ -148,38 +149,42 @@ for system '~a'")
 ;;; Helper procedures.
 ;;;
 
-(define (bootstrap-origin source)
-  "Return a variant of SOURCE, an <origin> instance, whose method uses
+(define bootstrap-origin
+  (mlambdaq (source)
+    "Return a variant of SOURCE, an <origin> instance, whose method uses
 %BOOTSTRAP-GUILE to do its job."
-  (define (boot fetch)
-    (lambda* (url hash-algo hash
-              #:optional name #:key system)
-      (fetch url hash-algo hash name
-             #:guile %bootstrap-guile
-             #:system system)))
+    (define (boot fetch)
+      (lambda* (url hash-algo hash
+                    #:optional name #:key system)
+        (fetch url hash-algo hash name
+               #:guile %bootstrap-guile
+               #:system system)))
 
-  (define %bootstrap-patch-inputs
-    ;; Packages used when an <origin> has a non-empty 'patches' field.
-    `(("tar"   ,%bootstrap-coreutils&co)
-      ("xz"    ,%bootstrap-coreutils&co)
-      ("bzip2" ,%bootstrap-coreutils&co)
-      ("gzip"  ,%bootstrap-coreutils&co)
-      ("patch" ,%bootstrap-coreutils&co)))
+    (define %bootstrap-patch-inputs
+      ;; Packages used when an <origin> has a non-empty 'patches' field.
+      `(("tar"   ,%bootstrap-coreutils&co)
+        ("xz"    ,%bootstrap-coreutils&co)
+        ("bzip2" ,%bootstrap-coreutils&co)
+        ("gzip"  ,%bootstrap-coreutils&co)
+        ("patch" ,%bootstrap-coreutils&co)))
 
-  (let ((orig-method (origin-method source)))
-    (origin (inherit source)
-      (method (cond ((eq? orig-method url-fetch)
-                     (boot url-fetch))
-                    (else orig-method)))
-      (patch-guile %bootstrap-guile)
-      (patch-inputs %bootstrap-patch-inputs)
+    (let ((orig-method (origin-method source)))
+      (if (or (not (null? (origin-patches source)))
+              (origin-snippet source))
+          (origin (inherit source)
+                  (method (if (eq? orig-method url-fetch)
+                              (boot url-fetch)
+                              orig-method))
+                  (patch-guile %bootstrap-guile)
+                  (patch-inputs %bootstrap-patch-inputs)
 
-      ;; Patches can be origins as well, so process them.
-      (patches (map (match-lambda
-                     ((? origin? patch)
-                      (bootstrap-origin patch))
-                     (patch patch))
-                    (origin-patches source))))))
+                  ;; Patches can be origins as well, so process them.
+                  (patches (map (match-lambda
+                                  ((? origin? patch)
+                                   (bootstrap-origin patch))
+                                  (patch patch))
+                                (origin-patches source))))
+          source))))
 
 (define* (package-from-tarball name source program-to-test description
                                #:key snippet)
@@ -345,8 +350,8 @@ or false to signal an error."
                     #:allow-other-keys)
   (define (->store file)
     (run-with-store store
-      (origin->derivation (bootstrap-executable file system)
-                          system)))
+      (lower-object (bootstrap-executable file system)
+                    system)))
 
   (let* ((tar   (->store "tar"))
          (xz    (->store "xz"))

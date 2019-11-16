@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
+;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (gnu packages)
   #:export (%asdf-build-system-modules
             %asdf-build-modules
             asdf-build
@@ -160,13 +162,22 @@ set up using CL source package conventions."
   (define (has-from-build-system? pkg)
     (eq? from-build-system (package-build-system pkg)))
 
+  (define (find-input-package pkg)
+    (let* ((name (package-name pkg))
+           (new-name (transform-package-name name))
+           (pkgs (find-packages-by-name new-name)))
+      (if (null? pkgs) #f (list-ref pkgs 0))))
+
   (define transform
     (mlambda (pkg)
       (define rewrite
         (match-lambda
           ((name content . rest)
            (let* ((is-package? (package? content))
-                  (new-content (if is-package? (transform content) content)))
+                  (new-content (if is-package?
+                                   (or (find-input-package content)
+                                       (transform content))
+                                   content)))
              `(,name ,new-content ,@rest)))))
 
       ;; Special considerations for source packages: CL inputs become

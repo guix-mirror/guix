@@ -278,6 +278,7 @@ MODULES =					\
   guix/scripts/container.scm			\
   guix/scripts/container/exec.scm		\
   guix/scripts/deploy.scm			\
+  guix/scripts/time-machine.scm			\
   guix.scm					\
   $(GNU_SYSTEM_MODULES)
 
@@ -564,7 +565,7 @@ EXTRA_DIST +=						\
   tests/test.drv					\
   tests/signing-key.pub					\
   tests/signing-key.sec					\
-  tests/cve-sample.xml					\
+  tests/cve-sample.json					\
   build-aux/config.rpath				\
   bootstrap						\
   doc/build.scm						\

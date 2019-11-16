@@ -110,8 +110,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.0.1")
-        (commit "fc1fe722a05318ac05a71a0b127f231631e2843f")
-        (revision 7))
+        (commit "41b4b713f4892918a9a1950acdd89f33b977d143")
+        (revision 10))
     (package
       (name "guix")
 
@@ -127,7 +127,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "0yx19hxvmkr6ar65ym87xd83n6hz02mr7ibwis7i8wah85ypfq26"))
+                  "08sblj4xy78va6zlxmxdq2id58pjr8rjqxxycd77hiacsqbjh9g6"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -907,14 +907,14 @@ Microsoft cabinet (.@dfn{CAB}) files.")
 (define-public msitools
   (package
     (name "msitools")
-    (version "0.99")
+    (version "0.100")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/msitools/"
                                   version "/msitools-" version ".tar.xz"))
               (sha256
                (base32
-                "0d9nidn5zc81bc30w119933rn2g87mrsqyqkndg20srkbsd96xfl"))))
+                "1skq17qr2ic4qr3779j49byfm8rncwbsq9rj1a33ncn2m7isdwdv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)

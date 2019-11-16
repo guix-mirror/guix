@@ -9,6 +9,7 @@
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2019 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
+;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -513,12 +514,14 @@ Users need to be in the @code{lp} group to access the D-Bus service.
 
                        ;; It provides polkit "actions".
                        (service-extension polkit-service-type list)))
+                (default-value colord)
                 (description
                  "Run @command{colord}, a system service with a D-Bus
 interface to manage the color profiles of input and output devices such as
 screens and scanners.")))
 
-(define* (colord-service #:key (colord colord))
+(define-deprecated (colord-service #:key (colord colord))
+  colord-service-type
   "Return a service that runs @command{colord}, a system service with a D-Bus
 interface to manage the color profiles of input and output devices such as
 screens and scanners.  It is notably used by the GNOME Color Manager graphical
@@ -579,7 +582,7 @@ include the @command{udisksctl} command, part of UDisks, and GNOME Disks."
 
 (define-record-type* <elogind-configuration> elogind-configuration
   make-elogind-configuration
-  elogind-configuration
+  elogind-configuration?
   (elogind                         elogind-package
                                    (default elogind))
   (kill-user-processes?            elogind-kill-user-processes?
@@ -833,7 +836,7 @@ accountsservice web site} for more information."
 
 (define-record-type* <gnome-desktop-configuration> gnome-desktop-configuration
   make-gnome-desktop-configuration
-  gnome-desktop-configuration
+  gnome-desktop-configuration?
   (gnome-package gnome-package (default gnome)))
 
 (define (gnome-polkit-settings config)
@@ -871,7 +874,7 @@ and extends polkit with the actions from @code{gnome-settings-daemon}."
 
 (define-record-type* <mate-desktop-configuration> mate-desktop-configuration
   make-mate-desktop-configuration
-  mate-desktop-configuration
+  mate-desktop-configuration?
   (mate-package mate-package (default mate)))
 
 (define mate-desktop-service-type
@@ -904,18 +907,24 @@ and extends polkit with the actions from @code{mate-settings-daemon}."
 
 (define-record-type* <xfce-desktop-configuration> xfce-desktop-configuration
   make-xfce-desktop-configuration
-  xfce-desktop-configuration
+  xfce-desktop-configuration?
   (xfce xfce-package (default xfce)))
+
+(define (xfce-polkit-settings config)
+  "Return the list of XFCE dependencies that provide polkit actions and
+rules."
+  (let ((xfce (xfce-package config)))
+    (map (lambda (name)
+           ((package-direct-input-selector name) xfce))
+         '("thunar"
+           "xfce4-power-manager"))))
 
 (define xfce-desktop-service-type
   (service-type
    (name 'xfce-desktop)
    (extensions
     (list (service-extension polkit-service-type
-                             (compose list
-                                      (package-direct-input-selector
-                                       "thunar")
-                                      xfce-package))
+                             xfce-polkit-settings)
           (service-extension profile-service-type
                              (compose list xfce-package))))
    (default-value (xfce-desktop-configuration))
@@ -1021,23 +1030,29 @@ as expected.")))
                (default "wacom"))
   (device inputattach-configuration-device
           (default "/dev/ttyS0"))
+  (baud-rate inputattach-configuration-baud-rate
+             (default #f))
   (log-file inputattach-configuration-log-file
             (default #f)))
 
 (define inputattach-shepherd-service
   (match-lambda
-    (($ <inputattach-configuration> type device log-file)
-     (list (shepherd-service
-            (provision '(inputattach))
-            (requirement '(udev))
-            (documentation "inputattach daemon")
-            (start #~(make-forkexec-constructor
-                      (list (string-append #$inputattach
-                                           "/bin/inputattach")
-                            (string-append "--" #$type)
-                            #$device)
-                      #:log-file #$log-file))
-            (stop #~(make-kill-destructor)))))))
+    (($ <inputattach-configuration> type device baud-rate log-file)
+     (let ((args (append (if baud-rate
+                             (list "--baud-rate" (number->string baud-rate))
+                             '())
+                         (list (string-append "--" type)
+                               device))))
+       (list (shepherd-service
+              (provision '(inputattach))
+              (requirement '(udev))
+              (documentation "inputattach daemon")
+              (start #~(make-forkexec-constructor
+                        (cons (string-append #$inputattach
+                                             "/bin/inputattach")
+                              (quote #$args))
+                        #:log-file #$log-file))
+              (stop #~(make-kill-destructor))))))))
 
 (define inputattach-service-type
   (service-type
@@ -1081,7 +1096,7 @@ dispatches events from it.")))
          (service upower-service-type)
          (accountsservice-service)
          (service cups-pk-helper-service-type)
-         (colord-service)
+         (service colord-service-type)
          (geoclue-service)
          (service polkit-service-type)
          (elogind-service)

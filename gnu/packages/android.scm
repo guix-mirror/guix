@@ -5,7 +5,7 @@
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -217,7 +217,6 @@ in Main, System, Radio and Events sub-logs.")
     (build-system android-ndk-build-system)
     (arguments
      `(#:tests? #f ; Test failure: logging.UNIMPLEMENTED
-       #:make-flags '("CXXFLAGS=-std=gnu++11")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source
@@ -257,7 +256,7 @@ various Android core host applications.")
                    "CC = gcc\n"
 
                    "CFLAGS += -fPIC\n"
-                   "CXXFLAGS += -std=gnu++11 -fPIC\n"
+                   "CXXFLAGS += -fPIC\n"
                    "CPPFLAGS += -Iinclude -I../include\n"
                    "LDFLAGS += -shared -Wl,-soname,$(NAME).so.0\n"
 
@@ -312,7 +311,7 @@ various Android core host applications.")
     (build-system android-ndk-build-system)
     (arguments
      `(#:make-flags '("CFLAGS=-Wno-error"
-                      "CXXFLAGS=-fpermissive -Wno-error -std=gnu++11")
+                      "CXXFLAGS=-fpermissive -Wno-error")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source
@@ -631,8 +630,7 @@ file system.")
     (source (android-platform-system-core version))
     (build-system android-ndk-build-system)
     (arguments
-     `(#:make-flags (list "CXXFLAGS=-std=gnu++11")
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source
            (lambda _
@@ -676,16 +674,16 @@ file system.")
 (define-public android-udev-rules
   (package
     (name "android-udev-rules")
-    (version "20180112")
+    (version "20191103")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/M0Rf30/android-udev-rules")
              (commit version)))
-       (file-name (string-append name "-" version "-checkout"))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "13gj79nnd04szqlrrzzkdr6wi1fky08pi7x8xfbg0jj3d3v0giah"))))
+        (base32 "0x2f2sv0x0ry7kccp47s0hlxps3hbpg37dj3xjjgpdm5hmn2cjq3"))))
     (build-system trivial-build-system)
     (native-inputs `(("source" ,source)))
     (arguments

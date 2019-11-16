@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
@@ -655,14 +655,14 @@ easy to use abstraction of the file system or shared memory.")
 (define-public perl-cache-fastmmap
   (package
     (name "perl-cache-fastmmap")
-    (version "1.47")
+    (version "1.48")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RO/ROBM/"
                            "Cache-FastMmap-" version ".tar.gz"))
        (sha256
-        (base32 "0fdni3iyjfnx8ldgrz3h6z6yxbklrx76klcghg6xvmzd878yqlmi"))))
+        (base32 "118y5lxwa092zrii7mcwnqypff7424w1dpgfkg8zlnz7h2mmnd9c"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Cache-FastMmap")
     (synopsis "Shared memory interprocess cache via mmap")
@@ -938,18 +938,19 @@ sophisticated C3 method resolution order.")
 (define-public perl-class-c3-adopt-next
   (package
     (name "perl-class-c3-adopt-next")
-    (version "0.13")
+    (version "0.14")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/F/FL/FLORA/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Class-C3-Adopt-NEXT-" version ".tar.gz"))
        (sha256
-        (base32
-         "1rwgbx6dsy4rpas94p8wakzj7hrla1p15jnbm24kwhsv79gp91ld"))))
+        (base32 "1xsbydmiskpa1qbmnf6n39cb83nlb432xgkad9kfhxnvm8jn4rw5"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-exception" ,perl-test-exception)))
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-module-build-tiny" ,perl-module-build-tiny)
+       ("perl-test-exception" ,perl-test-exception)))
     (propagated-inputs
      `(("perl-list-moreutils" ,perl-list-moreutils)
        ("perl-mro-compat" ,perl-mro-compat)))
@@ -1067,7 +1068,7 @@ to the calling program.")
 (define-public perl-class-inspector
   (package
     (name "perl-class-inspector")
-    (version "1.32")
+    (version "1.36")
     (source
      (origin
        (method url-fetch)
@@ -1075,7 +1076,7 @@ to the calling program.")
                            "Class-Inspector-" version ".tar.gz"))
        (sha256
         (base32
-         "0d85rihxahdvhj8cysqrgg0kbmcqghz5hgy41dbkxr1qaf5xrynf"))))
+         "0kk900bp8iq7bw5jyllfb31gvf93mmp24n4x90j7qs3jlhimsafc"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Class-Inspector")
     (synopsis "Get information about a class and its structure")
@@ -1160,19 +1161,18 @@ write accessor methods for your objects that perform standard tasks.")
 (define-public perl-class-method-modifiers
   (package
     (name "perl-class-method-modifiers")
-    (version "2.12")
+    (version "2.13")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Class-Method-Modifiers-" version ".tar.gz"))
        (sha256
-        (base32
-         "1j3swa212wh14dq5r6zjarm2lzpx6mrdfplpjy65px8b09ri0k74"))))
+        (base32 "0qzx83mgd71hlc2m1kpw15dqsjzjq7b2cj3sdgg45a0q23vhfn5b"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-requires" ,perl-test-requires)))
+       ("perl-test-needs" ,perl-test-needs)))
     (home-page "https://metacpan.org/release/Class-Method-Modifiers")
     (synopsis "Moose-like method modifiers")
     (description "Class::Method::Modifiers provides three modifiers:
@@ -1614,14 +1614,14 @@ CPAN::Meta object are present.")
 (define-public perl-cpanel-json-xs
   (package
     (name "perl-cpanel-json-xs")
-    (version "4.12")
+    (version "4.17")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RU/RURBAN/"
                            "Cpanel-JSON-XS-" version ".tar.gz"))
        (sha256
-        (base32 "0n66da8s88srr591i7gm1d611z9jbcz488fhqxy604diiw8pnha9"))))
+        (base32 "1yq6hwd6hayqrhaa2h90svqqvsc28k0g4bdip5nyxgm9r93sx07s"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-common-sense" ,perl-common-sense)))
@@ -1771,18 +1771,18 @@ input.")
 (define-public perl-data-compare
   (package
     (name "perl-data-compare")
-    (version "1.25")
+    (version "1.27")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/D/DC/DCANTRELL/"
                            "Data-Compare-" version ".tar.gz"))
        (sha256
-        (base32
-         "0wzasidg9yjcfsi2gdiaw6726ikqda7n24n0v2ngpaazakdkcjqx"))))
+        (base32 "1gg8rqbv3x6a1lrpabv6vnlab53zxmpwz2ygad9fcx4gygqj12l1"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-file-find-rule" ,perl-file-find-rule)))
+     `(("perl-clone" ,perl-clone)
+       ("perl-file-find-rule" ,perl-file-find-rule)))
     (home-page "https://metacpan.org/release/Data-Compare")
     (synopsis "Compare Perl data structures")
     (description "This module compares arbitrary data structures to see if
@@ -2271,14 +2271,14 @@ time before its creation (in 1582).")
 (define-public perl-datetime-calendar-julian
   (package
     (name "perl-datetime-calendar-julian")
-    (version "0.100")
+    (version "0.102")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/W/WY/WYANT/"
                            "DateTime-Calendar-Julian-" version ".tar.gz"))
        (sha256
-        (base32 "0gbw7rh706qk5jlmmz3yzsm0ilzp39kyar28g4j6d57my8cwaipx"))))
+        (base32 "0j95dhma66spjyb04zi6rwy7l33hibnrx02mn0znd9m89aiq52s6"))))
     (build-system perl-build-system)
     ;; Only needed for tests
     (native-inputs
@@ -2393,25 +2393,27 @@ to do this without writing reams of structural code.")
 (define-public perl-datetime-format-flexible
   (package
     (name "perl-datetime-format-flexible")
-    (version "0.28")
+    (version "0.32")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/T/TH/THINC/"
                            "DateTime-Format-Flexible-" version ".tar.gz"))
        (sha256
-        (base32
-         "1g63zs0q2x40h29r7in50c55g6kxiw3m2faw2p6c4rg74sj2k2b5"))))
+        (base32 "1vnq3a8bwhidcv3z9cvcmfiq2qa84hikr993ffr19fw7nbzbk9sh"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)
+       ("perl-test-nowarnings" ,perl-test-nowarnings)
+       ("perl-test-mocktime" ,perl-test-mocktime)))
     (propagated-inputs
      `(("perl-datetime" ,perl-datetime)
        ("perl-datetime-format-builder" ,perl-datetime-format-builder)
        ("perl-datetime-timezone" ,perl-datetime-timezone)
        ("perl-list-moreutils" ,perl-list-moreutils)
-       ("perl-module-pluggable" ,perl-module-pluggable)
-       ("perl-test-mocktime" ,perl-test-mocktime)))
+       ("perl-module-pluggable" ,perl-module-pluggable)))
     (home-page "https://metacpan.org/release/DateTime-Format-Flexible")
-    (synopsis "Parse data/time strings")
+    (synopsis "Parse date and time strings")
     (description "DateTime::Format::Flexible attempts to take any string you
 give it and parse it into a DateTime object.")
     (license (package-license perl))))
@@ -2701,17 +2703,17 @@ particular command is available.")
 (define-public perl-devel-checklib
   (package
     (name "perl-devel-checklib")
-    (version "1.13")
+    (version "1.14")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/M/MA/MATTN/Devel-CheckLib-"
              version ".tar.gz"))
        (sha256
-        (base32 "1a19qkwxwz3wqb16cdabymfbf9kiydiifw90nd5srpq5hy8gvb94"))))
+        (base32 "15621qh5gaan1sgmk9y9svl70nm8viw17x5h1kf0zknkk8lmw77j"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-io-captureoutput" ,perl-io-captureoutput)
+     `(("perl-capture-tiny" ,perl-capture-tiny)
        ("perl-mock-config" ,perl-mock-config)))
     (home-page "https://metacpan.org/release/Devel-CheckLib")
     (synopsis "Check that a library is available")
@@ -3167,14 +3169,14 @@ separator.")
 (define-public perl-error
   (package
     (name "perl-error")
-    (version "0.17027")
+    (version "0.17028")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/S/SH/SHLOMIF/"
                                   "Error-" version ".tar.gz"))
               (sha256
                (base32
-                "1gnkxf12dq2w1jmjpllp5f30ya4nll01jv2sfi24386zfn1arch7"))))
+                "0q796nwwiarfc6pga97380c9z8xva5545632001qj75kb1g5rn1s"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "https://metacpan.org/release/Error")
@@ -3321,6 +3323,33 @@ By itself it is not a particularly interesting module by any measure, however
 it ties together a family of modern toolchain modules.")
     (license (package-license perl))))
 
+(define-public perl-extutils-cppguess
+  (package
+    (name "perl-extutils-cppguess")
+    (version "0.20")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://cpan/authors/id/E/ET/ETJ/ExtUtils-CppGuess-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "0q9ynigk600fv95xac6aslrg2k19m6qbzf5hqfsnall8113r3gqj"))))
+    (build-system perl-build-system)
+    (native-inputs
+      `(("perl-capture-tiny" ,perl-capture-tiny)
+        ("perl-module-build" ,perl-module-build)))
+    (propagated-inputs
+      `(("perl-capture-tiny" ,perl-capture-tiny)))
+    (home-page
+      "https://metacpan.org/release/ExtUtils-CppGuess")
+    (synopsis "Tool for guessing C++ compiler and flags")
+    (description "ExtUtils::CppGuess attempts to guess the C++ compiler that
+is compatible with the C compiler used to build perl.")
+    (license (package-license perl))))
+
 (define-public perl-extutils-depends
   (package
     (name "perl-extutils-depends")
@@ -3386,6 +3415,29 @@ C code in your Perl programs, there isn't a clear method to compile standard,
 self-contained C libraries.  This module main goal is to help in that task.")
     (license (package-license perl))))
 
+(define-public perl-extutils-parsexs
+  (package
+    (name "perl-extutils-parsexs")
+    (version "3.35")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://cpan/authors/id/S/SM/SMUELLER/ExtUtils-ParseXS-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "077fqiyabydm8j34wxzxwxskyidh8nmwq9gskaxai8kq298z1pj1"))))
+    (build-system perl-build-system)
+    (home-page
+      "https://metacpan.org/release/ExtUtils-ParseXS")
+    (synopsis "Module to convert Perl XS code into C code")
+    (description "The package contains the ExtUtils::ParseXS module to
+convert Perl XS code into C code, the ExtUtils::Typemaps module to
+handle Perl/XS typemap files, and their submodules.")
+    (license (package-license perl))))
+
 (define-public perl-extutils-pkgconfig
   (package
     (name "perl-extutils-pkgconfig")
@@ -3408,6 +3460,56 @@ self-contained C libraries.  This module main goal is to help in that task.")
 of perl extensions which bind libraries that @command{pkg-config} knows.
 It is really just boilerplate code that you would have written yourself.")
     (license lgpl2.1+)))
+
+(define-public perl-extutils-typemaps-default
+  (package
+    (name "perl-extutils-typemaps-default")
+    (version "1.05")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://cpan/authors/id/S/SM/SMUELLER/ExtUtils-Typemaps-Default-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "1phmha0ks95kvzl00r1kgnd5hvg7qb1q9jmzjmw01p5zgs1zbyix"))))
+    (build-system perl-build-system)
+    (native-inputs
+      `(("perl-module-build" ,perl-module-build)))
+    (home-page
+      "https://metacpan.org/release/ExtUtils-Typemaps-Default")
+    (synopsis "Set of useful typemaps")
+    (description "The package provides a number of useful typemaps as
+submodules of ExtUtils::Typemaps.")
+    (license (package-license perl))))
+
+(define-public perl-extutils-xspp
+  (package
+    (name "perl-extutils-xspp")
+    (version "0.18")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://cpan/authors/id/S/SM/SMUELLER/ExtUtils-XSpp-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "1zx84f93lkymqz7qa4d63gzlnhnkxm5i3gvsrwkvvqr9cxjasxli"))))
+    (build-system perl-build-system)
+    (native-inputs
+      `(("perl-module-build" ,perl-module-build)
+        ("perl-test-base" ,perl-test-base)
+        ("perl-test-differences" ,perl-test-differences)))
+    (home-page
+      "https://metacpan.org/release/ExtUtils-XSpp")
+    (synopsis "XS for C++")
+    (description "This module implements the Perl foreign function
+interface XS for C++; it is a thin layer over plain XS.")
+    (license (package-license perl))))
 
 (define-public perl-file-changenotify
   (package
@@ -3443,7 +3545,7 @@ changes made to any file.")
 (define-public perl-file-configdir
   (package
     (name "perl-file-configdir")
-    (version "0.018")
+    (version "0.021")
     (source
      (origin
        (method url-fetch)
@@ -3451,11 +3553,12 @@ changes made to any file.")
                            "File-ConfigDir-" version ".tar.gz"))
        (sha256
         (base32
-         "1xpzrlya0gskk7lm6gppyfwbk0swv0n6ssgp629575dk5l49z2rf"))))
+         "1ihlhdbwaybyj3xqfxpx4ii0ypa41907b6zdh94rvr4wyqa5lh3b"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-file-homedir" ,perl-file-homedir)
-       ("perl-list-moreutils" ,perl-list-moreutils)))
+       ("perl-list-moreutils" ,perl-list-moreutils)
+       ("perl-test-without-module" ,perl-test-without-module)))
     (home-page "https://metacpan.org/release/File-ConfigDir")
     (synopsis "Get directories of configuration files")
     (description "This module is a helper for installing, reading and finding
@@ -4288,7 +4391,7 @@ Perl IO idioms.  It exports a single function called io, which returns a new
 (define-public perl-io-captureoutput
   (package
     (name "perl-io-captureoutput")
-    (version "1.1104")
+    (version "1.1105")
     (source
      (origin
        (method url-fetch)
@@ -4297,8 +4400,7 @@ Perl IO idioms.  It exports a single function called io, which returns a new
              version
              ".tar.gz"))
        (sha256
-        (base32
-         "0c437zvzpqi8f0h3nmblwdi2bvsb92b7g30fndr7my9qnky35izw"))))
+        (base32 "11zlfbahac09q3jvwmpijmkwgihwxps85jwy2q7q0wqjragh16df"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/IO-CaptureOutput")
     (synopsis "Capture STDOUT and STDERR from Perl code, subprocesses or XS")
@@ -5247,6 +5349,36 @@ replacement.  Whereas Module::Build has over 6,700 lines of code; this module
 has less than 120, yet supports the features needed by most distributions.")
     (license (package-license perl))))
 
+(define-public perl-module-build-withxspp
+  (package
+    (name "perl-module-build-withxspp")
+    (version "0.14")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://cpan/authors/id/S/SM/SMUELLER/Module-Build-WithXSpp-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "0d39fjg9c0n820bk3fb50vvlwhdny4hdl69xmlyzql5xzp4cicsk"))))
+    (build-system perl-build-system)
+    (native-inputs
+      `(("perl-module-build" ,perl-module-build)))
+    (propagated-inputs
+      `(("perl-extutils-cppguess" ,perl-extutils-cppguess)
+        ("perl-extutils-xspp" ,perl-extutils-xspp)
+        ("perl-module-build" ,perl-module-build)))
+    (home-page
+      "https://metacpan.org/release/Module-Build-WithXSpp")
+    (synopsis
+      "The module provides an XS++ enhanced flavour of Module::Build")
+    (description "This subclass of Module::Build adds some tools and
+processes to make it easier to use for wrapping C++ using XS++
+(ExtUtils::XSpp).")
+    (license (package-license perl))))
+
 (define-public perl-module-build-xsutil
   (package
     (name "perl-module-build-xsutil")
@@ -5553,15 +5685,14 @@ Moose and is optimised for rapid startup.")
   (package
     (inherit perl-moo)
     (name "perl-moo-2")
-    (version "2.003004")
+    (version "2.003006")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
                            "Moo-" version ".tar.gz"))
        (sha256
-        (base32
-         "1qciprcgb4661g2g4ks0fxkx5gbjvn7h9yfg0nzflqz9z0jvdfzq"))))
+        (base32 "0wi4gyp5kn4lbags0hrax3c9jj9spxg4d11fbrdh0ican4m0kcmw"))))
     (propagated-inputs
      `(("perl-role-tiny" ,perl-role-tiny-2)
        ("perl-sub-name" ,perl-sub-name)
@@ -6344,6 +6475,35 @@ takes additional parameters and uses @code{Getopt::Long::Descriptive} to
 generate a command line tool.")
     (license (package-license perl))))
 
+(define-public perl-moox-strictconstructor
+  (package
+    (name "perl-moox-strictconstructor")
+    (version "0.010")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://cpan/authors/id/H/HA/HARTZELL/MooX-StrictConstructor-"
+               version
+               ".tar.gz"))
+        (sha256
+         (base32
+          "0vvjgz7xbfmf69yav7sxsxmvklqv835xvh7h47w0apxmlkm9fjgr"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)))
+    (propagated-inputs
+     `(("perl-class-method-modifiers" ,perl-class-method-modifiers)
+       ("perl-moo" ,perl-moo)
+       ("perl-strictures" ,perl-strictures)))
+    (home-page "https://metacpan.org/release/MooX-StrictConstructor")
+    (synopsis "Make Moo-based object constructors blow up on unknown attributes")
+    (description
+     "Loading @code{MooX::StrictConstructor} makes your constructors \"strict\".
+If your constructor is called with an attribute init argument that your class
+does not declare, then it dies.")
+    (license perl-license)))
+
 (define-public perl-moox-types-mooselike
   (package
     (name "perl-moox-types-mooselike")
@@ -6550,7 +6710,7 @@ name, but they won't show up as methods on your class or instances.")
 (define-public perl-net-dns-native
   (package
     (name "perl-net-dns-native")
-    (version "0.20")
+    (version "0.22")
     (source
      (origin
        (method url-fetch)
@@ -6558,7 +6718,7 @@ name, but they won't show up as methods on your class or instances.")
              "mirror://cpan/authors/id/O/OL/OLEG/Net-DNS-Native-"
              version ".tar.gz"))
        (sha256
-        (base32 "0whm9l30frgzcfmlzqrsx3q5rdi8y6dhz33r4msgxrch8h97i8cb"))))
+        (base32 "1m9hbj83ikg52wvq7z8bjm78i50qvqk5alh11mmazzxrpbnrv38h"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Net-DNS-Native")
     (synopsis "Non-blocking system DNS resolver")
@@ -9056,14 +9216,14 @@ variable conform.")
 (define-public perl-type-tiny
   (package
     (name "perl-type-tiny")
-    (version "1.004004")
+    (version "1.006000")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/T/TO/TOBYINK/"
                            "Type-Tiny-" version ".tar.gz"))
        (sha256
-        (base32 "1gk2f0zs2xq99nqn6wcgvl8l9qlq2cnab2lk7l08kpac03m824h8"))))
+        (base32 "007xsx78cnjillbny7x9sjn1w6z8m22fmksmay710jhbvw9h19nm"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-warnings" ,perl-test-warnings)))
@@ -9398,15 +9558,14 @@ neither visible nor modifiable from Perl space).")
 (define-public perl-yaml
   (package
     (name "perl-yaml")
-    (version "1.27")
+    (version "1.29")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/T/TI/TINITA/"
                            "YAML-" version ".tar.gz"))
        (sha256
-        (base32
-         "1yc2yqjyrcdlhp209f3a63f9xx6v5klisli25fv221yy43la34n9"))))
+        (base32 "0gl5ssvrdajlbc85cy6z873n9cwlssk5q8z97a31vyiikhw5fp4w"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-yaml" ,perl-test-yaml)))
@@ -9419,21 +9578,18 @@ on the YAML 1.0 specification.")
 (define-public perl-yaml-libyaml
   (package
     (name "perl-yaml-libyaml")
-    (version "0.78")
+    (version "0.80")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "mirror://cpan/authors/id/T/TI/TINITA/YAML-LibYAML-"
-             version
-             ".tar.gz"))
+             version ".tar.gz"))
        (sha256
-        (base32 "03plv3wfqqqf7g8mxr8f6wlki2af8w3rg9xcfii1z5l1f1iarxx1"))))
+        (base32 "1nhn4w52kpq757rxl052f61h36rdzsy416k740m3fy5ih7axhq4x"))))
     (build-system perl-build-system)
-    (home-page
-     "https://metacpan.org/release/YAML-LibYAML")
-    (synopsis
-     "Perl YAML Serialization using XS and libyaml")
+    (home-page "https://metacpan.org/release/YAML-LibYAML")
+    (synopsis "Perl YAML Serialization using XS and libyaml")
     (description
      "@code{YAML::XS} is a Perl XS binding to libyaml which offers Perl the
 best YAML support to date.")
@@ -9637,15 +9793,14 @@ files, using JSON::PP and/or CPAN::Meta::YAML.")
 (define-public perl-scalar-list-utils
   (package
     (name "perl-scalar-list-utils")
-    (version "1.50")
+    (version "1.53")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/P/PE/PEVANS/"
                            "Scalar-List-Utils-" version ".tar.gz"))
        (sha256
-        (base32
-         "0x9n0617gjjcqa4nk5biiwkxdi90xpdfg6z07gjr009qjg3bkah6"))))
+        (base32 "16dfpnrcf5846j998rdd6gra16m9030rnz9fpsh1hfzvcsq8ch5x"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Scalar-List-Utils")
     (synopsis "Common Scalar and List utility subroutines")
@@ -9710,7 +9865,7 @@ File::Find replacement in Perl.")
 (define-public perl-file-find-object-rule
  (package
   (name "perl-file-find-object-rule")
-  (version "0.0309")
+  (version "0.0311")
   (source
     (origin
       (method url-fetch)
@@ -9719,7 +9874,7 @@ File::Find replacement in Perl.")
              version
              ".tar.gz"))
       (sha256
-        (base32 "1qr1rrp9gn0bpsixsrkan710sxc7bnhirh0anjsw2ihn4wdy3151"))))
+        (base32 "0gjzfd5fz7mhr5abafxr7qic7nwhk7y9iv17as6l880973j952h3"))))
   (build-system perl-build-system)
   (native-inputs
     `(("perl-module-build" ,perl-module-build)))

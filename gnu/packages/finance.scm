@@ -14,6 +14,7 @@
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2019 Sebastian Schott <sschott@mailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -86,7 +87,7 @@
 (define-public bitcoin-core
   (package
     (name "bitcoin-core")
-    (version "0.18.0")
+    (version "0.18.1")
     (source (origin
              (method url-fetch)
              (uri
@@ -94,15 +95,15 @@
                              version "/bitcoin-" version ".tar.gz"))
              (sha256
               (base32
-               "0ps0vw9iknz1b1sx74rabd1yhlxvwbd0aimjzn9hlqkvw286hkjy"))))
+               "15mz0gmm058gmq2gdpffbw25jpv7mksyhyfws6i7mqvrapqr6zaw"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("python" ,python) ; for the tests
-       ("util-linux" ,util-linux)   ; provides the hexdump command for tests
+       ("python" ,python)               ; for the tests
+       ("util-linux" ,util-linux)       ; provides the hexdump command for tests
        ("qttools" ,qttools)))
     (inputs
-     `(("bdb" ,bdb-4.8) ; Bitcoin Core requires bdb 4.8 for compatibility
+     `(("bdb" ,bdb-4.8)                 ; 4.8 required for compatibility
        ("boost" ,boost)
        ("libevent" ,libevent)
        ("miniupnpc" ,miniupnpc)
@@ -133,7 +134,7 @@
             #t))
           (add-before 'check 'set-home
            (lambda _
-            (setenv "HOME" (getenv "TMPDIR"))  ; Tests write to $HOME.
+            (setenv "HOME" (getenv "TMPDIR")) ; tests write to $HOME
             #t))
           (add-after 'check 'check-functional
            (lambda _
@@ -150,6 +151,34 @@ collectively by the network.  Bitcoin Core is the reference implementation
 of the bitcoin protocol.  This package provides the Bitcoin Core command
 line client and a client based on Qt.")
     (license license:expat)))
+
+(define-public homebank
+  (package
+    (name "homebank")
+    (version "5.2.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://homebank.free.fr/public/homebank-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "13ampiv68y30kc0p2560g3yz8whqpwnidfcnb9lndv93b9ca767y"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("libsoup" ,libsoup)))
+    (arguments
+     `(#:configure-flags (list "-without-ofx"))) ; libofx is not available yet
+    (home-page "http://homebank.free.fr/")
+    (synopsis "Graphical personal accounting application")
+    (description "HomeBank allows you to manage your personal accounts at
+home.  The seeks to be lightweight, simple and easy to use.  It brings
+features that allow you to analyze your finances in a detailed way instantly
+and dynamically with report tools based on filtering and graphical charts.")
+    (license license:gpl2+)))
 
 (define-public ledger
   (package
@@ -448,7 +477,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
   ;; the system's dynamically linked library.
   (package
     (name "monero")
-    (version "0.14.1.2")
+    (version "0.15.0.0")
     (source
      (origin
        (method git-fetch)
@@ -469,7 +498,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
            #t))
        (sha256
         (base32
-         "00zl883c7lcd9z7g4y3vv7rxmr7ppzrxdblnhk32r9l3qzyw55r6"))))
+         "19y4kcj4agws7swfa3draysb1y18c3xb13r8cg0faxx1dlm0zbnr"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -542,13 +571,18 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
                (invoke "tests/unit_tests/unit_tests"
                        (string-append "--gtest_filter=-"
                                       excluded-unit-tests)))))
+         (add-after 'install 'install-librandomx
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
+               (install-file "external/randomx/librandomx.a" lib)
+               #t)))
          (add-after 'install 'delete-dead-links
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (delete-file (string-append out "/lib/libprotobuf.so"))
                (delete-file (string-append out "/lib/libusb-1.0.so"))
                #t))))))
-    (home-page "https://getmonero.org/")
+    (home-page "https://web.getmonero.org/")
     (synopsis "Command-line interface to the Monero currency")
     (description
      "Monero is a secure, private, untraceable currency.  This package provides
@@ -558,7 +592,7 @@ the Monero command line client and daemon.")
 (define-public monero-gui
   (package
     (name "monero-gui")
-    (version "0.14.1.2")
+    (version "0.15.0.0")
     (source
      (origin
        (method git-fetch)
@@ -568,7 +602,7 @@ the Monero command line client and daemon.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1rm043r6y2mzy8pclnzbjjfxgps8pkfa2b92p66k8y8rdmgq6m1k"))))
+         "1shpnly2dym5jhvk8zk10p69mz062dihx979djg74q6hgkhhhqsh"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -670,7 +704,7 @@ the Monero command line client and daemon.")
              (let ((out (assoc-ref outputs "out")))
                (wrap-qt-program out "monero-wallet-gui"))
              #t)))))
-    (home-page "https://getmonero.org/")
+    (home-page "https://web.getmonero.org/")
     (synopsis "Graphical user interface for the Monero currency")
     (description
      "Monero is a secure, private, untraceable currency.  This package provides
@@ -1133,15 +1167,35 @@ Trezor wallet.")
   (package
     (inherit bitcoin-core)
     (name "bitcoin-abc")
-    (version "0.19.8")
+    (version "0.20.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.bitcoinabc.org/"
-                                  version "/linux/src/bitcoin-abc-"
+                                  version "/src/bitcoin-abc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0ndvkxv5m8346bdhfqzgdiz1k9wyjycj05jp7daf9pml3cw79sz5"))))
+                "0fld54z3l7z7k5n35rrjichjnx37j9xp0rv8i69m3x4qfj1xk2np"))))
+    (inputs
+     `(("bdb" ,bdb-5.3)
+       ("boost" ,boost)
+       ("libevent" ,libevent)
+       ("miniupnpc" ,miniupnpc)
+       ("openssl" ,openssl)
+       ("protobuf" ,protobuf)
+       ("qtbase" ,qtbase)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments bitcoin-core)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'fix-tests
+             ;; Disable 'check-devtools' test which tries to run a
+             ;; python script that doesn't exist.
+             (lambda _
+               (substitute* "Makefile.in"
+                 (("^check-local: check-devtools")
+                  "check-local:"))
+               #t))))))
     (home-page "https://www.bitcoinabc.org/")
     (synopsis "Bitcoin ABC peer-to-peer full node for the Bitcoin Cash protocol")
     (description

@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -31,6 +31,7 @@
   #:use-module (gnu packages linux)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix gexp)
   #:use-module (guix monads)
@@ -310,14 +311,15 @@ completion for many common commands.")
   (package
     (name "bash-tap")
     (version "1.0.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/illusori/bash-tap/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0qs1qi38bl3ns4mpagcawv618dsk2q1lgrbddgvs0wl3ia12cyz5"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/illusori/bash-tap.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "13zz9h6bhhnk3hiwhlpafrnf2isws249h3fz785dcgymk02arz9c"))))
     ;; There is no compilation process to use this package, however, the bash
     ;; scripts installed by this package start with "#!/bin/bash".  To fix
     ;; these lines, we use the patch-shebangs of the GNU build system.  The

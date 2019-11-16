@@ -61,11 +61,16 @@
   "zlib@openssh.com,zlib")
 
 (define* (open-ssh-session host #:key user port identity
-                           (compression %compression))
+                           (compression %compression)
+                           (timeout 3600))
   "Open an SSH session for HOST and return it.  IDENTITY specifies the file
 name of a private key to use for authenticating with the host.  When USER,
 PORT, or IDENTITY are #f, use default values or whatever '~/.ssh/config'
-specifies; otherwise use them.  Throw an error on failure."
+specifies; otherwise use them.  Install TIMEOUT as the maximum time in seconds
+after which a read or write operation on a channel of the returned session is
+considered as failing.
+
+Throw an error on failure."
   (let ((session (make-session #:user user
                                #:identity identity
                                #:host host
@@ -86,6 +91,7 @@ specifies; otherwise use them.  Throw an error on failure."
        ;; Use public key authentication, via the SSH agent if it's available.
        (match (userauth-public-key/auto! session)
          ('success
+          (session-set! session 'timeout timeout)
           session)
          (x
           (disconnect! session)

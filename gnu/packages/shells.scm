@@ -682,7 +682,7 @@ The OpenBSD Korn Shell is a cleaned up and enhanced ksh.")
 (define-public loksh
   (package
     (name "loksh")
-    (version "6.5")
+    (version "6.6")
     (source
      (origin
        (method git-fetch)
@@ -691,7 +691,7 @@ The OpenBSD Korn Shell is a cleaned up and enhanced ksh.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01ra64zm1ryb4jsbmh8c3fjaymyy1992hzpm6iydbfxn1sjdihha"))))
+        (base32 "1a8s64n97ikvvi7ckirxnnjvcmhr3dd4rnqm2ivapyzb0wp42jk7"))))
     (build-system gnu-build-system)
     (inputs
      `(("libbsd" ,libbsd)

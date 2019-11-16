@@ -30,12 +30,21 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
-  #:use-module (ice-9 match))
+  #:use-module (ice-9 match)
+  #:export (make-mingw-w64))
 
-(define-public (make-mingw-w64 machine)
-  (let ((triplet (string-append machine "-" "w64-mingw32")))
+(define* (make-mingw-w64 machine
+                         #:key
+                         xgcc
+                         xbinutils
+                         with-winpthreads?)
+  "Return a mingw-w64 for targeting MACHINE.  If XGCC or XBINUTILS is specified,
+use that gcc or binutils when cross-compiling.  If WITH-WINPTHREADS? is
+specified, recurse and return a mingw-w64 with support for winpthreads."
+  (let* ((triplet (string-append machine "-" "w64-mingw32")))
     (package
-      (name (string-append "mingw-w64" "-" machine))
+      (name (string-append "mingw-w64" "-" machine
+                           (if with-winpthreads? "-winpthreads" "")))
       (version "6.0.0")
       (source (origin
                 (method url-fetch)
@@ -45,8 +54,13 @@
                 (sha256
                  (base32 "1w28mynv500y03h92nh87rgw3fnp82qwnjbxrrzqkmr63q812pl0"))
                 (patches (search-patches "mingw-w64-6.0.0-gcc.patch"))))
-      (native-inputs `(("xgcc-core" ,(cross-gcc triplet))
-                       ("xbinutils" ,(cross-binutils triplet))))
+      (native-inputs `(("xgcc-core" ,(if xgcc xgcc (cross-gcc triplet)))
+                       ("xbinutils" ,(if xbinutils xbinutils (cross-binutils triplet)))
+                       ,@(if with-winpthreads?
+                             `(("xlibc" ,(make-mingw-w64 machine
+                                                         #:xgcc xgcc
+                                                         #:xbinutils xbinutils)))
+                             '())))
       (build-system gnu-build-system)
       (search-paths
        (list (search-path-specification
@@ -59,7 +73,10 @@
                  ,(string-append triplet "/lib")
                  ,(string-append triplet "/lib64"))))))
       (arguments
-       `(#:configure-flags '(,(string-append "--host=" triplet))
+       `(#:configure-flags '(,(string-append "--host=" triplet)
+                             ,@(if with-winpthreads?
+                                   '("--with-libraries=winpthreads")
+                                   '()))
          #:phases
          (modify-phases %standard-phases
            (add-before 'configure 'setenv
@@ -74,7 +91,13 @@
                           ":" mingw-headers "/include"
                           ":" mingw-headers "/crt"
                           ":" mingw-headers "/defaults/include"
-                          ":" mingw-headers "/direct-x/include"))))))
+                          ":" mingw-headers "/direct-x/include"))
+                 (when ,with-winpthreads?
+                     (let ((xlibc (assoc-ref inputs "xlibc")))
+                       (setenv "CROSS_LIBRARY_PATH"
+                               (string-append
+                                xlibc "/lib" ":"
+                                xlibc "/" ,triplet "/lib"))))))))
          #:make-flags (list "DEFS=-DHAVE_CONFIG_H -D__MINGW_HAS_DXSDK=1")
          #:tests? #f ; compiles and includes glibc headers
          #:strip-binaries? #f))
@@ -97,5 +120,13 @@ several new APIs such as DirectX and DDK, and 64-bit support.")
 
 (define-public mingw-w64-x86_64
   (make-mingw-w64 "x86_64"))
+
+(define-public mingw-w64-i686-winpthreads
+  (make-mingw-w64 "i686"
+                  #:with-winpthreads? #t))
+
+(define-public mingw-w64-x86_64-winpthreads
+  (make-mingw-w64 "x86_64"
+                  #:with-winpthreads? #t))
 
 (define-public mingw-w64 mingw-w64-i686)

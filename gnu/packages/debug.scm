@@ -52,7 +52,7 @@
      (origin
       (method url-fetch)
       (uri (list
-            (string-append "http://ftp.de.debian.org/debian/pool/main/d/delta/"
+            (string-append "mirror://debian/pool/main/d/delta/"
                            "delta_" version ".orig.tar.gz")
             ;; This uri seems to send guix download into an infinite loop
             (string-append "http://delta.tigris.org/files/documents/3103/"

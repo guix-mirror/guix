@@ -306,7 +306,7 @@ This package contains the binary.")
 (define-public mpg123
   (package
     (name "mpg123")
-    (version "1.25.12")
+    (version "1.25.13")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "mirror://sourceforge/mpg123/mpg123/"
@@ -316,7 +316,7 @@ This package contains the binary.")
                           version ".tar.bz2")))
               (sha256
                (base32
-                "1l9iwwgqzw6yg5zk9pqmlbfyq6d8dqysbmj0j3m8dyrxd34wgzhz"))))
+                "02l915jq0ymndb082g6w89bpf66z04ifa1lr7ga3yycw6m46hc4h"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--with-default-audio=pulse")))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -473,13 +473,13 @@ compression format (.mpc files).")
 (define-public eyed3
   (package
     (name "eyed3")
-    (version "0.8.10")
+    (version "0.8.11")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "eyeD3" version))
        (sha256
-        (base32 "1jb22n1jczxgbpcnfiw12r8dcs74556g1d09mzms44f52kgs7lgc"))))
+        (base32 "1347mhjysbdpmmvdqm6lhskdw0qj9vjdn4n172ffnz958adrnk0f"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))    ; the required test data contains copyrighted material

@@ -2171,7 +2171,7 @@ bindings to almost all functions of SLEPc.")
 (define-public mumps
   (package
     (name "mumps")
-    (version "5.1.2")
+    (version "5.2.1")
     (source
      (origin
        (method url-fetch)
@@ -2179,8 +2179,11 @@ bindings to almost all functions of SLEPc.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1s9asin08zqzmh08257sdghhivvy9vjif7c53fhaxaax2kd5qd7b"))
-       (patches (search-patches "mumps-build-parallelism.patch"))))
+         "0jklh54x4y3ik1zkw6db7766kakjm5910diyaghfxxf8vwsgr26r"))
+       (patches (search-patches "mumps-build-parallelism.patch"
+                                "mumps-shared-libseq.patch"
+                                "mumps-shared-mumps.patch"
+                                "mumps-shared-pord.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("fortran" ,gfortran)
@@ -2210,15 +2213,17 @@ CC           = gcc
 FC           = gfortran
 FL           = gfortran
 INCSEQ       = -I$(topdir)/libseq
-LIBSEQ       = -L$(topdir)/libseq -lmpiseq
+LIBSEQ       = $(topdir)/libseq/libmpiseq.a
 LIBSEQNEEDED = libseqneeded~;
 CC           = mpicc
 FC           = mpifort
 FL           = mpifort~]
 AR           = ar vr # rules require trailing space, ugh...
 RANLIB       = ranlib
-LIBBLAS      = -L~a -lopenblas~@[
-SCALAP       = -L~a -lscalapack~]
+BLASDIR      = ~a
+LIBBLAS      = -Wl,-rpath=$(BLASDIR) -Wl,-rpath='$$ORIGIN' -L$(BLASDIR) -lopenblas~@[
+SCALAPDIR    = ~a
+SCALAP       = -Wl,-rpath=$(SCALAPDIR) -Wl,-rpath='$$ORIGIN' -L$(SCALAPDIR) -lscalapack~]
 LIBOTHERS    = -pthread
 CDEFS        = -DAdd_
 PIC          = -fPIC
@@ -2229,18 +2234,18 @@ INCS         = $(INCSEQ)
 LIBS         = $(SCALAP) $(LIBSEQ)
 LPORDDIR     = $(topdir)/PORD/lib
 IPORD        = -I$(topdir)/PORD/include
-LPORD        = -L$(LPORDDIR) -lpord
+LPORD        = $(LPORDDIR)/libpord.a
 ORDERINGSF   = -Dpord~@[
 METISDIR     = ~a
 IMETIS       = -I$(METISDIR)/include
-LMETIS       = -L$(METISDIR)/lib -lmetis
+LMETIS       = -Wl,-rpath $(METISDIR)/lib -L$(METISDIR)/lib -lmetis
 ORDERINGSF  += -Dmetis~]~@[~:{
 SCOTCHDIR    = ~a
 ISCOTCH      = -I$(SCOTCHDIR)/include
-LSCOTCH      = -L$(SCOTCHDIR)/lib ~a-lesmumps -lscotch -lscotcherr
+LSCOTCH      = -Wl,-rpath $(SCOTCHDIR)/lib -L$(SCOTCHDIR)/lib ~a-lesmumps -lscotch -lscotcherr
 ORDERINGSF  += ~a~}~]
 ORDERINGSC   = $(ORDERINGSF)
-LORDERINGS   = $(LPORD) $(LMETIS) $(LSCOTCH)
+LORDERINGS   = $(LPORD) $(LMETIS) $(LSCOTCH) $(LIBSEQ)
 IORDERINGSF  = $(ISCOTCH)
 IORDERINGSC  = $(IPORD) $(IMETIS) $(ISCOTCH)"
                         (assoc-ref inputs "mpi")
@@ -2294,6 +2299,8 @@ IORDERINGSC  = $(IPORD) $(IMETIS) $(ISCOTCH)"
                (copy-recursively "include" (string-append out "/include"))
                (when (file-exists? "libseq/libmpiseq.a")
                  (install-file "libseq/libmpiseq.a" libdir))
+               (when (file-exists? "libseq/libmpiseq.so")
+                 (install-file "libseq/libmpiseq.so" libdir))
                #t))))))
     (home-page "http://mumps.enseeiht.fr")
     (synopsis "Multifrontal sparse direct solver")
@@ -3985,14 +3992,14 @@ supports compressed MAT files, as well as newer (version 7.3) MAT files.")
 (define-public vc
   (package
     (name "vc")
-    (version "1.3.3")
+    (version "1.4.1")
     (source
       (origin (method url-fetch)
               (uri (string-append "https://github.com/VcDevel/Vc/releases/"
                                   "download/" version "/Vc-" version ".tar.gz"))
               (sha256
                (base32
-                "1zmlpn32jzb38smp3j834llmbix3whsrbw0h397qxysbw792kih8"))))
+                "17qili8bf8r78cng65yf4qmgna8kiqjqbgcqbric6v9j6nkhkrk8"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
@@ -4000,7 +4007,30 @@ supports compressed MAT files, as well as newer (version 7.3) MAT files.")
          ;; By default, Vc will optimize for the CPU of the build machine.
          ;; Setting this to "none" makes it create portable binaries.  See
          ;; "cmake/OptimizeForArchitecture.cmake".
-         "-DTARGET_ARCHITECTURE=none")))
+         "-DTARGET_ARCHITECTURE=none")
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'copy-testdata
+                    (lambda* (#:key inputs native-inputs #:allow-other-keys)
+                      (let ((testdata (assoc-ref (or native-inputs inputs)
+                                                 "testdata")))
+                        (copy-recursively testdata "tests/testdata")
+                        #t))))))
+    (native-inputs
+     `(("virtest" ,virtest)
+
+       ;; This is a submodule in the git project, but not part of the
+       ;; released sources.  See the git branch for the commit to take.
+       ("testdata" ,(let ((commit "9ada1f34d6a41f1b5553d6223f277eae72c039d3"))
+                      (origin
+                        (method git-fetch)
+                        (uri (git-reference
+                              (url "https://github.com/VcDevel/vc-testdata")
+                              (commit "9ada1f34d6a41f1b5553d6223f277eae72c039d3")))
+                        (file-name (git-file-name "vc-testdata"
+                                                  (string-take commit 7)))
+                        (sha256
+                         (base32
+                          "1hkhqib03qlcq412ym2dciynfxcdr2ygqhnplz4l1vissr1wnqn2")))))))
     (synopsis "SIMD vector classes for C++")
     (description "Vc provides portable, zero-overhead C++ types for explicitly
 data-parallel programming.  It is a library designed to ease explicit

@@ -293,7 +293,7 @@ multiplies.")
 (define-public libtommath
   (package
     (name "libtommath")
-    (version "1.1.0")
+    (version "1.2.0")
     (outputs '("out" "static"))
     (source
       (origin
@@ -302,8 +302,7 @@ multiplies.")
                             "download/v" version "/ltm-" version ".tar.xz"))
         (sha256
          (base32
-          "1bbyagqzfdbg37k1n08nsqzdf44z8zsnjjinqbsyj7rxg246qilh"))
-        (patches (search-patches "libtommath-fix-linkage.patch"))))
+          "1c8q1qy88cjhdjlk3g24mra94h34c1ldvkjz0n2988c0yvn5xixp"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -311,10 +310,6 @@ multiplies.")
          (delete 'configure) ; no configure
          (add-after 'unpack 'prepare-build
            (lambda _
-             ;; Don't pull in coreutils.
-             (substitute* "makefile_include.mk"
-               (("arch") "uname -m"))
-
              ;; We want the shared library by default so force it to be the
              ;; default makefile target.
              (delete-file "makefile")
@@ -326,14 +321,15 @@ multiplies.")
                                          "/lib/libtommath.a"))
              #t))
          (replace 'check
-           (lambda* (#:key make-flags #:allow-other-keys)
-             (apply invoke "make" "test_standalone" make-flags)
+           (lambda* (#:key test-target make-flags #:allow-other-keys)
+             (apply invoke "make" test-target make-flags)
              (invoke "sh" "test")))
          (add-after 'install 'install-static-library
            (lambda* (#:key outputs #:allow-other-keys)
              (invoke "make" "-f" "makefile.unix" "install"
                      (string-append "PREFIX=" (assoc-ref outputs "static"))
                      (string-append "CC=" (which "gcc"))))))
+       #:test-target "test"
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
                           "CC=gcc")))
     (native-inputs
@@ -346,9 +342,34 @@ simple to work with that provides fairly efficient routines that build out of
 the box without configuration.")
     (license unlicense)))
 
-(define-public libtommath-1.0
+(define-public libtommath-1.1
   (package
     (inherit libtommath)
+    (version "1.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/libtom/libtommath/releases/"
+                            "download/v" version "/ltm-" version ".tar.xz"))
+        (sha256
+         (base32
+          "1bbyagqzfdbg37k1n08nsqzdf44z8zsnjjinqbsyj7rxg246qilh"))
+        (patches (search-patches "libtommath-fix-linkage.patch"))))
+    (arguments
+      (substitute-keyword-arguments (package-arguments libtommath)
+        ((#:phases phases)
+         `(modify-phases ,phases
+            (add-after 'unpack 'patch-coreutils-call
+              (lambda _
+                ;; Don't pull in coreutils.
+                (substitute* "makefile_include.mk"
+                  (("arch") "uname -m"))
+                #t))))
+        ((#:test-target _) "test_standalone")))))
+
+(define-public libtommath-1.0
+  (package
+    (inherit libtommath-1.1)
     (version "1.0.1")
     (outputs '("out"))
     (source
@@ -360,7 +381,7 @@ the box without configuration.")
          (base32
           "0sbccdwbkfc680id2fi0x067j23biqcjqilwkk7y9339knrjy0s7"))))
     (arguments
-      (substitute-keyword-arguments (package-arguments libtommath)
+      (substitute-keyword-arguments (package-arguments libtommath-1.1)
         ((#:phases phases)
          `(modify-phases ,phases
             (delete 'install-static-library)))))))

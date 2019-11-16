@@ -56,6 +56,8 @@
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 format)
   #:export (display-profile-content
+            channel-list
+            with-git-error-handling
             guix-pull))
 
 
@@ -78,8 +80,6 @@
 (define (show-help)
   (display (G_ "Usage: guix pull [OPTION]...
 Download and deploy the latest version of Guix.\n"))
-  (display (G_ "
-      --verbose          produce verbose output"))
   (display (G_ "
   -C, --channels=FILE    deploy the channels defined in FILE"))
   (display (G_ "
@@ -120,10 +120,7 @@ Download and deploy the latest version of Guix.\n"))
 
 (define %options
   ;; Specifications of the command-line options.
-  (cons* (option '("verbose") #f #f
-                 (lambda (opt name arg result)
-                   (alist-cons 'verbose? #t result)))
-         (option '(#\C "channels") #t #f
+  (cons* (option '(#\C "channels") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'channel-file arg result)))
          (option '(#\l "list-generations") #f #t
@@ -235,12 +232,18 @@ purposes."
   (define title
     (channel-news-entry-title entry))
 
-  (format port "  ~a~%"
-          (highlight
-           (string-trim-right
-            (texi->plain-text (or (assoc-ref title language)
-                                  (assoc-ref title (%default-message-language))
-                                  ""))))))
+  (let ((title (or (assoc-ref title language)
+                   (assoc-ref title (%default-message-language))
+                   "")))
+    (format port "  ~a~%"
+            (highlight
+             (string-trim-right
+              (catch 'parser-error
+                (lambda ()
+                  (texi->plain-text title))
+
+                ;; When Texinfo markup is invalid, display it as-is.
+                (const title)))))))
 
 (define (display-news-entry entry language port)
   "Display ENTRY, a <channel-news-entry>, in LANGUAGE, a language code, to
@@ -252,14 +255,20 @@ PORT."
   (format port (dim (G_ "    commit ~a~%"))
           (channel-news-entry-commit entry))
   (newline port)
-  (format port "    ~a~%"
-          (indented-string
-           (parameterize ((%text-width (- (%text-width) 4)))
-             (string-trim-right
-              (texi->plain-text (or (assoc-ref body language)
-                                    (assoc-ref body (%default-message-language))
-                                    ""))))
-           4)))
+  (let ((body (or (assoc-ref body language)
+                  (assoc-ref body (%default-message-language))
+                  "")))
+    (format port "    ~a~%"
+            (indented-string
+             (parameterize ((%text-width (- (%text-width) 4)))
+               (string-trim-right
+                (catch 'parser-error
+                  (lambda ()
+                    (texi->plain-text body))
+                  (lambda _
+                    ;; When Texinfo markup is invalid, display it as-is.
+                    (fill-paragraph body (%text-width))))))
+             4))))
 
 (define* (display-channel-specific-news new old
                                         #:key (port (current-output-port))
@@ -370,7 +379,7 @@ previous generation.  Return true if there are news to display."
   (display-channel-news profile))
 
 (define* (build-and-install instances profile
-                            #:key use-substitutes? verbose? dry-run?)
+                            #:key use-substitutes? dry-run?)
   "Build the tool from SOURCE, and install it in PROFILE.  When DRY-RUN? is
 true, display what would be built without actually building it."
   (define update-profile
@@ -714,6 +723,9 @@ transformations specified in OPTS (resulting from '--url', '--commit', or
   (define default-file
     (string-append (config-directory) "/channels.scm"))
 
+  (define global-file
+    (string-append %sysconfdir "/guix/channels.scm"))
+
   (define (load-channels file)
     (let ((result (load* file (make-user-module '((guix channels))))))
       (if (and (list? result) (every channel? result))
@@ -725,6 +737,8 @@ transformations specified in OPTS (resulting from '--url', '--commit', or
            (load-channels file))
           ((file-exists? default-file)
            (load-channels default-file))
+          ((file-exists? global-file)
+           (load-channels global-file))
           (else
            %default-channels)))
 
@@ -772,11 +786,11 @@ Use '~/.config/guix/channels.scm' instead."))
               (process-generation-change opts profile))
              (else
               (with-store store
-                (ensure-default-profile)
                 (with-status-verbosity (assoc-ref opts 'verbosity)
                   (parameterize ((%current-system (assoc-ref opts 'system))
                                  (%graft? (assoc-ref opts 'graft?)))
                     (set-build-options-from-command-line store opts)
+                    (ensure-default-profile)
                     (honor-x509-certificates store)
 
                     (let ((instances (latest-channel-instances store channels)))
@@ -806,8 +820,6 @@ Use '~/.config/guix/channels.scm' instead."))
                                              #:dry-run?
                                              (assoc-ref opts 'dry-run?)
                                              #:use-substitutes?
-                                             (assoc-ref opts 'substitutes?)
-                                             #:verbose?
-                                             (assoc-ref opts 'verbose?))))))))))))))
+                                             (assoc-ref opts 'substitutes?))))))))))))))
 
 ;;; pull.scm ends here

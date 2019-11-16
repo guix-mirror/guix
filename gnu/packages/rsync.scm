@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
 ;;;
@@ -30,6 +30,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu))
 
@@ -61,14 +62,16 @@ files in the destination.")
 (define-public librsync
   (package
     (name "librsync")
-    (version "2.0.2")
+    (version "2.2.1")
        (source (origin
-            (method url-fetch)
-            (uri (string-append "https://github.com/librsync/librsync/archive/v"
-                                version ".tar.gz"))
+            (method git-fetch)
+            (uri (git-reference
+                   (url "https://github.com/librsync/librsync.git")
+                   (commit (string-append "v" version))))
+            (file-name (git-file-name name version))
             (sha256
              (base32
-              "1waa581pcscc1rnvy06cj584k5dx0dc7jj79wsdj7xw4xqh9ayz6"))))
+              "08wdlxsa9zg2pyasz1lwg70d5psi4amv81v4yxwffx67ndzb9yp5"))))
    (build-system cmake-build-system)
    (inputs
     `(("popt" ,popt)))

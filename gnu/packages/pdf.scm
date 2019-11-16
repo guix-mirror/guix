@@ -7,7 +7,7 @@
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
@@ -15,6 +15,8 @@
 ;;; Copyright © 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2019 Ben Sturmfels <ben@sturm.com.au>
+;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -65,6 +67,7 @@
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages javascript)
   #:use-module (gnu packages lesstif)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages pcre)
@@ -72,6 +75,8 @@
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sdl)
@@ -200,10 +205,7 @@ When present, Poppler is able to correctly render CJK and Cyrillic text.")
              (substitute* "setup.py"
                ;; This check always fails, so disable it.
                (("if not check_qtxml\\(\\)")
-                "if True")
-               ;; Enable C++11, which is needed because of Qt5.
-               (("\\*\\*ext_args" line)
-                (string-append "extra_compile_args=['-std=gnu++11'], " line)))
+                "if True"))
              ;; We need to pass an extra flag here.  This cannot be in
              ;; configure-flags because it should not be passed for the
              ;; installation phase.
@@ -753,13 +755,13 @@ using a stylus.")
 (define-public python-reportlab
   (package
     (name "python-reportlab")
-    (version "3.5.13")
+    (version "3.5.32")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "reportlab" version))
               (sha256
                (base32
-                "1wxgcj46rm83qz97i8ygvd59bks60kr6vvnz12ygw640z58ff5k1"))))
+                "0lf8hil9nbm74zl27l8rydxbhwnpr0pbghibsqrc9sglds9l9vw3"))))
     (build-system python-build-system)
     (arguments
      '(;; FIXME: There is one test failure, but it does not cause the
@@ -978,6 +980,50 @@ Note: This module isn't maintained anymore.  For new projects please use
 python-pypdf2 instead.")
     (license license:bsd-3)))
 
+(define-public pdfarranger
+  (package
+    (name "pdfarranger")
+    (version "1.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jeromerobert/pdfarranger.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1f8m8r81322i97wkqpmf7a4kiwnq244n6cnbldh03jc49vwq2kxx"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f                                ;no tests
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'wrap-for-typelib
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let* ((out     (assoc-ref outputs "out"))
+                             (program (string-append out "/bin/pdfarranger")))
+                        (wrap-program program
+                          `("GI_TYPELIB_PATH" ":" prefix
+                            (,(getenv "GI_TYPELIB_PATH"))))
+                        #t))))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("python-distutils-extra" ,python-distutils-extra)))
+    (propagated-inputs
+     `(("gtk+" ,gtk+)
+       ("poppler" ,poppler)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pypdf2" ,python-pypdf2)))
+    (home-page "https://github.com/jeromerobert/pdfarranger")
+    (synopsis "Merge, split and re-arrange pages from PDF documents")
+    (description
+     "PDF Arranger is a small application which allows one to merge or split
+PDF documents and rotate, crop and rearrange their pages using an interactive
+and intuitive graphical interface.
+
+PDF Arranger was formerly known as PDF-Shuffler.")
+    (license license:gpl3+)))
+
 (define-public pdfposter
   (package
     (name "pdfposter")
@@ -1074,48 +1120,29 @@ presentation.  The input files processed by pdfpc are PDF documents.")
     (license license:gpl2+)))
 
 (define-public paps
-  (let ((commit "37e6ca1cd96d751bbbff5539d795c90d657289a5")
-        (revision "1"))
-    (package
-      (name "paps")
-      ;; The last release was in 2015, but since then there have been security
-      ;; bug fixes.
-      (version (git-version "0.7.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/dov/paps.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1ilcyjqdynxsd2p8dnn8h4592dwf531x9pbkxa1w09hkcdn7hgwc"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'do-not-run-configure-script-during-bootstrap
-             (lambda _
-               (substitute* "autogen.sh"
-                 (("^./configure") "#"))
-               #t)))))
-      (inputs
-       `(("pango" ,pango)))
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("gettext" ,gettext-minimal)
-         ("glib" ,glib "bin")
-         ("intltool" ,intltool)
-         ("pkg-config" ,pkg-config)))
-      (home-page "https://github.com/dov/paps")
-      (synopsis "Pango to PostScript converter")
-      (description
-       "Paps reads a UTF-8 encoded file and generates a PostScript language
+  (package
+    (name "paps")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/dov/paps/releases/download/v"
+                           version "/paps-" version ".tar.gz"))
+       (sha256
+        (base32 "1z1w1fg2bvb8p92n1jlpqp3n9mq42szb2mqhh4xqmmnmfcdkpi9s"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("pango" ,pango)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/dov/paps")
+    (synopsis "Pango to PostScript converter")
+    (description
+     "Paps reads a UTF-8 encoded file and generates a PostScript language
 rendering of the file.  The rendering is done by creating outline curves
 through the Pango @code{ft2} backend.")
-      (license license:lgpl2.0+))))
+    (license license:lgpl2.0+)))
 
 (define-public stapler
   (package
@@ -1157,4 +1184,81 @@ manipulating PDF documents from the command line.  It supports
 @item displaying metadata in a PDF document
 @item displaying the mapping between logical and physical page numbers
 @end itemize")
+    (license license:bsd-3)))
+
+(define-public weasyprint
+  (package
+    (name "weasyprint")
+    (version "50")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "WeasyPrint" version))
+       (sha256
+        (base32 "0invs96zvmcr6wh5klj52jrcnr9qg150v9wpmbhcsf3vv1d1hbcw"))
+       (patches (search-patches "weasyprint-library-paths.patch"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-library-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((fontconfig (assoc-ref inputs "fontconfig"))
+                   (glib (assoc-ref inputs "glib"))
+                   (pango (assoc-ref inputs "pango"))
+                   (pangoft2 (assoc-ref inputs "pangoft2")))
+               (substitute* "weasyprint/fonts.py"
+                 (("@fontconfig@")
+                  (string-append fontconfig "/lib/libfontconfig.so"))
+                 (("@pangoft2@")
+                  (string-append pango "/lib/libpangoft2-1.0.so")))
+               (substitute* "weasyprint/text.py"
+                 (("@gobject@")
+                  (string-append glib "/lib/libgobject-2.0.so"))
+                 (("@pango@")
+                  (string-append pango "/lib/libpango-1.0.so"))
+                 (("@pangocairo@")
+                  (string-append pango "/lib/libpangocairo-1.0.so"))))))
+         (add-after 'unpack 'remove-pytest-options
+           (lambda _
+             (substitute* "setup.cfg"
+               ;; flake8 and isort syntax checks fail, which is not our
+               ;; business
+               (("addopts = --flake8 --isort") ""))))
+         (replace 'check
+           (lambda _
+             ;; run pytest, excluding one failing test
+             (invoke "pytest" "-k" "not test_flex_column_wrap_reverse"))))))
+    (inputs
+     `(("fontconfig" ,fontconfig)
+       ("glib" ,glib)
+       ("pango" ,pango)))
+    (propagated-inputs
+     `(("gdk-pixbuf" ,gdk-pixbuf)
+       ("python-cairocffi" ,python-cairocffi)
+       ("python-cairosvg" ,python-cairosvg)
+       ("python-cffi" ,python-cffi)
+       ("python-cssselect2" ,python-cssselect2)
+       ("python-html5lib" ,python-html5lib)
+       ("python-pyphen" ,python-pyphen)
+       ("python-tinycss2" ,python-tinycss2)))
+    (native-inputs
+     `(("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://weasyprint.org/")
+    (synopsis "Document factory for creating PDF files from HTML")
+    (description "WeasyPrint helps web developers to create PDF documents.  It
+turns simple HTML pages into gorgeous statistical reports, invoices, tickets,
+etc.
+
+From a technical point of view, WeasyPrint is a visual rendering engine for
+HTML and CSS that can export to PDF and PNG.  It aims to support web standards
+for printing.
+
+It is based on various libraries but not on a full rendering engine like
+WebKit or Gecko.  The CSS layout engine is written in Python, designed for
+pagination, and meant to be easy to hack on.  Weasyprint can also be used as a
+python library.
+
+Keywords: html2pdf, htmltopdf")
     (license license:bsd-3)))

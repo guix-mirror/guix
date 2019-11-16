@@ -23,6 +23,7 @@
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2019 Kyle Andrews <kyle.c.andrews@gmail.com>
 ;;; Copyright © 2019 Ingo Ruhnke <grumbel@gmail.com>
+;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,57 +43,56 @@
 (define-module (gnu packages wm)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
-  #:use-module (gnu packages)
-  #:use-module (gnu packages linux)
+  #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages bison)
+  #:use-module (gnu packages docbook)
+  #:use-module (gnu packages documentation)
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages fribidi)
+  #:use-module (gnu packages gawk)
+  #:use-module (gnu packages gl)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gperf)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages haskell-web)
   #:use-module (gnu packages haskell-xyz)
-  #:use-module (gnu packages autotools)
-  #:use-module (gnu packages bison)
-  #:use-module (gnu packages gawk)
-  #:use-module (gnu packages base)
-  #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages perl)
-  #:use-module (gnu packages pulseaudio)
-  #:use-module (gnu packages xorg)
-  #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages documentation)
-  #:use-module (gnu packages xml)
-  #:use-module (gnu packages m4)
-  #:use-module (gnu packages docbook)
   #:use-module (gnu packages image)
-  #:use-module (gnu packages pcre)
-  #:use-module (gnu packages python)
-  #:use-module (gnu packages gtk)
-  #:use-module (gnu packages libevent)
-  #:use-module (gnu packages fribidi)
-  #:use-module (gnu packages maths)
-  #:use-module (gnu packages web)
-  #:use-module (gnu packages fontutils)
-  #:use-module (gnu packages freedesktop)
-  #:use-module (gnu packages glib)
-  #:use-module (gnu packages gperf)
   #:use-module (gnu packages imagemagick)
-  #:use-module (gnu packages lua)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
-  #:use-module (gnu packages suckless)
-  #:use-module (gnu packages mpd)
-  #:use-module (gnu packages gl)
-  #:use-module (gnu packages video)
-  #:use-module (gnu packages version-control)
-  #:use-module (gnu packages man)
-  #:use-module (gnu packages textutils)
-  #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages logging)
+  #:use-module (gnu packages lua)
+  #:use-module (gnu packages m4)
+  #:use-module (gnu packages man)
+  #:use-module (gnu packages maths)
+  #:use-module (gnu packages mpd)
+  #:use-module (gnu packages pcre)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pretty-print)
+  #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages serialization)
-  #:use-module (guix download)
-  #:use-module (guix git-download))
+  #:use-module (gnu packages suckless)
+  #:use-module (gnu packages textutils)
+  #:use-module (gnu packages version-control)
+  #:use-module (gnu packages video)
+  #:use-module (gnu packages web)
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg))
 
 (define-public bspwm
   (package
@@ -691,14 +691,14 @@ Haskell, no knowledge of the language is required to install and use it.")
 (define-public ghc-xmonad-contrib
   (package
     (name "ghc-xmonad-contrib")
-    (version "0.15")
+    (version "0.16")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://hackage/package/xmonad-contrib/"
                            "xmonad-contrib-" version ".tar.gz"))
        (sha256
-        (base32 "0r9yzgy67j4mi3dyxx714f0ssk5qzca5kh4zw0fhiz1pf008cxms"))))
+        (base32 "1pddgkvnbww28wykncc7j0yb0lv15bk7xnnhdcbrwkxzw66w6wmd"))))
     (build-system haskell-build-system)
     (propagated-inputs
      `(("ghc-old-time" ,ghc-old-time)
@@ -1034,15 +1034,15 @@ Keybinder works with GTK-based applications using the X Window System.")
     (version "3.2.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (let ((version-with-underscores
-                   (string-join (string-split version #\.) "_")))
-              (string-append "https://github.com/conformal/spectrwm/archive/"
-                             "SPECTRWM_" version-with-underscores ".tar.gz")))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/conformal/spectrwm.git")
+             (commit
+              (string-append "SPECTRWM_"
+                             (string-join (string-split version #\.) "_")))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0z7gjmp1x6y8q3dnw6swvbv8x2wd4ykzjvi3ibk2sxhgc910907v"))))
+        (base32 "1dfqy5f0s1nv6rqkz9lj006vypmp4rwxd5vczfk3ndzqgnh19kw6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (let ((pkg-config (lambda (flag)
@@ -1194,15 +1194,14 @@ its size
 (define-public polybar
   (package
     (name "polybar")
-    (version "3.3.1")
+    (version "3.4.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/jaagr/polybar/releases/"
+       (uri (string-append "https://github.com/polybar/polybar/releases/"
                            "download/" version "/polybar-" version ".tar"))
        (sha256
-        (base32 "0758na059vpgnsrcdrxmh9wsahs80wnmizb9g7bmixlrkxr2m65h"))
-       (file-name (string-append name "-" version ".tar"))))
+        (base32 "1sy4xnx9rnj5z22kca8al84ivjg4mkvb9wj68pqq2y02l54gldwy"))))
     (build-system cmake-build-system)
     (arguments
      ;; Test is disabled because it requires downloading googletest from the
@@ -1212,6 +1211,7 @@ its size
      `(("alsa-lib" ,alsa-lib)
        ("cairo" ,cairo)
        ("i3-wm" ,i3-wm)
+       ("jsoncpp" ,jsoncpp)
        ("libmpdclient" ,libmpdclient)
        ("libnl" ,libnl)
        ("libxcb" ,libxcb)

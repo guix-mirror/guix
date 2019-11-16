@@ -39,6 +39,7 @@
               (uri (git-reference
                     (url "https://github.com/mikiobraun/jblas.git")
                     (commit (string-append "jblas-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "0afh48hq8i8li5z11x415c8slwsfrlib0w1xjfbg186mximqvv3g"))))

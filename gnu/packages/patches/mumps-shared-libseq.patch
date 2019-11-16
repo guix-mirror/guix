@@ -1,0 +1,42 @@
+Create a shared version of the sequential library, MUST BE LAST IN SERIES
+
+Index: mumps/libseq/Makefile
+===================================================================
+--- mumps.orig/libseq/Makefile
++++ mumps/libseq/Makefile
+@@ -8,15 +8,17 @@ all: libmpiseq
+ 
+ include ../Makefile.inc
+ 
+-libmpiseq: libmpiseq$(PLAT)$(LIBEXT)
++libmpiseq: libmpiseq$(PLAT).a libmpiseq$(PLAT).so
+ 
+-libmpiseq$(PLAT)$(LIBEXT): mpi.o mpic.o elapse.o
+-	$(AR)$@ mpi.o mpic.o elapse.o
++libmpiseq$(PLAT).a: mpi.o mpic.o elapse.o
++	$(AR) $@ mpi.o mpic.o elapse.o
+ 	$(RANLIB) $@
++libmpiseq$(PLAT).so: mpi.o mpic.o elapse.o
++	$(FC) -shared $^ -Wl,-soname,libmpiseq$(PLAT)-5.1.2.so -o libmpiseq$(PLAT)-5.1.2.so -Wl,-z,defs
+ .f.o:
+-	$(FC) $(OPTF)              -c $*.f $(OUTF)$*.o
++	$(FC) $(OPTF)              -fPIC -c $*.f $(OUTF)$*.o
+ .c.o:
+-	$(CC) $(OPTC) $(CDEFS) -I. -c $*.c $(OUTC)$*.o
++	$(CC) $(OPTC) $(CDEFS) -I. -fPIC -c $*.c $(OUTC)$*.o
+ 
+ clean:
+-	$(RM) *.o *$(LIBEXT)
++	$(RM) *.o *.a *.so
+Index: mumps/Makefile
+===================================================================
+--- mumps.orig/Makefile
++++ mumps/Makefile
+@@ -60,6 +60,7 @@ requiredobj: Makefile.inc $(LIBSEQNEEDED
+ 
+ libseqneeded:
+ 	(cd libseq; $(MAKE))
++	cp libseq/lib* $(libdir)
+ 
+ # Build the libpord.a library and copy it into $(topdir)/lib
+ $(libdir)/libpord$(PLAT).a:

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,7 +38,7 @@
 (define-public poedit
   (package
     (name "poedit")
-    (version "2.2.1")
+    (version "2.2.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -46,7 +47,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1fxzmry4b23l90j03jdyvd4jprdpy4xcnhw7xrmmfnlbh2abf9x7"))
+                "147jiiab4n0nbhzp1vw1jn8ykhy7qh6zf02654ppi0imdfvfnjss"))
              (modules '((guix build utils)))
              (snippet
               '(begin

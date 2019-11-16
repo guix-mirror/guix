@@ -44,6 +44,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
@@ -1093,7 +1094,7 @@ toolkit.")
 (define-public gtkmm
   (package
     (name "gtkmm")
-    (version "3.24.0")
+    (version "3.24.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1101,7 +1102,7 @@ toolkit.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0hxaq4x9jqj8vvnv3sb6nwapz83v8lclbm887qqci0g50llcjpyg"))))
+               "1hxdnhavjyvbcpxhd5z17l9fj4182028s66lc0s16qqqrldhjwbd"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("glib" ,glib "bin")        ;for 'glib-compile-resources'
@@ -1319,14 +1320,14 @@ produces identical output on all those targets.")
 (define-public perl-gtk2
   (package
     (name "perl-gtk2")
-    (version "1.24992")
+    (version "1.24993")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/X/XA/XAOC/Gtk2-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1044rj3wbfmgaif2jb0k28m2aczli6ai2n5yvn6pr7zjyw16kvd2"))))
+                "0ry9jfvfgdwzalxcvwsgr7plhk3agx7p40l0fqdf3vrf7ds47i29"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-extutils-depends" ,perl-extutils-depends)
@@ -1737,7 +1738,7 @@ independent of your desktop environment, and supports global key bindings.")
 (define-public yad
   (package
     (name "yad")
-    (version "0.41.0")
+    (version "5.0")
     (source
      (origin
        (method git-fetch)
@@ -1746,24 +1747,24 @@ independent of your desktop environment, and supports global key bindings.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1hkxiich898sbacpg3jflf6i8l4hkfnc0zh10rr376v0mnzbn6jn"))))
-    (build-system gnu-build-system)
+        (base32 "07rd61hvilsxxrj7lf8c9k0a8glj07s48m7ya8d45030r90g3lvc"))))
+    (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags
-       '("--with-gtk=gtk3"
-         "--enable-html"
-         "--enable-gio"
-         "--enable-spell"
-         "--enable-icon-browser")
+       ;; Passing --enable-foo will silently disable foo if prerequisite
+       ;; inputs are missing, not abort the build as one might expect.
+       ;; ‘--enable-html’ adds a huge webkitgtk dependency.  It was never
+       ;; present in the past and nobody complained.
+       '("--enable-icon-browser"
+         "--enable-spell")              ; gspell checking support
        #:phases
        (modify-phases %standard-phases
-         (replace 'bootstrap
+         (add-after 'bootstrap 'intltoolize
            (lambda _
-             (invoke "autoreconf" "-vif")
-             (invoke "intltoolize" "--force" "--automake")
-             #t)))))
+             (invoke "intltoolize" "--force" "--automake"))))))
     (inputs
-     `(("gtk+" ,gtk+)))
+     `(("gspell" ,gspell)
+       ("gtk+" ,gtk+)))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)

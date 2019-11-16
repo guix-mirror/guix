@@ -291,9 +291,9 @@ the required network abstractions for applications.")
        ("logrus" ,go-github-com-sirupsen-logrus)
        ("go-netlink" ,go-netlink)
        ("go-netns" ,go-netns)
-       ("go-golang-org-x-crypto-ssh-terminal"
-        ,go-golang-org-x-crypto-ssh-terminal)
-       ("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
+       ("go-golang-org-x-crypto"
+        ,go-golang-org-x-crypto)
+       ("go-golang-org-x-sys" ,go-golang-org-x-sys)))
     (synopsis "Docker user-space proxy")
     (description "A proxy running in the user space.  It is used by the
 built-in registry server of Docker.")
@@ -317,7 +317,8 @@ built-in registry server of Docker.")
        (patches
         (search-patches "docker-engine-test-noinstall.patch"
                         "docker-fix-tests.patch"
-                        "docker-use-fewer-modprobes.patch"))))
+                        "docker-use-fewer-modprobes.patch"
+                        "docker-adjust-tests-for-changes-in-go.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules

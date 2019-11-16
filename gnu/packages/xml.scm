@@ -975,14 +975,14 @@ XSL-T processor.  It also performs any necessary post-processing.")
 (define-public xmlsec
   (package
     (name "xmlsec")
-    (version "1.2.28")
+    (version "1.2.29")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.aleksey.com/xmlsec/download/"
                                   "xmlsec1-" version ".tar.gz"))
               (sha256
                (base32
-                "1m12caglhyx08g8lh2sl3nkldlpryzdx2d572q73y3m33s0w9vhk"))))
+                "1arr50fvma01q2ix7g4k2c7lb8qcqjajn7wdc07r66b0jsxdxldi"))))
     (build-system gnu-build-system)
     (propagated-inputs                  ; according to xmlsec1.pc
      `(("libxml2" ,libxml2)
@@ -1021,28 +1021,18 @@ Libxml2).")
     (name "minixml")
     (version "2.12")
     (source (origin
-              (method url-fetch/tarbomb)
+              (method url-fetch)
               (uri (string-append "https://github.com/michaelrsweet/mxml/"
                                   "releases/download/v" version
                                   "/mxml-" version ".tar.gz"))
               (sha256
                (base32
-                "1z8nqxa4pqdic8wpixkkgg1m2pak9wjikjjxnk3j5i0d29dbgmmg"))))
+                "0kq3wiycb40dcyswvajrqb1n5ffm5xcnsfxxaml92vhpl6x57yvb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        (list (string-append "LDFLAGS=-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-permissions
-           ;; FIXME: url-fetch/tarbomb resets all permissions to 555/444.
-           (lambda _
-             (for-each
-              (lambda (file)
-                (chmod file #o644))
-              (find-files "doc" "\\."))
-             #t)))
        #:tests? #f))                    ; tests are run during build
     (home-page "https://michaelrsweet.github.io/mxml")
     (synopsis "Small XML parsing library")

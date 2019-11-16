@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2016 David Thompson <dthompson2@worcester.edu>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
 ;;; Copyright © 2014, 2015, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
@@ -44,6 +44,7 @@
 ;;; Copyright © 2019 Dan Frumin <dfrumin@cs.ru.nl>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
+;;; Copyright © 2019 Josh Holland <josh@inv.alid.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -499,7 +500,7 @@ tired of cows, a variety of other ASCII-art messengers are available.")
 (define-public freedoom
   (package
     (name "freedoom")
-    (version "0.11.3")
+    (version "0.12.1")
     (source
      (origin
        (method git-fetch)
@@ -508,38 +509,19 @@ tired of cows, a variety of other ASCII-art messengers are available.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0k4dlgr82qk6i7dchp3nybq6awlfag2ivy3zzl1v6vhcrnbvssgl"))))
+        (base32 "1mq60lfwaaxmch7hsz8403pwafnlsmsd5z2df2j77ppwndwcrypb"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
        (list (string-append "prefix=" (assoc-ref %outputs "out")))
-       #:parallel-build? #f
        #:tests? #f                      ; no check target
        #:phases
        (modify-phases %standard-phases
          (delete 'bootstrap)
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((dejavu (assoc-ref inputs "font-dejavu"))
-                    (freedoom (assoc-ref outputs "out"))
+             (let* ((freedoom (assoc-ref outputs "out"))
                     (wad-dir (string-append freedoom "/share/games/doom")))
-               ;; Replace the font-searching function in a shell
-               ;; script with a direct path to the required font.
-               ;; This is necessary because ImageMagick can only find the
-               ;; most basic fonts while in the build environment.
-               (substitute* "graphics/titlepic/create_caption"
-                 (("font=\\$\\(find_font.*$")
-                  (string-append
-                   "font=" dejavu
-                   "/share/fonts/truetype/DejaVuSansCondensed-Bold.ttf\n")))
-               ;; Make icon creation reproducible.
-               (substitute* "dist/Makefile"
-                 (("freedm.png")
-                  "-define png:exclude-chunks=date freedm.png")
-                 (("freedoom1.png")
-                  "-define png:exclude-chunks=date freedoom1.png")
-                 (("freedoom2.png")
-                  "-define png:exclude-chunks=date freedoom2.png"))
                ;; Make sure that the install scripts know where to find
                ;; the appropriate WAD files.
                (substitute* "dist/freedoom"
@@ -553,11 +535,8 @@ tired of cows, a variety of other ASCII-art messengers are available.")
     (native-inputs
      `(("asciidoc" ,asciidoc)
        ("deutex" ,deutex)
-       ("font-dejavu" ,font-dejavu)
-       ("imagemagick" ,imagemagick)
-       ("python" ,python-2)))
-    (inputs
-     `(("prboom-plus" ,prboom-plus)))
+       ("python" ,python)
+       ("python-pillow" ,python-pillow)))
     (home-page "https://freedoom.github.io/")
     (synopsis "Free content game based on the Doom engine")
     (native-search-paths
@@ -1437,14 +1416,23 @@ fight Morgoth, the Lord of Darkness.")
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/Pingus/pingus.git")
+              (url "https://gitlab.com/pingus/pingus.git")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32
          "0wp06kcmknsnxz7bjnsndb8x062z7r23fb3yrnbfnj68qhz18y74"))
        (patches (search-patches "pingus-boost-headers.patch"
-                                "pingus-sdl-libs-config.patch"))))
+                                "pingus-sdl-libs-config.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (substitute* "src/pingus/screens/demo_session.cpp"
+             (("#include <iostream>")
+              ;; std::function moved to <functional> with C++ 11.
+              ;; Remove this for versions newer than 0.7.6.
+              "#include <iostream>\n#include <functional>"))
+           #t))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("scons-python2" ,scons-python2)))
@@ -1854,7 +1842,7 @@ match, cannon keep, and grave-itation pit.")
 (define minetest-data
   (package
     (name "minetest-data")
-    (version "5.0.1")
+    (version "5.1.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1863,7 +1851,7 @@ match, cannon keep, and grave-itation pit.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1hw3n7qqpasq6bivxhq01kr0d58w0gp46s0baxixp1fakd79p8a7"))))
+                "1r9fxz2j24q74a9injvbxbf2xk67fzabv616i676zw2cvgv9hn39"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("source" ,source)))
@@ -1888,7 +1876,7 @@ match, cannon keep, and grave-itation pit.")
 (define-public minetest
   (package
     (name "minetest")
-    (version "5.0.1")
+    (version "5.1.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1897,7 +1885,7 @@ match, cannon keep, and grave-itation pit.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "11i8fqjpdggqfdlx440k5758zy0nbf9phxan9r63mavc7mph88ay"))
+                "184n9gxfa7yr0j85z2x736maaymsnppd5jzm326wlqri3c0qqy3z"))
               (modules '((guix build utils)))
               (snippet
                 '(begin
@@ -2594,24 +2582,14 @@ world}, @uref{http://evolonline.org, Evol Online} and
 (define openttd-engine
   (package
     (name "openttd-engine")
-    (version "1.8.0")
+    (version "1.9.3")
     (source
      (origin (method url-fetch)
-             (uri (string-append "http://binaries.openttd.org/releases/"
+             (uri (string-append "https://proxy.binaries.openttd.org/openttd-releases/"
                                  version "/openttd-" version "-source.tar.xz"))
-             (patches
-              (list
-               (origin (method url-fetch)
-                       (uri (string-append
-                             "https://github.com/OpenTTD/OpenTTD/commit/"
-                             "19076c24c1f3baf2a22d1fa832d5688216cf54a3.patch"))
-                       (file-name "openttd-fix-compilation-with-ICU-61.patch")
-                       (sha256
-                        (base32
-                         "02d1xmb75yv4x6rfnvxk3vvq4l3lvvwr2pfsdzn7lzalic51ziqh")))))
              (sha256
               (base32
-               "0zq8xdg0k92p3s4j9x76591zaqz7k9ra69q008m209vdfffjvly2"))
+               "0ijq72kgx997ggw40i5f4a3nf7y2g72z37l47i18yjvgbdzy320r"))
              (modules '((guix build utils)))
              (snippet
               ;; The DOS port contains proprietary software.
@@ -2656,7 +2634,7 @@ Tycoon Deluxe with many enhancements including multiplayer mode,
 internationalization support, conditional orders and the ability to clone,
 autoreplace and autoupdate vehicles.  This package only includes the game
 engine.  When you start it you will be prompted to download a graphics set.")
-    (home-page "http://openttd.org/")
+    (home-page "https://www.openttd.org/")
     ;; This package is GPLv2, except for a few files located in
     ;; "src/3rdparty/" which are under the 3-clause BSD, LGPLv2.1+ and Zlib
     ;; licenses.  In addition, this software contains an in-game downloader
@@ -2667,7 +2645,7 @@ engine.  When you start it you will be prompted to download a graphics set.")
 (define openttd-opengfx
   (package
     (name "openttd-opengfx")
-    (version "0.5.2")
+    (version "0.5.5")
     (source
      (origin
        (method url-fetch)
@@ -2675,7 +2653,7 @@ engine.  When you start it you will be prompted to download a graphics set.")
                            version "/opengfx-" version "-source.tar.xz"))
        (sha256
         (base32
-         "0iz66q7p1mf00njfjbc4vibh3jaybki7armkl18iz7p6x4chp9zv"))))
+         "009fa1bdin1bk0ynzhzc30hzkmmwzmwkk6j591ax3f6w75l28n49"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "CC=gcc"
@@ -2910,7 +2888,7 @@ Transport Tycoon Deluxe.")
 (define-public openrct2
   (package
     (name "openrct2")
-    (version "0.2.3")
+    (version "0.2.4")
     (source
      (origin
        (method git-fetch)
@@ -2919,7 +2897,7 @@ Transport Tycoon Deluxe.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01mj6jlbl2cn3wpk6sy34ldzdl0qykpn7fncznjykklj2nqzr4ig"))))
+        (base32 "1rlw3w20llg36sj3bk50g661qw766ng8ma3p42sdkj8br9dw800h"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags (list "-DDOWNLOAD_OBJECTS=OFF"
@@ -4755,7 +4733,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
 (define-public crawl
   (package
     (name "crawl")
-    (version "0.23.2")
+    (version "0.24.0")
     (source
      (origin
        (method url-fetch)
@@ -4768,7 +4746,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
              (string-append "http://crawl.develz.org/release/stone_soup-"
                             version "-nodeps.tar.xz")))
        (sha256
-        (base32 "1hw10hqhh688mrqs9vxrl17y1dzfjzsmxz6izg1a9dzmjlhrc01a"))
+        (base32 "0kdq6s12myxfdg75ma9x3ys2nd0xwb3xm2ynlmhg4628va0pnixr"))
        (patches (search-patches "crawl-upgrade-saves.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -5158,7 +5136,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
 (define-public tome4
   (package
     (name "tome4")
-    (version "1.5.10")
+    (version "1.6.0")
     (synopsis "Single-player, RPG roguelike game set in the world of Eyal")
     (source
      (origin
@@ -5167,7 +5145,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
                            version ".tar.bz2"))
        (sha256
         (base32
-         "0mc5dgh2x9nbili7gy6srjhb23ckalf08wqq2amyjr5rq392jvd7"))
+         "1z1w4ycgl5wbm0sv7577vcdfwwf4k7vaf2njzyb21rvqjizpbkwr"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -5508,7 +5486,7 @@ elements to achieve a simple goal in the most complex way possible.")
 (define-public pioneer
   (package
     (name "pioneer")
-    (version "20180203")
+    (version "20190203")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5517,16 +5495,15 @@ elements to achieve a simple goal in the most complex way possible.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0hp2mf36kj2v93hka8m8lxw2qhmnjc62wjlpw7c7ix0r8xa01i6h"))))
-    (build-system gnu-build-system)
+                "1g34wvgyvz793dhm1k64kl82ib0cavkbg0f2p3fp05b457ycljff"))))
+    (build-system cmake-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("assimp" ,assimp)
        ("curl" ,curl)
        ("freetype" ,freetype)
+       ("glew" ,glew)
        ("glu" ,glu)
        ("libpng" ,libpng)
        ("libsigc++" ,libsigc++)
@@ -5536,16 +5513,9 @@ elements to achieve a simple goal in the most complex way possible.")
        ("sdl" ,(sdl-union (list sdl2 sdl2-image)))))
     (arguments
      `(#:tests? #f                      ;tests are broken
-       #:configure-flags (list "--with-external-liblua"
-                               (string-append "PIONEER_DATA_DIR="
-                                              %output "/share/games/pioneer"))
-       #:phases (modify-phases %standard-phases
-                  (add-before 'bootstrap 'fix-lua-check
-                    (lambda _
-                      (substitute* "configure.ac"
-                        (("lua5.2")
-                         (string-append "lua-" ,(version-major+minor
-                                                 (package-version lua-5.2))))))))))
+       #:configure-flags (list "-DUSE_SYSTEM_LIBLUA:BOOL=YES"
+                               (string-append "-DPIONEER_DATA_DIR="
+                                              %output "/share/games/pioneer"))))
     (home-page "http://pioneerspacesim.net")
     (synopsis "Game of lonely space adventure")
     (description

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Mckinley Olsen <mck.olsen@gmail.com>
-;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2016, 2017, 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
@@ -171,14 +171,17 @@ insert mode and command mode where keybindings have different functions.")
 (define-public asciinema
   (package
     (name "asciinema")
-    (version "1.4.0")
+    (version "2.0.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "asciinema" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/asciinema/asciinema")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1jrf8c8711gkdilmvyv3d37kp8xfvdc5cqighw5k92a6g9z4acgv"))))
+         "1a2pysxnp6icyd08mgf66xr6f6j0irnfxdpf3fmzcz31ix7l9kc4"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -186,14 +189,16 @@ insert mode and command mode where keybindings have different functions.")
          (add-before 'build 'patch-exec-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((ncurses (assoc-ref inputs "ncurses")))
-               (substitute* "asciinema/recorder.py"
+               (substitute* "asciinema/term.py"
                  (("'tput'")
                   (string-append "'" ncurses "/bin/tput'"))))
-             #t)))))
+             #t))
+         (replace 'check
+           (lambda _ (invoke "nosetests" "-v"))))))
     (inputs `(("ncurses" ,ncurses)))
     (native-inputs
      ;; For tests.
-     `(("python-requests" ,python-requests)))
+     `(("python-nose" ,python-nose)))
     (home-page "https://asciinema.org")
     (synopsis "Terminal session recorder")
     (description
@@ -214,6 +219,7 @@ text-based approach to terminal recording.")
                 (uri (git-reference
                       (url (string-append "https://github.com/Aetf/" name))
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "0mwn91i5h5d518i1s05y7hzv6bc13vzcvxszpfh77473iwg4wprx"))))
@@ -721,42 +727,6 @@ programmer to write text-based user interfaces.")
       (home-page "https://github.com/nsf/termbox-go")
       (license license:expat))))
 
-(define-public go-golang.org-x-crypto-ssh-terminal
-  (let ((commit "c78caca803c95773f48a844d3dcab04b9bc4d6dd")
-        (revision "0"))
-    (package
-      (name "go-golang.org-x-crypto-ssh-terminal")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/crypto")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0vxlfxr9y681yn2cfh6dbqmq35vvq4f45ay0mm31ffkny9cms0y4"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "golang.org/x/crypto/ssh/terminal"
-         #:unpack-path "golang.org/x/crypto"
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
-             (lambda* (#:key outputs #:allow-other-keys)
-               (map (lambda (file)
-                      (make-file-writable file))
-                    (find-files
-                     (string-append (assoc-ref outputs "out")
-                                    "/src/golang.org/x/crypto/ed25519/testdata")
-                     ".*\\.gz$"))
-               #t)))))
-      (synopsis "Support functions for dealing with terminals in Go")
-      (description "@code{terminal} provides support functions for dealing
-with terminals in Go.")
-      (home-page "https://go.googlesource.com/crypto/")
-      (license license:bsd-3))))
-
 (define-public go-github-com-junegunn-fzf
   (package
     (name "go-github-com-junegunn-fzf")
@@ -779,7 +749,7 @@ with terminals in Go.")
        ("go-github-com-mattn-go-shellwords" ,go-github-com-mattn-go-shellwords)
        ("go-github-com-mattn-go-isatty" ,go-github-com-mattn-go-isatty)
        ("go-github-com-gdamore-tcell" ,go-github-com-gdamore-tcell)
-       ("go-golang-org-x-crypto-ssh-terminal" ,go-golang-org-x-crypto-ssh-terminal)))
+       ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)))
     (home-page "https://github.com/junegunn/fzf")
     (synopsis "Command-line fuzzy-finder")
     (description "This package provides an interactive command-line filter
@@ -805,8 +775,8 @@ usable with any list--including files, command history, processes and more.")
       (arguments
        '(#:import-path "github.com/howeyc/gopass"))
       (propagated-inputs
-       `(("go-golang.org-x-crypto-ssh-terminal"
-          ,go-golang.org-x-crypto-ssh-terminal)))
+       `(("go-golang-org-x-crypto"
+          ,go-golang-org-x-crypto)))
       (synopsis "Retrieve password from a terminal or piped input in Go")
       (description
        "@code{gopass} is a Go package for retrieving a password from user
@@ -956,7 +926,7 @@ tmux.")
 (define-public kitty
   (package
     (name "kitty")
-    (version "0.14.5")
+    (version "0.14.6")
     (home-page "https://sw.kovidgoyal.net/kitty/")
     (source
      (origin
@@ -966,8 +936,7 @@ tmux.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0qx3wj4n3zgjcpd1vjjwdlz8d1vp8bkxihsg2khlla1izandgxxa"))
+        (base32 "1rb5ys9xsdhd2qa3kz5gqzz111c6b14za98va6hlglk69wqlmb51"))
        (modules '((guix build utils)))
        (snippet
         '(begin

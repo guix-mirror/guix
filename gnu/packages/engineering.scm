@@ -767,48 +767,27 @@ language.")
 (define-public kicad
     (package
       (name "kicad")
-      (version "5.0.2")
+      (version "5.1.4")
       (source
        (origin
          (method url-fetch)
          (file-name (string-append name "-" version ".tar.xz"))
          (uri (string-append
-                "https://launchpad.net/kicad/" (version-major+minor version)
-                "/" version "/+download/kicad-" version ".tar.xz"))
+                "https://launchpad.net/kicad/" (version-major version)
+                ".0/" version "/+download/kicad-" version ".tar.xz"))
          (sha256
-          (base32 "10605rr10x0353n6yk2z095ydnkd1i6j1ncbq64pfxdn5vkhcd1g"))))
+          (base32 "1r60dgh6aalbpq1wsmpyxkz0nn4ck8ydfdjcrblpl69k5rks5k2j"))))
       (build-system cmake-build-system)
       (arguments
        `(#:out-of-source? #t
          #:tests? #f ; no tests
          #:build-type "Release"
          #:configure-flags
-         (list "-DKICAD_STABLE_VERSION=ON"
-               "-DKICAD_REPO_NAME=stable"
-               "-DKICAD_SKIP_BOOST=ON"; Use our system's boost library.
-               "-DKICAD_SCRIPTING=ON"
-               "-DKICAD_SCRIPTING_MODULES=ON"
-               "-DKICAD_SCRIPTING_WXPYTHON=ON"
-               ;; Has to be set explicitly, as we don't have the wxPython
-               ;; headers in the wxwidgets store item, but in wxPython.
-               (string-append "-DCMAKE_CXX_FLAGS=-I"
-                              (assoc-ref %build-inputs "wxpython")
-                              "/include/wx-"
-                             ,(version-major+minor
-                                (package-version python2-wxpython)))
-               "-DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE"
-               "-DKICAD_SPICE=TRUE"
-               ;; TODO: Enable this when CA certs are working with curl.
-               "-DBUILD_GITHUB_PLUGIN=OFF")
+         (list "-DKICAD_SCRIPTING_PYTHON3=ON"
+               "-DKICAD_SCRIPTING_WXPYTHON_PHOENIX=ON"
+               "-DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE")
          #:phases
          (modify-phases %standard-phases
-           (add-after 'unpack 'adjust-boost-include
-             (lambda _
-               ;; The location of this header changed in Boost 1.66.
-               (substitute* "3d-viewer/3d_cache/3d_cache.cpp"
-                 (("boost/uuid/sha1\\.hpp")
-                  "boost/uuid/detail/sha1.hpp"))
-               #t))
            (add-after 'install 'wrap-program
              ;; Ensure correct Python at runtime.
              (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -845,9 +824,9 @@ language.")
          ("mesa" ,mesa)
          ("opencascade-oce" ,opencascade-oce)
          ("openssl" ,openssl)
-         ("python" ,python-2)
-         ("wxwidgets" ,wxwidgets-gtk2)
-         ("wxpython" ,python2-wxpython)))
+         ("python" ,python)
+         ("wxwidgets" ,wxwidgets)
+         ("wxpython" ,python-wxpython)))
       (home-page "http://kicad-pcb.org/")
       (synopsis "Electronics Design Automation Suite")
       (description "Kicad is a program for the formation of printed circuit
@@ -921,7 +900,7 @@ render model libraries.")
 (define-public kicad-symbols
   (package
     (name "kicad-symbols")
-    (version "5.0.2")
+    (version "5.1.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -930,7 +909,7 @@ render model libraries.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1rjh2pjcrc3bhcgyyskj5pssm7vffrjk0ymwr70fb7sjpmk96yjk"))))
+                "1lna4xlvzrxif3569pkp6mrg7fj62z3a3ri5j97lnmnnzhiddnh3"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ; No tests exist
@@ -1546,7 +1525,7 @@ unique design feature of Trilinos is its focus on packages.")
      `(#:tests? #f
        #:configure-flags
        (list
-        "CXXFLAGS=-O3 -std=c++11"
+        "CXXFLAGS=-O3"
         (string-append "ARCHDIR="
                        (assoc-ref %build-inputs "trilinos")))))
     (native-inputs
@@ -1586,7 +1565,7 @@ parallel computing platforms.  It also supports serial execution.")
     (arguments
      `(,@(substitute-keyword-arguments (package-arguments xyce-serial)
            ((#:configure-flags flags)
-            `(list "CXXFLAGS=-O3 -std=c++11"
+            `(list "CXXFLAGS=-O3"
                    "CXX=mpiCC"
                    "CC=mpicc"
                    "F77=mpif77"
@@ -2007,6 +1986,7 @@ editors.")
               (uri (git-reference
                     (url "https://github.com/markwal/GPX.git")
                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1yab269x8qyf7rd04vaxyqyjv4pzz9lp4sc4dwh927k23avr3rw5"))))
@@ -2224,7 +2204,7 @@ full programmatic control over your models.")
 (define-public freecad
   (package
     (name "freecad")
-    (version "0.18.3")
+    (version "0.18.4")
     (source
      (origin
        (method git-fetch)
@@ -2234,7 +2214,7 @@ full programmatic control over your models.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1ny29y0h8smg1bwi5yn4kcnyfprqh3v7v2z8837cmmhcwp8dr95m"))))
+         "170hk1kgrvsddrwykp24wyj0cha78zzmzbf50gn98x7ngqqs395s"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -2427,7 +2407,7 @@ or the official 3dxserv, as if they were using the magellan SDK.
 
 Also, libspnav provides a magellan API wrapper on top of the new API.  So, any
 applications that were using the magellan library, can switch to libspnav
-without any changes.  And programmers that are familliar with the magellan API
+without any changes.  And programmers that are familiar with the magellan API
 can continue using it with a free library without the restrictions of the
 official SDK.")
     (license license:bsd-3)))

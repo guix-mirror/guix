@@ -28,15 +28,14 @@
 (define-public cpio
   (package
     (name "cpio")
-    (version "2.12")
+    (version "2.13")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/cpio/cpio-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0vi9q475h1rki53100zml75vxsykzyhrn70hidy41s5c2rc8r6bh"))
-             (patches (search-patches "cpio-CVE-2016-2037.patch"))))
+               "0vbgnhkawdllgnkdn6zn1f56fczwk0518krakz2qbwhxmv2vvdga"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/cpio/")
     (synopsis "Manage cpio and tar file archives")

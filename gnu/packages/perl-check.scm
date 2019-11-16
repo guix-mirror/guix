@@ -805,14 +805,14 @@ memory_cycle_ok( $object );
 (define-public perl-test-mockmodule
   (package
     (name "perl-test-mockmodule")
-    (version "0.170.0")
+    (version "0.171.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/G/GF/GFRANKS/"
                            "Test-MockModule-v" version ".tar.gz"))
        (sha256
-        (base32 "0pggwrlqj6k44qayhbpjqkzry1r626iy2vf30zlf2jdhbjbvlycz"))))
+        (base32 "1arqgb1773zym5dqlwm6kz48bfrccjhb5bjfsif0vkalwq2gvm7b"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
@@ -1170,7 +1170,7 @@ reported, and the tests skipped.")
 (define-public perl-test-runvalgrind
   (package
     (name "perl-test-runvalgrind")
-    (version "0.2.0")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
@@ -1179,8 +1179,7 @@ reported, and the tests skipped.")
              version
              ".tar.gz"))
        (sha256
-        (base32
-         "0cfndkn2k9pcx290wcblwmrwh1ybs0grxjlsrp8fbqqbmmjpb53h"))))
+        (base32 "175hlycrhgwrp7j4rwx5bk4fd6775242wjdqv107rvgsrszsi915"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
