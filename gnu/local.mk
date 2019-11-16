@@ -796,7 +796,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/elixir-path-length.patch			\
   %D%/packages/patches/elm-compiler-disable-reactor.patch	\
   %D%/packages/patches/elm-compiler-fix-map-key.patch		\
-  %D%/packages/patches/elm-compiler-relax-glsl-bound.patch	\
   %D%/packages/patches/emacs-dired-toggle-sudo-emacs-26.patch   \
   %D%/packages/patches/emacs-exec-path.patch			\
   %D%/packages/patches/emacs-fix-scheme-indent-function.patch	\
