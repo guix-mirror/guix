@@ -44,7 +44,7 @@
     (inputs
      `(("agda" ,agda)
        ("agda-ial" ,agda-ial)
-       ("ghc" ,ghc-8.4)
+       ("ghc" ,ghc)
        ("ghc-alex" ,ghc-alex)
        ("ghc-happy" ,ghc-happy)))
     (build-system emacs-build-system)
