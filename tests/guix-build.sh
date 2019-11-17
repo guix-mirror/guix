@@ -36,6 +36,12 @@ guix build -e '(@@ (gnu packages bootstrap) %bootstrap-guile)' |	\
 guix build hello -d |				\
     grep -e '-hello-[0-9\.]\+\.drv$'
 
+# Passing a .drv.
+drv="`guix build -e '(@@ (gnu packages bootstrap) %bootstrap-guile)' -d`"
+out="`guix build "$drv"`"
+out2="`guix build -e '(@@ (gnu packages bootstrap) %bootstrap-guile)'`"
+test "$out" = "$out2"
+
 # Passing a URI.
 GUIX_DAEMON_SOCKET="file://$GUIX_STATE_DIRECTORY/daemon-socket/socket"	\
 guix build -e '(@@ (gnu packages bootstrap) %bootstrap-guile)'
