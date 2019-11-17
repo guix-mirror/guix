@@ -8745,6 +8745,9 @@ with a new public API, and RPython support.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+	 (add-before 'install 'set-HOME
+	   (lambda _
+	     (setenv "HOME" "/tmp")))
          (replace 'check
            (lambda _
              ;; Tests require write access to HOME.
