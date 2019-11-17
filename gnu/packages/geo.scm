@@ -10,6 +10,7 @@
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
+;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1213,3 +1214,33 @@ supports loading GPX tracks, background imagery and OSM data from local
 sources as well as from online sources and allows to edit the OSM data (nodes,
 ways, and relations) and their metadata tags.")
     (license license:gpl2+)))
+
+(define-public libmaxminddb
+  (package
+    (name "libmaxminddb")
+    (version "1.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/maxmind/libmaxminddb"
+                           "/releases/download/" version "/"
+                           "/libmaxminddb-" version ".tar.gz"))
+       (sha256
+        (base32 "0mnimbaxnnarlw7g1rh8lpxsyf7xnmzwcczcc3lxw8xyf6ljln6x"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-cc-to-gcc
+           (lambda _
+             (setenv "CC" "gcc"))))))
+    (native-inputs
+     `(("perl" ,perl)))
+    (home-page "https://maxmind.github.io/libmaxminddb/")
+    (synopsis "C library for the MaxMind DB file format")
+    (description "The libmaxminddb library provides a C library for reading
+MaxMind DB files, including the GeoIP2 databases from MaxMind.  The MaxMind DB
+format is a custom, but open, binary format designed to facilitate fast
+lookups of IP addresses while allowing flexibility in the type of data
+associated with an address.")
+    (license license:asl2.0)))
