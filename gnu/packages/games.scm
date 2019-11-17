@@ -7337,14 +7337,14 @@ play with up to four players simultaneously.  It has network support.")
 (define-public hedgewars
   (package
     (name "hedgewars")
-    (version "0.9.25")
+    (version "1.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.hedgewars.org/download/releases/"
                                   "hedgewars-src-" version ".tar.bz2"))
               (sha256
                (base32
-                "08x7fqpy0hpnbfq2k06g522xayi7s53bca819zfhalvqnqs76pdk"))))
+                "0nqm9w02m0xkndlsj6ys3wr0ik8zc14zgilq7k6fwjrf3zk385i1"))))
     (build-system cmake-build-system)
     (arguments
      ;; XXX: Engine is built as Pascal source code, requiring Free Pascal
@@ -7353,32 +7353,8 @@ play with up to four players simultaneously.  It has network support.")
      `(#:configure-flags (list "-DBUILD_ENGINE_C=ON")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'remove-failing-test
-           ;; XXX: Remove single failing test.  Note: it is marked
-           ;; a "non-critical" test.
-           (lambda _
-             (delete-file-recursively "tests/lua_noncritical")
-             #t))
-         (add-after 'unpack 'fix-compiler
-           ;; XXX: Flag BUILD_ENGINE_C, as set above, implies using Clang to
-           ;; compile files.  However, using `clang' globally leads to the
-           ;; error: qtbase-5.11.3/include/qt5/QtCore/qglobal.h:45:12: fatal
-           ;; error: 'type_traits' file not found.
-           ;;
-           ;; Therefore, we make sure to use `c++' everywhere but in the
-           ;; engine.
-           (lambda _
-             (substitute* "project_files/hwc/CMakeLists.txt"
-               (("find_package\\(SDL2_ttf 2 REQUIRED\\)" all)
-                (string-append all "\n"
-                               "set(CMAKE_C_COMPILER ${CLANG_EXECUTABLE})\n"
-                               "set(CMAKE_CXX_COMPILER ${CLANG_EXECUTABLE})")))
-             (substitute* "CMakeLists.txt"
-               (("set\\(CMAKE_C(XX)?_COMPILER" all) (string-append "#" all)))
-             #t))
          (replace 'check
-           (lambda _
-             (invoke "ctest"))))))
+           (lambda _ (invoke "ctest"))))))
     (inputs
      `(("ffmpeg" ,ffmpeg)
        ("freeglut" ,freeglut)
