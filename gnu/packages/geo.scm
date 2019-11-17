@@ -65,6 +65,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sqlite)
@@ -1266,4 +1267,27 @@ associated with an address.")
     (description "MaxMind DB is a binary file format that stores data indexed
 by IP address subnets (IPv4 or IPv6).  This is a Python module for reading
 MaxMind DB files.")
+    (license license:asl2.0)))
+
+(define-public python-geoip2
+  (package
+    (name "python-geoip2")
+    (version "2.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "geoip2" version))
+       (sha256
+        (base32
+         "1w7cay5q6zawjzivqbwz5cqx1qbdjw6kbriccb7l46p7b39fkzzp"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ;; Tests require a copy of the maxmind database
+    (inputs
+     `(("python-maxminddb" ,python-maxminddb)
+       ("python-requests" ,python-requests)))
+    (home-page "http://www.maxmind.com/")
+    (synopsis "MaxMind GeoIP2 API")
+    (description "Provides an API for the GeoIP2 web services and databases.
+The API also works with MaxMind’s free GeoLite2 databases.")
     (license license:asl2.0)))
