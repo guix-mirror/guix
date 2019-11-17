@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -357,15 +358,16 @@ the last argument of `mknod'."
           (filter-map string->number (scandir "/proc")))))
 
 (define* (mount-root-file-system root type
-                                 #:key volatile-root?)
+                                 #:key volatile-root? options)
   "Mount the root file system of type TYPE at device ROOT.  If VOLATILE-ROOT?
 is true, mount ROOT read-only and make it an overlay with a writable tmpfs
-using the kernel built-in overlayfs."
+using the kernel built-in overlayfs.  OPTIONS indicates the options to use
+to mount ROOT."
 
   (if volatile-root?
       (begin
         (mkdir-p "/real-root")
-        (mount root "/real-root" type MS_RDONLY)
+        (mount root "/real-root" type MS_RDONLY options)
         (mkdir-p "/rw-root")
         (mount "none" "/rw-root" "tmpfs")
 
@@ -382,7 +384,7 @@ using the kernel built-in overlayfs."
                "lowerdir=/real-root,upperdir=/rw-root/upper,workdir=/rw-root/work"))
       (begin
         (check-file-system root type)
-        (mount root "/root" type)))
+        (mount root "/root" type 0 options)))
 
   ;; Make sure /root/etc/mtab is a symlink to /proc/self/mounts.
   (false-if-exception
@@ -472,6 +474,12 @@ upon error."
              mounts)
         "ext4"))
 
+  (define root-fs-options
+    (any (lambda (fs)
+           (and (root-mount-point? fs)
+                (file-system-options fs)))
+         mounts))
+
   (display "Welcome, this is GNU's early boot Guile.\n")
   (display "Use '--repl' for an initrd REPL.\n\n")
 
@@ -524,7 +532,8 @@ upon error."
                               (else (file-system-label root)))))
               (mount-root-file-system (canonicalize-device-spec root)
                                       root-fs-type
-                                      #:volatile-root? volatile-root?))
+                                      #:volatile-root? volatile-root?
+                                      #:options root-fs-options))
             (mount "none" "/root" "tmpfs"))
 
         ;; Mount the specified file systems.
