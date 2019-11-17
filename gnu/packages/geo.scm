@@ -1244,3 +1244,26 @@ format is a custom, but open, binary format designed to facilitate fast
 lookups of IP addresses while allowing flexibility in the type of data
 associated with an address.")
     (license license:asl2.0)))
+
+(define-public python-maxminddb
+  (package
+    (name "python-maxminddb")
+    (version "1.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "maxminddb" version))
+       (sha256
+        (base32
+         "0y9giw81k4wdmpryr4k42w50z292mf364a6vs1vxf83ksc9ig6j4"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ;; Tests require a copy of the maxmind database
+    (inputs
+     `(("libmaxminddb" ,libmaxminddb)))
+    (home-page "http://www.maxmind.com/")
+    (synopsis "Reader for the MaxMind DB format")
+    (description "MaxMind DB is a binary file format that stores data indexed
+by IP address subnets (IPv4 or IPv6).  This is a Python module for reading
+MaxMind DB files.")
+    (license license:asl2.0)))
