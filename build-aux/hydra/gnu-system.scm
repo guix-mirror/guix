@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2018, 2019 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,16 +34,22 @@
 (setvbuf (current-error-port) _IOLBF)
 (set-current-output-port (current-error-port))
 
+(define (find-current-checkout arguments)
+  "Find the first checkout of ARGUMENTS that provided the current file.
+Return #f if no such checkout is found."
+  (let ((current-root
+         (canonicalize-path
+          (string-append (dirname (current-filename)) "/../.."))))
+    (find (lambda (argument)
+            (and=> (assq-ref argument 'file-name)
+                   (lambda (name)
+                     (string=? name current-root)))) arguments)))
+
 (define (hydra-jobs store arguments)
   "Return a list of jobs where each job is a NAME/THUNK pair."
+
   (define checkout
-    ;; Extract metadata about the 'guix' checkout.  Its key in ARGUMENTS may
-    ;; vary, so pick up the first one that's neither 'subset' nor 'systems'.
-    (any (match-lambda
-           ((key . value)
-            (and (not (memq key '(systems subset)))
-                 value)))
-         arguments))
+    (find-current-checkout arguments))
 
   (define commit
     (assq-ref checkout 'revision))
@@ -70,9 +76,11 @@
            ((name . fields)
             ;; Hydra expects a thunk, so here it is.
             (cons name (lambda () fields))))
-         (inferior-eval-with-store inferior store
-                                   `(lambda (store)
-                                      (map (match-lambda
-                                             ((name . thunk)
-                                              (cons name (thunk))))
-                                           (hydra-jobs store ',arguments)))))))
+         (inferior-eval-with-store
+          inferior store
+          `(lambda (store)
+             (map (match-lambda
+                    ((name . thunk)
+                     (cons name (thunk))))
+                  (hydra-jobs store '((superior-guix-checkout . ,checkout)
+                                      ,@arguments))))))))
