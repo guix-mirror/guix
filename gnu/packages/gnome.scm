@@ -1409,9 +1409,9 @@ library.")
     (version "2.46.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/librsvg/"
                                   (version-major+minor version)  "/"
-                                  name "-" version ".tar.xz"))
+                                  "librsvg-" version ".tar.xz"))
               (sha256
                (base32
                 "1la3az2af2ccm6rp86b6wh0kq7kxzl4n8pli5qxhyic1rd91xj4n"))))
