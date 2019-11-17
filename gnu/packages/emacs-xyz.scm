@@ -14808,7 +14808,7 @@ appropriate directory if no @code{eshell} session is active.")
 (define-public emacs-eshell-z
   (package
     (name "emacs-eshell-z")
-    (version "0.3.2")
+    (version "0.4")
     (source
      (origin
        (method git-fetch)
@@ -14818,7 +14818,7 @@ appropriate directory if no @code{eshell} session is active.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1aac4m814jgxwpz7lbyx5r4z5dmawp4sk7pwbx0zqpnbcsaq5wwc"))))
+         "13dwaq8q23rwmrkpy3gvf7aswrkk6b9ak5221xl7n0bld4wdhq3j"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/xuchunyang/eshell-z")
     (synopsis "Quick navigation to frequently visited directories")
