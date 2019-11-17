@@ -54,6 +54,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix utils)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
@@ -67,6 +68,7 @@
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sphinx)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages time)
   #:use-module (gnu packages web)
@@ -3354,3 +3356,68 @@ Unlike the Python package @code{cssselect}, it does not translate selectors to
 XPath and therefore does not have all the correctness corner cases that are
 hard or impossible to fix in cssselect.")
     (license license:bsd-3)))
+
+(define-public gunicorn
+  (package
+    (name "gunicorn")
+    (version "20.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "gunicorn" version))
+       (sha256
+        (base32
+         "0l1zm8a0vz8ws3lkn8q9a0f93ipdzyvlf2zlwdj5xyadh6jdwsgg"))))
+    (outputs '("out" "doc"))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-doc
+           (lambda _
+             (invoke "make" "-C" "docs" "PAPER=a4" "html" "info")
+             (delete-file "docs/build/texinfo/Makefile")
+             (delete-file "docs/build/texinfo/Gunicorn.texi")
+             #t))
+         (replace 'check
+           (lambda _
+             (setenv "PYTHONPATH"
+                     (string-append ".:" (getenv "PYTHONPATH")))
+             ;; Remove test modules failing due to libc not found due to
+             ;; section '.dynamic' not found in libc.so
+             (delete-file "tests/test_arbiter.py")
+             (delete-file "tests/test_config.py")
+             (delete-file "tests/test_sock.py")
+             (invoke "pytest")))
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((doc (string-append (assoc-ref outputs "doc")
+                                        "/share/doc/" ,name "-" ,version))
+                    (html (string-append doc "/html"))
+                    (info (string-append doc "/info"))
+                    (examples (string-append doc "/examples")))
+               (mkdir-p html)
+               (mkdir-p info)
+               (mkdir-p examples)
+               (copy-recursively "docs/build/html" html)
+               (copy-recursively "docs/build/texinfo" info)
+               (copy-recursively "examples" examples)
+               (for-each (lambda (file)
+                           (copy-file file (string-append doc "/" file)))
+                         '("README.rst" "NOTICE" "LICENSE" "THANKS")))
+             #t)))))
+    (native-inputs
+     `(("binutils" ,binutils)  ;; for ctypes.util.find_library()
+       ("python-aiohttp", python-aiohttp)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-sphinx" ,python-sphinx)
+       ("texinfo" ,texinfo)))
+    (home-page "http://gunicorn.org/")
+    (synopsis "Python WSGI HTTP Server for UNIX")
+    (description "Gunicorn ‘Green Unicorn’ is a Python WSGI HTTP
+Server for UNIX.  It’s a pre-fork worker model ported from Ruby’s
+Unicorn project.  The Gunicorn server is broadly compatible with
+various web frameworks, simply implemented, light on server resources,
+and fairly speedy.")
+  (license license:expat)))
