@@ -1406,7 +1406,7 @@ library.")
 (define-public librsvg-next
   (package
     (name "librsvg")
-    (version "2.46.0")
+    (version "2.46.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/librsvg/"
@@ -1414,7 +1414,7 @@ library.")
                                   "librsvg-" version ".tar.xz"))
               (sha256
                (base32
-                "1la3az2af2ccm6rp86b6wh0kq7kxzl4n8pli5qxhyic1rd91xj4n"))))
+                "1s3a96i7f4pynjwxxvhysp4b6r7kyi8nasdxfyi62hc7gm34d3kn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1492,7 +1492,7 @@ library.")
     (description
      "Librsvg is a C library to render SVG files using the Cairo 2D graphics
 library.")
-    (license license:lgpl2.0+)))
+    (license license:lgpl2.1+)))
 
 (define-public libidl
   (package
