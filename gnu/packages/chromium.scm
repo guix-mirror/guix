@@ -660,8 +660,8 @@ from forcing GEXP-PROMISE."
                ;; their current status for convenience.
                (format #t "Dumping configure flags...\n")
                (invoke "gn" "args" "out/Release" "--list"))))
-         (replace 'build
-           (lambda* (#:key (parallel-build? #t) #:allow-other-keys)
+         (add-before 'build 'increase-resource-limits
+           (lambda _
              ;; XXX: Chromiums linking step requires a lot of simultaneous file
              ;; accesses.  Having a too low ulimit will result in bogus linker
              ;; errors such as "foo.a: error adding symbols: malformed archive".
@@ -677,7 +677,9 @@ from forcing GEXP-PROMISE."
                    (format #t
                            "increased maximum number of open files from ~d to ~d~%"
                            soft (if hard (min hard 4096) 4096)))))
-
+             #t))
+         (replace 'build
+           (lambda* (#:key (parallel-build? #t) #:allow-other-keys)
              (invoke "ninja" "-C" "out/Release"
                      "-j" (if parallel-build?
                               (number->string (parallel-job-count))
