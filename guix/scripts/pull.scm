@@ -36,6 +36,8 @@
   #:autoload   (guix inferior) (open-inferior)
   #:use-module (guix scripts build)
   #:autoload   (guix build utils) (which)
+  #:use-module ((guix build syscalls)
+                #:select (with-file-lock/no-wait))
   #:use-module (guix git)
   #:use-module (git)
   #:use-module (gnu packages)
@@ -815,11 +817,16 @@ Use '~/.config/guix/channels.scm' instead."))
                                        (if (assoc-ref opts 'bootstrap?)
                                            %bootstrap-guile
                                            (canonical-package guile-2.2)))))
-                        (run-with-store store
-                          (build-and-install instances profile
-                                             #:dry-run?
-                                             (assoc-ref opts 'dry-run?)
-                                             #:use-substitutes?
-                                             (assoc-ref opts 'substitutes?))))))))))))))
+                        (with-file-lock/no-wait (string-append profile ".lock")
+                          (lambda (key . args)
+                            (leave (G_ "profile ~a is locked by another process~%")
+                                   profile))
+
+                          (run-with-store store
+                            (build-and-install instances profile
+                                               #:dry-run?
+                                               (assoc-ref opts 'dry-run?)
+                                               #:use-substitutes?
+                                               (assoc-ref opts 'substitutes?)))))))))))))))
 
 ;;; pull.scm ends here
