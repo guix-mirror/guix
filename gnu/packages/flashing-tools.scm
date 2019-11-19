@@ -211,14 +211,15 @@ firmware from it.")
   (let ((commit "f289b7a2e5627464044249f0e5742830e052e360"))
     (package
       (name "teensy-loader-cli")
-      (version (string-append "2.1-1." (string-take commit 7)))
+      (version (git-version "2.1" "1" commit))
       (source
        (origin
-         (method url-fetch)
-         (uri (string-append "https://github.com/PaulStoffregen/"
-                             "teensy_loader_cli/archive/" commit ".tar.gz"))
-         (sha256 (base32 "17wqc2q4fa473cy7f5m2yiyb9nq0qw7xal2kzrxzaikgm9rabsw8"))
-         (file-name (string-append "teensy-loader-cli-" version ".tar.gz" ))
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/PaulStoffregen/teensy_loader_cli.git")
+                (commit commit)))
+         (sha256 (base32 "0sssim56pwsxp5cp5dlf6mi9h5fx2592m6j1g7abnm0s09b0lpdx"))
+         (file-name (git-file-name name version))
          (modules '((guix build utils)))
          (snippet
           `(begin
