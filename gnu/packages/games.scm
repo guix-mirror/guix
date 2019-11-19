@@ -463,13 +463,14 @@ want what you have.")
     (name "cowsay")
     (version "3.04")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/tnalpgge/"
-                                  "rank-amateur-cowsay/archive/"
-                                  "cowsay-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/tnalpgge/rank-amateur-cowsay.git")
+                     (commit (string-append name "-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "12w7apbf6a9qffk92r32b16w22na2fjcqbl32rn0n7zw5hrp3f6q"))))
+                "06455kq37hvq1xb7adyiwrx0djs50arsxvjgixyxks16lm1rlc7n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
