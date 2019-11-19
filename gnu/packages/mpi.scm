@@ -52,7 +52,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
 
-(define-public hwloc
+(define-public hwloc-1
   ;; Note: For now we keep 1.x as the default because many packages have yet
   ;; to migrate to 2.0.
   (package
@@ -134,7 +134,7 @@ bind processes, and much more.")
 (define-public hwloc-2
   ;; Note: 2.0 isn't the default yet, see above.
   (package
-    (inherit hwloc)
+    (inherit hwloc-1)
     (version "2.1.0")
     (source (origin
               (method url-fetch)
@@ -161,6 +161,10 @@ bind processes, and much more.")
                #t))))))))
 
 (define-deprecated hwloc-2.0 'hwloc-2
+  hwloc-2)
+
+(define-public hwloc
+  ;; The latest stable series of hwloc.
   hwloc-2)
 
 (define-public openmpi
