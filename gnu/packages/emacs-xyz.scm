@@ -1005,6 +1005,30 @@ skip set strings, which are arguments to @code{skip-chars-forward} and
 and reused.")
       (license license:gpl3+))))
 
+(define-public emacs-ample-theme
+  (let ((commit "536966adf882446165a1f756830028faa792c7a9")
+        (revision "1"))
+    (package
+      (name "emacs-ample-theme")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/jordonbiondo/ample-theme")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "07bpv8dag40qjnm5000pgzpazj4whfxf93x2vprz26sg3mjfx0nf"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/jordonbiondo/ample-theme")
+      (synopsis "Theme for Emacs providing dark, light, and flat versions")
+      (description "Ample themes is a collection of three themes sharing a
+similar pallet with a light, dark and flat versions with a focus on being easy
+on the eyes during night and day.  They only support GUI and 256 colour
+terminals.")
+      (license license:gpl3+))))
+
 (define-public emacs-reformatter
   (package
     (name "emacs-reformatter")
