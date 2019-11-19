@@ -196,7 +196,7 @@ implementation.
 (define-public cmark
   (package
     (name "cmark")
-    (version "0.28.3")
+    (version "0.29.0")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -205,7 +205,7 @@ implementation.
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "1lal6n6q7l84njgdcq1xbfxan56qlvr8xaw9m2jbd0jk4y2wkczg"))))
+               "0r7jpqhgnssq444i8pwji2g36058vfzwkl70wbiwj13h4w5rfc8f"))))
     (build-system cmake-build-system)
     (arguments
      '(#:test-target "test"))
