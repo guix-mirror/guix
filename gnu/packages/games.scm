@@ -3788,13 +3788,14 @@ Linux / Mac OS X servers, and an auto mapper with a VT100 map display.")
     (name "laby")
     (version "0.6.4")
     (source
-     (origin (method url-fetch)
-             (uri (string-append
-                   "https://github.com/sgimenez/laby/archive/"
-                   "laby-" version ".tar.gz"))
+     (origin (method git-fetch)
+             (uri (git-reference
+                    (url "https://github.com/sgimenez/laby.git")
+                    (commit (string-append name "-" version))))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "0gyrfa95l1qka7gbjf7l6mk7mbfvph00l0c995ia272qdw7rjhyf"))
+               "12fq9hhrxpzgfinmj9ra9ckss9yficwdlrmgjvvsq7agvh3sgyl1"))
              (patches (search-patches "laby-make-install.patch"))))
     (build-system gnu-build-system)
     (inputs
