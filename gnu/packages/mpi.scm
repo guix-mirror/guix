@@ -146,9 +146,9 @@ bind processes, and much more.")
                 "0qh8s7pphz0m5cwb7liqmc17xzfs23xhz5wn24r6ikvjyx99fhhr"))))
 
     ;; libnuma is no longer needed.
-    (inputs (alist-delete "numactl" (package-inputs hwloc)))
+    (inputs (alist-delete "numactl" (package-inputs hwloc-1)))
     (arguments
-     (substitute-keyword-arguments (package-arguments hwloc)
+     (substitute-keyword-arguments (package-arguments hwloc-1)
        ((#:phases phases)
         `(modify-phases ,phases
            (replace 'skip-linux-libnuma-test
