@@ -20364,7 +20364,7 @@ once the service has started.
 Log for the php-fpm master process.
 @item @code{process-manager} (default: @code{(php-fpm-dynamic-process-manager-configuration)})
 Detailed settings for the php-fpm process manager.
-Must be either:
+Must be one of:
 @table @asis
 @item @code{<php-fpm-dynamic-process-manager-configuration>}
 @item @code{<php-fpm-static-process-manager-configuration>}
