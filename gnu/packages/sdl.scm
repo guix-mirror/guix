@@ -142,6 +142,7 @@ joystick, and graphics hardware.")
                ("glib" ,glib)
                ("ibus" ,ibus)
                ("libxkbcommon" ,libxkbcommon)
+               ("libxcursor" ,libxcursor) ; enables X11 cursor support
                ("wayland" ,wayland)
                ("wayland-protocols" ,wayland-protocols))
              (package-inputs sdl)))
