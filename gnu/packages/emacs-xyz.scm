@@ -1976,7 +1976,7 @@ filters, new key bindings and faces.  It can be enabled by
                ("pdf-tools-handle-upgrades" '()))))
          (add-after 'emacs-patch-variables 'emacs-add-source-to-load-path
            (assoc-ref emacs:%standard-phases 'add-source-to-load-path))
-         (add-after 'emacs-set-emacs-load-path 'emacs-install
+         (add-after 'emacs-add-source-to-load-path 'emacs-install
            (assoc-ref emacs:%standard-phases 'install))
          (add-after 'emacs-install 'emacs-build
            (assoc-ref emacs:%standard-phases 'build))
