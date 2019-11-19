@@ -458,6 +458,31 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
 (define-public clang-toolchain
   (make-clang-toolchain clang))
 
+(define-public llvm-9
+  (package
+    (inherit llvm)
+    (version "9.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://llvm.org/releases/"
+                                  version "/llvm-" version ".src.tar.xz"))
+              (sha256
+               (base32
+                "117ymdz1by2nkfq1c2p9m4050dp848kbjbiv6nsfj8hzy9f5d86n"))))
+    (license license:asl2.0)))
+
+(define-public clang-runtime-9
+  (clang-runtime-from-llvm
+   llvm-9
+   "03ni43lbkp63lr3p6sc94dphqmvnz5av5mml0xmk930xvnbcvr2n"))
+
+(define-public clang-9
+  (clang-from-llvm llvm-9 clang-runtime-9
+                   "0426ma80i41qsgzm1qdz81mjskck426diygxi2k5vji2gkpixa3v"))
+
+(define-public clang-toolchain-9
+  (make-clang-toolchain clang-9))
+
 (define-public llvm-7
   (package
     (inherit llvm)
