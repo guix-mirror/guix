@@ -1974,8 +1974,8 @@ filters, new key bindings and faces.  It can be enabled by
              ;; upgrading" that pdf-tools tries to perform.
              (emacs-substitute-variables "pdf-tools.el"
                ("pdf-tools-handle-upgrades" '()))))
-         (add-after 'emacs-patch-variables 'emacs-set-emacs-load-path
-           (assoc-ref emacs:%standard-phases 'set-emacs-load-path))
+         (add-after 'emacs-patch-variables 'emacs-add-source-to-load-path
+           (assoc-ref emacs:%standard-phases 'add-source-to-load-path))
          (add-after 'emacs-set-emacs-load-path 'emacs-install
            (assoc-ref emacs:%standard-phases 'install))
          (add-after 'emacs-install 'emacs-build
