@@ -26282,8 +26282,8 @@ with an @code{environment} of @code{managed-host-environment-type}.
 @item @code{build-locally?} (default: @code{#t})
 If false, system derivations will be built on the machine being deployed to.
 @item @code{system}
-The Nix system type describing the architecture of the machine being deployed
-to. This should look something like ``x86_64-linux''.
+The system type describing the architecture of the machine being deployed
+to---e.g., @code{"x86_64-linux"}.
 @item @code{authorize?} (default: @code{#t})
 If true, the coordinator's signing key will be added to the remote's ACL
 keyring.
