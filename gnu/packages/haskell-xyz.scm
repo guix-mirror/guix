@@ -4140,6 +4140,16 @@ and are often as efficient as hand-written folds.")
         (base32
          "0q6kx57ygmznlpf8n499hid4x6mj3180paijx0a8dgi9hh7man61"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; This test is broken.  For details, see
+         ;; https://github.com/haskell-foundation/foundation/issues/530
+         (add-after 'unpack 'patch-tests
+           (lambda _
+             (substitute* "tests/Test/Foundation/Number.hs"
+               ((", testDividible proxy") ""))
+             #t)))))
     (inputs `(("ghc-basement" ,ghc-basement)))
     (home-page "https://github.com/haskell-foundation/foundation")
     (synopsis "Alternative prelude with batteries and no dependencies")
