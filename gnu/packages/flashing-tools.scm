@@ -417,13 +417,14 @@ Management Engine (ME).  You need to @code{sudo rmmod mei_me} and
     (name "me-cleaner")
     (version "1.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/corna/me_cleaner/"
-                                  "archive/v" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/corna/me_cleaner.git")
+                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "0hdnay1ai0r6l69z63jkiz6yfwdsqc2mrfyj77hgadv7xxxqm6na"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "1bdj2clm13ir441vn7sv860xsc5gh71ja5lc2wn0gggnff0adxj4"))
+              (file-name (git-file-name name version))))
     (build-system python-build-system)
     (arguments
      `(#:phases
