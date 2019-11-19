@@ -295,13 +295,14 @@ RK3036, RK3066, RK312X, RK3168, RK3188, RK3288, RK3368.")
     (name "heimdall")
     (version "1.4.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/Benjamin-Dobell/Heimdall"
-                                  "/archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/Benjamin-Dobell/Heimdall.git")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1y7gwg3lipyp2zcysm2vid1qg5nwin9bxbvgzs28lz2rya4fz6sq"))))
+                "1ygn4snvcmi98rgldgxf5hwm7zzi1zcsihfvm6awf9s6mpcjzbqz"))))
     (build-system cmake-build-system)
     (arguments
      `(#:build-type "Release"
@@ -328,7 +329,7 @@ RK3036, RK3066, RK312X, RK3168, RK3188, RK3288, RK3368.")
      `(("libusb" ,libusb)
        ("qtbase" ,qtbase)
        ("zlib" ,zlib)))
-    (home-page "http://glassechidna.com.au/heimdall/")
+    (home-page "https://glassechidna.com.au/heimdall/")
     (synopsis "Flash firmware onto Samsung mobile devices")
     (description "@command{heimdall} is a tool suite used to flash firmware (aka
 ROMs) onto Samsung mobile devices.  Heimdall connects to a mobile device over
