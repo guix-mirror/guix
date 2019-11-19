@@ -57,6 +57,7 @@
 ;;; Copyright © 2018, 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Luther Thompson <lutheroto@gmail.com>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
+;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -407,6 +408,31 @@ data types.")
             (files (list (string-append "lib/python"
                                         (version-major+minor version)
                                         "/site-packages"))))))))
+
+(define-public python-3.8
+  (package
+    (inherit python-3.7)
+    (name "python-next")
+    (version "3.8.0")
+    (source
+     (origin
+       (inherit (package-source python-3.7))
+       (uri (string-append "https://www.python.org/ftp/python/"
+                           version "/Python-" version ".tar.xz"))
+       (sha256 (base32 "110d0did9rxn7rg85kf2fwli5hqq44xv2d8bi7d92m7v2d728mmk"))
+       (patches (search-patches
+                 "python-3.8-search-paths.patch"
+                 "python-3-fix-tests.patch"
+                 "python-3.8-fix-tests.patch"
+                 "python-3-deterministic-build-info.patch"))
+       (snippet
+        '(begin
+           ;; Delete the bundled copy of libexpat.
+           (delete-file-recursively "Modules/expat")
+           (substitute* "Modules/Setup"
+             ;; Link Expat instead of embedding the bundled one.
+             (("^#pyexpat.*") "pyexpat pyexpat.c -lexpat\n"))
+           #t))))))
 
 ;; Current 3.x version.
 (define-public python-3 python-3.7)
