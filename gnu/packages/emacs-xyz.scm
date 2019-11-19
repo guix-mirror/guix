@@ -4096,7 +4096,7 @@ to a key in your preferred mode.")
                ((assoc-ref cmake:%standard-phases 'configure)
                 #:outputs outputs
                 #:configure-flags '("-DSC_EL_BYTECOMPILE=OFF"))))
-           (add-after 'set-emacs-load-path 'add-el-dir-to-emacs-load-path
+           (add-after 'add-source-to-load-path 'add-el-dir-to-emacs-load-path
              (lambda _
                (setenv "EMACSLOADPATH"
                        (string-append (getcwd) "/el:" (getenv "EMACSLOADPATH")))
