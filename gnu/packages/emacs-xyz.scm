@@ -5225,7 +5225,7 @@ after buffer changes.")
      `(#:tests? #t
        #:phases
        (modify-phases %standard-phases
-         (add-after 'set-emacs-load-path 'fix-autogen-script
+         (add-after 'unpack 'fix-autogen-script
            (lambda _
              (substitute* "autogen.sh"
                (("./configure") "sh configure"))))
