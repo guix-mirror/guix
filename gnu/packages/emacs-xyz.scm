@@ -17821,9 +17821,7 @@ a suffix) we prefer to call it just a \"transient\".")
              (lambda _
                (substitute* "./Makefile"
                  (("lisp docs") "lisp"))))
-           (add-after 'delete-doc-targets 'emacs-set-emacs-load-path
-             (assoc-ref emacs:%standard-phases 'set-emacs-load-path))
-           (add-after 'emacs-set-emacs-load-path 'chdir-lisp
+           (add-after 'delete-doc-targets 'chdir-lisp
              (lambda _
                (chdir "lisp")))
            (add-after 'chdir-lisp 'emacs-install
