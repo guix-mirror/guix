@@ -449,13 +449,14 @@ ME as far as possible (it only edits ME firmware image files).")
     (name "uefitool")
     (version "0.22.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/LongSoft/UEFITool/archive/"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/LongSoft/UEFITool.git")
+                     (commit version)))
               (sha256
                (base32
-                "05jmhv7jpq08kqbd1477y1lgyjvcic3njrd0bmzdy7v7b7lnhl82"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "13q1lw6k4spqw7a4w392vr9c76q1l75lm08plzvj04xhcb38sgv6"))
+              (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
