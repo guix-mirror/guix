@@ -447,7 +447,7 @@ ME as far as possible (it only edits ME firmware image files).")
 (define-public uefitool
   (package
     (name "uefitool")
-    (version "0.22.4")
+    (version "0.26.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -455,7 +455,7 @@ ME as far as possible (it only edits ME firmware image files).")
                      (commit version)))
               (sha256
                (base32
-                "13q1lw6k4spqw7a4w392vr9c76q1l75lm08plzvj04xhcb38sgv6"))
+                "1ka7i12swm9r5bmyz5vjr82abd2f3lj8p35f4208byalfbx51yq7"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
