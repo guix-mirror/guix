@@ -198,13 +198,14 @@ implementation.
     (name "cmark")
     (version "0.28.3")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "https://github.com/jgm/cmark/archive/"
-                                 version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                    (url "https://github.com/jgm/cmark.git")
+                    (commit version)))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "1z71pacl3ni1286c206pl8lazbcd32ackivsg3zibdf1sf2qdjdc"))))
+               "1lal6n6q7l84njgdcq1xbfxan56qlvr8xaw9m2jbd0jk4y2wkczg"))))
     (build-system cmake-build-system)
     (arguments
      '(#:test-target "test"))
