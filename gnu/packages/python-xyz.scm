@@ -53,7 +53,7 @@
 ;;; Copyright © 2016, 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
-;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2018, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018, 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Luther Thompson <lutheroto@gmail.com>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
@@ -16887,3 +16887,27 @@ qvarious formats: PDF, PostScript, PNG and even SVG.")
     (description "Pyphen is a pure Python module to hyphenate text using
 existing Hunspell hyphenation dictionaries.")
     (license (list license:gpl2 license:lgpl2.1 license:mpl1.1))))
+
+(define-public python-intelhex
+  (package
+    (name "python-intelhex")
+    (version "2.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "intelhex" version))
+       (sha256
+        (base32
+         "0ckqjbxd8gwcg98gfzpn4vq1qxzfvq3rdbrr1hikj1nmw08qb780"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f))          ;issue with version
+    (home-page "https://pypi.org/project/IntelHex/")
+    (synopsis "Python library for Intel HEX files manipulations")
+    (description "The Intel HEX file format is widely used in microprocessors
+and microcontrollers area (embedded systems etc.) as the de facto standard for
+representation of code to be programmed into microelectronic devices.  This
+package provides an intelhex Python library to read, write, create from
+scratch and manipulate data from Intel HEX file format.  It also includes
+several convenience Python scripts, including \"classic\" hex2bin and bin2hex
+converters and more, those based on the library itself.")
+    (license license:bsd-3)))
