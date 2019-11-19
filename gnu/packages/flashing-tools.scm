@@ -297,7 +297,7 @@ RK3036, RK3066, RK312X, RK3168, RK3188, RK3288, RK3368.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/Benjamin-Dobell/Heimdall.git")
+                     (url "https://gitlab.com/BenjaminDobell/Heimdall.git")
                      (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
