@@ -20,6 +20,7 @@
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2018 Nam Nguyen <namn@berkeley.edu>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1090,3 +1091,41 @@ with state-tracking and configuration abstractions.")
 that leverages the infrastructure provided by the Linux kernel for safely
 storing and retrieving sensitive information in your programs.")
     (license license:asl2.0)))
+
+(define-public python-mcuboot-imgtool
+  (package
+    (name "python-mcuboot-imgtool")
+    (version "1.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuulLabs-OSS/mcuboot")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1m1csyvzq4jx81zg635ssy1n7sc0z539z0myh872ll3nwqx7wa0q"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-broken-test
+           (lambda _
+             (substitute* "scripts/imgtool/keys/ed25519_test.py"
+               (("raw_sign") "sign_digest"))
+             #t))
+         (add-before 'build 'change-directory
+           (lambda _
+             (chdir "scripts")
+             #t)))))
+    (propagated-inputs
+     `(("python-click" ,python-click)
+       ("python-intelhex" ,python-intelhex)
+       ("python-cryptography" ,python-cryptography)))
+    (home-page "https://mcuboot.com")
+    (synopsis "Tool to securely sign firmware images for booting by MCUboot")
+    (description "MCUboot is a secure bootloader for 32-bit MCUs.  This
+package provides a tool to securely sign firmware images for booting by
+MCUboot.")
+    (license license:expat)))
