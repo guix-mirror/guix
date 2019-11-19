@@ -14620,14 +14620,14 @@ is the new Pyro version that is actively developed.")
     (version "2.9.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://bitbucket.org/khinsen/"
-                           "scientificpython/downloads/ScientificPython-"
-                           version ".tar.gz"))
-       (file-name (string-append "ScientificPython-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/khinsen/ScientificPython")
+             (commit (string-append "rel" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0fc69zhlsn9d2jvbzyjl9ah53vj598h84nkq230c83ahfvgzx5y3"))))
+         "16l48aj9fps9r7jyk8gpxppwrv0fqvlc13sayxskz28r5s6sjwbl"))))
     (build-system python-build-system)
     (inputs
      `(("netcdf" ,netcdf)))
@@ -14645,7 +14645,7 @@ is the new Pyro version that is actively developed.")
              (invoke "python" "setup.py" "build"
                      (string-append "--netcdf_prefix="
                                     (assoc-ref inputs "netcdf"))))))))
-    (home-page "https://bitbucket.org/khinsen/scientificpython")
+    (home-page "http://dirac.cnrs-orleans.fr/ScientificPython")
     (synopsis "Python modules for scientific computing")
     (description "ScientificPython is a collection of Python modules that are
 useful for scientific computing.  Most modules are rather general (Geometry,
