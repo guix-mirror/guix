@@ -79,6 +79,7 @@
   #:use-module (guix cvs-download)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix hg-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system emacs)
@@ -10249,6 +10250,30 @@ list of commands is displayed in a handy popup.")
      "This Emacs package automatically and unobtrusively trims whitespace
 characters from end of lines.")
     (license license:gpl3+)))
+
+(define-public emacs-openwith
+  (let ((changeset "aeb78782ec87680ea9f082a3f20a3675b3770cf9")
+        (revision "0"))
+    (package
+      (name "emacs-openwith")
+      (home-page "https://bitbucket.org/jpkotta/openwith")
+      (version (git-version "0.0.1" revision changeset))
+      (source (origin
+                (method hg-fetch)
+                (uri (hg-reference (url home-page) (changeset changeset)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1wl6gnxsyhaad4cl9bxjc0qbc5jzvlwbwjbajs0n1s6qr07d6r01"))))
+      (build-system emacs-build-system)
+      (synopsis "Open external applications for files with Emacs")
+      (description
+       "This package enables you to associate file name patterns with external
+applications that are automatically invoked when you use commands like
+@code{find-file}.  For example, you can have it open @code{png} files with
+@code{feh} and @code{mp4} files with @code{mpv}.  This is especially useful
+when browsing files with Dired.")
+      (license license:gpl2+))))
 
 (define-public emacs-org-edit-latex
   (package
