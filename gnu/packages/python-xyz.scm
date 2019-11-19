@@ -14657,16 +14657,17 @@ not actively maintained and works only with Python 2 and NumPy < 1.9.")
 (define-public python2-mmtk
   (package
     (name "python2-mmtk")
-    (version "2.7.11")
+    (version "2.7.12")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://bitbucket.org/khinsen/"
-                           "mmtk/downloads/MMTK-" version ".tar.gz"))
-       (file-name (string-append "MMTK-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/khinsen/MMTK")
+             (commit (string-append "rel" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1d0nnjx4lwsvh8f99vv1r6gi50d93yba0adkz8b4zgv4za4c5862"))))
+         "1fqwh3ba9jd42nigvn5shndgwb1zy7kh9520ncvqci7n8ffjr6p1"))))
     (build-system python-build-system)
     (native-inputs
      `(("netcdf" ,netcdf)))
