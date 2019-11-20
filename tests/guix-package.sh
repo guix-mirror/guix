@@ -394,6 +394,19 @@ guix package -I | grep guile
 test `guix package -I | wc -l` -eq 1
 guix package --rollback --bootstrap
 
+# Applying two manifests.
+cat > "$module_dir/manifest2.scm"<<EOF
+(use-modules (gnu packages bootstrap) (guix))
+(define p (package (inherit %bootstrap-guile) (name "eliug")))
+(packages->manifest (list p))
+EOF
+guix package --bootstrap \
+     -m "$module_dir/manifest.scm" -m "$module_dir/manifest2.scm"
+guix package -I | grep guile
+guix package -I | grep eliug
+test `guix package -I | wc -l` -eq 2
+guix package --rollback --bootstrap
+
 # Applying a manifest file with inferior packages.
 cat > "$module_dir/manifest.scm"<<EOF
 (use-modules (guix inferior))

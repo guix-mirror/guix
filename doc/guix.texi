@@ -2830,7 +2830,8 @@ $ guix package --upgrade . --do-not-upgrade emacs
 @cindex profile declaration
 @cindex profile manifest
 Create a new generation of the profile from the manifest object
-returned by the Scheme code in @var{file}.
+returned by the Scheme code in @var{file}.  This option can be repeated
+several times, in which case the manifests are concatenated.
 
 This allows you to @emph{declare} the profile's contents rather than
 constructing it through a sequence of @code{--install} and similar

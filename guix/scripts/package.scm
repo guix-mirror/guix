@@ -832,32 +832,17 @@ processed, #f otherwise."
   (unless dry-run?
     (delete-matching-generations store profile pattern)))
 
-(define* (manifest-action store profile file opts
-                          #:key dry-run?)
-  "Change PROFILE to contain the packages specified in FILE."
-  (let* ((user-module  (make-user-module '((guix profiles) (gnu))))
-         (manifest     (load* file user-module))
-         (bootstrap?   (assoc-ref opts 'bootstrap?))
-         (substitutes? (assoc-ref opts 'substitutes?))
-         (allow-collisions? (assoc-ref opts 'allow-collisions?)))
-    (if dry-run?
-        (format #t (G_ "would install new manifest from '~a' with ~d entries~%")
-                file (length (manifest-entries manifest)))
-        (format #t (G_ "installing new manifest from '~a' with ~d entries~%")
-                file (length (manifest-entries manifest))))
-    (build-and-use-profile store profile manifest
-                           #:allow-collisions? allow-collisions?
-                           #:bootstrap? bootstrap?
-                           #:use-substitutes? substitutes?
-                           #:dry-run? dry-run?)))
+(define (load-manifest file)
+  "Load the user-profile manifest (Scheme code) from FILE and return it."
+  (let ((user-module (make-user-module '((guix profiles) (gnu)))))
+    (load* file user-module)))
 
 (define %actions
   ;; List of actions that may be processed.  The car of each pair is the
   ;; action's symbol in the option list; the cdr is the action's procedure.
   `((roll-back? . ,roll-back-action)
     (switch-generation . ,switch-generation-action)
-    (delete-generations . ,delete-generations-action)
-    (manifest . ,manifest-action)))
+    (delete-generations . ,delete-generations-action)))
 
 (define (process-actions store opts)
   "Process any install/remove/upgrade action from OPTS."
@@ -896,7 +881,13 @@ processed, #f otherwise."
               opts)
 
     ;; Then, process normal package removal/installation/upgrade.
-    (let* ((manifest (profile-manifest profile))
+    (let* ((files    (filter-map (match-lambda
+                                   (('manifest . file) file)
+                                   (_ #f))
+                                 opts))
+           (manifest (match files
+                       (() (profile-manifest profile))
+                       (_  (concatenate-manifests (map load-manifest files)))))
            (step1    (options->removable opts manifest
                                          (manifest-transaction)))
            (step2    (options->installable opts manifest step1))
@@ -904,12 +895,23 @@ processed, #f otherwise."
                       (inherit step2)
                       (install (map transform-entry
                                     (manifest-transaction-install step2)))))
-           (new      (manifest-perform-transaction manifest step3)))
+           (new      (manifest-perform-transaction manifest step3))
+           (trans    (if (null? files)
+                         step3
+                         (fold manifest-transaction-install-entry
+                               step3
+                               (manifest-entries manifest)))))
 
       (warn-about-old-distro)
 
-      (unless (manifest-transaction-null? step3)
-        (show-manifest-transaction store manifest step3
+      (unless (manifest-transaction-null? trans)
+        ;; When '--manifest' is used, display information about TRANS as if we
+        ;; were starting from an empty profile.
+        (show-manifest-transaction store
+                                   (if (null? files)
+                                       manifest
+                                       (make-manifest '()))
+                                   trans
                                    #:dry-run? dry-run?)
         (build-and-use-profile store profile new
                                #:allow-collisions? allow-collisions?
