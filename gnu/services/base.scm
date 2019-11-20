@@ -706,7 +706,7 @@ to add @var{device} to the kernel's entropy pool.  The service will fail if
       (provision '(host-name))
       (start #~(lambda _
                  (sethostname #$name)))
-      (respawn? #f)))))
+      (one-shot? #t)))))
 
 (define (host-name-service name)
   "Return a service that sets the host name to @var{name}."
