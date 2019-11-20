@@ -3192,3 +3192,71 @@ programmers can leverage the power of multiple databases and multiple
 simultaneous database connections by using this framework.")
     (home-page "http://libdbi.sourceforge.net/")
     (license license:lgpl2.1+)))
+
+(define-public libdbi-drivers
+  (package
+    (name "libdbi-drivers")
+    (version "0.9.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/libdbi-drivers/"
+                                  "libdbi-drivers/libdbi-drivers-" version
+                                  "/libdbi-drivers-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0m680h8cc4428xin4p733azysamzgzcmv4psjvraykrsaz6ymlj3"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("inetutils" ,inetutils)
+       ("glibc-locales" ,glibc-locales)))
+    (inputs
+     `(("libdbi" ,libdbi)
+       ("mysql" ,mariadb)
+       ("postgresql" ,postgresql)
+       ("sqlite" ,sqlite)))
+    (arguments
+     `(#:configure-flags
+       (let ((libdbi (assoc-ref %build-inputs "libdbi"))
+             (mysql (assoc-ref %build-inputs "mysql"))
+             (postgresql (assoc-ref %build-inputs "postgresql"))
+             (sqlite (assoc-ref %build-inputs "sqlite")))
+         (list "--disable-docs"
+               (string-append "--with-dbi-incdir=" libdbi "/include")
+               (string-append "--with-dbi-libdir=" libdbi "/lib")
+               "--with-mysql"
+               (string-append "--with-mysql-incdir=" mysql "/include/mysql")
+               (string-append "--with-mysql-libdir=" mysql "/lib")
+               "--with-pgsql"
+               (string-append "--with-pgsql-incdir=" postgresql "/include")
+               (string-append "--with-pgsql-libdir=" postgresql "/lib")
+               "--with-sqlite3"
+               (string-append "--with-sqlite-incdir=" sqlite "/include")
+               (string-append "--with-sqlite-libdir=" sqlite "/lib")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "tests/test_mysql.sh"
+               (("^MYMYSQLD=.*")
+                (string-append "MYMYSQLD="
+                               (assoc-ref inputs "mysql")
+                               "/bin/mysqld")))
+             #t))
+         (add-after 'install 'remove-empty-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((var (string-append (assoc-ref outputs "out") "/var")))
+               (delete-file-recursively var))
+             #t)))))
+    (synopsis "Database drivers for the libdbi framework")
+    (description
+     "The @code{libdbi-drivers} library provides the database specific drivers
+for the @code{libdbi} framework.
+
+The drivers officially supported by @code{libdbi} are:
+@itemize
+@item MySQL,
+@item PostgreSQL,
+@item SQLite.
+@end itemize")
+    (home-page "http://libdbi-drivers.sourceforge.net/")
+    (license license:lgpl2.1+)))
