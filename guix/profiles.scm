@@ -92,6 +92,7 @@
             manifest-pattern-version
             manifest-pattern-output
 
+            concatenate-manifests
             manifest-remove
             manifest-add
             manifest-lookup
@@ -514,6 +515,10 @@ procedure is here for backward-compatibility and will eventually vanish."
 (define (read-manifest port)
   "Return the packages listed in MANIFEST."
   (sexp->manifest (read port)))
+
+(define (concatenate-manifests lst)
+  "Concatenate the manifests listed in LST and return the resulting manifest."
+  (manifest (append-map manifest-entries lst)))
 
 (define (entry-predicate pattern)
   "Return a procedure that returns #t when passed a manifest entry that
