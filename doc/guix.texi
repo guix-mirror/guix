@@ -5253,6 +5253,10 @@ added to it or removed from it after extraction of the pack.
 One use case for this is the Guix self-contained binary tarball
 (@pxref{Binary Installation}).
 
+@item --derivation
+@itemx -d
+Print the name of the derivation that builds the pack.
+
 @item --bootstrap
 Use the bootstrap binaries to build the pack.  This option is only
 useful to Guix developers.

@@ -800,6 +800,10 @@ last resort for relocation."
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'dry-run? #t (alist-cons 'graft? #f result))))
+         (option '(#\d "derivation") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'derivation-only? #t result)))
+
          (option '(#\f "format") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'format (string->symbol arg) result)))
@@ -918,6 +922,8 @@ Create a bundle of PACKAGE.\n"))
   -r, --root=FILE        make FILE a symlink to the result, and register it
                          as a garbage collector root"))
   (display (G_ "
+  -d, --derivation       return the derivation of the pack"))
+  (display (G_ "
   -v, --verbosity=LEVEL  use the given verbosity LEVEL"))
   (display (G_ "
       --bootstrap        use the bootstrap binaries to build the pack"))
@@ -1002,6 +1008,7 @@ Create a bundle of PACKAGE.\n"))
                                           (assoc-ref opts 'system)
                                           #:graft? (assoc-ref opts 'graft?))))
           (let* ((dry-run?    (assoc-ref opts 'dry-run?))
+                 (derivation? (assoc-ref opts 'derivation-only?))
                  (relocatable? (assoc-ref opts 'relocatable?))
                  (proot?      (eq? relocatable? 'proot))
                  (manifest    (let ((manifest (manifest-from-args store opts)))
@@ -1070,11 +1077,15 @@ Create a bundle of PACKAGE.\n"))
                                                      #:archiver
                                                      archiver)))
                 (mbegin %store-monad
-                  (show-what-to-build* (list drv)
-                                       #:use-substitutes?
-                                       (assoc-ref opts 'substitutes?)
-                                       #:dry-run? dry-run?)
-                  (munless dry-run?
+                  (munless derivation?
+                    (show-what-to-build* (list drv)
+                                         #:use-substitutes?
+                                         (assoc-ref opts 'substitutes?)
+                                         #:dry-run? dry-run?))
+                  (mwhen derivation?
+                    (return (format #t "~a~%"
+                                    (derivation-file-name drv))))
+                  (munless (or derivation? dry-run?)
                     (built-derivations (list drv))
                     (mwhen gc-root
                       (register-root* (match (derivation->output-paths drv)

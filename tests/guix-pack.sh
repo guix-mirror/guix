@@ -36,6 +36,10 @@ export GUIX_BUILD_OPTIONS
 test_directory="`mktemp -d`"
 trap 'chmod -Rf +w "$test_directory"; rm -rf "$test_directory"' EXIT
 
+# Compute the derivation of a pack.
+drv="`guix pack coreutils -d --no-grafts`"
+guix gc -R "$drv" | grep "`guix build coreutils -d --no-grafts`"
+
 # Build a tarball with no compression.
 guix pack --compression=none --bootstrap guile-bootstrap
 
