@@ -27,6 +27,7 @@
 ;;; Copyright © 2019 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.lonestar.org>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,6 +68,7 @@
   #:use-module (gnu packages file)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages libbsd)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages guile)
@@ -87,6 +89,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages mcrypt)
+  #:use-module (gnu packages patchutils)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages python)
@@ -619,6 +622,64 @@ programs and scripts.  At the same time, it is a feature-rich network debugging
 and exploration tool, since it can create almost any kind of connection you
 would need and has several interesting built-in capabilities.")
     (license license:gpl2+)))
+
+(define-public netcat-openbsd
+  (package
+    (name "netcat-openbsd")
+    (version "1.203-2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://salsa.debian.org/debian/netcat-openbsd.git")
+                    (commit (string-append "debian/" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0j85gzbjzs6yrhgabh3zkwzd27qkr5s0zjjczl0hah8q7yhrjk3m"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no test suite
+       #:make-flags
+       (list "CC=gcc"
+             (string-append "CFLAGS=-I" (assoc-ref %build-inputs "libbsd") "/include")
+             "LDFLAGS=-lbsd")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'patch
+           (lambda _
+             (setenv "QUILT_PATCHES" "debian/patches")
+             (invoke "quilt" "push" "-a")
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man (string-append out "/share/man/man1"))
+                    (doc (string-append out "/share/doc/netcat-openbsd-" ,version))
+                    (examples (string-append doc "/examples")))
+               (install-file "nc" bin)
+               (install-file "nc.1" man)
+               (install-file "debian/copyright" doc)
+               (copy-recursively "debian/examples" examples)
+               #t))))))
+    (inputs `(("libbsd" ,libbsd)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("quilt" ,quilt)))
+    (home-page "https://packages.debian.org/sid/netcat-openbsd")
+    (synopsis "Read and write data over TCP/IP")
+    (description
+     "Netcat is a simple Unix utility which reads and writes data across
+network connections using TCP or UDP protocol.  It is designed to be a reliable
+\"back-end\" tool that can be used directly or easily driven by other programs
+and scripts.  At the same time it is a feature-rich network debugging and
+exploration tool, since it can create almost any kind of connection you would
+need and has several interesting built-in capabilities.
+
+This package contains the OpenBSD rewrite of netcat, including support for
+IPv6, proxies, and Unix sockets.")
+    (license (list license:bsd-3
+                   license:bsd-2))))  ; atomicio.*, socks.c
 
 (define-public sipcalc
   (package
