@@ -37,6 +37,7 @@
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3170,3 +3171,24 @@ NumPy, and other traditional Python scientific computing packages.")
 It implements the Python DB API 2.0 specification and includes support for
 SQLAlchemy.")
     (license license:asl2.0)))
+
+(define-public libdbi
+  (package
+    (name "libdbi")
+    (version "0.9.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/libdbi/libdbi/libdbi-"
+                                  version "/libdbi-" version ".tar.gz"))
+              (sha256
+               (base32
+                "00s5ra7hdlq25iv23nwf4h1v3kmbiyzx0v9bhggjiii4lpf6ryys"))))
+    (build-system gnu-build-system)
+    (synopsis "Database independent abstraction layer in C")
+    (description
+     "This library implements a database independent abstraction layer in C,
+similar to the DBI/DBD layer in Perl.  Writing one generic set of code,
+programmers can leverage the power of multiple databases and multiple
+simultaneous database connections by using this framework.")
+    (home-page "http://libdbi.sourceforge.net/")
+    (license license:lgpl2.1+)))
