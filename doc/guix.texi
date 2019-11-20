@@ -5178,7 +5178,8 @@ build} (@pxref{Additional Build Options, @code{--expression} in
 @item --manifest=@var{file}
 @itemx -m @var{file}
 Use the packages contained in the manifest object returned by the Scheme
-code in @var{file}.
+code in @var{file}.  This option can be repeated several times, in which
+case the manifests are concatenated.
 
 This has a similar purpose as the same-named option in @command{guix
 package} (@pxref{profile-manifest, @option{--manifest}}) and uses the

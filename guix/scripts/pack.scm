@@ -965,7 +965,10 @@ Create a bundle of PACKAGE.\n"))
                                   (list (transform store package) "out")))
                                (reverse
                                 (filter-map maybe-package-argument opts))))
-           (manifest-file (assoc-ref opts 'manifest)))
+           (manifests     (filter-map (match-lambda
+                                        (('manifest . file) file)
+                                        (_ #f))
+                                      opts)))
       (define properties
         (if (assoc-ref opts 'save-provenance?)
             (lambda (package)
@@ -979,11 +982,15 @@ Create a bundle of PACKAGE.\n"))
             (const '())))
 
       (cond
-       ((and manifest-file (not (null? packages)))
+       ((and (not (null? manifests)) (not (null? packages)))
         (leave (G_ "both a manifest and a package list were given~%")))
-       (manifest-file
-        (let ((user-module (make-user-module '((guix profiles) (gnu)))))
-          (load* manifest-file user-module)))
+       ((not (null? manifests))
+        (concatenate-manifests
+         (map (lambda (file)
+                (let ((user-module (make-user-module
+                                    '((guix profiles) (gnu)))))
+                  (load* file user-module)))
+              manifests)))
        (else
         (manifest
          (map (match-lambda
