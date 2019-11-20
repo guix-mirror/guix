@@ -84,6 +84,29 @@ echo "(use-modules (guix profiles) (gnu packages bootstrap))
 guix environment --bootstrap --manifest=$tmpdir/manifest.scm --pure \
      -- "$SHELL" -c 'test -f "$GUIX_ENVIRONMENT/bin/guile"'
 
+# Make sure '--manifest' can be specified multiple times.
+cat > "$tmpdir/manifest2.scm" <<EOF
+(use-modules (guix) (guix profiles)
+             (guix build-system trivial)
+             (gnu packages bootstrap))
+
+(packages->manifest
+ (list (package
+         (inherit %bootstrap-guile)
+         (name "eliug")
+         (build-system trivial-build-system)
+         (arguments
+          (quasiquote
+           (#:guile ,%bootstrap-guile
+            #:builder
+            (begin
+              (mkdir %output)
+              (mkdir (string-append %output "/eliug")))))))))
+EOF
+guix environment --bootstrap -m "$tmpdir/manifest.scm" \
+     -m "$tmpdir/manifest2.scm" --pure \
+     -- "$SHELL" -c 'test -f "$GUIX_ENVIRONMENT/bin/guile" && test -d "$GUIX_ENVIRONMENT/eliug"'
+
 # Make sure '-r' works as expected.
 rm -f "$gcroot"
 expected="`guix environment --bootstrap --ad-hoc guile-bootstrap \

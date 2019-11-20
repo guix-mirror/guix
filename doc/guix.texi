@@ -4802,7 +4802,8 @@ As an example, @var{file} might contain a definition like this
 @item --manifest=@var{file}
 @itemx -m @var{file}
 Create an environment for the packages contained in the manifest object
-returned by the Scheme code in @var{file}.
+returned by the Scheme code in @var{file}.  This option can be repeated
+several times, in which case the manifests are concatenated.
 
 This is similar to the same-named option in @command{guix package}
 (@pxref{profile-manifest, @option{--manifest}}) and uses the same
