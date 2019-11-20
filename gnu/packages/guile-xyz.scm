@@ -1921,17 +1921,22 @@ is no support for parsing block and inline level HTML.")
 (define-public mcron
   (package
     (name "mcron")
-    (version "1.1.2")
+    (version "1.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/mcron/mcron-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "069m3ri7nc8lgy3h9ka7gj3v3anqj69x9jw4l3cfq65nqkxsch4g"))))
+                "00kv7fgllzjpis0g1m9csycp4f6l11774m09dqy255cvmim2g743"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'fix-finding-guile
+                    (lambda _
+                      (substitute* "configure"
+                        (("2\\.0") "2.2 2.0"))
+                      #t))
                   (add-before 'check 'adjust-tests
                     (lambda _
                       (substitute* "tests/job-specifier.scm"
@@ -1948,11 +1953,7 @@ is no support for parsing block and inline level HTML.")
                         (("\\(test-equal \"next-year\"" all)
                          (string-append "(test-skip 4)\n" all)))
                       #t)))))
-    (native-inputs `(("autoconf" ,autoconf)
-                     ("automake" ,automake)
-                     ("help2man" ,help2man)
-                     ("pkg-config" ,pkg-config)
-                     ("texinfo" ,texinfo)
+    (native-inputs `(("pkg-config" ,pkg-config)
                      ("tzdata" ,tzdata-for-tests)))
     (inputs `(("guile" ,guile-2.2)))
     (home-page "https://www.gnu.org/software/mcron/")
