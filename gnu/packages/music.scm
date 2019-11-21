@@ -3804,7 +3804,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
 (define-public musescore
   (package
     (name "musescore")
-    (version "3.3")
+    (version "3.3.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3813,7 +3813,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "15ckjwvp3xigjkzmp1ddzvlm4d0vlk9i1axyfxg3hr2sia84yxvi"))
+                "0r2xhhwv09v8ykgvh38fgpmpcmkra7lvhv7714xp7vb0wpcnh8l3"))
               (modules '((guix build utils)))
               (snippet
                ;; Un-bundle OpenSSL and remove unused libraries.

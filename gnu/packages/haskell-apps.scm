@@ -49,10 +49,14 @@
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages version-control))
 
+;; In Stackage LTS 14, this package is at 2.4.1.0.  However, that
+;; version requires version 2.4.1.0 of the 'Cabal' package, which is
+;; provided by GHC 8.6.5 at version 2.4.0.1.  Hence, we use an older
+;; version to match the compiler's library.
 (define-public cabal-install
  (package
   (name "cabal-install")
-   (version "2.2.0.0")
+   (version "2.4.0.0")
    (source
     (origin
      (method url-fetch)
@@ -61,9 +65,19 @@
             version
             ".tar.gz"))
       (sha256
-       (base32 "1nd3ch7qr4dpfxhgkcq2lnhvszx2kjgnn1kwb44vk9y5jgfs4mn8"))))
-   (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
+       (base32 "1xmyl0x8wqfrnray6ky5wy0g0samv4264fbdlzxhqsvk9dbfja8k"))))
    (build-system haskell-build-system)
+   (arguments
+    `(#:cabal-revision
+      ("2" "1xil5pim6j1ckqj61zz6l7xpfxxr3rkw2hvpws2f7pr9shk645dl")
+      #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'update-constraints
+           (lambda _
+             (substitute* "cabal-install.cabal"
+               (("zip-archive >= 0\\.3\\.2\\.5 && < 0\\.4,")
+                "zip-archive >= 0.3.2.5 && <= 0.4.1,"))
+             #t)))))
    (inputs
     `(("ghc-async" ,ghc-async)
       ("ghc-base16-bytestring" ,ghc-base16-bytestring)
@@ -78,6 +92,7 @@
       ("ghc-random" ,ghc-random)
       ("ghc-resolv" ,ghc-resolv)
       ("ghc-tar" ,ghc-tar)
+      ("ghc-zip-archive" ,ghc-zip-archive)
       ("ghc-zlib" ,ghc-zlib)))
    (home-page "https://www.haskell.org/cabal/")
    (synopsis "Command-line interface for Cabal and Hackage")
@@ -172,7 +187,9 @@ unlit literate code files; and an option to turn off macro-expansion.")
            #t))))
     (build-system haskell-build-system)
     (arguments
-     `(#:configure-flags '("-fpkgconfig" "-fcurl" "-flibiconv" "-fthreaded"
+     `(#:cabal-revision
+       ("1" "0xl7j5cm704pbl2ms0dkydh7jvrz0ym76d725ifpg4h902m1zkhg")
+       #:configure-flags '("-fpkgconfig" "-fcurl" "-flibiconv" "-fthreaded"
                            "-fnetwork-uri" "-fhttp" "--flag=executable"
                            "--flag=library")
        #:phases
@@ -181,6 +198,12 @@ unlit literate code files; and an option to turn off macro-expansion.")
            (lambda _
              (substitute* "tests/issue538.sh"
                (("/bin/sh") (which "sh")))
+             #t))
+         (add-before 'configure 'update-constraints
+           (lambda _
+             (substitute* "darcs.cabal"
+               (("QuickCheck   >= 2\\.8\\.2 && < 2\\.13,")
+                "QuickCheck   >= 2.8.2 && < 2.14,"))
              #t)))))
     (inputs
      `(("ghc-cmdargs" ,ghc-cmdargs)
@@ -391,7 +414,7 @@ used to keep a folder in sync between computers.")
 (define-public hlint
   (package
     (name "hlint")
-    (version "2.1.10")
+    (version "2.1.26")
     (source
      (origin
        (method url-fetch)
@@ -400,7 +423,7 @@ used to keep a folder in sync between computers.")
              "/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "19as2m9g75cr6n1agzvsij0cvqhb0wbjlk31w4y5d5mns87dki0w"))))
+         "16zkkpbfrd69853cdqf597fva969lirfc86b039i9zd7ghlrcayc"))))
     (build-system haskell-build-system)
     (inputs
      `(("cpphs" ,cpphs)
@@ -416,6 +439,7 @@ used to keep a folder in sync between computers.")
        ("ghc-extra" ,ghc-extra)
        ("ghc-refact" ,ghc-refact)
        ("ghc-aeson" ,ghc-aeson)
+       ("ghc-lib-parser" ,ghc-lib-parser)
        ("hscolour" ,hscolour)))
     (home-page "http://community.haskell.org/~ndm/hlint/")
     (synopsis "Suggest improvements for Haskell source code")
@@ -427,7 +451,7 @@ unwanted suggestions, and to add your own custom suggestions.")
 (define-public hoogle
   (package
     (name "hoogle")
-    (version "5.0.17.3")
+    (version "5.0.17.11")
     (source
      (origin
        (method url-fetch)
@@ -437,18 +461,19 @@ unwanted suggestions, and to add your own custom suggestions.")
          version ".tar.gz"))
        (sha256
         (base32
-         "174gp41v0krzj37m75pnr3aawyhkbk2wq4q6zk2z3zh0avvvmgk6"))))
+         "1svp8z9pad8z2j386pr0dda0ds8ddxab0salnz4gm51q877w93p1"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-network-uri" ,ghc-network-uri)
-       ("ghc-network" ,ghc-network)
-       ("ghc-quickcheck" ,ghc-quickcheck)
+     `(("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-aeson" ,ghc-aeson)
+       ("ghc-blaze-html" ,ghc-blaze-html)
+       ("ghc-blaze-markup" ,ghc-blaze-markup)
        ("ghc-cmdargs" ,ghc-cmdargs)
        ("ghc-conduit" ,ghc-conduit)
        ("ghc-conduit-extra" ,ghc-conduit-extra)
        ("ghc-connection" ,ghc-connection)
        ("ghc-extra" ,ghc-extra)
+       ("ghc-foundation" ,ghc-foundation)
        ("ghc-old-locale" ,ghc-old-locale)
        ("ghc-haskell-src-exts" ,ghc-haskell-src-exts)
        ("ghc-http-conduit" ,ghc-http-conduit)
@@ -502,16 +527,16 @@ and mIRC chat codes.")
 (define-public kmonad
   (package
     (name "kmonad")
-    (version "0.2.0")
+    (version "0.3.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/david-janssen/kmonad.git")
-             (commit "06d7b8c709efa695be35df9bde91275cbb2ba099")))
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1rjr4h5yq63x3kad6yn4p8v26389sd9dgr5n2w73s1chafapzwwd"))))
+        (base32 "1g40nkpldih6h1rlxjx5yf9iavr3qs1f2b6j0gd8135p5hkg8d8n"))))
     (build-system haskell-build-system)
     (arguments
      `(#:phases
@@ -543,7 +568,7 @@ and mIRC chat codes.")
        ("ghc-exceptions" ,ghc-exceptions)
        ("ghc-hashable" ,ghc-hashable)
        ("ghc-lens" ,ghc-lens)
-       ("ghc-megaparsec" ,ghc-megaparsec-7)
+       ("ghc-megaparsec" ,ghc-megaparsec)
        ("ghc-optparse-applicative" ,ghc-optparse-applicative)
        ("ghc-unagi-chan" ,ghc-unagi-chan)
        ("ghc-unliftio" ,ghc-unliftio)

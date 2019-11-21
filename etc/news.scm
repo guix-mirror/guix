@@ -9,6 +9,24 @@
 (channel-news
  (version 0)
 
+ (entry (commit "f675f8dec73d02e319e607559ed2316c299ae8c7")
+        (title (en "New command @command{guix time-machine}")
+               (de "Neuer Befehl @command{guix time-machine}")
+               (fr "Nouvelle commande @command{guix time-machine}"))
+        (body (en "The new command @command{guix time-machine} facilitates
+access to older or newer revisions of Guix than the one that is installed.
+It can be used to install different versions of packages, and to
+re-create computational environments exactly as used in the past.")
+              (de "Der neue Befehl @command{guix time-machine} vereinfacht
+den Zugriff auf ältere oder neuere Guix-Versionen als die installierte.
+Er kann zur Installation bestimmter Paketversionen verwendet werden, aber
+auch zur Wiederherstellung von Entwicklungsumgebungen, wie sie in der
+Vergangenheit verwendet wurden.")
+              (fr "La nouvelle commande @command{guix time-machine}
+facilite l'accès à des versions antérieures ou postérieures par rapport
+à la version installée.  Elle sert à installer des versions spécifiques
+de paquets, ainsi à la restauration d'environnements dans un état
+historique.")))
  (entry (commit "3e962e59d849e4300e447d94487684102d9d412e")
         (title (en "@command{guix graph} now supports package
 transformations")

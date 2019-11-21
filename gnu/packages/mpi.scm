@@ -52,7 +52,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
 
-(define-public hwloc
+(define-public hwloc-1
   ;; Note: For now we keep 1.x as the default because many packages have yet
   ;; to migrate to 2.0.
   (package
@@ -134,7 +134,7 @@ bind processes, and much more.")
 (define-public hwloc-2
   ;; Note: 2.0 isn't the default yet, see above.
   (package
-    (inherit hwloc)
+    (inherit hwloc-1)
     (version "2.1.0")
     (source (origin
               (method url-fetch)
@@ -146,9 +146,9 @@ bind processes, and much more.")
                 "0qh8s7pphz0m5cwb7liqmc17xzfs23xhz5wn24r6ikvjyx99fhhr"))))
 
     ;; libnuma is no longer needed.
-    (inputs (alist-delete "numactl" (package-inputs hwloc)))
+    (inputs (alist-delete "numactl" (package-inputs hwloc-1)))
     (arguments
-     (substitute-keyword-arguments (package-arguments hwloc)
+     (substitute-keyword-arguments (package-arguments hwloc-1)
        ((#:phases phases)
         `(modify-phases ,phases
            (replace 'skip-linux-libnuma-test
@@ -161,6 +161,10 @@ bind processes, and much more.")
                #t))))))))
 
 (define-deprecated hwloc-2.0 'hwloc-2
+  hwloc-2)
+
+(define-public hwloc
+  ;; The latest stable series of hwloc.
   hwloc-2)
 
 (define-public openmpi
@@ -192,7 +196,7 @@ bind processes, and much more.")
              `(("psm2" ,psm2))
              '())
        ,@(if (and (not (%current-target-system))
-                  (member (%current-system) (package-supported-systems psm2)))
+                  (member (%current-system) (package-supported-systems ucx)))
              `(("ucx" ,ucx))
              '())
        ("rdma-core" ,rdma-core)
@@ -209,12 +213,6 @@ bind processes, and much more.")
                            "--with-valgrind"
                            "--with-hwloc=external"
                            "--with-libevent"
-
-                           ;; Make sure ./configure fails if one of these is
-                           ;; missing.
-                           "--with-ucx"
-                           "--with-psm"
-                           "--with-psm2"
 
                            ;; InfiniBand support
                            "--enable-openib-control-hdr-padding"
@@ -348,6 +346,15 @@ only provides @code{MPI_THREAD_FUNNELED}.")))
      ;; Allow oversubscription in case there are less physical cores available
      ;; in the build environment than the package wants while testing.
      (setenv "OMPI_MCA_rmaps_base_mapping_policy" "core:OVERSUBSCRIBE")
+
+     ;; UCX sometimes outputs uninteresting warnings such as:
+     ;;
+     ;;   mpool.c:38   UCX  WARN  object 0x7ffff44fffc0 was not returned to mpool ucp_am_bufs
+     ;;
+     ;; These in turn leads to failures of test suites that capture and
+     ;; compare stdout, such as that of 'hdf5-parallel-openmpi'.  Thus, tell
+     ;; UCX to not emit those warnings.
+     (setenv "UCX_LOG_LEVEL" "error")
      #t))
 
 (define-public intel-mpi-benchmarks

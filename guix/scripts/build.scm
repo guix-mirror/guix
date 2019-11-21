@@ -802,7 +802,15 @@ build---packages, gexps, derivations, and so on."
   (append-map (match-lambda
                 (('argument . (? string? spec))
                  (cond ((derivation-path? spec)
-                        (list (read-derivation-from-file spec)))
+                        (catch 'system-error
+                          (lambda ()
+                            (list (read-derivation-from-file spec)))
+                          (lambda args
+                            ;; Non-existent .drv files can be substituted down
+                            ;; the road, so don't error out.
+                            (if (= ENOENT (system-error-errno args))
+                                '()
+                                (apply throw args)))))
                        ((store-path? spec)
                         ;; Nothing to do; maybe for --log-file.
                         '())
@@ -934,7 +942,11 @@ needed."
                                    '())))
                    (items (filter-map (match-lambda
                                         (('argument . (? store-path? file))
-                                         (and (not (derivation-path? file))
+                                         ;; If FILE is a .drv that's not in
+                                         ;; store, keep it so that it can be
+                                         ;; substituted.
+                                         (and (or (not (derivation-path? file))
+                                                  (not (file-exists? file)))
                                               file))
                                         (_ #f))
                                       opts))
@@ -965,7 +977,8 @@ needed."
                                (map (compose list derivation-file-name) drv)
                                roots))
                     ((not (assoc-ref opts 'dry-run?))
-                     (and (build-derivations store drv mode)
+                     (and (build-derivations store (append drv items)
+                                             mode)
                           (for-each show-derivation-outputs drv)
                           (for-each (cut register-root store <> <>)
                                     (map (lambda (drv)

@@ -214,14 +214,14 @@ Interface} specification.")
     ;; ’stable’ and recommends that “in general you deploy the NGINX mainline
     ;; branch at all times” (https://www.nginx.com/blog/nginx-1-6-1-7-released/)
     ;; Consider updating the nginx-documentation package together with this one.
-    (version "1.17.5")
+    (version "1.17.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1hqhziic4csci8xs4q8vbzpmj2qjkhmmx68zza7h5bvmbbhkbvk3"))))
+                "1dipq90h3n1xdslwbijwlhbk84r7q0bswlbvi970may09lqsbd1w"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
@@ -1340,6 +1340,20 @@ hash/signatures.")
     (description
      "LibYAML is a YAML 1.1 parser and emitter written in C.")
     (license license:expat)))
+
+(define-public libyaml-2.1
+  (package
+    (inherit libyaml)
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://pyyaml.org/download/libyaml/yaml-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1karpcfgacgppa82wm2drcfn2kb6q2wqfykf5nrhy20sci2i2a3q"))))))
 
 (define-public libquvi-scripts
   (package
@@ -4176,8 +4190,8 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
   (package-with-python2 python-feedparser))
 
 (define-public guix-data-service
-  (let ((commit "5e2bc7c6e920e1542ab8fde39dbddca443a7cbc8")
-        (revision "4"))
+  (let ((commit "23f60a6bbb923a9510d95250b4a1626cb8a84b7f")
+        (revision "5"))
     (package
       (name "guix-data-service")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -4189,7 +4203,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0awfvps7k9bpg3gpgc93y401g7pjabx7mr9960vigad8vddhixqi"))))
+                  "08v6wdj5ia139krplc7y74s4rm1iblqf91713z69yhh5zbkvyxg8"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
@@ -4199,12 +4213,6 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
          #:test-target "check-with-tmp-database"
          #:phases
          (modify-phases %standard-phases
-           (add-after 'set-paths 'set-GUIX_ENVIRONMENT
-             (lambda* (#:key inputs #:allow-other-keys)
-               ;; This means guix.el finds the Emacs modules
-               (setenv "GUIX_ENVIRONMENT"
-                       (assoc-ref inputs "emacs-with-modules"))
-               #t))
            (add-before 'build 'set-GUILE_AUTO_COMPILE
              (lambda _
                ;; To avoid errors relating to guild
@@ -4255,10 +4263,8 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
          ("autoconf" ,autoconf)
          ("automake" ,automake)
          ("ephemeralpg" ,ephemeralpg)
-         ("emacs-with-modules" ,(directory-union
-                                 "emacs-union"
-                                 (list emacs-no-x
-                                       emacs-htmlize)))
+         ("emacs-minimal" ,emacs-minimal)
+         ("emacs-htmlize" ,emacs-htmlize)
          ("pkg-config" ,pkg-config)))
       (synopsis "Store and provide data about GNU Guix")
       (description

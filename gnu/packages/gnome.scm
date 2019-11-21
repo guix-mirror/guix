@@ -861,8 +861,21 @@ on the GNOME Desktop with a single simple application.")
        (base32
         "0bshwm49cd01ighsxqlbqn10q0ch71ff99gcrx8pr2gyky2ad3pq"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'set-adwaita-theme-file-name
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      ;; Provide the correct file name of the default GNOME
+                      ;; background, 'adwaita-timed.xml'.
+                      (let ((theme (assoc-ref inputs "gnome-backgrounds")))
+                        (substitute* (find-files "schemas"
+                                                 "\\.gschema\\.xml\\.in$")
+                          (("@datadir@/backgrounds/gnome")
+                           (string-append theme "/share/backgrounds/gnome")))
+                        #t))))))
     (inputs
-     `(("glib" ,glib)))
+     `(("glib" ,glib)
+       ("gnome-backgrounds" ,gnome-backgrounds)))
     (native-inputs
      `(("intltool" ,intltool)
        ("glib" ,glib "bin")                       ; glib-compile-schemas, etc.
@@ -1406,15 +1419,15 @@ library.")
 (define-public librsvg-next
   (package
     (name "librsvg")
-    (version "2.46.0")
+    (version "2.46.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/librsvg/"
                                   (version-major+minor version)  "/"
-                                  name "-" version ".tar.xz"))
+                                  "librsvg-" version ".tar.xz"))
               (sha256
                (base32
-                "1la3az2af2ccm6rp86b6wh0kq7kxzl4n8pli5qxhyic1rd91xj4n"))))
+                "1s3a96i7f4pynjwxxvhysp4b6r7kyi8nasdxfyi62hc7gm34d3kn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1492,7 +1505,7 @@ library.")
     (description
      "Librsvg is a C library to render SVG files using the Cairo 2D graphics
 library.")
-    (license license:lgpl2.0+)))
+    (license license:lgpl2.1+)))
 
 (define-public libidl
   (package

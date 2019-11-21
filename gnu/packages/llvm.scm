@@ -11,6 +11,8 @@
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2019 Arm Ltd <David.Truby@arm.com>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,7 +39,9 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system emacs)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages bootstrap)           ;glibc-dynamic-linker
   #:use-module (gnu packages compression)
@@ -202,6 +206,7 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
                    (lambda* (#:key inputs #:allow-other-keys)
                      (let ((libc (assoc-ref inputs "libc"))
                            (compiler-rt (assoc-ref inputs "clang-runtime"))
+                           (gcc (assoc-ref inputs "gcc"))
                            (version
                             (string->number
                              ,(version-major (package-version clang-runtime)))))
@@ -217,6 +222,12 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
                           (substitute* "lib/Driver/ToolChains/Linux.cpp"
                             (("(^[[:blank:]]+LibDir = ).*" _ declaration)
                              (string-append declaration "\"" libc "/lib\";\n"))
+
+                            ;; Make clang look for libstdc++ in the right
+                            ;; location.
+                            (("LibStdCXXIncludePathCandidates\\[\\] = \\{")
+                             (string-append
+                              "LibStdCXXIncludePathCandidates[] = { \"" gcc "/include/c++\","))
 
                             ;; Make sure libc's libdir is on the search path, to
                             ;; allow crt1.o & co. to be found.
@@ -289,6 +300,51 @@ Objective-C++ programming languages.  It uses LLVM as its back end.  The Clang
 project includes the Clang front end, the Clang static analyzer, and several
 code analysis tools.")
     (license license:ncsa)))
+
+(define (make-clang-toolchain clang)
+  (package
+    (name (string-append (package-name clang) "-toolchain"))
+    (version (package-version clang))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build union))
+       #:builder (begin
+                   (use-modules (ice-9 match)
+                                (srfi srfi-26)
+                                (guix build union))
+
+                   (let ((out (assoc-ref %outputs "out")))
+
+                     (match %build-inputs
+                       (((names . directories) ...)
+                        (union-build out directories)))
+
+                     (union-build (assoc-ref %outputs "debug")
+                                  (list (assoc-ref %build-inputs
+                                                   "libc-debug")))
+                     (union-build (assoc-ref %outputs "static")
+                                  (list (assoc-ref %build-inputs
+                                                   "libc-static")))
+                     #t))))
+
+    (native-search-paths (package-native-search-paths clang))
+    (search-paths (package-search-paths clang))
+
+    (license (package-license clang))
+    (home-page "https://clang.llvm.org")
+    (synopsis "Complete Clang toolchain for C/C++ development")
+    (description "This package provides a complete Clang toolchain for C/C++
+development to be installed in user profiles.  This includes Clang, as well as
+libc (headers and binaries, plus debugging symbols in the @code{debug}
+output), and Binutils.")
+    (outputs '("out" "debug" "static"))
+    (inputs `(("clang" ,clang)
+              ("ld-wrapper" ,(car (assoc-ref (%final-inputs) "ld-wrapper")))
+              ("binutils" ,binutils)
+              ("libc" ,glibc)
+              ("libc-debug" ,glibc "debug")
+              ("libc-static" ,glibc "static")))))
 
 (define-public libcxx
   (package
@@ -399,6 +455,34 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
                    "0svk1f70hvpwrjp6x5i9kqwrqwxnmcrw5s7f4cxyd100mdd12k08"
                    #:patches '("clang-7.0-libc-search-path.patch")))
 
+(define-public clang-toolchain
+  (make-clang-toolchain clang))
+
+(define-public llvm-9
+  (package
+    (inherit llvm)
+    (version "9.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://llvm.org/releases/"
+                                  version "/llvm-" version ".src.tar.xz"))
+              (sha256
+               (base32
+                "117ymdz1by2nkfq1c2p9m4050dp848kbjbiv6nsfj8hzy9f5d86n"))))
+    (license license:asl2.0)))
+
+(define-public clang-runtime-9
+  (clang-runtime-from-llvm
+   llvm-9
+   "03ni43lbkp63lr3p6sc94dphqmvnz5av5mml0xmk930xvnbcvr2n"))
+
+(define-public clang-9
+  (clang-from-llvm llvm-9 clang-runtime-9
+                   "0426ma80i41qsgzm1qdz81mjskck426diygxi2k5vji2gkpixa3v"))
+
+(define-public clang-toolchain-9
+  (make-clang-toolchain clang-9))
+
 (define-public llvm-7
   (package
     (inherit llvm)
@@ -421,6 +505,9 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
                    "067lwggnbg0w1dfrps790r5l6k8n5zwhlsw7zb6zvmfpwpfn4nx4"
                    #:patches '("clang-7.0-libc-search-path.patch")))
 
+(define-public clang-toolchain-7
+  (make-clang-toolchain clang-7))
+
 (define-public llvm-6
   (package
     (inherit llvm)
@@ -442,6 +529,9 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
   (clang-from-llvm llvm-6 clang-runtime
                    "0rxn4rh7rrnsqbdgp4gzc8ishbkryhpl1kd3mpnxzpxxhla3y93w"
                    #:patches '("clang-6.0-libc-search-path.patch")))
+
+(define-public clang-toolchain-6
+  (make-clang-toolchain clang-6))
 
 ;; Libcxx files specifically used by PySide2.
 (define-public libcxx-6

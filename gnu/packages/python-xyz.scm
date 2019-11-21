@@ -53,7 +53,7 @@
 ;;; Copyright © 2016, 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
-;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2018, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018, 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Luther Thompson <lutheroto@gmail.com>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
@@ -8745,6 +8745,9 @@ with a new public API, and RPython support.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+	 (add-before 'install 'set-HOME
+	   (lambda _
+	     (setenv "HOME" "/tmp")))
          (replace 'check
            (lambda _
              ;; Tests require write access to HOME.
@@ -14617,14 +14620,14 @@ is the new Pyro version that is actively developed.")
     (version "2.9.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://bitbucket.org/khinsen/"
-                           "scientificpython/downloads/ScientificPython-"
-                           version ".tar.gz"))
-       (file-name (string-append "ScientificPython-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/khinsen/ScientificPython")
+             (commit (string-append "rel" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0fc69zhlsn9d2jvbzyjl9ah53vj598h84nkq230c83ahfvgzx5y3"))))
+         "16l48aj9fps9r7jyk8gpxppwrv0fqvlc13sayxskz28r5s6sjwbl"))))
     (build-system python-build-system)
     (inputs
      `(("netcdf" ,netcdf)))
@@ -14642,7 +14645,7 @@ is the new Pyro version that is actively developed.")
              (invoke "python" "setup.py" "build"
                      (string-append "--netcdf_prefix="
                                     (assoc-ref inputs "netcdf"))))))))
-    (home-page "https://bitbucket.org/khinsen/scientificpython")
+    (home-page "http://dirac.cnrs-orleans.fr/ScientificPython")
     (synopsis "Python modules for scientific computing")
     (description "ScientificPython is a collection of Python modules that are
 useful for scientific computing.  Most modules are rather general (Geometry,
@@ -14654,16 +14657,17 @@ not actively maintained and works only with Python 2 and NumPy < 1.9.")
 (define-public python2-mmtk
   (package
     (name "python2-mmtk")
-    (version "2.7.11")
+    (version "2.7.12")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://bitbucket.org/khinsen/"
-                           "mmtk/downloads/MMTK-" version ".tar.gz"))
-       (file-name (string-append "MMTK-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/khinsen/MMTK")
+             (commit (string-append "rel" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1d0nnjx4lwsvh8f99vv1r6gi50d93yba0adkz8b4zgv4za4c5862"))))
+         "1fqwh3ba9jd42nigvn5shndgwb1zy7kh9520ncvqci7n8ffjr6p1"))))
     (build-system python-build-system)
     (native-inputs
      `(("netcdf" ,netcdf)))
@@ -16884,3 +16888,27 @@ qvarious formats: PDF, PostScript, PNG and even SVG.")
     (description "Pyphen is a pure Python module to hyphenate text using
 existing Hunspell hyphenation dictionaries.")
     (license (list license:gpl2 license:lgpl2.1 license:mpl1.1))))
+
+(define-public python-intelhex
+  (package
+    (name "python-intelhex")
+    (version "2.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "intelhex" version))
+       (sha256
+        (base32
+         "0ckqjbxd8gwcg98gfzpn4vq1qxzfvq3rdbrr1hikj1nmw08qb780"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f))          ;issue with version
+    (home-page "https://pypi.org/project/IntelHex/")
+    (synopsis "Python library for Intel HEX files manipulations")
+    (description "The Intel HEX file format is widely used in microprocessors
+and microcontrollers area (embedded systems etc.) as the de facto standard for
+representation of code to be programmed into microelectronic devices.  This
+package provides an intelhex Python library to read, write, create from
+scratch and manipulate data from Intel HEX file format.  It also includes
+several convenience Python scripts, including \"classic\" hex2bin and bin2hex
+converters and more, those based on the library itself.")
+    (license license:bsd-3)))

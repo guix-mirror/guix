@@ -796,7 +796,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/elixir-path-length.patch			\
   %D%/packages/patches/elm-compiler-disable-reactor.patch	\
   %D%/packages/patches/elm-compiler-fix-map-key.patch		\
-  %D%/packages/patches/elm-compiler-relax-glsl-bound.patch	\
   %D%/packages/patches/emacs-dired-toggle-sudo-emacs-26.patch   \
   %D%/packages/patches/emacs-exec-path.patch			\
   %D%/packages/patches/emacs-fix-scheme-indent-function.patch	\
@@ -878,8 +877,14 @@ dist_patch_DATA =						\
   %D%/packages/patches/gd-freetype-test-failure.patch		\
   %D%/packages/patches/geoclue-config.patch			\
   %D%/packages/patches/ghc-8.0-fall-back-to-madv_dontneed.patch \
+  %D%/packages/patches/ghc-diff-swap-cover-args.patch           \
   %D%/packages/patches/ghc-dont-pass-linker-flags-via-response-files.patch	\
-  %D%/packages/patches/ghc-haddock-library-unbundle.patch		\
+  %D%/packages/patches/ghc-haddock-api-fix-haddock.patch	\
+  %D%/packages/patches/ghc-hpack-fix-tests.patch		\
+  %D%/packages/patches/ghc-microlens-aeson-fix-tests.patch	\
+  %D%/packages/patches/ghc-monad-par-fix-tests.patch		\
+  %D%/packages/patches/ghc-pandoc-fix-html-tests.patch		\
+  %D%/packages/patches/ghc-pandoc-fix-latex-test.patch		\
   %D%/packages/patches/ghostscript-no-header-id.patch		\
   %D%/packages/patches/ghostscript-no-header-uuid.patch		\
   %D%/packages/patches/ghostscript-no-header-creationdate.patch \
@@ -972,6 +977,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/hdf-eos5-remove-gctp.patch		\
   %D%/packages/patches/hdf-eos5-fix-szip.patch			\
   %D%/packages/patches/hdf-eos5-fortrantests.patch		\
+  %D%/packages/patches/hexchat-crash-exit.patch			\
   %D%/packages/patches/higan-remove-march-native-flag.patch	\
   %D%/packages/patches/hubbub-sort-entities.patch		\
   %D%/packages/patches/hurd-fix-eth-multiplexer-dependency.patch        \
@@ -1133,6 +1139,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/metabat-fix-compilation.patch		\
   %D%/packages/patches/mhash-keygen-test-segfault.patch		\
   %D%/packages/patches/mingw-w64-6.0.0-gcc.patch		\
+  %D%/packages/patches/minisat-friend-declaration.patch		\
+  %D%/packages/patches/minisat-install.patch			\
   %D%/packages/patches/mpc123-initialize-ao.patch		\
   %D%/packages/patches/module-init-tools-moduledir.patch	\
   %D%/packages/patches/monero-use-system-miniupnpc.patch			\
@@ -1269,6 +1277,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-3-deterministic-build-info.patch	\
   %D%/packages/patches/python-3-search-paths.patch		\
   %D%/packages/patches/python-3-fix-tests.patch			\
+  %D%/packages/patches/python-3.8-search-paths.patch		\
+  %D%/packages/patches/python-3.8-fix-tests.patch		\
   %D%/packages/patches/python-CVE-2018-14647.patch		\
   %D%/packages/patches/python-axolotl-AES-fix.patch		\
   %D%/packages/patches/python-cairocffi-dlopen-path.patch	\
@@ -1390,11 +1400,13 @@ dist_patch_DATA =						\
   %D%/packages/patches/tk-find-library.patch			\
   %D%/packages/patches/ttf2eot-cstddef.patch			\
   %D%/packages/patches/ttfautohint-source-date-epoch.patch	\
+  %D%/packages/patches/tomb-fix-errors-on-open.patch		\
   %D%/packages/patches/totem-meson-compat.patch			\
   %D%/packages/patches/totem-meson-easy-codec.patch		\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
   %D%/packages/patches/txr-shell.patch				\
   %D%/packages/patches/u-boot-fix-mkimage-header-verification.patch	\
+  %D%/packages/patches/ucx-tcp-iface-ioctl.patch		\
   %D%/packages/patches/udiskie-no-appindicator.patch		\
   %D%/packages/patches/unzip-CVE-2014-8139.patch		\
   %D%/packages/patches/unzip-CVE-2014-8140.patch		\

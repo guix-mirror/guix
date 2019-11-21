@@ -36,6 +36,8 @@
   #:autoload   (guix inferior) (open-inferior)
   #:use-module (guix scripts build)
   #:autoload   (guix build utils) (which)
+  #:use-module ((guix build syscalls)
+                #:select (with-file-lock/no-wait))
   #:use-module (guix git)
   #:use-module (git)
   #:use-module (gnu packages)
@@ -56,6 +58,8 @@
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 format)
   #:export (display-profile-content
+            channel-list
+            with-git-error-handling
             guix-pull))
 
 
@@ -78,8 +82,6 @@
 (define (show-help)
   (display (G_ "Usage: guix pull [OPTION]...
 Download and deploy the latest version of Guix.\n"))
-  (display (G_ "
-      --verbose          produce verbose output"))
   (display (G_ "
   -C, --channels=FILE    deploy the channels defined in FILE"))
   (display (G_ "
@@ -120,10 +122,7 @@ Download and deploy the latest version of Guix.\n"))
 
 (define %options
   ;; Specifications of the command-line options.
-  (cons* (option '("verbose") #f #f
-                 (lambda (opt name arg result)
-                   (alist-cons 'verbose? #t result)))
-         (option '(#\C "channels") #t #f
+  (cons* (option '(#\C "channels") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'channel-file arg result)))
          (option '(#\l "list-generations") #f #t
@@ -382,7 +381,7 @@ previous generation.  Return true if there are news to display."
   (display-channel-news profile))
 
 (define* (build-and-install instances profile
-                            #:key use-substitutes? verbose? dry-run?)
+                            #:key use-substitutes? dry-run?)
   "Build the tool from SOURCE, and install it in PROFILE.  When DRY-RUN? is
 true, display what would be built without actually building it."
   (define update-profile
@@ -818,13 +817,16 @@ Use '~/.config/guix/channels.scm' instead."))
                                        (if (assoc-ref opts 'bootstrap?)
                                            %bootstrap-guile
                                            (canonical-package guile-2.2)))))
-                        (run-with-store store
-                          (build-and-install instances profile
-                                             #:dry-run?
-                                             (assoc-ref opts 'dry-run?)
-                                             #:use-substitutes?
-                                             (assoc-ref opts 'substitutes?)
-                                             #:verbose?
-                                             (assoc-ref opts 'verbose?))))))))))))))
+                        (with-file-lock/no-wait (string-append profile ".lock")
+                          (lambda (key . args)
+                            (leave (G_ "profile ~a is locked by another process~%")
+                                   profile))
+
+                          (run-with-store store
+                            (build-and-install instances profile
+                                               #:dry-run?
+                                               (assoc-ref opts 'dry-run?)
+                                               #:use-substitutes?
+                                               (assoc-ref opts 'substitutes?)))))))))))))))
 
 ;;; pull.scm ends here

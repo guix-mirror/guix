@@ -463,13 +463,14 @@ want what you have.")
     (name "cowsay")
     (version "3.04")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/tnalpgge/"
-                                  "rank-amateur-cowsay/archive/"
-                                  "cowsay-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/tnalpgge/rank-amateur-cowsay.git")
+                     (commit (string-append name "-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "12w7apbf6a9qffk92r32b16w22na2fjcqbl32rn0n7zw5hrp3f6q"))))
+                "06455kq37hvq1xb7adyiwrx0djs50arsxvjgixyxks16lm1rlc7n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1880,30 +1881,38 @@ match, cannon keep, and grave-itation pit.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/minetest/minetest")
-                     (commit version)))
+                    (url "https://github.com/minetest/minetest")
+                    (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
                 "184n9gxfa7yr0j85z2x736maaymsnppd5jzm326wlqri3c0qqy3z"))
               (modules '((guix build utils)))
               (snippet
-                '(begin
-                   (delete-file-recursively "lib") #t))))
+               '(begin
+                  ;; Mimic upstream commit 706b6aad06, for compatibility with
+                  ;; newer jsoncpp.  Remove this for > 5.1.0.
+                  (substitute* "cmake/Modules/FindJson.cmake"
+                    (("features\\.h")
+                     "allocator.h"))
+
+                  ;; Delete bundled libraries.
+                  (delete-file-recursively "lib")
+                  #t))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-         (list "-DRUN_IN_PLACE=0"
-               "-DENABLE_FREETYPE=1"
-               "-DENABLE_GETTEXT=1"
-               "-DENABLE_SYSTEM_JSONCPP=TRUE"
-               (string-append "-DIRRLICHT_INCLUDE_DIR="
-                              (assoc-ref %build-inputs "irrlicht")
-                              "/include/irrlicht")
-               (string-append "-DCURL_INCLUDE_DIR="
-                              (assoc-ref %build-inputs "curl")
-                              "/include/curl"))
-       #:tests? #f)) ; no check target
+       (list "-DRUN_IN_PLACE=0"
+             "-DENABLE_FREETYPE=1"
+             "-DENABLE_GETTEXT=1"
+             "-DENABLE_SYSTEM_JSONCPP=TRUE"
+             (string-append "-DIRRLICHT_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "irrlicht")
+                            "/include/irrlicht")
+             (string-append "-DCURL_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "curl")
+                            "/include/curl"))
+       #:tests? #f))                    ;no check target
     (native-search-paths
      (list (search-path-specification
             (variable "MINETEST_SUBGAME_PATH")
@@ -3787,13 +3796,14 @@ Linux / Mac OS X servers, and an auto mapper with a VT100 map display.")
     (name "laby")
     (version "0.6.4")
     (source
-     (origin (method url-fetch)
-             (uri (string-append
-                   "https://github.com/sgimenez/laby/archive/"
-                   "laby-" version ".tar.gz"))
+     (origin (method git-fetch)
+             (uri (git-reference
+                    (url "https://github.com/sgimenez/laby.git")
+                    (commit (string-append name "-" version))))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "0gyrfa95l1qka7gbjf7l6mk7mbfvph00l0c995ia272qdw7rjhyf"))
+               "12fq9hhrxpzgfinmj9ra9ckss9yficwdlrmgjvvsq7agvh3sgyl1"))
              (patches (search-patches "laby-make-install.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -3943,7 +3953,7 @@ throwing people around in pseudo-randomly generated buildings.")
 (define-public hyperrogue
   (package
     (name "hyperrogue")
-    (version "10.5d")
+    (version "11.2d")
     ;; When updating this package, be sure to update the "hyperrogue-data"
     ;; origin in native-inputs.
     (source (origin
@@ -3954,7 +3964,7 @@ throwing people around in pseudo-randomly generated buildings.")
                     "-src.tgz"))
               (sha256
                (base32
-                "1ls055v4pv2xmn2a8lav7wl370zn0wsd91q41bk0amxd168kcndy"))))
+                "1b532s94zv1jsni7bvh848m42arxcclsr0x3n7c689iamwqzrxmn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -4032,7 +4042,7 @@ throwing people around in pseudo-randomly generated buildings.")
              "-win.zip"))
            (sha256
             (base32
-             "13n9hcvf9yv7kjghm5jhjpwq1kh94i4bgvcczky9kvdvw1y9278n"))))
+             "0vq4l1xaqpjj3hmxn1vn2b3bbkn1hrag42ck9f30blinv347bwhf"))))
        ("unzip" ,unzip)))
     (inputs
      `(("font-dejavu" ,font-dejavu)
@@ -5136,7 +5146,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
 (define-public tome4
   (package
     (name "tome4")
-    (version "1.6.0")
+    (version "1.6.1")
     (synopsis "Single-player, RPG roguelike game set in the world of Eyal")
     (source
      (origin
@@ -5145,7 +5155,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
                            version ".tar.bz2"))
        (sha256
         (base32
-         "1z1w4ycgl5wbm0sv7577vcdfwwf4k7vaf2njzyb21rvqjizpbkwr"))
+         "0c5a2bdyfccwkqnb6yqvzggyi2nk032v01kfc00zlgpdfzljcb9i"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -5442,14 +5452,14 @@ making Yamagi Quake II one of the most solid Quake II implementations available.
     (version "0.9.3.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/the-butterfly-effect/tbe/archive/"
-             "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/the-butterfly-effect/tbe.git")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "18qkp7fgdvyl3haqqa693mgyic7afsznsxgz98z9wn4csaqxsnby"))))
+         "1ag2cp346f9bz9qy6za6q54id44d2ypvkyhvnjha14qzzapwaysj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -5793,7 +5803,7 @@ affect gameplay).")
   (package
     (inherit chocolate-doom)
     (name "crispy-doom")
-    (version "5.5.2")
+    (version "5.6.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5801,7 +5811,7 @@ affect gameplay).")
                     (commit (string-append "crispy-doom-" version))))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "1a60ns0blhvml6gzj9qx18c18pbf02rq7vypaajd6nqy5h4fz3cn"))))
+               (base32 "0f319979wqfgm4pvsa6y5clg30p55l441kmrr8db0p5smyv3x2s4"))))
     (native-inputs
      (append
       (package-native-inputs chocolate-doom)
@@ -7337,14 +7347,14 @@ play with up to four players simultaneously.  It has network support.")
 (define-public hedgewars
   (package
     (name "hedgewars")
-    (version "0.9.25")
+    (version "1.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.hedgewars.org/download/releases/"
                                   "hedgewars-src-" version ".tar.bz2"))
               (sha256
                (base32
-                "08x7fqpy0hpnbfq2k06g522xayi7s53bca819zfhalvqnqs76pdk"))))
+                "0nqm9w02m0xkndlsj6ys3wr0ik8zc14zgilq7k6fwjrf3zk385i1"))))
     (build-system cmake-build-system)
     (arguments
      ;; XXX: Engine is built as Pascal source code, requiring Free Pascal
@@ -7353,32 +7363,8 @@ play with up to four players simultaneously.  It has network support.")
      `(#:configure-flags (list "-DBUILD_ENGINE_C=ON")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'remove-failing-test
-           ;; XXX: Remove single failing test.  Note: it is marked
-           ;; a "non-critical" test.
-           (lambda _
-             (delete-file-recursively "tests/lua_noncritical")
-             #t))
-         (add-after 'unpack 'fix-compiler
-           ;; XXX: Flag BUILD_ENGINE_C, as set above, implies using Clang to
-           ;; compile files.  However, using `clang' globally leads to the
-           ;; error: qtbase-5.11.3/include/qt5/QtCore/qglobal.h:45:12: fatal
-           ;; error: 'type_traits' file not found.
-           ;;
-           ;; Therefore, we make sure to use `c++' everywhere but in the
-           ;; engine.
-           (lambda _
-             (substitute* "project_files/hwc/CMakeLists.txt"
-               (("find_package\\(SDL2_ttf 2 REQUIRED\\)" all)
-                (string-append all "\n"
-                               "set(CMAKE_C_COMPILER ${CLANG_EXECUTABLE})\n"
-                               "set(CMAKE_CXX_COMPILER ${CLANG_EXECUTABLE})")))
-             (substitute* "CMakeLists.txt"
-               (("set\\(CMAKE_C(XX)?_COMPILER" all) (string-append "#" all)))
-             #t))
          (replace 'check
-           (lambda _
-             (invoke "ctest"))))))
+           (lambda _ (invoke "ctest"))))))
     (inputs
      `(("ffmpeg" ,ffmpeg)
        ("freeglut" ,freeglut)

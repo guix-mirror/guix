@@ -47,9 +47,25 @@
         (base32 "0s93z9vr0vp5w894ghc5s34nsq09sg1msf59zfiba87sid5vgjqy"))
        (patches
         (search-patches "elm-compiler-disable-reactor.patch"
-                        "elm-compiler-relax-glsl-bound.patch"
                         "elm-compiler-fix-map-key.patch"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'update-constraints
+           (lambda _
+             (substitute* "elm.cabal"
+               (("ansi-terminal >= 0\\.8 && < 0\\.9,")
+                "ansi-terminal >= 0.8 && < 0.10,")
+               (("containers >= 0\\.5\\.8\\.2 && < 0\\.6,")
+                "containers >= 0.5.8.2 && < 0.7,")
+               (("http-client >= 0\\.5 && < 0\\.6,")
+                "http-client >= 0.5 && < 0.7,")
+               (("language-glsl >= 0\\.0\\.2 && < 0\\.3,")
+                "language-glsl >= 0.0.2 && < 0.4,")
+               (("network >= 2\\.4 && < 2\\.7,")
+                "network >= 2.4 && < 2.9,"))
+             #t)))))
     (inputs
      `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
        ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)

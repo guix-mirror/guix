@@ -24,6 +24,7 @@
 ;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
+;;; Copyright © 2019 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3811,3 +3812,102 @@ therefore satisfying any requirements they may have to be self contained,
 as is the case with audio plugins.")
     (home-page "https://gitlab.com/geontime/redkite")
     (license license:gpl3+)))
+
+(define-public carla
+  (package
+    (name "carla")
+    (version "2.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/falkTX/Carla.git")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0fqgncqlr86n38yy7pa118mswfacmfczj7w9xx6c6k0jav3wk29k"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no "check" target
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-CC-variable-and-show-features
+           (lambda _
+             (setenv "CC" "gcc")
+             (invoke "make" "features")))
+         (delete 'configure))))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("ffmpeg" ,ffmpeg)
+       ("fluidsynth" ,fluidsynth)
+       ("file" ,file)
+       ("liblo" ,liblo)
+       ("libsndfile" ,libsndfile)
+       ("gtk+" ,gtk+)
+       ("python-pyliblo" ,python-pyliblo)
+       ("python-pyqt" ,python-pyqt)
+       ("python-rdflib" ,python-rdflib)
+       ;; python-pyqt shows the following error without python-wrapper:
+       ;; Error while finding module specification for 'PyQt5.uic.pyuic'
+       ;; (ModuleNotFoundError: No module named 'PyQt5')
+       ("python-wrapper" ,python-wrapper)
+       ("libx11" ,libx11)
+       ("qtbase" ,qtbase)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://kx.studio/Applications:Carla")
+    (synopsis "Audio plugin host")
+    (description "Carla is a modular audio plugin host, with features like
+transport control, automation of parameters via MIDI CC and remote control
+over OSC.  Carla currently supports LADSPA (including LRDF), DSSI, LV2, VST2,
+and VST3 plugin formats, plus SF2 and SFZ file support.  It uses JACK as the
+default and preferred audio driver but also supports native drivers like ALSA.")
+    (license license:gpl2+)))
+
+(define-public ecasound
+  (package
+    (name "ecasound")
+    (version "2.9.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://nosignal.fi/download/ecasound-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32 "15rcs28fq2wfvfs66p5na7adq88b55qszbhshpizgdbyqzgr2jf1"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    ;; would be nice to add mikmod to inputs if that gets packaged
+    ;; eventually
+    (inputs `(("alsa-lib" ,alsa-lib)
+              ("jack" ,jack-1)
+              ("mpg123" ,mpg123)
+              ("lame" ,lame)
+              ("vorbis-tools" ,vorbis-tools)
+              ("faad2" ,faad2)
+              ("flac" ,flac)
+              ("timidity++" ,timidity++)
+              ("libsndfile" ,libsndfile)
+              ("libsamplerate" ,libsamplerate)
+              ("ncurses" ,ncurses)
+              ("ladspa" ,ladspa)
+              ("lilv" ,lilv)))
+    (home-page "http://nosignal.fi/ecasound/index.php")
+    (synopsis "Multitrack audio processing")
+    (description "Ecasound is a software package designed for multitrack audio
+processing. It can be used for simple tasks like audio playback, recording and
+format conversions, as well as for multitrack effect processing, mixing,
+recording and signal recycling. Ecasound supports a wide range of audio inputs,
+outputs and effect algorithms. Effects and audio objects can be combined in
+various ways, and their parameters can be controlled by operator objects like
+oscillators and MIDI-CCs. A versatile console mode user-interface is included
+in the package.")
+    ;; As an exception to the above, the C, C++ and python implementations 
+    ;; of the Ecasound Control Interface (ECI) are licensed under the LGPL 
+    ;; (see the file 'COPYING.LGPL'). This allows writing ECI applications 
+    ;; that are not licensed under GPL.
+    (license (list license:gpl2 license:lgpl2.1))))

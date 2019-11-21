@@ -107,23 +107,14 @@
 (define-public qemu
   (package
     (name "qemu")
-    (version "4.1.0")
+    (version "4.1.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qemu.org/qemu-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1ih9v6gxgild3m4g80ld4dr3wp9db3bpy203k73fxgc9hqhn0vk5"))
-             (patches
-              (list
-               ;; Fix an ordering issue with recent kernels, see
-               ;; <https://bugs.gnu.org/37860>.
-               (qemu-patch
-                "bf9e0313c27d8e6ecd7f7de3d63e1cb25d8f6311"
-                "qemu-tests-make-filemonitor-test-more-robust.patch"
-                (base32
-                 "1242wqpr8id3cn88pzbig3sqh4znml0g0h2mwdmdyhp81blq7s7n"))))))
+               "1lm1jndfpc5sydwrxyiz5sms414zkcg9jdl0zx318qbjsayxnvzd"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Running tests in parallel can occasionally lead to failures, like:
@@ -300,7 +291,12 @@ server and embedded PowerPC, and S390 guests.")
     ;; qemu-minimal-2.10 needs Python 2. Remove below once no longer necessary.
     (native-inputs `(("python-2" ,python-2)
                      ,@(fold alist-delete (package-native-inputs qemu)
-                             '("python-wrapper")))))))
+                             '("python-wrapper"))))
+    (inputs
+     (fold alist-delete (package-inputs qemu)
+           ;; Disable seccomp support, because it's not required for the GRUB
+           ;; test suite, and because it fails with libseccomp 2.4.2 and later.
+           '("libseccomp"))))))
 
 (define-public libosinfo
   (package
@@ -385,6 +381,12 @@ all common programming languages.  Vala bindings are also provided.")
                             "/share/doc/" ,name "-" ,version)
              "--sysconfdir=/etc"
              "--localstatedir=/var")
+       #:make-flags
+       ;; Treat the kernel headers as system headers to silence
+       ;; compiler warnings from those.
+       (list (string-append "C_INCLUDE_PATH="
+                            (assoc-ref %build-inputs "kernel-headers")
+                            "/include"))
        #:phases
        (modify-phases %standard-phases
          (replace 'install

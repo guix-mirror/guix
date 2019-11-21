@@ -581,11 +581,7 @@ corresponds to the symbols listed in FLAGS."
        0))))
 
 (define* (mount-file-system fs #:key (root "/root"))
-  "Mount the file system described by FS, a <file-system> object, under ROOT.
-
-DEVICE, MOUNT-POINT, and TYPE must be strings; OPTIONS can be a string or #f;
-FLAGS must be a list of symbols.  CHECK? is a Boolean indicating whether to
-run a file system check."
+  "Mount the file system described by FS, a <file-system> object, under ROOT."
 
   (define (mount-nfs source mount-point type flags options)
     (let* ((idx (string-rindex source #\:))

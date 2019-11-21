@@ -9,7 +9,7 @@
 ;;; Copyright © 2016 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2017, 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
@@ -185,6 +185,13 @@
 
     (native-search-paths
      (list (search-path-specification
+            (variable "EMACSLOADPATH")
+            ;; The versioned entries are for the Emacs' builtin libraries.
+            (files (list (string-append "share/emacs/" version "/site-lisp")
+                         (string-append "share/emacs/" version "/lisp")
+                         "share/emacs/site-lisp"))
+            (file-pattern ".*"))        ;recursively add any sub directory
+           (search-path-specification
             (variable "INFOPATH")
             (files '("share/info")))))
 

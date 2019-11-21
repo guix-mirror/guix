@@ -184,31 +184,31 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
 
 (define deblob-scripts-5.3
   (linux-libre-deblob-scripts
-   "5.3.6"
+   "5.3.11"
    (base32 "15n09zq38d69y1wl28s3nasf3377qp2yil5b887zpqrm00dif7i4")
-   (base32 "0nrimraf46nf6y1hwkg29fyl0a83wnj0mwq54ggxvffn9gk5h9pa")))
+   (base32 "1xk3gzgnl9m29avka32zkggl36sdxyvps40hr12hjy42l1ysfshm")))
 
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
-   "4.19.79"
+   "4.19.84"
    (base32 "02zs405awaxydbapka4nz8h6lmnc0dahgczqsrs5s2bmzjyyqkcy")
-   (base32 "1fyacg28aym6virxyn7wk99qil2fjbks3iwm7p3hxy51pccn34za")))
+   (base32 "1s89hmy4ihd65by2p1xxkxj476f6c9s5g9r9yvqncb50xlhilk50")))
 
 (define deblob-scripts-4.14
   (linux-libre-deblob-scripts
-   "4.14.149"
+   "4.14.154"
    (base32 "091jk9jkn9jf39bxpc7395bhcb7p96nkg3a8047380ki06lnfxh6")
-   (base32 "0x9nd3hnyrm753cbgdqmy92mbnyw86w64g4hvyibnkpq5n7s3z9n")))
+   (base32 "1pcsfzpcv3bs30iyhwpk1x64r0gyv7wi22spnq6avzj1ayva10kw")))
 
 (define deblob-scripts-4.9
   (linux-libre-deblob-scripts
-   "4.9.196"
+   "4.9.201"
    (base32 "1wvldzlv7q2xdbadas87dh593nxr4a8p5n0f8zpm72lja6w18hmg")
    (base32 "0is8gn4qdd7h5l6lacvhqdch26lmrbgxfm8ab7fx8n85ha7y358w")))
 
 (define deblob-scripts-4.4
   (linux-libre-deblob-scripts
-   "4.4.196"
+   "4.4.201"
    (base32 "0x2j1i88am54ih2mk7gyl79g25l9zz4r08xhl482l3fvjj2irwbw")
    (base32 "12ac4g3ky8yma8sylmxvvysqvd4hnaqjiwmxrxb6wlxggfd7zkbx")))
 
@@ -352,42 +352,42 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-(define-public linux-libre-5.3-version "5.3.11")
+(define-public linux-libre-5.3-version "5.3.12")
 (define-public linux-libre-5.3-pristine-source
   (let ((version linux-libre-5.3-version)
-        (hash (base32 "1dxfh0l4inpjd17pyxfsskjsphs43r8lg6nhhr3y4whxdna5cwbf")))
+        (hash (base32 "184pmjyqh4bkrc3vj65zn6xnljzv9d1x7c1z0hlgj6fakpwgdgsk")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.3)))
 
-(define-public linux-libre-4.19-version "4.19.84")
+(define-public linux-libre-4.19-version "4.19.85")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "0q06mhz170x1lkx6c6qdh82rcnsj03q6f2m28aqhmc4wc694m2w6")))
+        (hash (base32 "1dsgbys73jga5h0a9icgif6qbi31g84315zlcdid9bzf1abkbx3v")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.154")
+(define-public linux-libre-4.14-version "4.14.155")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "00q662s8mgnzqfgk5gkzqfv9ws3vryf28blbq1zxcy4s6wj4mpl6")))
+        (hash (base32 "10g4493ldc398qza304z5yz8qdp93w7a2bs5h5dwk0bbamwikmkp")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.201")
+(define-public linux-libre-4.9-version "4.9.202")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "125xmh5h1zmfniidpjljny53qkl4phpxaali69i66lajscxx8grq")))
+        (hash (base32 "1gsfbvsswpwj6r56ynb6mmx7dc8hp9yhi7sfr0hhii0gs4ffq241")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.201")
+(define-public linux-libre-4.4-version "4.4.202")
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "120kci4kmc48zcw16lhxmh71kaxm9ac5qxik36q3a20czg28b2m7")))
+        (hash (base32 "0adrmps7izfqy0yn4440isxvigslwzk1a375r9kh86idwbmcxb7x")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -679,23 +679,26 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
              #t))
          (replace 'configure
            (lambda* (#:key inputs native-inputs target #:allow-other-keys)
-             ;; Unset CROSS_CPATH to make sure that cross-libc is not
-             ;; found. Otherwise, some of its header would conflict with the
-             ;; one from linux (stdint.h and linux/types.h)
-             ,@(if (%current-target-system)
-                   '((unsetenv "CROSS_CPATH"))
-                   '())
-
-             ;; On AArch64 (at least), we need to remove glibc headers from CPATH
-             ;; (they are still available as "system headers"), so that the kernel
-             ;; can override uint64_t.  See <https://bugs.gnu.org/37593>.
-             (setenv "CPATH"
-                     (string-join
-                      (remove (cut string-prefix? (assoc-ref inputs "libc") <>)
-                              (string-split (getenv "CPATH") #\:))
-                      ":"))
-             (format #t "environment variable `CPATH' changed to `~a'~%"
-                     (getenv "CPATH"))
+             ;; On AArch64 (at least), we need to remove glibc headers from
+             ;; CPATH (they are still available as "system headers"), so that
+             ;; the kernel can override uint64_t.  See
+             ;; <https://bugs.gnu.org/37593>. This is also true when
+             ;; cross-compiling, except in that case, cross-libc must be
+             ;; removed from CROSS_CPATH.
+             (let ((var ,(if (%current-target-system)
+                             "CROSS_CPATH"
+                             "CPATH"))
+                   (libc ,(if (%current-target-system)
+                              "cross-libc"
+                              "libc")))
+               (setenv var
+                       (string-join
+                        (remove
+                         (cut string-prefix? (assoc-ref inputs libc) <>)
+                         (string-split (getenv var) #\:))
+                        ":"))
+               (format #t "environment variable `~a' changed to `~a'~%"
+                       var (getenv var)))
 
              ;; Avoid introducing timestamps
              (setenv "KCONFIG_NOTIMESTAMP" "1")
@@ -4783,7 +4786,7 @@ of flash storage.")
 (define-public libseccomp
   (package
     (name "libseccomp")
-    (version "2.4.1")
+    (version "2.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/seccomp/libseccomp/"
@@ -4791,7 +4794,7 @@ of flash storage.")
                                   "/libseccomp-" version ".tar.gz"))
               (sha256
                (base32
-                "1s06h2cgk0xxwmhwj72z33bllafc1xqnxzk2yyra2rmg959778qw"))))
+                "0nsq81acrbkdr8zairxbwa33bj2a6126npp76b4srjl472sjfkxm"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))

@@ -283,7 +283,7 @@ that implements both the msgpack and msgpack-rpc specifications.")
 (define-public jsoncpp
   (package
     (name "jsoncpp")
-    (version "1.9.1")
+    (version "1.9.2")
     (home-page "https://github.com/open-source-parsers/jsoncpp")
     (source (origin
               (method git-fetch)
@@ -291,7 +291,7 @@ that implements both the msgpack and msgpack-rpc specifications.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "00g356iv3kcp0gadj7gbyzf9jn9avvx9vxbxc7c2i5nnry8z72wj"))))
+                "037d1b1qdmn3rksmn1j71j26bv4hkjv7sn7da261k853xb5899sg"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_SHARED_LIBS:BOOL=YES")))

@@ -32,6 +32,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module ((guix utils) #:select (target-64bit?))
   #:use-module (guix packages)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
@@ -158,7 +159,11 @@ and they are executed on lists of files, hosts, users or other items.")
             (string-append "--with-freeipmi=" (assoc-ref %build-inputs "freeipmi"))
             (string-append "--with-hwloc=" (assoc-ref %build-inputs "hwloc"))
             (string-append "--with-json=" (assoc-ref %build-inputs "json-c"))
-            (string-append "--with-munge=" (assoc-ref %build-inputs "munge")))
+            (string-append "--with-munge=" (assoc-ref %build-inputs "munge"))
+
+            ;; 32-bit support is marked as deprecated and needs to be
+            ;; explicitly enabled.
+            ,@(if (target-64bit?) '() '("--enable-deprecated")))
       #:phases
       (modify-phases %standard-phases
         (add-after 'unpack 'autoconf

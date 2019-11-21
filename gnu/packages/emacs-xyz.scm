@@ -79,6 +79,7 @@
   #:use-module (guix cvs-download)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix hg-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system emacs)
@@ -1003,6 +1004,30 @@ skip set strings, which are arguments to @code{skip-chars-forward} and
       (description
        "This package allows common parts of regexps to be easily picked out
 and reused.")
+      (license license:gpl3+))))
+
+(define-public emacs-ample-theme
+  (let ((commit "536966adf882446165a1f756830028faa792c7a9")
+        (revision "1"))
+    (package
+      (name "emacs-ample-theme")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/jordonbiondo/ample-theme")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "07bpv8dag40qjnm5000pgzpazj4whfxf93x2vprz26sg3mjfx0nf"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/jordonbiondo/ample-theme")
+      (synopsis "Theme for Emacs providing dark, light, and flat versions")
+      (description "Ample themes is a collection of three themes sharing a
+similar pallet with a light, dark and flat versions with a focus on being easy
+on the eyes during night and day.  They only support GUI and 256 colour
+terminals.")
       (license license:gpl3+))))
 
 (define-public emacs-reformatter
@@ -1974,9 +1999,9 @@ filters, new key bindings and faces.  It can be enabled by
              ;; upgrading" that pdf-tools tries to perform.
              (emacs-substitute-variables "pdf-tools.el"
                ("pdf-tools-handle-upgrades" '()))))
-         (add-after 'emacs-patch-variables 'emacs-set-emacs-load-path
-           (assoc-ref emacs:%standard-phases 'set-emacs-load-path))
-         (add-after 'emacs-set-emacs-load-path 'emacs-install
+         (add-after 'emacs-patch-variables 'emacs-add-source-to-load-path
+           (assoc-ref emacs:%standard-phases 'add-source-to-load-path))
+         (add-after 'emacs-add-source-to-load-path 'emacs-install
            (assoc-ref emacs:%standard-phases 'install))
          (add-after 'emacs-install 'emacs-build
            (assoc-ref emacs:%standard-phases 'build))
@@ -2049,14 +2074,14 @@ type, for example: packages, buffers, files, etc.")
 (define-public emacs-guix
   (package
     (name "emacs-guix")
-    (version "0.5.1.1")
+    (version "0.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://emacs-guix.gitlab.io/website/"
                                   "releases/emacs-guix-" version ".tar.gz"))
               (sha256
                (base32
-                "1gxg7lan3njc2yg2d02b2zij0d2cm2pv2q08nqz86s85jk3b6m03"))))
+                "0yz64c0z4ygi2k4af18k4r1ncgys18jb8icywkp2g5pgmpn5l7ps"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -4096,7 +4121,7 @@ to a key in your preferred mode.")
                ((assoc-ref cmake:%standard-phases 'configure)
                 #:outputs outputs
                 #:configure-flags '("-DSC_EL_BYTECOMPILE=OFF"))))
-           (add-after 'set-emacs-load-path 'add-el-dir-to-emacs-load-path
+           (add-after 'add-source-to-load-path 'add-el-dir-to-emacs-load-path
              (lambda _
                (setenv "EMACSLOADPATH"
                        (string-append (getcwd) "/el:" (getenv "EMACSLOADPATH")))
@@ -5225,7 +5250,7 @@ after buffer changes.")
      `(#:tests? #t
        #:phases
        (modify-phases %standard-phases
-         (add-after 'set-emacs-load-path 'fix-autogen-script
+         (add-after 'unpack 'fix-autogen-script
            (lambda _
              (substitute* "autogen.sh"
                (("./configure") "sh configure"))))
@@ -10226,6 +10251,30 @@ list of commands is displayed in a handy popup.")
 characters from end of lines.")
     (license license:gpl3+)))
 
+(define-public emacs-openwith
+  (let ((changeset "aeb78782ec87680ea9f082a3f20a3675b3770cf9")
+        (revision "0"))
+    (package
+      (name "emacs-openwith")
+      (home-page "https://bitbucket.org/jpkotta/openwith")
+      (version (git-version "0.0.1" revision changeset))
+      (source (origin
+                (method hg-fetch)
+                (uri (hg-reference (url home-page) (changeset changeset)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1wl6gnxsyhaad4cl9bxjc0qbc5jzvlwbwjbajs0n1s6qr07d6r01"))))
+      (build-system emacs-build-system)
+      (synopsis "Open external applications for files with Emacs")
+      (description
+       "This package enables you to associate file name patterns with external
+applications that are automatically invoked when you use commands like
+@code{find-file}.  For example, you can have it open @code{png} files with
+@code{feh} and @code{mp4} files with @code{mpv}.  This is especially useful
+when browsing files with Dired.")
+      (license license:gpl2+))))
+
 (define-public emacs-org-edit-latex
   (package
     (name "emacs-org-edit-latex")
@@ -14809,7 +14858,7 @@ appropriate directory if no @code{eshell} session is active.")
 (define-public emacs-eshell-z
   (package
     (name "emacs-eshell-z")
-    (version "0.3.2")
+    (version "0.4")
     (source
      (origin
        (method git-fetch)
@@ -14819,7 +14868,7 @@ appropriate directory if no @code{eshell} session is active.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1aac4m814jgxwpz7lbyx5r4z5dmawp4sk7pwbx0zqpnbcsaq5wwc"))))
+         "13dwaq8q23rwmrkpy3gvf7aswrkk6b9ak5221xl7n0bld4wdhq3j"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/xuchunyang/eshell-z")
     (synopsis "Quick navigation to frequently visited directories")
@@ -14861,7 +14910,7 @@ autosuggestions with:
 (define-public emacs-desktop-environment
   (package
     (name "emacs-desktop-environment")
-    (version "0.2.2")
+    (version "0.3.0")
     (source
      (origin
        (method git-fetch)
@@ -14871,7 +14920,7 @@ autosuggestions with:
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "14ija2rrz3zjhjbzxg84j5fq6xph4ah7w9bkqnq37by040cydvhw"))))
+         "195n99xvxyh4cfxjpfa1h1maalqrxf7nyi0bh3lqa1z6z5bdb6x2"))))
     (build-system emacs-build-system)
     (home-page "https://gitlab.petton.fr/DamienCassou/desktop-environment")
     (synopsis "Control your GNU/Linux desktop environment from Emacs")
@@ -15824,7 +15873,8 @@ Pandoc, the document-conversion tool.")
            "1qgfxc5d1hb32ks1fxpx7agpw7dvnkz99wydlflc9fqq75g8v142"))))
       (build-system emacs-build-system)
       (propagated-inputs
-       `(("emacs-dash" ,emacs-dash)
+       `(("ccls" ,ccls)
+         ("emacs-dash" ,emacs-dash)
          ("emacs-projectile" ,emacs-projectile)
          ("emacs-lsp-mode" ,emacs-lsp-mode)))
       (home-page "https://github.com/MaskRay/emacs-ccls")
@@ -17821,9 +17871,7 @@ a suffix) we prefer to call it just a \"transient\".")
              (lambda _
                (substitute* "./Makefile"
                  (("lisp docs") "lisp"))))
-           (add-after 'delete-doc-targets 'emacs-set-emacs-load-path
-             (assoc-ref emacs:%standard-phases 'set-emacs-load-path))
-           (add-after 'emacs-set-emacs-load-path 'chdir-lisp
+           (add-after 'delete-doc-targets 'chdir-lisp
              (lambda _
                (chdir "lisp")))
            (add-after 'chdir-lisp 'emacs-install
