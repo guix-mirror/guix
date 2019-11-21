@@ -4213,12 +4213,6 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
          #:test-target "check-with-tmp-database"
          #:phases
          (modify-phases %standard-phases
-           (add-after 'set-paths 'set-GUIX_ENVIRONMENT
-             (lambda* (#:key inputs #:allow-other-keys)
-               ;; This means guix.el finds the Emacs modules
-               (setenv "GUIX_ENVIRONMENT"
-                       (assoc-ref inputs "emacs-with-modules"))
-               #t))
            (add-before 'build 'set-GUILE_AUTO_COMPILE
              (lambda _
                ;; To avoid errors relating to guild
@@ -4269,10 +4263,8 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
          ("autoconf" ,autoconf)
          ("automake" ,automake)
          ("ephemeralpg" ,ephemeralpg)
-         ("emacs-with-modules" ,(directory-union
-                                 "emacs-union"
-                                 (list emacs-no-x
-                                       emacs-htmlize)))
+         ("emacs-minimal" ,emacs-minimal)
+         ("emacs-htmlize" ,emacs-htmlize)
          ("pkg-config" ,pkg-config)))
       (synopsis "Store and provide data about GNU Guix")
       (description
