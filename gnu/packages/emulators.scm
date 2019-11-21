@@ -1213,6 +1213,8 @@ play them on systems for which they were never designed!")
     (arguments
      `(#:make-flags
        (cons*
+        ;; A 'strict-overflow' error pops up on i686 so disable '-Werror'.
+        "NOWERROR=1"
         (string-append "QT_HOME=" (assoc-ref %build-inputs "qtbase"))
         (string-append "SDL_INI_PATH="
                        (assoc-ref %outputs "out")
