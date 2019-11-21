@@ -2073,14 +2073,14 @@ type, for example: packages, buffers, files, etc.")
 (define-public emacs-guix
   (package
     (name "emacs-guix")
-    (version "0.5.1.1")
+    (version "0.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://emacs-guix.gitlab.io/website/"
                                   "releases/emacs-guix-" version ".tar.gz"))
               (sha256
                (base32
-                "1gxg7lan3njc2yg2d02b2zij0d2cm2pv2q08nqz86s85jk3b6m03"))))
+                "0yz64c0z4ygi2k4af18k4r1ncgys18jb8icywkp2g5pgmpn5l7ps"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
