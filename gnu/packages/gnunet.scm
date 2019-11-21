@@ -358,4 +358,6 @@ services.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("libglade" ,libglade)))
-    (synopsis "Graphical front-end tools for GNUnet")))
+    (synopsis "Graphical front-end tools for GNUnet")
+    (properties '((ftp-server . "ftp.gnu.org")
+                  (ftp-directory . "/gnunet")))))
