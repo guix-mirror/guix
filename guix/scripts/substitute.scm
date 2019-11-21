@@ -227,58 +227,6 @@ provide."
      (leave (G_ "unsupported substitute URI scheme: ~a~%")
             (uri->string uri)))))
 
-(define-record-type <cache-info>
-  (%make-cache-info url store-directory wants-mass-query?)
-  cache-info?
-  (url               cache-info-url)
-  (store-directory   cache-info-store-directory)
-  (wants-mass-query? cache-info-wants-mass-query?))
-
-(define (download-cache-info url)
-  "Download the information for the cache at URL.  On success, return a
-<cache-info> object and a port on which to send further HTTP requests.  On
-failure, return #f and #f."
-  (define uri
-    (string->uri (string-append url "/nix-cache-info")))
-
-  (define (read-cache-info port)
-    (alist->record (fields->alist port)
-                   (cut %make-cache-info url <...>)
-                   '("StoreDir" "WantMassQuery")))
-
-  (catch #t
-    (lambda ()
-      (case (uri-scheme uri)
-        ((file)
-         (values (call-with-input-file (uri-path uri)
-                   read-cache-info)
-                 #f))
-        ((http https)
-         (let ((port (guix:open-connection-for-uri
-                      uri
-                      #:verify-certificate? #f
-                      #:timeout %fetch-timeout)))
-           (guard (c ((http-get-error? c)
-                      (warning (G_ "while fetching '~a': ~a (~s)~%")
-                               (uri->string (http-get-error-uri c))
-                               (http-get-error-code c)
-                               (http-get-error-reason c))
-                      (close-connection port)
-                      (warning (G_ "ignoring substitute server at '~s'~%") url)
-                      (values #f #f)))
-             (values (read-cache-info (http-fetch uri
-                                                  #:verify-certificate? #f
-                                                  #:port port
-                                                  #:keep-alive? #t))
-                     port))))))
-    (lambda (key . args)
-      (case key
-        ((getaddrinfo-error system-error)
-         ;; Silently ignore the error: probably due to lack of network access.
-         (values #f #f))
-        (else
-         (apply throw key args))))))
-
 
 (define-record-type <narinfo>
   (%make-narinfo path uri-base uris compressions file-sizes file-hashes
@@ -628,6 +576,41 @@ if file doesn't exist, and the narinfo otherwise."
           #f
           (apply throw args)))))
 
+(define %unreachable-hosts
+  ;; Set of names of unreachable hosts.
+  (make-hash-table))
+
+(define* (open-connection-for-uri/maybe uri
+                                        #:key
+                                        (verify-certificate? #f)
+                                        (time %fetch-timeout))
+  "Open a connection to URI and return a port to it, or, if connection failed,
+print a warning and return #f."
+  (define host
+    (uri-host uri))
+
+  (catch #t
+    (lambda ()
+      (guix:open-connection-for-uri uri
+                                    #:verify-certificate? verify-certificate?
+                                    #:timeout time))
+    (match-lambda*
+      (('getaddrinfo-error error)
+       (unless (hash-ref %unreachable-hosts host)
+         (hash-set! %unreachable-hosts host #t)   ;warn only once
+         (warning (G_ "~a: host not found: ~a~%")
+                  host (gai-strerror error)))
+       #f)
+      (('system-error . args)
+       (unless (hash-ref %unreachable-hosts host)
+         (hash-set! %unreachable-hosts host #t)
+         (warning (G_ "~a: connection failed: ~a~%") host
+                  (strerror
+                   (system-error-errno `(system-error ,@args)))))
+       #f)
+      (args
+       (apply throw args)))))
+
 (define (fetch-narinfos url paths)
   "Retrieve all the narinfos for PATHS from the cache at URL and return them."
   (define update-progress!
@@ -657,13 +640,18 @@ if file doesn't exist, and the narinfo otherwise."
            (len    (response-content-length response))
            (cache  (response-cache-control response))
            (ttl    (and cache (assoc-ref cache 'max-age))))
+      (update-progress!)
+
       ;; Make sure to read no more than LEN bytes since subsequent bytes may
       ;; belong to the next response.
       (if (= code 200)                            ; hit
           (let ((narinfo (read-narinfo port url #:size len)))
-            (cache-narinfo! url (narinfo-path narinfo) narinfo ttl)
-            (update-progress!)
-            (cons narinfo result))
+            (if (string=? (dirname (narinfo-path narinfo))
+                          (%store-prefix))
+                (begin
+                  (cache-narinfo! url (narinfo-path narinfo) narinfo ttl)
+                  (cons narinfo result))
+                result))
           (let* ((path      (uri-path (request-uri request)))
                  (hash-part (basename
                              (string-drop-right path 8)))) ;drop ".narinfo"
@@ -674,26 +662,28 @@ if file doesn't exist, and the narinfo otherwise."
                             (if (= 404 code)
                                 ttl
                                 %narinfo-transient-error-ttl))
-            (update-progress!)
             result))))
 
-  (define (do-fetch uri port)
+  (define (do-fetch uri)
     (case (and=> uri uri-scheme)
       ((http https)
        (let ((requests (map (cut narinfo-request url <>) paths)))
-         (update-progress!)
-
-         ;; Note: Do not check HTTPS server certificates to avoid depending on
-         ;; the X.509 PKI.  We can do it because we authenticate narinfos,
-         ;; which provides a much stronger guarantee.
-         (let ((result (http-multiple-get uri
-                                          handle-narinfo-response '()
-                                          requests
-                                          #:verify-certificate? #f
-                                          #:port port)))
-           (close-connection port)
-           (newline (current-error-port))
-           result)))
+         (match (open-connection-for-uri/maybe uri)
+           (#f
+            '())
+           (port
+            (update-progress!)
+            ;; Note: Do not check HTTPS server certificates to avoid depending
+            ;; on the X.509 PKI.  We can do it because we authenticate
+            ;; narinfos, which provides a much stronger guarantee.
+            (let ((result (http-multiple-get uri
+                                             handle-narinfo-response '()
+                                             requests
+                                             #:verify-certificate? #f
+                                             #:port port)))
+              (close-port port)
+              (newline (current-error-port))
+              result)))))
       ((file #f)
        (let* ((base  (string-append (uri-path uri) "/"))
               (files (map (compose (cut string-append base <> ".narinfo")
@@ -704,17 +694,7 @@ if file doesn't exist, and the narinfo otherwise."
        (leave (G_ "~s: unsupported server URI scheme~%")
               (if uri (uri-scheme uri) url)))))
 
-  (let-values (((cache-info port)
-                (download-cache-info url)))
-    (and cache-info
-         (if (string=? (cache-info-store-directory cache-info)
-                       (%store-prefix))
-             (do-fetch (string->uri url) port)    ;reuse PORT
-             (begin
-               (warning (G_ "'~a' uses different store '~a'; ignoring it~%")
-                        url (cache-info-store-directory cache-info))
-               (close-connection port)
-               #f)))))
+  (do-fetch (string->uri url)))
 
 (define (lookup-narinfos cache paths)
   "Return the narinfos for PATHS, invoking the server at CACHE when no
