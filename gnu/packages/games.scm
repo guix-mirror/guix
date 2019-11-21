@@ -1890,7 +1890,15 @@ match, cannon keep, and grave-itation pit.")
               (modules '((guix build utils)))
               (snippet
                '(begin
-                  (delete-file-recursively "lib") #t))))
+                  ;; Mimic upstream commit 706b6aad06, for compatibility with
+                  ;; newer jsoncpp.  Remove this for > 5.1.0.
+                  (substitute* "cmake/Modules/FindJson.cmake"
+                    (("features\\.h")
+                     "allocator.h"))
+
+                  ;; Delete bundled libraries.
+                  (delete-file-recursively "lib")
+                  #t))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
