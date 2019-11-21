@@ -1881,30 +1881,30 @@ match, cannon keep, and grave-itation pit.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/minetest/minetest")
-                     (commit version)))
+                    (url "https://github.com/minetest/minetest")
+                    (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
                 "184n9gxfa7yr0j85z2x736maaymsnppd5jzm326wlqri3c0qqy3z"))
               (modules '((guix build utils)))
               (snippet
-                '(begin
-                   (delete-file-recursively "lib") #t))))
+               '(begin
+                  (delete-file-recursively "lib") #t))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-         (list "-DRUN_IN_PLACE=0"
-               "-DENABLE_FREETYPE=1"
-               "-DENABLE_GETTEXT=1"
-               "-DENABLE_SYSTEM_JSONCPP=TRUE"
-               (string-append "-DIRRLICHT_INCLUDE_DIR="
-                              (assoc-ref %build-inputs "irrlicht")
-                              "/include/irrlicht")
-               (string-append "-DCURL_INCLUDE_DIR="
-                              (assoc-ref %build-inputs "curl")
-                              "/include/curl"))
-       #:tests? #f)) ; no check target
+       (list "-DRUN_IN_PLACE=0"
+             "-DENABLE_FREETYPE=1"
+             "-DENABLE_GETTEXT=1"
+             "-DENABLE_SYSTEM_JSONCPP=TRUE"
+             (string-append "-DIRRLICHT_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "irrlicht")
+                            "/include/irrlicht")
+             (string-append "-DCURL_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "curl")
+                            "/include/curl"))
+       #:tests? #f))                    ;no check target
     (native-search-paths
      (list (search-path-specification
             (variable "MINETEST_SUBGAME_PATH")
