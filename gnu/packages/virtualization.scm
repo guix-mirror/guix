@@ -300,7 +300,12 @@ server and embedded PowerPC, and S390 guests.")
     ;; qemu-minimal-2.10 needs Python 2. Remove below once no longer necessary.
     (native-inputs `(("python-2" ,python-2)
                      ,@(fold alist-delete (package-native-inputs qemu)
-                             '("python-wrapper")))))))
+                             '("python-wrapper"))))
+    (inputs
+     (fold alist-delete (package-inputs qemu)
+           ;; Disable seccomp support, because it's not required for the GRUB
+           ;; test suite, and because it fails with libseccomp 2.4.2 and later.
+           '("libseccomp"))))))
 
 (define-public libosinfo
   (package
