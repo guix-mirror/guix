@@ -263,7 +263,8 @@ access to servers running the Discord protocol.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "064nq151nzsljv97dmkifyl162d2738vbgvm1phx7yv04pjvk4kp"))))
+                "064nq151nzsljv97dmkifyl162d2738vbgvm1phx7yv04pjvk4kp"))
+              (patches (search-patches "hexchat-crash-exit.patch"))))
     (build-system meson-build-system)
     (native-inputs `(("gettext" ,gettext-minimal)
                      ("perl" ,perl)
