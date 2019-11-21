@@ -1368,13 +1368,11 @@ source URLs.  When this option is omitted,
 This means that substitutes may be downloaded from @var{urls}, as long
 as they are signed by a trusted signature (@pxref{Substitutes}).
 
-@cindex build hook
-@item --no-build-hook
-Do not use the @dfn{build hook}.
-
-The build hook is a helper program that the daemon can start and to
-which it submits build requests.  This mechanism is used to offload
-builds to other machines (@pxref{Daemon Offload Setup}).
+@cindex offloading
+@item --no-offload
+Do not use offload builds to other machines (@pxref{Daemon Offload
+Setup}).  That is, always build things locally instead of offloading
+builds to remote machines.
 
 @item --cache-failures
 Cache build failures.  By default, only successful builds are cached.
@@ -8112,10 +8110,10 @@ stashing one of the build results with @code{guix archive --export}
 (@pxref{Invoking guix archive}), then rebuilding, and finally comparing
 the two results.
 
-@item --no-build-hook
-Do not attempt to offload builds @i{via} the ``build hook'' of the daemon
-(@pxref{Daemon Offload Setup}).  That is, always build things locally
-instead of offloading builds to remote machines.
+@item --no-offload
+Do not use offload builds to other machines (@pxref{Daemon Offload
+Setup}).  That is, always build things locally instead of offloading
+builds to remote machines.
 
 @item --max-silent-time=@var{seconds}
 When the build or substitution process remains silent for more than

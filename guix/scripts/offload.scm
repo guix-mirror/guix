@@ -60,7 +60,7 @@
 ;;; retrieving the build output(s) over SSH upon success.
 ;;;
 ;;; This command should not be used directly; instead, it is called on-demand
-;;; by the daemon, unless it was started with '--no-build-hook' or a client
+;;; by the daemon, unless it was started with '--no-offload' or a client
 ;;; inhibited build hooks.
 ;;;
 ;;; Code:

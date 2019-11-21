@@ -113,8 +113,11 @@ static const struct argp_option options[] =
       n_("do not use substitutes") },
     { "substitute-urls", GUIX_OPT_SUBSTITUTE_URLS, n_("URLS"), 0,
       n_("use URLS as the default list of substitute providers") },
-    { "no-build-hook", GUIX_OPT_NO_BUILD_HOOK, 0, 0,
-      n_("do not use the 'build hook'") },
+    { "no-offload", GUIX_OPT_NO_BUILD_HOOK, 0, 0,
+      n_("do not attempt to offload builds") },
+    { "no-build-hook", GUIX_OPT_NO_BUILD_HOOK, 0,
+      OPTION_HIDDEN,				  // deprecated
+      n_("do not attempt to offload builds") },
     { "cache-failures", GUIX_OPT_CACHE_FAILURES, 0, 0,
       n_("cache build failures") },
     { "rounds", GUIX_OPT_BUILD_ROUNDS, "N", 0,

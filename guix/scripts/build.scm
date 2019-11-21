@@ -504,7 +504,7 @@ options handled by 'set-build-options-from-command-line', and listed in
   (display (G_ "
       --no-grafts        do not graft packages"))
   (display (G_ "
-      --no-build-hook    do not attempt to offload builds via the build hook"))
+      --no-offload       do not attempt to offload builds"))
   (display (G_ "
       --max-silent-time=SECONDS
                          mark the build as failed after SECONDS of silence"))
@@ -610,8 +610,12 @@ talking to a remote daemon\n")))
                          (alist-cons 'graft? #f
                                      (alist-delete 'graft? result eq?))
                          rest)))
-        (option '("no-build-hook") #f #f
+        (option '("no-offload" "no-build-hook") #f #f
                 (lambda (opt name arg result . rest)
+                  (when (string=? name "no-build-hook")
+                    (warning (G_ "'--no-build-hook' is deprecated; \
+use '--no-offload' instead~%")))
+
                   (apply values
                          (alist-cons 'build-hook? #f
                                      (alist-delete 'build-hook? result))
