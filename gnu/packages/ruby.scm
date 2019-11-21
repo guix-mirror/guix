@@ -3801,18 +3801,16 @@ for select languages.")
 (define-public ruby-prawn-manual-builder
   (package
     (name "ruby-prawn-manual-builder")
-    (version "0.3.0")
+    (version "0.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "prawn-manual_builder" version))
        (sha256
-        (base32
-         "0wbjnkqp55p5wmz85ldypcray223glckd209hmdxhnzk8s5pb3za"))))
+        (base32 "1vlg5w7wq43g2hgpgra2nrcxj1kb4ayqliz4gmja2rhs037j2vzs"))))
     (build-system ruby-build-system)
     (arguments
-     '(;; No included tests
-       #:tests? #f
+     '(#:tests? #f                      ; no included tests
        #:phases
        (modify-phases %standard-phases
          (add-after 'extract-gemspec 'patch-gemspec
