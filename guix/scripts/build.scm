@@ -545,7 +545,7 @@ talking to a remote daemon\n")))
                      #:fallback? (assoc-ref opts 'fallback?)
                      #:use-substitutes? (assoc-ref opts 'substitutes?)
                      #:substitute-urls (assoc-ref opts 'substitute-urls)
-                     #:use-build-hook? (assoc-ref opts 'build-hook?)
+                     #:offload? (assoc-ref opts 'offload?)
                      #:max-silent-time (assoc-ref opts 'max-silent-time)
                      #:timeout (assoc-ref opts 'timeout)
                      #:print-build-trace (assoc-ref opts 'print-build-trace?)
@@ -617,8 +617,8 @@ talking to a remote daemon\n")))
 use '--no-offload' instead~%")))
 
                   (apply values
-                         (alist-cons 'build-hook? #f
-                                     (alist-delete 'build-hook? result))
+                         (alist-cons 'offload? #f
+                                     (alist-delete 'offload? result))
                          rest)))
         (option '("max-silent-time") #t #f
                 (lambda (opt name arg result . rest)
@@ -663,7 +663,7 @@ use '--no-offload' instead~%")))
   `((build-mode . ,(build-mode normal))
     (graft? . #t)
     (substitutes? . #t)
-    (build-hook? . #t)
+    (offload? . #t)
     (print-build-trace? . #t)
     (print-extended-build-trace? . #t)
     (multiplexed-build-output? . #t)

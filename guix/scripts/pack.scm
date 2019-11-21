@@ -759,7 +759,7 @@ last resort for relocation."
     (profile-name . "guix-profile")
     (system . ,(%current-system))
     (substitutes? . #t)
-    (build-hook? . #t)
+    (offload? . #t)
     (graft? . #t)
     (print-build-trace? . #t)
     (print-extended-build-trace? . #t)
