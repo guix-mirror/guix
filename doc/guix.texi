@@ -20306,7 +20306,7 @@ the corresponding user and/or group is present on the system.
 It is possible to configure a FastCGI-backed web service to pass HTTP
 authentication information from the front-end to the back-end, and to
 allow @code{fcgiwrap} to run the back-end process as a corresponding
-local user.  To enable this capability on the back-end., run
+local user.  To enable this capability on the back-end, run
 @code{fcgiwrap} as the @code{root} user and group.  Note that this
 capability also has to be configured on the front-end as well.
 @end table
