@@ -209,7 +209,7 @@ as ordering relation.")
 (define-public json-modern-cxx
   (package
     (name "json-modern-cxx")
-    (version "3.7.0")
+    (version "3.7.3")
     (home-page "https://github.com/nlohmann/json")
     (source
      (origin
@@ -218,7 +218,7 @@ as ordering relation.")
                            (commit (string-append "v" version))))
        (sha256
         (base32
-         "0v7xih4zjixxxfvkfbs7a8j9qcvpwlsv4vrkbyns3hc7b44nb8ap"))
+         "04rry1xzis71z5gj1ylcj8b4li5q18zxhcwaviwvi3hx0frzxl9w"))
        (file-name (git-file-name name version))
        (modules '((guix build utils)))
        (snippet
