@@ -4374,7 +4374,7 @@ USB transfers with your high-level application or system daemon.")
 (define-public simple-scan
   (package
     (name "simple-scan")
-    (version "3.34.1")
+    (version "3.34.2")
     (source
      (origin
        (method url-fetch)
@@ -4382,7 +4382,7 @@ USB transfers with your high-level application or system daemon.")
                            (version-major+minor version) "/"
                            "simple-scan-" version ".tar.xz"))
        (sha256
-        (base32 "0glzskxdc7p9z7nwcakqc7qzij4l79adlvvb2cj5fmis731zw9yq"))))
+        (base32 "1fk3g4f9slckqfwm576jrjq1d1qihw0dlgzdf00ns7qbhzb0kxsp"))))
     (build-system meson-build-system)
     ;; TODO: Fix icons in home screen, About dialogue, and scan menu.
     (arguments
