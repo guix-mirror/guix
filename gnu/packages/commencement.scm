@@ -1757,6 +1757,37 @@ ac_cv_c_float_format='IEEE (little-endian)'
                  (setenv "CONFIG_SHELL" shell)
                  #t)))))))))
 
+(define coreutils-mesboot0
+  (package
+    (inherit coreutils)
+    (name "coreutils-mesboot0")
+    ;; The latest .gz release of Coreutils is 8.13; which does not build with gcc-2.95.3:
+    ;; randperm.c: In function `sparse_swap':
+    ;; randperm.c:117: invalid lvalue in unary `&'
+    (version "5.0")                     ; 2003-04
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/coreutils/coreutils-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "10wq6k66i8adr4k08p0xmg87ff4ypiazvwzlmi7myib27xgffz62"))))
+    (native-inputs (%boot-mesboot0-inputs))
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (inputs '())
+    (propagated-inputs '())
+    (arguments
+     `(#:implicit-inputs? #f
+       #:tests? #f                      ; WARNING: `perl' is needed, ...
+       #:parallel-build? #f
+       #:strip-binaries? #f   ; strip: unrecognized option `--only-keep-debug'
+       #:guile ,%bootstrap-guile
+       #:configure-flags
+       '("--disable-doc"
+         "LIBS=-lc -lnss_files -lnss_dns -lresolv"
+         "ac_cv_func_gethostbyname=no"
+         "gl_cv_func_rename_dest_works=yes")))))
+
 (define binutils-mesboot
   (package
     (inherit binutils-mesboot0)
