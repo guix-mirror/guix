@@ -1889,6 +1889,89 @@ ac_cv_c_float_format='IEEE (little-endian)'
                   (string-append "SHELL = " shell)))
                #t))))))))
 
+(define bash-mesboot
+  (package
+    (inherit bash-mesboot0)
+    (version "4.4")
+    (name "bash-mesboot")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/bash/bash-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1jyz6snd63xjn6skk7za6psgidsd53k05cr3lksqybi0q6936syq"))))
+    (inputs '())
+    (propagated-inputs '())
+    (native-inputs (%boot-mesboot0-inputs))
+    (outputs '("out"))
+    (arguments
+     `(#:implicit-inputs? #f
+       #:guile ,%bootstrap-guile
+       #:parallel-build? #f
+       #:configure-flags
+       '("--build=i686-unknown-linux-gnu"
+         "--host=i686-unknown-linux-gnu"
+
+         "--without-bash-malloc"
+         "--disable-readline"
+         "--disable-history"
+         "--disable-help-builtin"
+         "--disable-progcomp"
+         "--disable-net-redirections"
+         "--disable-nls"
+
+         ;; Pretend 'dlopen' is missing so we don't build loadable
+         ;; modules and related code.
+         "ac_cv_func_dlopen=no")
+       #:make-flags '("bash")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'scripted-patch
+           (lambda _
+             (substitute* "shell.c"
+               ((";;") ";"))
+             #t))
+         (add-before 'configure 'setenv
+           (lambda _
+             (setenv "AWK" "gawk")
+             (setenv "LIBS" "-lc -lnss_files -lnss_dns -lresolv")
+             (setenv "gl_cv_func_rename_dest_works" "yes")
+             #t))
+         (add-after 'configure 'configure-fixups
+           (lambda _
+             (let ((config.h (open-file "config.h" "a")))
+               (display (string-append "
+#define enable_hostname_completion(on_or_off) 0
+")
+                        config.h)
+               (close config.h))
+             #t))
+         (replace 'check
+           (lambda _
+             (invoke "./bash" "--version")))
+         (replace 'install
+           (lambda _
+             (let* ((out (assoc-ref %outputs "out"))
+                    (bin (string-append out "/bin")))
+               (mkdir-p bin)
+               (copy-file "bash" (string-append bin "/bash"))
+               (copy-file "bash" (string-append bin "/sh"))
+               #t))))))))
+
+(define (%boot-mesboot1-inputs)
+  `(("bash" ,bash-mesboot)
+    ("binutils" ,binutils-mesboot1)
+    ("coreutils" ,coreutils-mesboot0)
+    ("gawk" ,gawk-mesboot)
+    ("grep" ,grep-mesboot)
+    ("make" ,make-mesboot)
+    ("sed" ,sed-mesboot)
+    ("tar" ,tar-mesboot)
+    ,@(fold alist-delete (%boot-mesboot0-inputs)
+            '("bash" "bash" "binutils" "coreutils" "gash" "gawk" "grep " "guile"
+              "make" "sed" "tar"))))
+
 (define gmp-boot
   (package
     (inherit gmp)
