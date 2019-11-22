@@ -8862,3 +8862,52 @@ Features:
 
 This package is part of the KDE games module.")
     (license (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
+
+(define-public palapeli
+  (package
+    (name "palapeli")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/palapeli-" version ".tar.xz"))
+       (sha256
+        (base32 "1g91ydbc0x2y2gn3lcb5w03mn7k78l5bq4cb1s59kx6yjbflv3pw"))))
+    (properties `((tags . ("Desktop" "KDE" "Games"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("karchive" ,karchive)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kcrash" ,kcrash)
+       ("ki18n" ,ki18n)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("kitemviews" ,kitemviews)
+       ("knotifications" ,knotifications)
+       ("kservice" ,kservice)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdegames" ,libkdegames)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtsvg" ,qtsvg)
+       ("shared-mime-info" ,shared-mime-info)))
+    (home-page "https://games.kde.org/")
+    (synopsis "Jigsaw puzzle game")
+    (description "Palapeli is a jigsaw puzzle game.  Unlike other games in
+that genre, you are not limited to aligning pieces on imaginary grids.  The
+pieces are freely moveable.  Also, Palapeli features real persistency, i.e.
+everything you do is saved on your disk immediately.
+
+Palapeli is the Finnish word for jigsaw puzzle.
+
+This package is part of the KDE games module.")
+    (license license:gpl2+)))
