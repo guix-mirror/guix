@@ -66,7 +66,7 @@
                          make-flags)
                    make-flags))
              (apply system* "make" (append flags (list "compiler"))))))))
-    (home-page "http://www.polyml.org/")
+    (home-page "https://www.polyml.org/")
     (synopsis "Standard ML implementation")
     (description "Poly/ML is a Standard ML implementation.  It is fully
 compatible with the ML97 standard.  It includes a thread library, a foreign
