@@ -4794,7 +4794,8 @@ of flash storage.")
                                   "/libseccomp-" version ".tar.gz"))
               (sha256
                (base32
-                "0nsq81acrbkdr8zairxbwa33bj2a6126npp76b4srjl472sjfkxm"))))
+                "0nsq81acrbkdr8zairxbwa33bj2a6126npp76b4srjl472sjfkxm"))
+              (patches (search-patches "libseccomp-open-aarch64.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))

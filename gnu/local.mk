@@ -1078,6 +1078,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libmygpo-qt-missing-qt5-modules.patch	\
   %D%/packages/patches/libreoffice-icu.patch			\
   %D%/packages/patches/libreoffice-glm.patch			\
+  %D%/packages/patches/libseccomp-open-aarch64.patch		\
   %D%/packages/patches/libsndfile-armhf-type-checks.patch	\
   %D%/packages/patches/libsndfile-CVE-2017-8361-8363-8365.patch	\
   %D%/packages/patches/libsndfile-CVE-2017-8362.patch		\
