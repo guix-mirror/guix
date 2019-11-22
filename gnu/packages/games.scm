@@ -8638,3 +8638,45 @@ grid, the winner being the first to place four pieces in a line.
 
 This package is part of the KDE games module.")
     (license (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
+
+(define-public kblackbox
+  (package
+    (name "kblackbox")
+    (version "19.08.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://kde/stable/applications/" version
+                          "/src/kblackbox-" version ".tar.xz"))
+      (sha256
+       (base32 "1x42sfpf75c6mavwkc7g7dm11y9s5dpj8igphly5kvm0pajqby0n"))))
+    (properties `((tags . ("Desktop" "KDE" "Games"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("karchive" ,karchive)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("ki18n" ,ki18n)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdegames" ,libkdegames)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtsvg" ,qtsvg)))
+    (home-page "https://games.kde.org/")
+    (synopsis "Find atoms in a grid by shooting electrons")
+    (description "KBlackbox is a game of hide and seek played on a grid of
+boxes where the computer has hidden several balls.  The position of the hidden
+balls can be deduced by shooting beams into the box
+
+KBlackBox is a game of hide and seek played on an grid of boxes, where the
+player shoots rays into the grid to deduce the positions of hidden objects.
+
+This package is part of the KDE games module.")
+    (license (list license:gpl2+ license:fdl1.2+))))
