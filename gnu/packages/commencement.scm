@@ -1693,6 +1693,44 @@ ac_cv_c_float_format='IEEE (little-endian)'
                (install-file "src/tar" bin)
                #t))))))))
 
+(define grep-mesboot
+  ;; The initial grep.
+  (package
+    (inherit grep)
+    (name "grep-mesboot")
+    (version "2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/grep/grep-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1w862l80lgc5mxvpiy4cfwk761d6xxavn0m3xd2l7xs2kmzvp6lq"))))
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (inputs '())
+    (propagated-inputs '())
+    (native-inputs (%boot-mesboot0-inputs))
+    (arguments
+     `(#:implicit-inputs? #f
+       #:guile ,%bootstrap-guile
+       #:parallel-build? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-configure
+           (lambda _
+             (let* ((bash (assoc-ref %build-inputs "bash"))
+                    (shell (string-append bash "/bin/bash")))
+               (substitute* "configure"
+                 ((" [|][|] ./config.status") " || sh ./config.status")))))
+         (replace 'install
+           (lambda _
+             (let* ((out (assoc-ref %outputs "out"))
+                    (bin (string-append out "/bin")))
+               (install-file "grep" bin)
+               (symlink "grep" (string-append bin "/egrep"))
+               (symlink "grep" (string-append bin "/fgrep"))
+               #t))))))))
+
 (define binutils-mesboot
   (package
     (inherit binutils-mesboot0)
