@@ -8597,3 +8597,44 @@ levels with varying number of diamond colors and board sizes.
 
 This package is part of the KDE games module.")
     (license (list license:gpl2+ license:fdl1.2+))))
+
+(define-public kfourinline
+  (package
+    (name "kfourinline")
+    (version "19.08.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://kde/stable/applications/" version
+                          "/src/kfourinline-" version ".tar.xz"))
+      (sha256
+       (base32 "1vprs6dc1ccn3g6k594i9s94xy4b91vzlqjysyc6fqcq2fs54ny3"))))
+    (properties `((tags . ("Desktop" "KDE" "Games"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdelibs4support" ,kdelibs4support)
+       ("kdnssd" ,kdnssd)
+       ("ki18n" ,ki18n)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdegames" ,libkdegames)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtsvg" ,qtsvg)))
+    (home-page "https://games.kde.org/")
+    (synopsis "Place 4 pieces in a row")
+    (description "KFourInLine is a board game for two players based on the
+Connect-Four game.
+
+KFourInLine is a game where two players take turns dropping pieces into a
+grid, the winner being the first to place four pieces in a line.
+
+This package is part of the KDE games module.")
+    (license (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
