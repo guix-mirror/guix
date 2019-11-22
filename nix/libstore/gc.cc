@@ -11,6 +11,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <climits>
 
 
 namespace nix {
@@ -417,7 +418,15 @@ void LocalStore::deletePathRecursive(GCState & state, const Path & path)
         throw SysError(format("getting status of %1%") % path);
     }
 
-    printMsg(lvlInfo, format("deleting `%1%'") % path);
+    if (state.options.maxFreed != ULLONG_MAX) {
+	double fraction = state.results.bytesFreed + size
+	    / state.options.maxFreed;
+	unsigned int percentage = (fraction > 1. ? 1. : fraction) * 100.;
+	printMsg(lvlInfo, format("[%1%%%] deleting '%2%'") % percentage % path);
+    } else {
+	size_t total = (state.results.bytesFreed + size) / (1024 * 1024);
+	printMsg(lvlInfo, format("[%1% MiB] deleting '%2%'") % total % path);
+    }
 
     state.results.paths.insert(path);
 
