@@ -8470,3 +8470,48 @@ More information at http://en.wikipedia.org/wiki/Sudoku
 
 This package is part of the KDE games module.")
     (license (list license:gpl2+ license:fdl1.2+))))
+
+(define-public klines
+  (package
+    (name "klines")
+    (version "19.08.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://kde/stable/applications/" version
+                          "/src/klines-" version ".tar.xz"))
+      (sha256
+       (base32 "1g1f46jp0rb8gpqkgcf915ydpsscn1sxk3gjvm8bcqgx9ddq59xa"))))
+    (properties `((tags . ("Desktop" "KDE" "Games"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kcompletion" ,kcompletion)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("ki18n" ,ki18n)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdegames" ,libkdegames)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))
+    (home-page "https://games.kde.org/")
+    (synopsis "Place 5 equal pieces together, but wait, there are 3 new ones")
+    (description "KLines is a simple but highly addictive one player game.
+
+The player has to move the colored balls around the game board, gathering them
+into the lines of the same color by five.  Once the line is complete it is
+removed from the board, therefore freeing precious space.  In the same time
+the new balls keep arriving by three after each move, filling up the game
+board.
+
+KLines is a single-player game where the player removes colored balls from the
+board by arranging them into lines of five or more.  However, every time the
+player moves a ball, three more balls are added to the board.
+
+This package is part of the KDE games module.")
+    (license (list license:gpl2+ license:fdl1.2+))))
