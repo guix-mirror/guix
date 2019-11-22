@@ -1731,6 +1731,32 @@ ac_cv_c_float_format='IEEE (little-endian)'
                (symlink "grep" (string-append bin "/fgrep"))
                #t))))))))
 
+(define binutils-mesboot1
+  (package
+    (inherit binutils-mesboot0)
+    (name "binutils-mesboot1")
+    (native-inputs (%boot-mesboot0-inputs))
+    (arguments
+     (substitute-keyword-arguments (package-arguments binutils-mesboot0)
+       ((#:configure-flags configure-flags)
+        '(let ((out (assoc-ref %outputs "out")))
+           `("--disable-nls"
+             "--disable-shared"
+             "--disable-werror"
+             "--build=i686-unknown-linux-gnu"
+             "--host=i686-unknown-linux-gnu"
+             "--with-sysroot=/"
+             ,(string-append "--prefix=" out))))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'setenv
+             (lambda _
+               (let* ((out (assoc-ref %outputs "out"))
+                      (bash (assoc-ref %build-inputs "bash"))
+                      (shell (string-append bash "/bin/bash")))
+                 (setenv "CONFIG_SHELL" shell)
+                 #t)))))))))
+
 (define binutils-mesboot
   (package
     (inherit binutils-mesboot0)
