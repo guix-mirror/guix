@@ -7963,3 +7963,41 @@ to assist in learning basic vocabulary.
 
 This package is part of the KDE games module.")
     (license (list license:gpl2+ license:fdl1.2+))))
+
+(define-public picmi
+  (package
+    (name "picmi")
+    (version "19.08.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://kde/stable/applications/" version
+                          "/src/picmi-" version ".tar.xz"))
+      (sha256
+       (base32 "0z9mpmv49w914gqdx274brdzl6d1bz9j9nkvbwgmr3iq1ba49m3f"))))
+    (properties `((tags . ("Desktop" "KDE" "Games"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdeclarative" ,kdeclarative)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("knewstuff" ,knewstuff)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdegames" ,libkdegames)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtsvg" ,qtsvg)))
+    (home-page "https://games.kde.org/")
+    (synopsis "Number logic game")
+    (description "Picmi is a number logic game in which cells in a grid have
+to be colored or left blank according to numbers given at the side of the
+grid.  The aim is to reveal a hidden picture.
+
+This package is part of the KDE games module.")
+    (license (list license:gpl2+ license:fdl1.2+))))
