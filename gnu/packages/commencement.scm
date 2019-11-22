@@ -2606,9 +2606,15 @@ exec " gcc "/bin/" program
     (version (package-version gcc-mesboot))
     (source #f)
     (inputs '())
-    (native-inputs `(("bash" ,%bootstrap-coreutils&co)
+    (native-inputs `(("bash" ,bash-mesboot)
+                     ("coreutils" ,coreutils-mesboot0)
                      ("libc" ,glibc-mesboot)
                      ("gcc" ,gcc-mesboot)))))
+
+(define (%boot-mesboot5-inputs)
+  `(("gcc-wrapper" ,gcc-mesboot-wrapper)
+    ("gcc" ,gcc-mesboot)
+    ,@(fold alist-delete (%boot-mesboot4-inputs) '("gcc" "gcc-wrapper"))))
 
 (define m4-mesboot
   (package
