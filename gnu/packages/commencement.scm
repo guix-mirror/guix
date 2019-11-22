@@ -1637,6 +1637,62 @@ ac_cv_c_float_format='IEEE (little-endian)'
     ("libc" ,glibc-mesboot0)
     ,@(alist-delete "gcc" (%boot-mesboot-core-inputs))))
 
+(define tar-mesboot
+  ;; Initial tar with support for xz compression.
+  (package
+    (inherit tar)
+    (name "tar-mesboot")
+    (version  "1.22")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/tar/tar-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "19nvix64y95n5v6rr5g9g3fn08zz85cb5anzd7csfv4a4sz9lw4y"))))
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (inputs '())
+    (propagated-inputs '())
+    (native-inputs (%boot-mesboot0-inputs))
+    (arguments
+     `(#:implicit-inputs? #f
+       #:guile ,%bootstrap-guile
+       #:parallel-build? #f
+       #:tests? #f            ; check is naive, also checks non-built PROGRAMS
+       #:strip-binaries? #f   ; no strip yet
+       #:configure-flags '("--build=i686-unknown-linux-gnu"
+                           "--host=i686-unknown-linux-gnu"
+                           "--disable-nls")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key configure-flags #:allow-other-keys)
+             (let* ((out (assoc-ref %outputs "out"))
+                    (bash (assoc-ref %build-inputs "bash"))
+                    (shell (string-append bash "/bin/bash")))
+               (setenv "CONFIG_SHELL" shell)
+               (setenv "SHELL" shell)
+               (setenv "LIBS" "-lc -lnss_files -lnss_dns -lresolv")
+               (setenv "gl_cv_func_rename_dest_works" "yes")
+               (format (current-error-port)
+                       "running ./configure ~a\n" (string-join configure-flags))
+               (apply invoke (cons "./configure" configure-flags)))))
+         (add-after 'unpack 'scripted-patch
+           (lambda _
+             (let* ((bash (assoc-ref %build-inputs "bash"))
+                    (shell (string-append bash "/bin/bash")))
+               (substitute* "configure"
+                 ((" /bin/sh") shell)))
+             (substitute* "Makefile.in"
+               (("^SUBDIRS = doc") "SUBDIRS ="))
+             #t))
+         (replace 'install
+           (lambda _
+             (let* ((out (assoc-ref %outputs "out"))
+                    (bin (string-append out "/bin")))
+               (install-file "src/tar" bin)
+               #t))))))))
+
 (define binutils-mesboot
   (package
     (inherit binutils-mesboot0)
