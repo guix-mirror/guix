@@ -2224,6 +2224,28 @@ ac_cv_c_float_format='IEEE (little-endian)'
          "ac_cv_have_decl_optreset=no"
          "CPPFLAGS=-D__GNUC__=1")))))
 
+(define hello-mesboot
+  ;; Check for Scheme-only bootstrap.
+  (package
+    (inherit hello)
+    (name "hello-mesboot")
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (inputs '())
+    (propagated-inputs '())
+    (native-inputs (%boot-mesboot2-inputs))
+    (arguments
+     `(#:implicit-inputs? #f
+       #:guile ,%bootstrap-guile
+       #:parallel-build? #f
+       ;; checking for grep that handles long lines and -e...
+       ;; configure: error: no acceptable grep could be found
+       #:configure-flags '("ac_cv_path_GREP=grep")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "./hello"))))))))
+
 (define binutils-mesboot
   (package
     (inherit binutils-mesboot0)
