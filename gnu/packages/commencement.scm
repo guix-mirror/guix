@@ -1589,18 +1589,12 @@ BASH = ")))
   (package
     (inherit gcc-core-mesboot0)
     (name "gcc-mesboot0")
-    (native-inputs `(("binutils" ,binutils-mesboot0)
-
+    (native-inputs `(("boot-patch" ,(search-patch "gcc-boot-2.95.3.patch"))
                      ;; Packages are given in an order that's relevant for
                      ;; #include_next purposes.
                      ("libc" ,glibc-mesboot0)
                      ("kernel-headers" ,%bootstrap-linux-libre-headers)
-                     ("gcc" ,gcc-core-mesboot0)
-
-                     ("bash" ,%bootstrap-coreutils&co)
-                     ("coreutils" ,%bootstrap-coreutils&co)
-                     ("diffutils" ,diffutils-mesboot)
-                     ("make" ,make-mesboot0)))
+                     ,@(%boot-mesboot-core-inputs)))
     (arguments
      (substitute-keyword-arguments (package-arguments gcc-core-mesboot0)
        ((#:phases phases)
@@ -1619,11 +1613,11 @@ ac_cv_c_float_format='IEEE (little-endian)'
                (let* ((out (assoc-ref outputs "out"))
                       (gcc-dir (string-append
                                 out "/lib/gcc-lib/i686-unknown-linux-gnu/2.95.3")))
-                 (mkdir-p "tmp")
-                 (zero? (system (string-append "set -x; cd tmp && ar x ../gcc/libgcc2.a")))
-                 (zero? (system (string-append "set -x; cd tmp && ar r " gcc-dir "/libgcc.a *.o")))
-                 (copy-file "gcc/libgcc2.a" (string-append out "/lib/libgcc2.a"))
-                 #t)))))
+                 (and
+                  (mkdir-p "tmp")
+                  (zero? (system (string-append "set -x; cd tmp && ar x ../gcc/libgcc2.a")))
+                  (zero? (system (string-append "set -x; cd tmp && ar r " gcc-dir "/libgcc.a *.o")))
+                  (copy-file "gcc/libgcc2.a" (string-append out "/lib/libgcc2.a"))))))))
        ((#:configure-flags configure-flags)
         `(let ((out (assoc-ref %outputs "out")))
            `("--disable-shared"
@@ -1636,6 +1630,12 @@ ac_cv_c_float_format='IEEE (little-endian)'
            `("RANLIB=true"
              ,(string-append "LIBGCC2_INCLUDES=-I " gcc "/include")
              "LANGUAGES=c")))))))
+
+(define (%boot-mesboot0-inputs)
+  `(("gcc" ,gcc-mesboot0)
+    ("kernel-headers" ,%bootstrap-linux-libre-headers)
+    ("libc" ,glibc-mesboot0)
+    ,@(alist-delete "gcc" (%boot-mesboot-core-inputs))))
 
 (define binutils-mesboot
   (package
