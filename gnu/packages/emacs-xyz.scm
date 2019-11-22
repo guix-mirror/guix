@@ -127,6 +127,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages mail)
+  #:use-module (gnu packages messaging)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pdf)
@@ -19952,6 +19953,67 @@ Google guidelines.")
       (synopsis "Helm interface for Emacs fish-completion")
       (description "Helm Fish Completion is a Helm interface for Emacs
 fish-completion.  It can be used in both Eshell and M-x shell.")
+      (license license:gpl3+))))
+
+(define-public emacs-telega
+  (let ((commit "019e923f933370d75dbe0a8473a18eb66fe94c0e")
+	(revision "1")
+	(version "0.4.4"))
+    (package
+      (name "emacs-telega")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/zevlg/telega.el.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "058814agkq8mp9ajpj8sz51rm9nigs2xpsdij05wjkxhfq30kqva"))
+         (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f
+         #:modules ((guix build gnu-build-system)
+                    ((guix build emacs-build-system) #:prefix emacs:)
+                    (guix build utils)
+                    (guix build emacs-utils))
+         #:imported-modules (,@%gnu-build-system-modules
+                             (guix build emacs-build-system)
+                             (guix build emacs-utils))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'unpack-patch
+             (lambda _
+               (substitute* "server/Makefile"
+                 (("CC=cc")
+                  "CC=gcc")
+                 (("INSTALL_PREFIX=\\$\\(HOME\\)/.telega")
+                  (string-append "INSTALL_PREFIX=" (assoc-ref %outputs "out")
+                                 "/bin")))
+               #t))
+           (delete 'configure)
+
+           ;; Build emacs-side using `emacs-build-system'
+           (add-after 'compress-documentation 'emacs-add-source-to-load-path
+             (assoc-ref emacs:%standard-phases 'add-source-to-load-path))
+           (add-after 'emacs-set-emacs-load-path 'emacs-install
+             (assoc-ref emacs:%standard-phases 'install))
+           (add-after 'emacs-install 'emacs-build
+             (assoc-ref emacs:%standard-phases 'build))
+           (add-after 'emacs-install 'emacs-make-autoloads
+             (assoc-ref emacs:%standard-phases 'make-autoloads)))))
+      (propagated-inputs
+       `(("emacs-visual-fill-column" ,emacs-visual-fill-column)))
+      (native-inputs
+       `(("tdlib" ,tdlib)
+         ("emacs" ,emacs-minimal)))
+      (synopsis "GNU Emacs client for the Telegram messenger")
+      (description
+       "Telega is full-featured, unofficial client for the Telegram messaging
+platform for GNU Emacs.")
+      (home-page "https://github.com/zevlg/telega.el")
       (license license:gpl3+))))
 
 (define-public emacs-doom-modeline
