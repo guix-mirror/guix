@@ -8326,3 +8326,43 @@ or by puny earthlings.
 
 This package is part of the KDE games module.")
     (license (list license:gpl2+ license:fdl1.2+))))
+
+(define-public kbounce
+  (package
+    (name "kbounce")
+    (version "19.08.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://kde/stable/applications/"
+                          version "/src/kbounce-" version ".tar.xz"))
+      (sha256
+       (base32 "02rfv0qzz5cmyfx8f56a45hbm9gsp6m3dcy8ajwx88rw5wpbrr11"))))
+    (properties `((tags . ("Desktop" "KDE" "Games"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kcompletion" ,kcompletion)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdegames" ,libkdegames)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtsvg" ,qtsvg)))
+    (home-page "https://games.kde.org/")
+    (synopsis "Jezzball arcade game")
+    (description "KBounce is a single player arcade game with the elements of
+puzzle.  It is played on a field, surrounded by wall, with two or more balls
+bouncing around within the walls.  The object of the game is to build new
+walls to decrease the size of the active field.
+
+This package is part of the KDE games module.")
+    (license (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
