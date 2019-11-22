@@ -1,4 +1,4 @@
-This patch enables building gcc-4.7.4 using gcc-2.95.3 and glibc-2.2.5
+This patch enables building gcc-4.6.4 using gcc-2.95.3 and glibc-2.2.5
 
   * Tweak Makefile to allow overriding NATIVE_SYSTEM_HEADER_DIR using #:makeflags
   * Add missing limits.h include.
@@ -14,12 +14,12 @@ diff --git a/gcc/Makefile.in b/gcc/Makefile.in
 index f3cc49fdb18..bc5718fc9a6 100644
 --- a/gcc/Makefile.in
 +++ b/gcc/Makefile.in
-@@ -458,7 +458,7 @@ LINKER_PLUGIN_API_H = $(srcdir)/../include/plugin-api.h
+@@ -440,7 +440,7 @@ LINKER_PLUGIN_API_H = $(srcdir)/../include/plugin-api.h
  LTO_SYMTAB_H = $(srcdir)/../include/lto-symtab.h
  
  # Default native SYSTEM_HEADER_DIR, to be overridden by targets.
--NATIVE_SYSTEM_HEADER_DIR = @NATIVE_SYSTEM_HEADER_DIR@
-+# NATIVE_SYSTEM_HEADER_DIR = @NATIVE_SYSTEM_HEADER_DIR@
+-NATIVE_SYSTEM_HEADER_DIR = /usr/include
++# NATIVE_SYSTEM_HEADER_DIR = /usr/include
  # Default cross SYSTEM_HEADER_DIR, to be overridden by targets.
  CROSS_SYSTEM_HEADER_DIR = @CROSS_SYSTEM_HEADER_DIR@
  
@@ -40,24 +40,11 @@ index 94b7a0b89a7..ab2baab55ca 100644
  
  /* Linux has a feature called exec-shield-randomize that perturbs the
     address of non-fixed mapped segments by a (relatively) small amount.
-diff --git a/libgcc/Makefile.in b/libgcc/Makefile.in
-index c301ff03cae..f86318c3bd5 100644
---- a/libgcc/Makefile.in
-+++ b/libgcc/Makefile.in
-@@ -225,7 +225,7 @@ endif
- LIBGCC2_DEBUG_CFLAGS = -g
- LIBGCC2_CFLAGS = -O2 $(LIBGCC2_INCLUDES) $(GCC_CFLAGS) $(HOST_LIBGCC2_CFLAGS) \
- 		 $(LIBGCC2_DEBUG_CFLAGS) -DIN_LIBGCC2 \
--		 -fbuilding-libgcc -fno-stack-protector \
-+		 -fno-stack-protector \
- 		 $(INHIBIT_LIBC_CFLAGS)
- 
- # Additional options to use when compiling libgcc2.a.
 diff --git a/libgcc/generic-morestack-thread.c b/libgcc/generic-morestack-thread.c
 index bbe6dd12b5a..1d1d48223d7 100644
 --- a/libgcc/generic-morestack-thread.c
 +++ b/libgcc/generic-morestack-thread.c
-@@ -35,7 +35,7 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+@@ -34,7 +34,7 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
     will want to define inhibit_libc while building a compiler which
     can build glibc.  */
  
