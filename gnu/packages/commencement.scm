@@ -2636,16 +2636,11 @@ exec " gcc "/bin/" program
             '("coreutils" "kernel-headers"))))
 
 (define (%bootstrap-inputs+toolchain)
-  ;; The traditional bootstrap-inputs.  For the i686-linux Reduced Binary Seed
-  ;; the actual reduced set with bootstrapped toolchain.
+  ;; The traditional bootstrap-inputs.  For the i686-linux, x86_64-linux
+  ;; Scheme-only bootstrap the actual reduced set with bootstrapped toolchain.
   (match (%current-system)
     ((or "i686-linux" "x86_64-linux")
-     `(("libc" ,glibc-mesboot)
-       ("binutils" ,binutils-mesboot)
-       ("gcc-wrapper" ,gcc-mesboot-wrapper)
-       ("gcc" ,gcc-mesboot)
-       ,@(fold alist-delete (%bootstrap-inputs)
-               '("bootstrap-mescc-tools" "mes"))))
+     (%boot-mesboot6-inputs))
     (_
      (%bootstrap-inputs))))
 
