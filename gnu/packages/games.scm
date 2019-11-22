@@ -8050,3 +8050,34 @@ Features are:
 
 This package is part of the KDE games module.")
     (license (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
+
+(define-public libkmahjongg
+  (package
+    (name "libkmahjongg")
+    (version "19.08.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://kde/stable/applications/"
+                          version "/src/libkmahjongg-" version ".tar.xz"))
+      (sha256
+       (base32 "0rdimk11hrc8qrmiv26z0ddjzi1k6806c0rfskx4cwmildmh6zgx"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("kauth" ,kauth)
+       ("kcompletion" ,kcompletion)
+       ;("kconfig" ,kconfig)
+       ("kcodecs" ,kcodecs)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("ki18n" ,ki18n)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)))
+    (home-page "https://games.kde.org/")
+    (synopsis "Shared library for kmahjongg and kshisen")
+    (description "Shared library and common files for kmahjongg, kshisen and
+other Mah Jongg like games.")
+    (license (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
