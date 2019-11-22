@@ -2178,6 +2178,52 @@ ac_cv_c_float_format='IEEE (little-endian)'
   `(("gcc" ,gcc-mesboot1)
     ,@(alist-delete "gcc" (%boot-mesboot1-inputs))))
 
+(define xz-mesboot
+  ;; Finally, we can build xz.
+  (package
+    (inherit xz)
+    (name "xz-mesboot")
+    (version "5.0.0")
+    (source (bootstrap-origin
+             (origin
+               (method url-fetch)
+               (uri (list (string-append "http://tukaani.org/xz/xz-" version
+                                         ".tar.gz")
+                          (string-append "http://multiprecision.org/guix/xz-"
+                                         version ".tar.gz")))
+               (sha256
+                (base32
+                 "0kf40ggbs1vaaj5s9k4csycahzqcf65n20pa6lngqhm6j0cj3agb")))))
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (inputs '())
+    (outputs '("out"))
+    (propagated-inputs '())
+    (native-inputs (%boot-mesboot2-inputs))
+    (arguments
+     `(#:implicit-inputs? #f
+       #:guile ,%bootstrap-guile
+       #:parallel-build? #f
+       #:configure-flags
+       `("--disable-assembler"
+         "--disable-shared"
+         "--enable-small"
+         "--disable-threads"
+         "--disable-xzdec"
+         "--disable-lzmadec"
+         "--disable-lzmainfo"
+         "--disable-lzma-links"
+         "--disable-scripts"
+         "--disable-doc"
+         "--disable-nls"
+         "--disable-symbol-versions"
+         ;; configure disqualifies BASH, CPP, GCC and GREP
+         ;; all of which seem fine for the build
+         "ac_cv_prog_cc_c99=-std=gnu9x"
+         "ac_cv_path_GREP=grep"
+         "gl_cv_posix_shell=bash"
+         "ac_cv_have_decl_optreset=no"
+         "CPPFLAGS=-D__GNUC__=1")))))
+
 (define binutils-mesboot
   (package
     (inherit binutils-mesboot0)
