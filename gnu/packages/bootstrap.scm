@@ -809,19 +809,18 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
 (define (%bootstrap-inputs)
   ;; The initial, pre-built inputs.  From now on, we can start building our
   ;; own packages.
-  `(,@(match (%current-system)
-        ((or "i686-linux" "x86_64-linux")
-         `(("linux-libre-headers" ,%bootstrap-linux-libre-headers)
-           ("bootstrap-mescc-tools" ,%bootstrap-mescc-tools)
-           ("mes" ,%bootstrap-mes)))
-        (_
-         `(("libc" ,%bootstrap-glibc)
-           ("gcc" ,%bootstrap-gcc)
-           ("binutils" ,%bootstrap-binutils))))
-    ("coreutils&co" ,%bootstrap-coreutils&co)
-
-    ;; In gnu-build-system.scm, we rely on the availability of Bash.
-    ("bash" ,%bootstrap-coreutils&co)))
+  (match (%current-system)
+    ((or "i686-linux" "x86_64-linux")
+     `(("linux-libre-headers" ,%bootstrap-linux-libre-headers)
+       ("bootstrap-mescc-tools" ,%bootstrap-mescc-tools)
+       ("mes" ,%bootstrap-mes)))
+    (_
+     `(("libc" ,%bootstrap-glibc)
+       ("gcc" ,%bootstrap-gcc)
+       ("binutils" ,%bootstrap-binutils)
+       ("coreutils&co" ,%bootstrap-coreutils&co)
+       ;; In gnu-build-system.scm, we rely on the availability of Bash.
+       ("bash" ,%bootstrap-coreutils&co)))))
 
 (define %bootstrap-inputs-for-tests
   ;; These are bootstrap inputs that are cheap to produce (no compilation
