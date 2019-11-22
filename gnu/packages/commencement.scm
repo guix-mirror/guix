@@ -1385,8 +1385,8 @@ ac_cv_c_float_format='IEEE (little-endian)'
     (supported-systems '("i686-linux" "x86_64-linux"))
     (inputs '())
     (propagated-inputs '())
-    (native-inputs `(("coreutils" ,%bootstrap-coreutils&co)
-                     ("headers" ,%bootstrap-linux-libre-headers)))
+    (native-inputs `(("kernel-headers" ,%bootstrap-linux-libre-headers)
+                     ,@(%boot-tcc-inputs)))
     (arguments
      `(#:implicit-inputs? #f
        #:guile ,%bootstrap-guile
@@ -1400,7 +1400,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (include (string-append out "/include"))
-                    (headers (assoc-ref %build-inputs "headers" )))
+                    (headers (assoc-ref %build-inputs "kernel-headers")))
                (mkdir-p include)
                (copy-recursively "include" out)
                (copy-recursively headers out)
