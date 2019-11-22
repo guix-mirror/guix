@@ -8805,3 +8805,60 @@ inspired by the work of the Clanbomber clone.
 
 This package is part of the KDE games module.")
     (license (list license:gpl2+ license:fdl1.2+))))
+
+(define-public ksirk
+  (package
+    (name "ksirk")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                          "/src/ksirk-" version ".tar.xz"))
+       (sha256
+        (base32 "1b1wixs2hp5qnvdygfwa3kvy0kn94ysa4ifmx90q6r3yfr2lpfca"))))
+    (properties `((tags . ("Desktop" "KDE" "Games"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kcrash" ,kcrash)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)
+       ("knewstuff" ,knewstuff)
+       ("kwallet" ,kwallet)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdegames" ,libkdegames)
+       ("phonon" ,phonon)
+       ("qca" ,qca)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtsvg" ,qtsvg)
+       ("zlib" ,zlib)))
+    (home-page "https://games.kde.org/")
+    (synopsis "Computerized version of the well known strategy board game
+'Risk'")
+    (description "KsirK is a multi-player network-enabled game.  The goal of
+the game is simply to conquer the world by attacking your neighbors with your
+armies.
+
+At the beginning of the game, countries are distributed to all the players.
+Each country contains one army represented by an infantryman.  Each player has
+some armies to distribute to his countries.  On each turn, each player can
+attack his neighbours, eventually conquering one or more countries.  At the
+end of each turn, some bonus armies are distributed to the players in function
+of the number of countries they own.  The winner is the player that conquered
+all the world.
+
+Features:
+@itemize
+@item Support for 1-6 human or computer players
+@item Multi-player gaming over a network
+@item You can easily create new skins with SVG graphics and the skin editor
+@item Hot New Stuff support.  You can easily download and install new skins
+@end itemize
+
+This package is part of the KDE games module.")
+    (license (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
