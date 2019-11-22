@@ -8408,3 +8408,65 @@ over.
 
 This package is part of the KDE games module.")
     (license (list license:gpl2+ license:fdl1.2+))))
+
+(define-public ksudoku
+  (package
+    (name "ksudoku")
+    (version "19.08.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://kde/stable/applications/"
+                          version "/src/ksudoku-" version ".tar.xz"))
+      (sha256
+       (base32 "0rcscz91hilm7l3am5w02n0n8l7xhi4l0n4sskznh68kblw0ggw2"))))
+    (properties `((tags . ("Desktop" "KDE" "Games"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("karchive", karchive)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kguiaddons" ,kguiaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdegames" ,libkdegames)
+       ("glu" ,glu)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtsvg" ,qtsvg)))
+    (home-page "https://games.kde.org/")
+    (synopsis "Sudoku puzzle game and solver")
+    (description "KSudoku is a Sudoku game and solver, supporting a range of
+2D and 3D Sudoku variants.  In addition to playing Sudoku, it can print Sudoku
+puzzle sheets and find the solution to any Sudoku puzzle.
+
+The word Sudoku means \"single number in an allotted place\" in Japanese.
+These are the basic rules: Every Sudoku is a square divided into 3x3
+subsquares with 3x3 cells each.
+
+Some cells are filled with a number at the beginning.  The remaining ones are
+to be filled by the player using numbers from 1 to 9, without repeating a
+number twice on each column, row or subsquare (each of them must contain only
+one 1, one 2, one 3, and so on).  The game requires logic and patience.
+Solving takes usually 10 to 30 minutes, depending on puzzle level, your skill
+and experience.
+
+The numerals in Sudoku puzzles are used for convenience (for example in 16x16
+board we use letters): arithmetic relationships between numbers are
+irrelevant.
+
+This program supports also 16x16 games with numbers from 1 to 16 and 256
+cells with 16 cols, rows and subsquares!
+
+More information at http://en.wikipedia.org/wiki/Sudoku
+
+This package is part of the KDE games module.")
+    (license (list license:gpl2+ license:fdl1.2+))))
