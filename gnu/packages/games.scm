@@ -8162,3 +8162,48 @@ scrambled tiles
 
 This package is part of the KDE games module.")
     (license license:gpl2+)))
+
+(define-public kajongg
+  (package
+    (name "kajongg")
+    (version "19.08.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://kde/stable/applications/"
+                          version "/src/kajongg-" version ".tar.xz"))
+      (sha256
+       (base32 "0ql6p5zifdpdf65r7ki9ml123azpwwk9x3x8r9ij6xhjnf7p7x6w"))))
+    (properties `((tags . ("Desktop" "KDE" "Games"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ;("perl" ,perl)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("ki18n" ,ki18n)
+       ("libkmahjongg" ,libkmahjongg)
+       ("python" ,python)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)))
+    (propagated-inputs
+     `(("python-twisted" ,python-twisted)
+       ("python-pyqt" ,python-pyqt)))
+    ;; FIXME: Need to wrap PYTHONPATH
+    (home-page "https://games.kde.org/")
+    (synopsis "Classical Mah Jongg game for 4 players")
+    (description "Kajongg is the ancient Chinese board game for 4 players.
+
+If you are looking for the Mah Jongg solitaire please use the application
+kmahjongg.
+
+Kajongg can be used in two different ways: Scoring a manual game where you
+play as always and use Kajongg for the computation of scores and for
+bookkeeping.  Or you can use Kajongg to play against any combination of other
+human players or computer players.
+
+This package is part of the KDE games module.")
+    (license (list license:gpl2+ license:fdl1.2+))))
