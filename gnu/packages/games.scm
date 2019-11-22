@@ -8081,3 +8081,44 @@ This package is part of the KDE games module.")
     (description "Shared library and common files for kmahjongg, kshisen and
 other Mah Jongg like games.")
     (license (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
+
+(define-public kmahjongg
+  (package
+    (name "kmahjongg")
+    (version "19.08.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://kde/stable/applications/"
+                          version "/src/kmahjongg-" version ".tar.xz"))
+      (sha256
+       (base32 "08na845h0nhmfrszdmvfq5y1dy7kgbrlzjp0f5snvbbf7w44ci6p"))))
+    (properties `((tags . ("Desktop" "KDE" "Games"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kcompletion" ,kcompletion)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdeclarative" ,kdeclarative)
+       ("ki18n" ,ki18n)
+       ("knewstuff" ,knewstuff)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdegames" ,libkdegames)
+       ("libkmahjongg" ,libkmahjongg)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtsvg" ,qtsvg)))
+    (home-page "https://games.kde.org/")
+    (synopsis "Tile laying patience")
+    (description "In KMahjongg the tiles are scrambled and staked on top of
+each other to resemble a certain shape.  The player is then expected to remove
+all the tiles off the game board by locating each tile's matching pair.
+
+A variety of tile layouts are included, as well as an editor to create new
+layouts.
+
+This package is part of the KDE games module.")
+    (license (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
