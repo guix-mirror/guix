@@ -102,7 +102,7 @@
                        (assoc-ref %build-inputs "shadow")
                        "/etc/login.defs")
         (string-append "-DQT_IMPORTS_DIR="
-                       (assoc-ref %outputs "out") "/qml")
+                       (assoc-ref %outputs "out") "/lib/qt5/qml")
         (string-append "-DCMAKE_INSTALL_SYSCONFDIR="
                        (assoc-ref %outputs "out") "/etc"))
        #:modules ((guix build cmake-build-system)
