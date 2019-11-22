@@ -171,6 +171,7 @@ package contains the library and drivers.")))
        ;; commits upstream.  A 1.0 release is planned.
        (patches (search-patches "xsane-fix-memory-leak.patch"
                                 "xsane-fix-pdf-floats.patch"
+                                "xsane-fix-snprintf-buffer-length.patch"
                                 "xsane-support-ipv6.patch"
                                 "xsane-tighten-default-umask.patch"))
        (modules '((guix build utils)))
