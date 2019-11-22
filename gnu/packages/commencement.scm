@@ -2316,63 +2316,6 @@ ac_cv_c_float_format='IEEE (little-endian)'
                (("^SUBDIRS = po") "SUBDIRS ="))
              #t)))))))
 
-(define gcc-mesboot1-wrapper
-  ;; We need this so gcc-mesboot1 can be used to create shared binaries that
-  ;; have the correct interpreter, otherwise configuring gcc-mesboot using
-  ;; --enable-shared will fail.
-  (package
-    (inherit gcc-mesboot1)
-    (name "gcc-mesboot1-wrapper")
-    (source #f)
-    (inputs '())
-    (native-inputs `(("bash" ,%bootstrap-coreutils&co)
-                     ("libc" ,glibc-mesboot)
-                     ("gcc" ,gcc-mesboot1)))
-    (arguments
-     `(#:implicit-inputs? #f
-       #:guile ,%bootstrap-guile
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'unpack)
-         (delete 'configure)
-         (delete 'install)
-         (replace 'build
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (bash (assoc-ref %build-inputs "bash"))
-                    (libc (assoc-ref %build-inputs "libc"))
-                    (gcc (assoc-ref %build-inputs "gcc"))
-                    (bin (string-append out "/bin")))
-               (mkdir-p bin)
-               (for-each
-                (lambda (program)
-                  (let ((wrapper (string-append bin "/" program)))
-                    (with-output-to-file wrapper
-                      (lambda _
-                        (display (string-append "#! " bash "/bin/bash
-exec " gcc "/bin/" program
-" -Wl,--dynamic-linker"
-;; also for x86_64-linux, we are still on i686-linux
-" -Wl," libc ,(glibc-dynamic-linker "i686-linux")
-" -Wl,--rpath"
-" -Wl," libc "/lib"
-" \"$@\"
-"))
-                        (chmod wrapper #o555)))))
-                '(
-                  "gcc"
-                  "g++"
-                  "i686-unknown-linux-gnu-gcc"
-                  "i686-unknown-linux-gnu-g++"
-                  ))
-               #t)))
-         (replace 'check
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin"))
-                    (program (string-append bin "/gcc")))
-               (invoke program "--help")))))))))
-
 (define (%boot-mesboot3-inputs)
   `(("binutils" ,binutils-mesboot)
     ("xz" ,xz-mesboot)
@@ -2512,6 +2455,64 @@ SHELL := " shell "
 (define (%boot-mesboot4-inputs)
   `(("libc" ,glibc-mesboot)
     ,@(alist-delete "libc" (%boot-mesboot3-inputs))))
+
+(define gcc-mesboot1-wrapper
+  ;; We need this so gcc-mesboot1 can be used to create shared binaries that
+  ;; have the correct interpreter, otherwise configuring gcc-mesboot using
+  ;; --enable-shared will fail.
+  (package
+    (inherit gcc-mesboot1)
+    (name "gcc-mesboot1-wrapper")
+    (source #f)
+    (inputs '())
+    (native-inputs `(("bash" ,bash-mesboot)
+                     ("coreutils" ,coreutils-mesboot0)
+                     ("libc" ,glibc-mesboot)
+                     ("gcc" ,gcc-mesboot1)))
+    (arguments
+     `(#:implicit-inputs? #f
+       #:guile ,%bootstrap-guile
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'unpack)
+         (delete 'configure)
+         (delete 'install)
+         (replace 'build
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bash (assoc-ref %build-inputs "bash"))
+                    (libc (assoc-ref %build-inputs "libc"))
+                    (gcc (assoc-ref %build-inputs "gcc"))
+                    (bin (string-append out "/bin")))
+               (mkdir-p bin)
+               (for-each
+                (lambda (program)
+                  (let ((wrapper (string-append bin "/" program)))
+                    (with-output-to-file wrapper
+                      (lambda _
+                        (display (string-append "#! " bash "/bin/bash
+exec " gcc "/bin/" program
+" -Wl,--dynamic-linker"
+;; also for x86_64-linux, we are still on i686-linux
+" -Wl," libc ,(glibc-dynamic-linker "i686-linux")
+" -Wl,--rpath"
+" -Wl," libc "/lib"
+" \"$@\"
+"))
+                        (chmod wrapper #o555)))))
+                '("cpp"
+                  "gcc"
+                  "g++"
+                  "i686-unknown-linux-gnu-cpp"
+                  "i686-unknown-linux-gnu-gcc"
+                  "i686-unknown-linux-gnu-g++"))
+               #t)))
+         (replace 'check
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (program (string-append bin "/gcc")))
+               (invoke program "--help")))))))))
 
 (define gcc-mesboot
   (package
