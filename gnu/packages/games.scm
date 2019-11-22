@@ -8515,3 +8515,45 @@ player moves a ball, three more balls are added to the board.
 
 This package is part of the KDE games module.")
     (license (list license:gpl2+ license:fdl1.2+))))
+
+(define-public kgoldrunner
+  (package
+    (name "kgoldrunner")
+    (version "19.08.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://kde/stable/applications/" version "/src/kgoldrunner-"
+                           version ".tar.xz"))
+      (sha256
+       (base32 "16rcvq796r3asz4v4ap75xvwnxd3dd2nsq5r9vxvzl6rrf1w9bj4"))))
+    (properties `((tags . ("Desktop" "KDE" "Games"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kcompletion" ,kcompletion)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdegames" ,libkdegames)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))
+    (home-page "https://games.kde.org/")
+    (synopsis "Action and puzzle solving game")
+    (description "KGoldrunner is an action game where the hero runs through a
+maze, climbs stairs, dig holes and dodges enemies in order to collect all the
+gold nuggets and escape to the next level.  Your enemies are also after the
+gold.  Worse still, they are after you!.
+
+KGoldrunner is a fast-paced platform game where the player must navigate a
+maze while collecting gold nuggets and avoiding enemies.  A variety of level
+packs are included, as well as an editor to create new levels.
+
+This package is part of the KDE games module.")
+    (license (list license:gpl2+ license:fdl1.2+))))
