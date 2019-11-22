@@ -2130,6 +2130,54 @@ ac_cv_c_float_format='IEEE (little-endian)'
                (format (current-error-port) "LIBRARY_PATH=~a\n" (getenv "LIBRARY_PATH"))
                #t))))))))
 
+(define gcc-mesboot1
+  (package
+    (inherit gcc-core-mesboot1)
+    (name "gcc-mesboot1")
+    (version "4.6.4")
+    (native-inputs
+     `(("gcc-g++"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "mirror://gnu/gcc/gcc-"
+                               version "/gcc-g++-" version ".tar.gz"))
+           (sha256
+            (base32
+             "1fqqk5zkmdg4vmqzdmip9i42q6b82i3f6yc0n86n9021cr7ms2k9"))))
+       ,@(package-native-inputs gcc-core-mesboot1)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments gcc-core-mesboot1)
+       ((#:configure-flags configure-flags)
+        `(let ((out (assoc-ref %outputs "out")))
+           `("--enable-languages=c,c++"
+             ,@(filter
+                (negate (lambda (x) (string-prefix? "--enable-languages=" x)))
+                ,configure-flags))))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'unpack 'unpack-g++
+             (lambda _
+               (let ((source-g++ (assoc-ref %build-inputs "gcc-g++")))
+                 (invoke "tar" "xvf" source-g++))
+               #t))
+           (replace 'setenv
+             (lambda _
+               (setenv "CONFIG_SHELL" (which "sh"))
+
+               ;; Allow MPFR headers to be found.
+               (setenv "C_INCLUDE_PATH"
+                       (string-append (getcwd) "/mpfr/src:"
+                                      (getenv "C_INCLUDE_PATH")))
+
+               ;; Set the C++ search path so that C headers can be found as
+               ;; libstdc++ is being compiled.
+               (setenv "CPLUS_INCLUDE_PATH" (getenv "C_INCLUDE_PATH"))
+               #t))))))))
+
+(define (%boot-mesboot2-inputs)
+  `(("gcc" ,gcc-mesboot1)
+    ,@(alist-delete "gcc" (%boot-mesboot1-inputs))))
+
 (define binutils-mesboot
   (package
     (inherit binutils-mesboot0)
@@ -2152,119 +2200,6 @@ ac_cv_c_float_format='IEEE (little-endian)'
                "--build=i686-unknown-linux-gnu"
                "--host=i686-unknown-linux-gnu"
                "--with-sysroot=/"))))))
-
-(define gcc-mesboot1
-  (package
-    (inherit gcc-mesboot0)
-    (name "gcc-mesboot1")
-    (version (package-version gcc-4.7))
-    (source (bootstrap-origin
-             (origin (inherit (package-source gcc-4.7))
-                     (patches (search-patches "gcc-boot-4.7.4.patch")))))
-    (inputs `(("gmp-source" ,(package-source gmp-boot))
-              ("mpfr-source" ,(package-source mpfr-boot))
-              ("mpc-source" ,(package-source mpc-boot))))
-    (native-inputs `(("binutils" ,binutils-mesboot)
-
-                     ("libc" ,glibc-mesboot0)
-                     ("kernel-headers" ,%bootstrap-linux-libre-headers)
-                     ("gcc" ,gcc-mesboot0)
-
-                     ("bash" ,%bootstrap-coreutils&co)
-                     ("coreutils" ,%bootstrap-coreutils&co)
-                     ("diffutils" ,diffutils-mesboot)
-                     ("make" ,make-mesboot)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments gcc-core-mesboot0)
-       ((#:make-flags make-flags)
-        `(let* ((libc (assoc-ref %build-inputs "libc"))
-                (ldflags (string-append
-                          "-B" libc "/lib "
-                          "-Wl,-dynamic-linker "
-                          "-Wl," libc
-                          ,(glibc-dynamic-linker "i686-linux"))))
-           (list (string-append "LDFLAGS=" ldflags)
-                 (string-append "LDFLAGS_FOR_TARGET=" ldflags))))
-       ((#:phases phases)
-        `(modify-phases ,phases
-           ;; c&p from commencement.scm:gcc-boot0
-           (add-after 'unpack 'unpack-gmp&co
-             (lambda* (#:key inputs #:allow-other-keys)
-               (let ((gmp  (assoc-ref %build-inputs "gmp-source"))
-                     (mpfr (assoc-ref %build-inputs "mpfr-source"))
-                     (mpc  (assoc-ref %build-inputs "mpc-source")))
-
-                 ;; To reduce the set of pre-built bootstrap inputs, build
-                 ;; GMP & co. from GCC.
-                 (for-each (lambda (source)
-                             (or (invoke "tar" "xvf" source)
-                                 (error "failed to unpack tarball"
-                                        source)))
-                           (list gmp mpfr mpc))
-
-                 ;; Create symlinks like `gmp' -> `gmp-x.y.z'.
-                 ,@(map (lambda (lib)
-                          ;; Drop trailing letters, as gmp-6.0.0a unpacks
-                          ;; into gmp-6.0.0.
-                          `(symlink ,(string-trim-right
-                                      (package-full-name lib "-")
-                                      char-set:letter)
-                                    ,(package-name lib)))
-                        (list gmp-boot mpfr-boot mpc-boot))
-                 #t)))
-           (delete 'remove-info)
-           (replace 'setenv
-             (lambda _
-               (setenv "CONFIG_SHELL" (which "sh"))
-
-               ;; Allow MPFR headers to be found.
-               (setenv "C_INCLUDE_PATH"
-                       (string-append (getcwd) "/mpfr/src:"
-                                      (getenv "C_INCLUDE_PATH")))
-
-               ;; Set the C++ search path so that C headers can be found as
-               ;; libstdc++ is being compiled.
-               (setenv "CPLUS_INCLUDE_PATH" (getenv "C_INCLUDE_PATH"))
-               #t))
-           (delete 'install2)))
-       ((#:configure-flags configure-flags)
-        `(let ((out (assoc-ref %outputs "out"))
-               (glibc (assoc-ref %build-inputs "libc")))
-           (list (string-append "--prefix=" out)
-                 "--build=i686-unknown-linux-gnu"
-                 "--host=i686-unknown-linux-gnu"
-
-                 (string-append "--with-native-system-header-dir=" glibc "/include")
-                 (string-append "--with-build-sysroot=" glibc "/include")
-
-                 "--disable-bootstrap"
-                 "--disable-decimal-float"
-                 "--disable-libatomic"
-                 "--disable-libcilkrts"
-                 "--disable-libgomp"
-                 "--disable-libitm"
-                 "--disable-libmudflap"
-                 "--disable-libquadmath"
-                 "--disable-libsanitizer"
-                 "--disable-libssp"
-                 "--disable-libvtv"
-                 "--disable-lto"
-                 "--disable-lto-plugin"
-                 "--disable-multilib"
-                 "--disable-plugin"
-                 "--disable-threads"
-                 "--enable-languages=c,c++"
-
-                 "--enable-static"
-                 ;; libstdc++.so: error: depends on 'libgcc_s.so.1', which cannot be found in RUNPATH ()
-                 "--disable-shared"
-                 "--enable-threads=single"
-
-                 ;; No pre-compiled libstdc++ headers, to save space.
-                 "--disable-libstdcxx-pch"
-
-                 ;; for libcpp ...
-                 "--disable-build-with-cxx")))))))
 
 (define gcc-mesboot1-wrapper
   ;; We need this so gcc-mesboot1 can be used to create shared binaries that
