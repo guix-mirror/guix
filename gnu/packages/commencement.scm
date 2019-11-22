@@ -2490,19 +2490,10 @@ SHELL := " shell "
   (package
     (inherit glibc-headers-mesboot)
     (name "glibc-mesboot")
-    (native-inputs `(("binutils" ,binutils-mesboot)
-                     ("libc" ,glibc-mesboot0)
-                     ("headers" ,glibc-headers-mesboot)
-                     ("gcc" ,gcc-mesboot1)
-
-                     ("bash" ,%bootstrap-coreutils&co)
-                     ("coreutils" ,%bootstrap-coreutils&co)
-                     ("diffutils" ,diffutils-mesboot)
-                     ("kernel-headers" ,%bootstrap-linux-libre-headers)
-                     ("make" ,make-mesboot)))
-
+    (native-inputs `(("headers" ,glibc-headers-mesboot)
+                     ,@(%boot-mesboot3-inputs)))
     (arguments
-     `(#:validate-runpath? #f               ; fails when using --enable-shared
+     `(#:validate-runpath? #f ; fails when using --enable-shared
        ,@(substitute-keyword-arguments (package-arguments glibc-headers-mesboot)
            ((#:make-flags make-flags)
             `(let ((bash (assoc-ref %build-inputs "bash")))
@@ -2514,9 +2505,13 @@ SHELL := " shell "
                    (let* ((kernel-headers (assoc-ref %build-inputs "kernel-headers"))
                           (out (assoc-ref outputs "out"))
                           (install-flags (cons "install" make-flags)))
-                     (apply invoke "make" install-flags)
-                     (copy-recursively kernel-headers out)
-                     #t))))))))))
+                     (and (apply invoke "make" install-flags)
+                          (copy-recursively kernel-headers out)
+                          #t)))))))))))
+
+(define (%boot-mesboot4-inputs)
+  `(("libc" ,glibc-mesboot)
+    ,@(alist-delete "libc" (%boot-mesboot3-inputs))))
 
 (define gcc-mesboot
   (package
