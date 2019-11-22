@@ -1857,6 +1857,38 @@ ac_cv_c_float_format='IEEE (little-endian)'
                (symlink "gawk" (string-append bin "/awk"))
                #t))))))))
 
+(define sed-mesboot
+  (package
+    (inherit sed)
+    (name "sed-mesboot")
+    (version "4.0.6")                   ; 2003-04
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/sed/sed-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0861ij94cqc4vaaki6r2wlapwcmhpx4ggp4r70f46mb21a8fkvf1"))))
+    (native-inputs (%boot-mesboot0-inputs))
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (inputs '())
+    (propagated-inputs '())
+    (arguments
+     `(#:implicit-inputs? #f
+       #:parallel-build? #f
+       #:guile ,%bootstrap-guile
+       #:tests? #f                      ; 8to7 fails
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack '/bin/sh
+           (lambda _
+             (let* ((bash (assoc-ref %build-inputs "bash"))
+                    (shell (string-append bash "/bin/bash")))
+               (substitute* "testsuite/Makefile.tests"
+                 (("^SHELL = /bin/sh")
+                  (string-append "SHELL = " shell)))
+               #t))))))))
+
 (define binutils-mesboot
   (package
     (inherit binutils-mesboot0)
