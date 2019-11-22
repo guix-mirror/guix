@@ -1788,6 +1788,39 @@ ac_cv_c_float_format='IEEE (little-endian)'
          "ac_cv_func_gethostbyname=no"
          "gl_cv_func_rename_dest_works=yes")))))
 
+(define make-mesboot
+  (package
+    (inherit gnu-make)
+    (name "make-mesboot")
+    (version "3.82")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/make/make-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1rs2f9hmvy3q6zkl15jnlmnpgffm0bhw5ax0h5c7q604wqrip69x"))))
+    (native-inputs (%boot-mesboot0-inputs))
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (inputs '())
+    (propagated-inputs '())
+    (arguments
+     `(#:implicit-inputs? #f
+       #:parallel-build? #f
+       #:guile ,%bootstrap-guile
+       #:configure-flags '("LIBS=-lc -lnss_files -lnss_dns -lresolv")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "./make" "--version")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (install-file "make" bin)
+               #t))))))))
+
 (define binutils-mesboot
   (package
     (inherit binutils-mesboot0)
@@ -1810,39 +1843,6 @@ ac_cv_c_float_format='IEEE (little-endian)'
                "--build=i686-unknown-linux-gnu"
                "--host=i686-unknown-linux-gnu"
                "--with-sysroot=/"))))))
-
-(define make-mesboot
-  (package
-    (inherit make-mesboot0)
-    (name "make-mesboot")
-    (version "3.82")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/make/make-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1rs2f9hmvy3q6zkl15jnlmnpgffm0bhw5ax0h5c7q604wqrip69x"))))
-    (native-inputs `(("binutils" ,binutils-mesboot0)
-                     ("libc" ,glibc-mesboot0)
-                     ("gcc" ,gcc-mesboot0)
-                     ("make" ,make-mesboot0)
-
-                     ("bash" ,%bootstrap-coreutils&co)
-                     ("coreutils" ,%bootstrap-coreutils&co)
-                     ("kernel-headers" ,%bootstrap-linux-libre-headers)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments make-mesboot0)
-       ((#:configure-flags configure-flags)
-        `(let ((out (assoc-ref %outputs "out")))
-           `(,(string-append "--prefix=" out))))
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (delete 'configure-fixup)
-           (add-before 'configure 'setenv
-             (lambda _
-               (setenv "LIBS" "-lc -lnss_files -lnss_dns -lresolv")
-               #t))))))))
 
 (define gmp-boot
   (package
