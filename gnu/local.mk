@@ -1463,7 +1463,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/xfce4-panel-plugins.patch		\
   %D%/packages/patches/xfce4-settings-defaults.patch		\
   %D%/packages/patches/xinetd-fix-fd-leak.patch			\
-  %D%/packages/patches/xinetd-CVE-2013-4342.patch
+  %D%/packages/patches/xinetd-CVE-2013-4342.patch		\
+  %D%/packages/patches/xsane-fix-memory-leak.patch		\
+  %D%/packages/patches/xsane-fix-pdf-floats.patch		\
+  %D%/packages/patches/xsane-support-ipv6.patch			\
+  %D%/packages/patches/xsane-tighten-default-umask.patch
 
 MISC_DISTRO_FILES =				\
   %D%/packages/ld-wrapper.in
