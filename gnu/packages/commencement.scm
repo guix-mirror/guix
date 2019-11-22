@@ -2616,6 +2616,25 @@ exec " gcc "/bin/" program
     ("gcc" ,gcc-mesboot)
     ,@(fold alist-delete (%boot-mesboot4-inputs) '("gcc" "gcc-wrapper"))))
 
+(define-public coreutils-mesboot
+  (package
+    (inherit coreutils)
+    (name "coreutils-mesboot")
+    (source (bootstrap-origin (package-source coreutils)))
+    (native-inputs (%boot-mesboot5-inputs))
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (inputs '())
+    (propagated-inputs '())
+    (arguments
+     `(#:implicit-inputs? #f
+       #:guile ,%bootstrap-guile
+       #:tests? #f))))
+
+(define (%boot-mesboot6-inputs)
+  `(("coreutils" ,coreutils-mesboot)
+    ,@(fold alist-delete (%boot-mesboot5-inputs)
+            '("coreutils" "kernel-headers"))))
+
 (define m4-mesboot
   (package
     (inherit m4)
