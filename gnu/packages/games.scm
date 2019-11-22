@@ -8285,3 +8285,44 @@ up, the game is over.
 
 This package is part of the KDE games module.")
     (license (list license:gpl2+ license:fdl1.2+))))
+
+(define-public konquest
+  (package
+    (name "konquest")
+    (version "19.08.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://kde/stable/applications/"
+                          version "/src/konquest-" version ".tar.xz"))
+      (sha256
+       (base32 "02gjxskhi10a1sqh3skcild8zria7wncz1a4sbz7ax1p851q76k1"))))
+    (properties `((tags . ("Desktop" "KDE" "Games"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kguiaddons" ,kguiaddons)
+       ("ki18n" ,ki18n)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdegames" ,libkdegames)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtsvg" ,qtsvg)))
+    (home-page "https://games.kde.org/")
+    (synopsis "Simple turn-based strategy game")
+    (description "Konquest is the KDE version of Gnu-Lactic Konquest.  Players
+conquer other planets by sending ships to them.  The goal is to build an
+interstellar empire and ultimately conquer all other player's planets.  The
+game can be played with up to nine empires, commanded either by the computer
+or by puny earthlings.
+
+This package is part of the KDE games module.")
+    (license (list license:gpl2+ license:fdl1.2+))))
