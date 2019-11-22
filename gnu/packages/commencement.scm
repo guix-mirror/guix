@@ -2746,12 +2746,28 @@ exec " gcc "/bin/" program
        #:strip-binaries? #f
        #:validate-runpath? #f))))
 
+(define sed-boot0
+  (package
+    (inherit sed)
+    (name "sed-boot0")
+    (source (bootstrap-origin (package-source sed)))
+    (native-inputs '())
+    (inputs
+     `(("make" ,gnu-make-boot0)
+       ,@(%bootstrap-inputs+toolchain)))
+    (arguments
+     `(#:implicit-inputs? #f
+       #:tests? #f
+       #:guile ,%bootstrap-guile
+       ,@(package-arguments sed)))))
+
 (define (%boot0-inputs)
   `(("make" ,gnu-make-boot0)
     ("diffutils" ,diffutils-boot0)
     ("findutils" ,findutils-boot0)
     ("file" ,file-boot0)
     ("gawk" ,gawk-boot0)
+    ("sed" ,sed-boot0)
     ,@(%bootstrap-inputs+toolchain)))
 
 (define* (boot-triplet #:optional (system (%current-system)))
