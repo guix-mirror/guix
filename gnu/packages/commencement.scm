@@ -2248,26 +2248,73 @@ ac_cv_c_float_format='IEEE (little-endian)'
 
 (define binutils-mesboot
   (package
-    (inherit binutils-mesboot0)
+    (inherit binutils)
     (name "binutils-mesboot")
-    (native-inputs `(("binutils" ,binutils-mesboot0)
-                     ("libc" ,glibc-mesboot0)
-                     ("gcc" ,gcc-mesboot0)
-
-                     ("bash" ,%bootstrap-coreutils&co)
-                     ("coreutils" ,%bootstrap-coreutils&co)
-                     ("diffutils" ,diffutils-mesboot)
-                     ("kernel-headers" ,%bootstrap-linux-libre-headers)
-                     ("make" ,make-mesboot0)))
+    (version "2.20.1a")
+    (source (bootstrap-origin
+             (origin
+               (method url-fetch)
+               (uri (string-append "mirror://gnu/binutils/binutils-"
+                                   version ".tar.bz2"))
+               (patches (search-patches "binutils-boot-2.20.1a.patch"))
+               (sha256
+                (base32
+                 "0r7dr0brfpchh5ic0z9r4yxqn4ybzmlh25sbp30cacqk8nb7rlvi")))))
+    (inputs '())
+    (propagated-inputs '())
+    (native-inputs `(("xz" ,xz-mesboot)
+                     ,@(%boot-mesboot2-inputs)))
+    (supported-systems '("i686-linux" "x86_64-linux"))
     (arguments
-     (substitute-keyword-arguments (package-arguments binutils-mesboot0)
-       ((#:configure-flags configure-flags)
-        '(list "--disable-nls"
-               "--disable-shared"
-               "--disable-werror"
-               "--build=i686-unknown-linux-gnu"
-               "--host=i686-unknown-linux-gnu"
-               "--with-sysroot=/"))))))
+     `(#:implicit-inputs? #f
+       #:guile ,%bootstrap-guile
+       #:tests? #f                     ; runtest: command not found
+       #:parallel-build? #f
+       #:strip-binaries? #f            ; no strip yet
+       #:configure-flags
+       `("CC=gcc"
+         "CXX=false"
+         "RANLIB=true"
+         "--disable-doc"
+         "--disable-nls"
+         "--disable-shared"
+         "--disable-werror"
+         "--build=i686-unknown-linux-gnu"
+         "--host=i686-unknown-linux-gnu"
+         "--with-sysroot=/"
+         ;; checking for grep that handles long lines and -e
+         "ac_cv_path_GREP=grep")
+       ;; FIXME: ac_cv_path_GREP=grep doesn't seem to be forwarded to
+       ;; cascading configure's?
+       #:make-flags '("ac_cv_path_GREP=grep")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'scripted-patch
+           (lambda _
+             ;; sed-mesboot0 cannot build these
+             (copy-file "binutils/Makefile.in" "binutils/Makefile.in.orig")
+             (substitute* "binutils/Makefile.in"
+               ;; binutils/binutils uses an amazingly complex install
+               ;; command, using FOR, SED, READ, IF, ECHO, SED, SED, AWK,
+               ;; READ, and then LIBTOOL (to do something like
+               ;; `mkdir $DESTDIR$bindir; cp readline $DESTDIR$bindir ...')
+
+               ;; Some tool [debugme!] cannot handle two escaped newlines
+               ;; (bash?), and the install stops after $(am__EXEEXT_11)
+               ;; ("objcopy"), so $(am__EXEEXT_13) ("readelf") and others do
+               ;; not get installed.  Remove the stray newline:
+               (("^\t@BUILD_NLMCONV@ @BUILD_SRCONV@ @BUILD_DLLTOOL@ @BUILD_WINDRES@ .*") ""))
+             (substitute* "opcodes/Makefile.in"
+               (("^SUBDIRS = [.] po") "SUBDIRS = ."))
+             (substitute* "binutils/Makefile.in"
+               (("^SUBDIRS = doc po") "SUBDIRS ="))
+             (substitute* "gas/Makefile.in"
+               (("^SUBDIRS = doc po") "SUBDIRS ="))
+             (substitute* "gprof/Makefile.in"
+               (("^SUBDIRS = po") "SUBDIRS ="))
+             (substitute* "ld/Makefile.in"
+               (("^SUBDIRS = po") "SUBDIRS ="))
+             #t)))))))
 
 (define gcc-mesboot1-wrapper
   ;; We need this so gcc-mesboot1 can be used to create shared binaries that
@@ -2325,6 +2372,11 @@ exec " gcc "/bin/" program
                     (bin (string-append out "/bin"))
                     (program (string-append bin "/gcc")))
                (invoke program "--help")))))))))
+
+(define (%boot-mesboot3-inputs)
+  `(("binutils" ,binutils-mesboot)
+    ("xz" ,xz-mesboot)
+    ,@(alist-delete "binutils" (%boot-mesboot2-inputs))))
 
 (define glibc-headers-mesboot
   (package
