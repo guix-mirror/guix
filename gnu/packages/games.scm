@@ -8723,3 +8723,46 @@ connect all the computers on the board.
 
 This package is part of the KDE games module.")
     (license (list license:gpl2+ license:fdl1.2+))))
+
+(define-public bomber
+  (package
+    (name "bomber")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/bomber-" version ".tar.xz"))
+       (sha256
+        (base32 "1lvzd0mzgq25akvwvkm57l3plm65k731v2i1ahakn985bb5gc3is"))))
+    (properties `((tags . ("Desktop" "KDE" "Games"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kcompletiom" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("ki18n" ,ki18n)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdegames" ,libkdegames)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))
+    (home-page "https://games.kde.org/")
+    (synopsis "Arcade bombing game")
+    (description "Bomber is a single player arcade game.
+
+The player is invading various cities in a plane that is decreasing in height.
+The goal of the game is to destroy all the buildings and advance to the next
+level.  Each level gets a bit harder by increasing the speed of the plane and
+the height of the buildings.
+
+Bomber is a game where you fly a spaceship and attempt to bomb the buildings
+below you.  Each pass the spaceship makes, it gets lower and lower.  If you've
+not destroyed a building in your path, you will crash into it.
+
+This package is part of the KDE games module.")
+    (license (list license:gpl2+ license:fdl1.2+))))
