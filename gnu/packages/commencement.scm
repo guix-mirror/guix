@@ -1821,6 +1821,42 @@ ac_cv_c_float_format='IEEE (little-endian)'
                (install-file "make" bin)
                #t))))))))
 
+(define gawk-mesboot
+  (package
+    (inherit gawk)
+    (name "gawk-mesboot")
+    (version "3.1.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gawk/gawk-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "03d5y7jabq7p2s7ys9alay9446mm7i5g2wvy8nlicardgb6b6ii1"))))
+    (native-inputs `(,@(%boot-mesboot0-inputs)
+                     ("mesboot-headers" ,mesboot-headers)))
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (inputs '())
+    (propagated-inputs '())
+    (arguments
+     `(#:implicit-inputs? #f
+       #:parallel-build? #f
+       #:guile ,%bootstrap-guile
+       #:configure-flags '("ac_cv_func_connect=no")
+       #:make-flags '("gawk")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "./gawk" "--version")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (install-file "gawk" bin)
+               (symlink "gawk" (string-append bin "/awk"))
+               #t))))))))
+
 (define binutils-mesboot
   (package
     (inherit binutils-mesboot0)
