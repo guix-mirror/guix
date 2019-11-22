@@ -2520,17 +2520,10 @@ exec " gcc "/bin/" program
     (name "gcc-mesboot")
     (version (package-version gcc-4.9))
     (source (bootstrap-origin (package-source gcc-4.9)))
-    (native-inputs `(("binutils" ,binutils-mesboot)
-
-                     ("libc" ,glibc-mesboot)
-                     ("kernel-headers" ,%bootstrap-linux-libre-headers)
-                     ("gcc-wrapper" ,gcc-mesboot1-wrapper)
+    (native-inputs `(("gcc-wrapper" ,gcc-mesboot1-wrapper)
                      ("gcc" ,gcc-mesboot1)
-
-                     ("bash" ,%bootstrap-coreutils&co)
-                     ("coreutils" ,%bootstrap-coreutils&co)
-                     ("diffutils" ,diffutils-mesboot)
-                     ("make" ,make-mesboot)))
+                     ("headers" ,glibc-headers-mesboot)
+                     ,@(%boot-mesboot4-inputs)))
     (arguments
      `(#:validate-runpath? #f
        ,@(substitute-keyword-arguments (package-arguments gcc-mesboot1)
@@ -2572,7 +2565,37 @@ exec " gcc "/bin/" program
                      "--disable-libstdcxx-pch"
 
                      ;; for libcpp ...
-                     "--disable-build-with-cxx"))))))))
+                     "--disable-build-with-cxx")))
+           ((#:phases phases)
+            `(modify-phases ,phases
+               (delete 'apply-boot-patch)
+               (delete 'unpack-g++)     ; sadly, gcc-4.9.4 does not provide
+                                        ; modular core/language downloads
+               (replace 'setenv
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let* ((out (assoc-ref outputs "out"))
+                          (binutils (assoc-ref %build-inputs "binutils"))
+                          (bash (assoc-ref %build-inputs "bash"))
+                          (gcc (assoc-ref %build-inputs "gcc"))
+                          (glibc (assoc-ref %build-inputs "libc"))
+                          (kernel-headers (assoc-ref %build-inputs "kernel-headers")))
+                     (setenv "CONFIG_SHELL" (string-append bash "/bin/sh"))
+                     (setenv "C_INCLUDE_PATH" (string-append
+                                               gcc "/lib/gcc-lib/i686-unknown-linux-gnu/4.6.4/include"
+                                               ":" kernel-headers "/include"
+                                               ":" glibc "/include"
+                                               ":" (getcwd) "/mpfr/src"))
+                     (setenv "CPLUS_INCLUDE_PATH" (string-append
+                                                   gcc "/lib/gcc-lib/i686-unknown-linux-gnu/4.6.4/include"
+                                                   ":" kernel-headers "/include"
+                                                   ":" glibc "/include"
+                                                   ":" (getcwd) "/mpfr/src"))
+                     (setenv "LIBRARY_PATH" (string-append glibc "/lib"
+                                                           ":" gcc "/lib"))
+                     (format (current-error-port) "C_INCLUDE_PATH=~a\n" (getenv "C_INCLUDE_PATH"))
+                     (format (current-error-port) "CPLUS_INCLUDE_PATH=~a\n" (getenv "CPLUS_INCLUDE_PATH"))
+                     (format (current-error-port) "LIBRARY_PATH=~a\n" (getenv "LIBRARY_PATH"))
+                     #t))))))))))
 
 (define gcc-mesboot-wrapper
   ;; We need this so gcc-mesboot can be used to create shared binaries that
