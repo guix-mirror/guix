@@ -5968,14 +5968,13 @@ that TURN is no longer being maintained.")
 (define-public ruby-mimemagic
   (package
     (name "ruby-mimemagic")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "mimemagic" version))
        (sha256
-        (base32
-         "00ibc1mhvdfyfyl103xwb45621nwyqxf124cni5hyfhag0fn1c3q"))))
+        (base32 "04cp5sfbh1qx82yqxn0q75c7hlcx8y1dr5g3kyzwm4mx6wi2gifw"))))
     (build-system ruby-build-system)
     (arguments
      '(#:phases
