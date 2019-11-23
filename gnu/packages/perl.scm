@@ -2237,15 +2237,14 @@ hours, minutes, seconds, and time zones.")
 (define-public perl-datetime
   (package
     (name "perl-datetime")
-    (version "1.50")
+    (version "1.51")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
                            "DateTime-" version ".tar.gz"))
        (sha256
-        (base32
-         "165iqk1xvhs5j0kzsipa7aqycx3h37wqsl2r4jl104yqvmqhqszd"))))
+        (base32 "1ibfq6acz1ih28vl613yygbb3r2d8ykx6di669vajhvswl6xl8ny"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-cpan-meta-check" ,perl-cpan-meta-check)
