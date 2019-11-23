@@ -14820,15 +14820,14 @@ files, and Makefiles.")
 (define-public python-whatever
   (package
     (name "python-whatever")
-    (version "0.5")
+    (version "0.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/Suor/whatever/archive/" version
                            ".tar.gz"))
        (sha256
-        (base32
-         "1iqvnaf0zpc6b4rvbqq4xy45mszcscyzpzknv8wg6j84pbp22sap"))
+        (base32 "1rchg9hrlvw4sn20lq1zspczr4x1pv57c02gv73igiqx1hqpy2nc"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system python-build-system)
     (arguments
