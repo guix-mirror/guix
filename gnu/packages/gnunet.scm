@@ -349,14 +349,14 @@ services.")
 (define-public gnunet-gtk
   (package (inherit gnunet)
     (name "gnunet-gtk")
-    (version (package-version gnunet))
+    (version "0.11.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gnunet/gnunet-gtk-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1p38k1s6a2fmcfc9a7cf1zrdycm9h06kqdyand4s3k500nj6mb4g"))))
+                "061ifhqk6q9kx71z5404fm4d60yj2dihlwwmdqmhkn5nn4bvcwb5"))))
     (arguments
      `(#:configure-flags
        (list "--with-libunique"
@@ -365,6 +365,7 @@ services.")
                             (assoc-ref %build-inputs "gnunet")))))
     (inputs
      `(("gnunet" ,gnunet)
+       ("gnutls" ,gnutls/dane)
        ("libgcrypt" ,libgcrypt)
        ("gtk+" ,gtk+)
        ("libextractor" ,libextractor)
