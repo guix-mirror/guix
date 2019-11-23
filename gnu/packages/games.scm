@@ -8951,3 +8951,51 @@ per single turn to make combinations with the highest score.
 
 This package is part of the KDE games module.")
     (license (list license:gpl2+ license:fdl1.2+))))
+
+(define-public kigo
+  (package
+    (name "kigo")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/kigo-" version ".tar.xz"))
+       (sha256
+        (base32 "00l5gcbi8xyj9c1lngkrddka3a4m4cd78prfplrpq32ma9xq681f"))))
+    (properties `((tags . ("Desktop" "KDE" "Games"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("knewstuff", knewstuff)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdegames" ,libkdegames)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtsvg" ,qtsvg)))
+    (home-page "https://games.kde.org/")
+    (synopsis "Go board game")
+    (description "Kigo is an open-source implementation of the popular Go
+game.
+
+Go is a strategic board game for two players.  It is also known as
+igo (Japanese), weiqi or wei ch'i (Chinese) or baduk (Korean).  Go is noted
+for being rich in strategic complexity despite its simple rules.  The game is
+played by two players who alternately place black and white stones (playing
+pieces, now usually made of glass or plastic) on the vacant intersections of a
+grid of 19x19 lines (9x9 or 13x13 for easier games).
+
+You also need to install a go engine, e.g. @code{gnugo}.
+
+This package is part of the KDE games module.")
+    (license license:gpl3+)))
