@@ -623,7 +623,15 @@ manipulate repositories of the Git version control system.")
     (license license:gpl3+)))
 
 (define-public guile2.0-git
-  (package-for-guile-2.0 guile-git))
+  (let ((base (package-for-guile-2.0 guile-git)))
+    (package
+      (inherit base)
+      ;; Libgit2's Guile test driver requires (ice-9 textual-ports), which is
+      ;; not in Guile 2.0.  Thus, keep LIBGIT2 as-is here (i.e., built against
+      ;; Guile 2.2).
+      (inputs `(("libgit2" ,libgit2)
+                ,@(srfi-1:alist-delete "libgit2"
+                                       (package-inputs base)))))))
 
 ;;; guile.scm ends here
 
