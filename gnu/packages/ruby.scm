@@ -6414,18 +6414,16 @@ checking for the right Ruby version in software.")
 (define-public ruby-websocket-driver
   (package
    (name "ruby-websocket-driver")
-   (version "0.7.0")
+   (version "0.7.1")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "websocket-driver" version))
      (sha256
-      (base32
-       "1551k3fs3kkb3ghqfj3n5lps0ikb9pyrdnzmvgfdxy8574n4g1dn"))))
+      (base32 "1bxamwqldmy98hxs5pqby3andws14hl36ch78g0s81gaz9b91nj2"))))
    (build-system ruby-build-system)
    (arguments
-    '(;; No included tests
-      #:tests? #f))
+    '(#:tests? #f))                     ; no included tests
    (propagated-inputs
     `(("ruby-websocket-extensions" ,ruby-websocket-extensions)))
    (synopsis "WebSocket protocol handler with pluggable I/O")
