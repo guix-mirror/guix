@@ -9281,3 +9281,42 @@ course more and more difficult the longer the snakes grow.
 
 This package is part of the KDE games module.")
     (license (list license:gpl2+ license:fdl1.2+))))
+
+(define-public kollision
+  (package
+    (name "kollision")
+    (version "19.08.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://kde/stable/applications/" version
+                          "/src/kollision-" version ".tar.xz"))
+      (sha256
+       (base32 "1p7qrn3d0ybpvc9k6k5wzj54dsrp1rqh39844maz0ay2fhvmch12"))))
+    (properties `((tags . ("Desktop" "KDE" "Games"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("ki18n" ,ki18n)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdegames" ,libkdegames)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))
+    (home-page "https://games.kde.org/")
+    (synopsis "Simple ball dodging game")
+    (description "In Kollision you use mouse to control a small blue ball in a
+closed space environment filled with small red balls, which move about
+chaotically.  Your goal is to avoid touching any of those red balls with your
+blue one, because the moment you do the game will be over.  The longer you can
+stay in game the higher will your score be.
+
+This package is part of the KDE games module.")
+    (license (list license:gpl2+ license:fdl1.2+))))
