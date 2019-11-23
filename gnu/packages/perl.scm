@@ -2906,15 +2906,14 @@ arbitrary parameters.")
 (define-public perl-devel-stacktrace
   (package
     (name "perl-devel-stacktrace")
-    (version "2.03")
+    (version "2.04")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
                            "Devel-StackTrace-" version ".tar.gz"))
        (sha256
-        (base32
-         "0j58kgjr9s3vibsgifmk9k5h7daag0cb9x45f30m9qi4pr7cs63n"))))
+        (base32 "0mb8bngjq7s3kbh95h3ig4p3jfb156c4r0d53z344gbxaknh6g6d"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Devel-StackTrace")
     (synopsis "Object representing a stack trace")
