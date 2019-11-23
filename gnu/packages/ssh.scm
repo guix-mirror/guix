@@ -265,9 +265,6 @@ Additionally, various channel-specific options can be negotiated.")
        #:configure-flags '("--disable-static")
 
        #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'autoreconf
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (invoke "autoreconf" "-vfi")))
                   (add-before 'build 'fix-libguile-ssh-file-name
                     (lambda* (#:key outputs #:allow-other-keys)
                       ;; Build and install libguile-ssh.so so that we can use
