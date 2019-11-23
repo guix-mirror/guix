@@ -2094,13 +2094,13 @@ suites.")
 (define-public ruby-useragent
   (package
     (name "ruby-useragent")
-    (version "0.16.8")
+    (version "0.16.10")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "useragent" version))
               (sha256
                (base32
-                "1139cjqyv1hk1qcw89k81ajjkqyakqgbcyvmfrsmjqi8yn9kgqhq"))))
+                "1fv5kvq494swy0p17h9qya9r50w15xsi9zmvhzb8gh55kq6ki50p"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; no test suite
