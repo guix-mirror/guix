@@ -2689,3 +2689,27 @@ anything other than straight complex DFTs.")
 run SRFI 64 test suites.  It gives Automake insight into the individual
 tests being run, resulting clearer and more specific output.")
     (license license:gpl3+)))
+
+(define-public guile-semver
+  (package
+    (name "guile-semver")
+    (version "0.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://files.ngyro.com/guile-semver/"
+                                  "guile-semver-" version ".tar.gz"))
+              (sha256
+               (base32
+                "06b66rj7nyhr6i3dpkwvfw1xb10w2pngrsw2hxfxkznwsbh9byfz"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("srfi-64-driver" ,srfi-64-driver)))
+    (inputs
+     `(("guile" ,guile-2.2)))
+    (home-page "https://ngyro.com/software/guile-semver.html")
+    (synopsis "Semantic Versioning (SemVer) for Guile")
+    (description "This Guile library provides tools for reading,
+comparing, and writing Semantic Versions.  It also includes ranges in
+the style of the Node Package Manager (NPM).")
+    (license license:gpl3+)))
