@@ -9043,14 +9043,13 @@ netCDF files.")
 (define-public r-biocmanager
   (package
     (name "r-biocmanager")
-    (version "1.30.9")
+    (version "1.30.10")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "BiocManager" version))
        (sha256
-        (base32
-         "1l9b2mr99nhpvk1wkd93397i0d6z4vvbq3zm8dk86gb1pfci26sx"))))
+        (base32 "03n9s2vf7vgpgb5alpxwamf9xfkn32cbzngwyn6spq1bnh9a9dzk"))))
     (properties `((upstream-name . "BiocManager")))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/BiocManager/")
