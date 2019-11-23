@@ -1596,14 +1596,14 @@ language known as SASS.")
 (define-public perl-apache-logformat-compiler
   (package
     (name "perl-apache-logformat-compiler")
-    (version "0.35")
+    (version "0.36")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/K/KA/KAZEBURO/"
                            "Apache-LogFormat-Compiler-" version ".tar.gz"))
        (sha256
-        (base32 "06i70ydxk2wa2rcqn16842kra2qz3jwk0vk1abq8lah4180c0m0n"))))
+        (base32 "05xcl7j65vakx7x79jqjikyw0nzf60bc2w6hhc0q5sklxq1ral4l"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-http-message" ,perl-http-message)
