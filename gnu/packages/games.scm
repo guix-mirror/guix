@@ -9160,3 +9160,41 @@ where two ships fly around a star in a struggle to be the only survivor.
 
 This package is part of the KDE games module.")
     (license (list license:gpl2+ license:fdl1.2+))))
+
+(define-public bovo
+  (package
+    (name "bovo")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/bovo-" version ".tar.xz"))
+       (sha256
+        (base32 "0dbpng0w52nahmx7brsll66zw23ql1g6pcvn2k4g2lnvxch0i59g"))))
+    (properties `((tags . ("Desktop" "KDE" "Games"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kcompletion" ,kcompletion)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("ki18n" ,ki18n)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdegames" ,libkdegames)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtsvg" ,qtsvg)))
+    (home-page "https://games.kde.org/")
+    (synopsis "Classic pen and paper game: five in a line")
+    (description "Bovo is a Gomoku (from Japanese 五目並べ - lit.  \"five
+points\") like game for two players, where the opponents alternate in placing
+their respective pictogram on the game board.  The winner is the first to
+complete a line of five markers.  (Also known as: Connect Five, Five in a row,
+X and O, Naughts and Crosses)
+
+This package is part of the KDE games module.")
+    (license (list license:gpl2+ license:fdl1.2+))))
