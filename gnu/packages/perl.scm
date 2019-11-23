@@ -1220,16 +1220,17 @@ uses no non-core modules for any recent Perl.")
 (define-public perl-class-unload
   (package
     (name "perl-class-unload")
-    (version "0.08")
+    (version "0.11")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/I/IL/ILMARI/"
                            "Class-Unload-" version ".tar.gz"))
        (sha256
-        (base32
-         "097gr3r2jgnm1175m4lpg4a97hv2mxrn9r0b2c6bn1x9xdhkywgh"))))
+        (base32 "0pqa98z3ij6a3v9wkmvc8b410kv30y0xxqf0i6if3lp4lx3rgqjj"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-requires" ,perl-test-requires)))
     (propagated-inputs
      `(("perl-class-inspector" ,perl-class-inspector)))
     (home-page "https://metacpan.org/release/Class-Unload")
