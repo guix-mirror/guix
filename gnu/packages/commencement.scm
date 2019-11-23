@@ -2672,6 +2672,19 @@ exec " gcc "/bin/" program
     (native-inputs '())                           ; no need for 'pkg-config'
     (inputs (%bootstrap-inputs+toolchain))))
 
+(define bzip2-boot0
+  (package
+    (inherit bzip2)
+    (name "bzip2-boot0")
+    (native-inputs `())
+    (inputs
+     `(("make" ,gnu-make-boot0)
+       ,@(%bootstrap-inputs+toolchain)))
+    (arguments
+     `(#:guile ,%bootstrap-guile
+       #:implicit-inputs? #f
+       ,@(package-arguments bzip2)))))
+
 (define diffutils-boot0
   (package
     (inherit diffutils)
@@ -2778,11 +2791,12 @@ exec " gcc "/bin/" program
        ,@(package-arguments sed)))))
 
 (define (%boot0-inputs)
-  `(("make" ,gnu-make-boot0)
+  `(("bzip2" ,bzip2-boot0)
     ("diffutils" ,diffutils-boot0)
     ("findutils" ,findutils-boot0)
     ("file" ,file-boot0)
     ("gawk" ,gawk-boot0)
+    ("make" ,gnu-make-boot0)
     ("patch" ,patch-boot0)
     ("sed" ,sed-boot0)
     ,@(%bootstrap-inputs+toolchain)))
