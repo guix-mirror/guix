@@ -5268,14 +5268,13 @@ bootstrap test for generalized linear mixed models.")
 (define-public r-cardata
   (package
     (name "r-cardata")
-    (version "3.0-2")
+    (version "3.0-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "carData" version))
        (sha256
-        (base32
-         "152lfgaspgx6x2wzdb5p3zv6r87a0d2pg10h6fjmdr613kzlwp1v"))))
+        (base32 "0cg2yxzn0pdjqykr60my1fzpfkqac21fll5hv3m9w5c9sayq8swq"))))
     (properties `((upstream-name . "carData")))
     (build-system r-build-system)
     (home-page "https://r-forge.r-project.org/projects/car/")
