@@ -3873,14 +3873,14 @@ allows you to locate these files after installation.")
 (define-public perl-file-slurp
   (package
     (name "perl-file-slurp")
-    (version "9999.27")
+    (version "9999.28")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/C/CA/CAPOEIRAB/"
                            "File-Slurp-" version ".tar.gz"))
        (sha256
-        (base32 "1x233kj1qifvii7j8d4wzarwhj5z11vnpxsqvdm98dsccr7qi79s"))))
+        (base32 "1vkwh880lbyr2qcrfka7yb3z4yz9id4va52gfjgdnyfb1c0wx1q5"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/File-Slurp")
     (synopsis "Reading/Writing/Modifying of complete files")
