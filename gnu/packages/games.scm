@@ -9362,3 +9362,47 @@ to destroy all ships wins the game.
 
 This package is part of the KDE games module.")
     (license (list license:gpl2+ license:fdl1.2+))))
+
+(define-public kreversi
+  (package
+    (name "kreversi")
+    (version "19.08.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://kde/stable/applications/" version
+"/src/kreversi-" version ".tar.xz"))
+      (sha256
+       (base32 "0b6q8df2bawgnrswhq59z37axad0q3zpvvzxdds7sz1lw505xw9h"))))
+    (properties `((tags . ("Desktop" "KDE" "Games"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdeclarative" ,kdeclarative)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdegames" ,libkdegames)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtsvg" ,qtsvg)))
+    (home-page "https://games.kde.org/")
+    (synopsis "Old reversi board game, also known as othello")
+    (description "KReversi is a simple one player strategy game played
+against the computer.
+
+If a player's piece is captured by an opposing player, that piece is turned
+over to reveal the color of that player.  A winner is declared when one player
+has more pieces of his own color on the board and there are no more possible
+moves.
+
+This package is part of the KDE games module.")
+    (license (list license:gpl2+ license:fdl1.2+))))
