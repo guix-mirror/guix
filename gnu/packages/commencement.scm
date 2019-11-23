@@ -2685,6 +2685,21 @@ exec " gcc "/bin/" program
        #:implicit-inputs? #f
        ,@(package-arguments bzip2)))))
 
+(define coreutils-boot0
+  (package
+    (inherit coreutils)
+    (source (bootstrap-origin (package-source coreutils)))
+    (name "coreutils-boot0")
+    (native-inputs `())
+    (inputs
+     `(("make" ,gnu-make-boot0)
+       ,@(%bootstrap-inputs+toolchain)))
+    (arguments
+     `(#:tests? #f
+       #:implicit-inputs? #f
+       #:guile ,%bootstrap-guile
+       ,@(package-arguments coreutils)))))
+
 (define diffutils-boot0
   (package
     (inherit diffutils)
@@ -2807,6 +2822,7 @@ exec " gcc "/bin/" program
 
 (define (%boot0-inputs)
   `(("bzip2" ,bzip2-boot0)
+    ("coreutils" ,coreutils-boot0)
     ("diffutils" ,diffutils-boot0)
     ("findutils" ,findutils-boot0)
     ("file" ,file-boot0)
