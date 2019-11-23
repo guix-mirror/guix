@@ -541,7 +541,15 @@ Guile's foreign function interface.")
               (sha256
                (base32
                 "1nv8j7wk6b5n4p22szyi8lv8fs31rrzxhzz16gyj8r38c1fyp9qp"))
-              (file-name (string-append name "-" version "-checkout"))))
+              (file-name (string-append name "-" version "-checkout"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Allow builds with Guile 3.0.
+                  (substitute* "configure.ac"
+                    (("^GUILE_PKG.*")
+                     "GUILE_PKG([3.0 2.2 2.0])\n"))
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -557,6 +565,9 @@ Guile's foreign function interface.")
 
 (define-public guile2.0-sqlite3
   (package-for-guile-2.0 guile-sqlite3))
+
+(define-public guile3.0-sqlite3
+  (package-for-guile-3.0 guile-sqlite3))
 
 (define-public guile-bytestructures
   (package
