@@ -2190,16 +2190,15 @@ Date::Calc.")
 (define-public perl-date-manip
   (package
     (name "perl-date-manip")
-    (version "6.76")
+    (version "6.78")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://cpan.metacpan.org/authors/id/S/SB/SBECK/"
+       (uri (string-append "mirror://cpan/authors/id/S/SB/SBECK/"
                            "Date-Manip-" version ".tar.gz"))
        (sha256
-        (base32 "1a33mpkx7qqb9nqxyh2kkb596d8xq6jw0ljrd4xrwiz30f6cg1qw"))))
+        (base32 "1faxj6gafrqir9hvy9r8q57s93n57b412s04qycrks7r0520hdnb"))))
     (build-system perl-build-system)
-    (native-inputs `(("perl-module-build" ,perl-module-build)))
     (arguments
      ;; Tests would require tzdata for timezone information, but tzdata is in
      ;; (gnu packages base) which would create a circular dependency.  TODO:
