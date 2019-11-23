@@ -4286,7 +4286,7 @@ inc directory within a distribution and are used by Makefile.PL or Build.PL.")
 (define-public perl-indirect
   (package
     (name "perl-indirect")
-    (version "0.38")
+    (version "0.39")
     (source
      (origin
        (method url-fetch)
@@ -4294,8 +4294,7 @@ inc directory within a distribution and are used by Makefile.PL or Build.PL.")
              "mirror://cpan/authors/id/V/VP/VPIT/indirect-"
              version ".tar.gz"))
        (sha256
-        (base32
-         "13k5a8p903m8x3pcv9qqkzvnb8gpgq36cr3dvn3lk1ngsi9w5ydy"))))
+        (base32 "1r971mykvvsrzrp6a9ccl649ihr84h254jmlfpazv64f6i63qwvi"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/indirect")
     (synopsis "Lexically warn about using the indirect method call syntax")
