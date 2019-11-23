@@ -1101,6 +1101,9 @@ dispatches events from it.")))
          ;; Add udev rules for MTP devices so that non-root users can access
          ;; them.
          (simple-service 'mtp udev-service-type (list libmtp))
+         ;; Add polkit rules, so that non-root users in the wheel group can
+         ;; perform administrative tasks (similar to "sudo").
+         polkit-wheel-service
 
          ;; NetworkManager and its applet.
          (service network-manager-service-type)
