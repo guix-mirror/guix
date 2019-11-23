@@ -3885,14 +3885,13 @@ suitable for a gemspec file.")
 (define-public ruby-progressbar
   (package
     (name "ruby-progressbar")
-    (version "1.10.0")
+    (version "1.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "ruby-progressbar" version))
        (sha256
-        (base32
-         "1cv2ym3rl09svw8940ny67bav7b2db4ms39i4raaqzkf59jmhglk"))))
+        (base32 "1k77i0d4wsn23ggdd2msrcwfy0i376cglfqypkk2q77r2l3408zf"))))
     (build-system ruby-build-system)
     (arguments
      '(;; TODO: There looks to be a circular dependency with ruby-fuubar.
