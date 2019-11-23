@@ -2790,6 +2790,21 @@ exec " gcc "/bin/" program
        #:guile ,%bootstrap-guile
        ,@(package-arguments sed)))))
 
+(define tar-boot0
+  (package
+    (inherit tar)
+    (name "tar-boot0")
+    (source (bootstrap-origin (package-source tar)))
+    (native-inputs '())
+    (inputs
+     `(("make" ,gnu-make-boot0)
+       ,@(%bootstrap-inputs+toolchain)))
+    (arguments
+     `(#:implicit-inputs? #f
+       #:tests? #f
+       #:guile ,%bootstrap-guile
+       ,@(package-arguments tar)))))
+
 (define (%boot0-inputs)
   `(("bzip2" ,bzip2-boot0)
     ("diffutils" ,diffutils-boot0)
@@ -2799,6 +2814,7 @@ exec " gcc "/bin/" program
     ("make" ,gnu-make-boot0)
     ("patch" ,patch-boot0)
     ("sed" ,sed-boot0)
+    ("tar" ,tar-boot0)
     ,@(%bootstrap-inputs+toolchain)))
 
 (define* (boot-triplet #:optional (system (%current-system)))
