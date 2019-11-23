@@ -4403,18 +4403,16 @@ when working with Ruby code.")
 (define-public ruby-jaro-winkler
   (package
     (name "ruby-jaro-winkler")
-    (version "1.5.2")
+    (version "1.5.4")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "jaro_winkler" version))
        (sha256
-        (base32
-         "1zz27z88qznix4r65gd9h56gl177snlfpgv10b0s69vi8qpl909l"))))
+        (base32 "1y8l6k34svmdyqxya3iahpwbpvmn3fswhwsvrz0nk1wyb8yfihsh"))))
     (build-system ruby-build-system)
     (arguments
-     '(;; No included tests
-       #:tests? #f))
+     '(#:tests? #f))                    ; no included tests
     (synopsis "Ruby implementation of Jaro-Winkler distance algorithm")
     (description
      "@code{jaro_winkler} is an implementation of Jaro-Winkler distance
