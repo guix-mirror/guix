@@ -2341,9 +2341,9 @@ libraries written in C.")
     (version "0.56.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/vte/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "vte-" version ".tar.xz"))
               (sha256
                (base32
                 "0j166gic5znssdb9r45qazq4kb4v9fial82czand5wa8i2yd988p"))))
