@@ -19953,3 +19953,28 @@ Google guidelines.")
       (description "Helm Fish Completion is a Helm interface for Emacs
 fish-completion.  It can be used in both Eshell and M-x shell.")
       (license license:gpl3+))))
+
+(define-public emacs-shrink-path
+  (package
+    (name "emacs-shrink-path")
+    (version "0.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/bennya/shrink-path.el.git")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32
+         "0kx0c4syd7k6ff9j463bib32pz4wq0rzjlg6b0yqnymlzfr1mbki"))
+       (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-s" ,emacs-s)
+       ("emacs-dash" ,emacs-dash)
+       ("emacs-f" ,emacs-f)))
+    (home-page "https://gitlab.com/bennya/shrink-path.el")
+    (synopsis "Fish-style path truncation in emacs-lisp")
+    (description "This package provides utility functions that allow for
+Fish-style truncated directories in eshell and various modelines.")
+    (license license:gpl3+)))
