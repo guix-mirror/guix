@@ -9042,3 +9042,43 @@ game has unlimited undo, redo, save and reload capabilities.
 
 This package is part of the KDE games module.")
     (license (list license:gpl2+ license:fdl1.2+))))
+
+(define-public lskat
+  (package
+    (name "lskat")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/lskat-" version ".tar.xz"))
+       (sha256
+        (base32 "1qk5hd27zb42pbcxq5wyzz62nj5f0qdmgy54r9rnk92pzzzk94s9"))))
+    (properties `((tags . ("Desktop" "KDE" "Games"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kguiaddons" ,kguiaddons)
+       ("ki18n" ,ki18n)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdegames" ,libkdegames)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtsvg" ,qtsvg)))
+    (home-page "https://games.kde.org/")
+    (synopsis "Lieutnant Skat card game")
+    (description "Lieutnant Skat (from German \"Offiziersskat\") is a fun and
+engaging card game for two players, where the second player is either live
+opponent, or a built in artificial intelligence.
+
+Lieutnant Skat is a simplified variant of the Skat card game for two players.
+
+This package is part of the KDE games module.")
+    (license (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
