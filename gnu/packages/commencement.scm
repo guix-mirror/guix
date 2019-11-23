@@ -2746,6 +2746,22 @@ exec " gcc "/bin/" program
        #:strip-binaries? #f
        #:validate-runpath? #f))))
 
+(define patch-boot0
+  (package
+    (inherit patch)
+    (source (bootstrap-origin (package-source patch)))
+    (name "patch-boot0")
+    (native-inputs '())
+    (inputs
+     `(("make" ,gnu-make-boot0)
+       ,@(%bootstrap-inputs+toolchain)))
+    (arguments
+     `(#:tests? #f                      ; merge test fails
+       #:implicit-inputs? #f
+       #:guile ,%bootstrap-guile
+       #:strip-binaries? #f
+       #:validate-runpath? #f))))
+
 (define sed-boot0
   (package
     (inherit sed)
@@ -2767,6 +2783,7 @@ exec " gcc "/bin/" program
     ("findutils" ,findutils-boot0)
     ("file" ,file-boot0)
     ("gawk" ,gawk-boot0)
+    ("patch" ,patch-boot0)
     ("sed" ,sed-boot0)
     ,@(%bootstrap-inputs+toolchain)))
 
