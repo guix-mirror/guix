@@ -2991,7 +2991,7 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "19.09.0")
+    (version "19.11.1")
     (source
      (origin
        (method git-fetch)
@@ -3000,7 +3000,7 @@ point numbers.")
              (commit (string-append "Version-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "195j6j8z0jd6xg3a63ywbrbsc6dany795m3fb95nbx1vq0bqqvvn"))))
+        (base32 "16xizaddb27432n1083y89ir5zdqvllsgbwrzzk4jc2rw1ldxfsv"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)))
