@@ -604,7 +604,21 @@ type system, elevating types to first-class status.")
               (sha256
                (base32
                 "018hmfsh0rjwfvr4h7y10jc6k8a2k9xsirngghy3pjasin4nd2yz"))
-              (file-name (git-file-name name version))))
+              (file-name (git-file-name name version))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Allow builds with Guile 3.0.
+                  (substitute* "configure.ac"
+                    (("^GUILE_PKG.*")
+                     "GUILE_PKG([3.0 2.2 2.0])\n"))
+
+                  ;; The 'guile.m4' that's shipped is too old and fails to
+                  ;; recognize Guile 2.9/3.0.  Delete it and pick the one
+                  ;; provided by the Guile we're using.
+                  (delete-file "m4/guile.m4")
+
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -621,6 +635,9 @@ type system, elevating types to first-class status.")
      "This package provides Guile bindings to libgit2, a library to
 manipulate repositories of the Git version control system.")
     (license license:gpl3+)))
+
+(define-public guile3.0-git
+  (package-for-guile-3.0 guile-git))
 
 (define-public guile2.0-git
   (let ((base (package-for-guile-2.0 guile-git)))
