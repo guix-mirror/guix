@@ -20005,3 +20005,27 @@ icon support, git integration, and several other utilities.")
     (description "This package provides utility functions that allow for
 Fish-style truncated directories in eshell and various modelines.")
     (license license:gpl3+)))
+
+(define-public emacs-org-present
+  (let ((commit "d13acd70eff6a1608bc991920232146a0de76b21"))
+    (package
+      (name "emacs-org-present")
+      (version "0.0.1")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rlister/org-present.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0jz8xiny3rv9ql0p623byz32pip1b82j2c2nyfz2wd114kiabb6q"))))
+      (build-system emacs-build-system)
+      (synopsis "Ultra-minimalist presentation minor-mode for Emacs org-mode")
+      (description "Org-present is an extremely minimalist presentation tool
+for Emacs org-mode.  Simply layout your presentation with each slide under a
+top-level header, start the minor mode with @code{org-present}, and page through
+each slide with left/right keys.")
+      (home-page "https://github.com/rlister/org-present")
+      (license license:gpl2))))
