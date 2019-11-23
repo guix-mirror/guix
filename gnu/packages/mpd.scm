@@ -362,7 +362,7 @@ MPD servers, search and multimedia key support.")
     (home-page "https://github.com/joshkunz/ashuffle")
     (synopsis "Automatic library-wide shuffle for mpd")
     (description "ashuffle is an application for automatically shuffling your
-MPD library in a similar way to many other music player's 'shuffle library'
+MPD library in a similar way to many other music players' 'shuffle library'
 feature. ashuffle works like any other MPD client, and can be used alongside
 other MPD frontends.")
     (license license:expat)))
