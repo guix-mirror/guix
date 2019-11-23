@@ -9198,3 +9198,46 @@ X and O, Naughts and Crosses)
 
 This package is part of the KDE games module.")
     (license (list license:gpl2+ license:fdl1.2+))))
+
+(define-public killbots
+  (package
+    (name "killbots")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/killbots-" version ".tar.xz"))
+       (sha256
+        (base32 "1qi86q7diw7glkp9v33yim9nhz2da4balbxa1hjrdgjdv8zdbxbm"))))
+    (properties `((tags . ("Desktop" "KDE" "Games"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("ki18n" ,ki18n)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdegames" ,libkdegames)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))
+    (home-page "https://games.kde.org/")
+    (synopsis "Port of the classic BSD console game robots")
+    (description "Killbots is a simple game of evading killer robots.
+
+Who created the robots and why they have been programmed to destroy, no one
+knows.  All that is known is that the robots are numerous and their sole
+objective is to destroy you.  Fortunately for you, their creator has focused
+on quantity rather than quality and as a result the robots are severely
+lacking in intelligence.  Your superior wit and a fancy teleportation device
+are your only weapons against the never-ending stream of mindless automatons.
+
+This package is part of the KDE games module.")
+    (license (list license:gpl2+ license:fdl1.2+))))
