@@ -290,7 +290,7 @@ tools (containers, algorithms) used by other QuantStack packages.")
 (define-public ccls
   (package
     (name "ccls")
-    (version "0.20190823.3")
+    (version "0.20190823.5")
     (source
      (origin
        (method git-fetch)
@@ -298,7 +298,7 @@ tools (containers, algorithms) used by other QuantStack packages.")
              (url "https://github.com/MaskRay/ccls")
              (commit version)))
        (sha256
-        (base32 "1sx31zp6q2qc6fz3r78rx34zp2x4blrqzxwbpww71vb6lp1clmdm"))
+        (base32 "0b2pkpzn576b92zcxpwchpkyw2fww6s69818rx4g9z34kzm35zy5"))
        (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
