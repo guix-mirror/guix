@@ -135,6 +135,8 @@
             inputattach-configuration?
             inputattach-service-type
 
+            polkit-wheel-service
+
             %desktop-services))
 
 ;;; Commentary:
@@ -1063,6 +1065,25 @@ as expected.")))
    (default-value (inputattach-configuration))
    (description "Return a service that runs inputattach on a device and
 dispatches events from it.")))
+
+
+;;;
+;;; polkit-wheel-service -- Allow wheel group to perform admin actions
+;;;
+
+(define polkit-wheel
+  (file-union
+   "polkit-wheel"
+   `(("share/polkit-1/rules.d/wheel.rules"
+      ,(plain-file
+        "wheel.rules"
+        "polkit.addAdminRule(function(action, subject) {
+    return [\"unix-group:wheel\"];
+});
+")))))
+
+(define polkit-wheel-service
+  (simple-service 'polkit-wheel polkit-service-type (list polkit-wheel)))
 
 
 ;;;

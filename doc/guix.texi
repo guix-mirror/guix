@@ -15591,6 +15591,13 @@ capabilities to ordinary users.  For example, an ordinary user can be granted
 the capability to suspend the system if the user is logged in locally.
 @end deffn
 
+@defvr {Scheme Variable} polkit-wheel-service
+Service that adds the @code{wheel} group as admins to the Polkit
+service.  This makes it so that users in the @code{wheel} group are queried
+for their own passwords when performing administrative actions instead of
+@code{root}'s, similar to the behaviour used by @code{sudo}.
+@end defvr
+
 @defvr {Scheme Variable} upower-service-type
 Service that runs @uref{https://upower.freedesktop.org/, @command{upowerd}}, a
 system-wide monitor for power consumption and battery levels, with the given
