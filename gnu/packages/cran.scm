@@ -314,14 +314,13 @@ scraping tasks, inspired by libraries like @code{BeautifulSoup}.")
 (define-public r-selectr
   (package
     (name "r-selectr")
-    (version "0.4-1")
+    (version "0.4-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "selectr" version))
        (sha256
-        (base32
-         "1jp27rxks4w29l47k42869hp8hnkzq2rnvsqbr44wd19fqb2zm4b"))))
+        (base32 "09y1n3iy297g49xlpl7xrjpwgnm57pskx5991lyfcpizbz8ax22m"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-stringr" ,r-stringr)
