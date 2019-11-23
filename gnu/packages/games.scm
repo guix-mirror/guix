@@ -8911,3 +8911,43 @@ Palapeli is the Finnish word for jigsaw puzzle.
 
 This package is part of the KDE games module.")
     (license license:gpl2+)))
+
+(define-public kiriki
+  (package
+    (name "kiriki")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/kiriki-" version ".tar.xz"))
+       (sha256
+        (base32 "1xg25dj95g81dc5l7k47am4j52abrwwfx4h73lvsbn4lc8lfmshw"))))
+    (properties `((tags . ("Desktop" "KDE" "Games"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdegames" ,libkdegames)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))
+    (home-page "https://games.kde.org/")
+    (synopsis "Yahtzee dice game")
+    (description "Kiriki is an addictive and fun dice game, designed to be
+played by as many as six players.
+
+Participants have to collect points by rolling five dice for up to three times
+per single turn to make combinations with the highest score.
+
+This package is part of the KDE games module.")
+    (license (list license:gpl2+ license:fdl1.2+))))
