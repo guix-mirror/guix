@@ -8999,3 +8999,46 @@ You also need to install a go engine, e.g. @code{gnugo}.
 
 This package is part of the KDE games module.")
     (license license:gpl3+)))
+
+(define-public kubrick
+  (package
+    (name "kubrick")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/kubrick-" version ".tar.xz"))
+       (sha256
+        (base32 "0ma8wja4rqlsmsr8cyicfpkwlgqva4450ls4c0ql53p0kabf04gx"))))
+    (properties `((tags . ("Desktop" "KDE" "Games"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("glu" ,glu)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdegames" ,libkdegames)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtsvg" ,qtsvg)))
+    (home-page "https://games.kde.org/")
+    (synopsis "Game based on Rubik's Cube")
+    (description "Kubrick is a game based on the Rubik's Cube puzzle.
+
+The cube sizes range from 2x2x2 up to 6x6x6, or you can play with irregular
+\"bricks\" such as 5x3x2 or \"mats\" such as 6x4x1 or 2x2x1.  The game has a
+selection of puzzles at several levels of difficulty, as well as demos of
+pretty patterns and solution moves, or you can make up your own puzzles.  The
+game has unlimited undo, redo, save and reload capabilities.
+
+This package is part of the KDE games module.")
+    (license (list license:gpl2+ license:fdl1.2+))))
