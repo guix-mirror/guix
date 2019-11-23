@@ -19954,6 +19954,33 @@ Google guidelines.")
 fish-completion.  It can be used in both Eshell and M-x shell.")
       (license license:gpl3+))))
 
+(define-public emacs-doom-modeline
+  (package
+    (name "emacs-doom-modeline")
+    (version "2.7.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/seagle0128/doom-modeline.git")
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "16qlakgbwwjfr013g0cly4js4v9cfhxb8fn7zmn124f788m22357"))
+              (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:test-command '("ert-runner")))
+    (native-inputs `(("emacs-ert-runner" ,emacs-ert-runner)))
+    (propagated-inputs
+     `(("emacs-all-the-icons" ,emacs-all-the-icons)
+       ("emacs-shrink-path" ,emacs-shrink-path)))
+    (synopsis "Fancy and fast mode-line inspired by minimalism design")
+    (description "Doom modeline is a complete modeline for GNU Emacs inspired
+by the Doom theme collection.  This modeline features support for mode-specific
+icon support, git integration, and several other utilities.")
+    (home-page "https://github.com/seagle0128/doom-modeline/")
+    (license license:gpl3+)))
+
 (define-public emacs-shrink-path
   (package
     (name "emacs-shrink-path")
