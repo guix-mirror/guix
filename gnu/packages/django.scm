@@ -695,6 +695,9 @@ project.")
              (or
               (not tests?)
               (begin
+                (setenv "PYTHONPATH"
+                        (string-append (getcwd) ":"
+                                       (getenv "PYTHONPATH")))
                 (setenv "DJANGO_SETTINGS_MODULE" "tests.settings")
                 (invoke "django-admin" "test" "tests"))))))))
     (propagated-inputs
