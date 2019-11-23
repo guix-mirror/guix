@@ -42,6 +42,7 @@
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
+;;; Copyright © 2019 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -472,6 +473,61 @@ to other formats.")
 GNOME modules built from Git.  It contains a common \"autogen.sh\" script that
 can be used to configure a source directory checked out from Git and some
 commonly used macros.")
+    (license license:gpl2+)))
+
+(define-public gnome-contacts
+  (package
+    (name "gnome-contacts")
+    (version "3.30.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/gnome-contacts/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1b0pkdwz9yqcv82zzdf76rs2w3wa5zli8pka09wnahikx1ykk43h"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'generate-vapis
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; To generate goa's missing .vapi file
+             (define goa
+               (assoc-ref inputs "gnome-online-accounts:lib"))
+
+             (invoke "vapigen" "--directory=vapi" "--pkg=gio-2.0"
+                     "--library=goa-1.0"
+                     (string-append goa "/share/gir-1.0/Goa-1.0.gir"))
+             #t)))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("gtk+:bin" ,gtk+ "bin")
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cheese" ,cheese)
+       ("docbook-xml" ,docbook-xml)
+       ("dockbook-xsl" ,docbook-xsl)
+       ("evolution-data-server" ,evolution-data-server)
+       ("gettext" ,gettext-minimal)
+       ("gnome-desktop" ,gnome-desktop)
+       ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gtk+" ,gtk+)
+       ("libgee" ,libgee)
+       ("libxslt" ,libxslt)
+       ("telepathy-glib" ,telepathy-glib)
+       ("vala" ,vala)))
+    (propagated-inputs
+     `(("folks", folks)
+       ("telepathy-mission-control" ,telepathy-mission-control)))
+    (synopsis "GNOME's integrated address book")
+    (description
+     "GNOME Contacts organizes your contact information from online and
+offline sources, providing a centralized place for managing your contacts.")
+    (home-page "https://wiki.gnome.org/Apps/Contacts")
     (license license:gpl2+)))
 
 (define-public gnome-desktop
