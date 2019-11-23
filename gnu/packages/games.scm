@@ -9082,3 +9082,44 @@ Lieutnant Skat is a simplified variant of the Skat card game for two players.
 
 This package is part of the KDE games module.")
     (license (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
+
+(define-public kapman
+  (package
+    (name "kapman")
+    (version "19.08.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://kde/stable/applications/" version
+                          "/src/kapman-" version ".tar.xz"))
+      (sha256
+       (base32 "03pq38caam30q4bw14c045kayw2d87xq1yaa3s2jkrylylfq3p0f"))))
+    (properties `((tags . ("Desktop" "KDE" "Games"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("ki18n" ,ki18n)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdegames" ,libkdegames)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtsvg" ,qtsvg)))
+    (home-page "https://games.kde.org/")
+    (synopsis "Pac-Man clone")
+    (description "Kapman is a clone of the well known game Pac-Man.
+
+You must run through the maze to eat all pills without being captured by a
+ghost.  By eating an energizer, Kapman gets the ability to eat ghosts for a
+few seconds.  When a stage is cleared of pills and energizer the player is
+taken to the next stage with slightly increased game speed
+
+This package is part of the KDE games module.")
+    (license (list license:gpl2+ license:fdl1.2+))))
