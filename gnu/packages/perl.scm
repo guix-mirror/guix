@@ -6384,17 +6384,15 @@ an external class to the given attribute.")
 (define-public perl-moox-late
   (package
     (name "perl-moox-late")
-    (version "0.015")
+    (version "0.016")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "mirror://cpan/authors/id/T/TO/TOBYINK/MooX-late-"
-             version
-             ".tar.gz"))
+             version ".tar.gz"))
        (sha256
-        (base32
-         "1gzvd9zws3v09sh0xx6srmw4jwi22fnrya4zcsc8dykn62pjclqp"))))
+        (base32 "0kjy86rrpzfy6w5r9ykjq7njwdnvp7swd6r2k4gfrh3picz3kdhz"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
@@ -6405,8 +6403,7 @@ an external class to the given attribute.")
        ("perl-moox-handlesvia" ,perl-moox-handlesvia)))
     (propagated-inputs
      `(("perl-type-tiny" ,perl-type-tiny)))
-    (home-page
-     "https://metacpan.org/release/MooX-late")
+    (home-page "https://metacpan.org/release/MooX-late")
     (synopsis "Easily translate Moose code to Moo")
     (description
      "MooX::late does the following:
