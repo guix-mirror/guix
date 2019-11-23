@@ -1256,17 +1256,16 @@ complexity.")
 (define-public ruby-oauth2
   (package
     (name "ruby-oauth2")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "oauth2" version))
        (sha256
-        (base32
-         "0av6nlb5y2sm6m8fx669ywrqa9858yqaqfqzny75nqp3anag89qh"))))
+        (base32 "15i9z4j5pcjkr30lkcd79xzbr4kpmy0bqgwa436fqyqk646fv036"))))
     (build-system ruby-build-system)
     (arguments
-     '(#:tests? #f)) ; No included tests
+     '(#:tests? #f))                    ; no included tests
     (propagated-inputs
      `(("ruby-faraday" ,ruby-faraday)
        ("ruby-jwt" ,ruby-jwt)
