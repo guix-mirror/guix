@@ -11218,19 +11218,16 @@ library.")
 (define-public r-protviz
   (package
     (name "r-protviz")
-    (version "0.4.0")
+    (version "0.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "protViz" version))
        (sha256
         (base32
-         "150i2q4nakz28f39kmhrchz4qsr8ax6y02512md94k8hq4hamxg1"))))
+         "0cznzm1ijlq33yd5wsa61prav77y2vi698w0n2fx1xcv504c4bjv"))))
     (properties `((upstream-name . "protViz")))
     (build-system r-build-system)
-    (inputs
-     `(("perl" ,perl)
-       ("python-2" ,python-2)))
     (propagated-inputs `(("r-rcpp" ,r-rcpp)))
     (home-page "https://github.com/protViz/protViz/")
     (synopsis "Visualizing and analyzing mass spectrometry data in proteomics")
