@@ -123,6 +123,29 @@ provides methods for automatically determining breaks and labels for axes and
 legends.")
     (license license:expat)))
 
+(define-public r-pheatmap
+  (package
+    (name "r-pheatmap")
+    (version "1.0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pheatmap" version))
+       (sha256
+        (base32
+         "1hdh74az3vyzz6dqa311rhxdm74n46lyr03p862kn80p0kp9d7ap"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-gtable" ,r-gtable)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-scales" ,r-scales)))
+    (home-page "https://cran.r-project.org/web/packages/pheatmap")
+    (synopsis "Pretty heatmaps")
+    (description
+     "This package provides an implementation of heatmaps that offers more
+control over dimensions and appearance.")
+    (license license:gpl2+)))
+
 (define-public r-ellipsis
   (package
     (name "r-ellipsis")
