@@ -1128,6 +1128,40 @@ be used alone or in concert with Non Mixer and Non Sequencer to form a
 complete studio.")
     (license license:gpl2+)))
 
+(define-public bsequencer
+  (package
+    (name "bsequencer")
+    (version "1.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/sjaehn/BSEQuencer.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "08xwz5v8wrar0rx7qdr9pkpjz2k9sw6bn5glhpn6sp6453fabf8q"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #f ; there are none
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs
+     `(("cairo" ,cairo)
+       ("lv2" ,lv2)
+       ("libx11" ,libx11)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/sjaehn/BSEQuencer")
+    (synopsis "Multi-channel MIDI step sequencer LV2 plugin")
+    (description
+     "This package provides a multi-channel MIDI step sequencer LV2 plugin
+with a selectable pattern matrix size.")
+    (license license:gpl3+)))
+
 (define-public solfege
   (package
     (name "solfege")
