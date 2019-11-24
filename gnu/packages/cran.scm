@@ -6100,14 +6100,14 @@ to help insert or delete content at a specific location in the document.")
 (define-public r-abn
   (package
     (name "r-abn")
-    (version "2.1")
+    (version "2.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "abn" version))
        (sha256
         (base32
-         "08jlvb6i5f7ry2dwm0jgrnn2w95vr0l67dpx13n9878lz9ld131b"))))
+         "19w6bdjyp4zwqs6p0flry4qxqynf9rh8ykdrfrp61wrdf7kysw0d"))))
     (build-system r-build-system)
     (inputs
      `(("gsl" ,gsl)))
