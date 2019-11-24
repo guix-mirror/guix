@@ -1302,13 +1302,14 @@ or junctions, and always follows hard links.")
     (name "unshield")
     (version "1.4.3")
     (source
-     (origin (method url-fetch)
-             (uri (string-append "http://github.com/twogood/unshield/archive/"
-                                 version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+     (origin (method git-fetch)
+             (uri (git-reference
+                    (url "http://github.com/twogood/unshield.git")
+                    (commit version)))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "1avv5c11jbmzwizq10pwvlh1dmyna8ccvpgacv95h4gbq26rg35a"))))
+               "19wn22vszhci8dfcixx5rliz7phx3lv5ablvhjlclvj75k2vsdqd"))))
     (build-system cmake-build-system)
     (inputs
      `(("zlib" ,zlib)
