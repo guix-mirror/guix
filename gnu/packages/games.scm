@@ -3840,29 +3840,22 @@ programmers may also add their own favorite language.")
 (define-public bambam
   (package
     (name "bambam")
-    (version "0.6")
+    (version "1.0.0")
     (source
       (origin
         (method git-fetch)
         (uri (git-reference
               (url "https://github.com/porridge/bambam")
-              (commit version)))
+              (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32
-          "08hcd0gzia3pz7fzk4pqc5kbq1074j4q0jcmbpgvr7n623nj2xa5"))))
+         (base32 "18cwd1wpyyx8y61cags9bkdhx9x858xicc4y1c9c2s0xjmgzhl3i"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2
-       #:tests? #f ; no tests
+     `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
-         (delete 'build)
-         (add-before 'install 'patch-data-dir-location
-           (lambda _
-             (substitute* "bambam.py"
-               (("'data'") "'../share/bambam/data'"))
-             #t))
+         (delete 'build)                ; nothing to build
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out   (assoc-ref outputs "out"))
