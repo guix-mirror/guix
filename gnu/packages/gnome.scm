@@ -2338,7 +2338,7 @@ libraries written in C.")
 (define-public vte
   (package
     (name "vte")
-    (version "0.56.3")
+    (version "0.58.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/vte/"
@@ -2346,20 +2346,20 @@ libraries written in C.")
                                   "vte-" version ".tar.xz"))
               (sha256
                (base32
-                "0j166gic5znssdb9r45qazq4kb4v9fial82czand5wa8i2yd988p"))))
-    (build-system gnu-build-system)
+                "0xa9ipwic4jnhhbzlnqbhssz10xkzv61cpkl1ammc6mdq95bbp12"))))
+    (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
        ("vala" ,vala)
        ("gobject-introspection" ,gobject-introspection)
-       ("glib" ,glib "bin") ; for glib-genmarshal, etc.
+       ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
        ("gperf" ,gperf)
        ("xmllint" ,libxml2)))
     (propagated-inputs
-     `(("gtk+" ,gtk+)                             ;required by vte-2.91.pc
-       ("gnutls" ,gnutls)                         ;ditto
-       ("pcre2" ,pcre2)))                         ;ditto
+     `(("gtk+" ,gtk+)                   ; required by vte-2.91.pc
+       ("gnutls" ,gnutls)               ; ditto
+       ("pcre2" ,pcre2)))               ; ditto
     (home-page "https://www.gnome.org/")
     (synopsis "Virtual Terminal Emulator")
     (description
