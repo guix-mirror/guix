@@ -983,16 +983,17 @@ e.g. microbiome samples, genomes, metagenomes.")
       (version "1.7.0")
       (source
        (origin
-         (method url-fetch)
-         (uri (string-append "https://github.com/bioperl/bioperl-live/"
-                             "archive/release-"
-                             (string-map (lambda (c)
-                                           (if (char=? c #\.)
-                                               #\- c)) version)
-                             ".tar.gz"))
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/bioperl/bioperl-live")
+                (commit (string-append "release-"
+                                       (string-map (lambda (c)
+                                                     (if (char=? c #\.)
+                                                         #\- c)) version)))))
+         (file-name (git-file-name name version))
          (sha256
           (base32
-           "12phgpxwgkqflkwfb9dcqg7a31dpjlfhar8wcgv0aj5ln4akfz06"))))
+           "0wl8yvzcls59pwwk6m8ahy87pwg6nnibzy5cldbvmcwg2x2w7783"))))
       (build-system perl-build-system)
       (arguments
        `(#:phases
