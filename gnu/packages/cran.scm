@@ -10042,14 +10042,14 @@ Touzet and Varre (2007).")
 (define-public r-rnifti
   (package
     (name "r-rnifti")
-    (version "0.11.1")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RNifti" version))
        (sha256
         (base32
-         "0jcgdg5k2swmi57aqj347kfi1fc4nvag7pxdfz61kc0vqqamm0wg"))))
+         "0l61hjnzv043ibpkgrhc0yngaqmc58lkvii8j1dzh022z5wbqrj8"))))
     (properties `((upstream-name . "RNifti")))
     (build-system r-build-system)
     (propagated-inputs `(("r-rcpp" ,r-rcpp)))
