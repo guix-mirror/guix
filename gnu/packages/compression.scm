@@ -1819,12 +1819,12 @@ single-member files which can't be decompressed in parallel.")
    (source
     (origin
      (method url-fetch)
-     (uri (string-append "https://github.com/dscharrer/innoextract/archive/"
-                         version ".tar.gz"))
+     (uri (string-append "https://github.com/dscharrer/innoextract/releases"
+                         "/download/" version
+                         "/innoextract-" version ".tar.gz"))
      (sha256
       (base32
-       "0khwi9f0q0h6xfbixrrc1rfpgj0b7ajwilq7yhmxnn5lpc807f6x"))
-     (file-name (string-append name "-" version ".tar.gz"))))
+       "197hs9aj1ska6czrsq4caazsw9v0xbaa0lazbh380fmwy8rbgvy1"))))
    (build-system cmake-build-system)
    (arguments
     `(#:tests? #f
