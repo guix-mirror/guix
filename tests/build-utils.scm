@@ -235,13 +235,11 @@ print('hello world')"))
          (lambda (port)
            (format port "This is not a script")))
        (chmod script-file-name #o777)
-       (catch 'srfi-34
-         (lambda ()
-           (wrap-script script-file-name
-                        #:guile "MYGUILE"
-                        `("GUIX_FOO" prefix ("/some/path"
-                                             "/some/other/path"))))
-         (lambda (type obj)
-           (wrap-error? obj)))))))
+       (guard (c ((wrap-error? c) #t))
+         (wrap-script script-file-name
+                      #:guile "MYGUILE"
+                      `("GUIX_FOO" prefix ("/some/path"
+                                           "/some/other/path")))
+         #f)))))
 
 (test-end)
