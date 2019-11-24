@@ -2,6 +2,7 @@
 ;;; Copyright © 2015, 2016, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
+;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -80,12 +81,14 @@ library.")
     (name "sparsehash")
     (version "2.0.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/sparsehash/sparsehash/"
-                                  "archive/sparsehash-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/sparsehash/sparsehash.git")
+                     (commit (string-append name "-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "133szz0ldwch0kd91l0sa57qsnl020njn622szd9cxrjqyjqds85"))))
+                "0m3f0cnpnpf6aak52wn8xbrrdw8p0yhq8csgc8nlvf9zp8c402na"))))
     (build-system gnu-build-system)
     (synopsis "Memory-efficient hashtable implementations")
     (description
