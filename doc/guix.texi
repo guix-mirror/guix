@@ -47,7 +47,7 @@ Copyright @copyright{} 2017 Thomas Danckaert@*
 Copyright @copyright{} 2017 humanitiesNerd@*
 Copyright @copyright{} 2017 Christopher Allan Webber@*
 Copyright @copyright{} 2017, 2018 Marius Bakke@*
-Copyright @copyright{} 2017 Hartmut Goebel@*
+Copyright @copyright{} 2017, 2019 Hartmut Goebel@*
 Copyright @copyright{} 2017, 2019 Maxim Cournoyer@*
 Copyright @copyright{} 2017, 2018, 2019 Tobias Geerinckx-Rice@*
 Copyright @copyright{} 2017 George Clemmer@*
@@ -6408,6 +6408,25 @@ passes flags specified by the @code{#:make-maker-flags} or
 @code{#:module-build-flags} parameter, respectively.
 
 Which Perl package is used can be specified with @code{#:perl}.
+@end defvr
+
+@defvr {Scheme Variable} qt-build-system
+This variable is exported by @code{(guix build-system qt)}.  It
+is intended for use with applications using Qt or KDE.
+
+This build system adds the phase @code{qt-wrap} to the ones defined by
+@var{cmake-build-system}, after the @code{install} phase.
+
+This phase searches for Qt5 plugin paths, QML paths and some XDG in the inputs
+and output.  In case some path is found, all programs in the output's
+@file{bin/}, @file{sbin/}, @file{libexec/} and @file{lib/libexec/} directories
+are wrapped in scripts defining the necessary environment variables.
+
+It is possible to exclude specific package outputs from that wrapping process
+by listing their names in the @code{#:qt-wrap-excluded-outputs} parameter.
+This is useful when an output is known not to contain any Qt binaries, and
+where wrapping would gratuitously add a dependency of that output on Qt, KDE,
+or such.
 @end defvr
 
 @defvr {Scheme Variable} r-build-system
