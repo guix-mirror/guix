@@ -7818,3 +7818,84 @@ remake of that series or any other game.")
 the AlphaGo Zero paper.  The current best network weights file for the engine
 can be downloaded from @url{https://zero.sjeng.org/best-network}.")
    (license license:gpl3+)))
+
+(define-public q5go
+  (package
+   (name "q5go")
+   (version "1.0")
+   (source (origin
+            (method git-fetch)
+            (uri (git-reference
+                  (url "https://github.com/bernds/q5Go.git")
+                  (commit (string-append "q5go-" version))))
+            (file-name (git-file-name name version))
+            (sha256
+             (base32
+              "1gdlfqcqkqv7vph3qwq78d0qz6dhmdsranxq9bmixiisbzkqby31"))))
+   (build-system gnu-build-system)
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
+   (inputs
+    `(("qtbase" ,qtbase)
+      ("qtmultimedia" ,qtmultimedia)
+      ("qtsvg" ,qtsvg)))
+   (arguments
+    '(#:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'fix-configure-script
+          (lambda _
+            ;; Bypass the unavailable qtchooser program.
+            (substitute* "configure"
+              (("test -z \"QTCHOOSER\"")
+               "false")
+              (("qtchooser -run-tool=(.*) -qt=qt5" _ command)
+               command))
+            #t))
+        (add-after 'unpack 'fix-paths
+          (lambda _
+            (substitute* '("src/pics/Makefile.in"
+                           "src/translations/Makefile.in")
+              (("\\$\\(datadir\\)/qGo/")
+               "$(datadir)/q5go/"))
+            #t))
+        (add-after 'install 'install-desktop-file
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (apps (string-append out "/share/applications"))
+                   (pics (string-append out "/share/q5go/pics")))
+              (delete-file-recursively (string-append out "/share/applnk"))
+              (delete-file-recursively (string-append out "/share/mimelnk"))
+              (install-file "../source/src/pics/Bowl.ico" pics)
+              (mkdir-p apps)
+              (with-output-to-file (string-append apps "/q5go.desktop")
+                (lambda _
+                  (format #t
+                          "[Desktop Entry]~@
+                           Name=q5go~@
+                           Exec=~a/bin/q5go~@
+                           Icon=~a/Bowl.ico~@
+                           Categories=Game;~@
+                           Comment=Game of Go~@
+                           Comment[de]=Spiel des Go~@
+                           Comment[eo]=Goo~@
+                           Comment[es]=Juego de Go~@
+                           Comment[fr]=Jeu de Go~@
+                           Comment[ja]=囲碁~@
+                           Comment[ko]=바둑~@
+                           Comment[zh]=围棋~@
+                           Terminal=false~@
+                           Type=Application~%"
+                          out pics))))
+             #t)))))
+   (synopsis "Qt GUI to play the game of Go")
+   (description
+    "This a tool for Go players which performs the following functions:
+@itemize
+@item SGF editor,
+@item Analysis frontend for Leela Zero (or compatible engines),
+@item GTP interface (to play against an engine),
+@item IGS client (to play on the internet),
+@item Export games to a variety of formats.
+@end itemize")
+   (home-page "https://github.com/bernds/q5Go")
+   (license license:gpl2+)))
