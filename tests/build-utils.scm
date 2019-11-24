@@ -151,11 +151,12 @@ echo hello world"))
   (test-equal "wrap-script, simple case"
     (string-append
      (format #f "\
-#!GUILE --no-auto-compile
+#!~a --no-auto-compile
 #!#; Guix wrapper
 #\\-~s
 #\\-~s
 "
+             (which "guile")
              '(begin (let ((current (getenv "GUIX_FOO")))
                        (setenv "GUIX_FOO"
                                (if current
@@ -175,11 +176,9 @@ echo hello world"))
            (lambda (port)
              (format port script-contents)))
          (chmod script-file-name #o777)
-
-         (mock ((guix build utils) which (const "GUILE"))
-               (wrap-script script-file-name
-                            `("GUIX_FOO" prefix ("/some/path"
-                                                 "/some/other/path"))))
+         (wrap-script script-file-name
+                      `("GUIX_FOO" prefix ("/some/path"
+                                           "/some/other/path")))
          (let ((str (call-with-input-file script-file-name get-string-all)))
            (with-directory-excursion directory
              (delete-file "foo"))
