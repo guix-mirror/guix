@@ -8379,6 +8379,31 @@ are also supported.  The two main functions are @code{ggpredict()} and
 results using @code{ggplot2}.")
     (license license:gpl3)))
 
+(define-public r-effectsize
+  (package
+    (name "r-effectsize")
+    (version "0.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "effectsize" version))
+       (sha256
+        (base32
+         "07vgmxdl75798hgdh90zysafjh97rmmj2wjjyr6xff4fbhi8rlkb"))))
+    (properties `((upstream-name . "effectsize")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bayestestr" ,r-bayestestr)
+       ("r-insight" ,r-insight)
+       ("r-parameters" ,r-parameters)))
+    (home-page "https://github.com/easystats/effectsize")
+    (synopsis "Indices of effect size and standardized parameters")
+    (description
+     "This package provides utilities to work with indices of effect size and
+standardized parameters for a wide variety of models, allowing computation and
+conversion of indices such as Cohen's d, r, odds, etc.")
+    (license license:gpl3)))
+
 (define-public r-sjplot
   (package
     (name "r-sjplot")
