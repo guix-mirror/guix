@@ -1107,12 +1107,13 @@ well as bzip2.")
     (version "1.1.7")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/google/snappy/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append "snappy-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/google/snappy.git")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1m7rcdqzkys5lspj8jcsaah8w33zh28s771bw0ga2lgzfgl05yix"))
+        (base32 "1x7r8sjmdqlqjz0xfiwdyrqpgaj5yrvrgb28ivgpvnxgar5qv6m2"))
        (patches (search-patches "snappy-add-O2-flag-in-CmakeLists.txt.patch"))))
     (build-system cmake-build-system)
     (arguments
