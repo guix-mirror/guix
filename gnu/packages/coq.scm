@@ -377,13 +377,14 @@ theorems between the two libraries.")
     (name "coq-bignums")
     (version "8.9.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/coq/bignums/archive/V"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/coq/bignums.git")
+                     (commit (string-append "V" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0pmk9smw7a14wrfkvjlvmpxim4bsv6xnm5xkrlld2faqy74a044g"))))
+                "03qz1w2xb2j5p06liz5yyafl0fl9vprcqm6j0iwi7rxwghl00p01"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
