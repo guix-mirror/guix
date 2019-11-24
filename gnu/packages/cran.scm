@@ -99,19 +99,20 @@ the system clipboards.")
 (define-public r-scales
   (package
     (name "r-scales")
-    (version "1.0.0")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "scales" version))
        (sha256
-        (base32 "0353dkh3d7x78463c6ds80hcml59lrqwr8rlv82a8dnkxla4l7qc"))))
+        (base32 "00rdbfj5mwc3kr8pskidn3n2zkp4ms6cx36xazz54pxw3pysdr0y"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-labeling" ,r-labeling)
+     `(("r-farver" ,r-farver)
+       ("r-labeling" ,r-labeling)
+       ("r-lifecycle" ,r-lifecycle)
        ("r-munsell" ,r-munsell)
        ("r-rcolorbrewer" ,r-rcolorbrewer)
-       ("r-rcpp" ,r-rcpp)
        ("r-r6" ,r-r6)
        ("r-viridislite" ,r-viridislite)))
     (home-page "https://github.com/hadley/scales")
