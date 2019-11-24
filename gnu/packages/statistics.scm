@@ -1108,32 +1108,6 @@ the input of another.")
 using just two functions: melt and dcast (or acast).")
     (license license:expat)))
 
-(define-public r-scales
-  (package
-    (name "r-scales")
-    (version "1.0.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "scales" version))
-       (sha256
-        (base32 "0353dkh3d7x78463c6ds80hcml59lrqwr8rlv82a8dnkxla4l7qc"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-labeling" ,r-labeling)
-       ("r-munsell" ,r-munsell)
-       ("r-rcolorbrewer" ,r-rcolorbrewer)
-       ("r-rcpp" ,r-rcpp)
-       ("r-r6" ,r-r6)
-       ("r-viridislite" ,r-viridislite)))
-    (home-page "https://github.com/hadley/scales")
-    (synopsis "Scale functions for visualization")
-    (description
-     "This package provides graphical scales that map data to aesthetics, and
-provides methods for automatically determining breaks and labels for axes and
-legends.")
-    (license license:expat)))
-
 (define-public r-ggplot2
   (package
     (name "r-ggplot2")
