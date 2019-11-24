@@ -2255,22 +2255,32 @@ list of components.  This module takes care of that for you.")
 (define-public guile-gi
   (package
     (name "guile-gi")
-    (version "0.2.0")
+    (version "0.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://lonelycactus.com/tarball/guile_gi-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1n4pbrmbrjkrx826a4m31ag5c35rgkj1sirqh4qalk7gg67cfb41"))))
+                "1ah5bmkzplsmkrk7v9vlxlqch7i91qv4cq2d2nar9xshbpcrj484"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--with-gnu-filesystem-hierarchy")))
+     `(#:configure-flags '("--with-gnu-filesystem-hierarchy")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'start-xorg-server
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The init_check test requires a running X server.
+             (system (format #f "~a/bin/Xvfb :1 &"
+                             (assoc-ref inputs "xorg-server")))
+             (setenv "DISPLAY" ":1")
+             #t)))))
     (native-inputs
      `(("gettext" ,gnu-gettext)
        ("glib:bin" ,glib "bin") ; for glib-compile-resources
        ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("xorg-server" ,xorg-server)))
     (propagated-inputs
      `(("glib" ,glib)
        ("gobject-introspection" ,gobject-introspection)
