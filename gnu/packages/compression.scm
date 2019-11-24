@@ -650,13 +650,14 @@ This package is mostly for compatibility and historical interest.")
     (name "sfarklib")
     (version "2.24")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/raboof/sfArkLib/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/raboof/sfArkLib.git")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0bzs2d98rk1xw9qwpnc7gmlbxwmwc3dg1rpn310afy9pq1k9clzi"))))
+                "0jrxy24gak7q5ml06p5jjgzk9i5r2mkfjk4ycirkp4kg7k5a237w"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;no "check" target
