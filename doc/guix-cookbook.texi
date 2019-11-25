@@ -187,9 +187,10 @@ A list structure can be created with the @code{list} procedure:
 @end lisp
 
 @item
-The @emph{quote} disables evaluation of a parenthesized expression: the first
-term is not called over the other terms.  Thus it effectively returns a list
-of terms.
+The @dfn{quote} disables evaluation of a parenthesized expression: the
+first term is not called over the other terms (@pxref{Expression Syntax,
+quote,, guile, GNU Guile Reference Manual}).  Thus it effectively
+returns a list of terms.
 
 @lisp
 '(display (string-append "Hello " "Guix" "\n"))
@@ -200,9 +201,9 @@ of terms.
 @end lisp
 
 @item
-The @dfn{quasiquote} disables evaluation of a parenthesized expression until
-a comma re-enables it.  Thus it provides us with fine-grained control over
-what is evaluated and what is not.
+The @dfn{quasiquote} disables evaluation of a parenthesized expression
+until @dfn{unquote} (a comma) re-enables it.  Thus it provides us with
+fine-grained control over what is evaluated and what is not.
 
 @lisp
 `(2 a 5 7 (2 ,a 5 ,(+ a 4)))
@@ -213,7 +214,8 @@ Note that the above result is a list of mixed elements: numbers, symbols (here
 @code{a}) and the last element is a list itself.
 
 @item
-Multiple variables can be named locally with @code{let}:
+Multiple variables can be named locally with @code{let} (@pxref{Local
+Bindings,,, guile, GNU Guile Reference Manual}):
 
 @lisp
 (define x 10)
@@ -249,7 +251,8 @@ the build stage.  Note that it is merely a convention, like @code{_} in C.
 Scheme treats @code{%} exactly the same as any other letter.
 
 @item
-Modules are created with @code{define-module}.  For instance
+Modules are created with @code{define-module} (@pxref{Creating Guile
+Modules,,, guile, GNU Guile Reference Manual}).  For instance
 
 @lisp
 (define-module (guix build-system ruby)
