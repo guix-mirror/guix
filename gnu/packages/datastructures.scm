@@ -21,7 +21,6 @@
 
 (define-module (gnu packages datastructures)
   #:use-module (gnu packages)
-  #:use-module (gnu packages documentation)
   #:use-module (gnu packages perl)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -216,8 +215,6 @@ to the structure and choosing one or more fields to act as the key.")
                (base32
                 "1v86ivv3mmdy802i9xkjpxb4cggj3s27wb19ja4sw1klnivjj69g"))))
     (build-system cmake-build-system)
-    (native-inputs
-     `(("doxygen" ,doxygen)))
     (home-page "https://github.com/simongog/sdsl-lite")
     (synopsis "Succinct data structure library")
     (description "The Succinct Data Structure Library (SDSL) is a powerful and
