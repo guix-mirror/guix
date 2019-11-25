@@ -213,8 +213,31 @@ to the structure and choosing one or more fields to act as the key.")
                                   ".tar.gz.offline.install.gz"))
               (sha256
                (base32
-                "1v86ivv3mmdy802i9xkjpxb4cggj3s27wb19ja4sw1klnivjj69g"))))
+                "1v86ivv3mmdy802i9xkjpxb4cggj3s27wb19ja4sw1klnivjj69g"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file-recursively "external") #t))
+              (patches
+                (list (origin
+                        (method url-fetch)
+                        (uri "https://salsa.debian.org/science-team/libsdsl/raw/debian/2.1.1+dfsg-2/debian/patches/0001-Patch-cmake-files.patch")
+                        (file-name "sdsl-lite-dont-use-bundled-libraries.patch")
+                        (sha256
+                         (base32
+                          "0m542xpys54bni29zibgrfpgpd0zgyny4h131virxsanixsbz52z")))))))
     (build-system cmake-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-static-library
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (copy-file "lib/libsdsl_static.a"
+                          (string-append out "/lib/libsdsl.a")))
+             #t)))))
+    (native-inputs
+     `(("libdivsufsort" ,libdivsufsort)))
     (home-page "https://github.com/simongog/sdsl-lite")
     (synopsis "Succinct data structure library")
     (description "The Succinct Data Structure Library (SDSL) is a powerful and
