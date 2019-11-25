@@ -111,9 +111,10 @@ REPL} by running @code{guile} from the command line.
 Alternatively you can also run @code{guix environment --ad-hoc guile -- guile}
 if you'd rather not have Guile installed in your user profile.
 
-In the following examples we use the @code{>} symbol to denote the REPL
-prompt, that is, the line reserved for user input.  @xref{Using Guile
-Interactively,,, guile, GNU Guile Reference Manual}) for more details on the
+In the following examples, lines show what you would type at the REPL;
+lines starting with ``@result{}'' show evaluation results, while lines
+starting with ``@print{}'' show things that get printed.  @xref{Using Guile
+Interactively,,, guile, GNU Guile Reference Manual}), for more details on the
 REPL.
 
 @itemize
@@ -126,12 +127,15 @@ and @code{#f} stand for the Booleans ``true'' and ``false'', respectively.
 Examples of valid expressions:
 
 @lisp
-> "Hello World!"
 "Hello World!"
-> 17
+@result{} "Hello World!"
+
 17
-> (display (string-append "Hello " "Guix" "\n"))
-"Hello Guix!"
+@result{} 17
+
+(display (string-append "Hello " "Guix" "\n"))
+@print{} Hello Guix!
+@result{} #<unspecified>
 @end lisp
 
 @item
@@ -144,8 +148,8 @@ last evaluated expression as its return value.
 Anonymous functions are declared with the @code{lambda} term:
 
 @lisp
-> (lambda (x) (* x x))
-#<procedure 120e348 at <unknown port>:24:0 (x)>
+(lambda (x) (* x x))
+@result{} #<procedure 120e348 at <unknown port>:24:0 (x)>
 @end lisp
 
 The above procedure returns the square of its argument.  Since everything is
@@ -153,18 +157,18 @@ an expression, the @code{lambda} expression returns an anonymous procedure,
 which can in turn be applied to an argument:
 
 @lisp
-> ((lambda (x) (* x x)) 3)
-9
+((lambda (x) (* x x)) 3)
+@result{} 9
 @end lisp
 
 @item
 Anything can be assigned a global name with @code{define}:
 
 @lisp
-> (define a 3)
-> (define square (lambda (x) (* x x)))
-> (square a)
-9
+(define a 3)
+(define square (lambda (x) (* x x)))
+(square a)
+@result{} 9
 @end lisp
 
 @item
@@ -178,8 +182,8 @@ Procedures can be defined more concisely with the following syntax:
 A list structure can be created with the @code{list} procedure:
 
 @lisp
-> (list 2 a 5 7)
-(2 3 5 7)
+(list 2 a 5 7)
+@result{} (2 3 5 7)
 @end lisp
 
 @item
@@ -188,20 +192,21 @@ term is not called over the other terms.  Thus it effectively returns a list
 of terms.
 
 @lisp
-> '(display (string-append "Hello " "Guix" "\n"))
-(display (string-append "Hello " "Guix" "\n"))
-> '(2 a 5 7)
-(2 a 5 7)
+'(display (string-append "Hello " "Guix" "\n"))
+@result{} (display (string-append "Hello " "Guix" "\n"))
+
+'(2 a 5 7)
+@result{} (2 a 5 7)
 @end lisp
 
 @item
-The @emph{quasiquote} disables evaluation of a parenthesized expression until
+The @dfn{quasiquote} disables evaluation of a parenthesized expression until
 a comma re-enables it.  Thus it provides us with fine-grained control over
 what is evaluated and what is not.
 
 @lisp
-> `(2 a 5 7 (2 ,a 5 ,(+ a 4)))
-(2 a 5 7 (2 3 5 7))
+`(2 a 5 7 (2 ,a 5 ,(+ a 4)))
+@result{} (2 a 5 7 (2 3 5 7))
 @end lisp
 
 Note that the above result is a list of mixed elements: numbers, symbols (here
@@ -211,25 +216,27 @@ Note that the above result is a list of mixed elements: numbers, symbols (here
 Multiple variables can be named locally with @code{let}:
 
 @lisp
-> (define x 10)
-> (let ((x 2)
-        (y 3))
-    (list x y))
-(2 3)
-> x
-10
-> y
-ERROR: In procedure module-lookup: Unbound variable: y
+(define x 10)
+(let ((x 2)
+      (y 3))
+  (list x y))
+@result{} (2 3)
+
+x
+@result{} 10
+
+y
+@error{} In procedure module-lookup: Unbound variable: y
 @end lisp
 
 Use @code{let*} to allow later variable declarations to refer to earlier
 definitions.
 
 @lisp
-> (let* ((x 2)
-         (y (* x 3)))
-    (list x y))
-(2 6)
+(let* ((x 2)
+       (y (* x 3)))
+  (list x y))
+@result{} (2 6)
 @end lisp
 
 @item
@@ -982,10 +989,10 @@ definition in @samp{$GUIX_CHECKOUT/guix/build/gnu-build-system.scm}:
 Or from the REPL:
 
 @lisp
-> (add-to-load-path "/path/to/guix/checkout")
-> ,module (guix build gnu-build-system)
-> (map first %standard-phases)
-(set-SOURCE-DATE-EPOCH set-paths install-locale unpack bootstrap patch-usr-bin-file patch-source-shebangs configure patch-generated-file-shebangs build check install patch-shebangs strip validate-runpath validate-documentation-location delete-info-dir-file patch-dot-desktop-files install-license-files reset-gzip-timestamps compress-documentation)
+(add-to-load-path "/path/to/guix/checkout")
+,use (guix build gnu-build-system)
+(map first %standard-phases)
+@result{} (set-SOURCE-DATE-EPOCH set-paths install-locale unpack bootstrap patch-usr-bin-file patch-source-shebangs configure patch-generated-file-shebangs build check install patch-shebangs strip validate-runpath validate-documentation-location delete-info-dir-file patch-dot-desktop-files install-license-files reset-gzip-timestamps compress-documentation)
 @end lisp
 
 If you want to know more about what happens during those phases, consult the
