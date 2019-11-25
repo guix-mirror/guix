@@ -581,7 +581,7 @@ To add several directories, separate them with a colon (@code{:}).
 
 Our previous @samp{my-hello} needs some adjustments though:
 
-@example
+@lisp
 (define-module (my-hello)
   #:use-module (guix licenses)
   #:use-module (guix packages)
@@ -607,7 +607,7 @@ serves as an example of standard GNU coding practices.  As such, it supports
 command-line arguments, multiple languages, and so on.")
     (home-page "https://www.gnu.org/software/hello/")
     (license gpl3+)))
-@end example
+@end lisp
 
 Note that we have assigned the package value to an exported variable name with
 @code{define-public}.  This is effectively assigning the package to the @code{my-hello}
@@ -619,14 +619,14 @@ will fail because the last expression, @code{define-public}, does not return a
 package.  If you want to use @code{define-public} in this use-case nonetheless, make
 sure the file ends with an evaluation of @code{my-hello}:
 
-@example
+@lisp
 ; ...
 (define-public my-hello
   ; ...
   )
 
 my-hello
-@end example
+@end lisp
 
 This last example is not very typical.
 
@@ -739,7 +739,7 @@ The above "Hello World" example is as simple as it goes.  Packages can be more
 complex than that and Guix can handle more advanced scenarios.  Let's look at
 another, more sophisticated package (slightly modified from the source):
 
-@example
+@lisp
 (define-module (gnu packages version-control)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
@@ -812,7 +812,7 @@ provided as a re-entrant linkable library with a solid API, allowing you to
 write native speed custom Git applications in any language with bindings.")
       ;; GPLv2 with linking exception
       (license license:gpl2))))
-@end example
+@end lisp
 
 (In those cases were you only want to tweak a few fields from a package
 definition, you should rely on inheritance instead of copy-pasting everything.
@@ -851,17 +851,17 @@ Snippets might need additional Guile modules which can be imported from the
 
 First, a syntactic comment: See the quasi-quote / comma syntax?
 
-@example
+@lisp
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-@end example
+@end lisp
 
 is equivalent to
 
-@example
+@lisp
     (native-inputs
      (list (list "pkg-config" pkg-config)))
-@end example
+@end lisp
 
 You'll mostly see the former because it's shorter.
 
@@ -930,10 +930,10 @@ Another  common argument is @code{:make-flags}, which specifies a list of flags 
 append when running make, as you would from the command line.  For instance, the
 following flags
 
-@example
+@lisp
 #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out"))
                    "CC=gcc")
-@end example
+@end lisp
 
 translate into
 
@@ -948,9 +948,9 @@ global variable pointing to the destination directory in the store (something li
 
 Similarly, it's possible to set the "configure" flags.
 
-@example
+@lisp
 #:configure-flags '("-DUSE_SHA1DC=ON")
-@end example
+@end lisp
 
 The @code{%build-inputs} variable is also generated in scope.  It's an association
 table that maps the input names to their store directories.
@@ -960,7 +960,7 @@ phases include @code{unpack}, @code{configure}, @code{build}, @code{install} and
 more about those phases, you need to work out the appropriate build system
 definition in @samp{$GUIX_CHECKOUT/guix/build/gnu-build-system.scm}:
 
-@example
+@lisp
 (define %standard-phases
   ;; Standard build phases, as a list of symbol/procedure pairs.
   (let-syntax ((phases (syntax-rules ()
@@ -978,16 +978,16 @@ definition in @samp{$GUIX_CHECKOUT/guix/build/gnu-build-system.scm}:
             install-license-files
             reset-gzip-timestamps
             compress-documentation)))
-@end example
+@end lisp
 
 Or from the REPL:
 
-@example
+@lisp
 > (add-to-load-path "/path/to/guix/checkout")
 > ,module (guix build gnu-build-system)
 > (map first %standard-phases)
 (set-SOURCE-DATE-EPOCH set-paths install-locale unpack bootstrap patch-usr-bin-file patch-source-shebangs configure patch-generated-file-shebangs build check install patch-shebangs strip validate-runpath validate-documentation-location delete-info-dir-file patch-dot-desktop-files install-license-files reset-gzip-timestamps compress-documentation)
-@end example
+@end lisp
 
 If you want to know more about what happens during those phases, consult the
 associated procedures.
@@ -995,7 +995,7 @@ associated procedures.
 For instance, as of this writing the definition of @code{unpack} for the GNU build
 system is
 
-@example
+@lisp
 (define* (unpack #:key source #:allow-other-keys)
   "Unpack SOURCE in the working directory, and change directory within the
 source.  When SOURCE is a directory, copy it in a sub-directory of the current
@@ -1015,7 +1015,7 @@ working directory."
             (invoke "tar" "xvf" source))
         (chdir (first-subdirectory "."))))
   #t)
-@end example
+@end lisp
 
 Note the @code{chdir} call: it changes the working directory to where the source was
 unpacked.
@@ -1045,14 +1045,14 @@ by their name in those variables.  Thus @code{(assoc-ref outputs "out")} is the 
 directory of the main output of the package.  A phase procedure may look like
 this:
 
-@example
+@lisp
 (lambda* (#:key inputs outputs #:allow-other-keys)
   (let (((bash-directory (assoc-ref inputs "bash"))
          (output-directory (assoc-ref outputs "out"))
          (doc-directory (assoc-ref outputs "doc"))
   ; ...
   #t)
-@end example
+@end lisp
 
 The procedure must return @code{#t} on success.  It's brittle to rely on the return
 value of the last expression used to tweak the phase because there is no
@@ -1233,7 +1233,7 @@ $ guix refresh hello --update
 If you've started browsing the existing package definitions, you might have
 noticed that a significant number of them have a @code{inherit} field:
 
-@example
+@lisp
 (define-public adwaita-icon-theme
   (package (inherit gnome-icon-theme)
     (name "adwaita-icon-theme")
@@ -1248,7 +1248,7 @@ noticed that a significant number of them have a @code{inherit} field:
                 "17fpahgh5dyckgz7rwqvzgnhx53cx9kr2xw0szprc6bnqy977fi8"))))
     (native-inputs
      `(("gtk-encode-symbolic-svg" ,gtk+ "bin")))))
-@end example
+@end lisp
 
 All unspecified fields are inherited from the parent package.  This is very
 convenient to create alternative packages, for instance with different source,
