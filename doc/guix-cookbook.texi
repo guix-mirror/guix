@@ -121,7 +121,7 @@ REPL.
 Scheme syntax boils down to a tree of expressions (or @emph{s-expression} in
 Lisp lingo).  An expression can be a literal such as numbers and strings, or a
 compound which is a parenthesized list of compounds and literals.  @code{#t}
-and @code{#f} stand for the booleans "true" and "false", respectively.
+and @code{#f} stand for the Booleans ``true'' and ``false'', respectively.
 
 Examples of valid expressions:
 
@@ -331,14 +331,14 @@ It does not assume much knowledge of the Guix system nor of the Lisp language.
 The reader is only expected to be familiar with the command line and to have some
 basic programming knowledge.
 
-@node A "Hello World" package
-@subsection A "Hello World" package
+@node A ``Hello World'' package
+@subsection A ``Hello World'' package
 
-The “Defining Packages” section of the manual introduces the basics of Guix
+The ``Defining Packages'' section of the manual introduces the basics of Guix
 packaging (@pxref{Defining Packages,,, guix, GNU Guix Reference Manual}).  In
 the following section, we will partly go over those basics again.
 
-``GNU hello'' is a dummy project that serves as an idiomatic example for
+GNU@tie{}Hello is a dummy project that serves as an idiomatic example for
 packaging.  It uses the GNU build system (@code{./configure && make && make
 install}).  Guix already provides a package definition which is a perfect
 example to start with.  You can look up its declaration with @code{guix edit
@@ -416,10 +416,10 @@ available licenses.
 @end table
 
 Time to build our first package!  Nothing fancy here for now: we will stick to a
-dummy "my-hello", a copy of the above declaration.
+dummy @code{my-hello}, a copy of the above declaration.
 
-As with the ritualistic "Hello World" taught with most programming languages,
-this will possibly be the most "manual" approach.  We will work out an ideal
+As with the ritualistic ``Hello World'' taught with most programming languages,
+this will possibly be the most ``manual'' approach.  We will work out an ideal
 setup later; for now we will go the simplest route.
 
 Save the following to a file @file{my-hello.scm}.
@@ -554,20 +554,20 @@ earlier example.
 
 The @code{use-modules} expression tells which of the modules we need in the file.
 Modules are a collection of values and procedures.  They are commonly called
-"libraries" or "packages" in other programming languages.
+``libraries'' or ``packages'' in other programming languages.
 
 @node @samp{GUIX_PACKAGE_PATH}
 @subsubsection @samp{GUIX_PACKAGE_PATH}
 
-@emph{Note: Starting from Guix 0.16, the more flexible Guix "channels" are the
+@emph{Note: Starting from Guix 0.16, the more flexible Guix @dfn{channels} are the
 preferred way and supersede @samp{GUIX_PACKAGE_PATH}.  See next section.}
 
 It can be tedious to specify the file from the command line instead of simply
 calling @code{guix package --install my-hello} as you would do with the official
 packages.
 
-Guix makes it possible to streamline the process by adding as many "package
-declaration paths" as you want.
+Guix makes it possible to streamline the process by adding as many ``package
+declaration directories'' as you want.
 
 Create a directory, say @samp{~./guix-packages} and add it to the @samp{GUIX_PACKAGE_PATH}
 environment variable:
@@ -736,7 +736,7 @@ It's a community effort so the more join in, the better Guix becomes!
 @node Extended example
 @subsection Extended example
 
-The above "Hello World" example is as simple as it goes.  Packages can be more
+The above ``Hello World'' example is as simple as it goes.  Packages can be more
 complex than that and Guix can handle more advanced scenarios.  Let's look at
 another, more sophisticated package (slightly modified from the source):
 
@@ -841,9 +841,7 @@ version when packaging programs for a specific commit.
 Snippets are quoted (i.e. non-evaluated) Scheme code that are a means of patching
 the source.  They are a Guix-y alternative to the traditional @samp{.patch} files.
 Because of the quote, the code in only evaluated when passed to the Guix daemon
-for building.
-
-There can be as many snippet as needed.
+for building.  There can be as many snippets as needed.
 
 Snippets might need additional Guile modules which can be imported from the
 @code{modules} field.
@@ -884,7 +882,7 @@ being present at build time.
 
 The distinction between the various inputs is important: if a dependency can be
 handled as an @emph{input} instead of a @emph{propagated input}, it should be done so, or
-else it "pollutes" the user profile for no good reason.
+else it ``pollutes'' the user profile for no good reason.
 
 For instance, a user installing a graphical program that depends on a
 command line tool might only be interested in the graphical part, so there is no
@@ -947,7 +945,7 @@ directory in Make parlance) to @code{(assoc-ref %outputs "out")}, which is a bui
 global variable pointing to the destination directory in the store (something like
 @samp{/gnu/store/...-my-libgit2-20180408}).
 
-Similarly, it's possible to set the "configure" flags.
+Similarly, it's possible to set the configure flags:
 
 @lisp
 #:configure-flags '("-DUSE_SHA1DC=ON")
@@ -1067,11 +1065,11 @@ argument field.  Indeed, the build code in the package declaration should not be
 evaluated on the client side, but only when passed to the Guix daemon.  This
 mechanism of passing code around two running processes is called @uref{https://arxiv.org/abs/1709.00833, code staging}.
 
-@subsubsection "Utils" functions
+@subsubsection Utility functions
 
 When customizing @code{phases}, we often need to write code that mimics the
 equivalent system invocations (@code{make}, @code{mkdir}, @code{cp}, etc.) commonly used during
-regular "Unix-style" installations.
+regular ``Unix-style'' installations.
 
 Some like @code{chmod} are native to Guile.
 @xref{,,, guile, Guile reference manual} for a complete list.
@@ -1104,7 +1102,7 @@ Run an executable.  This should be used instead of @code{system*}.
 Run the body in a different working directory,
 then restore the previous working directory.
 @item substitute*
-A "sed-like" function.
+A ``@command{sed}-like'' function.
 @end table
 
 @subsubsection Module prefix
@@ -1300,7 +1298,7 @@ The @uref{https://www.gnu.org/software/guix/manual/en/html_node/Defining-Package
 @uref{https://gitlab.com/pjotrp/guix-notes/blob/master/HACKING.org, Pjotr’s hacking guide to GNU Guix}
 
 @item
-@uref{https://www.gnu.org/software/guix/guix-ghm-andreas-20130823.pdf, "GNU Guix: Package without a scheme!"}, by Andreas Enge
+@uref{https://www.gnu.org/software/guix/guix-ghm-andreas-20130823.pdf, ``GNU Guix: Package without a scheme!''}, by Andreas Enge
 @end itemize
 
 @c *********************************************************************
@@ -1534,7 +1532,7 @@ CONFIG_VIRTIO=m
 @end example
 
 After copying all the configuration options, run @code{make localmodconfig}
-again to make sure that you don't have any output starting with "module".
+again to make sure that you don't have any output starting with ``module''.
 After all of these machine specific modules there are a couple more left that
 are also needed.  @code{CONFIG_MODULES} is necessary so that you can build and
 load modules separately and not have everything built into the kernel.
