@@ -670,7 +670,7 @@ In the rest of this article, we use @samp{$GUIX_CHECKOUT} to refer to the locati
 the checkout.
 
 
-Follow the instruction in the manual (@pxref{Contributing,,, guix, GNU Guix
+Follow the instructions in the manual (@pxref{Contributing,,, guix, GNU Guix
 Reference Manual}) to set up the repository environment.
 
 Once ready, you should be able to use the package definitions from the
@@ -679,7 +679,8 @@ repository environment.
 Feel free to edit package definitions found in @samp{$GUIX_CHECKOUT/gnu/packages}.
 
 The @samp{$GUIX_CHECKOUT/pre-inst-env} script lets you use @samp{guix} over the package
-collection of the repository.
+collection of the repository (@pxref{Running Guix Before It Is
+Installed,,, guix, GNU Guix Reference Manual}).
 
 @itemize
 @item
