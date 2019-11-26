@@ -6265,7 +6265,19 @@ SVG, EPS, PNG and terminal output.")
        (method url-fetch)
        (uri (pypi-uri "seaborn" version))
        (sha256
-        (base32 "0bqysi3fxfjl1866m5jq8z7mynhqbqnikim74dmzn8539iwkzj3n"))))
+        (base32 "0bqysi3fxfjl1866m5jq8z7mynhqbqnikim74dmzn8539iwkzj3n"))
+       (patches
+        (list (origin
+                (method url-fetch)
+                ;; This has already been merged, but there is no new
+                ;; release including this patch.  It fixes problems
+                ;; with axis rotation that would lead to test
+                ;; failures.
+                (uri "https://patch-diff.githubusercontent.com/raw/mwaskom/seaborn/pull/1716.diff")
+                (sha256
+                 (base32
+                  "1lm870z316n9ivsyr86hpk1gxaraw0mrjvq42lqsm0znhjdp9q9w"))
+                (file-name "seaborn-0.9.0-axis-rotation.patch"))))))
     (build-system python-build-system)
     (arguments
      `(#:phases
