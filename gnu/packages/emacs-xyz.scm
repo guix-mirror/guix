@@ -5937,13 +5937,14 @@ possible to query other endpoints like DBPedia.")
     (version "0.1.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/technomancy/better-defaults"
-                           "/archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/technomancy/better-defaults")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "08fg4zslzlxbvyil5g4gwvwd22fh4zsgqprs5wh9hv1rgc6757m2"))))
+         "1rxznx2l0cdpiz8mad8s6q17m1fngpgb1cki7ch6yh18r3qz8ysr"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/technomancy/better-defaults")
     (synopsis "Better defaults for Emacs")
