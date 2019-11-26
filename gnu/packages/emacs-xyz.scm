@@ -11229,14 +11229,14 @@ supports multiple backends such as @code{vlc}, @code{mpg123},
     (name "emacs-groovy-modes")
     (version "2.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/Groovy-Emacs-Modes/groovy-emacs-modes"
-                    "/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/Groovy-Emacs-Modes/groovy-emacs-modes")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "15j0hnkx9nppjzda5cqsxxz5f3bq9hc4xfyjcdypzqiypcvmpa39"))))
+                "0c1d4cbnlny8gpcd20zr1wxx6ggf28jgh7sgd5r1skpsvjpbfqx2"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-s" ,emacs-s)))
