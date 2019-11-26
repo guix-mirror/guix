@@ -233,6 +233,9 @@
 (define test-source-hash
   "")
 
+(define string->license
+  (@@ (guix import crate) string->license))
+
 (test-begin "crate")
 
 (test-equal "guix-package->crate-name"
@@ -436,5 +439,25 @@
            #t)
           (x
            (pk 'fail x #f)))))
+
+(test-equal "licenses: MIT OR Apache-2.0"
+  '(license:expat license:asl2.0)
+  (string->license "MIT OR Apache-2.0"))
+
+(test-equal "licenses: Apache-2.0 / MIT"
+  '(license:asl2.0 license:expat)
+  (string->license "Apache-2.0 / MIT"))
+
+(test-equal "licenses: Apache-2.0 WITH LLVM-exception"
+  '(license:asl2.0 unknown-license!)
+  (string->license "Apache-2.0 WITH LLVM-exception"))
+
+(test-equal "licenses: MIT/Apache-2.0 AND BSD-2-Clause"
+  '(license:expat license:asl2.0 unknown-license!)
+  (string->license "MIT/Apache-2.0 AND BSD-2-Clause"))
+
+(test-equal "licenses: MIT/Apache-2.0"
+  '(license:expat license:asl2.0)
+  (string->license "MIT/Apache-2.0"))
 
 (test-end "crate")

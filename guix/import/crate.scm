@@ -178,21 +178,20 @@ and LICENSE."
          (close-port port)
          pkg))
 
-(define %dual-license-rx
-  ;; Dual licensing is represented by a string such as "MIT OR Apache-2.0".
-  ;; This regexp matches that.
-  (make-regexp "^(.*) OR (.*)$"))
+(define (string->license string)
+  (filter-map (lambda (license)
+                (and (not (string-null? license))
+                     (not (any (lambda (elem) (string=? elem license))
+                               '("AND" "OR" "WITH")))
+                     (or (spdx-string->license license)
+                         'unknown-license!)))
+              (string-split string (string->char-set " /"))))
 
 (define* (crate->guix-package crate-name #:optional version)
   "Fetch the metadata for CRATE-NAME from crates.io, and return the
 `package' s-expression corresponding to that package, or #f on failure.
 When VERSION is specified, attempt to fetch that version; otherwise fetch the
 latest version of CRATE-NAME."
-  (define (string->license string)
-    (match (regexp-exec %dual-license-rx string)
-      (#f (list (spdx-string->license string)))
-      (m  (list (spdx-string->license (match:substring m 1))
-                (spdx-string->license (match:substring m 2))))))
 
   (define (normal-dependency? dependency)
     (eq? (crate-dependency-kind dependency) 'normal))
