@@ -401,7 +401,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ("gperf" ,gperf)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
-       ("python" ,python-2)
+       ("python" ,python)
        ("vulkan-headers" ,vulkan-headers)
        ("ruby" ,ruby)))
     (arguments
@@ -756,7 +756,8 @@ xmlpatternsvalidator.")))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
-       ("python" ,python-2)
+       ("python" ,python)
+       ("python-wrapper" ,python-wrapper)
        ("qtsvg" ,qtsvg)
        ("qtxmlpatterns" ,qtxmlpatterns)))
     (inputs
@@ -889,7 +890,7 @@ recognition API for devices.")))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
-       ("python" ,python-2)
+       ("python" ,python)
        ("qtdeclarative" ,qtdeclarative)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
