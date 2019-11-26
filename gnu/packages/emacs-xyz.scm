@@ -13365,13 +13365,14 @@ grouping buffers by their projectile root directory.")
     (version "1.0.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/istib/helm-mode-manager/"
-                           "archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/istib/helm-mode-manager")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0wllj321z16hgrx0ddwzk5wz4mnnx5am7w5nclqclfc5dfdn92wm"))))
+         "1srx5f0s9x7zan7ayqd6scxfhcvr3nkd4yzs96hphd87rb18apzk"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-helm" ,emacs-helm)))
