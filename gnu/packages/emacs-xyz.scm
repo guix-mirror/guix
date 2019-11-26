@@ -8472,13 +8472,14 @@ been adapted to work with mu4e.")
     (version "2.0.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/akatov/pretty-mode/"
-                           "archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/akatov/pretty-mode/")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1fan7m4vnqs8kpg7r54kx3g7faadkpkf9kzarfv8n57kq8w157pl"))))
+         "013fig9i4fyx16krp2vfv953p3rwdzr38zs6i50af4pqz4vrcfvh"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/akatov/pretty-mode")
     (synopsis "Redisplay parts of the buffer as Unicode symbols")
