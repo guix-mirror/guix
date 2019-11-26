@@ -306,7 +306,18 @@ static void _deletePath(const Path & path, unsigned long long & bytesFreed)
 
     printMsg(lvlVomit, format("%1%") % path);
 
+#ifdef HAVE_STATX
+# define st_mode stx_mode
+# define st_size stx_size
+# define st_nlink stx_nlink
+    struct statx st;
+    if (statx(AT_FDCWD, path.c_str(),
+	      AT_SYMLINK_NOFOLLOW,
+	      STATX_SIZE | STATX_NLINK | STATX_MODE, &st) == -1)
+	throw SysError(format("getting status of `%1%'") % path);
+#else
     struct stat st = lstat(path);
+#endif
 
     if (!S_ISDIR(st.st_mode) && st.st_nlink == 1)
 	bytesFreed += st.st_size;
@@ -321,6 +332,9 @@ static void _deletePath(const Path & path, unsigned long long & bytesFreed)
         for (auto & i : readDirectory(path))
             _deletePath(path + "/" + i.name, bytesFreed);
     }
+#undef st_mode
+#undef st_size
+#undef st_nlink
 
     if (remove(path.c_str()) == -1)
         throw SysError(format("cannot unlink `%1%'") % path);
