@@ -8135,13 +8135,14 @@ by zenburn, sinburn and similar themes, but slowly diverging from them.")
     (version "1.5.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/auto-complete/"
-                           "auto-complete/archive/v" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/auto-complete/auto-complete.git")
+              (commit (string-append "v" version))))
        (sha256
         (base32
-         "1jvq4lj00hwml75lpmlciazy8f3bbg13gffsfnl835p4qd8l7yqv"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+         "04i9b11iksg6acn885wl3qgi5xpsm3yszlqmd2x21yhprndlz7gb"))
+       (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-popup" ,emacs-popup)))
