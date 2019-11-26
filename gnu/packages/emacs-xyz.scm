@@ -14276,13 +14276,14 @@ compilation/grep buffers.  Works with @code{wgrep}, @code{ack}, @code{ag},
     (version "0.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/alezost/shift-number.el"
-                           "/archive/" "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/alezost/shift-number.el")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1g79m0hqn9jgpm565vvh8pdfzndc4vw7xisnh5qysj55qfg8cb1x"))))
+         "0zlwmzsxkv4mkggylxfx2fkrwgz7dz3zbg2gkn2rxcpy2k2gla64"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/alezost/shift-number.el")
     (synopsis "Increase or decrease the number at point")
