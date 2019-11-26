@@ -4308,7 +4308,7 @@ as the original project seems to have been abandoned circa 2007.")
 (define-public python-socksipychain
   (package
     (name "python-socksipychain")
-    (version "2.0.15")
+    (version "2.1.0")
     (source
      (origin
        (method git-fetch)
@@ -4318,7 +4318,7 @@ as the original project seems to have been abandoned circa 2007.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1pkljnh9hfwla8sg7mil4f9zrnsqj0dbhr3crxjw3k8dnjz70dvk"))))
+         "0idm9a050rd2kbgbz2sk9ib9589kj4xh1xdnggs6xbq2v2y8f6zn"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f)) ; Tests try to access the network.
