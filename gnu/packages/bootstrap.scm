@@ -301,7 +301,8 @@ or false to signal an error."
     "http://alpha.gnu.org/gnu/guix/bootstrap"
     "ftp://alpha.gnu.org/gnu/guix/bootstrap"
     "http://www.fdn.fr/~lcourtes/software/guix/packages"
-    "http://flashner.co.il/guix/bootstrap"))
+    "http://flashner.co.il/guix/bootstrap"
+    "http://lilypond.org/janneke/guix/"))
 
 (define (bootstrap-guile-url-path system)
   "Return the URI for FILE."
