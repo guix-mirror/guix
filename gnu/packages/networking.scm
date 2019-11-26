@@ -2745,21 +2745,19 @@ module @code{batman-adv}, for Layer 2.")
 (define-public pagekite
   (package
     (name "pagekite")
-    (version "1.0.0.190721")
+    (version "1.5.0.191126")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://pagekite.net/pk/src/pagekite-"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pagekite/PyPagekite.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0y4vaqd3pjr6if8jcnhjwignkxgrajmnx1rd1p37anj8xjg7l8zh"))))
+        (base32 "0mncfjfrr13sm84g5z49qxg5cy791h5qxphjsl77x91zs3m36c8l"))))
     (build-system python-build-system)
     (arguments
-     ;; Python 3 support is a work-in-progress and should come soon:
-     ;; https://github.com/pagekite/PyPagekite/issues/40
-     ;; https://github.com/pagekite/PyPagekite/pull/71
-     `(#:python ,python-2
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'install 'install-man-page
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -2771,7 +2769,8 @@ module @code{batman-adv}, for Layer 2.")
                (install-file "doc/pagekite.1" (string-append man "/man1"))
                #t))))))
     (inputs
-     `(("python2-socksipychain" ,python2-socksipychain)))
+     `(("python-six" ,python-six)
+       ("python-socksipychain" ,python-socksipychain)))
     (home-page "https://pagekite.net/")
     (synopsis "Make localhost servers publicly visible")
     (description
