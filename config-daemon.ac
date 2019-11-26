@@ -91,8 +91,9 @@ if test "x$guix_build_daemon" = "xyes"; then
   dnl sched_setaffinity: to improve RPC locality.
   dnl statvfs: to detect disk-full conditions.
   dnl strsignal: for error reporting.
+  dnl statx: fine-grain 'stat' call, new in glibc 2.28.
   AC_CHECK_FUNCS([lutimes lchown posix_fallocate sched_setaffinity \
-     statvfs nanosleep strsignal])
+     statvfs nanosleep strsignal statx])
 
   dnl Check whether the store optimiser can optimise symlinks.
   AC_MSG_CHECKING([whether it is possible to create a link to a symlink])

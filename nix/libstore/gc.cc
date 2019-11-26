@@ -570,8 +570,17 @@ void LocalStore::removeUnusedLinks(const GCState & state)
         if (name == "." || name == "..") continue;
         Path path = linksDir + "/" + name;
 
+#ifdef HAVE_STATX
+# define st_size stx_size
+# define st_nlink stx_nlink
+	struct statx st;
+	if (statx(AT_FDCWD, path.c_str(),
+		  AT_SYMLINK_NOFOLLOW | AT_STATX_DONT_SYNC,
+		  STATX_SIZE | STATX_NLINK, &st) == -1)
+#else
         struct stat st;
         if (lstat(path.c_str(), &st) == -1)
+#endif
             throw SysError(format("statting `%1%'") % path);
 
         if (st.st_nlink != 1) {
@@ -586,6 +595,8 @@ void LocalStore::removeUnusedLinks(const GCState & state)
             throw SysError(format("deleting `%1%'") % path);
 
         state.results.bytesFreed += st.st_size;
+#undef st_size
+#undef st_nlink
     }
 
     struct stat st;
