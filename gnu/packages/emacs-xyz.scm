@@ -12663,13 +12663,14 @@ region instead.")
     (name "emacs-validate")
     (version "1.0.5")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/Malabarba/validate.el"
-                                  "/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/Malabarba/validate.el")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "125mbd111f1h1baw0z3fzm48y1bvaigljyzvvnqgrn0shxbj0khg"))))
+                "1l12ibx6cw4mgicgjpw71fb4fr4sd0k54lvbpq7ngc29br3j6i4v"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/Malabarba/validate.el")
     (synopsis "Emacs library for scheme validation")
