@@ -7947,14 +7947,14 @@ passive voice.")
     (version "0.5.2")
     (home-page "https://github.com/jaypei/emacs-neotree")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/jaypei/" name
-                    "/archive/" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url home-page)
+                     (commit version)))
               (sha256
                (base32
-                "1zd6dchwyijnf7kgchfcp51gs938l204dk9z6mljrfqf2zy0gp12"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "0hx72fq10772bbyqrj7mhhp02k26cccjxdadiqm1ykainhfmn1x0"))
+              (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (synopsis "Folder tree view for Emacs")
     (description "This Emacs package provides a folder tree view.")
