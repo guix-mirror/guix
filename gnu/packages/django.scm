@@ -456,14 +456,14 @@ merging, minifying and compiling CSS and Javascript files.")
     (version "2.4.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/niwinz/django-jinja/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/niwinz/django-jinja.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0bzrb4m6wx9ph5cpvz7wpvg5k6ksvj0dnxlg0nhhqskhvp46brs1"))))
+         "1fcrxlznlq1xvl26y3j1r22vvy6m08r5l97xi2wj50rdmxhfvhis"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-django" ,python-django)
