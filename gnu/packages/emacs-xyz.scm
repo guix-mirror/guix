@@ -4814,13 +4814,14 @@ variants.")
     (name "emacs-solarized-theme")
     (version "1.2.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/bbatsov/solarized-emacs/"
-                                  "archive/v"  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/bbatsov/solarized-emacs/")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ha3slc6d9wi9ilkhmwrzkvf308n6ph7b0k69pk369s9304awxzx"))))
+                "0zcj9jf8nlsj9vms888z2vs76q54n8g8r9sh381xad3x8d6lrlb3"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
