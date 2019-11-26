@@ -8035,13 +8035,14 @@ files that you would find in @file{contrib/} from the git repository.")))
     (version "0.6.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/lewang/"
-                           "flx/archive/v" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/lewang/flx.git")
+              (commit (string-append "v" version))))
        (sha256
         (base32
-         "0bkcpnf1j4i2fcc2rllwbz62l00sw2mcia6rm5amgwvlkqavmkv6"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+         "0sjybrcnb2sl33swy3q664vqrparajcl0m455gciiih2j87hwadc"))
+       (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (home-page "https://github.com/lewang/flx")
     (synopsis "Fuzzy matching for Emacs")
