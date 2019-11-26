@@ -137,15 +137,14 @@ Daemon and possibly more in the future.")
 (define-public libgcrypt
   (package
     (name "libgcrypt")
-    (version "1.8.4")
-    (replacement libgcrypt-1.8.5)
+    (version "1.8.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "09r27ywj9zplq6n9qw3mn7zmvf6y2jdmwx5d1kg8yqkj0qx18f7n"))))
+                "1hvsazms1bfd769q0ngl0r9g5i4m9mpz9jmvvrdzyzk3rfa2ljiv"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error-host" ,libgpg-error)))
@@ -170,18 +169,6 @@ generation.")
     (license license:lgpl2.0+)
     (properties '((ftp-server . "ftp.gnupg.org")
                   (ftp-directory . "/gcrypt/libgcrypt")))))
-
-(define-public libgcrypt-1.8.5
-  (package
-    (inherit libgcrypt)
-    (version "1.8.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
-                                  version ".tar.bz2"))
-              (sha256
-               (base32
-                "1hvsazms1bfd769q0ngl0r9g5i4m9mpz9jmvvrdzyzk3rfa2ljiv"))))))
 
 (define-public libassuan
   (package
