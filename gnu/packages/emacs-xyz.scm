@@ -8060,13 +8060,14 @@ Flx has support for ido (interactively do things) through flx-ido.")
     (version "1.19")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/n3mo/cyberpunk-theme.el/"
-                           "archive/" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/n3mo/cyberpunk-theme.el/")
+              (commit version)))
        (sha256
         (base32
-         "05l5fxw1mn5py6mfhxrzyqjq0d8m5m1akfi46vrgh13r414jffvv"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+         "1npwrw3pgdmvqhihcqcfi2yrs178iiip5fcj8zhpp6cr9yqsvvgi"))
+       (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (home-page "https://github.com/n3mo/cyberpunk-theme.el")
     (synopsis "Cyberpunk theme for emacs built-in color theme support")
