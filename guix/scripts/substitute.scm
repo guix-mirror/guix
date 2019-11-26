@@ -86,6 +86,8 @@
             read-narinfo
             write-narinfo
 
+            %allow-unauthenticated-substitutes?
+
             substitute-urls
             guix-substitute))
 
@@ -118,15 +120,21 @@
           (string-append %state-directory "/substitute/cache"))
       (string-append (cache-directory #:ensure? #f) "/substitute")))
 
+(define (warn-about-missing-authentication)
+  (warning (G_ "authentication and authorization of substitutes \
+disabled!~%"))
+  #t)
+
 (define %allow-unauthenticated-substitutes?
   ;; Whether to allow unchecked substitutes.  This is useful for testing
   ;; purposes, and should be avoided otherwise.
-  (and (and=> (getenv "GUIX_ALLOW_UNAUTHENTICATED_SUBSTITUTES")
-              (cut string-ci=? <> "yes"))
-       (begin
-         (warning (G_ "authentication and authorization of substitutes \
-disabled!~%"))
-         #t)))
+  (make-parameter
+   (and=> (getenv "GUIX_ALLOW_UNAUTHENTICATED_SUBSTITUTES")
+          (cut string-ci=? <> "yes"))
+   (lambda (value)
+     (when value
+       (warn-about-missing-authentication))
+     value)))
 
 (define %narinfo-ttl
   ;; Number of seconds during which cached narinfo lookups are considered
@@ -370,7 +378,7 @@ No authentication and authorization checks are performed here!"
 (define* (valid-narinfo? narinfo #:optional (acl (current-acl))
                          #:key verbose?)
   "Return #t if NARINFO's signature is not valid."
-  (or %allow-unauthenticated-substitutes?
+  (or (%allow-unauthenticated-substitutes?)
       (let ((hash      (narinfo-sha256 narinfo))
             (signature (narinfo-signature narinfo))
             (uri       (uri->string (first (narinfo-uris narinfo)))))

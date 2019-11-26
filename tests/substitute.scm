@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -169,9 +169,7 @@ a file for NARINFO."
           (cute write-file
                 (string-append narinfo-directory "/example.out") <>))
 
-        (set! (@@ (guix scripts substitute)
-                  %allow-unauthenticated-substitutes?)
-              #f))
+        (%allow-unauthenticated-substitutes? #f))
       thunk
       (lambda ()
         (when (file-exists? cache-directory)
