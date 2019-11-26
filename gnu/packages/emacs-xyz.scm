@@ -14056,13 +14056,14 @@ split to display more windows and more buffers, the buffer exits
     (name "emacs-rsw-elisp")
     (version "1.0.5")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/rswgnu/rsw-elisp"
-                                  "/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/rswgnu/rsw-elisp")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1jnn7xfwl3wxc87v44ccsf1wwp80par3xgcvfb1icd6zchjmlcps"))))
+                "0dfq8myg0r91900bk1s70amsmm4mjk2qsg12v5pk7lla5d2vnyaf"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/rswgnu/rsw-elisp")
     (synopsis "Improved expressions that interactively evaluate Emacs Lisp")
