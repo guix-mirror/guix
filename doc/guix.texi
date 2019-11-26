@@ -20360,7 +20360,7 @@ User who will own the php worker processes.
 Group of the worker processes.
 @item @code{socket-user} (default: @code{php-fpm})
 User who can speak to the php-fpm socket.
-@item @code{socket-group} (default: @code{php-fpm})
+@item @code{socket-group} (default: @code{nginx})
 Group that can speak to the php-fpm socket.
 @item @code{pid-file} (default: @code{(string-append "/var/run/php" (version-major (package-version php)) "-fpm.pid")})
 The process id of the php-fpm process is written to this file
