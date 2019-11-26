@@ -375,15 +375,14 @@ semiconductors.")
 (define-public gsl
   (package
     (name "gsl")
-    (version "2.5")
+    (version "2.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gsl/gsl-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1395y9hlhqadn5g9j8q22224fds5sd92jxi9czfavjj24myasq04"))
-              (patches (search-patches "gsl-test-i686.patch"))))
+                "1a460zj9xmbgvcymkdhqh313c4l29mn9cffbi5vf33x3qygk70mp"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Currently there are numerous tests that fail on "exotic"
