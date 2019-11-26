@@ -13037,13 +13037,14 @@ confused by comments or @code{foo-bar} matching @code{foo}.")
     (version "0.15")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/phillord/m-buffer-el"
-                           "/archive/" "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/phillord/m-buffer-el")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "17vdcc8q37q9db98jyww1c0ivinmwfcw4l04zccfacalra63a214"))))
+         "1sx76i59razwccvn6x7rx5a124bfyjw9fcbxf4gj7nsg33qiq809"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
