@@ -4331,9 +4331,6 @@ TLS/SSL encryption.  It was developed for use in PageKite, and also includes
 a simple netcat replacement with chaining support.")
     (license license:bsd-3)))
 
-(define-public python2-socksipychain
-  (package-with-python2 python-socksipychain))
-
 (define-public python-pycodestyle
   (package
     (name "python-pycodestyle")
