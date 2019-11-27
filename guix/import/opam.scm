@@ -49,7 +49,7 @@
 (define-peg-pattern COLON none ":")
 ;; A string character is any character that is not a quote, or a quote preceded by a backslash.
 (define-peg-pattern STRCHR body
-                    (or " " "!" (and (ignore "\\") "\"")
+                    (or " " "!" "\n" (and (ignore "\\") "\"")
                         (and (ignore "\\") "\\") (range #\# #\頋)))
 (define-peg-pattern operator all (or "=" "!" "<" ">"))
 
