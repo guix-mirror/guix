@@ -514,67 +514,6 @@ Git-friendly development workflow.")
     ;; The 'LICENSE' file waives some requirements compared to LGPLv3.
     (license license:lgpl3)))
 
-(define-public camlp4-4.07
-  (package
-    (name "camlp4")
-    (version "4.07+1")
-    (source (origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://github.com/ocaml/camlp4.git")
-                   (commit version)))
-             (file-name (git-file-name name version))
-             (sha256
-              (base32
-               "0cxl4hkqcvspvkx4f2k83217rh6051fll9i2yz7cw6m3bq57mdvl"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("ocaml" ,ocaml-4.07)
-       ("ocamlbuild" ,ocamlbuild)
-       ("which" ,which)))
-    (inputs `(("ocaml" ,ocaml-4.07)))
-    (arguments
-     '(#:tests? #f                                ;no documented test target
-       ;; a race-condition will lead byte and native targets to  mkdir _build
-       ;; which  fails on the second attempt.
-       #:parallel-build? #f
-       #:make-flags '("all")
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; This is a home-made 'configure' script.
-             (let ((out (assoc-ref outputs "out")))
-               (invoke "./configure"
-                       (string-append "--libdir=" out
-                                      "/lib/ocaml/site-lib")
-                       (string-append "--bindir=" out "/bin")
-                       (string-append "--pkgdir=" out
-                                      "/lib/ocaml/site-lib")))))
-         (add-after 'install 'install-meta
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (substitute* "camlp4/META.in"
-                 (("directory = .*")
-                  (string-append "directory = \"" out
-                                 "/lib/ocaml/site-lib/camlp4\"\n")))
-               (invoke "make" "install-META")))))))
-    (home-page "https://github.com/ocaml/camlp4")
-    (synopsis "Write parsers in OCaml")
-    (description
-     "Camlp4 is a software system for writing extensible parsers for
-programming languages.  It provides a set of OCaml libraries that are used to
-define grammars as well as loadable syntax extensions of such grammars.
-Camlp4 stands for Caml Preprocessor and Pretty-Printer and one of its most
-important applications is the definition of domain-specific extensions of the
-syntax of OCaml.")
-
-    ;; This is LGPLv2 with an exception that allows packages statically-linked
-    ;; against the library to be released under any terms.
-    (license license:lgpl2.0)))
-
-(define-public camlp4 camlp4-4.07)
-
 (define-public camlp5
   (package
     (name "camlp5")
