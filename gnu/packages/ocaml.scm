@@ -2910,7 +2910,7 @@ and 4 (random based) according to RFC 4122.")
 (define-public ocaml-piqi
   (package
     (name "ocaml-piqi")
-    (version "0.7.6")
+    (version "0.7.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/alavrik/piqi-ocaml/"
@@ -2918,7 +2918,7 @@ and 4 (random based) according to RFC 4122.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0da0v2v28aj65b0cwpvvmcqyrfvz94pp3j5zgfdr1jrl5s37c21g"))))
+                "1l0b4saxmwqgw9mb10mwrz31lvpj3l0abh3cwarqp0x4vdrzshbh"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:make-flags
@@ -2930,11 +2930,11 @@ and 4 (random based) according to RFC 4122.")
          (delete 'configure))))
     (native-inputs
      `(("which" ,which)
-       ("camlp4" ,camlp4)
        ("protobuf" ,protobuf))) ; for tests
     (propagated-inputs
-     `(("num" ,ocaml-num)
-       ("piqilib" ,ocaml-piqilib)))
+     `(("ocaml-num" ,ocaml-num)
+       ("ocaml-piqilib" ,ocaml-piqilib)
+       ("ocaml-stdlib-shims" ,ocaml-stdlib-shims)))
     (home-page "https://github.com/alavrik/piqi-ocaml")
     (synopsis "Protocol serialization system for OCaml")
     (description "Piqi is a multi-format data serialization system for OCaml.
