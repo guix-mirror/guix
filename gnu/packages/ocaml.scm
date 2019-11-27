@@ -1408,14 +1408,11 @@ ocaml-migrate-parsetree")
                 "15jjk2pq1vx311gl49s5ag6x5y0654x35w75z07g7kr2q334hqps"))))
     (build-system dune-build-system)
     (native-inputs
-     `(("camlp4" ,camlp4)
-       ("time" ,time)
+     `(("time" ,time)
        ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("bisect" ,ocaml-bisect)))
+       ("automake" ,automake)))
     (propagated-inputs
-     `(("camlp4" ,camlp4)
-       ("ocaml-ppx-tools-versioned" ,ocaml-ppx-tools-versioned)))
+     `(("ocaml-ppx-tools-versioned" ,ocaml-ppx-tools-versioned)))
     (arguments
      `(#:tests? #f; Tests fail to build
        #:jbuild? #t))
