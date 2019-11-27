@@ -814,17 +814,18 @@ Knuth’s LR(1) parser construction technique.")
 (define-public lablgtk
   (package
     (name "lablgtk")
-    (version "2.18.6")
+    (version "2.18.8")
     (source (origin
-              (method url-fetch)
-              (uri (ocaml-forge-uri name version 1726))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/garrigue/lablgtk")
+                     (commit "lablgtk2188")))
               (sha256
                (base32
-                "1y38fdvswy6hmppm65qvgdk4pb3ghhnvz7n4ialf46340r1s5p2d"))))
+                "0gpww8bkwi5cl68kc006970zvzwvq73h1mwrnd239apmwlxc1l8a"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("camlp4" ,camlp4)
-       ("ocaml" ,ocaml)
+     `(("ocaml" ,ocaml)
        ("findlib" ,ocaml-findlib)
        ("pkg-config" ,pkg-config)))
     ;; FIXME: Add inputs gtkgl-2.0, libpanelapplet-2.0, gtkspell-2.0,
