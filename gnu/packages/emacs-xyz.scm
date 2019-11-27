@@ -9864,8 +9864,7 @@ Emacs.")
                  (substitute* "bin/ert-runner"
                    (("ERT_RUNNER=\"\\$\\(dirname \\$\\(dirname \\$0\\)\\)")
                     (string-append "ERT_RUNNER=\"" out
-                                   "/share/emacs/site-lisp/guix.d/ert-runner-"
-                                   ,version)))
+                                   "/share/emacs/site-lisp")))
                  (install-file "bin/ert-runner" (string-append out "/bin"))
                  (wrap-program (string-append out "/bin/ert-runner")
                    (list "EMACSLOADPATH" ":" 'prefix
