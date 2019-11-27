@@ -2,7 +2,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
-;;; Copyright © 2017, 2018 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016, 2017, 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
@@ -15789,3 +15789,21 @@ routines designed for solving ODEs resulting from 1-D, 2-D and 3-D partial
 differential equations (PDE) that have been converted to ODEs by numerical
 differencing.")
     (license license:gpl2+)))
+
+(define-public r-pracma
+  (package
+    (name "r-pracma")
+    (version "2.2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "pracma" version))
+              (sha256
+               (base32 "0isd3s0i4mzmva8lkh0j76hwjy1w50q7d1n9lhxsnnkgalx3xs1g"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/pracma/")
+    (synopsis "Practical numerical math functions")
+    (description "This package provides functions for numerical analysis and
+linear algebra, numerical optimization, differential equations, plus some
+special functions.  It uses Matlab function names where appropriate to simplify
+porting.")
+    (license license:gpl3+)))

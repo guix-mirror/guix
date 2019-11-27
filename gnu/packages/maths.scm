@@ -2342,24 +2342,6 @@ sparse system of linear equations A x = b using Gaussian elimination.")
     (inputs
      (alist-delete "pt-scotch" (package-inputs mumps-openmpi)))))
 
-(define-public r-pracma
-  (package
-    (name "r-pracma")
-    (version "2.2.5")
-    (source (origin
-      (method url-fetch)
-      (uri (cran-uri "pracma" version))
-      (sha256
-        (base32 "0isd3s0i4mzmva8lkh0j76hwjy1w50q7d1n9lhxsnnkgalx3xs1g"))))
-    (build-system r-build-system)
-    (home-page "https://cran.r-project.org/web/packages/pracma/")
-    (synopsis "Practical numerical math functions")
-    (description "This package provides functions for numerical analysis and
-linear algebra, numerical optimization, differential equations, plus some
-special functions.  It uses Matlab function names where appropriate to simplify
-porting.")
-    (license license:gpl3+)))
-
 (define-public ruby-asciimath
   (package
     (name "ruby-asciimath")
