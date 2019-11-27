@@ -1261,53 +1261,6 @@ full_split, cut, rcut, etc..")
     ;; where it says `mit'.
     (license license:expat)))
 
-(define-public ocaml-bisect
-  (package
-    (name "ocaml-bisect")
-    (version "1.3.1")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/gasche/bisect.git")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0hm5za61qydda6ri3887b4zqqbqilh42x712xnclm1rr7ggga2nh"))
-       (patches
-        (search-patches
-         "ocaml-bisect-fix-camlp4-in-another-directory.patch"))))
-    (build-system ocaml-build-system)
-    (native-inputs
-     `(("camlp4" ,camlp4)
-       ("libxml2" ,libxml2)
-       ("ocamlbuild" ,ocamlbuild)
-       ("which" ,which)))
-    (propagated-inputs
-     `(("camlp4" ,camlp4)))
-    (arguments
-     `(#:test-target "tests"
-       #:make-flags
-       (list "all" (string-append "CAMLP4_LIBDIR="
-                                  (assoc-ref %build-inputs "camlp4")
-                                  "/lib/ocaml/site-lib/camlp4"))
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (invoke "./configure" "-prefix" (assoc-ref outputs "out")
-                     "-ocaml-prefix" (assoc-ref inputs "ocaml")
-                     "-camlp4-prefix" (assoc-ref inputs "camlp4"))
-             #t)))))
-    (home-page "http://bisect.x9c.fr")
-    (synopsis "Code coverage tool for the OCaml language")
-    (description "Bisect is a code coverage tool for the OCaml language.  It is
-a camlp4-based tool that allows to instrument your application before running
-tests.  After application execution, it is possible to generate a report in HTML
-format that is the replica of the application source code annotated with code
-coverage information.")
-    (license license:gpl3+)))
-
 (define-public dune
   (package
     (name "dune")
