@@ -3020,8 +3020,6 @@ the plugins facilitate extensibility, and the frontends serve as entry points.")
                (base32
                 "0chn7ldqb3wyf95yhmsxxq65cif56smgz1mhhc7m0dpwmyq1k97h"))))
     (build-system dune-build-system)
-    (native-inputs
-     `(("camlp4" ,camlp4)))
     (arguments
      `(#:build-flags (list "--profile" "release")
        #:test-target "camomile-test"
