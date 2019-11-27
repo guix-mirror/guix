@@ -278,6 +278,7 @@ its <pre class=\"lisp\"> blocks (as produced by 'makeinfo --html')."
             (define entity->string
               (match-lambda
                 ("rArr"   "⇒")
+                ("rarr"   "→")
                 ("hellip" "…")
                 ("rsquo"  "’")
                 (e (pk 'unknown-entity e) (primitive-exit 2))))
