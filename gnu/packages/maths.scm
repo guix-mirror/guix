@@ -62,7 +62,6 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
-  #:use-module (guix build-system r)
   #:use-module (guix build-system ruby)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
