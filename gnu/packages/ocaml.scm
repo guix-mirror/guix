@@ -2282,9 +2282,7 @@ many additional enhancements, including:
     (build-system ocaml-build-system)
     (native-inputs
      `(("ocamlbuild" ,ocamlbuild)
-       ("qtest" ,ocaml-qtest)
-       ("bisect" ,ocaml-bisect)
-       ("ounit" ,ocaml-ounit)))
+       ("qtest" ,ocaml-qtest)))
     (propagated-inputs
      `(("ocaml-num" ,ocaml-num)))
     (arguments
