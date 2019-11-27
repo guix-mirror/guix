@@ -54,8 +54,8 @@ The files in the list do not have extensions (.el, .elc)."
           (seq-filter (lambda (dir)
                         (string-match-p "/share/emacs/site-lisp" dir))
                       (split-string emacs-load-path ":")))
-          (autoloads (mapcan #'guix-emacs-find-autoloads
-                             emacs-non-core-load-path-directories)))
+         (autoloads (mapcan #'guix-emacs-find-autoloads
+                            emacs-non-core-load-path-directories)))
     (mapc (lambda (f)
             (load f 'noerror))
           autoloads)))
