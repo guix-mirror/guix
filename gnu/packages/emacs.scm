@@ -186,11 +186,9 @@
     (native-search-paths
      (list (search-path-specification
             (variable "EMACSLOADPATH")
-            ;; The versioned entries are for the Emacs' builtin libraries.
-            (files (list (string-append "share/emacs/" version "/site-lisp")
-                         (string-append "share/emacs/" version "/lisp")
-                         "share/emacs/site-lisp"))
-            (file-pattern ".*"))        ;recursively add any sub directory
+            ;; The versioned entry is for the Emacs' builtin libraries.
+            (files (list (string-append "share/emacs/" version "/lisp")
+                         "share/emacs/site-lisp")))
            (search-path-specification
             (variable "INFOPATH")
             (files '("share/info")))))
