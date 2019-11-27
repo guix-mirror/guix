@@ -509,6 +509,16 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                  (("\\$\\$\\[QT_HOST_DATA/get\\]") archdata)
                  (("\\$\\$\\[QT_HOST_DATA/src\\]") archdata))
                #t)))
+         (add-after 'patch-mkspecs 'patch-prl-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; Insert absolute references to the qtbase libraries because
+               ;; QT_INSTALL_LIBS does not always resolve correctly, depending
+               ;; on context.  See <https://bugs.gnu.org/38405>
+               (substitute* (find-files (string-append out "/lib") "\\.prl$")
+                 (("\\$\\$\\[QT_INSTALL_LIBS\\]")
+                  (string-append out "/lib")))
+               #t)))
          (add-after 'unpack 'patch-paths
            ;; Use the absolute paths for dynamically loaded libs, otherwise
            ;; the lib will be searched in LD_LIBRARY_PATH which typically is
