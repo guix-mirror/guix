@@ -1089,15 +1089,15 @@ virtual machines.")
 (define-public bubblewrap
   (package
     (name "bubblewrap")
-    (version "0.3.3")
+    (version "0.4.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/projectatomic/bubblewrap/"
+              (uri (string-append "https://github.com/containers/bubblewrap/"
                                   "releases/download/v" version "/bubblewrap-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1zsd6rxryg97dkkhibr0fvq16x3s75qj84rvhdv8p42ag58mz966"))))
+                "08r0f4c3fjkb4zjrb4kkax1zfcgcgic702vb62sjjw5xfhppvzp5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1134,7 +1134,7 @@ virtual machines.")
     (native-inputs
      `(("python-2" ,python-2)
        ("util-linux" ,util-linux)))
-    (home-page "https://github.com/projectatomic/bubblewrap")
+    (home-page "https://github.com/containers/bubblewrap")
     (synopsis "Unprivileged sandboxing tool")
     (description "Bubblewrap is aimed at running applications in a sandbox,
 restricting their access to parts of the operating system or user data such as

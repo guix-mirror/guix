@@ -372,7 +372,7 @@ ARGS is the list of arguments received by the 'throw' handler."
        (report-error loc (G_ "~a~%") message)))
     (('unbound-variable _ ...)
      (report-unbound-variable-error args #:frame frame))
-    (('srfi-34 obj)
+    (((or 'srfi-34 '%exception) obj)
      (if (message-condition? obj)
          (report-error (and (error-location? obj)
                             (error-location obj))
@@ -404,7 +404,7 @@ exiting.  ARGS is the list of arguments received by the 'throw' handler."
        (warning loc (G_ "~a~%") message)))
     (('unbound-variable _ ...)
      (report-unbound-variable-error args))
-    (('srfi-34 obj)
+    (((or 'srfi-34 '%exception) obj)
      (if (message-condition? obj)
          (warning (G_ "failed to load '~a': ~a~%")
                   file
@@ -813,7 +813,7 @@ similar."
         (match args
           (('syntax-error proc message properties form . rest)
            (report-error (G_ "syntax error: ~a~%") message))
-          (('srfi-34 obj)
+          (((or 'srfi-34 '%exception) obj)
            (if (message-condition? obj)
                (report-error (G_ "~a~%")
                              (gettext (condition-message obj)

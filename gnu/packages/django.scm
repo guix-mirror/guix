@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -348,14 +348,14 @@ account authentication.")
     (version "1.10.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/jazzband/django-debug-toolbar/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jazzband/django-debug-toolbar.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1rww056hyzks8spbgf4h7kf6ybxlc5p08a2b6gn1nqrrzs4yx9sy"))))
+         "0zr6yjsms97wlvvd17rdbrx01irkg887dn9x70c1hzfjmfvp9afk"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-sqlparse" ,python-sqlparse)
@@ -456,14 +456,14 @@ merging, minifying and compiling CSS and Javascript files.")
     (version "2.4.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/niwinz/django-jinja/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/niwinz/django-jinja.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0bzrb4m6wx9ph5cpvz7wpvg5k6ksvj0dnxlg0nhhqskhvp46brs1"))))
+         "1fcrxlznlq1xvl26y3j1r22vvy6m08r5l97xi2wj50rdmxhfvhis"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-django" ,python-django)
@@ -695,6 +695,9 @@ project.")
              (or
               (not tests?)
               (begin
+                (setenv "PYTHONPATH"
+                        (string-append (getcwd) ":"
+                                       (getenv "PYTHONPATH")))
                 (setenv "DJANGO_SETTINGS_MODULE" "tests.settings")
                 (invoke "django-admin" "test" "tests"))))))))
     (propagated-inputs

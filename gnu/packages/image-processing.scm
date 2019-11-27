@@ -373,7 +373,7 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
              (zero? (system (format #f "~a/bin/Xvfb ~a &" xorg-server disp)))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("xorg-server" ,xorg-server) ; For running the tests
+       ("xorg-server" ,xorg-server-for-tests) ; For running the tests
        ("opencv-extra"
         ,(origin
            (method git-fetch)

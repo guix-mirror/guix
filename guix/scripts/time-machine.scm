@@ -94,7 +94,7 @@ Execute COMMAND ARGS... in an older version of Guix.\n"))
   ;; Alist of default option values.
   `((system . ,(%current-system))
     (substitutes? . #t)
-    (build-hook? . #t)
+    (offload? . #t)
     (print-build-trace? . #t)
     (print-extended-build-trace? . #t)
     (multiplexed-build-output? . #t)

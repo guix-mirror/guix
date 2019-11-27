@@ -983,16 +983,17 @@ e.g. microbiome samples, genomes, metagenomes.")
       (version "1.7.0")
       (source
        (origin
-         (method url-fetch)
-         (uri (string-append "https://github.com/bioperl/bioperl-live/"
-                             "archive/release-"
-                             (string-map (lambda (c)
-                                           (if (char=? c #\.)
-                                               #\- c)) version)
-                             ".tar.gz"))
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/bioperl/bioperl-live")
+                (commit (string-append "release-"
+                                       (string-map (lambda (c)
+                                                     (if (char=? c #\.)
+                                                         #\- c)) version)))))
+         (file-name (git-file-name name version))
          (sha256
           (base32
-           "12phgpxwgkqflkwfb9dcqg7a31dpjlfhar8wcgv0aj5ln4akfz06"))))
+           "0wl8yvzcls59pwwk6m8ahy87pwg6nnibzy5cldbvmcwg2x2w7783"))))
       (build-system perl-build-system)
       (arguments
        `(#:phases
@@ -11571,35 +11572,6 @@ code that is used in the Cufflinks codebase.  The goal of this library is to
 provide this functionality without the necessity of drawing in a heavy-weight
 dependency like SeqAn.")
     (license (license:x11-style "https://www.boost.org/LICENSE_1_0.txt"))))
-
-(define-public libdivsufsort
-  (package
-    (name "libdivsufsort")
-    (version "2.0.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/y-256/libdivsufsort.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0fgdz9fzihlvjjrxy01md1bv9vh12rkgkwbm90b1hj5xpbaqp7z2"))))
-    (build-system cmake-build-system)
-    (arguments
-     '(#:tests? #f                      ; there are no tests
-       #:configure-flags
-       ;; Needed for rapmap and sailfish.
-       '("-DBUILD_DIVSUFSORT64=ON")))
-    (home-page "https://github.com/y-256/libdivsufsort")
-    (synopsis "Lightweight suffix-sorting library")
-    (description "libdivsufsort is a software library that implements a
-lightweight suffix array construction algorithm.  This library provides a
-simple and an efficient C API to construct a suffix array and a
-Burrows-Wheeler transformed string from a given string over a constant-size
-alphabet.  The algorithm runs in O(n log n) worst-case time using only 5n+O(1)
-bytes of memory space, where n is the length of the string.")
-    (license license:expat)))
 
 (define-public sailfish
   (package

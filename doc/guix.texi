@@ -1368,13 +1368,11 @@ source URLs.  When this option is omitted,
 This means that substitutes may be downloaded from @var{urls}, as long
 as they are signed by a trusted signature (@pxref{Substitutes}).
 
-@cindex build hook
-@item --no-build-hook
-Do not use the @dfn{build hook}.
-
-The build hook is a helper program that the daemon can start and to
-which it submits build requests.  This mechanism is used to offload
-builds to other machines (@pxref{Daemon Offload Setup}).
+@cindex offloading
+@item --no-offload
+Do not use offload builds to other machines (@pxref{Daemon Offload
+Setup}).  That is, always build things locally instead of offloading
+builds to remote machines.
 
 @item --cache-failures
 Cache build failures.  By default, only successful builds are cached.
@@ -2830,7 +2828,8 @@ $ guix package --upgrade . --do-not-upgrade emacs
 @cindex profile declaration
 @cindex profile manifest
 Create a new generation of the profile from the manifest object
-returned by the Scheme code in @var{file}.
+returned by the Scheme code in @var{file}.  This option can be repeated
+several times, in which case the manifests are concatenated.
 
 This allows you to @emph{declare} the profile's contents rather than
 constructing it through a sequence of @code{--install} and similar
@@ -4802,7 +4801,8 @@ As an example, @var{file} might contain a definition like this
 @item --manifest=@var{file}
 @itemx -m @var{file}
 Create an environment for the packages contained in the manifest object
-returned by the Scheme code in @var{file}.
+returned by the Scheme code in @var{file}.  This option can be repeated
+several times, in which case the manifests are concatenated.
 
 This is similar to the same-named option in @command{guix package}
 (@pxref{profile-manifest, @option{--manifest}}) and uses the same
@@ -5176,7 +5176,8 @@ build} (@pxref{Additional Build Options, @code{--expression} in
 @item --manifest=@var{file}
 @itemx -m @var{file}
 Use the packages contained in the manifest object returned by the Scheme
-code in @var{file}.
+code in @var{file}.  This option can be repeated several times, in which
+case the manifests are concatenated.
 
 This has a similar purpose as the same-named option in @command{guix
 package} (@pxref{profile-manifest, @option{--manifest}}) and uses the
@@ -8050,9 +8051,9 @@ the end of the build log.  This is useful when debugging build issues.
 @xref{Debugging Build Failures}, for tips and tricks on how to debug
 build issues.
 
-This option has no effect when connecting to a remote daemon with a
-@code{guix://} URI (@pxref{The Store, the @code{GUIX_DAEMON_SOCKET}
-variable}).
+This option implies @option{--no-offload}, and it has no effect when
+connecting to a remote daemon with a @code{guix://} URI (@pxref{The
+Store, the @code{GUIX_DAEMON_SOCKET} variable}).
 
 @item --keep-going
 @itemx -k
@@ -8109,10 +8110,10 @@ stashing one of the build results with @code{guix archive --export}
 (@pxref{Invoking guix archive}), then rebuilding, and finally comparing
 the two results.
 
-@item --no-build-hook
-Do not attempt to offload builds @i{via} the ``build hook'' of the daemon
-(@pxref{Daemon Offload Setup}).  That is, always build things locally
-instead of offloading builds to remote machines.
+@item --no-offload
+Do not use offload builds to other machines (@pxref{Daemon Offload
+Setup}).  That is, always build things locally instead of offloading
+builds to remote machines.
 
 @item --max-silent-time=@var{seconds}
 When the build or substitution process remains silent for more than
@@ -20359,7 +20360,7 @@ User who will own the php worker processes.
 Group of the worker processes.
 @item @code{socket-user} (default: @code{php-fpm})
 User who can speak to the php-fpm socket.
-@item @code{socket-group} (default: @code{php-fpm})
+@item @code{socket-group} (default: @code{nginx})
 Group that can speak to the php-fpm socket.
 @item @code{pid-file} (default: @code{(string-append "/var/run/php" (version-major (package-version php)) "-fpm.pid")})
 The process id of the php-fpm process is written to this file

@@ -1,7 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
+;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,7 +21,6 @@
 
 (define-module (gnu packages datastructures)
   #:use-module (gnu packages)
-  #:use-module (gnu packages documentation)
   #:use-module (gnu packages perl)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -80,12 +80,14 @@ library.")
     (name "sparsehash")
     (version "2.0.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/sparsehash/sparsehash/"
-                                  "archive/sparsehash-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/sparsehash/sparsehash.git")
+                     (commit (string-append name "-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "133szz0ldwch0kd91l0sa57qsnl020njn622szd9cxrjqyjqds85"))))
+                "0m3f0cnpnpf6aak52wn8xbrrdw8p0yhq8csgc8nlvf9zp8c402na"))))
     (build-system gnu-build-system)
     (synopsis "Memory-efficient hashtable implementations")
     (description
@@ -211,10 +213,31 @@ to the structure and choosing one or more fields to act as the key.")
                                   ".tar.gz.offline.install.gz"))
               (sha256
                (base32
-                "1v86ivv3mmdy802i9xkjpxb4cggj3s27wb19ja4sw1klnivjj69g"))))
+                "1v86ivv3mmdy802i9xkjpxb4cggj3s27wb19ja4sw1klnivjj69g"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file-recursively "external") #t))
+              (patches
+                (list (origin
+                        (method url-fetch)
+                        (uri "https://salsa.debian.org/science-team/libsdsl/raw/debian/2.1.1+dfsg-2/debian/patches/0001-Patch-cmake-files.patch")
+                        (file-name "sdsl-lite-dont-use-bundled-libraries.patch")
+                        (sha256
+                         (base32
+                          "0m542xpys54bni29zibgrfpgpd0zgyny4h131virxsanixsbz52z")))))))
     (build-system cmake-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-static-library
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (copy-file "lib/libsdsl_static.a"
+                          (string-append out "/lib/libsdsl.a")))
+             #t)))))
     (native-inputs
-     `(("doxygen" ,doxygen)))
+     `(("libdivsufsort" ,libdivsufsort)))
     (home-page "https://github.com/simongog/sdsl-lite")
     (synopsis "Succinct data structure library")
     (description "The Succinct Data Structure Library (SDSL) is a powerful and
@@ -226,3 +249,32 @@ operations of the original object efficiently.  The theoretical time
 complexity of an operation performed on the classical data structure and the
 equivalent succinct data structure are (most of the time) identical.")
     (license license:gpl3+)))
+
+(define-public libdivsufsort
+  (package
+    (name "libdivsufsort")
+    (version "2.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/y-256/libdivsufsort.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0fgdz9fzihlvjjrxy01md1bv9vh12rkgkwbm90b1hj5xpbaqp7z2"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f                      ; there are no tests
+       #:configure-flags
+       ;; Needed for rapmap and sailfish.
+       '("-DBUILD_DIVSUFSORT64=ON")))
+    (home-page "https://github.com/y-256/libdivsufsort")
+    (synopsis "Lightweight suffix-sorting library")
+    (description "libdivsufsort is a software library that implements a
+lightweight suffix array construction algorithm.  This library provides a
+simple and an efficient C API to construct a suffix array and a
+Burrows-Wheeler transformed string from a given string over a constant-size
+alphabet.  The algorithm runs in O(n log n) worst-case time using only 5n+O(1)
+bytes of memory space, where n is the length of the string.")
+    (license license:expat)))

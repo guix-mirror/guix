@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
@@ -40,13 +42,14 @@
     (name "cinnamon-desktop")
     (version "3.4.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/linuxmint/cinnamon-desktop/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/linuxmint/cinnamon-desktop")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1jf24csrbfi9aiza1g70jpvsbjiqwphk0i5wilxq9kpjjsl99maq"))))
+                "18mjy80ly9361npjhxpm3n0pkmrwviaqr2kixjb7hyxa6kzzh5xw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

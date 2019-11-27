@@ -352,42 +352,42 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-(define-public linux-libre-5.3-version "5.3.12")
+(define-public linux-libre-5.3-version "5.3.13")
 (define-public linux-libre-5.3-pristine-source
   (let ((version linux-libre-5.3-version)
-        (hash (base32 "184pmjyqh4bkrc3vj65zn6xnljzv9d1x7c1z0hlgj6fakpwgdgsk")))
+        (hash (base32 "0by9lmgmllf19yflzm9f24cy9glcq6m73ywm25bddsnh0czya14z")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.3)))
 
-(define-public linux-libre-4.19-version "4.19.85")
+(define-public linux-libre-4.19-version "4.19.86")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "1dsgbys73jga5h0a9icgif6qbi31g84315zlcdid9bzf1abkbx3v")))
+        (hash (base32 "1xmzcxsiydym574y7k313qd8s4c3mdahpb3nx3cingfl36ivnb5z")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.155")
+(define-public linux-libre-4.14-version "4.14.156")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "10g4493ldc398qza304z5yz8qdp93w7a2bs5h5dwk0bbamwikmkp")))
+        (hash (base32 "1h47fxfbq0d5ry7j3jxz45v5c4103qncgm2vydpz6zdx1kmrz27q")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.202")
+(define-public linux-libre-4.9-version "4.9.203")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "1gsfbvsswpwj6r56ynb6mmx7dc8hp9yhi7sfr0hhii0gs4ffq241")))
+        (hash (base32 "0jd8n8y3yf59sgfjhgjxsznxng7s4b30x5vdb48wrpgqmz7m1n8w")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.202")
+(define-public linux-libre-4.4-version "4.4.203")
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "0adrmps7izfqy0yn4440isxvigslwzk1a375r9kh86idwbmcxb7x")))
+        (hash (base32 "02krniihix9mb9bc0ffs03q4i9grjhwymnfp10h1r6gmxa554qlj")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -4794,7 +4794,8 @@ of flash storage.")
                                   "/libseccomp-" version ".tar.gz"))
               (sha256
                (base32
-                "0nsq81acrbkdr8zairxbwa33bj2a6126npp76b4srjl472sjfkxm"))))
+                "0nsq81acrbkdr8zairxbwa33bj2a6126npp76b4srjl472sjfkxm"))
+              (patches (search-patches "libseccomp-open-aarch64.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))

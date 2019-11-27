@@ -1,0 +1,34 @@
+From bbd54510f0297afa2d1a81927db060cb0b791f14 Mon Sep 17 00:00:00 2001
+From: Ralph Little <littlesincanada@yahoo.co.uk>
+Date: Sun, 1 Sep 2019 17:34:19 -0700
+Subject: [PATCH] Apply opensuse upstream patch xsane_memory_leak
+
+Removes completely redundant memory allocation.
+---
+ src/xsane-batch-scan.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/src/xsane-batch-scan.c b/src/xsane-batch-scan.c
+index 90cc0e0..e77caca 100644
+--- a/src/xsane-batch-scan.c
++++ b/src/xsane-batch-scan.c
+@@ -680,7 +680,6 @@ static GtkWidget *xsane_batch_scan_create_list_entry(Batch_Scan_Parameters *para
+  GtkWidget *list_item;
+  GtkWidget *hbox;
+  int size = 120;
+- char *data;
+ 
+   list_item = gtk_list_item_new();
+ 
+@@ -688,8 +687,6 @@ static GtkWidget *xsane_batch_scan_create_list_entry(Batch_Scan_Parameters *para
+   gtk_container_add(GTK_CONTAINER(list_item), hbox);
+   gtk_widget_show(hbox);
+ 
+-  data = calloc(size, size);
+-
+   parameters->gtk_preview = gtk_preview_new(GTK_PREVIEW_COLOR);
+   gtk_preview_size(GTK_PREVIEW(parameters->gtk_preview), size, size);
+   gtk_box_pack_start(GTK_BOX(hbox), parameters->gtk_preview, FALSE, FALSE, 0);
+-- 
+2.22.0
+

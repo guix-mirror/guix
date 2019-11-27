@@ -37,6 +37,7 @@
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3195,3 +3196,92 @@ NumPy, and other traditional Python scientific computing packages.")
 It implements the Python DB API 2.0 specification and includes support for
 SQLAlchemy.")
     (license license:asl2.0)))
+
+(define-public libdbi
+  (package
+    (name "libdbi")
+    (version "0.9.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/libdbi/libdbi/libdbi-"
+                                  version "/libdbi-" version ".tar.gz"))
+              (sha256
+               (base32
+                "00s5ra7hdlq25iv23nwf4h1v3kmbiyzx0v9bhggjiii4lpf6ryys"))))
+    (build-system gnu-build-system)
+    (synopsis "Database independent abstraction layer in C")
+    (description
+     "This library implements a database independent abstraction layer in C,
+similar to the DBI/DBD layer in Perl.  Writing one generic set of code,
+programmers can leverage the power of multiple databases and multiple
+simultaneous database connections by using this framework.")
+    (home-page "http://libdbi.sourceforge.net/")
+    (license license:lgpl2.1+)))
+
+(define-public libdbi-drivers
+  (package
+    (name "libdbi-drivers")
+    (version "0.9.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/libdbi-drivers/"
+                                  "libdbi-drivers/libdbi-drivers-" version
+                                  "/libdbi-drivers-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0m680h8cc4428xin4p733azysamzgzcmv4psjvraykrsaz6ymlj3"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("inetutils" ,inetutils)
+       ("glibc-locales" ,glibc-locales)))
+    (inputs
+     `(("libdbi" ,libdbi)
+       ("mysql" ,mariadb)
+       ("postgresql" ,postgresql)
+       ("sqlite" ,sqlite)))
+    (arguments
+     `(#:configure-flags
+       (let ((libdbi (assoc-ref %build-inputs "libdbi"))
+             (mysql (assoc-ref %build-inputs "mysql"))
+             (postgresql (assoc-ref %build-inputs "postgresql"))
+             (sqlite (assoc-ref %build-inputs "sqlite")))
+         (list "--disable-docs"
+               (string-append "--with-dbi-incdir=" libdbi "/include")
+               (string-append "--with-dbi-libdir=" libdbi "/lib")
+               "--with-mysql"
+               (string-append "--with-mysql-incdir=" mysql "/include/mysql")
+               (string-append "--with-mysql-libdir=" mysql "/lib")
+               "--with-pgsql"
+               (string-append "--with-pgsql-incdir=" postgresql "/include")
+               (string-append "--with-pgsql-libdir=" postgresql "/lib")
+               "--with-sqlite3"
+               (string-append "--with-sqlite-incdir=" sqlite "/include")
+               (string-append "--with-sqlite-libdir=" sqlite "/lib")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "tests/test_mysql.sh"
+               (("^MYMYSQLD=.*")
+                (string-append "MYMYSQLD="
+                               (assoc-ref inputs "mysql")
+                               "/bin/mysqld")))
+             #t))
+         (add-after 'install 'remove-empty-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((var (string-append (assoc-ref outputs "out") "/var")))
+               (delete-file-recursively var))
+             #t)))))
+    (synopsis "Database drivers for the libdbi framework")
+    (description
+     "The @code{libdbi-drivers} library provides the database specific drivers
+for the @code{libdbi} framework.
+
+The drivers officially supported by @code{libdbi} are:
+@itemize
+@item MySQL,
+@item PostgreSQL,
+@item SQLite.
+@end itemize")
+    (home-page "http://libdbi-drivers.sourceforge.net/")
+    (license license:lgpl2.1+)))

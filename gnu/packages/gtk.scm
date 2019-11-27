@@ -360,7 +360,7 @@ diagrams.")
        ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
        ("pkg-config" ,pkg-config)
        ;; For testing.
-       ("xorg-server" ,xorg-server)
+       ("xorg-server" ,xorg-server-for-tests)
        ("shared-mime-info" ,shared-mime-info)))
     (propagated-inputs
      ;; As per the pkg-config file.
@@ -431,7 +431,7 @@ printing and other features typical of a source code editor.")
       ("pkg-config" ,pkg-config)
       ("vala" ,vala)
       ;; For testing.
-      ("xorg-server" ,xorg-server)
+      ("xorg-server" ,xorg-server-for-tests)
       ("shared-mime-info" ,shared-mime-info)))
    (propagated-inputs
     ;; gtksourceview-3.0.pc refers to all these.
@@ -1287,7 +1287,7 @@ write GNOME applications.")
 (define-public perl-cairo
   (package
     (name "perl-cairo")
-    (version "1.106")
+    (version "1.107")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1295,7 +1295,7 @@ write GNOME applications.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1i25kks408c54k2zxskvg54l5k3qadzm8n72ffga9jy7ic0h6j76"))))
+                "0sg1gf1f2pjq7pji0zsv4rbi3bzpsx82z98k7yqxafzrvlkf27ay"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-extutils-depends" ,perl-extutils-depends)

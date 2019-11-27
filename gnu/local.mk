@@ -826,6 +826,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/fbreader-curl-7.62.patch		\
   %D%/packages/patches/fcgi-2.4.0-gcc44-fixes.patch		\
   %D%/packages/patches/fcgi-2.4.0-poll.patch			\
+  %D%/packages/patches/feh-fix-tests-for-imlib2-1.6.patch	\
   %D%/packages/patches/fifo-map-fix-flags-for-gcc.patch		\
   %D%/packages/patches/fifo-map-remove-catch.hpp.patch		\
   %D%/packages/patches/file-CVE-2018-10360.patch		\
@@ -1079,6 +1080,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libmygpo-qt-missing-qt5-modules.patch	\
   %D%/packages/patches/libreoffice-icu.patch			\
   %D%/packages/patches/libreoffice-glm.patch			\
+  %D%/packages/patches/libseccomp-open-aarch64.patch		\
   %D%/packages/patches/libsndfile-armhf-type-checks.patch	\
   %D%/packages/patches/libsndfile-CVE-2017-8361-8363-8365.patch	\
   %D%/packages/patches/libsndfile-CVE-2017-8362.patch		\
@@ -1218,6 +1220,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/p7zip-CVE-2016-9296.patch		\
   %D%/packages/patches/p7zip-CVE-2017-17969.patch		\
   %D%/packages/patches/p7zip-remove-unused-code.patch		\
+  %D%/packages/patches/pam-mount-luks2-support.patch		\
   %D%/packages/patches/patchutils-test-perms.patch		\
   %D%/packages/patches/patch-hurd-path-max.patch		\
   %D%/packages/patches/pcre2-fix-jit_match-crash.patch		\
@@ -1466,7 +1469,12 @@ dist_patch_DATA =						\
   %D%/packages/patches/xfce4-panel-plugins.patch		\
   %D%/packages/patches/xfce4-settings-defaults.patch		\
   %D%/packages/patches/xinetd-fix-fd-leak.patch			\
-  %D%/packages/patches/xinetd-CVE-2013-4342.patch
+  %D%/packages/patches/xinetd-CVE-2013-4342.patch		\
+  %D%/packages/patches/xsane-fix-memory-leak.patch		\
+  %D%/packages/patches/xsane-fix-pdf-floats.patch		\
+  %D%/packages/patches/xsane-fix-snprintf-buffer-length.patch	\
+  %D%/packages/patches/xsane-support-ipv6.patch			\
+  %D%/packages/patches/xsane-tighten-default-umask.patch
 
 MISC_DISTRO_FILES =				\
   %D%/packages/ld-wrapper.in

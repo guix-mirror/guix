@@ -198,7 +198,7 @@ with the editor vim.")))
                                                     display " &")))))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("xorg-server" ,xorg-server)
+       ("xorg-server" ,xorg-server-for-tests)
        ,@(package-native-inputs vim)))
     (inputs
      `(("acl" ,acl)

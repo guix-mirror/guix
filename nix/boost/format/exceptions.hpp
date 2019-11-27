@@ -59,7 +59,7 @@ public:
   virtual const char *what() const throw()
   {
     return "boost::too_few_args: "
-      "format-string refered to more arguments than were passed";
+      "format-string referred to more arguments than were passed";
   }
 };
 
@@ -70,7 +70,7 @@ public:
   virtual const char *what() const throw()
   {
     return "boost::too_many_args: "
-      "format-string refered to less arguments than were passed";
+      "format-string referred to less arguments than were passed";
   }
 };
 

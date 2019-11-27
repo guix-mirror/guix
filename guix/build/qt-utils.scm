@@ -26,9 +26,9 @@
       (if env-val (string-append env-val ":" path) path)))
 
   (let ((qml-path        (suffix "QML2_IMPORT_PATH"
-                                 (string-append out "/qml")))
+                                 (string-append out "/lib/qt5/qml")))
         (plugin-path     (suffix "QT_PLUGIN_PATH"
-                                 (string-append out "/plugins")))
+                                 (string-append out "/lib/qt5/plugins")))
         (xdg-data-path   (suffix "XDG_DATA_DIRS"
                                  (string-append out "/share")))
         (xdg-config-path (suffix "XDG_CONFIG_DIRS"

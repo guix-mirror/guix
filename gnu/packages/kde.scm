@@ -558,9 +558,6 @@ different notification systems.")
          (add-after 'install 'wrap-executable
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (setenv "QT_PLUGIN_PATH"
-                       (string-append out "/lib/qt5/plugins"
-                                      ":" (getenv "QT_PLUGIN_PATH")))
                (wrap-qt-program out "../lib/libexec/kdeconnectd")
                (wrap-qt-program out "kdeconnect-cli")
                (wrap-qt-program out "kdeconnect-handler")

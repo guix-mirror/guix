@@ -644,7 +644,7 @@ else [])"))
     (native-inputs
      `(("intltool" ,intltool)
        ("python-docutils" ,python-docutils)
-       ("xorg-server" ,xorg-server)))
+       ("xorg-server" ,xorg-server-for-tests)))
     (inputs
      `(("adwaita-icon-theme" ,adwaita-icon-theme)
        ("gnome-keyring" ,gnome-keyring)
@@ -1822,13 +1822,13 @@ QMatrixClient project.")
 (define-public hangups
   (package
     (name "hangups")
-    (version "0.4.9")
+    (version "0.4.10")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "hangups" version))
        (sha256
-        (base32 "1jw4i58cd4j1ymsnhv9224xsi26w8y0qrj6z4nw50dnbl45b6aaa"))))
+        (base32 "0ww9z9kcb02pwnr8q1ll31wkzspc1fci1ly8ifrwzxysp4rxy3j5"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

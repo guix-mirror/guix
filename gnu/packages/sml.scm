@@ -2,6 +2,7 @@
 ;;; Copyright © 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Brett Gilio <brettg@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,7 +33,7 @@
 (define-public polyml
   (package
     (name "polyml")
-    (version "5.7.1")
+    (version "5.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -41,7 +42,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0j0wv3ijfrjkfngy7dswm4k1dchk3jak9chl5735dl8yrl8mq755"))))
+                "1jabrf9cnmsppawga6q5pjiq1cdayilxp66fkxykczs6vv2gz7f9"))))
     (build-system gnu-build-system)
     (inputs
      `(("gmp" ,gmp)
@@ -65,7 +66,7 @@
                          make-flags)
                    make-flags))
              (apply system* "make" (append flags (list "compiler"))))))))
-    (home-page "http://www.polyml.org/")
+    (home-page "https://www.polyml.org/")
     (synopsis "Standard ML implementation")
     (description "Poly/ML is a Standard ML implementation.  It is fully
 compatible with the ML97 standard.  It includes a thread library, a foreign

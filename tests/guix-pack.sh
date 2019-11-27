@@ -109,3 +109,14 @@ drv1="`guix pack -n guile 2>&1 | grep pack.*\.drv`"
 drv2="`guix pack -n --with-source=guile=$test_directory guile 2>&1 | grep pack.*\.drv`"
 test -n "$drv1"
 test "$drv1" != "$drv2"
+
+# Try '--manifest' options.
+cat > "$test_directory/manifest1.scm" <<EOF
+(specifications->manifest '("guile"))
+EOF
+cat > "$test_directory/manifest2.scm" <<EOF
+(specifications->manifest '("emacs"))
+EOF
+drv="`guix pack -nd -m "$test_directory/manifest1.scm" -m "$test_directory/manifest2.scm"`"
+guix gc -R "$drv" | grep `guix build guile -nd`
+guix gc -R "$drv" | grep `guix build emacs -nd`

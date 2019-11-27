@@ -535,19 +535,18 @@ generator.")
 (define-public perl-crypt-random-source
   (package
     (name "perl-crypt-random-source")
-    (version "0.12")
+    (version "0.14")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Crypt-Random-Source-" version ".tar.gz"))
        (sha256
-        (base32
-         "00mw5m52sbz9nqp3f6axyrgcrihqxn7k8gv0vi1kvm1j1nc9g29h"))))
+        (base32 "1rpdds3sy5l1fhngnkrsgwsmwd54wpicx3i9ds69blcskwkcwkpc"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build-tiny" ,perl-module-build-tiny)
-       ("perl-test-exception" ,perl-test-exception)))
+       ("perl-test-fatal" ,perl-test-fatal)))
     (propagated-inputs
      `(("perl-capture-tiny" ,perl-capture-tiny)
        ("perl-module-find" ,perl-module-find)

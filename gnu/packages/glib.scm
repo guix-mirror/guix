@@ -339,6 +339,7 @@ shared NFS home directories.")
            (variable "GIO_EXTRA_MODULES")
            (files '("lib/gio/modules")))))
    (search-paths native-search-paths)
+   (properties '((hidden? . #t)))
 
    (synopsis "Thread-safe general utility library; basis of GTK+ and GNOME")
    (description
@@ -347,6 +348,34 @@ and interfaces for such runtime functionality as an event loop, threads,
 dynamic loading, and an object system.")
    (home-page "https://developer.gnome.org/glib/")
    (license license:lgpl2.1+)))
+
+(define-public glib-with-documentation
+  ;; glib's doc must be built in a separate package since it requires gtk-doc,
+  ;; which in turn depends on glib.
+  (package
+    (inherit glib)
+    (properties (alist-delete 'hidden? (package-properties glib)))
+    (outputs (cons "doc" (package-outputs glib))) ; 20 MiB of GTK-Doc reference
+    (native-inputs
+     `(("gtk-doc" ,gtk-doc)             ; for the doc
+       ("docbook-xml" ,docbook-xml)
+       ("libxml2" ,libxml2)
+       ,@(package-native-inputs glib)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments glib)
+       ((#:configure-flags flags ''())
+        `(cons "-Dgtk_doc=true" ,flags))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'install 'move-doc
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out"))
+                     (doc (assoc-ref outputs "doc"))
+                     (html (string-append "/share/gtk-doc")))
+                 (copy-recursively (string-append out html)
+                                   (string-append doc html))
+                 (delete-file-recursively (string-append out html))
+                 #t)))))))))
 
 (define gobject-introspection
   (package

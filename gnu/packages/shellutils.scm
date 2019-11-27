@@ -316,3 +316,26 @@ commands that are obsolete or contain a piece of sensitive information) or
 bookmark your favourite commands.")
     (home-page "http://me.mindforger.com/projects/hh.html")
     (license license:asl2.0)))
+
+(define-public shell-functools
+  (package
+    (name "shell-functools")
+    (version "0.3.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/sharkdp/shell-functools.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0d6zzg7cxfrzwzh1wmpj7q85kz33sak6ac59ncsm6dlbin12h0hi"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/sharkdp/shell-functools/")
+    (synopsis "Functional programming tools for the shell")
+    (description "This package provides higher order functions like map,
+filter, foldl, sort_by and take_while as simple command-line tools. Following
+the UNIX philosophy, these commands are designed to be composed via pipes. A
+large collection of functions such as basename, replace, contains or is_dir
+are provided as arguments to these commands.")
+    (license license:expat)))

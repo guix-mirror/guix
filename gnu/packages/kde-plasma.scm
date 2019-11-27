@@ -96,7 +96,7 @@ manager which re-parents a Client window to a window decoration frame.")
 
        ;; For tests.
        ("dbus" ,dbus)
-       ("xorg-server" ,xorg-server)))
+       ("xorg-server" ,xorg-server-for-tests)))
     (inputs
      `(("kcmutils" ,kcmutils)
        ("kcrash" ,kcrash)

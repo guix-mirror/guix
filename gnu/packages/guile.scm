@@ -276,14 +276,14 @@ without requiring the source code to be rewritten.")
   (package
     (inherit guile-2.2)
     (name "guile-next")
-    (version "2.9.4")
+    (version "2.9.5")
     (source (origin
               (inherit (package-source guile-2.2))
               (uri (string-append "ftp://alpha.gnu.org/gnu/guile/guile-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1milviqhipyfx400pqhngxpxyajalzwmp597dxn5514pkk0g7v0p"))))
+                "1db91mhvphzmiyw6f41ks9haysphygngv400ivgqf23lg22wn5zr"))))
     (native-search-paths
      (list (search-path-specification
             (variable "GUILE_LOAD_PATH")
@@ -541,7 +541,15 @@ Guile's foreign function interface.")
               (sha256
                (base32
                 "1nv8j7wk6b5n4p22szyi8lv8fs31rrzxhzz16gyj8r38c1fyp9qp"))
-              (file-name (string-append name "-" version "-checkout"))))
+              (file-name (string-append name "-" version "-checkout"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Allow builds with Guile 3.0.
+                  (substitute* "configure.ac"
+                    (("^GUILE_PKG.*")
+                     "GUILE_PKG([3.0 2.2 2.0])\n"))
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -557,6 +565,9 @@ Guile's foreign function interface.")
 
 (define-public guile2.0-sqlite3
   (package-for-guile-2.0 guile-sqlite3))
+
+(define-public guile3.0-sqlite3
+  (package-for-guile-3.0 guile-sqlite3))
 
 (define-public guile-bytestructures
   (package
@@ -604,7 +615,21 @@ type system, elevating types to first-class status.")
               (sha256
                (base32
                 "018hmfsh0rjwfvr4h7y10jc6k8a2k9xsirngghy3pjasin4nd2yz"))
-              (file-name (git-file-name name version))))
+              (file-name (git-file-name name version))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Allow builds with Guile 3.0.
+                  (substitute* "configure.ac"
+                    (("^GUILE_PKG.*")
+                     "GUILE_PKG([3.0 2.2 2.0])\n"))
+
+                  ;; The 'guile.m4' that's shipped is too old and fails to
+                  ;; recognize Guile 2.9/3.0.  Delete it and pick the one
+                  ;; provided by the Guile we're using.
+                  (delete-file "m4/guile.m4")
+
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -622,8 +647,19 @@ type system, elevating types to first-class status.")
 manipulate repositories of the Git version control system.")
     (license license:gpl3+)))
 
+(define-public guile3.0-git
+  (package-for-guile-3.0 guile-git))
+
 (define-public guile2.0-git
-  (package-for-guile-2.0 guile-git))
+  (let ((base (package-for-guile-2.0 guile-git)))
+    (package
+      (inherit base)
+      ;; Libgit2's Guile test driver requires (ice-9 textual-ports), which is
+      ;; not in Guile 2.0.  Thus, keep LIBGIT2 as-is here (i.e., built against
+      ;; Guile 2.2).
+      (inputs `(("libgit2" ,libgit2)
+                ,@(srfi-1:alist-delete "libgit2"
+                                       (package-inputs base)))))))
 
 ;;; guile.scm ends here
 

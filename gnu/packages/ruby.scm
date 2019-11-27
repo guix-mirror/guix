@@ -1256,17 +1256,16 @@ complexity.")
 (define-public ruby-oauth2
   (package
     (name "ruby-oauth2")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "oauth2" version))
        (sha256
-        (base32
-         "0av6nlb5y2sm6m8fx669ywrqa9858yqaqfqzny75nqp3anag89qh"))))
+        (base32 "15i9z4j5pcjkr30lkcd79xzbr4kpmy0bqgwa436fqyqk646fv036"))))
     (build-system ruby-build-system)
     (arguments
-     '(#:tests? #f)) ; No included tests
+     '(#:tests? #f))                    ; no included tests
     (propagated-inputs
      `(("ruby-faraday" ,ruby-faraday)
        ("ruby-jwt" ,ruby-jwt)
@@ -1761,13 +1760,13 @@ the output produced by running shell commands.")
 (define-public ruby-notiffany
   (package
     (name "ruby-notiffany")
-    (version "0.1.1")
+    (version "0.1.3")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "notiffany" version))
               (sha256
                (base32
-                "0x838fa5il0dd9zbm3lxkpbfxcf5fxv9556mayc2mxsdl5ghv8nx"))))
+                "0f47h3bmg1apr4x51szqfv3rh2vq58z3grh4w02cp3bzbdh6jxnk"))))
     (build-system ruby-build-system)
     ;; Tests are not included in the gem.
     (arguments `(#:tests? #f))
@@ -2067,13 +2066,13 @@ the SimpleCov code coverage tool for Ruby version 1.9 and above.")
 (define-public ruby-simplecov
   (package
     (name "ruby-simplecov")
-    (version "0.17.0")
+    (version "0.17.1")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "simplecov" version))
               (sha256
                (base32
-                "0dq0nkaxvbsnl70hkimy35g4yjfs3blx4s7nbpzbvgqx72hxgv5v"))))
+                "1135k46nik05sdab30yxb8264lqiz01c8v000g16cl9pjc4mxrdw"))))
     (build-system ruby-build-system)
     ;; Simplecov depends on rubocop for code style checking at build time.
     ;; Rubocop needs simplecov at build time.
@@ -2094,13 +2093,13 @@ suites.")
 (define-public ruby-useragent
   (package
     (name "ruby-useragent")
-    (version "0.16.8")
+    (version "0.16.10")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "useragent" version))
               (sha256
                (base32
-                "1139cjqyv1hk1qcw89k81ajjkqyakqgbcyvmfrsmjqi8yn9kgqhq"))))
+                "1fv5kvq494swy0p17h9qya9r50w15xsi9zmvhzb8gh55kq6ki50p"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; no test suite
@@ -3802,18 +3801,16 @@ for select languages.")
 (define-public ruby-prawn-manual-builder
   (package
     (name "ruby-prawn-manual-builder")
-    (version "0.3.0")
+    (version "0.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "prawn-manual_builder" version))
        (sha256
-        (base32
-         "0wbjnkqp55p5wmz85ldypcray223glckd209hmdxhnzk8s5pb3za"))))
+        (base32 "1vlg5w7wq43g2hgpgra2nrcxj1kb4ayqliz4gmja2rhs037j2vzs"))))
     (build-system ruby-build-system)
     (arguments
-     '(;; No included tests
-       #:tests? #f
+     '(#:tests? #f                      ; no included tests
        #:phases
        (modify-phases %standard-phases
          (add-after 'extract-gemspec 'patch-gemspec
@@ -3888,14 +3885,13 @@ suitable for a gemspec file.")
 (define-public ruby-progressbar
   (package
     (name "ruby-progressbar")
-    (version "1.10.0")
+    (version "1.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "ruby-progressbar" version))
        (sha256
-        (base32
-         "1cv2ym3rl09svw8940ny67bav7b2db4ms39i4raaqzkf59jmhglk"))))
+        (base32 "1k77i0d4wsn23ggdd2msrcwfy0i376cglfqypkk2q77r2l3408zf"))))
     (build-system ruby-build-system)
     (arguments
      '(;; TODO: There looks to be a circular dependency with ruby-fuubar.
@@ -4408,18 +4404,16 @@ when working with Ruby code.")
 (define-public ruby-jaro-winkler
   (package
     (name "ruby-jaro-winkler")
-    (version "1.5.2")
+    (version "1.5.4")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "jaro_winkler" version))
        (sha256
-        (base32
-         "1zz27z88qznix4r65gd9h56gl177snlfpgv10b0s69vi8qpl909l"))))
+        (base32 "1y8l6k34svmdyqxya3iahpwbpvmn3fswhwsvrz0nk1wyb8yfihsh"))))
     (build-system ruby-build-system)
     (arguments
-     '(;; No included tests
-       #:tests? #f))
+     '(#:tests? #f))                    ; no included tests
     (synopsis "Ruby implementation of Jaro-Winkler distance algorithm")
     (description
      "@code{jaro_winkler} is an implementation of Jaro-Winkler distance
@@ -5973,14 +5967,13 @@ that TURN is no longer being maintained.")
 (define-public ruby-mimemagic
   (package
     (name "ruby-mimemagic")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "mimemagic" version))
        (sha256
-        (base32
-         "00ibc1mhvdfyfyl103xwb45621nwyqxf124cni5hyfhag0fn1c3q"))))
+        (base32 "04cp5sfbh1qx82yqxn0q75c7hlcx8y1dr5g3kyzwm4mx6wi2gifw"))))
     (build-system ruby-build-system)
     (arguments
      '(#:phases
@@ -6417,18 +6410,16 @@ checking for the right Ruby version in software.")
 (define-public ruby-websocket-driver
   (package
    (name "ruby-websocket-driver")
-   (version "0.7.0")
+   (version "0.7.1")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "websocket-driver" version))
      (sha256
-      (base32
-       "1551k3fs3kkb3ghqfj3n5lps0ikb9pyrdnzmvgfdxy8574n4g1dn"))))
+      (base32 "1bxamwqldmy98hxs5pqby3andws14hl36ch78g0s81gaz9b91nj2"))))
    (build-system ruby-build-system)
    (arguments
-    '(;; No included tests
-      #:tests? #f))
+    '(#:tests? #f))                     ; no included tests
    (propagated-inputs
     `(("ruby-websocket-extensions" ,ruby-websocket-extensions)))
    (synopsis "WebSocket protocol handler with pluggable I/O")
@@ -7569,13 +7560,13 @@ for the terminal.")
 (define-public ruby-command-line-reporter
   (package
     (name "ruby-command-line-reporter")
-    (version "4.0.0")
+    (version "4.0.1")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "command_line_reporter" version))
               (sha256
                (base32
-                "1qma35xrb772whxwy1rs9bicb9d6lvz0s2dd2dnn4fr6zcbcxc0a"))))
+                "1l0zxkh5n9dxfw46lpkg416ljpldlq1bgdhqh0d118dk338nz4ll"))))
     (build-system ruby-build-system)
     (arguments
      ;; No Rakefile

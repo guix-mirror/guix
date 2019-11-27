@@ -4814,13 +4814,14 @@ variants.")
     (name "emacs-solarized-theme")
     (version "1.2.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/bbatsov/solarized-emacs/"
-                                  "archive/v"  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/bbatsov/solarized-emacs/")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ha3slc6d9wi9ilkhmwrzkvf308n6ph7b0k69pk369s9304awxzx"))))
+                "0zcj9jf8nlsj9vms888z2vs76q54n8g8r9sh381xad3x8d6lrlb3"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
@@ -5936,13 +5937,14 @@ possible to query other endpoints like DBPedia.")
     (version "0.1.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/technomancy/better-defaults"
-                           "/archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/technomancy/better-defaults")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "08fg4zslzlxbvyil5g4gwvwd22fh4zsgqprs5wh9hv1rgc6757m2"))))
+         "1rxznx2l0cdpiz8mad8s6q17m1fngpgb1cki7ch6yh18r3qz8ysr"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/technomancy/better-defaults")
     (synopsis "Better defaults for Emacs")
@@ -7945,14 +7947,14 @@ passive voice.")
     (version "0.5.2")
     (home-page "https://github.com/jaypei/emacs-neotree")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/jaypei/" name
-                    "/archive/" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url home-page)
+                     (commit version)))
               (sha256
                (base32
-                "1zd6dchwyijnf7kgchfcp51gs938l204dk9z6mljrfqf2zy0gp12"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "0hx72fq10772bbyqrj7mhhp02k26cccjxdadiqm1ykainhfmn1x0"))
+              (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (synopsis "Folder tree view for Emacs")
     (description "This Emacs package provides a folder tree view.")
@@ -8033,13 +8035,14 @@ files that you would find in @file{contrib/} from the git repository.")))
     (version "0.6.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/lewang/"
-                           "flx/archive/v" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/lewang/flx.git")
+              (commit (string-append "v" version))))
        (sha256
         (base32
-         "0bkcpnf1j4i2fcc2rllwbz62l00sw2mcia6rm5amgwvlkqavmkv6"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+         "0sjybrcnb2sl33swy3q664vqrparajcl0m455gciiih2j87hwadc"))
+       (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (home-page "https://github.com/lewang/flx")
     (synopsis "Fuzzy matching for Emacs")
@@ -8057,13 +8060,14 @@ Flx has support for ido (interactively do things) through flx-ido.")
     (version "1.19")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/n3mo/cyberpunk-theme.el/"
-                           "archive/" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/n3mo/cyberpunk-theme.el/")
+              (commit version)))
        (sha256
         (base32
-         "05l5fxw1mn5py6mfhxrzyqjq0d8m5m1akfi46vrgh13r414jffvv"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+         "1npwrw3pgdmvqhihcqcfi2yrs178iiip5fcj8zhpp6cr9yqsvvgi"))
+       (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (home-page "https://github.com/n3mo/cyberpunk-theme.el")
     (synopsis "Cyberpunk theme for emacs built-in color theme support")
@@ -8131,13 +8135,14 @@ by zenburn, sinburn and similar themes, but slowly diverging from them.")
     (version "1.5.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/auto-complete/"
-                           "auto-complete/archive/v" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/auto-complete/auto-complete.git")
+              (commit (string-append "v" version))))
        (sha256
         (base32
-         "1jvq4lj00hwml75lpmlciazy8f3bbg13gffsfnl835p4qd8l7yqv"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+         "04i9b11iksg6acn885wl3qgi5xpsm3yszlqmd2x21yhprndlz7gb"))
+       (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-popup" ,emacs-popup)))
@@ -8467,13 +8472,14 @@ been adapted to work with mu4e.")
     (version "2.0.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/akatov/pretty-mode/"
-                           "archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/akatov/pretty-mode/")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1fan7m4vnqs8kpg7r54kx3g7faadkpkf9kzarfv8n57kq8w157pl"))))
+         "013fig9i4fyx16krp2vfv953p3rwdzr38zs6i50af4pqz4vrcfvh"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/akatov/pretty-mode")
     (synopsis "Redisplay parts of the buffer as Unicode symbols")
@@ -11223,14 +11229,14 @@ supports multiple backends such as @code{vlc}, @code{mpg123},
     (name "emacs-groovy-modes")
     (version "2.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/Groovy-Emacs-Modes/groovy-emacs-modes"
-                    "/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/Groovy-Emacs-Modes/groovy-emacs-modes")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "15j0hnkx9nppjzda5cqsxxz5f3bq9hc4xfyjcdypzqiypcvmpa39"))))
+                "0c1d4cbnlny8gpcd20zr1wxx6ggf28jgh7sgd5r1skpsvjpbfqx2"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-s" ,emacs-s)))
@@ -12658,13 +12664,14 @@ region instead.")
     (name "emacs-validate")
     (version "1.0.5")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/Malabarba/validate.el"
-                                  "/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/Malabarba/validate.el")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "125mbd111f1h1baw0z3fzm48y1bvaigljyzvvnqgrn0shxbj0khg"))))
+                "1l12ibx6cw4mgicgjpw71fb4fr4sd0k54lvbpq7ngc29br3j6i4v"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/Malabarba/validate.el")
     (synopsis "Emacs library for scheme validation")
@@ -13031,13 +13038,14 @@ confused by comments or @code{foo-bar} matching @code{foo}.")
     (version "0.15")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/phillord/m-buffer-el"
-                           "/archive/" "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/phillord/m-buffer-el")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "17vdcc8q37q9db98jyww1c0ivinmwfcw4l04zccfacalra63a214"))))
+         "1sx76i59razwccvn6x7rx5a124bfyjw9fcbxf4gj7nsg33qiq809"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -13358,13 +13366,14 @@ grouping buffers by their projectile root directory.")
     (version "1.0.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/istib/helm-mode-manager/"
-                           "archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/istib/helm-mode-manager")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0wllj321z16hgrx0ddwzk5wz4mnnx5am7w5nclqclfc5dfdn92wm"))))
+         "1srx5f0s9x7zan7ayqd6scxfhcvr3nkd4yzs96hphd87rb18apzk"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-helm" ,emacs-helm)))
@@ -14048,13 +14057,14 @@ split to display more windows and more buffers, the buffer exits
     (name "emacs-rsw-elisp")
     (version "1.0.5")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/rswgnu/rsw-elisp"
-                                  "/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/rswgnu/rsw-elisp")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1jnn7xfwl3wxc87v44ccsf1wwp80par3xgcvfb1icd6zchjmlcps"))))
+                "0dfq8myg0r91900bk1s70amsmm4mjk2qsg12v5pk7lla5d2vnyaf"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/rswgnu/rsw-elisp")
     (synopsis "Improved expressions that interactively evaluate Emacs Lisp")
@@ -14267,13 +14277,14 @@ compilation/grep buffers.  Works with @code{wgrep}, @code{ack}, @code{ag},
     (version "0.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/alezost/shift-number.el"
-                           "/archive/" "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/alezost/shift-number.el")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1g79m0hqn9jgpm565vvh8pdfzndc4vw7xisnh5qysj55qfg8cb1x"))))
+         "0zlwmzsxkv4mkggylxfx2fkrwgz7dz3zbg2gkn2rxcpy2k2gla64"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/alezost/shift-number.el")
     (synopsis "Increase or decrease the number at point")
@@ -14483,7 +14494,7 @@ Emacs minor mode to escape sequences in code.")
 (define-public emacs-dashboard
   (package
     (name "emacs-dashboard")
-    (version "1.5.0")
+    (version "1.6.0")
     (source
      (origin
        (method git-fetch)
@@ -14492,7 +14503,7 @@ Emacs minor mode to escape sequences in code.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ihpcagwgc9qy70lf2y3dvx2bm5h9lnqh4sx6643cr8pp06ysbvq"))))
+        (base32 "1g6g8vad1kdmv1zxp95a8sn70idl26isqjb3xk1r95pqnx1cn591"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-page-break-lines" ,emacs-page-break-lines)))

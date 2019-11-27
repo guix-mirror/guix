@@ -39,25 +39,32 @@
 ;;;
 ;;; Code:
 
-(define %default-optimizations
-  ;; Default optimization options (equivalent to -O2 on Guile 2.2).
-  (append (if (defined? 'tree-il-default-optimization-options)
-              (tree-il-default-optimization-options) ;Guile 2.2
-              (tree-il-optimizations))               ;Guile 3
-          (if (defined? 'cps-default-optimization-options)
-              (cps-default-optimization-options)  ;Guile 2.2
-              (cps-optimizations))))              ;Guile 3
+(define optimizations-for-level
+  (or (and=> (false-if-exception
+              (resolve-interface '(system base optimize)))
+             (lambda (iface)
+               (module-ref iface 'optimizations-for-level))) ;Guile 3.0
+      (let ()                                                ;Guile 2.2
+        (define %default-optimizations
+          ;; Default optimization options (equivalent to -O2 on Guile 2.2).
+          (append (tree-il-default-optimization-options)
+                  (cps-default-optimization-options)))
 
-(define %lightweight-optimizations
-  ;; Lightweight optimizations (like -O0, but with partial evaluation).
-  (let loop ((opts %default-optimizations)
-             (result '()))
-    (match opts
-      (() (reverse result))
-      ((#:partial-eval? _ rest ...)
-       (loop rest `(#t #:partial-eval? ,@result)))
-      ((kw _ rest ...)
-       (loop rest `(#f ,kw ,@result))))))
+        (define %lightweight-optimizations
+          ;; Lightweight optimizations (like -O0, but with partial evaluation).
+          (let loop ((opts %default-optimizations)
+                     (result '()))
+            (match opts
+              (() (reverse result))
+              ((#:partial-eval? _ rest ...)
+               (loop rest `(#t #:partial-eval? ,@result)))
+              ((kw _ rest ...)
+               (loop rest `(#f ,kw ,@result))))))
+
+        (lambda (level)
+          (if (<= level 1)
+              %lightweight-optimizations
+              %default-optimizations)))))
 
 (define (supported-warning-type? type)
   "Return true if TYPE, a symbol, denotes a supported warning type."
@@ -80,8 +87,8 @@
 (define (optimization-options file)
   "Return the default set of optimizations options for FILE."
   (if (string-contains file "gnu/packages/")
-      %lightweight-optimizations                  ;build faster
-      '()))
+      (optimizations-for-level 1)                 ;build faster
+      (optimizations-for-level 3)))
 
 (define (scm->go file)
   "Strip the \".scm\" suffix from FILE, and append \".go\"."

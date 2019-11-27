@@ -650,13 +650,14 @@ This package is mostly for compatibility and historical interest.")
     (name "sfarklib")
     (version "2.24")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/raboof/sfArkLib/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/raboof/sfArkLib.git")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0bzs2d98rk1xw9qwpnc7gmlbxwmwc3dg1rpn310afy9pq1k9clzi"))))
+                "0jrxy24gak7q5ml06p5jjgzk9i5r2mkfjk4ycirkp4kg7k5a237w"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;no "check" target
@@ -1109,12 +1110,13 @@ well as bzip2.")
     (version "1.1.7")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/google/snappy/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append "snappy-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/google/snappy.git")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1m7rcdqzkys5lspj8jcsaah8w33zh28s771bw0ga2lgzfgl05yix"))
+        (base32 "1x7r8sjmdqlqjz0xfiwdyrqpgaj5yrvrgb28ivgpvnxgar5qv6m2"))
        (patches (search-patches "snappy-add-O2-flag-in-CmakeLists.txt.patch"))))
     (build-system cmake-build-system)
     (arguments
@@ -1303,13 +1305,14 @@ or junctions, and always follows hard links.")
     (name "unshield")
     (version "1.4.3")
     (source
-     (origin (method url-fetch)
-             (uri (string-append "http://github.com/twogood/unshield/archive/"
-                                 version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+     (origin (method git-fetch)
+             (uri (git-reference
+                    (url "http://github.com/twogood/unshield.git")
+                    (commit version)))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "1avv5c11jbmzwizq10pwvlh1dmyna8ccvpgacv95h4gbq26rg35a"))))
+               "19wn22vszhci8dfcixx5rliz7phx3lv5ablvhjlclvj75k2vsdqd"))))
     (build-system cmake-build-system)
     (inputs
      `(("zlib" ,zlib)
@@ -1815,16 +1818,16 @@ single-member files which can't be decompressed in parallel.")
 (define-public innoextract
   (package
    (name "innoextract")
-   (version "1.7")
+   (version "1.8")
    (source
     (origin
      (method url-fetch)
-     (uri (string-append "https://github.com/dscharrer/innoextract/archive/"
-                         version ".tar.gz"))
+     (uri (string-append "https://github.com/dscharrer/innoextract/releases"
+                         "/download/" version
+                         "/innoextract-" version ".tar.gz"))
      (sha256
       (base32
-       "0khwi9f0q0h6xfbixrrc1rfpgj0b7ajwilq7yhmxnn5lpc807f6x"))
-     (file-name (string-append name "-" version ".tar.gz"))))
+       "0saj50n8ds85shygy4mq1h6s99510r9wgjjdll4dmvhra4lzcy2y"))))
    (build-system cmake-build-system)
    (arguments
     `(#:tests? #f

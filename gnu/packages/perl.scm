@@ -779,15 +779,14 @@ library assert.h.")
 (define-public perl-carp-assert-more
   (package
     (name "perl-carp-assert-more")
-    (version "1.16")
+    (version "1.20")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/P/PE/PETDANCE/"
                            "Carp-Assert-More-" version ".tar.gz"))
        (sha256
-        (base32
-         "1x9jd6s3lq97na6gz7g0zaq62l8z297xsfpdj2v42p3ijpfirl4f"))))
+        (base32 "16jnhdjgfwymrc5fki4xlf1rlziszf9k6q0245g976124k708ac5"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-exception" ,perl-test-exception)))
@@ -1221,16 +1220,17 @@ uses no non-core modules for any recent Perl.")
 (define-public perl-class-unload
   (package
     (name "perl-class-unload")
-    (version "0.08")
+    (version "0.11")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/I/IL/ILMARI/"
                            "Class-Unload-" version ".tar.gz"))
        (sha256
-        (base32
-         "097gr3r2jgnm1175m4lpg4a97hv2mxrn9r0b2c6bn1x9xdhkywgh"))))
+        (base32 "0pqa98z3ij6a3v9wkmvc8b410kv30y0xxqf0i6if3lp4lx3rgqjj"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-requires" ,perl-test-requires)))
     (propagated-inputs
      `(("perl-class-inspector" ,perl-class-inspector)))
     (home-page "https://metacpan.org/release/Class-Unload")
@@ -2190,16 +2190,15 @@ Date::Calc.")
 (define-public perl-date-manip
   (package
     (name "perl-date-manip")
-    (version "6.76")
+    (version "6.78")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://cpan.metacpan.org/authors/id/S/SB/SBECK/"
+       (uri (string-append "mirror://cpan/authors/id/S/SB/SBECK/"
                            "Date-Manip-" version ".tar.gz"))
        (sha256
-        (base32 "1a33mpkx7qqb9nqxyh2kkb596d8xq6jw0ljrd4xrwiz30f6cg1qw"))))
+        (base32 "1faxj6gafrqir9hvy9r8q57s93n57b412s04qycrks7r0520hdnb"))))
     (build-system perl-build-system)
-    (native-inputs `(("perl-module-build" ,perl-module-build)))
     (arguments
      ;; Tests would require tzdata for timezone information, but tzdata is in
      ;; (gnu packages base) which would create a circular dependency.  TODO:
@@ -2237,15 +2236,14 @@ hours, minutes, seconds, and time zones.")
 (define-public perl-datetime
   (package
     (name "perl-datetime")
-    (version "1.50")
+    (version "1.51")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
                            "DateTime-" version ".tar.gz"))
        (sha256
-        (base32
-         "165iqk1xvhs5j0kzsipa7aqycx3h37wqsl2r4jl104yqvmqhqszd"))))
+        (base32 "1ibfq6acz1ih28vl613yygbb3r2d8ykx6di669vajhvswl6xl8ny"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-cpan-meta-check" ,perl-cpan-meta-check)
@@ -2906,15 +2904,14 @@ arbitrary parameters.")
 (define-public perl-devel-stacktrace
   (package
     (name "perl-devel-stacktrace")
-    (version "2.03")
+    (version "2.04")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
                            "Devel-StackTrace-" version ".tar.gz"))
        (sha256
-        (base32
-         "0j58kgjr9s3vibsgifmk9k5h7daag0cb9x45f30m9qi4pr7cs63n"))))
+        (base32 "0mb8bngjq7s3kbh95h3ig4p3jfb156c4r0d53z344gbxaknh6g6d"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Devel-StackTrace")
     (synopsis "Object representing a stack trace")
@@ -3873,14 +3870,14 @@ allows you to locate these files after installation.")
 (define-public perl-file-slurp
   (package
     (name "perl-file-slurp")
-    (version "9999.27")
+    (version "9999.28")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/C/CA/CAPOEIRAB/"
                            "File-Slurp-" version ".tar.gz"))
        (sha256
-        (base32 "1x233kj1qifvii7j8d4wzarwhj5z11vnpxsqvdm98dsccr7qi79s"))))
+        (base32 "1vkwh880lbyr2qcrfka7yb3z4yz9id4va52gfjgdnyfb1c0wx1q5"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/File-Slurp")
     (synopsis "Reading/Writing/Modifying of complete files")
@@ -4286,7 +4283,7 @@ inc directory within a distribution and are used by Makefile.PL or Build.PL.")
 (define-public perl-indirect
   (package
     (name "perl-indirect")
-    (version "0.38")
+    (version "0.39")
     (source
      (origin
        (method url-fetch)
@@ -4294,8 +4291,7 @@ inc directory within a distribution and are used by Makefile.PL or Build.PL.")
              "mirror://cpan/authors/id/V/VP/VPIT/indirect-"
              version ".tar.gz"))
        (sha256
-        (base32
-         "13k5a8p903m8x3pcv9qqkzvnb8gpgq36cr3dvn3lk1ngsi9w5ydy"))))
+        (base32 "1r971mykvvsrzrp6a9ccl649ihr84h254jmlfpazv64f6i63qwvi"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/indirect")
     (synopsis "Lexically warn about using the indirect method call syntax")
@@ -6384,17 +6380,15 @@ an external class to the given attribute.")
 (define-public perl-moox-late
   (package
     (name "perl-moox-late")
-    (version "0.015")
+    (version "0.016")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "mirror://cpan/authors/id/T/TO/TOBYINK/MooX-late-"
-             version
-             ".tar.gz"))
+             version ".tar.gz"))
        (sha256
-        (base32
-         "1gzvd9zws3v09sh0xx6srmw4jwi22fnrya4zcsc8dykn62pjclqp"))))
+        (base32 "0kjy86rrpzfy6w5r9ykjq7njwdnvp7swd6r2k4gfrh3picz3kdhz"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
@@ -6405,8 +6399,7 @@ an external class to the given attribute.")
        ("perl-moox-handlesvia" ,perl-moox-handlesvia)))
     (propagated-inputs
      `(("perl-type-tiny" ,perl-type-tiny)))
-    (home-page
-     "https://metacpan.org/release/MooX-late")
+    (home-page "https://metacpan.org/release/MooX-late")
     (synopsis "Easily translate Moose code to Moo")
     (description
      "MooX::late does the following:

@@ -1596,14 +1596,14 @@ language known as SASS.")
 (define-public perl-apache-logformat-compiler
   (package
     (name "perl-apache-logformat-compiler")
-    (version "0.35")
+    (version "0.36")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/K/KA/KAZEBURO/"
                            "Apache-LogFormat-Compiler-" version ".tar.gz"))
        (sha256
-        (base32 "06i70ydxk2wa2rcqn16842kra2qz3jwk0vk1abq8lah4180c0m0n"))))
+        (base32 "05xcl7j65vakx7x79jqjikyw0nzf60bc2w6hhc0q5sklxq1ral4l"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-http-message" ,perl-http-message)
@@ -4190,8 +4190,8 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
   (package-with-python2 python-feedparser))
 
 (define-public guix-data-service
-  (let ((commit "23f60a6bbb923a9510d95250b4a1626cb8a84b7f")
-        (revision "5"))
+  (let ((commit "af1324855e1ecaf9b1dd7afcc714d09aaa38f081")
+        (revision "6"))
     (package
       (name "guix-data-service")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -4203,7 +4203,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "08v6wdj5ia139krplc7y74s4rm1iblqf91713z69yhh5zbkvyxg8"))))
+                  "1qxs1sbyx894njw4f898wzc5shjj85h9kgz95p8mq1acmazhlhkv"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
@@ -5588,7 +5588,7 @@ inspired by Ruby's @code{fakeweb}.")
 (define-public jo
   (package
     (name "jo")
-    (version "1.2")
+    (version "1.3")
     (source
      (origin
        (method url-fetch)
@@ -5596,7 +5596,7 @@ inspired by Ruby's @code{fakeweb}.")
                            version "/jo-" version ".tar.gz"))
        (sha256
         (base32
-         "1bmdck53jslrl3anqqpm6iyjdxrz445qzcc4fr37hr3wjg22zv1n"))))
+         "0r6yb8pjsbcqfyac4240a0sj93pb91fv385bpk395cx3f5bcj9fy"))))
     (build-system gnu-build-system)
     (home-page "https://github.com/jpmens/jo")
     (synopsis "Output JSON from a shell")

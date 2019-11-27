@@ -49,14 +49,14 @@
 (define-public xapian
   (package
     (name "xapian")
-    (version "1.4.13")
+    (version "1.4.14")
     ;; Note: When updating Xapian, remember to update xapian-bindings below.
     (source (origin
               (method url-fetch)
               (uri (string-append "https://oligarchy.co.uk/xapian/" version
                                   "/xapian-core-" version ".tar.xz"))
               (sha256
-               (base32 "0z0k8902bz2ckdggikj5yz11ik2n8krmdwzvpqv60phcm3zzzy4k"))))
+               (base32 "0ja95vn0lkf6qkjhg2blkx306i10hg4fr8wlrhalmly93307lnlp"))))
     (build-system gnu-build-system)
     (inputs `(("zlib" ,zlib)
               ("util-linux" ,util-linux)))
@@ -94,7 +94,7 @@ rich set of boolean query operators.")
                                   "/xapian-bindings-" version ".tar.xz"))
               (sha256
                (base32
-                "14jqm8mi55z4jxyi9qnnxdljli81zknsp2ja2yjx17hm28kmsnks"))))
+                "0qb17cw8n0g5gcg8dq5b3hs6i16w74rgxcryd0ja9n2h0rlda2an"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-python3")
@@ -104,9 +104,10 @@ rich set of boolean query operators.")
                             "/lib/python" ,(version-major+minor
                                             (package-version python))
                             "/site-packages/xapian"))))
+    (native-inputs
+     `(("python-sphinx" ,python-sphinx))) ;for documentation
     (inputs
      `(("python" ,python)
-       ("python-sphinx" ,python-sphinx) ; for documentation
        ("xapian" ,xapian)
        ("zlib" ,zlib)))
     (synopsis "Python bindings for the Xapian search engine library")

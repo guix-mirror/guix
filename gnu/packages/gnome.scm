@@ -2025,7 +2025,7 @@ since ca. 2006, when GTK+ itself incorporated printing support.")
     (native-inputs
      `(("glib" ,glib "bin")             ; for glib-genmarshal, etc.
        ("intltool" ,intltool)
-       ("xorg-server" ,xorg-server) ; For running the tests
+       ("xorg-server" ,xorg-server-for-tests) ; For running the tests
        ("pkg-config" ,pkg-config)))
     (home-page "https://developer.gnome.org/libbonoboui/")
     (synopsis "Some user interface controls using Bonobo")
@@ -2338,28 +2338,28 @@ libraries written in C.")
 (define-public vte
   (package
     (name "vte")
-    (version "0.56.3")
+    (version "0.58.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/vte/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "vte-" version ".tar.xz"))
               (sha256
                (base32
-                "0j166gic5znssdb9r45qazq4kb4v9fial82czand5wa8i2yd988p"))))
-    (build-system gnu-build-system)
+                "0xa9ipwic4jnhhbzlnqbhssz10xkzv61cpkl1ammc6mdq95bbp12"))))
+    (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
        ("vala" ,vala)
        ("gobject-introspection" ,gobject-introspection)
-       ("glib" ,glib "bin") ; for glib-genmarshal, etc.
+       ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
        ("gperf" ,gperf)
        ("xmllint" ,libxml2)))
     (propagated-inputs
-     `(("gtk+" ,gtk+)                             ;required by vte-2.91.pc
-       ("gnutls" ,gnutls)                         ;ditto
-       ("pcre2" ,pcre2)))                         ;ditto
+     `(("gtk+" ,gtk+)                   ; required by vte-2.91.pc
+       ("gnutls" ,gnutls)               ; ditto
+       ("pcre2" ,pcre2)))               ; ditto
     (home-page "https://www.gnome.org/")
     (synopsis "Virtual Terminal Emulator")
     (description
@@ -4374,7 +4374,7 @@ USB transfers with your high-level application or system daemon.")
 (define-public simple-scan
   (package
     (name "simple-scan")
-    (version "3.34.1")
+    (version "3.34.2")
     (source
      (origin
        (method url-fetch)
@@ -4382,7 +4382,7 @@ USB transfers with your high-level application or system daemon.")
                            (version-major+minor version) "/"
                            "simple-scan-" version ".tar.xz"))
        (sha256
-        (base32 "0glzskxdc7p9z7nwcakqc7qzij4l79adlvvb2cj5fmis731zw9yq"))))
+        (base32 "1fk3g4f9slckqfwm576jrjq1d1qihw0dlgzdf00ns7qbhzb0kxsp"))))
     (build-system meson-build-system)
     ;; TODO: Fix icons in home screen, About dialogue, and scan menu.
     (arguments
@@ -4591,7 +4591,7 @@ principles are simplicity and standards compliance.")
        ("pkg-config" ,pkg-config)
        ("python-pep8" ,python-pep8)
        ("xmllint" ,libxml2)
-       ("xorg-server" ,xorg-server)))
+       ("xorg-server" ,xorg-server-for-tests)))
     (inputs
      `(("gobject-introspection" ,gobject-introspection)
        ("gtk+" ,gtk+)
@@ -7752,7 +7752,7 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
 
        ;; For tests.
        ("aspell-dict-en" ,aspell-dict-en)
-       ("xorg-server" ,xorg-server)))
+       ("xorg-server" ,xorg-server-for-tests)))
     (propagated-inputs
      `(("enchant" ,enchant)))            ;enchant.pc is required by gspell-1.pc
     (home-page "https://wiki.gnome.org/Projects/gspell")
@@ -8167,7 +8167,7 @@ hexadecimal or ASCII.  It is useful for editing binary files in general.")
      `(("glib" ,glib "bin")             ; glib-compile-resources
        ("pkg-config" ,pkg-config)
        ;; For tests.
-       ("xorg-server" ,xorg-server)))
+       ("xorg-server" ,xorg-server-for-tests)))
     (inputs
      `(("glib" ,glib)
        ("gobject-introspection" ,gobject-introspection)
@@ -8257,7 +8257,7 @@ functionality.")
 (define-public gthumb
   (package
     (name "gthumb")
-    (version "3.8.1")
+    (version "3.8.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gthumb/"
@@ -8265,7 +8265,7 @@ functionality.")
                                   "gthumb-" version ".tar.xz"))
               (sha256
                (base32
-                "184zn79w4s9y1zy42ar31p3jsg8rmkxy8k6iry51nz8aizbcs7jb"))))
+                "15wqks35ks5dm7zj046dfd45vvrilan2ayfy2sxiprv7q74cip2q"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -8389,9 +8389,9 @@ advanced image management tool")
        ("gtk-doc" ,gtk-doc)
        ("pkg-config" ,pkg-config)
        ("gettext" ,gettext-minimal)
-       ("xorg-server" ,xorg-server)
 
        ;; Test suite dependencies.
+       ("xorg-server" ,xorg-server-for-tests)
        ("hicolor-icon-theme" ,hicolor-icon-theme)))
     (home-page "https://source.puri.sm/Librem5/libhandy")
     (synopsis "Library full of GTK+ widgets for mobile phones")

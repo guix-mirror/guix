@@ -504,7 +504,7 @@ options handled by 'set-build-options-from-command-line', and listed in
   (display (G_ "
       --no-grafts        do not graft packages"))
   (display (G_ "
-      --no-build-hook    do not attempt to offload builds via the build hook"))
+      --no-offload       do not attempt to offload builds"))
   (display (G_ "
       --max-silent-time=SECONDS
                          mark the build as failed after SECONDS of silence"))
@@ -545,7 +545,8 @@ talking to a remote daemon\n")))
                      #:fallback? (assoc-ref opts 'fallback?)
                      #:use-substitutes? (assoc-ref opts 'substitutes?)
                      #:substitute-urls (assoc-ref opts 'substitute-urls)
-                     #:use-build-hook? (assoc-ref opts 'build-hook?)
+                     #:offload? (and (assoc-ref opts 'offload?)
+                                     (not (assoc-ref opts 'keep-failed?)))
                      #:max-silent-time (assoc-ref opts 'max-silent-time)
                      #:timeout (assoc-ref opts 'timeout)
                      #:print-build-trace (assoc-ref opts 'print-build-trace?)
@@ -610,11 +611,15 @@ talking to a remote daemon\n")))
                          (alist-cons 'graft? #f
                                      (alist-delete 'graft? result eq?))
                          rest)))
-        (option '("no-build-hook") #f #f
+        (option '("no-offload" "no-build-hook") #f #f
                 (lambda (opt name arg result . rest)
+                  (when (string=? name "no-build-hook")
+                    (warning (G_ "'--no-build-hook' is deprecated; \
+use '--no-offload' instead~%")))
+
                   (apply values
-                         (alist-cons 'build-hook? #f
-                                     (alist-delete 'build-hook? result))
+                         (alist-cons 'offload? #f
+                                     (alist-delete 'offload? result))
                          rest)))
         (option '("max-silent-time") #t #f
                 (lambda (opt name arg result . rest)
@@ -659,7 +664,7 @@ talking to a remote daemon\n")))
   `((build-mode . ,(build-mode normal))
     (graft? . #t)
     (substitutes? . #t)
-    (build-hook? . #t)
+    (offload? . #t)
     (print-build-trace? . #t)
     (print-extended-build-trace? . #t)
     (multiplexed-build-output? . #t)

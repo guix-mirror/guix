@@ -140,14 +140,14 @@ Guile.")
 (define-public mes
   (package
     (inherit mes-0.19)
-    (version "0.20")
+    (version "0.21")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/mes/"
                                   "mes-" version ".tar.gz"))
               (sha256
                (base32
-                "04pajp8v31na34ls4730ig5f6miiplhdvkmsb9ls1b8bbmw2vb4n"))))
+                "104qxngxyl7pql8vqrnli3wfyx0ayfaqg8gjfhmk4qzrafs46slm"))))
     (propagated-inputs
      `(("mescc-tools" ,mescc-tools)
        ("nyacc" ,nyacc)))))

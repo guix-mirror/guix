@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages gnome)
@@ -70,6 +72,8 @@
        ("icu4c" ,icu4c)
        ("glib" ,glib)
        ("gtk" ,gtk+)
+       ("libdbi" ,libdbi)
+       ("libdbi-drivers" ,libdbi-drivers)
        ("libgnomecanvas" ,libgnomecanvas)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
@@ -89,8 +93,7 @@
     (arguments
      `(#:test-target "check"
        #:configure-flags
-       (list "-DWITH_OFX=OFF"           ; libofx is not available yet
-             "-DWITH_SQL=OFF")          ; without dbi.h
+       (list "-DWITH_OFX=OFF")          ; libofx is not available yet
        #:make-flags '("GUILE_AUTO_COMPILE=0")
        #:modules ((guix build cmake-build-system)
                   ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
@@ -147,6 +150,10 @@
              (for-each (lambda (prog)
                          (wrap-program (string-append (assoc-ref outputs "out")
                                                       "/bin/" prog)
+                           `("GNC_DBD_DIR" =
+                             (,(string-append
+                                (assoc-ref inputs "libdbi-drivers")
+                                "/lib/dbd")))
                            `("PERL5LIB" ":" prefix
                              ,(map (lambda (o)
                                      (string-append o "/lib/perl5/site_perl/"

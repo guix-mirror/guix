@@ -763,7 +763,8 @@ encoding conversion errors."
                             max-build-jobs
                             timeout
                             max-silent-time
-                            (use-build-hook? #t)
+                            (offload? #t)
+                            (use-build-hook? *unspecified*) ;deprecated
                             (build-verbosity 0)
                             (log-type 0)
                             (print-build-trace #t)
@@ -803,6 +804,10 @@ encoding conversion errors."
   (define socket
     (store-connection-socket server))
 
+  (unless (unspecified? use-build-hook?)
+    (warn-about-deprecation #:use-build-hook? #f
+                            #:replacement #:offload?))
+
   (let-syntax ((send (syntax-rules ()
                        ((_ (type option) ...)
                         (begin
@@ -816,7 +821,9 @@ encoding conversion errors."
             (max-silent-time (or max-silent-time 3600)))
         (send (integer max-build-jobs) (integer max-silent-time))))
     (when (>= (store-connection-minor-version server) 2)
-      (send (boolean use-build-hook?)))
+      (send (boolean (if (unspecified? use-build-hook?)
+                         offload?
+                         use-build-hook?))))
     (when (>= (store-connection-minor-version server) 4)
       (send (integer build-verbosity) (integer log-type)
             (boolean print-build-trace)))

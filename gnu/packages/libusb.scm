@@ -305,25 +305,37 @@ wrapper for accessing libusb-1.0.")
 (define-public libplist
   (package
     (name "libplist")
-    (version "2.0.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://www.libimobiledevice.org/downloads/"
-                                  "libplist-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "00pnh9zf3iwdji2faccns7vagbmbrwbj9a8zp9s53a6rqaa9czis"))))
+    (version "2.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/libimobiledevice/libplist.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "02vraf4j46bp746s0gz7vga2gv2dy3zd1v1bsy9x8algg9fpcb7n"))))
     (build-system gnu-build-system)
     (arguments
-     ;; Tests fail randomly when run in parallel because several of them write
-     ;; and read to/from the same file--e.g., "4.plist" is accessed by
-     ;; 'large.test' and 'largecmp.test'.
-     '(#:parallel-tests? #f))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'configure-later
+           ;; Don't run ./configure during bootstrap.
+           (lambda _
+             (setenv "NOCONFIGURE" "set")
+             #t)))
+       ;; Tests fail randomly when run in parallel because several of them write
+       ;; and read to/from the same file--e.g., "4.plist" is accessed by
+       ;; 'large.test' and 'largecmp.test'.
+       #:parallel-tests? #f))
     (inputs
      `(("python" ,python)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python-cython" ,python-cython)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("python-cython" ,python-cython))) ; to build Python bindings
     (home-page "https://www.libimobiledevice.org/")
     (synopsis "C library to handle Apple Property List files")
     (description "This package provides a small portable C library to handle

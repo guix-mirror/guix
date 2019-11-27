@@ -191,7 +191,7 @@ COMMAND or an interactive shell in that environment.\n"))
 (define %default-options
   `((system . ,(%current-system))
     (substitutes? . #t)
-    (build-hook? . #t)
+    (offload? . #t)
     (graft? . #t)
     (print-build-trace? . #t)
     (print-extended-build-trace? . #t)

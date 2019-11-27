@@ -178,6 +178,23 @@ across a broad spectrum of applications.")
                              (symlink "libboost_python37.so" "libboost_python3.so"))
                            #t)))))))))
 
+(define-public boost-static
+  (package
+    (inherit boost)
+    (name "boost-static")
+    (arguments
+     (substitute-keyword-arguments (package-arguments boost)
+       ((#:make-flags flags)
+        `(cons "link=static" (delete "link=shared" ,flags)))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'provide-libboost_python
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (with-directory-excursion (string-append out "/lib")
+                   (symlink "libboost_python27.a" "libboost_python.a"))
+                 #t)))))))))
+
 (define-public boost-for-mysql
   ;; Older version for MySQL 5.7.23.
   (package

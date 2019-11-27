@@ -1,0 +1,72 @@
+From 893a5ce1f75e5eea7c8d383038ff92a150819c9c Mon Sep 17 00:00:00 2001
+From: Ralph Little <littlesincanada@yahoo.co.uk>
+Date: Thu, 19 Sep 2019 22:02:33 -0700
+Subject: [PATCH] xsane-*-project.c - reduced snprintf format pad to silence
+ warning about too long constrant string for buffer.
+
+---
+ src/xsane-email-project.c     | 4 ++--
+ src/xsane-fax-project.c       | 4 ++--
+ src/xsane-multipage-project.c | 2 +-
+ 3 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/src/xsane-email-project.c b/src/xsane-email-project.c
+index f20cb12..ac93fc2 100644
+--- a/src/xsane-email-project.c
++++ b/src/xsane-email-project.c
+@@ -896,7 +896,7 @@ static void xsane_email_project_update_project_status()
+   snprintf(filename, sizeof(filename), "%s/xsane-mail-list", preferences.email_project);
+   projectfile = fopen(filename, "r+b"); /* r+ = read and write, position = start of file */
+ 
+-  snprintf(buf, 32, "%s@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", xsane.email_status); /* fill 32 characters status line */
++  snprintf(buf, 33, "%s@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", xsane.email_status); /* fill 32 characters status line */
+   fprintf(projectfile, "%s\n", buf); /* first line is status of email */
+ 
+   fclose(projectfile);
+@@ -936,7 +936,7 @@ void xsane_email_project_save()
+   {
+    char buf[TEXTBUFSIZE];
+ 
+-    snprintf(buf, 32, "%s@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", xsane.email_status); /* fill 32 characters status line */
++    snprintf(buf, 33, "%s@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", xsane.email_status); /* fill 32 characters status line */
+     fprintf(projectfile, "%s\n", buf); /* first line is status of email */
+     gtk_progress_set_format_string(GTK_PROGRESS(xsane.project_progress_bar), _(xsane.email_status));
+     xsane_progress_bar_set_fraction(GTK_PROGRESS_BAR(xsane.project_progress_bar), 0.0);
+diff --git a/src/xsane-fax-project.c b/src/xsane-fax-project.c
+index f263313..0c60a97 100644
+--- a/src/xsane-fax-project.c
++++ b/src/xsane-fax-project.c
+@@ -452,7 +452,7 @@ static void xsane_fax_project_update_project_status()
+   snprintf(filename, sizeof(filename), "%s/xsane-fax-list", preferences.fax_project);
+   projectfile = fopen(filename, "r+b"); /* r+ = read and write, position = start of file */
+ 
+-  snprintf(buf, 32, "%s@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", xsane.fax_status); /* fill 32 characters status line */
++  snprintf(buf, 33, "%s@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", xsane.fax_status); /* fill 32 characters status line */
+   fprintf(projectfile, "%s\n", buf); /* first line is status of mail */
+ 
+   fclose(projectfile);
+@@ -498,7 +498,7 @@ void xsane_fax_project_save()
+   {
+    char buf[TEXTBUFSIZE];
+ 
+-    snprintf(buf, 32, "%s@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", xsane.fax_status); /* fill 32 characters status line */
++    snprintf(buf, 33, "%s@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", xsane.fax_status); /* fill 32 characters status line */
+     fprintf(projectfile, "%s\n", buf); /* first line is status of mail */
+     gtk_progress_set_format_string(GTK_PROGRESS(xsane.project_progress_bar), _(xsane.fax_status));
+     xsane_progress_bar_set_fraction(GTK_PROGRESS_BAR(xsane.project_progress_bar), 0.0);
+diff --git a/src/xsane-multipage-project.c b/src/xsane-multipage-project.c
+index f23e5f8..9392e00 100644
+--- a/src/xsane-multipage-project.c
++++ b/src/xsane-multipage-project.c
+@@ -522,7 +522,7 @@ void xsane_multipage_project_save()
+   {
+    char buf[TEXTBUFSIZE];
+ 
+-    snprintf(buf, 32, "%s@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", xsane.multipage_status); /* fill 32 characters status line */
++    snprintf(buf, 33, "%s@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", xsane.multipage_status); /* fill 32 characters status line */
+     fprintf(projectfile, "%s\n", buf); /* first line is status of multipage */
+     gtk_progress_set_format_string(GTK_PROGRESS(xsane.project_progress_bar), _(xsane.multipage_status));
+     xsane_progress_bar_set_fraction(GTK_PROGRESS_BAR(xsane.project_progress_bar), 0.0);
+-- 
+2.23.0
+

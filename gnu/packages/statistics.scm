@@ -803,13 +803,13 @@ effects of different types of color-blindness.")
 (define-public r-digest
   (package
     (name "r-digest")
-    (version "0.6.22")
+    (version "0.6.23")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "digest" version))
        (sha256
-        (base32 "1qav52y1qmkg9j2g48mrl6bbjwhs0fs9dl55xb62lfkrihkappqh"))))
+        (base32 "18h5s8vkdcz2vhpsx6g3ig00zalrihr03skn95zw3lr2y56pafmp"))))
     (build-system r-build-system)
     ;; Vignettes require r-knitr, which requires r-digest, so we have to
     ;; disable them and the tests.
@@ -846,30 +846,6 @@ OpenSSL should be used.")
     (description "Provides tools for determining estimability of linear
 functions of regression coefficients, and @code{epredict} methods that handle
 non-estimable cases correctly.")
-    (license license:gpl2+)))
-
-(define-public r-pheatmap
-  (package
-    (name "r-pheatmap")
-    (version "1.0.12")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "pheatmap" version))
-       (sha256
-        (base32
-         "1hdh74az3vyzz6dqa311rhxdm74n46lyr03p862kn80p0kp9d7ap"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-gtable" ,r-gtable)
-       ("r-rcolorbrewer" ,r-rcolorbrewer)
-       ("r-scales" ,r-scales)))
-    (home-page
-     "https://cran.r-project.org/web/packages/pheatmap")
-    (synopsis "Pretty heatmaps")
-    (description
-     "This package provides an implementation of heatmaps that offers more
-control over dimensions and appearance.")
     (license license:gpl2+)))
 
 (define-public r-labeling
@@ -1106,32 +1082,6 @@ the input of another.")
     (description
      "Reshape2 is an R library to flexibly restructure and aggregate data
 using just two functions: melt and dcast (or acast).")
-    (license license:expat)))
-
-(define-public r-scales
-  (package
-    (name "r-scales")
-    (version "1.0.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "scales" version))
-       (sha256
-        (base32 "0353dkh3d7x78463c6ds80hcml59lrqwr8rlv82a8dnkxla4l7qc"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-labeling" ,r-labeling)
-       ("r-munsell" ,r-munsell)
-       ("r-rcolorbrewer" ,r-rcolorbrewer)
-       ("r-rcpp" ,r-rcpp)
-       ("r-r6" ,r-r6)
-       ("r-viridislite" ,r-viridislite)))
-    (home-page "https://github.com/hadley/scales")
-    (synopsis "Scale functions for visualization")
-    (description
-     "This package provides graphical scales that map data to aesthetics, and
-provides methods for automatically determining breaks and labels for axes and
-legends.")
     (license license:expat)))
 
 (define-public r-ggplot2
@@ -1656,13 +1606,13 @@ defined in different packages.")
 (define-public r-rlang
   (package
     (name "r-rlang")
-    (version "0.4.1")
+    (version "0.4.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "rlang" version))
               (sha256
                (base32
-                "122hhc7pdri8wkjmk37y71m4h1gmdzaqcfdizfdjg1bhy935i10k"))))
+                "0fczcp17kaz3s4p0nd4126bppwl20vpxfybhsndpcky9h75wklgv"))))
     (build-system r-build-system)
     (home-page "http://rlang.tidyverse.org")
     (synopsis "Functions for base types, core R and Tidyverse features")
@@ -2309,13 +2259,13 @@ tables, autolinks and strikethrough text.")
 (define-public r-roxygen2
   (package
     (name "r-roxygen2")
-    (version "7.0.0")
+    (version "7.0.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "roxygen2" version))
               (sha256
                (base32
-                "13sani3y9ql56cvja8pfjpwsbq8pismc52ns1cq1zgi0jycgqja5"))))
+                "07v7f7may3vr80f4m1w1ll41qdahszycyx4c1yf8pw7asx73d77j"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-brew" ,r-brew)
@@ -3256,14 +3206,13 @@ analysis of large sparse or dense matrices.")
 (define-public r-glmnet
   (package
    (name "r-glmnet")
-   (version "3.0")
+   (version "3.0-1")
    (source
     (origin
      (method url-fetch)
      (uri (cran-uri "glmnet" version))
      (sha256
-      (base32
-       "1fwspkxbsx7jy5h8zcdl0q8xsbj7svjjbcmg5lfpxdsgyyww46v7"))))
+      (base32 "04wa926mnss53p1fhx0mjgxnmwmmqls12sc0sy7w09kbmyqa3fq7"))))
    (build-system r-build-system)
    (native-inputs
     `(("gfortran" ,gfortran)))
@@ -4884,14 +4833,14 @@ analysis} (PCA) by projection pursuit.")
 (define-public r-rrcov
   (package
     (name "r-rrcov")
-    (version "1.4-7")
+    (version "1.4-9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rrcov" version))
        (sha256
         (base32
-         "14zjyqcdiqx6js99nx5s8hmyx564ixy2d8s6i7wa50xmx368rl6b"))))
+         "11zvxidlb1pr2j5dzvmbjqdgsmmicsq8ppjf5wcfykfyf2fkcmz7"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cluster" ,r-cluster)
@@ -5020,14 +4969,13 @@ groupings.")
 (define-public r-vgam
   (package
     (name "r-vgam")
-    (version "1.1-1")
+    (version "1.1-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "VGAM" version))
        (sha256
-        (base32
-         "0lnsqx3q3k0c7sj8gj0n6shn2fyxwrh8xph8h1r1i23ybbb2n6fy"))))
+        (base32 "0kyan3a4ys2xbg9kf167cyf1gk7g963id62cjm2ij4i7y4wi61zq"))))
     (properties `((upstream-name . "VGAM")))
     (build-system r-build-system)
     (inputs
@@ -5088,14 +5036,14 @@ based on an interface to Fortran implementations by M. J. D. Powell.")
 (define-public r-rcppeigen
   (package
     (name "r-rcppeigen")
-    (version "0.3.3.5.0")
+    (version "0.3.3.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RcppEigen" version))
        (sha256
         (base32
-         "01bz41c29591ybzqn4z88ss036ai3anh9figryvmfpqcfwbszip5"))))
+         "1b78qcjim0n9klgkr82n794d6bj9r9f33g0kcsszsns2hir65sk2"))))
     (properties `((upstream-name . "RcppEigen")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5268,14 +5216,13 @@ bootstrap test for generalized linear mixed models.")
 (define-public r-cardata
   (package
     (name "r-cardata")
-    (version "3.0-2")
+    (version "3.0-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "carData" version))
        (sha256
-        (base32
-         "152lfgaspgx6x2wzdb5p3zv6r87a0d2pg10h6fjmdr613kzlwp1v"))))
+        (base32 "0cg2yxzn0pdjqykr60my1fzpfkqac21fll5hv3m9w5c9sayq8swq"))))
     (properties `((upstream-name . "carData")))
     (build-system r-build-system)
     (home-page "https://r-forge.r-project.org/projects/car/")
@@ -5288,14 +5235,13 @@ Companion to Applied Regression, Third Edition, Sage.")
 (define-public r-car
   (package
     (name "r-car")
-    (version "3.0-4")
+    (version "3.0-5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "car" version))
        (sha256
-        (base32
-         "1mhfxrb62yanaz36f4n38p9hhnqbs5b19k0864w4ja1ccgh3nl3f"))))
+        (base32 "0w7fm81pn0wqrwzbjyddnrkpjl8gavg7ijh7rab9f21rkgkzgm3y"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-abind" ,r-abind)
@@ -5763,26 +5709,6 @@ You can customize the colors according to your taste, guided by the color
 table made by the command @code{show256Colors()}.  You can also set the colors
 to any arbitrary string.  In this case, it is up to you to set valid values.")
     (license license:gpl3+)))
-
-(define-public r-txtplot
-  (package
-    (name "r-txtplot")
-    (version "1.0-3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "txtplot" version))
-       (sha256
-        (base32
-         "1949ab1bzvysdb79g8x1gaknj0ih3d6g63pv9512h5m5l3a6c31h"))))
-    (build-system r-build-system)
-    (home-page "https://cran.r-project.org/web/packages/txtplot/")
-    (synopsis "Text-based plotting")
-    (description "This package provides functions to produce rudimentary ASCII
-graphics directly in the terminal window.  This package provides a basic
-plotting function (and equivalents of curve, density, acf and barplot) as well
-as a boxplot function.")
-    (license license:lgpl3+)))
 
 (define-public python-rpy2
   ;; We need to take this changeset instead of the RELEASE_3_0_4 tag, because
