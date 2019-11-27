@@ -16,6 +16,7 @@
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2019 Brett Gilio <brettg@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,6 +58,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages icu4c)
@@ -72,6 +74,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
+  #:use-module (gnu packages php)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
@@ -1945,5 +1948,49 @@ Telegram messenger.")
     ;; Code under tgl/ (the Telegram library) is LGPLv2.1+, but the plugin
     ;; itself is GPLv2+.
     (license license:gpl2+)))
+
+(define-public tdlib
+  (let ((commit "afca63a4f43531058a079e91eb5c81f54ad744b5")
+        (revision "1")
+        (version "1.5.0"))
+    (package
+      (name "tdlib")
+      (version (git-version version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/tdlib/td.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1aa3p4k32mfshgc6fv58gwg8pnaix39rv455hfx6znj7llr8na6k"))
+                (file-name (git-file-name name version))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #t
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'remove-failing-tests
+             (lambda _
+               (substitute* "test/CMakeLists.txt"
+                 ;; The test cases are compiled into a distinct binary
+                 ;; which uses mtproto.cpp to attempt to connect to
+                 ;; a remote server. Removing this file from the sources
+                 ;; list disables those specific test cases.
+                 (("\\$\\{CMAKE_CURRENT_SOURCE_DIR\\}/mtproto.cpp") ""))
+               #t)))))
+      (native-inputs
+       `(("gperf" ,gperf)
+         ("openssl" ,openssl)
+         ("zlib" ,zlib)
+         ("php" ,php)
+         ("doxygen" ,doxygen)))
+      (synopsis "Cross-platform library for building Telegram clients")
+      (description "Tdlib is a cross-platform library for creating custom
+Telegram clients following the official Telegram API.  It can be easily used
+from almost any programming language with a C-FFI and features first-class
+support for high performance Telegram Bot creation.")
+      (home-page "https://core.telegram.org/tdlib")
+      (license license:boost1.0))))
 
 ;;; messaging.scm ends here
