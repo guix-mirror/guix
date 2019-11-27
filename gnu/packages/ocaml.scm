@@ -959,18 +959,17 @@ to the other.")
 (define-public ocaml-findlib
   (package
     (name "ocaml-findlib")
-    (version "1.8.0")
+    (version "1.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.camlcity.org/download/"
                                   "findlib" "-" version ".tar.gz"))
               (sha256
                (base32
-                "1b97zqjdriqd2ikgh4rmqajgxwdwn013riji5j53y3xvcmnpsyrb"))))
+                "00s3sfb02pnjmkax25pcnljcnhcggiliccfz69a72ic7gsjwz1cf"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("camlp4" ,camlp4)
-       ("m4" ,m4)
+     `(("m4" ,m4)
        ("ocaml" ,ocaml)))
     (arguments
      `(#:tests? #f  ; no test suite
@@ -993,13 +992,7 @@ to the other.")
                       (let ((out (assoc-ref outputs "out")))
                         (invoke "make" "install"
                                 (string-append "OCAML_CORE_STDLIB="
-                                               out "/lib/ocaml/site-lib")))))
-                  (add-after 'install 'remove-camlp4
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((out (assoc-ref outputs "out")))
-                        (delete-file-recursively
-                         (string-append out "/lib/ocaml/site-lib/camlp4"))
-                        #t))))))
+                                               out "/lib/ocaml/site-lib"))))))))
     (home-page "http://projects.camlcity.org/projects/findlib.html")
     (synopsis "Management tool for OCaml libraries")
     (description
