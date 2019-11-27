@@ -167,7 +167,7 @@ of categories with some of the activities available in that category.
        ("gettext" ,gettext-minimal)
        ("perl" ,perl)
        ("qttools" ,qttools)
-       ("xorg-server" ,xorg-server)))
+       ("xorg-server" ,xorg-server-for-tests)))
     (inputs
      `(("openssl" ,openssl)
        ("python-2" ,python-2)

@@ -360,7 +360,7 @@ diagrams.")
        ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
        ("pkg-config" ,pkg-config)
        ;; For testing.
-       ("xorg-server" ,xorg-server)
+       ("xorg-server" ,xorg-server-for-tests)
        ("shared-mime-info" ,shared-mime-info)))
     (propagated-inputs
      ;; As per the pkg-config file.
@@ -431,7 +431,7 @@ printing and other features typical of a source code editor.")
       ("pkg-config" ,pkg-config)
       ("vala" ,vala)
       ;; For testing.
-      ("xorg-server" ,xorg-server)
+      ("xorg-server" ,xorg-server-for-tests)
       ("shared-mime-info" ,shared-mime-info)))
    (propagated-inputs
     ;; gtksourceview-3.0.pc refers to all these.

@@ -1045,7 +1045,7 @@ files, to verify signatures, and to manage the private and public keys.")
        ("perl-xml-twig" ,perl-xml-twig)
        ("torsocks" ,torsocks)))
     (native-inputs
-     `(("xorg-server" ,xorg-server)))
+     `(("xorg-server" ,xorg-server-for-tests)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases

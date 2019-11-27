@@ -6310,7 +6310,7 @@ SVG, EPS, PNG and terminal output.")
        ("python-scipy" ,python-scipy)))
     (native-inputs
      `(("python-pytest" ,python-pytest)
-       ("xorg-server" ,xorg-server)))
+       ("xorg-server" ,xorg-server-for-tests)))
     (home-page "http://stanford.edu/~mwaskom/software/seaborn/")
     (synopsis "Statistical data visualization")
     (description

@@ -373,7 +373,7 @@ features.")))
        ("imagemagick" ,imagemagick)
        ("gerbv" ,gerbv)
        ("ghostscript" ,ghostscript)
-       ("xvfb" ,xorg-server)))
+       ("xvfb" ,xorg-server-for-tests)))
     (home-page "http://pcb.geda-project.org/")
     (synopsis "Design printed circuit board layouts")
     (description
@@ -1771,7 +1771,7 @@ parallel computing platforms.  It also supports serial execution.")
          ("python" ,python-2) ; for tests
          ("matplotlib" ,python2-matplotlib) ; for tests
          ("numpy" ,python2-numpy) ; for tests
-         ("xorg-server" ,xorg-server))) ; for tests
+         ("xorg-server" ,xorg-server-for-tests))) ; for tests
       (inputs
        `(("adms" ,adms)
          ("asco" ,asco)
@@ -2174,7 +2174,7 @@ specification can be downloaded at @url{http://3mf.io/specification/}.")
        ("imagemagick" ,imagemagick)
        ("ps" ,procps)
        ("python" ,python)
-       ("xvfb" ,xorg-server)))
+       ("xvfb" ,xorg-server-for-tests)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases

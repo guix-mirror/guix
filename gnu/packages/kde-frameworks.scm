@@ -483,7 +483,7 @@ Internet).")
        ("extra-cmake-modules" ,extra-cmake-modules)
        ("inetutils" ,inetutils)
        ("qttools" ,qttools)
-       ("xorg-server" ,xorg-server)))
+       ("xorg-server" ,xorg-server-for-tests)))
     (inputs
      `(("qtbase" ,qtbase)))
     (arguments
@@ -548,7 +548,7 @@ propagate their changes to their respective configuration files.")
        ("qttools" ,qttools)
        ("shared-mime-info" ,shared-mime-info)
        ;; TODO: FAM: File alteration notification http://oss.sgi.com/projects/fam
-       ("xorg-server" ,xorg-server))) ; for the tests
+       ("xorg-server" ,xorg-server-for-tests))) ; for the tests
     (inputs
      `(("qtbase" ,qtbase)))
     (arguments
@@ -1041,7 +1041,7 @@ represented by a QPoint or a QSize.")
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("qttools" ,qttools)
-       ("xorg-server" ,xorg-server)))
+       ("xorg-server" ,xorg-server-for-tests)))
     (inputs
      `(("qtbase" ,qtbase)))
     (arguments
@@ -1091,7 +1091,7 @@ configuration pages, message boxes, and password requests.")
        ("dbus" ,dbus) ; for the tests
        ("openbox" ,openbox) ; for the tests
        ("qttools" ,qttools)
-       ("xorg-server" ,xorg-server))) ; for the tests
+       ("xorg-server" ,xorg-server-for-tests))) ; for the tests
     (inputs
      `(("libxrender" ,libxrender)
        ("qtbase" ,qtbase)
@@ -2201,7 +2201,7 @@ their settings.")
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)
-       ("xorg-server" ,xorg-server)))
+       ("xorg-server" ,xorg-server-for-tests)))
     (inputs
      `(("kauth" ,kauth)
        ("kbookmarks" ,kbookmarks)

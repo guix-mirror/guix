@@ -644,7 +644,7 @@ else [])"))
     (native-inputs
      `(("intltool" ,intltool)
        ("python-docutils" ,python-docutils)
-       ("xorg-server" ,xorg-server)))
+       ("xorg-server" ,xorg-server-for-tests)))
     (inputs
      `(("adwaita-icon-theme" ,adwaita-icon-theme)
        ("gnome-keyring" ,gnome-keyring)

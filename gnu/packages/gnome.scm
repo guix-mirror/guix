@@ -2025,7 +2025,7 @@ since ca. 2006, when GTK+ itself incorporated printing support.")
     (native-inputs
      `(("glib" ,glib "bin")             ; for glib-genmarshal, etc.
        ("intltool" ,intltool)
-       ("xorg-server" ,xorg-server) ; For running the tests
+       ("xorg-server" ,xorg-server-for-tests) ; For running the tests
        ("pkg-config" ,pkg-config)))
     (home-page "https://developer.gnome.org/libbonoboui/")
     (synopsis "Some user interface controls using Bonobo")
@@ -4591,7 +4591,7 @@ principles are simplicity and standards compliance.")
        ("pkg-config" ,pkg-config)
        ("python-pep8" ,python-pep8)
        ("xmllint" ,libxml2)
-       ("xorg-server" ,xorg-server)))
+       ("xorg-server" ,xorg-server-for-tests)))
     (inputs
      `(("gobject-introspection" ,gobject-introspection)
        ("gtk+" ,gtk+)
@@ -7752,7 +7752,7 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
 
        ;; For tests.
        ("aspell-dict-en" ,aspell-dict-en)
-       ("xorg-server" ,xorg-server)))
+       ("xorg-server" ,xorg-server-for-tests)))
     (propagated-inputs
      `(("enchant" ,enchant)))            ;enchant.pc is required by gspell-1.pc
     (home-page "https://wiki.gnome.org/Projects/gspell")
@@ -8167,7 +8167,7 @@ hexadecimal or ASCII.  It is useful for editing binary files in general.")
      `(("glib" ,glib "bin")             ; glib-compile-resources
        ("pkg-config" ,pkg-config)
        ;; For tests.
-       ("xorg-server" ,xorg-server)))
+       ("xorg-server" ,xorg-server-for-tests)))
     (inputs
      `(("glib" ,glib)
        ("gobject-introspection" ,gobject-introspection)
@@ -8389,9 +8389,9 @@ advanced image management tool")
        ("gtk-doc" ,gtk-doc)
        ("pkg-config" ,pkg-config)
        ("gettext" ,gettext-minimal)
-       ("xorg-server" ,xorg-server)
 
        ;; Test suite dependencies.
+       ("xorg-server" ,xorg-server-for-tests)
        ("hicolor-icon-theme" ,hicolor-icon-theme)))
     (home-page "https://source.puri.sm/Librem5/libhandy")
     (synopsis "Library full of GTK+ widgets for mobile phones")

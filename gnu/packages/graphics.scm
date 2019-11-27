@@ -758,7 +758,7 @@ realistic reflections, shading, perspective and other effects.")
        ("graphviz" ,graphviz)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
-       ("xvfb" ,xorg-server)))
+       ("xvfb" ,xorg-server-for-tests)))
     (home-page "https://rapicorn.testbit.org/")
     (synopsis "Toolkit for rapid development of user interfaces")
     (description
@@ -1055,7 +1055,7 @@ requirements.")
                       (setenv "DISPLAY" ":1")
                       #t)))))
     (native-inputs
-     `(("xorg-server" ,xorg-server)))
+     `(("xorg-server" ,xorg-server-for-tests)))
     (inputs
      `(("glew" ,glew)
        ("libxrandr" ,libxrandr)
