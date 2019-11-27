@@ -1970,36 +1970,6 @@ format.  It can process XML documents without a complete in-memory
 representation of the data.")
     (license license:isc)))
 
-(define-public ocaml-ulex
-  (package
-    (name "ocaml-ulex")
-    (version "1.2")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/whitequark/ulex.git")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "08yf2x9a52l2y4savjqfjd2xy4pjd1rpla2ylrr9qrz1drpfw4ic"))))
-    (build-system ocaml-build-system)
-    (arguments
-     `(#:phases (modify-phases %standard-phases (delete 'configure))
-       #:tests? #f
-       #:make-flags
-       (list "all.opt"
-             (string-append "OCAMLBUILD=ocamlbuild -byte-plugin "
-                            "-cflags -I," (assoc-ref %build-inputs "camlp4")
-                            "/lib/ocaml/site-lib/camlp4"))))
-    (native-inputs
-     `(("camlp4" ,camlp4)
-       ("ocamlbuild" ,ocamlbuild)))
-    (home-page "http://www.cduce.org/download.html#side")
-    (synopsis "Lexer generator for Unicode and OCaml")
-    (description "Lexer generator for Unicode and OCaml.")
-    (license license:expat)))
-
 (define-public ocaml-gen
   (package
     (name "ocaml-gen")
