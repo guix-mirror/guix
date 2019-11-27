@@ -104,9 +104,10 @@ rich set of boolean query operators.")
                             "/lib/python" ,(version-major+minor
                                             (package-version python))
                             "/site-packages/xapian"))))
+    (native-inputs
+     `(("python-sphinx" ,python-sphinx))) ;for documentation
     (inputs
      `(("python" ,python)
-       ("python-sphinx" ,python-sphinx) ; for documentation
        ("xapian" ,xapian)
        ("zlib" ,zlib)))
     (synopsis "Python bindings for the Xapian search engine library")
