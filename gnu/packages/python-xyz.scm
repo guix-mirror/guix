@@ -5950,14 +5950,14 @@ parsing (browser/HTTP) user agent strings.")
 (define-public python-dbus
   (package
     (name "python-dbus")
-    (version "1.2.10")
+    (version "1.2.14")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://dbus.freedesktop.org/releases/dbus-python/"
                            "dbus-python-" version ".tar.gz"))
        (sha256
-        (base32 "11nqk01iq5bx2llgb3ksknyinijdp29w4ndj210glm009ayjncyl"))))
+        (base32 "0cdchkgnivlka4lf8q4qfk0yxq483i3r3aqickjf8hfn7nx0c0mi"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -5976,10 +5976,7 @@ implementation of D-Bus.")
     (inputs `(("python" ,python-2)
               ,@(alist-delete "python"
                               (package-inputs python-dbus)
-                              equal?)))
-    ;; FIXME: on Python 2, the test_utf8 fails with:
-    ;; "ValueError: unichr() arg not in range(0x10000) (narrow Python build)"
-    (arguments `(#:tests? #f))))
+                              equal?)))))
 
 (define-public python-notify2
   (package
