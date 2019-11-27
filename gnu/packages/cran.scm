@@ -15741,3 +15741,23 @@ unique identifiers, and whether it is a certain length.  In addition,
 files and to efficiently import multiple tabular data files into one
 data.table.")
     (license license:gpl3)))
+
+(define-public r-quadprog
+  (package
+    (name "r-quadprog")
+    (version "1.5-8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "quadprog" version))
+       (sha256
+        (base32 "1ka9g8zak8sg4y2xbz93dfrldznlk9qpd4pq9z21cdcdn3b8s4i2"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/quadprog")
+    (synopsis "Functions to solve quadratic programming problems")
+    (description
+     "This package contains routines and documentation for solving quadratic
+programming problems.")
+    (license license:gpl3+)))
