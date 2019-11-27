@@ -1943,7 +1943,11 @@ for use with HTML5 video.")
              (patches (search-patches "avidemux-install-to-lib.patch"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("qttools" ,qttools)
+       ("yasm" ,yasm)))
     ;; FIXME: Once packaged, add libraries not found during the build.
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -1958,14 +1962,9 @@ for use with HTML5 video.")
        ("libvorbis" ,libvorbis)
        ("libvpx" ,libvpx)
        ("libxv" ,libxv)
-       ("perl" ,perl)
        ("pulseaudio" ,pulseaudio)
-       ("python" ,python-wrapper)
        ("qtbase" ,qtbase)
-       ("qttools" ,qttools)
-       ("sdl" ,sdl)
        ("sqlite" ,sqlite)
-       ("yasm" ,yasm)
        ("zlib" ,zlib)))
     (arguments
      `(#:tests? #f                      ; no check target
@@ -2002,7 +2001,6 @@ for use with HTML5 video.")
                (let* ((out (assoc-ref outputs "out"))
                       (lib (string-append out "/lib"))
                       (top (getcwd))
-                      (sdl (assoc-ref inputs "sdl"))
                       (build_component
                        (lambda* (component srcdir #:optional (args '()))
                          (let ((builddir (string-append "build_" component)))
@@ -2015,8 +2013,6 @@ for use with HTML5 video.")
                                     (string-append "-DCMAKE_SHARED_LINKER_FLAGS="
                                                    "\"-Wl,-rpath=" lib "\"")
                                     (string-append "-DAVIDEMUX_SOURCE_DIR=" top)
-                                    (string-append "-DSDL_INCLUDE_DIR="
-                                                   sdl "/include/SDL")
                                     (string-append "../" srcdir)
                                     "-DENABLE_QT5=True"
                                     args)
