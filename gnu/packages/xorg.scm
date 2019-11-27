@@ -5072,7 +5072,7 @@ over Xlib, including:
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.20.5")
+    (version "1.20.6")
     (source
       (origin
         (method url-fetch)
@@ -5081,7 +5081,7 @@ over Xlib, including:
               "xorg-server-" version ".tar.bz2"))
         (sha256
          (base32
-          "17dc3g8cc55nbkx3np64dsz04n621dnzjmcc9wys0xbyyd1q47d8"))
+          "1laib9z17jksgzb67z69blcmnpbvj7i7m604b5ns7s760iii85k3"))
         (patches
          (list
           ;; See:
@@ -5203,7 +5203,16 @@ draggable titlebars and borders.")
 (define-public xorg-server-for-tests
   (hidden-package
    (package
-     (inherit xorg-server))))
+     (inherit xorg-server)
+     (version "1.20.5")
+     (source (origin
+               (inherit (package-source xorg-server))
+               (uri (string-append
+                     "mirror://xorg/individual/xserver/"
+                     "xorg-server-" version ".tar.bz2"))
+               (sha256
+                (base32
+                 "17dc3g8cc55nbkx3np64dsz04n621dnzjmcc9wys0xbyyd1q47d8")))))))
 
 (define-public xorg-server-xwayland
   (package
