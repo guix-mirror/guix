@@ -492,8 +492,7 @@ the opam file fomat.")
      `(("dune" ,dune)
        ("git" ,git)                               ;for the tests
        ("ocaml-cppo" ,ocaml-cppo)
-       ("python" ,python)                         ;for the tests
-       ("camlp4" ,camlp4)))
+       ("python" ,python)))                       ;for the tests
     (inputs
      `(("ocaml" ,ocaml)
        ("ncurses" ,ncurses)
