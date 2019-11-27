@@ -11953,8 +11953,7 @@ object has been freed.")
                (install-file "sqlite/emacsql-sqlite"
                              (string-append out "/bin"))
                (for-each (cut install-file <>
-                              (string-append out "/share/emacs/site-lisp/guix.d/"
-                                             "emacsql" "-" ,version))
+                              (string-append out "/share/emacs/site-lisp"))
                          (find-files "." "\\.elc*$")))
              #t)))))
     (inputs
