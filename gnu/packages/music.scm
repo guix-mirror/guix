@@ -3,7 +3,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
@@ -423,7 +423,10 @@ many input formats and provides a customisable Vi-style user interface.")
                             "Clarinet in Bb.denemo"))
              #t)))))
     (native-inputs
-     `(("glib:bin" ,glib "bin")         ; for gtester
+     `(("intltool" ,intltool)
+       ("glib:bin" ,glib "bin")         ; for gtester
+       ("gtk-doc" ,gtk-doc)
+       ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -433,13 +436,10 @@ many input formats and provides a customisable Vi-style user interface.")
        ("fluidsynth" ,fluidsynth)
        ("glib" ,glib)
        ("gtk+" ,gtk+)
-       ("gtk-doc" ,gtk-doc)
        ("gtksourceview" ,gtksourceview-3)
        ("guile" ,guile-2.0)
-       ("intltool" ,intltool)
        ("librsvg" ,librsvg)
        ("libsndfile" ,libsndfile)
-       ("libtool" ,libtool)
        ("libxml2" ,libxml2)
        ("lilypond" ,lilypond)
        ("portaudio" ,portaudio)
