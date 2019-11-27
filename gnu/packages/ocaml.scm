@@ -1498,7 +1498,7 @@ coexistence with the old (version 2) SQLite and its OCaml wrapper
 (define-public ocaml-csv
   (package
     (name "ocaml-csv")
-    (version "2.2")
+    (version "2.3")
     (source
      (origin
        (method git-fetch)
@@ -1508,7 +1508,7 @@ coexistence with the old (version 2) SQLite and its OCaml wrapper
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "07qdw8bbvprk78x96pnm807rhs82ks6sxis1cf5nyng8b5nvm2mv"))))
+         "19k48517s8y1zb91a1312a0n94cbh5i5dixndcrqjmf87kkz61zx"))))
     (build-system dune-build-system)
     (arguments
      `(#:package "csv"
@@ -1520,7 +1520,9 @@ coexistence with the old (version 2) SQLite and its OCaml wrapper
 by all major spreadsheets.  This library implements pure OCaml functions to
 read and write files in this format as well as some convenience functions to
 manipulate such data.")
-    (license (package-license camlp4))))
+    ;; This is LGPLv2.1 with an exception that allows packages statically-linked
+    ;; against the library to be released under any terms.
+    (license license:lgpl2.1)))
 
 (define-public ocaml-mtime
   (package
