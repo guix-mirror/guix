@@ -2821,7 +2821,7 @@ Format module of the OCaml standard library.")
 (define-public ocaml-piqilib
   (package
     (name "ocaml-piqilib")
-    (version "0.6.14")
+    (version "0.6.15")
     (source
      (origin
        (method git-fetch)
@@ -2830,9 +2830,7 @@ Format module of the OCaml standard library.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0lyqllmfsxmwlg7qidy92kvxi9n39lvachmydcyi81f8p07ykd2d"))
-       (patches
-         (search-patches "ocaml-piqilib-Update-base64.patch"))))
+        (base32 "0v04hs85xv6d4ysqxyv1dik34dx49yab9shpi4x7iv19qlzl7csb"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:phases
@@ -2868,13 +2866,12 @@ Format module of the OCaml standard library.")
                       (string-append stubs "/dllpiqilib_stubs.so"))
              #t))))))
     (native-inputs
-     `(("which" ,which)
-       ("camlp4" ,camlp4)))
+     `(("which" ,which)))
     (propagated-inputs
-     `(("xmlm" ,ocaml-xmlm)
-       ("ulex" ,ocaml-ulex)
-       ("easy-format" ,ocaml-easy-format)
-       ("base64" ,ocaml-base64)))
+     `(("ocaml-xmlm" ,ocaml-xmlm)
+       ("ocaml-sedlex" ,ocaml-sedlex)
+       ("ocaml-easy-format" ,ocaml-easy-format)
+       ("ocaml-base64" ,ocaml-base64)))
     (home-page "http://piqi.org")
     (synopsis "Data serialization and conversion library")
     (description "Piqilib is the common library used by the piqi command-line
