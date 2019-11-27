@@ -14,6 +14,7 @@
 ;;; Copyright © 2018 Laura Lazzati <laura.lazzati.15@gmail.com>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Eric Brown <brown@fastmail.com>
 ;;; Copyright © 2018, 2019 Brett Gilio <brettg@posteo.net>
 ;;; Copyright © 2019 Nicolò Balzarotti <anothersms@gmail.com>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
@@ -15830,3 +15831,23 @@ It solves unconstrained optimization problems using a simplex method on
 subspaces.  The method is well suited for optimizing objective functions that
 are noisy or are discontinuous at the solution.")
     (license license:gpl3+)))
+
+(define-public r-txtplot
+  (package
+    (name "r-txtplot")
+    (version "1.0-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "txtplot" version))
+       (sha256
+        (base32
+         "1949ab1bzvysdb79g8x1gaknj0ih3d6g63pv9512h5m5l3a6c31h"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/txtplot/")
+    (synopsis "Text-based plotting")
+    (description "This package provides functions to produce rudimentary ASCII
+graphics directly in the terminal window.  This package provides a basic
+plotting function (and equivalents of curve, density, acf and barplot) as well
+as a boxplot function.")
+    (license license:lgpl3+)))

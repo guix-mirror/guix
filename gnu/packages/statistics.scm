@@ -5710,26 +5710,6 @@ table made by the command @code{show256Colors()}.  You can also set the colors
 to any arbitrary string.  In this case, it is up to you to set valid values.")
     (license license:gpl3+)))
 
-(define-public r-txtplot
-  (package
-    (name "r-txtplot")
-    (version "1.0-3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "txtplot" version))
-       (sha256
-        (base32
-         "1949ab1bzvysdb79g8x1gaknj0ih3d6g63pv9512h5m5l3a6c31h"))))
-    (build-system r-build-system)
-    (home-page "https://cran.r-project.org/web/packages/txtplot/")
-    (synopsis "Text-based plotting")
-    (description "This package provides functions to produce rudimentary ASCII
-graphics directly in the terminal window.  This package provides a basic
-plotting function (and equivalents of curve, density, acf and barplot) as well
-as a boxplot function.")
-    (license license:lgpl3+)))
-
 (define-public python-rpy2
   ;; We need to take this changeset instead of the RELEASE_3_0_4 tag, because
   ;; it fixes a regression when using ggplot 3.2.0.
