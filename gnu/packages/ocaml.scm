@@ -2025,6 +2025,73 @@ representation of the data.")
 and consumable.")
     (license license:bsd-2)))
 
+(define-public ocaml-sedlex
+  (package
+    (name "ocaml-sedlex")
+    (version "2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ocaml-community/sedlex")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "05f6qa8x3vhpdz1fcnpqk37fpnyyq13icqsk2gww5idjnh6kng26"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:tests? #f; no tests
+       #:package "sedlex"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "src/generator/data"
+               (for-each
+                 (lambda (file)
+                   (copy-file (assoc-ref inputs file) file))
+                 '("DerivedCoreProperties.txt" "DerivedGeneralCategory.txt"
+                   "PropList.txt")))
+             #t))
+         (add-before 'build 'chmod
+           (lambda _
+             (for-each (lambda (file) (chmod file #o644)) (find-files "." ".*"))
+             #t)))))
+    (native-inputs
+     `(("ocamlbuild" ,ocamlbuild)))
+    (propagated-inputs
+     `(("ocaml-gen" ,ocaml-gen)
+       ("ocaml-ppx-tools-versioned" ,ocaml-ppx-tools-versioned)
+       ("ocaml-uchar" ,ocaml-uchar)))
+    ;; These three files are needed by src/generator/data/dune, but would be
+    ;; downloaded using curl at build time.
+    (inputs
+     `(("DerivedCoreProperties.txt"
+        ,(origin
+           (method url-fetch)
+           (uri "https://www.unicode.org/Public/12.1.0/ucd/DerivedCoreProperties.txt")
+           (sha256
+            (base32
+             "0s6sn1yr9qmb2i6gf8dir2zpsbjv1frdfzy3i2yjylzvf637msx6"))))
+       ("DerivedGeneralCategory.txt"
+        ,(origin
+           (method url-fetch)
+           (uri "https://www.unicode.org/Public/12.1.0/ucd/extracted/DerivedGeneralCategory.txt")
+           (sha256
+            (base32
+             "1rifzq9ba6c58dn0lrmcb5l5k4ksx3zsdkira3m5p6h4i2wriy3q"))))
+       ("PropList.txt"
+        ,(origin
+           (method url-fetch)
+           (uri "https://www.unicode.org/Public/12.1.0/ucd/PropList.txt")
+           (sha256
+            (base32
+             "0gsb1jpj3mnqbjgbavi4l95gl6g4agq58j82km22fdfg63j3w3fk"))))))
+    (home-page "http://www.cduce.org/download.html#side")
+    (synopsis "Lexer generator for Unicode and OCaml")
+    (description "Lexer generator for Unicode and OCaml.")
+    (license license:expat)))
+
 (define-public ocaml-uchar
   (package
     (name "ocaml-uchar")
