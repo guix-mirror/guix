@@ -2000,6 +2000,31 @@ representation of the data.")
     (description "Lexer generator for Unicode and OCaml.")
     (license license:expat)))
 
+(define-public ocaml-gen
+  (package
+    (name "ocaml-gen")
+    (version "0.5.2")
+    (source (origin
+              (method url-fetch)
+              (uri "https://github.com/c-cube/gen/archive/0.5.2.tar.gz")
+              (sha256
+               (base32
+                "01hvvynh580zxsaqg12md8m17rda0l33avjv00pij44ql6676il2"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:tests? #f; no tests
+       #:package "gen"))
+    (propagated-inputs
+     `(("ocaml-odoc" ,ocaml-odoc)))
+    (native-inputs
+     `(("ocaml-qtest" ,ocaml-qtest)
+       ("ocaml-qcheck" ,ocaml-qcheck)))
+    (home-page "https://github.com/c-cube/gen/")
+    (synopsis "Iterators for OCaml, both restartable and consumable")
+    (description "Gen implements iterators of OCaml, that are both restartable
+and consumable.")
+    (license license:bsd-2)))
+
 (define-public ocaml-uchar
   (package
     (name "ocaml-uchar")
