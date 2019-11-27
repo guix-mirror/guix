@@ -11,6 +11,7 @@
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
+;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -72,7 +73,9 @@
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "070axq8jpibcabmjfv4fmjmpk3k349vzvh4qhsi4n62bkcwl35wg"))))
+                "070axq8jpibcabmjfv4fmjmpk3k349vzvh4qhsi4n62bkcwl35wg"))
+              (patches
+               (search-patches "feh-fix-tests-for-imlib2-1.6.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))

@@ -1,0 +1,51 @@
+commit 8048fb542d0c36f868760ba1590fbe14a3a85df7
+Author: Pierre Langlois <pierre.langlois@gmx.com>
+Date:   Wed Nov 27 10:42:05 2019 +0000
+
+    Adapt tests for imlib2 1.6
+    
+    Reported upstream on https://github.com/derf/feh/issues/497
+
+diff --git a/test/list/custom b/test/list/custom
+index dbe2074..40ac557 100644
+--- a/test/list/custom
++++ b/test/list/custom
+@@ -1,4 +1,4 @@
+ test/ok/gif; 16; 4; list; gif; 256; 953; gif; 1; 16
+-test/ok/jpg; 16; 4; list; jpg; 256; 354; jpeg; 2; 16
++test/ok/jpg; 16; 4; list; jpg; 256; 354; jpg; 2; 16
+ test/ok/png; 16; 4; list; png; 256; 403; png; 3; 16
+ test/ok/pnm; 16; 4; list; pnm; 256; 269; pnm; 4; 16
+diff --git a/test/list/default b/test/list/default
+index bc0ef52..e480db3 100644
+--- a/test/list/default
++++ b/test/list/default
+@@ -1,5 +1,5 @@
+ NUM	FORMAT	WIDTH	HEIGHT	PIXELS	SIZE	ALPHA	FILENAME
+ 1	gif	16	16	256 	953 	-	test/ok/gif
+-2	jpeg	16	16	256 	354 	-	test/ok/jpg
++2	jpg	16	16	256 	354 	-	test/ok/jpg
+ 3	png	16	16	256 	403 	X	test/ok/png
+ 4	pnm	16	16	256 	269 	-	test/ok/pnm
+diff --git a/test/list/format_reverse b/test/list/format_reverse
+index 9216184..3301f78 100644
+--- a/test/list/format_reverse
++++ b/test/list/format_reverse
+@@ -1,5 +1,5 @@
+ NUM	FORMAT	WIDTH	HEIGHT	PIXELS	SIZE	ALPHA	FILENAME
+ 1	pnm	16	16	256 	269 	-	test/ok/pnm
+ 2	png	16	16	256 	403 	X	test/ok/png
+-3	jpeg	16	16	256 	354 	-	test/ok/jpg
++3	jpg	16	16	256 	354 	-	test/ok/jpg
+ 4	gif	16	16	256 	953 	-	test/ok/gif
+diff --git a/test/list/size b/test/list/size
+index cad60b0..7716239 100644
+--- a/test/list/size
++++ b/test/list/size
+@@ -1,5 +1,5 @@
+ NUM	FORMAT	WIDTH	HEIGHT	PIXELS	SIZE	ALPHA	FILENAME
+ 1	pnm	16	16	256 	269 	-	test/ok/pnm
+-2	jpeg	16	16	256 	354 	-	test/ok/jpg
++2	jpg	16	16	256 	354 	-	test/ok/jpg
+ 3	png	16	16	256 	403 	X	test/ok/png
+ 4	gif	16	16	256 	953 	-	test/ok/gif

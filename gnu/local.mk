@@ -826,6 +826,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/fbreader-curl-7.62.patch		\
   %D%/packages/patches/fcgi-2.4.0-gcc44-fixes.patch		\
   %D%/packages/patches/fcgi-2.4.0-poll.patch			\
+  %D%/packages/patches/feh-fix-tests-for-imlib2-1.6.patch	\
   %D%/packages/patches/fifo-map-fix-flags-for-gcc.patch		\
   %D%/packages/patches/fifo-map-remove-catch.hpp.patch		\
   %D%/packages/patches/file-CVE-2018-10360.patch		\
