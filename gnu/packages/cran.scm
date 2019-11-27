@@ -15807,3 +15807,26 @@ linear algebra, numerical optimization, differential equations, plus some
 special functions.  It uses Matlab function names where appropriate to simplify
 porting.")
     (license license:gpl3+)))
+
+(define-public r-subplex
+  (package
+    (name "r-subplex")
+    (version "1.5-4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "subplex" version))
+       (sha256
+        (base32
+         "10cbgbx1bgsax5z7gz6716g360xpq4mvq19cf4qqrxv02mmwz57z"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/subplex")
+    (synopsis "Unconstrained optimization using the subplex algorithm")
+    (description
+     "This package implements the Subplex optimization algorithm.
+It solves unconstrained optimization problems using a simplex method on
+subspaces.  The method is well suited for optimizing objective functions that
+are noisy or are discontinuous at the solution.")
+    (license license:gpl3+)))
