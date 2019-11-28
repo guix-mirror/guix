@@ -308,7 +308,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/linux.scm			\
   %D%/packages/lirc.scm				\
   %D%/packages/lisp.scm				\
-  %D%/packages/lisp-xyz.scm			\
   %D%/packages/llvm.scm				\
   %D%/packages/lout.scm				\
   %D%/packages/logging.scm			\
