@@ -2160,11 +2160,16 @@ the command line or a script.")
                 "1kp8mqg2pbxq4xzpianypadfxcsyfgwcaqgqia6h9fsq6zyh4z0s"))))
     (build-system python-build-system)
     (arguments
-     ;; The setup.py script expects python-2.
-     `(#:python ,python-2
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-build-with-python3
+           (lambda _
+             (substitute* "setup.py"
+               (("itervalues") "values"))
+             #t)))
        ;; There are currently no checks in the package.
        #:tests? #f))
-    (native-inputs `(("python" ,python-2)))
+    (native-inputs `(("python" ,python)))
     (home-page "http://guichaz.free.fr/iotop/")
     (synopsis
      "Displays the IO activity of running processes")
