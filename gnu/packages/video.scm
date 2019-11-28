@@ -1266,7 +1266,8 @@ streaming protocols.")
     (build-system gnu-build-system)
     ;; FIXME: Add additional inputs once available.
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("yasm" ,yasm)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("cdparanoia" ,cdparanoia)
@@ -1297,7 +1298,6 @@ streaming protocols.")
        ("python" ,python-wrapper)
        ("sdl" ,sdl)
        ("speex" ,speex)
-       ("yasm" ,yasm)
        ("zlib" ,zlib)))
     (arguments
      `(#:tests? #f ; no test target
