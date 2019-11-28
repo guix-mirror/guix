@@ -1247,7 +1247,7 @@ documented at
   (string-append "\x1b]8;;" uri "\x1b\\"
                  text "\x1b]8;;\x1b\\"))
 
-(define (supports-hyperlinks? port)
+(define* (supports-hyperlinks? #:optional (port (current-output-port)))
   "Return true if PORT is a terminal that supports hyperlink escapes."
   ;; Note that terminals are supposed to ignore OSC escapes they don't
   ;; understand (this is the case of xterm as of version 349, for instance.)
@@ -1613,17 +1613,22 @@ DURATION-RELATION with the current time."
 (define (display-generation profile number)
   "Display a one-line summary of generation NUMBER of PROFILE."
   (unless (zero? number)
-    (let ((header (format #f (highlight (G_ "Generation ~a\t~a")) number
-                          (date->string
-                           (time-utc->date
-                            (generation-time profile number))
-                           ;; TRANSLATORS: This is a format-string for date->string.
-                           ;; Please choose a format that corresponds to the
-                           ;; usual way of presenting dates in your locale.
-                           ;; See https://www.gnu.org/software/guile/manual/html_node/SRFI_002d19-Date-to-string.html
-                           ;; for details.
-                           (G_ "~b ~d ~Y ~T"))))
-          (current (generation-number profile)))
+    (let* ((file   (generation-file-name profile number))
+           (link   (if (supports-hyperlinks?)
+                       (cut file-hyperlink file <>)
+                       identity))
+           (header (format #f (link (highlight (G_ "Generation ~a\t~a")))
+                           number
+                           (date->string
+                            (time-utc->date
+                             (generation-time profile number))
+                            ;; TRANSLATORS: This is a format-string for date->string.
+                            ;; Please choose a format that corresponds to the
+                            ;; usual way of presenting dates in your locale.
+                            ;; See https://www.gnu.org/software/guile/manual/html_node/SRFI_002d19-Date-to-string.html
+                            ;; for details.
+                            (G_ "~b ~d ~Y ~T"))))
+           (current (generation-number profile)))
       (if (= number current)
           ;; TRANSLATORS: The word "current" here is an adjective for
           ;; "Generation", as in "current generation".  Use the appropriate
