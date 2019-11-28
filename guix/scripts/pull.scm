@@ -54,6 +54,7 @@
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-37)
+  #:use-module (web uri)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 format)
@@ -184,6 +185,42 @@ Download and deploy the latest version of Guix.\n"))
 
          %standard-build-options))
 
+(define %vcs-web-views
+  ;; Hard-coded list of host names and corresponding web view URL templates.
+  ;; TODO: Allow '.guix-channel' files to specify a URL template.
+  (let ((labhub-url (lambda (repository-url commit)
+                      (string-append
+                       (if (string-suffix? ".git" repository-url)
+                           (string-drop-right repository-url 4)
+                           repository-url)
+                       "/commit/" commit))))
+    `(("git.savannah.gnu.org"
+       ,(lambda (repository-url commit)
+          (string-append (string-replace-substring repository-url
+                                                   "/git/" "/cgit/")
+                         "/commit/?id=" commit)))
+      ("notabug.org" ,labhub-url)
+      ("framagit.org" ,labhub-url)
+      ("gitlab.com" ,labhub-url)
+      ("gitlab.inria.fr" ,labhub-url)
+      ("github.com" ,labhub-url))))
+
+(define* (channel-commit-hyperlink channel
+                                   #:optional
+                                   (commit (channel-commit channel)))
+  "Return a hyperlink for COMMIT in CHANNEL, using COMMIT as the hyperlink's
+text.  The hyperlink links to a web view of COMMIT, when available."
+  (let* ((url  (channel-url channel))
+         (uri  (string->uri url))
+         (host (and uri (uri-host uri))))
+    (if host
+        (match (assoc host %vcs-web-views)
+          (#f
+           commit)
+          ((_ template)
+           (hyperlink (template url commit) commit)))
+        commit)))
+
 (define* (display-profile-news profile #:key concise?
                                current-is-newer?)
   "Display what's up in PROFILE--new packages, and all that.  If
@@ -247,15 +284,20 @@ purposes."
                 ;; When Texinfo markup is invalid, display it as-is.
                 (const title)))))))
 
-(define (display-news-entry entry language port)
-  "Display ENTRY, a <channel-news-entry>, in LANGUAGE, a language code, to
-PORT."
+(define (display-news-entry entry channel language port)
+  "Display ENTRY, a <channel-news-entry> from CHANNEL, in LANGUAGE, a language
+code, to PORT."
   (define body
     (channel-news-entry-body entry))
 
+  (define commit
+    (channel-news-entry-commit entry))
+
   (display-news-entry-title entry language port)
   (format port (dim (G_ "    commit ~a~%"))
-          (channel-news-entry-commit entry))
+          (if (supports-hyperlinks?)
+              (channel-commit-hyperlink channel commit)
+              commit))
   (newline port)
   (let ((body (or (assoc-ref body language)
                   (assoc-ref body (%default-message-language))
@@ -293,7 +335,7 @@ to display."
                    (channel-name channel))
            (for-each (if concise?
                          (cut display-news-entry-title <> language port)
-                         (cut display-news-entry <> language port))
+                         (cut display-news-entry <> channel language port))
                      entries)
            (newline port)
            #t))))))
@@ -528,10 +570,17 @@ way and displaying details about the channel's source code."
                                        ('branch branch)
                                        ('commit commit)
                                        _ ...))
-                 (format #t (G_ "    repository URL: ~a~%") url)
-                 (when branch
-                   (format #t (G_ "    branch: ~a~%") branch))
-                 (format #t (G_ "    commit: ~a~%") commit))
+                 (let ((channel (channel (name 'nameless)
+                                         (url url)
+                                         (branch branch)
+                                         (commit commit))))
+                   (format #t (G_ "    repository URL: ~a~%") url)
+                   (when branch
+                     (format #t (G_ "    branch: ~a~%") branch))
+                   (format #t (G_ "    commit: ~a~%")
+                           (if (supports-hyperlinks?)
+                               (channel-commit-hyperlink channel commit)
+                               commit))))
                 (_ #f)))
 
             ;; Show most recently installed packages last.

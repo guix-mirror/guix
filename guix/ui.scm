@@ -111,6 +111,7 @@
             package-specification->name+version+output
 
             supports-hyperlinks?
+            hyperlink
             file-hyperlink
             location->hyperlink
 
