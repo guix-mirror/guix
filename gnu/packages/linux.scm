@@ -2887,7 +2887,6 @@ interface.")
                             (string-append "REG_BIN=" regdb
                                            "/lib/crda/regulatory.bin")))))
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ("python" ,python-2)
                      ("wireless-regdb" ,wireless-regdb)))
     (inputs `(("libnl" ,libnl)))
     (home-page
