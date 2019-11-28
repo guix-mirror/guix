@@ -6955,7 +6955,7 @@ a fortress beyond the forbidden swamp.")
      "Multiplayer action game where you control small and nimble humanoids")
     (description "OpenClonk is a multiplayer action/tactics/skill game.  It is
 often referred to as a mixture of The Settlers and Worms.  In a simple 2D
-antfarm-style landscape, the player controls his crew of Clonks, small but
+antfarm-style landscape, the player controls a crew of Clonks, small but
 robust humanoid beings.  The game encourages free play but the normal goal is
 to either exploit valuable resources from the earth by building a mine or
 fight each other on an arena-like map.")
