@@ -24681,8 +24681,9 @@ It takes the following parameters:
 The configuration rules that will be used to generate
 @file{/etc/security/pam_mount.conf.xml}.
 
-The configuration rules are SXML elements, and the the default ones
-don't mount anything for anyone at login:
+The configuration rules are SXML elements (@pxref{SXML,,, guile, GNU
+Guile Reference Manual}), and the the default ones don't mount anything
+for anyone at login:
 
 @lisp
 `((debug (@@ (enable "0")))
