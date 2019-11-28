@@ -17232,6 +17232,27 @@ Nix expressions.  It supports syntax highlighting, indenting and refilling of
 comments.")
     (license license:lgpl2.1+)))
 
+(define-public emacs-libmpdel
+  (package
+    (name "emacs-libmpdel")
+    (version "1.1.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitea.petton.fr/mpdel/libmpdel.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0dnjndpv6bmz5blfs75ynmbm32g23l4slg5p3941b1i94a08qzpy"))))
+    (build-system emacs-build-system)
+    (home-page "https://gitea.petton.fr/mpdel/libmpdel")
+    (synopsis "Emacs library to communicate with Music Player Daemon (MPD)")
+    (description
+     "An Emacs library client to communicate with Music Player Daemon (MPD), a
+flexible, powerful, server-side application for playing music.")
+    (license license:gpl3+)))
+
 (define-public emacs-simple-mpc
   ;; There have been no releases.
   (let ((commit "bee8520e81292b4c7353e45b193f9a13b482f5b2")
