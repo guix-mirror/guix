@@ -497,7 +497,7 @@ test coverage and has a web user interface that will refresh automatically.")
     (arguments
      `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
     (native-inputs
-     `(("python-2" ,python-2)))
+     `(("python" ,python-wrapper)))
     (home-page "https://github.com/google/googletest/")
     (synopsis "Test discovery and XUnit test framework")
     (description "Google Test features an XUnit test framework, automated test
