@@ -193,7 +193,12 @@ language.")
               (patches (search-patches "jamvm-arm.patch"))
               (sha256
                (base32
-                "06lhi03l3b0h48pc7x58bk9my2nrcf1flpmglvys3wyad6yraf36"))))
+                "06lhi03l3b0h48pc7x58bk9my2nrcf1flpmglvys3wyad6yraf36"))
+              (snippet
+               '(begin
+                  ;; Remove precompiled software.
+                  (delete-file "lib/classes.zip")
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -206,6 +211,7 @@ language.")
      `(("classpath" ,classpath-bootstrap)
        ("jikes" ,jikes)
        ("libffi" ,libffi)
+       ("zip" ,zip)
        ("zlib" ,zlib)))
     ;; When built with a recent GCC and glibc the configure step of icedtea-6
     ;; fails with an invalid instruction error.
@@ -660,7 +666,12 @@ machine.")))
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1nl0zxz8y5x8gwsrm7n32bry4dx8x70p8z3s9jbdvs8avyb8whkn"))))
+                "1nl0zxz8y5x8gwsrm7n32bry4dx8x70p8z3s9jbdvs8avyb8whkn"))
+              (snippet
+               '(begin
+                  ;; Remove precompiled software.
+                  (delete-file "src/classlib/gnuclasspath/lib/classes.zip")
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -669,6 +680,7 @@ machine.")))
     (inputs
      `(("classpath" ,classpath-devel)
        ("ecj-javac-wrapper" ,ecj-javac-wrapper)
+       ("zip" ,zip)
        ("zlib" ,zlib)))))
 
 (define ecj-javac-wrapper-final
