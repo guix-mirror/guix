@@ -81,7 +81,6 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
-  #:use-module (guix build-system r)
   #:use-module (guix build-system scons)
   #:use-module (srfi srfi-1))
 
@@ -1670,26 +1669,6 @@ Features:
 @item Upload to Imgur.
 @end itemize\n")
     (license license:gpl3+)))
-
-(define-public r-jpeg
-  (package
-   (name "r-jpeg")
-   (version "0.1-8.1")
-   (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "jpeg" version))
-       (sha256
-        (base32
-         "1a8mi70x79a691r40yiw684jkg1mr9n8agkxlcksxcnrdybs9c0x"))))
-   (build-system r-build-system)
-   (inputs `(("libjpeg" ,libjpeg)))
-   (home-page "http://www.rforge.net/jpeg/")
-   (synopsis "Read and write JPEG images with R")
-   (description "This package provides a way to read, write and display bitmap
-images stored in the JPEG format with R.  It can read and write both files and
-in-memory raw vectors.")
-   (license license:gpl2+)))
 
 (define-public gifsicle
   (package
