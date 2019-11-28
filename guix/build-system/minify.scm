@@ -44,8 +44,8 @@
 (define (default-uglify-js)
   "Return the default package to minify JavaScript source files."
   ;; Lazily resolve the binding to avoid a circular dependency.
-  (let ((lisp-mod (resolve-interface '(gnu packages lisp))))
-    (module-ref lisp-mod 'uglify-js)))
+  (let ((js-mod (resolve-interface '(gnu packages javascript))))
+    (module-ref js-mod 'uglify-js)))
 
 (define* (lower name
                 #:key source inputs native-inputs outputs system
