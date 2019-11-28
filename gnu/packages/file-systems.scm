@@ -41,6 +41,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
@@ -146,63 +147,56 @@ non-determinism in the build process.")
 (define-public glusterfs
   (package
     (name "glusterfs")
-    (version "3.10.12")
+    (version "7.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.gluster.org/pub/gluster/glusterfs/"
-                           (version-major+minor version) "/" version
-                           "/glusterfs-" version ".tar.gz"))
+                           (version-major version) "/"
+                           (version-major+minor version) "/"
+                           "glusterfs-" version ".tar.gz"))
        (sha256
         (base32
-         "01ysvamvfv2l5pswa1rygpg8w0954h2wkh1ba97h3nx03m5n0prg"))
-       (patches
-        (search-patches "glusterfs-use-PATH-instead-of-hardcodes.patch"))))
+         "0yzhx710ypj0j3m5dcgmmgvkp7p0rmmp2p7ld0axrm4vpwc2b1wa"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (let ((out (assoc-ref %outputs "out")))
-         (list (string-append "--with-initdir=" out "/etc/init.d")
-               (string-append "--with-mountutildir=" out "/sbin")))
+       (let ((out (assoc-ref %outputs "out"))
+             (p2 (assoc-ref %build-inputs "python-2")))
+         (list (string-append "PYTHON=" p2 "/bin/python")
+               (string-append "--with-initdir=" out "/etc/init.d")
+               (string-append "--with-mountutildir=" out "/sbin")
+               "--enable-cmocka"  ; unit tests
+               ;; "--enable-debug"  ; debug build options
+               ;; "--enable-asan"  ; Address Sanitizer
+               ;; "--enable-tsan"  ; ThreadSanitizer
+               ))
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'replace-config.sub
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; The distributed config.sub is intentionally left empty and
-             ;; must be replaced.
-             (install-file (string-append (assoc-ref inputs "automake")
-                                          "/share/automake-"
-                                          ,(version-major+minor (package-version automake)) "/config.sub")
-                           ".")
-             #t))
-         ;; Fix flex error.  This has already been fixed with upstream commit
-         ;; db3fe245a9e8812829eae7d143e49d0bfdfef9a7, but is not available in
-         ;; current releases.
-         (add-before 'configure 'fix-lex
-           (lambda _
-             (substitute* "libglusterfs/src/Makefile.in"
-               (("libglusterfs_la_LIBADD = @LEXLIB@")
-                "libglusterfs_la_LIBADD ="))
-             #t)))))
+         (add-before 'configure 'autogen
+           (lambda _ (invoke "./autogen.sh"))))))
     (native-inputs
-     `(("cmocka" ,cmocka)
-       ("pkg-config" ,pkg-config)
+     `(("pkg-config" ,pkg-config)
+       ("libtirpc", libtirpc)
+       ("rpcsvc-proto", rpcsvc-proto)
        ("python-2" ,python-2) ; must be version 2
        ("flex" ,flex)
        ("bison" ,bison)
-       ("automake" ,automake)))
+       ("libtool" ,libtool)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("cmocka" ,cmocka)))
     (inputs
      `(("acl" ,acl)
-       ;; GlusterFS fails to build with libressl because HMAC_CTX_new and
-       ;; HMAC_CTX_free are undefined.
+       ("fuse", fuse)
        ("openssl" ,openssl)
        ("liburcu" ,liburcu)
        ("libuuid" ,util-linux)
        ("libxml2" ,libxml2)
-       ("lvm2" ,lvm2)
        ("readline" ,readline)
-       ("sqlite" ,sqlite) ; for tiering
-       ("zlib" ,zlib)))
+       ("zlib" ,zlib)
+       ("libaio", libaio)
+       ("rdma-core", rdma-core)))
     (home-page "https://www.gluster.org")
     (synopsis "Distributed file system")
     (description "GlusterFS is a distributed scalable network file system
