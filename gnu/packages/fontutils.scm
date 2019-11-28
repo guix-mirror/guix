@@ -762,7 +762,7 @@ maintain the Noto Fonts project.")
       ("desktop-file-utils" ,desktop-file-utils)))
    (inputs
     `(("json-glib" ,json-glib)
-      ("sqlite-with-column-metadata" ,sqlite-with-column-metadata)
+      ("sqlite" ,sqlite)
       ("fonconfig" ,fontconfig)
       ("freetype" ,freetype)
       ("gtk+" ,gtk+)))

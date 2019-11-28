@@ -74,7 +74,8 @@
       (list (string-append "CFLAGS=-O2 -DSQLITE_SECURE_DELETE "
                            "-DSQLITE_ENABLE_FTS3 "
                            "-DSQLITE_ENABLE_UNLOCK_NOTIFY "
-                           "-DSQLITE_ENABLE_DBSTAT_VTAB"))))
+                           "-DSQLITE_ENABLE_DBSTAT_VTAB "
+                           "-DSQLITE_ENABLE_COLUMN_METADATA"))))
    (home-page "https://www.sqlite.org/")
    (synopsis "The SQLite database management system")
    (description
@@ -83,15 +84,3 @@ zero-configuration, transactional SQL database engine.  SQLite is the most
 widely deployed SQL database engine in the world.  The source code for SQLite
 is in the public domain.")
    (license license:public-domain)))
-
-;; This is used by Qt.
-(define-public sqlite-with-column-metadata
-  (package/inherit sqlite
-    (name "sqlite-with-column-metadata")
-    (arguments
-     (substitute-keyword-arguments (package-arguments sqlite)
-       ((#:configure-flags flags)
-        `(list (string-append "CFLAGS=-O2 -DSQLITE_SECURE_DELETE "
-                              "-DSQLITE_ENABLE_UNLOCK_NOTIFY "
-                              "-DSQLITE_ENABLE_DBSTAT_VTAB "
-                              "-DSQLITE_ENABLE_COLUMN_METADATA")))))))
