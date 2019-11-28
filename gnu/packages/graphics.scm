@@ -71,6 +71,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages swig)
+  #:use-module (gnu packages tbb)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -87,14 +88,14 @@
 (define-public blender
   (package
     (name "blender")
-    (version "2.80")
+    (version "2.81")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.blender.org/source/"
-                                  "blender-" version ".tar.gz"))
+                                  "blender-" version ".tar.xz"))
               (sha256
                (base32
-                "1h550jisdbis50hxwk5kxrvrk1a6sh2fsri3yyj66vhzbi87x7fd"))))
+                "1prp0f2152f1sz23jlc86vndfvmplb7qhllikkirq7hgpykrshna"))))
     (build-system cmake-build-system)
     (arguments
       (let ((python-version (version-major+minor (package-version python))))
@@ -145,6 +146,8 @@
      `(("boost" ,boost)
        ("jemalloc" ,jemalloc)
        ("libx11" ,libx11)
+       ("libxi" ,libxi)
+       ("libxrender" ,libxrender)
        ("openimageio" ,openimageio)
        ("openexr" ,openexr)
        ("opensubdiv" ,opensubdiv)
@@ -162,6 +165,7 @@
        ("openal" ,openal)
        ("python" ,python)
        ("python-numpy" ,python-numpy)
+       ("tbb" ,tbb)
        ("zlib" ,zlib)))
     (home-page "https://blender.org/")
     (synopsis "3D graphics creation suite")
