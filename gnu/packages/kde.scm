@@ -517,8 +517,9 @@ cards.")
     (arguments
      `(#:tests? #f)) ; both tests fail, require display
     (inputs
+     `(("qtbase" ,qtbase)))
+    (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("qtbase" ,qtbase)
        ("qttools" ,qttools)))
     (home-page "https://techbase.kde.org/Projects/Snorenotify")
     (synopsis "Qt notification framework")

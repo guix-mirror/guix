@@ -292,6 +292,7 @@ of a package, and INPUT-NAMES, a list of package specifications such as
             "intltool"
             "itstool"
             "qttools"
+            "yasm" "nasm" "fasm"
             "python-coverage" "python2-coverage"
             "python-cython" "python2-cython"
             "python-docutils" "python2-docutils"

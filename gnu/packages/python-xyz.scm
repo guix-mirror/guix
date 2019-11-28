@@ -4088,8 +4088,7 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
                        (assoc-ref inputs "jquery-ui")
                        "-d" dir))
              #t))
-         (delete 'check)
-         (add-after 'install 'check
+         (replace 'check
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
              (invoke "python" "tests.py" "-v"
@@ -4147,6 +4146,7 @@ toolkits.")
                            (assoc-ref inputs "jquery-ui")
                            "-d" dir))
                  #t))
+             (delete 'fix-and-disable-failing-tests)
              (delete 'check))))) ; These tests weren't run the the past.
       ;; Make sure to use special packages for Python 2 instead
       ;; of those automatically rewritten by package-with-python2.

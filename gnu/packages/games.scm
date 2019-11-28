@@ -27,7 +27,7 @@
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2019 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -5139,7 +5139,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
 (define-public tome4
   (package
     (name "tome4")
-    (version "1.6.1")
+    (version "1.6.4")
     (synopsis "Single-player, RPG roguelike game set in the world of Eyal")
     (source
      (origin
@@ -5148,7 +5148,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
                            version ".tar.bz2"))
        (sha256
         (base32
-         "0c5a2bdyfccwkqnb6yqvzggyi2nk032v01kfc00zlgpdfzljcb9i"))
+         "1hrh79aqmvwwd7idlr3lzpdpc9dgm1k5p7w2462chcjvd8vhfhb7"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -6888,6 +6888,22 @@ a fortress beyond the forbidden swamp.")
                (("PATH_SUFFIXES \"src\" \"gtest\"")
                 "PATH_SUFFIXES \"src\""))
              #t))
+         (add-after 'unpack 'adjust-backward-cpp-includes
+           (lambda _
+             ;; XXX: The bundled backward-cpp exports a CMake "interface"
+             ;; that includes external libraries such as libdl from glibc.
+             ;; By default, CMake interface includes are treated as "system
+             ;; headers", and GCC behaves poorly when glibc is passed as a
+             ;; system header (causing #include_next failures).
+
+             ;; Here we prevent targets that consume the Backward::Backward
+             ;; interface from treating it as "system includes".
+             (substitute* "CMakeLists.txt"
+               (("target_link_libraries\\((.+) Backward::Backward\\)" all target)
+                (string-append "set_property(TARGET " target " PROPERTY "
+                               "NO_SYSTEM_FROM_IMPORTED true)\n"
+                               all)))
+             #t))
          (add-after 'unpack 'add-libiberty
            ;; Build fails upon linking executables without this.
            (lambda _
@@ -6939,7 +6955,7 @@ a fortress beyond the forbidden swamp.")
      "Multiplayer action game where you control small and nimble humanoids")
     (description "OpenClonk is a multiplayer action/tactics/skill game.  It is
 often referred to as a mixture of The Settlers and Worms.  In a simple 2D
-antfarm-style landscape, the player controls his crew of Clonks, small but
+antfarm-style landscape, the player controls a crew of Clonks, small but
 robust humanoid beings.  The game encourages free play but the normal goal is
 to either exploit valuable resources from the earth by building a mine or
 fight each other on an arena-like map.")

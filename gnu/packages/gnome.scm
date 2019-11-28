@@ -2431,6 +2431,7 @@ selection and URL hints.")))
               (patches (search-patches
                          "vte-CVE-2012-2738-pt1.patch"
                          "vte-CVE-2012-2738-pt2.patch"))))
+    (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-python")))
     (native-inputs

@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
@@ -1469,16 +1469,17 @@ JavaScript (ECMAScript 3).  It has basic support for ECMAScript 5.")
 (define-public sbcl-parse-number
   (package
     (name "sbcl-parse-number")
-    (version "1.5")
+    (version "1.7")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/sharplispers/parse-number/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/sharplispers/parse-number/")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1k6s4v65ksc1j5i0dprvzfvj213v6nah7i0rgd0726ngfjisj9ir"))))
+         "0sk06ib1bhqv9y39vwnnw44vmbc4b0kvqm37xxmkxd4dwchq82d7"))))
     (build-system asdf-build-system/sbcl)
     (home-page "http://www.cliki.net/PARSE-NUMBER")
     (synopsis "Parse numbers")
@@ -4140,11 +4141,13 @@ encoding table that uses only URI-compatible characters.")
     (version "1.1.7")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/edicl/chunga/archive/v" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/edicl/chunga.git")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0ra17kyc9l7qbaw003ly111r1cbn4zixbfq1ydr9cxw10v30q1n7"))))
+        (base32 "0jzn3nyb3f22gm983rfk99smqs3mhb9ivjmasvhq9qla5cl9pyhd"))))
     (build-system asdf-build-system/sbcl)
     (inputs
      `(("sbcl-trivial-gray-streams" ,sbcl-trivial-gray-streams)))
@@ -4923,6 +4926,7 @@ reset to 0 and you're able to read it again.")
        (uri (git-reference
              (url "https://github.com/fukamachi/lack.git")
              (commit commit)))
+       (file-name (git-file-name "lack-request" version))
        (sha256
         (base32 "1avh4ygcj9xcx4m17nj0wnxxaisk26w4ljs2bibzxaln24x7pi85"))))
      (build-system asdf-build-system/sbcl)
@@ -5039,6 +5043,7 @@ performance and simplicity in mind.")
        (uri (git-reference
              (url "https://github.com/fukamachi/lack.git")
              (commit commit)))
+       (file-name (git-file-name "lack-component" version))
        (sha256
         (base32 "1avh4ygcj9xcx4m17nj0wnxxaisk26w4ljs2bibzxaln24x7pi85"))))
      (build-system asdf-build-system/sbcl)
@@ -5074,6 +5079,7 @@ performance and simplicity in mind.")
        (uri (git-reference
              (url "https://github.com/fukamachi/lack.git")
              (commit commit)))
+       (file-name (git-file-name "lack-util" version))
        (sha256
         (base32 "1avh4ygcj9xcx4m17nj0wnxxaisk26w4ljs2bibzxaln24x7pi85"))))
      (build-system asdf-build-system/sbcl)
@@ -5111,6 +5117,7 @@ performance and simplicity in mind.")
        (uri (git-reference
              (url "https://github.com/fukamachi/lack.git")
              (commit commit)))
+       (file-name (git-file-name "lack-middleware-backtrace" version))
        (sha256
         (base32 "1avh4ygcj9xcx4m17nj0wnxxaisk26w4ljs2bibzxaln24x7pi85"))))
      (build-system asdf-build-system/sbcl)
@@ -5193,6 +5200,7 @@ mime-type of a file.")
        (uri (git-reference
              (url "https://github.com/fukamachi/lack.git")
              (commit commit)))
+       (file-name (git-file-name "lack-middleware-static" version))
        (sha256
         (base32 "1avh4ygcj9xcx4m17nj0wnxxaisk26w4ljs2bibzxaln24x7pi85"))))
      (build-system asdf-build-system/sbcl)
@@ -5232,6 +5240,7 @@ performance and simplicity in mind.")
        (uri (git-reference
              (url "https://github.com/fukamachi/lack.git")
              (commit commit)))
+       (file-name (git-file-name "lack" version))
        (sha256
         (base32 "1avh4ygcj9xcx4m17nj0wnxxaisk26w4ljs2bibzxaln24x7pi85"))))
      (build-system asdf-build-system/sbcl)
