@@ -5539,7 +5539,8 @@ libraries, which are often integrated directly into libfabric.")
        (patches (search-patches
                  "psm-arch.patch"     ; uname -p returns "unknown" on Debian 9
                  "psm-ldflags.patch"  ; build shared lib with LDFLAGS
-                 "psm-repro.patch"))))  ; reproducibility
+                 "psm-repro.patch"    ; reproducibility
+                 "psm-disable-memory-stats.patch"))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
     (inputs `(("libuuid" ,util-linux)))
