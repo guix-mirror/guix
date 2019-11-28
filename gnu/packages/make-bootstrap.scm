@@ -167,15 +167,6 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                 (current-source-location)
                                 #:native-inputs native-inputs))
 
-(define static-bash-for-bootstrap
-  (package
-    (inherit static-bash)
-    (source (origin
-              (inherit (package-source static-bash))
-              (patches
-               (cons (search-patch "bash-reproducible-linux-pgrp-pipe.patch")
-                     (origin-patches (package-source static-bash))))))))
-
 (define %static-inputs
   ;; Packages that are to be used as %BOOTSTRAP-INPUTS.
   (let ((coreutils (package (inherit coreutils)
@@ -252,7 +243,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                  (("-Wl,-export-dynamic") ""))
                                #t)))))))
                 (inputs (if (%current-target-system)
-                            `(("bash" ,static-bash-for-bootstrap))
+                            `(("bash" ,static-bash))
                             '()))))
 	(tar (package (inherit tar)
 	       (arguments
@@ -298,7 +289,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                ("sed" ,sed)
                ("grep" ,grep)
                ("gawk" ,gawk)))
-      ("bash" ,static-bash-for-bootstrap))))
+      ("bash" ,static-bash))))
 
 (define %static-binaries
   (package
