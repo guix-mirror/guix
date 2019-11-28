@@ -27,7 +27,7 @@
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2019 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -6887,6 +6887,22 @@ a fortress beyond the forbidden swamp.")
                 (string-append (getcwd) "/gmock/googletest"))
                (("PATH_SUFFIXES \"src\" \"gtest\"")
                 "PATH_SUFFIXES \"src\""))
+             #t))
+         (add-after 'unpack 'adjust-backward-cpp-includes
+           (lambda _
+             ;; XXX: The bundled backward-cpp exports a CMake "interface"
+             ;; that includes external libraries such as libdl from glibc.
+             ;; By default, CMake interface includes are treated as "system
+             ;; headers", and GCC behaves poorly when glibc is passed as a
+             ;; system header (causing #include_next failures).
+
+             ;; Here we prevent targets that consume the Backward::Backward
+             ;; interface from treating it as "system includes".
+             (substitute* "CMakeLists.txt"
+               (("target_link_libraries\\((.+) Backward::Backward\\)" all target)
+                (string-append "set_property(TARGET " target " PROPERTY "
+                               "NO_SYSTEM_FROM_IMPORTED true)\n"
+                               all)))
              #t))
          (add-after 'unpack 'add-libiberty
            ;; Build fails upon linking executables without this.
