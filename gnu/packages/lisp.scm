@@ -1472,13 +1472,14 @@ JavaScript (ECMAScript 3).  It has basic support for ECMAScript 5.")
     (version "1.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/sharplispers/parse-number/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/sharplispers/parse-number/")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1k6s4v65ksc1j5i0dprvzfvj213v6nah7i0rgd0726ngfjisj9ir"))))
+         "046qkppyakm2pgjxgxba4q7inp6dd3g628pkdj10z7v5zbjw3da9"))))
     (build-system asdf-build-system/sbcl)
     (home-page "http://www.cliki.net/PARSE-NUMBER")
     (synopsis "Parse numbers")
