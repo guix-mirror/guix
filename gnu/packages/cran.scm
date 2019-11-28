@@ -5812,14 +5812,14 @@ clustering.")
 (define-public r-factominer
   (package
     (name "r-factominer")
-    (version "1.42")
+    (version "2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "FactoMineR" version))
        (sha256
         (base32
-         "1yl16inb2m89l1czgaf0pgy9655dpr751hyx92yw6rqpd2ryznac"))))
+         "0qiw60ypf3bf5xsqz2b9l82i4jvprjm8lzpp12lhl8d9j5s8m0j8"))))
     (properties `((upstream-name . "FactoMineR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5827,6 +5827,8 @@ clustering.")
        ("r-cluster" ,r-cluster)
        ("r-ellipse" ,r-ellipse)
        ("r-flashclust" ,r-flashclust)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggrepel" ,r-ggrepel)
        ("r-lattice" ,r-lattice)
        ("r-leaps" ,r-leaps)
        ("r-mass" ,r-mass)
