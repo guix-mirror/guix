@@ -17253,6 +17253,31 @@ comments.")
 flexible, powerful, server-side application for playing music.")
     (license license:gpl3+)))
 
+(define-public emacs-mpdel
+  (package
+    (name "emacs-mpdel")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitea.petton.fr/mpdel/mpdel.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0pyyvbzskr44dxbmlp3y0r6s459fd51cvwjmnjaqxfxflr5v891g"))))
+    (build-system emacs-build-system)
+    (inputs
+     `(("emacs-libmpdel" ,emacs-libmpdel)))
+    (home-page "https://gitea.petton.fr/mpdel/mpdel")
+    (synopsis "Emacs user interface for Music Player Daemon (MPD)")
+    (description
+     "MPDel provides an Emacs user interface to control playback (play, pause,
+next, volume) and display and control the current playlist as well as your
+stored playlists.")
+    (license license:gpl3+)))
+
 (define-public emacs-simple-mpc
   ;; There have been no releases.
   (let ((commit "bee8520e81292b4c7353e45b193f9a13b482f5b2")
