@@ -10213,18 +10213,17 @@ be imported and then exported via the @code{gridSVG} package.")
 (define-public r-kohonen
   (package
     (name "r-kohonen")
-    (version "3.0.8")
+    (version "3.0.10")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "kohonen" version))
        (sha256
         (base32
-         "1zbfqa1qdlry8w6xhypkiknc5gn98v1ijhlsfka8zjg8ajhqgn1q"))))
+         "1ck7j13x701g67bx81x7plszz804jfhl1yg42krcj9x88vm5cscr"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-mass" ,r-mass)
-       ("r-rcpp" ,r-rcpp)))
+     `(("r-rcpp" ,r-rcpp)))
     (home-page "https://cran.r-project.org/web/packages/kohonen")
     (synopsis "Supervised and unsupervised self-organising maps")
     (description
