@@ -17,6 +17,7 @@
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2019 Brett Gilio <brettg@posteo.net>
+;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -185,11 +186,13 @@ end-to-end encryption.")
     (inputs `(("glib" ,glib)
               ("libotr" ,libotr)
               ("gnutls" ,gnutls)
-              ("python" ,python-2)
+              ("python" ,python)
               ("perl" ,perl)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'set-python
+           (lambda _ (setenv "PYTHON" (which "python3")) #t))
          (add-after 'install 'install-etc
            (lambda* (#:key (make-flags '()) #:allow-other-keys)
              (apply invoke "make" "install-etc" make-flags)))
