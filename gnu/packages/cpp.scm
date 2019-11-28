@@ -253,6 +253,9 @@ as ordering relation.")
 intuitive syntax and trivial integration.")
     (license license:expat)))
 
+(define-public nlohmann-json-cpp
+  (deprecated-package "nlohmann-json-cpp" json-modern-cxx))
+
 (define-public xtl
   (package
     (name "xtl")

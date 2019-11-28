@@ -30,7 +30,6 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
-  #:use-module (gnu packages serialization)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls))
 
@@ -168,7 +167,7 @@ Messaging Protocol}.")
        ("python-jupyter-client" ,python-jupyter-client)))
     (inputs
      `(("xtl" ,xtl)
-       ("nlohmann-json-cpp" ,nlohmann-json-cpp)
+       ("json-modern-cxx" ,json-modern-cxx)
        ("cppzmq" ,cppzmq)
        ("zeromq" ,zeromq)
        ("openssl" ,openssl)
