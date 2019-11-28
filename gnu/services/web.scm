@@ -742,8 +742,8 @@ of index files."
                             (server-blocks
                               (append (nginx-configuration-server-blocks config)
                               servers)))))
-                (default-value
-                  (nginx-configuration))))
+                (default-value (nginx-configuration))
+                (description "Run the nginx Web server.")))
 
 (define-record-type* <fcgiwrap-configuration> fcgiwrap-configuration
   make-fcgiwrap-configuration
