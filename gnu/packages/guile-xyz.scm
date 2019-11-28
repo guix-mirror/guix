@@ -2629,8 +2629,8 @@ clean and easy to use high level API.")
     (license license:gpl3+)))
 
 (define-public guile-ffi-fftw
-  (let ((commit "95d7ffb55860f3163c5283ecec1ef43bc3d174dd")
-        (revision "1"))
+  (let ((commit "294ad9e7491dcb40026d2fec9be2af05263be1c0")
+        (revision "2"))
     (package
       (name "guile-ffi-fftw")
       (version (git-version "0" revision commit))
@@ -2642,7 +2642,7 @@ clean and easy to use high level API.")
                 (file-name (git-file-name "guile-ffi-fftw" version))
                 (sha256
                  (base32
-                  "0v9vk9cr4x9gn36lihi9gfkxyiqak0i598v5li6qw8bg95004p49"))))
+                  "08j40a5p6a8pgvhffmzb5rfdnrav2mksy3gfjkdqy93jfj1z5afg"))))
       (build-system guile-build-system)
       (arguments
        `(#:source-directory "mod"
@@ -2668,9 +2668,7 @@ library's ‘guru interface’.  It provides two functions: @code{fftw-dft! rank
 sign in out} and @code{fftw-dft rank sign in}.  These bindings being minimal,
 there is no support for computing & reusing plans, or split r/i transforms, or
 anything other than straight complex DFTs.")
-      ;; TODO: This might actually be LGPLv3+
-      ;; See https://github.com/lloda/guile-ffi-fftw/issues/1
-      (license license:gpl3+))))
+      (license license:lgpl3+))))
 
 (define-public srfi-64-driver
   (package
