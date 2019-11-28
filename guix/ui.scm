@@ -111,6 +111,7 @@
             package-specification->name+version+output
 
             supports-hyperlinks?
+            file-hyperlink
             location->hyperlink
 
             relevance
@@ -1255,6 +1256,13 @@ documented at
   (and (isatty?* port)
        (not (getenv "INSIDE_EMACS"))))
 
+(define* (file-hyperlink file #:optional (text file))
+  "Return TEXT with escapes for a hyperlink to FILE."
+  (hyperlink (string-append "file://" (gethostname)
+                            (encode-and-join-uri-path
+                             (string-split file #\/)))
+             text))
+
 (define (location->hyperlink location)
   "Return a string corresponding to LOCATION, with escapes for a hyperlink."
   (let ((str  (location->string location))
@@ -1262,10 +1270,7 @@ documented at
                   (location-file location)
                   (search-path %load-path (location-file location)))))
     (if file
-        (hyperlink (string-append "file://" (gethostname)
-                                  (encode-and-join-uri-path
-                                   (string-split file #\/)))
-                   str)
+        (file-hyperlink file str)
         str)))
 
 (define* (package->recutils p port #:optional (width (%text-width))
