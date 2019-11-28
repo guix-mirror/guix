@@ -4088,8 +4088,7 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
                        (assoc-ref inputs "jquery-ui")
                        "-d" dir))
              #t))
-         (delete 'check)
-         (add-after 'install 'check
+         (replace 'check
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
              (invoke "python" "tests.py" "-v"
