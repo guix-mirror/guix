@@ -5111,6 +5111,7 @@ performance and simplicity in mind.")
        (uri (git-reference
              (url "https://github.com/fukamachi/lack.git")
              (commit commit)))
+       (file-name (git-file-name "lack-middleware-backtrace" version))
        (sha256
         (base32 "1avh4ygcj9xcx4m17nj0wnxxaisk26w4ljs2bibzxaln24x7pi85"))))
      (build-system asdf-build-system/sbcl)
