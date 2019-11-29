@@ -866,11 +866,7 @@ Use '~/.config/guix/channels.scm' instead."))
                                        (if (assoc-ref opts 'bootstrap?)
                                            %bootstrap-guile
                                            (canonical-package guile-2.2)))))
-                        (with-file-lock/no-wait (string-append profile ".lock")
-                          (lambda (key . args)
-                            (leave (G_ "profile ~a is locked by another process~%")
-                                   profile))
-
+                        (with-profile-lock profile
                           (run-with-store store
                             (build-and-install instances profile
                                                #:dry-run?

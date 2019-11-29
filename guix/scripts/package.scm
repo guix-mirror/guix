@@ -866,11 +866,7 @@ processed, #f otherwise."
 
   ;; First, acquire a lock on the profile, to ensure only one guix process
   ;; is modifying it at a time.
-  (with-file-lock/no-wait (string-append profile ".lock")
-    (lambda (key . args)
-      (leave (G_ "profile ~a is locked by another process~%")
-                 profile))
-
+  (with-profile-lock profile
     ;; Then, process roll-backs, generation removals, etc.
     (for-each (match-lambda
                 ((key . arg)

@@ -47,8 +47,8 @@
   #:use-module ((guix licenses)
                 #:select (license? license-name license-uri))
   #:use-module ((guix build syscalls)
-                #:select (free-disk-space terminal-columns
-                                          terminal-rows))
+                #:select (free-disk-space terminal-columns terminal-rows
+                          with-file-lock/no-wait))
   #:use-module ((guix build utils)
                 ;; XXX: All we need are the bindings related to
                 ;; '&invoke-error'.  However, to work around the bug described
@@ -119,6 +119,7 @@
             package-relevance
             display-search-results
 
+            with-profile-lock
             string->generations
             string->duration
             matching-generations
@@ -1662,6 +1663,21 @@ DURATION-RELATION with the current time."
       (newline)))
 
   (display-diff profile gen1 gen2))
+
+(define (profile-lock-handler profile errno . _)
+  "Handle failure to acquire PROFILE's lock."
+  (leave (G_ "profile ~a is locked by another process~%")
+         profile))
+
+(define profile-lock-file
+  (cut string-append <> ".lock"))
+
+(define-syntax-rule (with-profile-lock profile exp ...)
+  "Grab PROFILE's lock and evaluate EXP...  Call 'leave' if the lock is
+already taken."
+  (with-file-lock/no-wait (profile-lock-file profile)
+    (cut profile-lock-handler profile <...>)
+    exp ...))
 
 (define (display-profile-content profile number)
   "Display the packages in PROFILE, generation NUMBER, in a human-readable
