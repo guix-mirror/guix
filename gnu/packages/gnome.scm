@@ -7226,14 +7226,15 @@ simple and consistent.")
   (package
     (name "arc-icon-theme")
     (version "20161122")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/horst3180/arc-icon-theme"
-                                  "/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1ya1cqvv8q847c0rpcg6apzky87q3h04y8jz5nmi52qk6kg8si0b"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/horst3180/arc-icon-theme.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ch3hp08qri93510hypzz6m2x4xgg2h15wvnhjwh1x1s1b7jvxjd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
