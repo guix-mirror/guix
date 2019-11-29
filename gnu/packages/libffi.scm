@@ -41,7 +41,7 @@
 (define-public libffi
   (package
     (name "libffi")
-    (version "3.2.1")
+    (version "3.3")
     (source (origin
               (method url-fetch)
               (uri
@@ -49,21 +49,12 @@
                               name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0dya49bnhianl0r65m65xndz6ls2jn1xngyn72gd28ls3n7bnvnh"))
-              (patches (search-patches "libffi-3.2.1-complex-alpha.patch"))))
+                "0mi0cpf8aa40ljjmzxb7im6dbj45bb0kllcd09xgmp834y9agyvj"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Prevent the build system from passing -march and -mtune to the
        ;; compiler.  See "ax_cc_maxopt.m4" and "ax_gcc_archflag.m4".
-       #:configure-flags '("--enable-portable-binary" "--without-gcc-arch")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'post-install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (define out (assoc-ref outputs "out"))
-             (symlink (string-append out "/lib/libffi-3.2.1/include")
-                      (string-append out "/include"))
-             #t)))))
+       #:configure-flags '("--enable-portable-binary" "--without-gcc-arch")))
     (outputs '("out" "debug"))
     (synopsis "Foreign function call interface library")
     (description

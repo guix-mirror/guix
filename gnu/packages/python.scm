@@ -377,12 +377,7 @@ data types.")
                 " --exclude test_mmap"
                 ;; test_socket may hang and eventually run out of memory
                 ;; on some systems: <https://bugs.python.org/issue34587>.
-                " test_socket"
-                ;; XXX: test_ctypes fails on some platforms due to a problem in
-                ;; libffi 3.2.1: <https://bugs.python.org/issue23249>.
-                ,@(if (string-prefix? "aarch64" (%current-system))
-                      '(" test_ctypes")
-                      '()))))
+                " test_socket")))
        ((#:phases phases)
        `(modify-phases ,phases
           (add-before 'check 'set-TZDIR
