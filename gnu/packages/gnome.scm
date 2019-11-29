@@ -7172,13 +7172,13 @@ like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
     (version "4.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/moka-project/"
-                           name "/archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/snwh/faba-icon-theme.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "18ln06xl60qzvzz61zq9q72hdbfgjsza3flph8i2asyzx3dffz68"))))
+        (base32 "0xh6ppr73p76z60ym49b4d0liwdc96w41cc5p07d48hxjsa6qd6n"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases
