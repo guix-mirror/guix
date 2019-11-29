@@ -179,7 +179,7 @@ bind processes, and much more.")
                           "/downloads/openmpi-" version ".tar.bz2"))
       (sha256
        (base32 "0ms0zvyxyy3pnx9qwib6zaljyp2b3ixny64xvq3czv3jpr8zf2wh"))
-      (patches (search-patches "openmpi-psm2-priority.patch"))))
+      (patches (search-patches "openmpi-mtl-priorities.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("hwloc" ,hwloc-2 "lib")
