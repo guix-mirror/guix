@@ -157,12 +157,6 @@ printing, and psresize, for adjusting page sizes.")
   (package
     (name "ghostscript")
     (version "9.27")
-
-    ;; The problems addressed by GHOSTSCRIPT/FIXED are not security-related,
-    ;; but they have a significant impact on usability, hence this graft.
-    ;; TODO: Ungraft on next update cycle.
-    (replacement ghostscript/fixed)
-
     (source
       (origin
         (method url-fetch)
@@ -205,6 +199,10 @@ printing, and psresize, for adjusting page sizes.")
              (string-append "ZLIBDIR="
                             (assoc-ref %build-inputs "zlib") "/include")
              "--enable-dynamic"
+             "--disable-compile-inits"
+             (string-append "--with-fontpath="
+                            (assoc-ref %build-inputs "gs-fonts")
+                            "/share/fonts/type1/ghostscript")
 
              ,@(if (%current-target-system)
                    '(;; Specify the native compiler, which is used to build 'echogs'
@@ -268,6 +266,7 @@ printing, and psresize, for adjusting page sizes.")
                #t))))))
     (native-inputs
      `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)       ;needed for freetype
        ("python" ,python-wrapper)
        ("tcl" ,tcl)
 
@@ -278,7 +277,9 @@ printing, and psresize, for adjusting page sizes.")
                ("libjpeg/native" ,libjpeg))
              '())))
     (inputs
-     `(("freetype" ,freetype)
+     `(("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("gs-fonts" ,gs-fonts)
        ("jbig2dec" ,jbig2dec)
        ("libjpeg" ,libjpeg)
        ("libpaper" ,libpaper)
@@ -293,25 +294,6 @@ capabilities of the PostScript language.  It supports a wide variety of
 output file formats and printers.")
     (home-page "https://www.ghostscript.com/")
     (license license:agpl3+)))
-
-(define ghostscript/fixed
-  ;; This adds the Freetype dependency (among other things), which fixes the
-  ;; rendering issues described in <https://issues.guix.gnu.org/issue/34877>.
-  (package/inherit
-   ghostscript
-   (arguments
-    (substitute-keyword-arguments (package-arguments ghostscript)
-      ((#:configure-flags flags ''())
-       `(append (list "--disable-compile-inits"
-                      (string-append "--with-fontpath="
-                                     (assoc-ref %build-inputs "gs-fonts")
-                                     "/share/fonts/type1/ghostscript"))
-                ,flags))))
-   (native-inputs `(("pkg-config" ,pkg-config)    ;needed for freetype
-                    ,@(package-native-inputs ghostscript)))
-   (inputs `(("gs-fonts" ,gs-fonts)
-             ("fontconfig" ,fontconfig)
-             ,@(package-inputs ghostscript)))))
 
 (define-public ghostscript/x
   (package/inherit ghostscript
