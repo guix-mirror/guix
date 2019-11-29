@@ -109,14 +109,13 @@ Password Scheme\"} by Niels Provos and David Mazieres.")
 (define-public python-passlib
   (package
     (name "python-passlib")
-    (version "1.7.1")
+    (version "1.7.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "passlib" version))
        (sha256
-        (base32
-         "1q2khqpj9rlcgdmkypjdq1kswvhjf72bq0zk2cv669cc2dj8z51x"))))
+        (base32 "1a5ngap7kq0b4azq8nlfg6xg5bcl1i0v1sbynhmbr631jgpnqrld"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)))
@@ -129,8 +128,7 @@ Password Scheme\"} by Niels Provos and David Mazieres.")
            ;; some tests require access to "$HOME/.cython"
            (lambda* _ (setenv "PYTHON_EGG_CACHE" "/tmp") #t)))))
     (home-page "https://bitbucket.org/ecollins/passlib")
-    (synopsis
-     "Comprehensive password hashing framework")
+    (synopsis "Comprehensive password hashing framework")
     (description
      "Passlib is a password hashing library for Python 2 & 3, which provides
 cross-platform implementations of over 30 password hashing algorithms, as well
