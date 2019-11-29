@@ -468,8 +468,10 @@ guix package --list-profiles | grep '\.guix-profile'
 
 # Make sure we can properly lock a profile.
 mkdir "$module_dir"
-echo '(sleep 60)' > "$module_dir/manifest.scm"
+echo "(open-output-file \"$module_dir/ready\") (sleep 60)" \
+     > "$module_dir/manifest.scm"
 guix package -m "$module_dir/manifest.scm" -p "$module_dir/profile" &
 pid=$!
+while [ ! -f "$module_dir/ready" ] ; do sleep 0.5 ; done
 if guix install emacs -p "$module_dir/profile"; then kill $pid; false; else true; fi
 kill $pid
