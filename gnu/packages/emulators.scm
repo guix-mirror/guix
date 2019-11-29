@@ -1062,7 +1062,18 @@ emulation community.  It provides highly accurate emulation.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0y7rcpz7psf8k3agsrq277jdm651vbnn9xpqvmj2in1a786idya7"))))
+        (base32 "0y7rcpz7psf8k3agsrq277jdm651vbnn9xpqvmj2in1a786idya7"))
+       (patches
+        (search-patches "retroarch-disable-online-updater.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Don't suggest using the Online Updater if available: it never
+           ;; is.  This disables translation of this particular message.
+           (substitute* (find-files "menu/drivers" "\\.c$")
+             (("msg_hash_to_str\\(MSG_MISSING_ASSETS\\)")
+              "\"Warning: Missing assets, go get some\""))
+           #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -1074,7 +1085,7 @@ emulation community.  It provides highly accurate emulation.")
                     (etc (string-append out "/etc"))
                     (vulkan (assoc-ref inputs "vulkan-loader"))
                     (wayland-protocols (assoc-ref inputs "wayland-protocols")))
-               ;; Hard-code the path to libvulkan.so.
+               ;; Hard-code some store file names.
                (substitute* "gfx/common/vulkan_common.c"
                  (("libvulkan.so") (string-append vulkan "/lib/libvulkan.so")))
                (substitute* "gfx/common/wayland/generate_wayland_protos.sh"
@@ -1082,10 +1093,12 @@ emulation community.  It provides highly accurate emulation.")
                  (string-append wayland-protocols "/share/wayland-protocols")))
                (substitute* "qb/qb.libs.sh"
                  (("/bin/true") (which "true")))
+
                ;; Use shared zlib.
                (substitute* '("libretro-common/file/archive_file_zlib.c"
                               "libretro-common/streams/trans_stream_zlib.c")
                  (("<compat/zlib.h>") "<zlib.h>"))
+
                ;; The configure script does not yet accept the extra arguments
                ;; (like ‘CONFIG_SHELL=’) passed by the default configure phase.
                (invoke

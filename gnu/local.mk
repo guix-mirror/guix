@@ -1329,6 +1329,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/rpcbind-CVE-2017-8779.patch		\
   %D%/packages/patches/rtags-separate-rct.patch			\
   %D%/packages/patches/racket-store-checksum-override.patch	\
+  %D%/packages/patches/retroarch-disable-online-updater.patch	\
   %D%/packages/patches/ruby-rubygems-276-for-ruby24.patch	\
   %D%/packages/patches/ruby-rack-ignore-failing-test.patch      \
   %D%/packages/patches/ruby-safe-yaml-add-require-time.patch	\
