@@ -1666,8 +1666,13 @@ DURATION-RELATION with the current time."
 
 (define (profile-lock-handler profile errno . _)
   "Handle failure to acquire PROFILE's lock."
-  (leave (G_ "profile ~a is locked by another process~%")
-         profile))
+  ;; NFS mounts can return ENOLCK.  When that happens, there's not much that
+  ;; can be done, so warn the user and keep going.
+  (if (= errno ENOLCK)
+      (warning (G_ "cannot lock profile ~a: ~a~%")
+               profile (strerror errno))
+      (leave (G_ "profile ~a is locked by another process~%")
+             profile)))
 
 (define profile-lock-file
   (cut string-append <> ".lock"))
