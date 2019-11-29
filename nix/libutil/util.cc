@@ -177,8 +177,13 @@ struct stat lstat(const Path & path)
 bool pathExists(const Path & path)
 {
     int res;
+#ifdef HAVE_STATX
+    struct statx st;
+    res = statx(AT_FDCWD, path.c_str(), AT_SYMLINK_NOFOLLOW, 0, &st);
+#else
     struct stat st;
     res = lstat(path.c_str(), &st);
+#endif
     if (!res) return true;
     if (errno != ENOENT && errno != ENOTDIR)
         throw SysError(format("getting status of %1%") % path);
