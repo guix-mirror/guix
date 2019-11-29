@@ -110,15 +110,14 @@ writing of compressed data created with the zlib and bzip2 libraries.")
 (define-public perl-archive-extract
   (package
     (name "perl-archive-extract")
-    (version "0.80")
+    (version "0.82")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/B/BI/BINGOS/Archive-Extract-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "1x15j1q6w6z8hqyqgap0lz4qbq2174wfhksy1fdd653ccbaw5jr5"))))
+        (base32 "00zq2ishxk70192sjl1wciq14vhb9isz8rcafcy1j89va1srpvrn"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Archive-Extract")
     (synopsis "Generic archive extracting mechanism")
