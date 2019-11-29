@@ -156,7 +156,7 @@ printing, and psresize, for adjusting page sizes.")
 (define-public ghostscript
   (package
     (name "ghostscript")
-    (version "9.27")
+    (version "9.50")
     (source
       (origin
         (method url-fetch)
@@ -166,7 +166,7 @@ printing, and psresize, for adjusting page sizes.")
                             "/ghostscript-" version ".tar.xz"))
         (sha256
          (base32
-          "06dnj0mxyaryfbwlsjwaqf847w91w2h8f108kxxcc41nrnx1y3zw"))
+          "1m770dwc82afdgzgq2kar3120r1lbybm3mssdm79f8kggf0v16yv"))
         (patches (search-patches "ghostscript-no-header-creationdate.patch"
                                  "ghostscript-no-header-id.patch"
                                  "ghostscript-no-header-uuid.patch"))
