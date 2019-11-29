@@ -6697,16 +6697,16 @@ of its name.")
 (define-public emacs-rainbow-mode
   (package
     (name "emacs-rainbow-mode")
-    (version "1.0.1")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://elpa.gnu.org/packages/rainbow-mode-" version ".el"))
+                    "https://elpa.gnu.org/packages/rainbow-mode-" version ".el"))
               (sha256
                (base32
-                "0cpga4ax635rfpj7y2vmh7ank0yw00dcy20gjg1mj74r97by8csf"))))
+                "1zfqj63sr07pdlwy7caz4fxsjhmbhh939n81z6jxq9xggm8ajxkd"))))
     (build-system emacs-build-system)
-    (home-page "http://elpa.gnu.org/packages/rainbow-mode.html")
+    (home-page "https://elpa.gnu.org/packages/rainbow-mode.html")
     (synopsis "Colorize color names in buffers")
     (description
      "This minor mode sets background color to strings that match color
