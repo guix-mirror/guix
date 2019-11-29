@@ -59,7 +59,7 @@
 (define-public php
   (package
     (name "php")
-    (version "7.3.12")
+    (version "7.4.0")
     (home-page "https://secure.php.net/")
     (source (origin
               (method url-fetch)
@@ -67,7 +67,7 @@
                                   "php-" version ".tar.xz"))
               (sha256
                (base32
-                "1psmv3yw21rng2qqwck2b5w190s8q76qi35gqrh8i0mdc6c5xzma"))
+                "0hpc425lzh3h3nzigi4w5ndzj1sz5ppj7gqykgmc2v2x1sr53dwv"))
               (modules '((guix build utils)))
               (snippet
                '(with-directory-excursion "ext"
@@ -79,11 +79,8 @@
                             ;;"bcmath/libbcmath"
                             ;;"fileinfo/libmagic" ; a patched version of libmagic
                             '("gd/libgd"
-                              "mbstring/oniguruma"
                               "pcre/pcre2lib"
-                              "sqlite3/libsqlite"
-                              "xmlrpc/libxmlrpc"
-                              "zip/lib"))
+                              "xmlrpc/libxmlrpc"))
                   #t))))
     (build-system gnu-build-system)
     (arguments
@@ -94,40 +91,32 @@
                                             (assoc-ref %build-inputs input))))))
          (list (with "--with-bz2" "bzip2")
                (with "--with-curl" "curl")
-               (with "--with-freetype-dir" "freetype")
-               (with "--with-gd" "gd")
                (with "--with-gdbm" "gdbm")
                (with "--with-gettext" "glibc") ; libintl.h
                (with "--with-gmp" "gmp")
-               (with "--with-jpeg-dir" "libjpeg")
                (with "--with-ldap" "openldap")
                (with "--with-ldap-sasl" "cyrus-sasl")
-               (with "--with-libzip" "libzip")
-               (with "--with-libxml-dir" "libxml2")
-               (with "--with-onig" "oniguruma")
-               (with "--with-pcre-dir" "pcre")
-               (with "--with-pcre-regex" "pcre")
                (with "--with-pdo-pgsql" "postgresql")
                (with "--with-pdo-sqlite" "sqlite")
                (with "--with-pgsql" "postgresql")
-               (with "--with-png-dir" "libpng")
                ;; PHP’s Pspell extension, while retaining its current name,
                ;; now uses the Aspell library.
                (with "--with-pspell" "aspell")
                (with "--with-readline" "readline")
                (with "--with-sqlite3" "sqlite")
                (with "--with-tidy" "tidy")
-               (with "--with-webp-dir" "libwebp")
-               (with "--with-xpm-dir" "libxpm")
                (with "--with-xsl" "libxslt")
                (with "--with-zlib-dir" "zlib")
                ;; We could add "--with-snmp", but it requires netsnmp that
                ;; we don't have a package for. It is used to build the snmp
                ;; extension of php.
+               "--with-external-pcre"
+               "--with-external-gd"
                "--with-iconv"
                "--with-openssl"
                "--with-mysqli"          ; Required for, e.g. wordpress
                "--with-pdo-mysql"
+               "--with-zip"
                "--with-zlib"
                "--enable-bcmath"        ; Required for, e.g. Zabbix frontend
                "--enable-calendar"
@@ -136,12 +125,12 @@
                "--enable-flatfile"
                "--enable-fpm"
                "--enable-ftp"
+               "--enable-gd"
                "--enable-inifile"
                "--enable-intl"
                "--enable-mbstring"
                "--enable-pcntl"
-               "--enable-sockets"
-               "--enable-zip"))
+               "--enable-sockets"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'do-not-record-build-flags
@@ -173,7 +162,7 @@
                  (("/bin/cat") (which "cat"))))
              (substitute* '("ext/mbstring/tests/mb_send_mail01.phpt"
                             "ext/mbstring/tests/mb_send_mail03.phpt"
-                            "ext/mbstring/tests/bug52861.phpt"
+                            "ext/mbstring/tests/bug52681.phpt"
                             "ext/standard/tests/general_functions/bug34794.phpt"
                             "ext/standard/tests/general_functions/bug44667.phpt"
                             "ext/standard/tests/general_functions/proc_open.phpt")
@@ -196,12 +185,15 @@
                                 "ext/pcre/tests/bug76514.phpt"
                                 "ext/pcre/tests/preg_match_error3.phpt"
                                 "ext/standard/tests/general_functions/var_export-locale.phpt"
-                                "ext/standard/tests/general_functions/var_export_basic1.phpt")))
+                                "ext/standard/tests/general_functions/var_export_basic1.phpt"
+                                "ext/intl/tests/timezone_getErrorCodeMessage_basic.phpt"
+                                "ext/intl/tests/timezone_getOffset_error.phpt")))
                    '())
 
              ;; Drop tests that are known to fail.
              (for-each delete-file
                        '("ext/posix/tests/posix_getgrgid.phpt"    ; Requires /etc/group.
+                         "ext/posix/tests/posix_getgrnam_basic.phpt" ; Requires /etc/group.
                          "ext/sockets/tests/bug63000.phpt"        ; Fails to detect OS.
                          "ext/sockets/tests/socket_shutdown.phpt" ; Requires DNS.
                          "ext/sockets/tests/socket_send.phpt"     ; Likewise.
@@ -227,25 +219,12 @@
                          "ext/gd/tests/libgd00086_extern.phpt"
                          ;; Extra newline in gd-png output.
                          "ext/gd/tests/bug45799.phpt"
-                         ;; Different error message than expected from imagecrop().
-                         "ext/gd/tests/bug66356.phpt"
-                         ;; Similarly for imagecreatefromgd2().
-                         "ext/gd/tests/bug72339.phpt"
-                         ;; Call to undefined function imageantialias().  They are
-                         ;; supposed to fail anyway.
-                         "ext/gd/tests/bug72482.phpt"
-                         "ext/gd/tests/bug72482_2.phpt"
-                         "ext/gd/tests/bug73213.phpt"
                          ;; Test expects generic "gd warning" but gets the actual function name.
                          "ext/gd/tests/createfromwbmp2_extern.phpt"
                          ;; This bug should have been fixed in gd 2.2.2.
                          ;; Is it a regression?
                          "ext/gd/tests/bug65148.phpt"
-                         ;; These tests should not be run (disabled because
-                         ;; GD_BUNDLED = 0)
-                         "ext/gd/tests/bug77198_auto.phpt"
-                         "ext/gd/tests/bug77198_threshold.phpt"
-                         "ext/gd/tests/bug77200.phpt"
+                         ;; Expected error message, but from the wrong function
                          "ext/gd/tests/bug77269.phpt"
                          ;; TODO: Enable these when libgd is built with xpm support.
                          "ext/gd/tests/xpm2gd.phpt"
@@ -254,10 +233,6 @@
                          ;; Whitespace difference, probably caused by a very
                          ;; long store path
                          "ext/gd/tests/bug77479.phpt"
-                         ;; Slightly different result (NULL instead of false),
-                         ;; but the bug report suggests the issue was in
-                         ;; the bundled gd, not upstream.
-                         "ext/gd/tests/bug77272.phpt"
                          ;; Expected invalid XBM but got EOF before image was
                          ;; complete.  It's a warning in both cases and test
                          ;; result is the same.
@@ -269,31 +244,21 @@
                          "ext/iconv/tests/bug52211.phpt"
                          "ext/iconv/tests/bug60494.phpt"
                          ;; Expects "wrong charset", gets unknown error (22).
-                         "ext/iconv/tests/iconv_mime_decode_variation3.phpt"
                          "ext/iconv/tests/iconv_strlen_error2.phpt"
-                         "ext/iconv/tests/iconv_strlen_variation2.phpt"
                          "ext/iconv/tests/iconv_substr_error2.phpt"
                          ;; Expects conversion error, gets "error condition Termsig=11".
                          "ext/iconv/tests/iconv_strpos_error2.phpt"
                          "ext/iconv/tests/iconv_strrpos_error2.phpt"
-                         ;; Similar, but iterating over multiple values.
-                         ;; iconv breaks the loop after the first error with Termsig=11.
-                         "ext/iconv/tests/iconv_strpos_variation4.phpt"
-                         "ext/iconv/tests/iconv_strrpos_variation3.phpt"
                          ;; Expects "invalid multibyte sequence" but got
                          ;; "unknown error".
                          "ext/iconv/tests/bug76249.phpt"
 
                          ;; XXX: These test failures appear legitimate, needs investigation.
                          ;; open_basedir() restriction failure.
-                         "ext/curl/tests/bug61948.phpt"
-                         ;; Fails on recent curl https://bugs.php.net/patch-display.php?bug_id=77493
-                         "ext/curl/tests/curl_basic_009.phpt"
+                         "ext/curl/tests/bug61948-unix.phpt"
                          ;; Expects a false boolean, gets empty array from glob().
                          "ext/standard/tests/file/bug41655_1.phpt"
                          "ext/standard/tests/file/glob_variation5.phpt"
-                         ;; Test output is correct, but in wrong order.
-                         "ext/standard/tests/streams/proc_open_bug64438.phpt"
                          ;; The test expects an Array, but instead get the contents(?).
                          "ext/gd/tests/bug43073.phpt"
                          ;; imagettftext() returns wrong coordinates.
@@ -311,33 +276,13 @@
                          "ext/iconv/tests/bug48147.phpt"
                          ;; Expects illegal character ".", gets "=?utf-8?Q?."
                          "ext/iconv/tests/bug51250.phpt"
-                         ;; @iconv() does not return expected output.
-                         "ext/iconv/tests/iconv003.phpt"
                          ;; iconv throws "buffer length exceeded" on some string checks.
                          "ext/iconv/tests/iconv_mime_encode.phpt"
                          ;; file_get_contents(): iconv stream filter
                          ;; ("ISO-8859-1"=>"UTF-8") unknown error.
                          "ext/standard/tests/file/bug43008.phpt"
                          ;; Table data not created in sqlite(?).
-                         "ext/pdo_sqlite/tests/bug_42589.phpt"
-
-                         ;; Small variation in output.
-                         "ext/mbstring/tests/mb_ereg_variation3.phpt"
-                         "ext/mbstring/tests/mb_ereg_replace_variation1.phpt"
-                         "ext/mbstring/tests/bug72994.phpt"
-                         "ext/mbstring/tests/bug77367.phpt"
-                         "ext/mbstring/tests/bug77370.phpt"
-                         "ext/mbstring/tests/bug77371.phpt"
-                         "ext/mbstring/tests/bug77381.phpt"
-                         "ext/mbstring/tests/mbregex_stack_limit.phpt"
-                         "ext/mbstring/tests/mbregex_stack_limit2.phpt"
-                         "ext/ldap/tests/ldap_set_option_error.phpt"
-
-                         ;; Sometimes cannot start the LDAP server.
-                         "ext/ldap/tests/bug76248.phpt"
-
-                         ;; Bug #76909 preg_match difference between 7.3 and < 7.3
-                         "ext/pcre/tests/bug76909.phpt"))
+                         "ext/pdo_sqlite/tests/bug_42589.phpt"))
 
              ;; Skip tests requiring network access.
              (setenv "SKIP_ONLINE_TESTS" "1")
@@ -353,7 +298,6 @@
        ("bzip2" ,bzip2)
        ("curl" ,curl)
        ("cyrus-sasl" ,cyrus-sasl)
-       ("freetype" ,freetype)
        ("gd" ,gd)
        ("gdbm" ,gdbm)
        ("glibc" ,glibc)
@@ -361,11 +305,8 @@
        ("gnutls" ,gnutls)
        ("icu4c" ,icu4c)
        ("libgcrypt" ,libgcrypt)
-       ("libjpeg" ,libjpeg)
        ("libpng" ,libpng)
-       ("libwebp" ,libwebp)
        ("libxml2" ,libxml2)
-       ("libxpm" ,libxpm)
        ("libxslt" ,libxslt)
        ("libx11" ,libx11)
        ("libzip" ,libzip)
