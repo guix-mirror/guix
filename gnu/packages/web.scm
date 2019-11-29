@@ -5329,25 +5329,27 @@ additional capabilities.")
 (define-public xinetd
   (package
     (name "xinetd")
-    (version "2.3.15")
+    ;; This is the maintenance fork currently used by openSUSE and Debian.
+    (version "2.3.15.4")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/xinetd-org/xinetd.git")
-             (commit (string-append "xinetd-"
-                                    (string-join (string-split version #\.)
-                                                 "-")))))
+             (url "https://github.com/openSUSE/xinetd.git")
+             (commit version)))
        (file-name (git-file-name name version))
-       (patches (search-patches "xinetd-CVE-2013-4342.patch"
-                                "xinetd-fix-fd-leak.patch"))
        (sha256
-        (base32 "0wjai6qagcgxpa1khh639ih7kswgkryc7ll1i4hxhs29sc7irdcn"))))
+        (base32 "0lrp3lcj6azhjplwxws2rx40bkyp6i6bp7n77ndcisb7ninad30q"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-loadavg")
        #:tests? #f))                    ; no tests
-    (home-page "https://github.com/xinetd-org/xinetd")
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/openSUSE/xinetd")
     (synopsis "Internet services daemon")
     (description "@code{xinetd}, a more secure replacement for @code{inetd},
 listens for incoming requests over a network and launches the appropriate
