@@ -1394,18 +1394,18 @@ or junctions, and always follows hard links.")
 (define-public zstd
   (package
     (name "zstd")
-    (version "1.4.2")
+    (version "1.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/facebook/zstd/releases/download/"
                            "v" version "/zstd-" version ".tar.gz"))
        (sha256
-        (base32 "1ja3nrjynmiwwdjrf6crraizkbagp7y414bqqq2ady91nn1hjwqj"))))
+        (base32 "05ckxap00qvc0j51d3ci38150cxsw82w7s9zgd5fgzspnzmp1vsr"))))
     (build-system gnu-build-system)
-    (outputs '("out"                    ;1.1MiB executables and documentation
-               "lib"                    ;1MiB shared library and headers
-               "static"))               ;1MiB static library
+    (outputs '("out"                    ;1.2MiB executables and documentation
+               "lib"                    ;1.2MiB shared library and headers
+               "static"))               ;1.2MiB static library
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1425,12 +1425,10 @@ or junctions, and always follows hard links.")
                            (delete-file ar))
                          (find-files shared-libs "\\.a$"))
 
-               ;; While here, remove prefix= from the pkg-config file because it
-               ;; is unused, and because it contains a needless reference to $out.
-               ;; XXX: It would be great if #:disallow-references worked between
-               ;; outputs.
+               ;; Make sure the pkg-config file refers to the right output.
                (substitute* (string-append shared-libs "/pkgconfig/libzstd.pc")
-                 (("^prefix=.*") ""))
+                 (("^prefix=.*")
+                  (string-append "prefix=" lib "\n")))
 
                #t))))
        #:make-flags
