@@ -88,14 +88,14 @@ compression library.")
 (define-public perl-io-compress
   (package
     (name "perl-io-compress")
-    (version "2.090")
+    (version "2.091")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/"
                            "IO-Compress-" version ".tar.gz"))
        (sha256
-        (base32 "11z9jkcpqyd4d1kziiq8q4rmqax93jd3hryx8cnkg4zrhd5fa4jc"))))
+        (base32 "15ayljvmxszkd5bvzd52l7gv71ldj8bhdqdnj9f48dipn681238z"))))
     (build-system perl-build-system)
     (propagated-inputs
      ;; These two packages should be updated to this one's version first.
