@@ -1664,7 +1664,7 @@ a set of simplified face specifications and a user-supplied color palette")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://howm.sourceforge.jp/a/howm-"
+       (uri (string-append "https://howm.sourceforge.jp/a/howm-"
                            version ".tar.gz"))
        (sha256
         (base32 "1kvr5pxpc9rwhkza9025mdi0wvh0f0rpawl21rzirjk1x10903yi"))))
@@ -1685,7 +1685,7 @@ a set of simplified face specifications and a user-supplied color palette")
        (modify-phases %standard-phases
          (add-after 'install 'make-autoloads
            (assoc-ref emacs:%standard-phases 'make-autoloads)))))
-    (home-page "http://howm.osdn.jp/")
+    (home-page "https://howm.osdn.jp/")
     (synopsis "Note-taking tool for Emacs")
     (description "Howm is a note-taking tool for Emacs.  Like
 code@{emacs-wiki.el}, it facilitates using hyperlinks and doing full-text
