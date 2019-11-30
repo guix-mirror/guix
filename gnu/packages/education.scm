@@ -58,6 +58,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system qt)
   #:use-module (guix build-system trivial)
   #:use-module (srfi srfi-1))
 
@@ -563,15 +564,10 @@ language and very flexible regarding to new or unknown keyboard layouts.")
         (sha256
          (base32
           "19rdk94pls75hdvx11hnfk3qpm6l28p9q45q5f04sknxagrfaznr"))))
-    (build-system cmake-build-system)
+    (build-system qt-build-system)
     (arguments
-     `(#:modules ((guix build cmake-build-system)
-                  (guix build qt-utils)
-                  (guix build utils))
-       #:imported-modules (,@%cmake-build-system-modules
-                            (guix build qt-utils))
-       #:phases
-       (modify-phases %standard-phases
+     `(#:phases
+       (modify-phases (@ (guix build qt-build-system) %standard-phases)
          (add-after 'configure 'patch-makefiles
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((qtdec (assoc-ref inputs "qtdeclarative")))
@@ -579,11 +575,6 @@ language and very flexible regarding to new or unknown keyboard layouts.")
                               "src/CMakeFiles/ktouch.dir/build.make")
                  (("/gnu/store/.*qmlcachegen")
                   (string-append qtdec "/bin/qmlcachegen"))))
-             #t))
-         (add-after 'install 'wrap-executable
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-qt-program out "ktouch"))
              #t)))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
