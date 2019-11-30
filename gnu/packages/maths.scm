@@ -5015,7 +5015,7 @@ management via the GIMPS project's Primenet server.")
 (define-public nauty
   (package
     (name "nauty")
-    (version "2.6r11")
+    (version "2.6r12")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5024,7 +5024,7 @@ management via the GIMPS project's Primenet server.")
                     ".tar.gz"))
               (sha256
                (base32
-                "05z6mk7c31j70md83396cdjmvzzip1hqb88pfszzc6k4gy8h3m2y"))))
+                "1p4mxf8q5wm47nxyskxbqwa5p1vvkycv1zgswvnk9nsn6vff0al6"))))
     (build-system gnu-build-system)
     (outputs '("out" "lib"))
     (arguments
