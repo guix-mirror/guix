@@ -27129,8 +27129,8 @@ comparison less trivial.
 @end quotation
 
 This service is automatically added to your operating system
-configuration when you use @command{guix system reconfigure} or
-@command{guix system init}.
+configuration when you use @command{guix system reconfigure},
+@command{guix system init}, or @command{guix deploy}.
 @end defvr
 
 @node Shepherd Services
