@@ -2920,7 +2920,7 @@ replacement for the @code{urlview} program.")
 (define-public tnef
   (package
     (name "tnef")
-    (version "1.4.17")
+    (version "1.4.18")
     (source
      (origin
        (method git-fetch)
@@ -2928,8 +2928,7 @@ replacement for the @code{urlview} program.")
              (url "https://github.com/verdammelt/tnef.git")
              (commit version)))
        (sha256
-        (base32
-         "0cq2xh5wd74qn6k2nnw5rayxgqhjl3jbzf4zlc4babcwxrv32ldh"))
+        (base32 "104g48mcm00bgiyzas2vf86331w7bnw7h3bc11ib4lp7rz6zqfck"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
