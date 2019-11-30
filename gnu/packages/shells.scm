@@ -334,7 +334,7 @@ written by Paul Haahr and Byron Rakitzis.")
 (define-public tcsh
   (package
     (name "tcsh")
-    (version "6.20.00")
+    (version "6.22.02")
     (source (origin
               (method url-fetch)
               ;; Old tarballs are moved to old/.
@@ -344,9 +344,8 @@ written by Paul Haahr and Byron Rakitzis.")
                                         "old/tcsh-" version ".tar.gz")))
               (sha256
                (base32
-                "17ggxkkn5skl0v1x0j6hbv5l0sgnidfzwv16992sqkdm983fg7dq"))
-              (patches (search-patches "tcsh-fix-autotest.patch"
-                                       "tcsh-fix-out-of-bounds-read.patch"))
+                "0nw8prz1n0lmr82wnpyhrzmki630afn7p9cfgr3vl00vr9c72a7d"))
+              (patches (search-patches "tcsh-fix-autotest.patch"))
               (patch-flags '("-p0"))))
     (build-system gnu-build-system)
     (native-inputs

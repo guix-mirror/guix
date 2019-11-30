@@ -63,38 +63,14 @@
  
  AT_DATA([comment2.csh],
  [[echo testing...@%:@\
-@@ -567,10 +567,10 @@ run=3
-# Adapt to changes in sed 4.3:
-# https://github.com/tcsh-org/tcsh/commit/2ad4fc1705893207598ed5cd21713ddf3f17bba0
- ]])
- AT_DATA([uniformity_test.csh],
- [[
--set SERVICE_NAME_LOG = `cat batchsystem.properties | grep '^jdbc_url' | sed -ne 's/^[^=]*=[^@]*@[:blank:]*\([^$]*\)$/\1/p' | perl -pe 's/\s//g'  |  perl -pe 's/\)/\\\)/g' | perl -pe 's/\(/\\\(/g'`
-+set SERVICE_NAME_LOG = `cat batchsystem.properties | grep '^jdbc_url' | sed -ne 's/^[^=]*=[^@]*@[[:blank:]]*\([^$]*\)$/\1/p' | perl -pe 's/\s//g'  |  perl -pe 's/\)/\\\)/g' | perl -pe 's/\(/\\\(/g'`
- echo -n "$SERVICE_NAME_LOG" > ./output1
- 
--cat batchsystem.properties | grep '^jdbc_url' | sed -ne 's/^[^=]*=[^@]*@[:blank:]*\([^$]*\)$/\1/p' | perl -pe 's/\s//g'  |  perl -pe 's/\)/\\\)/g' | perl -pe 's/\(/\\\(/g' > ./output2
-+cat batchsystem.properties | grep '^jdbc_url' | sed -ne 's/^[^=]*=[^@]*@[[:blank:]]*\([^$]*\)$/\1/p' | perl -pe 's/\s//g'  |  perl -pe 's/\)/\\\)/g' | perl -pe 's/\(/\\\(/g' > ./output2
- 
- diff -uprN ./output1 ./output2 >& /dev/null
- 
-@@ -587,7 +587,7 @@ AT_DATA([quoting_result_test.csh],
- echo "(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP\)(HOST=db\)(PORT=1521\)\)(CONNECT_DATA=(SERVER=DEDICATED\)(SERVICE_NAME=bns03\)\)\)" > ./expected_result
- 
- set string = "jdbc_url=jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db)(PORT=1521))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=bns03)))"
--set SERVICE_NAME_LOG  = `echo "$string" | grep '^jdbc_url' | sed -ne 's/^[^=]*=[^@]*@[:blank:]*\([^$]*\)$/\1/p' | perl -pe 's/\)/\\\)/g'`
-+set SERVICE_NAME_LOG  = `echo "$string" | grep '^jdbc_url' | sed -ne 's/^[^=]*=[^@]*@[[:blank:]]*\([^$]*\)$/\1/p' | perl -pe 's/\)/\\\)/g'`
- 
- echo "$SERVICE_NAME_LOG" > ./actual_result
- 
 --- tests/subst.at
 +++ tests/subst.at
-@@ -54,7 +54,7 @@ AT_CHECK([echo 'echo ~; echo "$HOME"' | tcsh -f | uniq | wc -l | tr -d ' \t'],
+@@ -54,7 +54,7 @@ AT_CHECK([export HOME=$(getent passwd $(id -un) | awk -F: '{ print $(NF - 1) }')
  , [1
  ])
  
--AT_CHECK([echo "echo ~$(id -un)/foo; echo \"$HOME/foo\"" | tcsh -f | uniq dnl
-+AT_CHECK([echo "echo ~$(id -un)/foo; echo \"$HOME/foo\"" | tcsh -f | grep -v "/homeless-shelter" | uniq dnl
+-AT_CHECK([export HOME=$(getent passwd $(id -un) | awk -F: '{ print $(NF - 1) }'); echo "echo ~$(id -un)/foo; echo \"\$HOME/foo\"" | tcsh -f | uniq dnl
++AT_CHECK([export HOME=$(getent passwd $(id -un) | awk -F: '{ print $(NF - 1) }'); echo "echo ~$(id -un)//foo; echo \"\$HOME/foo\"" | tcsh -f | uniq dnl
  	  | wc -l | tr -d ' \t'], , [1
  ])
  
@@ -110,21 +86,6 @@
  ]])
  chmod a+x args.sh
  AT_CHECK([tcsh -f listflags.csh], ,
-@@ -704,9 +705,9 @@ AT_CHECK([tcsh -f mail.csh], ,
-# This test fails by trying to change to the build user's home
-# directory, which does not exist.
- AT_CLEANUP
- 
- 
--AT_SETUP([$ cdtohome])
--AT_CHECK([tcsh -f -c 'cd'], 0)
--AT_CLEANUP
-+#AT_SETUP([$ cdtohome])
-+#AT_CHECK([tcsh -f -c 'cd'], 0)
-+#AT_CLEANUP
- AT_SETUP([$ noimplicithome])
- AT_CHECK([tcsh -f -c 'unset cdtohome; cd'], 1, , [cd: Too few arguments.
- ])
 @@ -728,55 +729,57 @@ TCSH_UNTESTED([$ oid])
  AT_SETUP([$ owd])
  
