@@ -36,9 +36,11 @@
   #:use-module (guix records)
   #:use-module (guix profiles)
   #:use-module (guix scripts)
+  #:use-module (guix channels)
   #:use-module (guix scripts build)
   #:autoload   (guix scripts package) (delete-generations
                                        delete-matching-generations)
+  #:autoload   (guix scripts pull) (channel-commit-hyperlink)
   #:use-module (guix graph)
   #:use-module (guix scripts graph)
   #:use-module (guix scripts system reconfigure)
@@ -456,9 +458,30 @@ list of services."
 ;;; Generations.
 ;;;
 
+(define (sexp->channel sexp)
+  "Return the channel corresponding to SEXP, an sexp as found in the
+\"provenance\" file produced by 'provenance-service-type'."
+  (match sexp
+    (('channel ('name name)
+               ('url url)
+               ('branch branch)
+               ('commit commit))
+     (channel (name name) (url url)
+              (branch branch) (commit commit)))))
+
 (define* (display-system-generation number
                                     #:optional (profile %system-profile))
   "Display a summary of system generation NUMBER in a human-readable format."
+  (define (display-channel channel)
+    (format #t     "    ~a:~%" (channel-name channel))
+    (format #t (G_ "      repository URL: ~a~%") (channel-url channel))
+    (when (channel-branch channel)
+      (format #t (G_ "      branch: ~a~%") (channel-branch channel)))
+    (format #t (G_ "      commit: ~a~%")
+            (if (supports-hyperlinks?)
+                (channel-commit-hyperlink channel)
+                (channel-commit channel))))
+
   (unless (zero? number)
     (let* ((generation  (generation-file-name profile number))
            (params      (read-boot-parameters-file generation))
@@ -468,7 +491,13 @@ list of services."
            (root-device (if (bytevector? root)
                             (uuid->string root)
                             root))
-           (kernel      (boot-parameters-kernel params)))
+           (kernel      (boot-parameters-kernel params))
+           (provenance  (catch 'system-error
+                          (lambda ()
+                            (call-with-input-file
+                                (string-append generation "/provenance")
+                              read))
+                          (const #f))))
       (display-generation profile number)
       (format #t (G_ "  file name: ~a~%") generation)
       (format #t (G_ "  canonical file name: ~a~%") (readlink* generation))
@@ -495,7 +524,23 @@ list of services."
                     (else
                      root-device)))
 
-      (format #t (G_ "  kernel: ~a~%") kernel))))
+      (format #t (G_ "  kernel: ~a~%") kernel)
+
+      (match provenance
+        (#f #t)
+        (('provenance ('version 0)
+                      ('channels channels ...)
+                      ('configuration-file config-file))
+         (unless (null? channels)
+           ;; TRANSLATORS: Here "channel" is the same terminology as used in
+           ;; "guix describe" and "guix pull --channels".
+           (format #t (G_ "  channels:~%"))
+           (for-each display-channel (map sexp->channel channels)))
+         (when config-file
+           (format #t (G_ "  configuration file: ~a~%")
+                   (if (supports-hyperlinks?)
+                       (file-hyperlink config-file)
+                       config-file))))))))
 
 (define* (list-generations pattern #:optional (profile %system-profile))
   "Display in a human-readable format all the system generations matching

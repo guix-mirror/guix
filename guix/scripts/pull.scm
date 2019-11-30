@@ -60,6 +60,7 @@
   #:use-module (ice-9 format)
   #:export (display-profile-content
             channel-list
+            channel-commit-hyperlink
             with-git-error-handling
             guix-pull))
 
