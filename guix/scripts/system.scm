@@ -722,7 +722,9 @@ and TARGET arguments."
      (return (primitive-eval (lowered-gexp-sexp lowered))))))
 
 (define* (perform-action action os
-                         #:key skip-safety-checks?
+                         #:key
+                         save-provenance?
+                         skip-safety-checks?
                          install-bootloader?
                          dry-run? derivations-only?
                          use-substitutes? bootloader-target target
@@ -918,15 +920,17 @@ Some ACTIONS support additional ARGS.\n"))
   (display (G_ "
       --no-bootloader    for 'init', do not install a bootloader"))
   (display (G_ "
+      --save-provenance  save provenance information"))
+  (display (G_ "
       --share=SPEC       for 'vm', share host file system according to SPEC"))
+  (display (G_ "
+      --expose=SPEC      for 'vm', expose host file system according to SPEC"))
   (display (G_ "
   -N, --network          for 'container', allow containers to access the network"))
   (display (G_ "
   -r, --root=FILE        for 'vm', 'vm-image', 'disk-image', 'container',
                          and 'build', make FILE a symlink to the result, and
                          register it as a garbage collector root"))
-  (display (G_ "
-      --expose=SPEC      for 'vm', expose host file system according to SPEC"))
   (display (G_ "
       --full-boot        for 'vm', make a full boot sequence"))
   (display (G_ "
@@ -979,6 +983,9 @@ Some ACTIONS support additional ARGS.\n"))
          (option '("full-boot") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'full-boot? #t result)))
+         (option '("save-provenance") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'save-provenance? #t result)))
          (option '("skip-checks") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'skip-safety-checks? #t result)))
@@ -1047,25 +1054,33 @@ resulting from command-line parsing."
              file-or-exp))
     obj)
 
+  (define save-provenance?
+    (or (assoc-ref opts 'save-provenance?)
+        (memq action '(init reconfigure))))
+
   (let* ((file        (match args
                         (() #f)
                         ((x . _) x)))
          (expr        (assoc-ref opts 'expression))
          (system      (assoc-ref opts 'system))
          (target      (assoc-ref opts 'target))
-         (os          (ensure-operating-system
-                       (or file expr)
-                       (cond
-                        ((and expr file)
-                         (leave
-                          (G_ "both file and expression cannot be specified~%")))
-                        (expr
-                         (read/eval expr))
-                        (file
-                         (load* file %user-module
-                                #:on-error (assoc-ref opts 'on-error)))
-                        (else
-                         (leave (G_ "no configuration specified~%"))))))
+         (transform   (if save-provenance?
+                          (cut operating-system-with-provenance <> file)
+                          identity))
+         (os          (transform
+                       (ensure-operating-system
+                        (or file expr)
+                        (cond
+                         ((and expr file)
+                          (leave
+                           (G_ "both file and expression cannot be specified~%")))
+                         (expr
+                          (read/eval expr))
+                         (file
+                          (load* file %user-module
+                                 #:on-error (assoc-ref opts 'on-error)))
+                         (else
+                          (leave (G_ "no configuration specified~%")))))))
 
          (dry?        (assoc-ref opts 'dry-run?))
          (bootloader? (assoc-ref opts 'install-bootloader?))

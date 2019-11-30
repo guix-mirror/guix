@@ -25900,6 +25900,15 @@ switch to it@footnote{This action (and the related actions
 @code{switch-generation} and @code{roll-back}) are usable only on
 systems already running Guix System.}.
 
+@quotation Note
+@c The paragraph below refers to the problem discussed at
+@c <https://lists.gnu.org/archive/html/guix-devel/2014-08/msg00057.html>.
+It is highly recommended to run @command{guix pull} once before you run
+@command{guix system reconfigure} for the first time (@pxref{Invoking
+guix pull}).  Failing to do that you would see an older version of Guix
+once @command{reconfigure} has completed.
+@end quotation
+
 This effects all the configuration specified in @var{file}: user
 accounts, system services, global package list, setuid programs, etc.
 The command starts system services specified in @var{file} that are not
@@ -25918,14 +25927,27 @@ It also adds a bootloader menu entry for the new OS configuration,
 entries for older configurations to a submenu, allowing you to choose
 an older system generation at boot time should you need it.
 
-@quotation Note
-@c The paragraph below refers to the problem discussed at
-@c <https://lists.gnu.org/archive/html/guix-devel/2014-08/msg00057.html>.
-It is highly recommended to run @command{guix pull} once before you run
-@command{guix system reconfigure} for the first time (@pxref{Invoking
-guix pull}).  Failing to do that you would see an older version of Guix
-once @command{reconfigure} has completed.
-@end quotation
+@cindex provenance tracking, of the operating system
+Upon completion, the new system is deployed under
+@file{/run/current-system}.  This directory contains @dfn{provenance
+meta-data}: the list of channels in use (@pxref{Channels}) and
+@var{file} itself, when available.  This information is useful should
+you later want to inspect how this particular generation was built.
+
+In fact, assuming @var{file} is self-contained, you can later rebuild
+generation @var{n} of your operating system with:
+
+@example
+guix time-machine \
+  -C /var/guix/profiles/system-@var{n}-link/channels.scm -- \
+  system reconfigure \
+  /var/guix/profiles/system-@var{n}-link/configuration.scm
+@end example
+
+You can think of it as some sort of built-in version control!  Your
+system is not just a binary artifact: @emph{it carries its own source}.
+@xref{Service Reference, @code{provenance-service-type}}, for more
+information on provenance tracking.
 
 @item switch-generation
 @cindex generations
@@ -26186,6 +26208,25 @@ This works as per @command{guix build} (@pxref{Invoking guix build}).
 @itemx -d
 Return the derivation file name of the given operating system without
 building anything.
+
+@cindex provenance tracking, of the operating system
+@item --save-provenance
+As discussed above, @command{guix system init} and @command{guix system
+reconfigure} always save provenance information @i{via} a dedicated
+service (@pxref{Service Reference, @code{provenance-service-type}}).
+However, other commands don't do that by default.  If you wish to, say,
+create a virtual machine image that contains provenance information, you
+can run:
+
+@example
+guix system vm-image --save-provenance config.scm
+@end example
+
+That way, the resulting image will effectively ``embed its own source''
+in the form of meta-data in @file{/run/current-system}.  With that
+information, one can rebuild the image to make sure it really contains
+what it pretends to contain; or they could use that to derive a variant
+of the image.
 
 @item --file-system-type=@var{type}
 @itemx -t @var{type}
@@ -27086,6 +27127,10 @@ channels can lead to the same system, bit-for-bit; when
 different meta-data and thus different store file names, which makes
 comparison less trivial.
 @end quotation
+
+This service is automatically added to your operating system
+configuration when you use @command{guix system reconfigure} or
+@command{guix system init}.
 @end defvr
 
 @node Shepherd Services
