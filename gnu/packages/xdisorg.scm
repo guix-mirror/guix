@@ -95,14 +95,14 @@
 (define-public arandr
   (package
     (name "arandr")
-    (version "0.1.9")
+    (version "0.1.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://christian.amsuess.com/tools/arandr"
                                   "/files/arandr-" version ".tar.gz"))
               (sha256
                (base32
-                "1i3f1agixxbfy4kxikb2b241p7c2lg73cl9wqfvlwz3q6zf5faxv"))
+                "135q0llvm077jil2fr92ssw3p095m4r8jfj0lc5rr3m71n4srj6v"))
               (modules '((guix build utils)))
               (snippet
                '(begin
