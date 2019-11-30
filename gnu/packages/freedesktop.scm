@@ -879,13 +879,13 @@ message bus.")
   (package
     (name "accountsservice")
     (version "0.6.50")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://www.freedesktop.org/software/"
-                                  name "/" name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "0jn7vg1z4vxnna0hl33hbcb4bb3zpilxc2vyclh24vx4vvsjhn83"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.freedesktop.org/software/"
+                           "accountsservice/accountsservice-" version ".tar.xz"))
+       (sha256
+        (base32 "0jn7vg1z4vxnna0hl33hbcb4bb3zpilxc2vyclh24vx4vvsjhn83"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; XXX: tests require DocBook 4.1.2
