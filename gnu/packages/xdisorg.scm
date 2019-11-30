@@ -98,7 +98,7 @@
     (version "0.1.10")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://christian.amsuess.com/tools/arandr"
+              (uri (string-append "https://christian.amsuess.com/tools/arandr"
                                   "/files/arandr-" version ".tar.gz"))
               (sha256
                (base32
