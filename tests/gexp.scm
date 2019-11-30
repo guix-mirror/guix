@@ -170,6 +170,14 @@
         (let ((file (local-file "../guix/base32.scm")))
           (local-file-absolute-file-name file)))))
 
+(test-equal "local-file, non-literal relative file name"
+  (canonicalize-path (search-path %load-path "guix/base32.scm"))
+  (let ((directory (dirname (search-path %load-path
+                                         "guix/build-system/gnu.scm"))))
+    (with-directory-excursion directory
+      (let ((file (local-file (string-copy "../base32.scm"))))
+        (local-file-absolute-file-name file)))))
+
 (test-assertm "local-file, #:select?"
   (mlet* %store-monad ((select? -> (lambda (file stat)
                                      (member (basename file)
