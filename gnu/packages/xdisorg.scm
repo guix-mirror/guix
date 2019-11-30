@@ -98,8 +98,8 @@
     (version "0.1.9")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://christian.amsuess.com/tools/" name
-                                  "/files/" name "-" version ".tar.gz"))
+              (uri (string-append "http://christian.amsuess.com/tools/arandr"
+                                  "/files/arandr-" version ".tar.gz"))
               (sha256
                (base32
                 "1i3f1agixxbfy4kxikb2b241p7c2lg73cl9wqfvlwz3q6zf5faxv"))
