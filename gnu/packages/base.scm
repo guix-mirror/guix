@@ -253,40 +253,28 @@ interactive means to merge two files.")
 (define-public findutils
   (package
    (name "findutils")
-   (version "4.6.0")
+   (version "4.7.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/findutils/findutils-"
-                                version ".tar.gz"))
+                                version ".tar.xz"))
             (sha256
              (base32
-              "178nn4dl7wbcw499czikirnkniwnx36argdnqgz4ik9i6zvwkm6y"))
-            (patches (search-patches
-                      "findutils-gnulib-libio.patch"
-                      "findutils-localstatedir.patch"
-                      "findutils-makedev.patch"
-                      "findutils-test-xargs.patch"))
-            (modules '((guix build utils)))
-            (snippet
-             '(begin
-                ;; The gnulib test-lock test is prone to writer starvation
-                ;; with our glibc@2.25, which prefers readers, so disable it.
-                ;; The gnulib commit b20e8afb0b2 should fix this once
-                ;; incorporated here.
-                (substitute* "tests/Makefile.in"
-                  (("test-lock\\$\\(EXEEXT\\) ") ""))
-                #t))))
+              "16kqz9yz98dasmj70jwf5py7jk558w96w0vgp3zf9xsqk3gzpzn5"))
+            (patches (search-patches "findutils-localstatedir.patch"))))
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags (list
                          ;; Tell 'updatedb' to write to /var.
-                         "--localstatedir=/var"
-
-                         ;; Work around cross-compilation failure.  See
-                         ;; <http://savannah.gnu.org/bugs/?27299#comment1>.
-                         ,@(if (%current-target-system)
-                               '("gl_cv_func_wcwidth_works=yes")
-                               '()))))
+                         "--localstatedir=/var")
+      #:phases (modify-phases %standard-phases
+                 (add-before 'check 'adjust-test-shebangs
+                   (lambda _
+                     (substitute* '("tests/xargs/verbose-quote.sh"
+                                    "tests/find/exec-plus-last-file.sh")
+                       (("#!/bin/sh")
+                        (string-append "#!" (which "sh"))))
+                     #t)))))
    (synopsis "Operating on files matching given criteria")
    (description
     "Findutils supplies the basic file directory searching utilities of the

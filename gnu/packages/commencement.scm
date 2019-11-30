@@ -1450,7 +1450,15 @@ exec " gcc "/bin/" program
     (arguments
      `(#:implicit-inputs? #f
        #:guile ,%bootstrap-guile
-       ,@(package-arguments findutils)))))
+
+       ;; The build system assumes we have done a mistake when time_t is 32-bit
+       ;; on a 64-bit system.  Ignore that for our bootstrap toolchain.
+       ,@(if (target-64bit?)
+             (substitute-keyword-arguments (package-arguments findutils)
+               ((#:configure-flags flags ''())
+                `(cons "TIME_T_32_BIT_OK=yes"
+                       ,flags)))
+             (package-arguments findutils))))))
 
 (define file-boot0
   (package
