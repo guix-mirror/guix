@@ -27043,6 +27043,50 @@ programs under @file{/run/current-system/profile}.  Other services can
 extend it by passing it lists of packages to add to the system profile.
 @end defvr
 
+@cindex provenance tracking, of the operating system
+@defvr {Scheme Variable} provenance-service-type
+This is the type of the service that records @dfn{provenance meta-data}
+in the system itself.  It creates several files under
+@file{/run/current-system}:
+
+@table @file
+@item channels.scm
+This is a ``channel file'' that can be passed to @command{guix pull -C}
+or @command{guix time-machine -C}, and which describes the channels used
+to build the system, if that information was available
+(@pxref{Channels}).
+
+@item configuration.scm
+This is the file that was passed as the value for this
+@code{provenance-service-type} service.  By default, @command{guix
+system reconfigure} automatically passes the OS configuration file it
+received on the command line.
+
+@item provenance
+This contains the same information as the two other files but in a
+format that is more readily processable.
+@end table
+
+In general, these two pieces of information (channels and configuration
+file) are enough to reproduce the operating system ``from source''.
+
+@quotation Caveats
+This information is necessary to rebuild your operating system, but it
+is not always sufficient.  In particular, @file{configuration.scm}
+itself is insufficient if it is not self-contained---if it refers to
+external Guile modules or to extra files.  If you want
+@file{configuration.scm} to be self-contained, we recommend that modules
+or files it refers to be part of a channel.
+
+Besides, provenance meta-data is ``silent'' in the sense that it does
+not change the bits contained in your system, @emph{except for the
+meta-data bits themselves}.  Two different OS configurations or sets of
+channels can lead to the same system, bit-for-bit; when
+@code{provenance-service-type} is used, these two systems will have
+different meta-data and thus different store file names, which makes
+comparison less trivial.
+@end quotation
+@end defvr
 
 @node Shepherd Services
 @subsection Shepherd Services

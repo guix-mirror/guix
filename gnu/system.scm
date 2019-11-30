@@ -110,6 +110,7 @@
 
             system-linux-image-file-name
             operating-system-with-gc-roots
+            operating-system-with-provenance
 
             boot-parameters
             boot-parameters?
@@ -538,6 +539,15 @@ bookkeeping."
     ;; roots.  Add ROOTS to those.
     (services (cons (simple-service 'extra-root
                                     gc-root-service-type roots)
+                    (operating-system-user-services os)))))
+
+(define* (operating-system-with-provenance os #:optional config-file)
+  "Return a variant of OS that stores its own provenance information,
+including CONFIG-FILE, if available.  This is achieved by adding an instance
+of PROVENANCE-SERVICE-TYPE to its services."
+  (operating-system
+    (inherit os)
+    (services (cons (service provenance-service-type config-file)
                     (operating-system-user-services os)))))
 
 
