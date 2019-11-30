@@ -560,7 +560,8 @@ extracting icontainer icon files.")
     `(#:configure-flags (list (string-append "--with-docdir="
                                              (assoc-ref %outputs "doc")
                                              "/share/doc/"
-                                             ,name "-" ,version))))
+                                             ,name "-" ,version)
+                              "--disable-static")))
    (inputs `(("zlib" ,zlib)
              ("libjpeg" ,libjpeg)))
    (synopsis "Library for handling TIFF files")
