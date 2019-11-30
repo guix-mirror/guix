@@ -27,6 +27,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system qt)
   #:use-module (guix build-system gnu)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -62,7 +63,7 @@
               (sha256
                (base32
                 "0nilrhwlyvkngjgxfc08n73c16azgmw80pvx0a78xqww9y3hv4xh"))))
-    (build-system cmake-build-system)
+    (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)
@@ -105,24 +106,13 @@
                        (assoc-ref %outputs "out") "/lib/qt5/qml")
         (string-append "-DCMAKE_INSTALL_SYSCONFDIR="
                        (assoc-ref %outputs "out") "/etc"))
-       #:modules ((guix build cmake-build-system)
-                  (guix build qt-utils)
-                  (guix build utils))
-       #:imported-modules (,@%cmake-build-system-modules
-                           (guix build qt-utils))
        #:phases
-       (modify-phases %standard-phases
+       (modify-phases (@ (guix build qt-build-system) %standard-phases)
          (add-after 'unpack 'embed-loginctl-reference
            (lambda _
              (substitute* "CMakeLists.txt"
                (("/usr/bin/loginctl") (which "loginctl")))
-             #t))
-         (add-after 'install 'wrap-programs
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-qt-program out "sddm")
-               (wrap-qt-program out "sddm-greeter")
-               #t))))))
+               #t)))))
     (synopsis "QML based X11 and Wayland display manager")
     (description "SDDM is a display manager for X11 and Wayland aiming to be
 fast, simple and beautiful.  SDDM is themeable and puts no restrictions on the
