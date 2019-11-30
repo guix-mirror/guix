@@ -26301,6 +26301,10 @@ bootloader boot menu:
 
 @table @code
 
+@item describe
+Describe the current system generation: its file name, the kernel and
+bootloader used, etc., as well as provenance information when available.
+
 @item list-generations
 List a summary of each generation of the operating system available on
 disk, in a human-readable way.  This is similar to the

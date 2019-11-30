@@ -922,6 +922,8 @@ Some ACTIONS support additional ARGS.\n"))
   (display (G_ "\
    roll-back        switch to the previous operating system configuration\n"))
   (display (G_ "\
+   describe         describe the current system\n"))
+  (display (G_ "\
    list-generations list the system generations\n"))
   (display (G_ "\
    switch-generation switch to an existing operating system configuration\n"))
@@ -1196,6 +1198,12 @@ argument list and OPTS is the option alist."
                       ((pattern) pattern)
                       (x (leave (G_ "wrong number of arguments~%"))))))
        (list-generations pattern)))
+    ((describe)
+     (match (generation-number %system-profile)
+       (0
+        (error (G_ "no system generation, nothing to describe~%")))
+       (generation
+        (display-system-generation generation))))
     ((search)
      (apply (resolve-subcommand "search") args))
     ;; The following commands need to use the store, but they do not need an
@@ -1235,7 +1243,8 @@ argument list and OPTS is the option alist."
           (case action
             ((build container vm vm-image disk-image reconfigure init
               extension-graph shepherd-graph
-              list-generations delete-generations roll-back
+              list-generations describe
+              delete-generations roll-back
               switch-generation search docker-image)
              (alist-cons 'action action result))
             (else (leave (G_ "~a: unknown action~%") action))))))
