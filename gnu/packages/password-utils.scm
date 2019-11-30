@@ -294,21 +294,22 @@ applications, there is xclip integration." )
 (define-public yapet
   (package
     (name "yapet")
-    (version "1.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://www.guengel.ch/myapps/yapet/downloads/yapet-"
-                                  version
-                                  ".tar.bz2"))
-              (sha256
-               (base32
-                "1lq46mpxdsbl6qw4cj58hp9q7jckmyvbsi08p5zr77rjgqadxyyy"))))
+    (version "2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://yapet.guengel.ch/downloads/yapet-"
+                           version ".tar.xz"))
+       (sha256
+        (base32 "1fl4s7v1psl52ndd6i7716i9f493aj8ipl6lgmraadnn5h26l3pm"))))
     (build-system gnu-build-system)
     (inputs
-     `(("ncurses" ,ncurses)
+     `(("argon2" ,argon2)
+       ("ncurses" ,ncurses)
        ("openssl" ,openssl)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("cppunit" ,cppunit)
+       ("pkg-config" ,pkg-config)))
     (synopsis "Yet Another Password Encryption Tool")
     (description "YAPET is a text based password manager using the Blowfish
 encryption algorithm.  Because of its small footprint and very few library
