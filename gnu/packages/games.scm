@@ -6812,7 +6812,7 @@ where the player draws runes in real time to effect the desired spell.")
 (define-public edgar
   (package
     (name "edgar")
-    (version "1.31")
+    (version "1.32")
     (source
      (origin
        (method url-fetch)
@@ -6820,7 +6820,7 @@ where the player draws runes in real time to effect the desired spell.")
         (string-append "https://github.com/riksweeney/edgar/releases/download/"
                        version "/edgar-" version "-1.tar.gz"))
        (sha256
-        (base32 "0i4851ci8a86ql4bhdq3xdfmf4b9z5zrd4xpc6vhi06697zgm13i"))))
+        (base32 "12lam6qcscc5ima1w2ksd1cvsvxbd17h6mqkgsqpzx8ap43p2r5p"))))
     (build-system gnu-build-system)
     (arguments '(#:tests? #f            ; there are no tests
                  #:make-flags
