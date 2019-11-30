@@ -24,6 +24,7 @@
 
 (define-module (gnu packages kde)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system qt)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -541,28 +542,15 @@ different notification systems.")
         (sha256
          (base32
           "02lr3xx5s2mgddac4n3lkgr7ppf1z5m6ajs90rjix0vs8a271kp5"))))
-    (build-system cmake-build-system)
+    (build-system qt-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_TESTING=ON")
        #:tests? #f ; tests fail hard in our build environment
-       #:modules ((guix build cmake-build-system)
-                  (guix build qt-utils)
-                  (guix build utils))
-       #:imported-modules (,@%cmake-build-system-modules
-                            (guix build qt-utils))
        #:phases
-       (modify-phases %standard-phases
+       (modify-phases (@ (guix build qt-build-system) %standard-phases)
          (add-before 'check 'check-setup
            (lambda _
              (setenv "QT_QPA_PLATFORM" "offscreen")
-             #t))
-         (add-after 'install 'wrap-executable
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-qt-program out "../lib/libexec/kdeconnectd")
-               (wrap-qt-program out "kdeconnect-cli")
-               (wrap-qt-program out "kdeconnect-handler")
-               (wrap-qt-program out "kdeconnect-indicator"))
              #t)))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
