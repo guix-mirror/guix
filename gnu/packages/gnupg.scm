@@ -909,7 +909,7 @@ passphrase when @code{gpg} is run and needs it.")))
     (version "1.6")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.jabberwocky.com/"
+              (uri (string-append "https://www.jabberwocky.com/"
                                   "software/paperkey/paperkey-"
                                   version ".tar.gz"))
               (sha256
@@ -925,7 +925,7 @@ passphrase when @code{gpg} is run and needs it.")))
                             "checks/roundtrip-raw.sh")
                (("/bin/echo") "echo"))
              #t)))))
-    (home-page "http://www.jabberwocky.com/software/paperkey/")
+    (home-page "https://www.jabberwocky.com/software/paperkey/")
     (synopsis "Backup OpenPGP keys to paper")
     (description
      "Paperkey extracts the secret bytes from an OpenPGP (GnuPG, PGP, etc) key
