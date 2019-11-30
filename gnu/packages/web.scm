@@ -546,21 +546,24 @@ supported at your website.")
 (define-public fcgi
   (package
     (name "fcgi")
-    (version "2.4.0")
+    (version "2.4.2")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; Upstream has disappeared.
-       (uri (string-append "https://sources.archlinux.org/other/packages/fcgi/"
-                           "fcgi-" version ".tar.gz"))
+       (uri (git-reference
+             (url "https://github.com/FastCGI-Archives/fcgi2")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1f857wnl1d6jfrgfgfpz3zdaj8fch3vr13mnpcpvy8bang34bz36"))
-       (patches (search-patches "fcgi-2.4.0-poll.patch"
-                                "fcgi-2.4.0-gcc44-fixes.patch"))))
+        (base32 "1jhz6jfwv5kawa8kajvg18nfwc1b30f38zc0lggszd1vcmrwqkz1"))))
     (build-system gnu-build-system)
     ;; Parallel building is not supported.
     (arguments `(#:parallel-build? #f))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
     ;; This is an archived fork of the original home page, www.fastcgi.com.
     (home-page "https://fastcgi-archives.github.io/")
     (synopsis "Language-independent, high-performant extension to CGI")
