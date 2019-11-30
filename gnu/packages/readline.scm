@@ -3,6 +3,7 @@
 ;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +46,11 @@
   (list (readline-patch version seqno (base32 hash))
         ...))
 
+(define %patch-series-8.0
+  (patch-series
+   "8.0"
+   (1 "0sfh7wn0pr743xspnb1zndxndlv9rc0hcg14cbw5cmyg6f4ykrfq")))
+
 (define %patch-series-7.0
   (patch-series
    "7.0"
@@ -57,7 +63,8 @@
 (define-public readline
   (package
     (name "readline")
-    (version "8.0")
+    (version (string-append "8.0."
+                            (number->string (length %patch-series-8.0))))
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/readline/readline-"
@@ -65,7 +72,8 @@
               (sha256
                (base32
                 "0qg4924hf4hg0r0wbx2chswsr08734536fh5iagkd3a7f4czafg3"))
-              (patches (search-patches "readline-link-ncurses.patch"))
+              (patches (append %patch-series-8.0
+                               (search-patches "readline-link-ncurses.patch")))
               (patch-flags '("-p0"))))
     (build-system gnu-build-system)
     (propagated-inputs `(("ncurses" ,ncurses)))
