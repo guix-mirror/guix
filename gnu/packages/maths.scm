@@ -4108,7 +4108,7 @@ as equations, scalars, vectors, and matrices.")
 (define-public z3
   (package
     (name "z3")
-    (version "4.8.6")
+    (version "4.8.7")
     (home-page "https://github.com/Z3Prover/z3")
     (source (origin
               (method git-fetch)
@@ -4117,7 +4117,7 @@ as equations, scalars, vectors, and matrices.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1sywcqj5y8yp28m4cdvzsgw74kd6zr1s3y1x17ky8pr9prvpvl6x"))))
+                "0hprcdwhhyjigmhhk6514m71bnmvqci9r8gglrqilgx424r6ff7q"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
