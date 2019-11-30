@@ -30,22 +30,24 @@
   #:use-module (guix utils)
   #:use-module (ice-9 format))
 
-(define (patch-url seqno)
-  (format #f "mirror://gnu/readline/readline-7.0-patches/readline70-~3,'0d" seqno))
+(define (patch-url version seqno)
+  (format #f "mirror://gnu/readline/readline-~a-patches/readline~a-~3,'0d"
+          version (string-join (string-split version #\.) "") seqno))
 
-(define (readline-patch seqno sha256)
+(define (readline-patch version seqno sha256)
   "Return the origin of Readline patch SEQNO, with expected hash SHA256"
   (origin
     (method url-fetch)
-    (uri (patch-url seqno))
+    (uri (patch-url version seqno))
     (sha256 sha256)))
 
-(define-syntax-rule (patch-series (seqno hash) ...)
-  (list (readline-patch seqno (base32 hash))
+(define-syntax-rule (patch-series version (seqno hash) ...)
+  (list (readline-patch version seqno (base32 hash))
         ...))
 
 (define %patch-series-7.0
   (patch-series
+   "7.0"
    (1 "0xm3sxvwmss7ddyfb11n6pgcqd1aglnpy15g143vzcf75snb7hcs")
    (2 "0n1dxmqsbjgrfxb1hgk5c6lsraw4ncbnzxlsx7m35nym6lncjiw7")
    (3 "1027kmymniizcy0zbdlrczxfx3clxcdln5yq05q9yzlc6y9slhwy")
