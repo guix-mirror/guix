@@ -14381,14 +14381,13 @@ Git.")
 (define-public python-pyclipper
   (package
     (name "python-pyclipper")
-    (version "1.1.0.post1")
+    (version "1.1.0.post3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyclipper" version ".zip"))
        (sha256
-        (base32
-         "0ldbkbnx94an4zzrwb1sxmg6k0jgk4cwmvcdyy8y5k1zslc612wa"))
+        (base32 "164yksvqwqvwzh8f8lq92asg87hd8rvcy2xb5vm4y4ccvd5xgb7i"))
       (modules '((guix build utils)))
       (snippet
        '(begin
