@@ -2615,13 +2615,13 @@ vectors.")
 (define-public r-catools
   (package
     (name "r-catools")
-    (version "1.17.1.2")
+    (version "1.17.1.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "caTools" version))
               (sha256
                (base32
-                "0svj31y7h8vimvliygmmbl7pk850qk80k1vn38mlcxsnmcpm9k39"))))
+                "04m7vbydxb1nipday97w29p2miykyzxw572j9lda6jxmmp2kb1yp"))))
     (properties `((upstream-name . "caTools")))
     (build-system r-build-system)
     (propagated-inputs
