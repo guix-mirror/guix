@@ -3195,21 +3195,23 @@ with support for HD extensions.")
 (define-public bs1770gain
   (package
     (name "bs1770gain")
-    (version "0.6.0")
+    (version "0.6.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/bs1770gain/bs1770gain/"
                            version "/bs1770gain-" version ".tar.gz"))
        (sha256
-        (base32 "0nnqixvw3x7i22nsr54n4bgm35z9nh3d9qj5s75cfd3ajjsjndyh"))
+        (base32 "15nvlh9bg0a52cpg2mii17mlzmxszwivjjalbb4np1v5nj8l5fk6"))
        (modules '((guix build utils)))
        (snippet
         '(begin
            ;; XXX
+           (substitute* (find-files "." "\\.[ch]$")
+             (("^ \\* N..o.*") ""))
            (substitute* "libbg/bgx.c"
-             (("#define BS.* ") "#define BS ")
-             (("BS.*NO?.*N.*S.*E.*N.*SE?") "NO")
+             (("#define BG.* ") "#define BS ")
+             (("BG.*NO?.*N.*S.*E.*N.*SE?") "NO")
              (("\"( #|N).*\"") "\"\""))
            (substitute* (list "config.h"
                               "configure.ac"
