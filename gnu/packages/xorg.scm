@@ -5717,14 +5717,14 @@ Intrinsics (Xt) Library.")
 (define-public xclock
   (package
     (name "xclock")
-    (version "1.0.8")
+    (version "1.0.9")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.x.org/releases/individual/app/"
                            name "-" version ".tar.bz2"))
        (sha256
-        (base32 "0m92zhamh15my9f2rqa14q41d6k2cn468azm3g7g3w9n7942024k"))))
+        (base32 "1fr3q4rszgx7x2zxy2ip592a3fgx20hfwac49p2l5b7jqsr1ying"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
