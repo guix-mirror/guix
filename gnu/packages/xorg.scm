@@ -5722,7 +5722,7 @@ Intrinsics (Xt) Library.")
      (origin
        (method url-fetch)
        (uri (string-append "https://www.x.org/releases/individual/app/"
-                           name "-" version ".tar.bz2"))
+                           "xclock-" version ".tar.bz2"))
        (sha256
         (base32 "1fr3q4rszgx7x2zxy2ip592a3fgx20hfwac49p2l5b7jqsr1ying"))))
     (build-system gnu-build-system)
