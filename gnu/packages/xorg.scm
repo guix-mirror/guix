@@ -5940,7 +5940,7 @@ perl programs to display windows and graphics on X11 servers.")
 (define-public perl-x11-protocol-other
   (package
     (name "perl-x11-protocol-other")
-    (version "30")
+    (version "31")
     (source
      (origin
        (method url-fetch)
@@ -5948,8 +5948,7 @@ perl programs to display windows and graphics on X11 servers.")
              "mirror://cpan/authors/id/K/KR/KRYDE/X11-Protocol-Other-"
              version ".tar.gz"))
        (sha256
-        (base32
-         "1mambi57cdkj82wiw1l8y2f70a60qsamdas0165hlj10drryfgrj"))))
+        (base32 "1x3kvic52jgp2mvd5wzrqrprqi82cdk8l4075v8b33ksvj9mjqiw"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-encode-hanextra" ,perl-encode-hanextra)
