@@ -3656,14 +3656,14 @@ normalizations, minimum variance matching, and so on.")
 (define-public r-sdmtools
   (package
     (name "r-sdmtools")
-    (version "1.1-221.1")
+    (version "1.1-221.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "SDMTools" version))
        (sha256
         (base32
-         "1fsgnlc7glawimzijp11j53g5bnfp1mdq9wb0754idmxcdi8a99q"))))
+         "1xvcd97ikqsfdpk2fddy3k0z1ajqga7nv9bgac9c1wnjk1gqrpgh"))))
     (properties `((upstream-name . "SDMTools")))
     (build-system r-build-system)
     (propagated-inputs `(("r-r-utils" ,r-r-utils)))
