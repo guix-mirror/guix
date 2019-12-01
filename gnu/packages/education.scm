@@ -488,14 +488,14 @@ letters of the alphabet, spelling, eye-hand coordination, etc.")
 (define-public fet
   (package
     (name "fet")
-    (version "5.40.2")
+    (version "5.41.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.lalescu.ro/liviu/fet/download/"
                                   "fet-" version ".tar.bz2"))
               (sha256
                (base32
-                "068zdvb3rys7vvkq33i2jh89c7svvdaqp0548k99jmhbd24xnhgh"))))
+                "0ppa5h1p0y0z8x4xpn45b0x3nl1khyh56m22v6xysk3znxlak4q7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
