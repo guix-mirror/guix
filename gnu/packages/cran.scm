@@ -6275,14 +6275,14 @@ other add-on packages.")
 (define-public r-insight
   (package
     (name "r-insight")
-    (version "0.7.0")
+    (version "0.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "insight" version))
        (sha256
         (base32
-         "1alxc483r3d1ydp983m2872mxd4nj3j25qv47zzgj10nbi4y32sq"))))
+         "0scjmr8qvwaswb9wfq2lxp1v5fl72way8cid9agrf0z1agp0adad"))))
     (build-system r-build-system)
     (home-page "https://easystats.github.io/insight/")
     (synopsis "Easy access to model information for various model objects")
