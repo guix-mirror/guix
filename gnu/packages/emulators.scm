@@ -1147,7 +1147,7 @@ multi-system game/emulator system.")
 (define-public scummvm
   (package
     (name "scummvm")
-    (version "2.0.0")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
@@ -1155,10 +1155,10 @@ multi-system game/emulator system.")
                            "/scummvm-" version ".tar.xz"))
        (sha256
         (base32
-         "0q6aiw97wsrf8cjw9vjilzhqqsr2rw2lll99s8i5i9svan6l314p"))))
+         "09zp2mxmida6sz5vrr5bzyv8c3yjvq2xqmpmcllbadhmd9cwcl3b"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ;require "git"
+     `(#:tests? #f                                 ;require "git"
        #:configure-flags (list "--enable-release") ;for optimizations
        #:phases
        (modify-phases %standard-phases
@@ -1180,6 +1180,7 @@ multi-system game/emulator system.")
        ("faad2" ,faad2)
        ("fluidsynth" ,fluidsynth)
        ("freetype" ,freetype)
+       ("liba52" ,liba52)
        ("libflac" ,flac)
        ("libjpeg-turbo" ,libjpeg-turbo)
        ("libmad" ,libmad)
@@ -1189,7 +1190,7 @@ multi-system game/emulator system.")
        ("libtheora" ,libtheora)
        ("libvorbis" ,libvorbis)
        ("nasm" ,nasm)
-       ("sdl2" ,sdl2)
+       ("sdl2" ,(sdl-union (list sdl2 sdl2-net)))
        ("zlib" ,zlib)))
     (home-page "https://www.scummvm.org/")
     (synopsis "Engine for several graphical adventure games")
