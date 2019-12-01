@@ -2517,7 +2517,7 @@ produce uniform output across heterogeneous networks.")
 (define-public cbatticon
   (package
     (name "cbatticon")
-    (version "1.6.9")
+    (version "1.6.10")
     (source
      (origin
        (method git-fetch)
@@ -2525,7 +2525,7 @@ produce uniform output across heterogeneous networks.")
              (url "https://github.com/valr/cbatticon.git")
              (commit version)))
        (sha256
-        (base32 "0kw09d678sd3m18fmi4380sl4a2m5lkfmq0kps16cdmq7z80rvaf"))
+        (base32 "0ivm2dzhsa9ir25ry418r2qg2llby9j7a6m3arbvq5c3kaj8m9jr"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
