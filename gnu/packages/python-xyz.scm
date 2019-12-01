@@ -128,6 +128,7 @@
   #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-compression)
   #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
@@ -3306,42 +3307,6 @@ of the Mallard XML documentation system.  Ducktype files can be converted to
 Mallard using the @command{ducktype} tool.  The yelp-tools package
 provides additional functionality on the produced Mallard documents.")
     (license license:expat)))
-
-(define-public python-scikit-image
-  (package
-    (name "python-scikit-image")
-    (version "0.14.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "scikit-image" version))
-       (sha256
-        (base32 "07qchljkyxvg5nrm12fvszi7pmjk4m01qp0w0z8syxzxxs20pz8s"))))
-    (build-system python-build-system)
-    (arguments
-     ;; TODO: Some tests require running X11 server. Disable them?
-     '(#:tests? #f))
-    ;; See DEPENDS.txt for the list of build and run time requiremnts
-    (propagated-inputs
-     `(("python-cloudpickle" ,python-cloudpickle)
-       ("python-dask" ,python-dask)
-       ("python-matplotlib" ,python-matplotlib)
-       ("python-networkx" ,python-networkx)
-       ("python-numpy" ,python-numpy)
-       ("python-pillow" ,python-pillow)
-       ("python-pywavelets" ,python-pywavelets)
-       ("python-scipy" ,python-scipy)
-       ("python-six" ,python-six)))
-    (native-inputs
-     `(("python-cython" ,python-cython)))
-    (home-page "http://scikit-image.org/")
-    (synopsis "Image processing in Python")
-    (description
-     "Scikit-image is a collection of algorithms for image processing.")
-    (license license:bsd-3)))
-
-(define-public python2-scikit-image
-  (package-with-python2 python-scikit-image))
 
 (define-public python-cython
   (package
