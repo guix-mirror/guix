@@ -25,11 +25,11 @@
   #:use-module (guix licenses)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
-  #:use-module (gnu packages pcre)
-  #:use-module (gnu packages guile)
   #:use-module (gnu packages boost)
-  #:use-module (gnu packages python)
-  #:use-module (gnu packages perl))
+  #:use-module (gnu packages guile)
+  #:use-module (gnu packages pcre)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages python))
 
 (define-public swig
   (package
