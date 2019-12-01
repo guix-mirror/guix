@@ -2706,7 +2706,7 @@ Tracker 3 S3M and Impulse Tracker IT files.")
        ("automake" ,automake)
        ("libtool" ,libtool)
        ("file" ,file)))
-    (home-page "http://www.surina.net/soundtouch/")
+    (home-page "https://www.surina.net/soundtouch/")
     (synopsis
      "Audio processing library for changing tempo, pitch and playback rate")
     (description
