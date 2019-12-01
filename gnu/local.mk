@@ -1260,7 +1260,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/psm-disable-memory-stats.patch		\
   %D%/packages/patches/psm-ldflags.patch			\
   %D%/packages/patches/psm-repro.patch				\
-  %D%/packages/patches/pugixml-versioned-libdir.patch		\
   %D%/packages/patches/pulseaudio-fix-mult-test.patch		\
   %D%/packages/patches/pulseaudio-longer-test-timeout.patch	\
   %D%/packages/patches/pybugz-encode-error.patch		\

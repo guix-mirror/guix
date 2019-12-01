@@ -882,20 +882,18 @@ the form of functions.")
 (define-public pugixml
   (package
     (name "pugixml")
-    (version "1.9")
+    (version "1.10")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://github.com/zeux/pugixml/releases/download/v"
                           version "/pugixml-" version ".tar.gz"))
-      (patches (search-patches "pugixml-versioned-libdir.patch"))
       (sha256
-       (base32
-        "19nv3zhik3djp4blc4vrjwrl8dfhzmal8b21sq7y907nhddx6mni"))))
+       (base32 "02l7nllhydggf7s64d2x84kckbmwag4lsn28sc82953hnkxrkwsm"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")
-       #:tests? #f))                     ;no tests
+       #:tests? #f))                    ; no tests
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://pugixml.org")
