@@ -2246,14 +2246,14 @@ SpatialVx.")
 (define-public r-extremes
   (package
     (name "r-extremes")
-    (version "2.0-10")
+    (version "2.0-11")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "extRemes" version))
        (sha256
         (base32
-         "08fj72gpq2d6695hbm3cgwgal64z009ykrirby7g6r0akfcsx5ic"))))
+         "0hmgynxhzswqnhwb2sxrkczgam8c17s3vpxqc5bcz0bwczpxxyvm"))))
     (properties `((upstream-name . "extRemes")))
     (build-system r-build-system)
     (propagated-inputs
