@@ -1442,14 +1442,14 @@ command.")
 (define-public hostapd
   (package
     (name "hostapd")
-    (version "2.8")
+    (version "2.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://w1.fi/releases/hostapd-" version
                                   ".tar.gz"))
               (sha256
                (base32
-                "1c74rrazkhy4lr7pwgwa2igzca7h9l4brrs7672kiv7fwqmm57wj"))))
+                "1mrbvg4v7vm7mknf0n29mf88k3s4a4qj6r4d51wq8hmjj1m7s7c8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
