@@ -34,6 +34,7 @@
 ;;; Copyright © 2019 Tonton <tonton@riseup.net>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
+;;; Copyright © 2019 Daniel Schaefer <git@danielschaefer.me>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,6 +62,7 @@
   #:use-module (guix build-system go)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages adns)
@@ -2778,3 +2780,49 @@ a service (such as an HTTP or SSH server) on localhost visible to the wider
 Internet, even behind NAT or restrictive firewalls.  A managed front-end relay
 service is available at @url{https://pagekite.net/}, or you can run your own.")
     (license license:agpl3+)))
+
+(define-public ipcalc
+  (package
+    (name "ipcalc")
+    (version "0.41")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://jodies.de/ipcalc-archive/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "12if9sm8h2ac0pgwkw835cgyqjxm6h27k4kfn2vfas9krrqwbafx"))))
+    (inputs `(("perl" ,perl)
+              ("tar" ,tar)
+              ("gzip" ,gzip)
+              ("tarball" ,source)))
+    (build-system trivial-build-system) ;no Makefile.PL
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (use-modules (srfi srfi-1))
+         (let* ((source (assoc-ref %build-inputs "source"))
+                (perl (string-append (assoc-ref %build-inputs "perl")
+                                     "/bin"))
+                (tar (assoc-ref %build-inputs "tar"))
+                (gz  (assoc-ref %build-inputs "gzip"))
+                (out (assoc-ref %outputs "out"))
+                (bin (string-append out "/bin"))
+                (doc (string-append out "/share/doc/ipcalc")))
+           (setenv "PATH" (string-append gz "/bin"))
+           (invoke (string-append tar "/bin/tar") "xvf" source)
+           (chdir (string-append ,name "-" ,version))
+
+           (install-file "ipcalc" bin)
+           (patch-shebang (string-append bin "/ipcalc") (list perl))
+           #t))))
+    (synopsis "Simple IP network calculator")
+    (description "ipcalc takes an IP address and netmask and calculates the
+resulting broadcast, network, Cisco wildcard mask, and host range.  By giving
+a second netmask, you can design subnets and supernets.  It is also intended
+to be a teaching tool and presents the subnetting results as
+easy-to-understand binary values.")
+    (home-page "http://jodies.de/ipcalc")
+    (license license:gpl2+)))
