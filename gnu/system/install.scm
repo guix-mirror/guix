@@ -242,9 +242,6 @@ the user's target storage device rather than on the RAM disk."
 (define (/etc/configuration-files _)
   "Return a list of tuples representing configuration templates to add to
 /etc."
-  (define (file f)
-    (local-file (string-append "examples/" f)))
-
   (define directory
     (computed-file "configuration-templates"
                    (with-imported-modules '((guix build utils))
@@ -254,10 +251,10 @@ the user's target storage device rather than on the RAM disk."
                                      (copy-file file
                                                 (string-append #$output "/"
                                                                target)))
-                                   '(#$(file "bare-bones.tmpl")
-                                     #$(file "beaglebone-black.tmpl")
-                                     #$(file "desktop.tmpl")
-                                     #$(file "lightweight-desktop.tmpl"))
+                                   '(#$(local-file "examples/bare-bones.tmpl")
+                                     #$(local-file "examples/beaglebone-black.tmpl")
+                                     #$(local-file "examples/desktop.tmpl")
+                                     #$(local-file "examples/lightweight-desktop.tmpl"))
                                    '("bare-bones.scm"
                                      "beaglebone-black.scm"
                                      "desktop.scm"
