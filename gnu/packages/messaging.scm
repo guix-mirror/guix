@@ -643,7 +643,12 @@ else [])"))
             (variable "PYTHONPATH")
             (files (list (string-append
                           "lib/python"
-                          (version-major+minor (package-version python))
+
+                          ;; FIXME: Cannot use this expression as it would
+                          ;; introduce a circular dependency at the top level.
+                          ;; (version-major+minor (package-version python))
+                          "3.7"
+
                           "/site-packages"))))))
     (native-inputs
      `(("intltool" ,intltool)
