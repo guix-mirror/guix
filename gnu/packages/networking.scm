@@ -1951,8 +1951,8 @@ can be whipped up with little effort.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "ftp://ftp.bitwizard.nl/" name "/"
-                           name "-" version ".tar.gz"))
+       (uri (string-append "ftp://ftp.bitwizard.nl/mtr/"
+                           "mtr-" version ".tar.gz"))
        (sha256
         (base32 "03gid8g4r6a9r40855s4345xm1bylj2kfqkicjwxpmvvccyng712"))))
     (build-system gnu-build-system)
