@@ -34,7 +34,7 @@
               (uri (git-reference
                     (url "https://git.pengutronix.de/git/tools/microcom.git")
                     (commit "v2016.01.0")))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "080ci5589bpyy5kcl51csmvpw9zysify189hw6awx69pi3cjnxly"))))
