@@ -34,25 +34,19 @@
 (define-public swig
   (package
     (name "swig")
-    (version "3.0.12")
+    (version "4.0.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/" name "/" name "/"
                                  name "-" version "/"
                                  name "-" version ".tar.gz"))
-             (patches (search-patches "swig-guile-gc.patch"))
              (sha256
               (base32
-               "0kf99ygrjs5616gsqhz1l7bib3a12izmxi7g48bwblbymr3z9ybw"))))
+               "1ac7g0gd8ndwv3ybqn5vjgqxa7090bby4db164a7mn9ssp8b803s"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'set-env
-           ;; Required since Perl 5.26.0's removal of the current
-           ;; working directory from @INC.
-           ;; TODO Try removing this for later versions of SWIG.
-           (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1") #t))
          (add-before 'configure 'workaround-gcc-bug
            (lambda _
              ;; XXX: Don't add the -isystem flag, or GCCs #include_next
