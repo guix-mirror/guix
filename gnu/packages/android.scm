@@ -500,9 +500,14 @@ that is safe to use for user space.  It also includes
        ;; pcre is inlined by our package.
        ("pcre" ,pcre)))
     (home-page "https://developer.android.com/")
-    (synopsis (package-synopsis libselinux))
-    (description (package-description libselinux))
-    (license (package-license libselinux))))
+    (synopsis "Android version of the SELinux libraries and utilities")
+    (description
+     "The libselinux library provides an API for SELinux applications to get
+and set process and file security contexts, and to obtain security policy
+decisions.  It is required for any applications that use the SELinux API, and
+used by all applications that are SELinux-aware.  This package also includes
+the core SELinux management utilities.")
+    (license license:public-domain)))
 
 (define-public android-ext4-utils
   (package
