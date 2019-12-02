@@ -525,15 +525,15 @@ using the above tables.")
 (define-public libspiro
   (package
     (name "libspiro")
-    (version "0.5.20150702")
+    (version "20190731")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://github.com/fontforge/libspiro/releases"
-                          "/download/" version "/libspiro-dist-" version ".tar.gz"))
+                          "/download/" version "/libspiro-" version ".tar.gz"))
       (sha256
        (base32
-        "153ckwj6h3wwlsgcppzqj8cymv1927hi8ar8fzpchq5q89cj2kai"))))
+        "0m63x97b7aciviijprvy85gm03p2jsgslxn323zl9zn7qz6d3ir4"))))
     (build-system gnu-build-system)
     (synopsis "Clothoid to bezier conversion library")
     (description
