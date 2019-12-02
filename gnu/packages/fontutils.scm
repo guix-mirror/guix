@@ -535,6 +535,8 @@ using the above tables.")
        (base32
         "0m63x97b7aciviijprvy85gm03p2jsgslxn323zl9zn7qz6d3ir4"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (synopsis "Clothoid to bezier conversion library")
     (description
      "Raph Levien's Spiro package as a library.  A mechanism for drawing
