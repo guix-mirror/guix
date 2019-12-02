@@ -6830,13 +6830,13 @@ from an XML-based format.")
   (let ((base (package-with-python2 (strip-python2-variant python-fonttools))))
     (package/inherit
      base
-     (version "3.38.0")
+     (version "3.44.0")
      (source (origin
                (method url-fetch)
                (uri (pypi-uri "fonttools" version ".zip"))
                (sha256
                 (base32
-                 "12ripk3s7skgxr1bs9r8n13r94ym3s8iir7ivfixls9fa4dabmlh")))))))
+                 "0v6399g755f2hn1ry62i5b6gdinf2fpx2966v3bxh6bjw1accb5p")))))))
 
 (define-public python-ly
   (package
