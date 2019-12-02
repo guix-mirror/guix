@@ -358,10 +358,10 @@ the last argument of `mknod'."
           (filter-map string->number (scandir "/proc")))))
 
 (define* (mount-root-file-system root type
-                                 #:key volatile-root? options)
-  "Mount the root file system of type TYPE at device ROOT.  If VOLATILE-ROOT?
-is true, mount ROOT read-only and make it an overlay with a writable tmpfs
-using the kernel built-in overlayfs.  OPTIONS indicates the options to use
+                                 #:key volatile-root? (flags 0) options)
+  "Mount the root file system of type TYPE at device ROOT. If VOLATILE-ROOT? is
+true, mount ROOT read-only and make it an overlay with a writable tmpfs using
+the kernel built-in overlayfs. FLAGS and OPTIONS indicates the options to use
 to mount ROOT."
 
   (if volatile-root?
@@ -384,7 +384,7 @@ to mount ROOT."
                "lowerdir=/real-root,upperdir=/rw-root/upper,workdir=/rw-root/work"))
       (begin
         (check-file-system root type)
-        (mount root "/root" type 0 options)))
+        (mount root "/root" type flags options)))
 
   ;; Make sure /root/etc/mtab is a symlink to /proc/self/mounts.
   (false-if-exception
@@ -474,6 +474,13 @@ upon error."
              mounts)
         "ext4"))
 
+  (define root-fs-flags
+    (mount-flags->bit-mask (or (any (lambda (fs)
+                                      (and (root-mount-point? fs)
+                                           (file-system-flags fs)))
+                                    mounts)
+                               '())))
+
   (define root-fs-options
     (any (lambda (fs)
            (and (root-mount-point? fs)
@@ -533,6 +540,7 @@ upon error."
               (mount-root-file-system (canonicalize-device-spec root)
                                       root-fs-type
                                       #:volatile-root? volatile-root?
+                                      #:flags root-fs-flags
                                       #:options root-fs-options))
             (mount "none" "/root" "tmpfs"))
 
