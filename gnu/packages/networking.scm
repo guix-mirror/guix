@@ -1947,21 +1947,18 @@ can be whipped up with little effort.")
 (define-public mtr
   (package
     (name "mtr")
-    (version "0.92")
+    (version "0.93")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "ftp://ftp.bitwizard.nl/" name "/"
                            name "-" version ".tar.gz"))
        (sha256
-        (base32 "10j3ds3p27jygys4x08kj8fi3zlsgiv72xsfazkah6plwawrv5zj"))))
+        (base32 "03gid8g4r6a9r40855s4345xm1bylj2kfqkicjwxpmvvccyng712"))))
     (build-system gnu-build-system)
     (inputs
      `(("libcap" ,libcap)
        ("ncurses" ,ncurses)))
-    (native-inputs
-     ;; The 0.92 release tarball still requires the ‘autoheader’ tool.
-     `(("autoconf" ,autoconf)))
     (arguments
      `(#:tests? #f))                    ; tests require network access
     (home-page "https://www.bitwizard.nl/mtr/")
