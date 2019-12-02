@@ -42,7 +42,7 @@
     (inputs `(("readline" ,readline)))
     (native-inputs `(("automake" ,automake)
                      ("autoconf" ,autoconf)))
-    (home-page  "http://git.pengutronix.de/?p=tools/microcom.git")
+    (home-page  "https://git.pengutronix.de/?p=tools/microcom.git")
     (synopsis "Minimalistic serial line terminal program")
  (description "Microcom is a minimalistic terminal program for accessing
 devices via a serial connection.  It features connection via RS232 serial
