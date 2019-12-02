@@ -19967,7 +19967,7 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
-       `(#:tests? #f
+       `(#:test-target "test"
          #:modules ((guix build gnu-build-system)
                     ((guix build emacs-build-system) #:prefix emacs:)
                     (guix build utils)
@@ -19977,17 +19977,45 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
                              (guix build emacs-utils))
          #:phases
          (modify-phases %standard-phases
-           (add-after 'unpack 'unpack-patch
+           (add-after 'unpack 'prefix-patch
              (lambda _
                (substitute* "server/Makefile"
                  (("CC=cc")
                   "CC=gcc")
                  (("INSTALL_PREFIX=\\$\\(HOME\\)/.telega")
                   (string-append "INSTALL_PREFIX=" (assoc-ref %outputs "out")
-                                 "/bin")))
+                                 "/bin"))
+                 ;; Manually invoke `run_tests.py` after install phase.
+                 (("python3 run_tests.py")
+                  ""))
+               #t))
+           ;; The telega test suite checks for a version of Emacs
+           ;; compiled with imagemagick and svg support. Since we
+           ;; are using `emacs-minimal`, this step will fail.
+           ;; Grok the failing test, and remove problematic assertions.
+           (add-after 'unpack 'ert-suite-patch
+             (lambda _
+               (substitute* "telega-core.el"
+                 (("\\(image-type-available-p 'imagemagick\\) nil")
+                  "t")
+                 (("\\(image-type-available-p 'svg\\) nil")
+                  "t"))
+               #t))
+           ;; The server test suite has a hardcoded path.
+           ;; Reset this behavior to use the proper path.
+           (add-after 'unpack 'server-suite-patch
+             (lambda _
+               (substitute* "server/run_tests.py"
+                 (("~/.telega/telega-server")
+                  (string-append (assoc-ref %outputs "out")
+                                 "/bin/telega-server")))
+               #t))
+           (add-after 'install 'run-server-suite
+             (lambda _
+               (invoke "python3" "server/run_tests.py")
                #t))
            (delete 'configure)
-
+           
            ;; Build emacs-side using `emacs-build-system'
            (add-after 'compress-documentation 'emacs-add-source-to-load-path
              (assoc-ref emacs:%standard-phases 'add-source-to-load-path))
@@ -20001,7 +20029,8 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
        `(("emacs-visual-fill-column" ,emacs-visual-fill-column)))
       (native-inputs
        `(("tdlib" ,tdlib)
-         ("emacs" ,emacs-minimal)))
+         ("emacs" ,emacs-minimal)
+         ("python" ,python)))
       (synopsis "GNU Emacs client for the Telegram messenger")
       (description
        "Telega is full-featured, unofficial client for the Telegram messaging
