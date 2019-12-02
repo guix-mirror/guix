@@ -66,32 +66,6 @@
 (define-public expat
   (package
     (name "expat")
-    (version "2.2.7")
-    (replacement expat-2.2.9)
-    (source (let ((dot->underscore (lambda (c) (if (char=? #\. c) #\_ c))))
-              (origin
-                (method url-fetch)
-                (uri (list (string-append "mirror://sourceforge/expat/expat/"
-                                          version "/expat-" version ".tar.xz")
-                           (string-append
-                            "https://github.com/libexpat/libexpat/releases/download/R_"
-                            (string-map dot->underscore version)
-                            "/expat-" version ".tar.xz")))
-                (sha256
-                 (base32
-                  "1y5yax6bq8p9xk49zqkd62pxk8bq266wrgbrqgaxp3wsrw5g9qrh")))))
-    (build-system gnu-build-system)
-    (home-page "https://libexpat.github.io/")
-    (synopsis "Stream-oriented XML parser library written in C")
-    (description
-     "Expat is an XML parser library written in C.  It is a
-stream-oriented parser in which an application registers handlers for
-things the parser might find in the XML document (like start tags).")
-    (license license:expat)))
-
-(define expat-2.2.9
-  (package
-    (inherit expat)
     (version "2.2.9")
     (source (let ((dot->underscore (lambda (c) (if (char=? #\. c) #\_ c))))
               (origin
@@ -104,7 +78,15 @@ things the parser might find in the XML document (like start tags).")
                             "/expat-" version ".tar.xz")))
                 (sha256
                  (base32
-                  "1960mmgbb4cm64n1p0nz3hrs1pw03hkrfcw8prmnn4622mdrd9hy")))))))
+                  "1960mmgbb4cm64n1p0nz3hrs1pw03hkrfcw8prmnn4622mdrd9hy")))))
+    (build-system gnu-build-system)
+    (home-page "https://libexpat.github.io/")
+    (synopsis "Stream-oriented XML parser library written in C")
+    (description
+     "Expat is an XML parser library written in C.  It is a
+stream-oriented parser in which an application registers handlers for
+things the parser might find in the XML document (like start tags).")
+    (license license:expat)))
 
 (define-public libebml
   (package
