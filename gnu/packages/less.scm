@@ -27,7 +27,7 @@
 (define-public less
   (package
     (name "less")
-    (version "530")
+    (version "551")
     (source
      (origin
        (method url-fetch)
@@ -36,7 +36,7 @@
                   (string-append "http://www.greenwoodsoftware.com/less/less-"
                                  version ".tar.gz")))
        (sha256
-        (base32 "1qpj2z38c53qmvqn8jaa0kq26q989cfbfjj4y0s6z17l1amr2gsh"))))
+        (base32 "0ggyjl3yzn7c450zk1rixi9ls6asdhgqynhk34zsd0ckhmsm45pz"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)))
     (home-page "https://www.gnu.org/software/less/")
