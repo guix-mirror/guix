@@ -75,7 +75,8 @@
                                 "cmliblzma"
                                 ;; "cmlibuv"
                                 "cmzlib"))
-                    #t)))))
+                    #t)))
+              (patches (search-patches "cmake-curl-certificates.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -208,18 +209,6 @@ and workspaces that can be used in the compiler environment of your choice.")
        ("texinfo" ,texinfo)))
     (outputs '("out" "doc"))
     (properties (alist-delete 'hidden? (package-properties cmake-minimal)))))
-
-(define-public cmake/fixed
-  ;; This is a variant of CMake that fixes X.509 certificate lookup:
-  ;; <https://issues.guix.gnu.org/issue/37371>.
-  (package
-    (inherit cmake)
-    (version (string-append (package-version cmake) "-1"))
-    (source (origin
-              (inherit (package-source cmake))
-              (patches
-               (append (search-patches "cmake-curl-certificates.patch")
-                       (origin-patches (package-source cmake))))))))
 
 (define-public cmake-minimal-cross
   (package
