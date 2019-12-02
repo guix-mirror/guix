@@ -4691,11 +4691,11 @@ the OleFileIO module from PIL, the Python Image Library.")
     (inputs
      `(("freetype" ,freetype)
        ("lcms"     ,lcms)
-       ("zlib"     ,zlib)
        ("libjpeg"  ,libjpeg)
-       ("openjpeg" ,openjpeg)
        ("libtiff"  ,libtiff)
-       ("libwebp"  ,libwebp)))
+       ("libwebp"  ,libwebp)
+       ("openjpeg" ,openjpeg)
+       ("zlib"     ,zlib)))
     (propagated-inputs
      `(("python-olefile" ,python-olefile)))
     (arguments
