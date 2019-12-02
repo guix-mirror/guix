@@ -51,7 +51,7 @@
 (define-public cmake-minimal
   (package
     (name "cmake-minimal")
-    (version "3.15.1")
+    (version "3.16.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.cmake.org/files/v"
@@ -59,7 +59,7 @@
                                   "/cmake-" version ".tar.gz"))
               (sha256
                (base32
-                "1xyprly3sf4wi0n1x79k4n22yxm6pb7fv70gqr9lvc7qv14cbphq"))
+                "0pwcgvk75577rdizpzjrk2n43a6l7rvfhmhn7sd6xarwqrb6b9bd"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -101,6 +101,8 @@
        (let ((skipped-tests
               (list "BundleUtilities" ; This test fails on Guix.
                     "CTestTestSubdir" ; This test fails to build 2 of the 3 tests.
+                    ;; This test requires 'ldconfig' which is not available in Guix.
+                    "RunCMake.install"
                     ;; These tests requires network access.
                     "CTestCoverageCollectGCOV"
                     "CTestTestUpload")))
@@ -125,7 +127,7 @@
              ;; files.
              (substitute*
                  '("Modules/CompilerId/Xcode-3.pbxproj.in"
-                   "Modules/CPack.RuntimeScript.in"
+                   "Modules/Internal/CPack/CPack.RuntimeScript.in"
                    "Source/cmGlobalXCodeGenerator.cxx"
                    "Source/cmLocalUnixMakefileGenerator3.cxx"
                    "Source/cmExecProgramCommand.cxx"
@@ -217,22 +219,6 @@ and workspaces that can be used in the compiler environment of your choice.")
     (native-search-paths '())
     (search-paths
      (package-native-search-paths cmake-minimal))))
-
-(define-public cmake-3.15.5
-  ;; CMake 3.15.5 fixes some issues, but declare another version to
-  ;; avoid triggering the rebuild of all CMake-based packages.
-  ;; See <https://issues.guix.gnu.org/issue/38060>.
-  (package
-    (inherit cmake)
-    (version "3.15.5")
-    (source (origin
-              (inherit (package-source cmake))
-              (uri (string-append "https://www.cmake.org/files/v"
-                                  (version-major+minor version)
-                                  "/cmake-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1d5y8d92axcc6rfqlsxamayfs3fc1vdby91hn5mx1kn02ppprpgv"))))))
 
 (define-public emacs-cmake-mode
   (package
