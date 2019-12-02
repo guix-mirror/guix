@@ -36,6 +36,7 @@
 
 (define* (lower name
                 #:key source inputs native-inputs outputs system target
+                (implicit-inputs? #t)
                 #:allow-other-keys
                 #:rest arguments)
   "Return a bag for NAME."
@@ -45,7 +46,8 @@
   ;; procedures like 'package-for-guile-2.0' unchanged and simple.
 
   (define private-keywords
-    '(#:target #:inputs #:native-inputs))
+    '(#:target #:inputs #:native-inputs
+      #:implicit-inputs?))
 
   (bag
     (name name)
@@ -56,8 +58,10 @@
                           `(("source" ,source))
                           '())
                     ,@native-inputs
-                    ,@(map (cute assoc <> (standard-packages))
-                           '("tar" "gzip" "bzip2" "xz" "locales"))))
+                    ,@(if implicit-inputs?
+                          (map (cute assoc <> (standard-packages))
+                               '("tar" "gzip" "bzip2" "xz" "locales"))
+                          '())))
     (outputs outputs)
     (build (if target guile-cross-build guile-build))
     (arguments (strip-keyword-arguments private-keywords arguments))))
