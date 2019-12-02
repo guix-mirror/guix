@@ -1964,7 +1964,7 @@ can be whipped up with little effort.")
     (home-page "https://www.bitwizard.nl/mtr/")
     (synopsis "Network diagnostic tool")
     (description
-     "@dfn{mtr} (My TraceRoute) combines the functionality of the
+     "@acronym{mtr, My TraceRoute} combines the functionality of the
 @command{traceroute} and @command{ping} programs in a single network diagnostic
 tool.  @command{mtr} can use several network protocols to detect intermediate
 routers (or @dfn{hops}) between the local host and a user-specified destination.
