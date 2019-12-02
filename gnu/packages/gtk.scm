@@ -16,7 +16,7 @@
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -222,16 +222,28 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public pango
   (package
    (name "pango")
-   (version "1.42.4")
+   (version "1.44.7")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/pango/"
                                 (version-major+minor version) "/"
                                 name "-" version ".tar.xz"))
+            (patches (search-patches "pango-skip-libthai-test.patch"))
             (sha256
              (base32
-              "17bwb7dgbncrfsmchlib03k9n3xaalirb39g3yb43gg8cg6p8aqx"))))
-   (build-system gnu-build-system)
+              "07qvxa2sk90chp1l12han6vxvy098mc37sdqcznyywyv2g6bd9b6"))))
+   (build-system meson-build-system)
+   (arguments
+    '(#:phases (modify-phases %standard-phases
+                 (add-after 'unpack 'disable-cantarell-tests
+                   (lambda _
+                     (substitute* "tests/meson.build"
+                       ;; XXX FIXME: These tests require "font-cantarell", but
+                       ;; adding it here would introduce a circular dependency.
+                       (("\\[ 'test-harfbuzz'.*") "")
+                       (("\\[ 'test-itemize'.*") "")
+                       (("\\[ 'test-layout'.*") ""))
+                     #t)))))
    (propagated-inputs
     ;; These are all in Requires or Requires.private of the '.pc' files.
     `(("cairo" ,cairo)
@@ -239,13 +251,13 @@ affine transformation (scale, rotation, shear, etc.).")
       ("fontconfig" ,fontconfig)
       ("freetype" ,freetype)
       ("glib" ,glib)
-      ("harfbuzz" ,harfbuzz)))
-   (inputs
-    `(("zlib" ,zlib)
+      ("harfbuzz" ,harfbuzz)
 
       ;; Some packages, such as Openbox, expect Pango to be built with the
       ;; optional libxft support.
       ("libxft" ,libxft)))
+   (inputs
+    `(("zlib" ,zlib)))
    (native-inputs
     `(("pkg-config" ,pkg-config)
       ("glib" ,glib "bin")                               ; glib-mkenums, etc.
@@ -257,6 +269,21 @@ applications.  It has extensive support for the different writing systems
 used throughout the world.")
    (license license:lgpl2.0+)
    (home-page "https://developer.gnome.org/pango/")))
+
+(define-public pango-1.42
+  (package/inherit
+   pango
+   (version "1.42.4")
+   (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnome/sources/pango/"
+                                 (version-major+minor version) "/"
+                                 "pango-" version ".tar.xz"))
+             (sha256
+              (base32
+               "17bwb7dgbncrfsmchlib03k9n3xaalirb39g3yb43gg8cg6p8aqx"))))
+   (build-system gnu-build-system)
+   (arguments '())))
 
 (define-public pangox-compat
   (package

@@ -1242,6 +1242,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/p7zip-CVE-2017-17969.patch		\
   %D%/packages/patches/p7zip-remove-unused-code.patch		\
   %D%/packages/patches/pam-mount-luks2-support.patch		\
+  %D%/packages/patches/pango-skip-libthai-test.patch		\
   %D%/packages/patches/patchutils-test-perms.patch		\
   %D%/packages/patches/patch-hurd-path-max.patch		\
   %D%/packages/patches/pcre2-fix-jit_match-crash.patch		\

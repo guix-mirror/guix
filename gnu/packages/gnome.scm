@@ -1543,7 +1543,9 @@ dealing with different structured file formats.")
        ("glib" ,glib "bin")                               ; glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
     (inputs
-     `(("pango" ,pango)
+     `(;; XXX: 1.44 causes some test failures, so we stick with 1.42 for
+       ;; this ancient version of librsvg.
+       ("pango" ,pango-1.42)
        ("libcroco" ,libcroco)
        ("bzip2" ,bzip2)
        ("libgsf" ,libgsf)
