@@ -4706,13 +4706,15 @@ the OleFileIO module from PIL, the Python Image Library.")
              (substitute* "setup.py"
                (("\\['/sbin/ldconfig', '-p'\\]") "['true']"))))
          (replace 'check
-           (lambda* (#:key outputs inputs #:allow-other-keys)
-             (begin
-               (setenv "HOME" (getcwd))
-               ;; Make installed package available for running the tests.
-               (add-installed-pythonpath inputs outputs)
-               (invoke "python" "selftest.py" "--installed")
-               (invoke "python" "-m" "pytest" "-vv")))))))
+           (lambda* (#:key outputs inputs tests? #:allow-other-keys)
+             (if tests?
+               (begin
+                 (setenv "HOME" (getcwd))
+                 ;; Make installed package available for running the tests.
+                 (add-installed-pythonpath inputs outputs)
+                 (invoke "python" "selftest.py" "--installed")
+                 (invoke "python" "-m" "pytest" "-vv"))
+               #t))))))
     (home-page "https://python-pillow.org")
     (synopsis "Fork of the Python Imaging Library")
     (description
