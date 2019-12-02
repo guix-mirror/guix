@@ -1122,7 +1122,10 @@ Heritage")
         ((key . args)
          (if (eq? key skip-key)
              '()
-             (apply throw key args)))))))
+             (with-networking-fail-safe
+              (G_ "while connecting to Software Heritage")
+              '()
+              (apply throw key args))))))))
 
 
 ;;;
