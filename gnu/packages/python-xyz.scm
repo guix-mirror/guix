@@ -4705,8 +4705,7 @@ the OleFileIO module from PIL, the Python Image Library.")
            (lambda _
              (substitute* "setup.py"
                (("\\['/sbin/ldconfig', '-p'\\]") "['true']"))))
-         (delete 'check) ; We must run checks after python-pillow is installed.
-         (add-after 'install 'check-installed
+         (replace 'check
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (begin
                (setenv "HOME" (getcwd))
