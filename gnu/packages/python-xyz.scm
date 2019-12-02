@@ -6803,13 +6803,13 @@ add functionality and customization to your projects with their own plugins.")
 (define-public python-fonttools
   (package
     (name "python-fonttools")
-    (version "3.38.0")
+    (version "4.2.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "fonttools" version ".zip"))
               (sha256
                (base32
-                "12ripk3s7skgxr1bs9r8n13r94ym3s8iir7ivfixls9fa4dabmlh"))))
+                "0psy6z52jn49wp93s3k7kj0jzji1cad3wnwgm6c26vphv5appk4v"))))
     (build-system python-build-system)
     (native-inputs
      `(("unzip" ,unzip)
@@ -6825,8 +6825,18 @@ also contains a tool called “TTX” which converts TrueType/OpenType fonts to 
 from an XML-based format.")
     (license license:expat)))
 
+;; Fonttools 4.x dropped support for Python 2, so stick with 3.x here.
 (define-public python2-fonttools
-  (package-with-python2 python-fonttools))
+  (let ((base (package-with-python2 (strip-python2-variant python-fonttools))))
+    (package/inherit
+     base
+     (version "3.38.0")
+     (source (origin
+               (method url-fetch)
+               (uri (pypi-uri "fonttools" version ".zip"))
+               (sha256
+                (base32
+                 "12ripk3s7skgxr1bs9r8n13r94ym3s8iir7ivfixls9fa4dabmlh")))))))
 
 (define-public python-ly
   (package
