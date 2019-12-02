@@ -35,7 +35,6 @@
   (package
     (name "avahi")
     (version "0.7")
-    (replacement avahi/fixed)
     (home-page "http://avahi.org")
     (source (origin
              (method url-fetch)
@@ -44,7 +43,10 @@
              (sha256
               (base32
                "0128n7jlshw4bpx0vg8lwj8qwdisjxi7mvniwfafgnkzzrfrpaap"))
-             (patches (search-patches "avahi-localstatedir.patch"))))
+             (patches (search-patches "avahi-localstatedir.patch"
+                                      "avahi-CVE-2018-1000845.patch"))))
+    ;; Hide a duplicate of the CVE fixed above.
+    (properties `((lint-hidden-cve . ("CVE-2017-6519"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-distro=none"
@@ -74,17 +76,6 @@
 network.  It is an implementation of the mDNS (for \"Multicast DNS\") and
 DNS-SD (for \"DNS-Based Service Discovery\") protocols.")
     (license lgpl2.1+)))
-
-(define avahi/fixed
-  (package
-    (inherit avahi)
-    (source (origin
-              (inherit (package-source avahi))
-              (patches
-               (append (search-patches "avahi-CVE-2018-1000845.patch")
-                       (origin-patches (package-source avahi))))))
-    ;; Hide a duplicate of the CVE fixed above.
-    (properties `((lint-hidden-cve . ("CVE-2017-6519"))))))
 
 (define-public nss-mdns
   (package
