@@ -81,6 +81,57 @@
 ;;;
 ;;; Code:
 
+(define %bootstrap-guile+guild
+  ;; This package combines %bootstrap-guile with guild, which is not included
+  ;; in %bootstrap-guile.  Guild is needed to build gash-boot and
+  ;; gash-core-utils-boot because it is dependency of the Guile build system.
+  (package
+    (name "guile-bootstrap+guild")
+    (version "2.0")
+    (source (bootstrap-origin (package-source guile-2.0)))
+    (native-inputs `(("bash" ,(bootstrap-executable "bash" (%current-system)))
+                     ("tar" ,(bootstrap-executable "tar" (%current-system)))
+                     ("xz" ,(bootstrap-executable "xz" (%current-system)))
+                     ("guile" ,%bootstrap-guile)))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:guile ,%bootstrap-guile
+       #:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils))
+                   (let ((guile-source (assoc-ref %build-inputs "source"))
+                         (bin (string-append (getcwd) "/bin"))
+                         (tar (assoc-ref %build-inputs "tar"))
+                         (xz (assoc-ref %build-inputs "xz")))
+                     (mkdir-p bin)
+                     (setenv "PATH" bin)
+                     (with-directory-excursion bin
+                       (copy-file tar "tar")
+                       (copy-file xz "xz")
+                       (setenv "PATH" bin))
+                     (let* ((out (assoc-ref %outputs "out"))
+                            (out-bin (string-append out "/bin"))
+                            (guile (assoc-ref %build-inputs "guile"))
+                            (bash (assoc-ref %build-inputs "bash")))
+                       (mkdir-p out-bin)
+                       (with-directory-excursion out-bin
+                         (symlink (string-append guile "/bin/guile")
+                                  "guile")
+                         (invoke "tar" "--strip-components=2"
+                                 "-xvf" guile-source
+                                 (string-append "guile-"
+                                                ,(package-version guile-2.0)
+                                                "/meta/guild.in"))
+                         (copy-file "guild.in" "guild")
+                         (substitute* "guild"
+                           (("#!/bin/sh") (string-append "#! " bash))
+                           (("@installed_guile@") (string-append out-bin "/guile")))
+                         (chmod "guild" #o555)))))))
+    (synopsis "Bootstrap Guile plus Guild")
+    (description "Bootstrap Guile with added Guild")
+    (home-page #f)
+    (license (package-license guile-2.0))))
+
 (define mes-boot
   (package
     (inherit mes)
