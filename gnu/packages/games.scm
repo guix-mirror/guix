@@ -4938,9 +4938,9 @@ fight against their plot and save his fellow rabbits from slavery.")
     (home-page "https://play0ad.com")
     (license (list (license:fsdg-compatible
                     "http://tavmjong.free.fr/FONTS/ArevCopyright.txt"
-                    (license:license-comment
-                     (package-license font-bitstream-vera)))
-                   (package-license font-bitstream-vera)
+                    "Similar to the license of the Bitstream Vera fonts.")
+                   (license:fsdg-compatible
+                    "https://www.gnome.org/fonts/#Final_Bitstream_Vera_Fonts")
                    license:cc-by-sa3.0
                    license:expat
                    license:gfl1.0
