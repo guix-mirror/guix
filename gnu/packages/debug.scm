@@ -325,7 +325,7 @@ conditions.")
       ;; stress-make wrapper is under BSD-3-modifications-must-be-indicated,
       ;; and patched GNU Make is under its own license.
       (license (list (non-copyleft "LICENSE.md")
-                     (package-license gnu-make))))))
+                     gpl3+)))))
 
 (define-public zzuf
   (package
