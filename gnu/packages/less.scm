@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,12 +30,13 @@
     (version "530")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnu/less/less-"
-                          version ".tar.gz"))
-      (sha256
-       (base32
-        "1qpj2z38c53qmvqn8jaa0kq26q989cfbfjj4y0s6z17l1amr2gsh"))))
+       (method url-fetch)
+       (uri (list (string-append "mirror://gnu/less/less-"
+                                 version ".tar.gz")
+                  (string-append "http://www.greenwoodsoftware.com/less/less-"
+                                 version ".tar.gz")))
+       (sha256
+        (base32 "1qpj2z38c53qmvqn8jaa0kq26q989cfbfjj4y0s6z17l1amr2gsh"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)))
     (home-page "https://www.gnu.org/software/less/")
