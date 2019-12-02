@@ -212,16 +212,26 @@ project (but it is usable outside of the Gnome platform).")
 (define-public libxslt
   (package
     (name "libxslt")
-    (version "1.1.33")
+    (version "1.1.34")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://xmlsoft.org/libxslt/libxslt-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1j1q1swnsy8jgi9x7mclvkrqhfgn09886gdlr9wzk7a08i8n0dlf"))
+               "0zrzz6kjdyavspzik6fbkpvfpbd25r2qg6py5nnjaabrsr3bvccq"))
              (patches (search-patches "libxslt-generated-ids.patch"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'disable-fuzz-tests
+                    (lambda _
+                      ;; Disable libFuzzer tests, because they require
+                      ;; instrumentation builds of libxml2 and libxslt.
+                      (substitute* "tests/Makefile"
+                        (("exslt plugins fuzz")
+                         "exslt plugins"))
+                      #t)))))
     (home-page "http://xmlsoft.org/XSLT/index.html")
     (synopsis "C library for applying XSLT stylesheets to XML documents")
     (inputs `(("libgcrypt" ,libgcrypt)
