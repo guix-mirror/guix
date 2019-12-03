@@ -322,22 +322,6 @@ must contain the original contents of a narinfo file."
                     (and=> signature narinfo-signature->canonical-sexp))
                    str)))
 
-(define* (assert-valid-signature narinfo signature hash
-                                 #:optional (acl (current-acl)))
-  "Bail out if SIGNATURE, a canonical sexp representing the signature of
-NARINFO, doesn't match HASH, a bytevector containing the hash of NARINFO."
-  (let ((uri (uri->string (first (narinfo-uris narinfo)))))
-    (signature-case (signature hash acl)
-      (valid-signature #t)
-      (invalid-signature
-       (leave (G_ "invalid signature for '~a'~%") uri))
-      (hash-mismatch
-       (leave (G_ "hash mismatch for '~a'~%") uri))
-      (unauthorized-key
-       (leave (G_ "'~a' is signed with an unauthorized key~%") uri))
-      (corrupt-signature
-       (leave (G_ "signature on '~a' is corrupt~%") uri)))))
-
 (define* (read-narinfo port #:optional url
                        #:key size)
   "Read a narinfo from PORT.  If URL is true, it must be a string used to
