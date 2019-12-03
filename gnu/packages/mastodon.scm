@@ -50,6 +50,7 @@
     (propagated-inputs
      `(("python-beautifulsoup4" ,python-beautifulsoup4)
        ("python-requests" ,python-requests)
+       ("python-urwid" ,python-urwid)
        ("python-wcwidth" ,python-wcwidth)))
     (home-page "https://github.com/ihabunek/toot/")
     (synopsis "Mastodon CLI client")
