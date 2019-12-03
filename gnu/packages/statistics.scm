@@ -2777,13 +2777,13 @@ a column in data frame.")
 (define-public r-rsqlite
   (package
     (name "r-rsqlite")
-    (version "2.1.2")
+    (version "2.1.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RSQLite" version))
               (sha256
                (base32
-                "1inrhap5cs0wry2jbw42fx9wwxb3qdzlpy0ba4f6a29bs8jx9nk6"))))
+                "0c5s67s8w4q6p57rnh14n4gcmymyardg8lhnrdlimmjcfawj15h7"))))
     (properties `((upstream-name . "RSQLite")))
     (build-system r-build-system)
     (propagated-inputs
