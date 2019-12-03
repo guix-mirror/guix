@@ -496,3 +496,42 @@ Features:
 @item Laptop support through the Solid hardware device framework
 @end itemize")
     (license license:gpl2+)))
+
+(define-public sweeper
+  (package
+    (name "sweeper")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/sweeper-" version ".tar.xz"))
+       (sha256
+        (base32 "1gn87yxmhi7rs82jq7y89bvlx33xbl9wq8kr96pcz423khqvjl84"))))
+    (properties `((tags . ("Desktop" "KDE" "Utilities"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kactivities-stats" ,kactivities-stats)
+       ("kbookmarks" ,kbookmarks)
+       ("kcrash" ,kcrash)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kxmlgui" ,kxmlgui)
+       ("oxygen-icons" ,oxygen-icons) ;; default icon set
+       ("qtbase" ,qtbase)))
+    (home-page "https://kde.org/applications/utilities/org.kde.sweeper")
+    (synopsis "Temporary file and history cleaner")
+    (description "
+Sweeper helps to clean unwanted traces the user leaves on the system and to
+regain disk space removing unused temporary files.
+It can quickly remove temporary information, such as web page cookies,
+browser history, or the list of recently-opened documents.  It helps provide
+additional privacy on a system shared between multiple users.")
+    (license license:lgpl2.0+ )))
