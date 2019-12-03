@@ -64,6 +64,7 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mcrypt)
   #:use-module (gnu packages mp3)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
@@ -1716,28 +1717,24 @@ lightweight animated-GIF viewer, and @command{gifdiff} compares two GIFs for
 identical visual appearance.")
    (license license:gpl2+)))
 
+;; 1.0.7 is buggy and reverted in git repository.
 (define-public jp2a
   (package
     (name "jp2a")
-    (version "1.0.7")
+    (version "1.0.6")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/cslarsen/jp2a.git")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "12a1z9ba2j16y67f41y8ax5sgv1wdjd71pg7circdxkj263n78ql"))))
+       (method url-fetch)
+       (uri (string-append "mirror://debian/pool/main/j/jp2a/jp2a_"
+                           version ".orig.tar.gz"))
+        (sha256
+         (base32
+          "076frk3pa16s4r1b10zgy81vdlz0385zh3ykbnkaij25jn5aqc09"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libjpeg" ,libjpeg)
-       ("curl" ,curl)))
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+     `(("curl" ,curl)
+       ("libjpeg" ,libjpeg)
+       ("ncurses" ,ncurses)))
     (home-page "https://csl.name/jp2a/")
     (synopsis "Convert JPEG images to ASCII")
     (description
