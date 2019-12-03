@@ -125,6 +125,17 @@ Throw an error on failure."
 
     (match (connect! session)
       ('ok
+       ;; Authenticate against ~/.ssh/known_hosts.
+       (match (authenticate-server session)
+         ('ok #f)
+         (reason
+          (raise (condition
+                  (&message
+                   (message (format #f (G_ "failed to authenticate \
+server at '~a': ~a")
+                                    (session-get session 'host)
+                                    reason)))))))
+
        ;; Use public key authentication, via the SSH agent if it's available.
        (match (userauth-public-key/auto! session)
          ('success
