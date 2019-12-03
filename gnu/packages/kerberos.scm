@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2012, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -76,14 +76,16 @@
 
        ,@(if (%current-target-system)
              '(#:configure-flags
-               (list "krb5_cv_attr_constructor_destructor=yes"
+               (list "--localstatedir=/var"
+                     "krb5_cv_attr_constructor_destructor=yes"
                      "ac_cv_func_regcomp=yes"
                      "ac_cv_printf_positional=yes"
                      "ac_cv_file__etc_environment=yes"
                      "ac_cv_file__etc_TIMEZONE=no")
                #:make-flags
                (list "CFLAGS+=-DDESTRUCTOR_ATTR_WORKS=1"))
-             '())
+             '(#:configure-flags
+               (list "--localstatedir=/var")))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source-directory
