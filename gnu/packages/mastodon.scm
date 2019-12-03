@@ -47,7 +47,7 @@
              (invoke "py.test"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
-    (propagated-inputs
+    (inputs
      `(("python-beautifulsoup4" ,python-beautifulsoup4)
        ("python-requests" ,python-requests)
        ("python-urwid" ,python-urwid)
