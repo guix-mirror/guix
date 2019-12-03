@@ -165,3 +165,44 @@ briefly.  It was designed to help those with repetitive strain injuries, for
 whom pressing buttons hurts.")
     (license ;; GPL for programs, FDL for documentation
      (list license:gpl2+ license:fdl1.2+))))
+
+(define-public kmouth
+  (package
+    (name "kmouth")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/kmouth-" version ".tar.xz"))
+       (sha256
+        (base32 "1agjxf1jfi967hj1iz788n6cna6fr7qg80zsx6s119hg7b0xwqmr"))))
+    (properties `((tags . ("Desktop" "KDE" "Utilities"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kcompletion" ,kcompletion)
+       ("kconfig", kconfig)
+       ("kconfigwidgets", kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("oxygen-icons" ,oxygen-icons) ;; default icon set
+       ("qtbase" ,qtbase)
+       ("qtspeech" ,qtspeech)))
+    (home-page "https://kde.org/applications/utilities/org.kde.kmouth")
+    (synopsis "Type-and-say frontend for speech synthesizers")
+    (description "KMouth is a program which enables persons that cannot speak
+to let their computer speak, e.g. mutal people or people who have lost their
+voice.  It has a text input field and speaks the sentences that you enter.  It
+also has support for user defined phrasebooks.
+
+It includes a history of spoken sentences from which the user can select
+sentences to be re-spoken.")
+    (license ;; GPL for programs, FDL for documentation
+     (list license:gpl2+ license:fdl1.2+))))
