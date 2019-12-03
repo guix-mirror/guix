@@ -173,7 +173,7 @@
 
   (list (shepherd-service
          (documentation "GNU lsh SSH server")
-         (provision '(ssh-daemon))
+         (provision '(ssh-daemon ssh sshd))
          (requirement requires)
          (start #~(make-forkexec-constructor (list #$@lsh-command)))
          (stop  #~(make-kill-destructor)))))
@@ -497,7 +497,7 @@ of user-name/file-like tuples."
   (list (shepherd-service
          (documentation "OpenSSH server.")
          (requirement '(syslogd loopback))
-         (provision '(ssh-daemon))
+         (provision '(ssh-daemon ssh sshd))
          (start #~(make-forkexec-constructor #$openssh-command
                                              #:pid-file #$pid-file))
          (stop #~(make-kill-destructor))
@@ -606,7 +606,7 @@ of user-name/file-like tuples."
   (list (shepherd-service
          (documentation "Dropbear SSH server.")
          (requirement requires)
-         (provision '(ssh-daemon))
+         (provision '(ssh-daemon ssh sshd))
          (start #~(make-forkexec-constructor #$dropbear-command
                                              #:pid-file #$pid-file))
          (stop #~(make-kill-destructor)))))
