@@ -23,7 +23,8 @@
   #:use-module (guix packages)
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages kde-plasma)
-  #:use-module (gnu packages qt))
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages xorg))
 
 (define-public kate
   (package
@@ -122,5 +123,45 @@ Kate's features include:
 as you would use a lens to magnify a newspaper fine-print or a photograph.
 This application is useful for a variety of people: from researchers to
 artists to web-designers to people with low vision.")
+    (license ;; GPL for programs, FDL for documentation
+     (list license:gpl2+ license:fdl1.2+))))
+
+(define-public kmousetool
+  (package
+    (name "kmousetool")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/kmousetool-" version ".tar.xz"))
+       (sha256
+        (base32 "169kk20mkm29nycg2vs1k5cs22gzchqs9hbfd661cy2l7n4d8d04"))))
+    (properties `((tags . ("Desktop" "KDE" "Utilities"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kauth" ,kauth)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kconfigwidgets", kconfigwidgets)
+       ("kdbusaddons" ,kdbusaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("knotifications" ,knotifications)
+       ("kxmlgui" ,kxmlgui)
+       ("kwindowsystem" ,kwindowsystem)
+       ("libxtst" ,libxtst)
+       ("libxt" ,libxt)
+       ("phonon" ,phonon)
+       ("oxygen-icons" ,oxygen-icons) ;; default icon set
+       ("qtbase" ,qtbase)))
+    (home-page "https://kde.org/applications/utilities/org.kde.kmousetool")
+    (synopsis "Automatic mouse click and mouse manipulation tool for the
+disabled")
+    (description "KMouseTool clicks the mouse whenever the mouse cursor pauses
+briefly.  It was designed to help those with repetitive strain injuries, for
+whom pressing buttons hurts.")
     (license ;; GPL for programs, FDL for documentation
      (list license:gpl2+ license:fdl1.2+))))
