@@ -149,19 +149,6 @@ ignoring it~%")
          (leave (G_ "failed to load machine file '~a': ~s~%")
                 file args))))))
 
-(define (host-key->type+key host-key)
-  "Destructure HOST-KEY, an OpenSSH host key string, and return two values:
-its key type as a symbol, and the actual base64-encoded string."
-  (define (type->symbol type)
-    (and (string-prefix? "ssh-" type)
-         (string->symbol (string-drop type 4))))
-
-  (match (string-tokenize host-key)
-    ((type key x)
-     (values (type->symbol type) key))
-    ((type key)
-     (values (type->symbol type) key))))
-
 (define (private-key-from-file* file)
   "Like 'private-key-from-file', but raise an error that 'with-error-handling'
 can interpret meaningfully."
@@ -203,21 +190,8 @@ private key from '~a': ~a")
                                (build-machine-compression-level machine))))
     (match (connect! session)
       ('ok
-       ;; Authenticate the server.  XXX: Guile-SSH 0.10.1 doesn't know about
-       ;; ed25519 keys and 'get-key-type' returns #f in that case.
-       (let-values (((server)   (get-server-public-key session))
-                    ((type key) (host-key->type+key
-                                 (build-machine-host-key machine))))
-         (unless (and (or (not (get-key-type server))
-                          (eq? (get-key-type server) type))
-                      (string=? (public-key->string server) key))
-           ;; Key mismatch: something's wrong.  XXX: It could be that the server
-           ;; provided its Ed25519 key when we where expecting its RSA key.
-           (leave (G_ "server at '~a' returned host key '~a' of type '~a' \
-instead of '~a' of type '~a'~%")
-                  (build-machine-name machine)
-                  (public-key->string server) (get-key-type server)
-                  key type)))
+       ;; Make sure the server's key is what we expect.
+       (authenticate-server* session (build-machine-host-key machine))
 
        (let ((auth (userauth-public-key! session private)))
          (unless (eq? 'success auth)

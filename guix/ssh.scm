@@ -37,6 +37,8 @@
   #:use-module (ice-9 format)
   #:use-module (ice-9 binary-ports)
   #:export (open-ssh-session
+            authenticate-server*
+
             remote-inferior
             remote-daemon-channel
             connect-to-remote-daemon
@@ -59,6 +61,41 @@
 
 (define %compression
   "zlib@openssh.com,zlib")
+
+(define (host-key->type+key host-key)
+  "Destructure HOST-KEY, an OpenSSH host key string, and return two values:
+its key type as a symbol, and the actual base64-encoded string."
+  (define (type->symbol type)
+    (and (string-prefix? "ssh-" type)
+         (string->symbol (string-drop type 4))))
+
+  (match (string-tokenize host-key)
+    ((type key x)
+     (values (type->symbol type) key))
+    ((type key)
+     (values (type->symbol type) key))))
+
+(define (authenticate-server* session key)
+  "Make sure the server for SESSION has the given KEY, where KEY is a string
+such as \"ssh-ed25519 AAAAC3Nz… root@example.org\".  Raise an exception if the
+actual key does not match."
+  (let-values (((server)   (get-server-public-key session))
+               ((type key) (host-key->type+key key)))
+    (unless (and (or (not (get-key-type server))
+                     (eq? (get-key-type server) type))
+                 (string=? (public-key->string server) key))
+      ;; Key mismatch: something's wrong.  XXX: It could be that the server
+      ;; provided its Ed25519 key when we where expecting its RSA key.  XXX:
+      ;; Guile-SSH 0.10.1 doesn't know about ed25519 keys and 'get-key-type'
+      ;; returns #f in that case.
+      (raise (condition
+              (&message
+               (message (format #f (G_ "server at '~a' returned host key \
+'~a' of type '~a' instead of '~a' of type '~a'~%")
+                                (session-get session 'host)
+                                (public-key->string server)
+                                (get-key-type server)
+                                key type))))))))
 
 (define* (open-ssh-session host #:key user port identity
                            (compression %compression)
