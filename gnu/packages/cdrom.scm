@@ -134,14 +134,14 @@ extraction from CDs.")
 (define-public libcdio-paranoia
   (package
     (name "libcdio-paranoia")
-    (version "10.2+0.94+2")
+    (version "10.2+2.0.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/libcdio/libcdio-paranoia-"
-                                 version ".tar.gz"))
+                                 version ".tar.bz2"))
              (sha256
               (base32
-               "0h8rr1ir05r29rgawa1ccw335668k4s3zq4yg9095svyx7n843yn"))))
+               "1h8k8z9r75h3p697f77z9j1blwb6gf2d5rik6z2q6420my6c2ra5"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs `(("libcdio" ,libcdio)))
