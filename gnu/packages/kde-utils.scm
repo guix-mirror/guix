@@ -206,3 +206,46 @@ It includes a history of spoken sentences from which the user can select
 sentences to be re-spoken.")
     (license ;; GPL for programs, FDL for documentation
      (list license:gpl2+ license:fdl1.2+))))
+
+(define-public kronometer
+  (package
+    (name "kronometer")
+    (version "2.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/kronometer/" version
+                           "/src/kronometer-" version ".tar.xz"))
+       (sha256
+        (base32 "05hs8729a3aqjpwmn2xdf2sriacrll4sj4ax3lm4s1ravj09n9bm"))))
+    (properties `((tags . ("Desktop" "KDE" "Utilities"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kauth" ,kauth)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets", kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("ki18n" ,ki18n)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("oxygen-icons" ,oxygen-icons) ;; default icon set
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             ;; make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
+    (home-page "https://kde.org/applications/utilities/org.kde.kronometer")
+    (synopsis "Simple stopwatch application")
+    (description "Kronometer is a stopwatch application.  It features the
+basic stopwatch actions (pause, resume, reset, laps), as well as the ability
+to save the times and resume them later.")
+    (license ;; GPL for programs, LGPL for libraries, FDL for documentation
+     license:gpl2+)))
