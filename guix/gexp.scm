@@ -1386,13 +1386,8 @@ TARGET, a GNU triplet."
                       (ice-9 format)
                       (srfi srfi-1)
                       (srfi srfi-26)
+                      (system base target)
                       (system base compile))
-
-         ;; TODO: Inline this on the next rebuild cycle.
-         (ungexp-splicing
-          (if target
-              (gexp ((use-modules (system base target))))
-              (gexp ())))
 
          (define (regular? file)
            (not (member file '("." ".."))))
