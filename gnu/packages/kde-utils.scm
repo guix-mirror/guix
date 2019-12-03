@@ -372,3 +372,53 @@ filter tool.  All modifications to the data loaded can be endlessly undone or
 redone.")
     (license ;; GPL for programs, LGPL for libraries, FDL for documentation
      (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
+
+(define-public rsibreak
+  (package
+    (name "rsibreak")
+    (version "0.12.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde//stable/rsibreak/0.12/"
+                           "rsibreak-" version ".tar.xz"))
+       (sha256
+        (base32 "09axg6gbmpnxsk88mdjbxxvfaj5af7xaf1gmnr17b0506zcfgwhv"))))
+    (properties `((tags . ("Desktop" "KDE" "Utilities"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kauth" ,kauth)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kidletime" ,kidletime)
+       ("knotifications" ,knotifications)
+       ("knotifyconfig" ,knotifyconfig)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kxmlgui" ,kxmlgui)
+       ("oxygen-icons" ,oxygen-icons) ;; default icon set
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             ;; make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
+    (home-page "https://kde.org/applications/utilities/org.kde.rsibreak")
+    (synopsis "Assists in the Recovery and Prevention of Repetitive Strain
+Injury")
+    (description "Repetitive Strain Injury is an illness which can occur as a
+result of working with a mouse and keyboard.  This utility can be used to
+remind you to take a break now and then.")
+    (license ;; GPL for programs, FDL for documentation
+     (list license:gpl2+ license:fdl1.2+))))
