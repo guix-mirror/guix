@@ -1884,14 +1884,14 @@ rows, dropping names) to see if the modified versions are identical.")
 (define-public r-dendextend
   (package
     (name "r-dendextend")
-    (version "1.12.0")
+    (version "1.13.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "dendextend" version))
        (sha256
         (base32
-         "0mgsc9qkr5p6hss3wychdjvk263ay48yx543wawj72l7q7cgx1xl"))))
+         "1iclvd9cyckd4djpa87ynm05fk6zl4b4m735za1w4irimc130m3r"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
