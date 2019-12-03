@@ -4149,14 +4149,14 @@ published results; and a routine for graphical display.")
 (define-public r-network
   (package
     (name "r-network")
-    (version "1.15")
+    (version "1.16.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "network" version))
        (sha256
         (base32
-         "1cscw5978fyixhkicf06c4b2g1yf6gyi8vx86cz3dy75d41mrgjw"))))
+         "0dnf1wl3za2lhx2lwd8smhlijl1cfhckgr8zz9piiirrfi2m2kx2"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-magrittr" ,r-magrittr)
