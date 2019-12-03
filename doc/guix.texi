@@ -11244,9 +11244,12 @@ corresponding device mapping established.
 This is a list of symbols denoting mount flags.  Recognized flags
 include @code{read-only}, @code{bind-mount}, @code{no-dev} (disallow
 access to special files), @code{no-suid} (ignore setuid and setgid
-bits), @code{no-atime} (do not update file access times), and @code{no-exec}
-(disallow program execution).  @xref{Mount-Unmount-Remount,,, libc, The GNU C
-Library Reference Manual}, for more information on these flags.
+bits), @code{no-atime} (do not update file access times),
+@code{strict-atime} (update file access time), @code{lazy-time} (only
+update time on the in-memory version of the file inode), and
+@code{no-exec} (disallow program execution).
+@xref{Mount-Unmount-Remount,,, libc, The GNU C Library Reference
+Manual}, for more information on these flags.
 
 @item @code{options} (default: @code{#f})
 This is either @code{#f}, or a string denoting mount options passed to the

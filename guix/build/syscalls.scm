@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,6 +44,7 @@
             MS_BIND
             MS_MOVE
             MS_STRICTATIME
+            MS_LAZYTIME
             MNT_FORCE
             MNT_DETACH
             MNT_EXPIRE
@@ -451,6 +453,7 @@ the returned procedure is called."
 (define MS_BIND            4096)
 (define MS_MOVE            8192)
 (define MS_STRICTATIME 16777216)
+(define MS_LAZYTIME    33554432)
 
 (define MNT_FORCE       1)
 (define MNT_DETACH      2)
