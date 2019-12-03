@@ -5,6 +5,7 @@
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -79,6 +80,13 @@
                                      `("--triplet=arm-linux-gnueabihf")
                                      '()))
        #:test-target "test"))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "CPATH")
+            (files '("include")))
+           (search-path-specification
+            (variable "LIBRARY_PATH")
+            (files '("lib" "lib64")))))
     ;; Fails to build on MIPS: "Unsupported CPU"
     (supported-systems (delete "mips64el-linux" %supported-systems))
     (synopsis "Tiny and fast C compiler")
@@ -90,66 +98,6 @@ standard.")
     ;; An attempt to re-licence tcc under the Expat licence is underway but not
     ;; (if ever) complete.  See the RELICENSING file for more information.
     (license license:lgpl2.1+)))
-
-(define-public tcc-wrapper
-  (package
-    (inherit tcc)
-    (name "tcc-wrapper")
-    (build-system trivial-build-system)
-    (native-inputs '())
-    (inputs `(("tcc" ,tcc)
-              ("guile" ,guile-2.2)))
-
-    ;; By default TCC does not honor any search path environment variable.
-    ;; This wrapper adds them.
-    ;;
-    ;; FIXME: TCC includes its own linker so our 'ld-wrapper' hack to set the
-    ;; RUNPATH is ineffective here.  We should modify TCC itself.
-    (native-search-paths
-     (list (search-path-specification
-            (variable "TCC_CPATH")
-            (files '("include")))
-           (search-path-specification
-            (variable "TCC_LIBRARY_PATH")
-            (files '("lib" "lib64")))))
-
-    (arguments
-     '(#:builder
-       (let* ((out   (assoc-ref %outputs "out"))
-              (bin   (string-append out "/bin"))
-              (tcc   (assoc-ref %build-inputs "tcc"))
-              (guile (assoc-ref %build-inputs "guile")))
-         (mkdir out)
-         (mkdir bin)
-         (call-with-output-file (string-append bin "/cc")
-           (lambda (port)
-             (format port "#!~a/bin/guile --no-auto-compile~%!#~%" guile)
-             (write
-              `(begin
-                 (use-modules (ice-9 match)
-                              (srfi srfi-26))
-
-                 (define (split path)
-                   (string-tokenize path (char-set-complement
-                                          (char-set #\:))))
-
-                 (apply execl ,(string-append tcc "/bin/tcc")
-                        ,(string-append tcc "/bin/tcc") ;argv[0]
-                        (append (cdr (command-line))
-                                (match (getenv "TCC_CPATH")
-                                  (#f '())
-                                  (str
-                                   (map (cut string-append "-I" <>)
-                                        (split str))))
-                                (match (getenv "TCC_LIBRARY_PATH")
-                                  (#f '())
-                                  (str
-                                   (map (cut string-append "-L" <>)
-                                        (split str)))))))
-              port)
-             (chmod port #o777)))
-         #t)))
-    (synopsis "Wrapper providing the 'cc' command for TCC")))
 
 (define-public pcc
   (package
