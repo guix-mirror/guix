@@ -412,6 +412,54 @@ data")
 functions for accessing calendar data using the kcalcore API.")
     (license  license:lgpl2.0+)))
 
+(define-public kgpg
+  (package
+    (name "kgpg")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/kgpg-" version ".tar.xz"))
+       (sha256
+        (base32 "1dis7zv51a4lhx5l3wlwnhym8f79h8sibhhk97fkn8d7szdrmfw5"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("gnupg" ,gnupg)  ;; TODO: Remove after gpgme uses fixed path
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("akonadi" ,akonadi)
+       ("akonadi-contacts" ,akonadi-contacts)
+       ("boost" ,boost)
+       ("gpgme" ,gpgme)
+       ("karchive" ,karchive)
+       ("kcodecs" ,kcodecs)
+       ("kcontacts" ,kcontacts)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)
+       ("kitemmodels" ,kitemmodels)
+       ("kjobwidgets" ,kjobwidgets)
+       ("knotifications" ,knotifications)
+       ("kservice" ,kservice)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kxmlgui" ,kxmlgui)
+       ("oxygen-icons" ,oxygen-icons) ;; default icon set
+       ("qtbase" ,qtbase)))
+    (home-page "https://kde.org/applications/utilities/org.kde.kgpg")
+    (synopsis "Graphical front end for GNU Privacy Guard")
+    (description "Kgpg manages cryptographic keys for the GNU Privacy Guard,
+and can encrypt, decrypt, sign, and verify files.  It features a simple editor
+for applying cryptography to short pieces of text, and can also quickly apply
+cryptography to the contents of the clipboard.")
+    (license license:gpl2+)))
+
 (define-public kidentitymanagement
   (package
     (name "kidentitymanagement")
