@@ -264,7 +264,7 @@ problem, and shows the differences.")
 (define-public cmocka
   (package
     (name "cmocka")
-    (version "1.1.3")
+    (version "1.1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://cmocka.org/files/"
@@ -272,7 +272,7 @@ problem, and shows the differences.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1bxzzafjlwzgldcb07hjnlnqvh88wh21r2kw7z8f704w5bvvrsj3"))))
+                "1dm8pdvkyfa8dsbz9bpq7wwgixjij4sii9bbn5sgvqjm5ljdik7h"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; no test target
