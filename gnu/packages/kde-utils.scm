@@ -92,3 +92,35 @@ Kate's features include:
 @end itemize")
     (license ;; GPL for programs, LGPL for libraries
      (list license:gpl2+ license:lgpl2.0))))
+
+(define-public kmag
+  (package
+    (name "kmag")
+    (version "19.08.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://kde/stable/applications/" version
+                          "/src/kmag-" version ".tar.xz"))
+      (sha256
+       (base32 "0l69mgnh2mmkxawwibqdx9n7myl6qqnr2fd3mpsg2bzpcfvmsvi1"))))
+    (properties `((tags . ("Desktop" "KDE" "Utilities"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("kxmlgui" ,kxmlgui)
+       ("oxygen-icons" ,oxygen-icons) ;; default icon set
+       ;; TODO: QAccessibilityClient - libqaccessibilityclien
+       ("qtbase" ,qtbase)))
+    (home-page "https://kde.org/applications/utilities/org.kde.kmag")
+    (synopsis "Screen magnifier tool")
+    (description "You can use KMagnifier to magnify a part of the screen just
+as you would use a lens to magnify a newspaper fine-print or a photograph.
+This application is useful for a variety of people: from researchers to
+artists to web-designers to people with low vision.")
+    (license ;; GPL for programs, FDL for documentation
+     (list license:gpl2+ license:fdl1.2+))))
