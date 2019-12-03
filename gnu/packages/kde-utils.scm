@@ -22,6 +22,8 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages kde)
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages kde-plasma)
   #:use-module (gnu packages qt)
@@ -306,3 +308,67 @@ fish.
 Almost completely customizable, Krusader is very user friendly, fast and looks
 great on your desktop.")
     (license license:gpl2+)))
+
+(define-public okteta
+  (package
+    (name "okteta")
+    (version "17.12.3")
+    (source
+     (origin
+       (method url-fetch)
+       ;; TODO: Why is this not in "stable" anymore
+       (uri (string-append "mirror://kde/Attic/applications/" version
+                           "/src/okteta-" version ".tar.xz"))
+       (sha256
+        (base32 "03wsv83l1cay2dpcsksad124wzan7kh8zxdw1h0yicn398kdbck4"))))
+    (properties `((tags . ("Desktop" "KDE" "Utilities"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)
+       ("qttools" ,qttools)
+       ("shared-mime-info" ,shared-mime-info)))
+    (inputs
+     `(("kbookmarks" ,kbookmarks)
+       ("kcmutils" ,kcmutils)
+       ("kcodecs" ,kcodecs)
+       ("kcrash" ,kcrash)
+       ("kcompletion" ,kcompletion)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kdbusaddons" ,kdbusaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)
+       ("knewstuff" ,knewstuff)
+       ("kparts" ,kparts)
+       ("kservice" ,kservice)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("oxygen-icons" ,oxygen-icons) ;; default icon set
+       ("qca" ,qca)
+       ("qtbase" ,qtbase)
+       ("qtscript" ,qtscript)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             ;; make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             (setenv "HOME" "/tmp/dummy-home")
+             #t)))))
+    (home-page "https://kde.org/applications/utilities/org.kde.okteta")
+    (synopsis "Hexadecimal editor for binary files")
+    (description "Okteta is a simple editor for the raw data of files.  This
+type of program is also called hex editor or binary editor.
+
+The data is displayed in the traditional view with two columns: one with the
+numeric values and one with the assigned characters.  Editing can be done both
+in the value column and the character column.  Besides the usual editing
+capabilities Okteta also brings a small set of tools, like a table listing
+decodings into common simple data types, a table listing all possible bytes
+with its character and value equivalents, a info view with a statistic and a
+filter tool.  All modifications to the data loaded can be endlessly undone or
+redone.")
+    (license ;; GPL for programs, LGPL for libraries, FDL for documentation
+     (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
