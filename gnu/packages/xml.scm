@@ -117,14 +117,14 @@ hierarchical form with variable field lengths.")
 (define-public libxml2
   (package
     (name "libxml2")
-    (version "2.9.9")
+    (version "2.9.10")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://xmlsoft.org/libxml2/libxml2-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0wd881jzvqayx0ihzba29jl80k06xj9ywp16kxacdqs3064p1ywl"))))
+               "07xynh8hcxb2yb1fs051xrgszjvj37wnxvxgsj10rzmqzy9y3zma"))))
     (build-system gnu-build-system)
     (outputs '("out" "static"))
     (arguments
