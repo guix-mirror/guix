@@ -1384,15 +1384,15 @@ and routines to assist in editing internationalized text.")
 (define-public girara
   (package
     (name "girara")
-    (version "0.3.2")
+    (version "0.3.3")
     (source (origin
               (method url-fetch)
               (uri
                (string-append "https://pwmt.org/projects/girara/download/girara-"
-                              version ".tar.xz"))
+                              version ".tar.gz"))
               (sha256
                (base32
-                "1kc6n1mxjxa7wvwnqy94qfg8l9jvx9qrvrr2kc7m4g0z20x3a00p"))))
+                "13vr62kkkqs2xsrmsn114n6c6084ix1qyjksczqsc3s2y3bdsmj4"))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("check" ,check)
                      ("gettext" ,gettext-minimal)
