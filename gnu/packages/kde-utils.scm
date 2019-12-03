@@ -21,6 +21,7 @@
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages kde-plasma)
   #:use-module (gnu packages qt)
@@ -249,3 +250,59 @@ basic stopwatch actions (pause, resume, reset, laps), as well as the ability
 to save the times and resume them later.")
     (license ;; GPL for programs, LGPL for libraries, FDL for documentation
      license:gpl2+)))
+
+(define-public krusader
+  (package
+    (name "krusader")
+    (version "2.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/krusader/" version
+                           "/krusader-" version ".tar.xz"))
+       (sha256
+        (base32 "02b1jz5a7cjr13v6c7fczrhs1xmg1krnva5fxk8x2bf4nd1rm8s1"))))
+    (properties `((tags . ("Desktop" "KDE" "Utilities"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("karchive" ,karchive)
+       ("kbookmarks" ,kbookmarks)
+       ("kcodecs" ,kcodecs)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kguiaddons" ,kguiaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)
+       ("kitemviews" ,kitemviews)
+       ("knotifications" ,knotifications)
+       ("kparts" ,kparts)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwallet" ,kwallet)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kxmlgui" ,kxmlgui)
+       ("oxygen-icons" ,oxygen-icons) ;; default icon set
+       ("qtbase" ,qtbase)
+       ("solid" ,solid)
+       ("zlib" ,zlib)))
+    (home-page "https://www.krusader.org")
+    (synopsis "Twin-panel (commander-style) file manager")
+    (description "Krusader is a simple, easy, yet powerful,
+twin-panel (commander-style) file manager, similar to Midnight Commander or
+Total Commander
+
+It provides all the file management features you could possibly want.  Plus:
+extensive archive handling, mounted filesystem support, FTP, advanced search
+module, an internal viewer/editor, directory synchronisation, file content
+comparisons, powerful batch renaming and much much more.  It supports a wide
+variety of archive formats and can handle other KIO slaves such as smb or
+fish.
+
+Almost completely customizable, Krusader is very user friendly, fast and looks
+great on your desktop.")
+    (license license:gpl2+)))
