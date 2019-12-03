@@ -54,6 +54,7 @@
             machine-ssh-configuration-authorize?
             machine-ssh-configuration-port
             machine-ssh-configuration-user
+            machine-ssh-configuration-host-key
             machine-ssh-configuration-session))
 
 ;;; Commentary:
@@ -87,6 +88,8 @@
   (identity       machine-ssh-configuration-identity       ; path to a private key
                   (default #f))
   (session        machine-ssh-configuration-session        ; session
+                  (default #f))
+  (host-key       machine-ssh-configuration-host-key       ; #f | string
                   (default #f)))
 
 (define (machine-ssh-session machine)
@@ -98,11 +101,13 @@ one from the configuration's parameters if one was not provided."
         (let ((host-name (machine-ssh-configuration-host-name config))
               (user (machine-ssh-configuration-user config))
               (port (machine-ssh-configuration-port config))
-              (identity (machine-ssh-configuration-identity config)))
+              (identity (machine-ssh-configuration-identity config))
+              (host-key (machine-ssh-configuration-host-key config)))
           (open-ssh-session host-name
                             #:user user
                             #:port port
-                            #:identity identity)))))
+                            #:identity identity
+                            #:host-key host-key)))))
 
 
 ;;;

@@ -26447,6 +26447,18 @@ keyring.
 @item @code{identity} (default: @code{#f})
 If specified, the path to the SSH private key to use to authenticate with the
 remote host.
+
+@item @code{host-key} (default: @code{#f})
+This should be the SSH host key of the machine, which looks like this:
+
+@example
+ssh-ed25519 AAAAC3Nz@dots{} root@@example.org
+@end example
+
+When @code{host-key} is @code{#f}, the server is authenticated against
+the @file{~/.ssh/known_hosts} file, just like the OpenSSH @command{ssh}
+client does.
+
 @end table
 @end deftp
 
