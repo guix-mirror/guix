@@ -9916,14 +9916,14 @@ definiteness of a matrix.")
 (define-public r-rspectra
   (package
     (name "r-rspectra")
-    (version "0.15-0")
+    (version "0.16-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RSpectra" version))
        (sha256
         (base32
-         "1ab975scdqaxdna9sayjl6l14hz991y0pc8c8ah48w000616km8s"))))
+         "1ab45as2ysjrvkhvmx7y3nbhd0y1w4j9k2a789lcd973zz4wzwda"))))
     (properties `((upstream-name . "RSpectra")))
     (build-system r-build-system)
     (propagated-inputs
