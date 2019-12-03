@@ -2260,13 +2260,13 @@ tables, autolinks and strikethrough text.")
 (define-public r-roxygen2
   (package
     (name "r-roxygen2")
-    (version "7.0.1")
+    (version "7.0.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "roxygen2" version))
               (sha256
                (base32
-                "07v7f7may3vr80f4m1w1ll41qdahszycyx4c1yf8pw7asx73d77j"))))
+                "162xag27hwwyadfwm5zpyy15nxwhw2vbhwapx3jmi9cfyryr68sq"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-brew" ,r-brew)
