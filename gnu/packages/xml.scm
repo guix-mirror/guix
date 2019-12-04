@@ -80,6 +80,8 @@
                  (base32
                   "1960mmgbb4cm64n1p0nz3hrs1pw03hkrfcw8prmnn4622mdrd9hy")))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (home-page "https://libexpat.github.io/")
     (synopsis "Stream-oriented XML parser library written in C")
     (description
