@@ -753,11 +753,7 @@ species.")
     (version "1.12.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/experiment/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/experiment/src/contrib/"
-                                  "ABAData_" version ".tar.gz"))
+              (uri (bioconductor-uri "ABAData" version 'experiment))
               (sha256
                (base32
                 "1bmj341xcymlrk02gss5vvrqc4ddas0rdw39lnpsj98hq6n11p5z"))))
