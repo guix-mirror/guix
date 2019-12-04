@@ -626,12 +626,8 @@ by exposing these as TxDb objects.")
     (version "2.2.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "FDb.InfiniumMethylation.hg19_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "FDb.InfiniumMethylation.hg19"
+                                     version 'annotation))
               (sha256
                (base32
                 "0gq90fvph6kgrpjb89nvzq6hl1k24swn19rgjh5g98l86mja6nk0"))))
