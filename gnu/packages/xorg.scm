@@ -5124,7 +5124,8 @@ protocol.")
       `(("pkg-config" ,pkg-config)
         ("python" ,python-minimal-wrapper)))
     (arguments
-     `(#:configure-flags '("--enable-xkb")))
+     `(#:configure-flags '("--enable-xkb"
+                           "--disable-static")))
     (home-page "https://xcb.freedesktop.org/")
     (synopsis "The X C Binding (XCB) library")
     (description
