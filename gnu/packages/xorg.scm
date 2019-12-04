@@ -1344,6 +1344,8 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
           (base32
             "05lja9s54090xwh31r0bqms4v3pimng5xr09g2rdnafx2vk6hp12"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (propagated-inputs
      ;; xft.pc refers to all these.
       `(("libxrender" ,libxrender)
