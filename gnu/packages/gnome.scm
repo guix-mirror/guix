@@ -75,6 +75,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crates-io)
   #:use-module (gnu packages cups)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
@@ -165,6 +166,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xorg)
   #:use-module (gnu artwork)
+  #:use-module (guix build-system cargo)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
@@ -177,6 +179,8 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix gexp)
+  #:use-module (guix monads)
+  #:use-module (guix store)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
@@ -1416,37 +1420,239 @@ dealing with different structured file formats.")
 library.")
     (license license:lgpl2.0+)))
 
+(define* (computed-origin-method gexp-promise hash-algo hash
+                                 #:optional (name "source")
+                                 #:key (system (%current-system))
+                                 (guile (default-guile)))
+  "Return a derivation that executes the G-expression that results
+from forcing GEXP-PROMISE."
+  (mlet %store-monad ((guile (package->derivation guile system)))
+    (gexp->derivation (or name "computed-origin")
+                      (force gexp-promise)
+                      #:graft? #f       ;nothing to graft
+                      #:system system
+                      #:guile-for-build guile)))
+
+(define librsvg-next-source
+  (let* ((version         "2.46.3")
+         (upstream-source (origin
+                           (method url-fetch)
+                           (uri (string-append "mirror://gnome/sources/librsvg/"
+                                               (version-major+minor version)  "/"
+                                               "librsvg-" version ".tar.xz"))
+                           (sha256
+                            (base32
+                             "1s3a96i7f4pynjwxxvhysp4b6r7kyi8nasdxfyi62hc7gm34d3kn")))))
+    (origin
+      (method computed-origin-method)
+      (file-name (string-append "librsvg-" version ".tar.xz"))
+      (sha256 #f)
+      (uri
+       (delay
+        (with-imported-modules '((guix build utils))
+          #~(begin
+              (use-modules (guix build utils))
+              (set-path-environment-variable
+               "PATH" '("bin")
+               (list "/tmp"
+                     #+(canonical-package xz)
+                     #+(canonical-package gzip)
+                     #+(canonical-package tar)))
+              (invoke "tar" "xvf" #+upstream-source)
+              (with-directory-excursion (string-append "librsvg-" #$version)
+                (for-each
+                  (lambda (crate)
+                    (delete-file-recursively (string-append "vendor/" (car crate)))
+                    (invoke "tar" "xvf" (cdr crate) "-C" "vendor"))
+                  '(
+;; aho-corasick 0.7
+;; alga 0.9
+;; approx 0.3
+;; arrayvec 0.4
+                    ("atty" . #+(package-source rust-atty-0.2))
+                    ("autocfg" . #+(package-source rust-autocfg-0.1))
+                    ("bitflags" . #+(package-source rust-bitflags-1))
+;; block 0.1
+;; bstr 0.2
+;; byteorder 1.3
+;; cairo-rs 0.7
+;; cairo-sys-rs 0.9
+;; cast 0.2
+                    ("cfg-if" . #+(package-source rust-cfg-if-0.1))
+                    ("clap" . #+(package-source rust-clap-2))
+                    ;("cloudabi" . #+(package-source rust-cloudabi-0.0))
+;; criterion 0.2
+;; criterion-plot 0.3
+;; crossbeam-deque 0.7
+;; crossbeam-epoch 0.7
+;; crossbeam-queue 0.1
+;; crossbeam-utils 0.6
+;; cssparser 0.25
+;; cssparser-macros 0.3
+;; csv 1.1
+;; csv-core 0.1
+;; data-url 0.1
+;; downcast-rs 1.0
+                    ("dtoa" . #+(package-source rust-dtoa-0.4))
+;; dtoa-short 0.3
+;; either 1.5
+;; encoding 0.2
+;; encoding-index-japanese 1.20141219.5
+;; encoding-index-korean 1.20141219.5
+;; encoding-index-simpchinese 1.20141219.5
+;; encoding-index-singlebyte 1.20141219.5
+;; encoding-index-tradchinese 1.20141219.5
+;; encoding_index_tests 0.1
+;; float-cmp 0.5
+;; fragile 0.3
+                    ;("fuchsia-cprng" . #+(package-source rust-fuchsia-cprng-0.1))
+;; futf 0.1
+;; gdk-pixbuf 0.7
+;; gdk-pixbuf-sys 0.9
+;; generic-array 0.12
+;; gio 0.7
+;; gio-sys 0.9
+;; glib 0.8
+;; glib-sys 0.9
+;; gobject-sys 0.9
+;; idna 0.2
+;; itertools 0.8
+                    ("itoa" . #+(package-source rust-itoa-0.4))
+                    ;("language-tags" . #+(package-source rust-language-tags-0.2))
+                    ("lazy_static" . #+(package-source rust-lazy-static-1.3))
+                    ("libc" . #+(package-source rust-libc-0.2))
+;; libm 0.1
+;; locale_config 0.3
+                    ("log" . #+(package-source rust-log-0.4))
+;; mac 0.1
+;; malloc_buf 0.0
+;; markup5ever 0.9
+                    ;("matches" . #+(package-source rust-matches-0.1))
+;; matrixmultiply 0.2
+;; memchr 2.2
+;; memoffset 0.5
+;; nalgebra 0.18
+;; new_debug_unreachable 1.0
+                    ("nodrop" . #+(package-source rust-nodrop-0.1))
+;; num-complex 0.2
+                    ("num-integer" . #+(package-source rust-num-integer-0.1))
+;; num-rational 0.2
+                    ("num-traits" . #+(package-source rust-num-traits-0.2))
+                    ("num_cpus" . #+(package-source rust-num-cpus-1.10))
+;; objc 0.2
+;; objc-foundation 0.1
+;; objc_id 0.1
+;; pango 0.7
+;; pango-sys 0.9
+;; pangocairo 0.8
+;; pangocairo-sys 0.10
+                    ("percent-encoding" . #+(package-source rust-percent-encoding-2.1))
+;; phf 0.7.24
+;; phf_codegen 0.7.24
+;; phf_generator 0.7.24
+;; phf_shared 0.7.24
+                    ;("pkg-config" . #+(package-source rust-pkg-config-0.3))
+;; precomputed-hash 0.1
+                    ("proc-macro2" . #+(package-source rust-proc-macro2-1.0))
+;; procedural-masquerade 0.1
+                    ("quote" . #+(package-source rust-quote-1.0))
+                    ;("rand" . #+(package-source rust-rand-0.6))
+                    ("rand_chacha" . #+(package-source rust-rand-chacha-0.1))
+                    ("rand_core-0.3.1" . #+(package-source rust-rand-core-0.3))
+                    ("rand_core" . #+(package-source rust-rand-core-0.4))
+                    ("rand_hc" . #+(package-source rust-rand-hc-0.1))
+                    ("rand_isaac" . #+(package-source rust-rand-isaac-0.1))
+                    ("rand_jitter" . #+(package-source rust-rand-jitter-0.1))
+                    ("rand_os" . #+(package-source rust-rand-os-0.1))
+                    ("rand_pcg" . #+(package-source rust-rand-pcg-0.1))
+                    ("rand_xorshift" . #+(package-source rust-rand-xorshift-0.1))
+;; rand_xoshiro 0.1
+                    ;("rawpointer" . #+(package-source rust-rawpointer-0.1))
+;; rayon 1.2
+;; rayon-core 1.6
+;; rctree 0.3
+                    ("rdrand" . #+(package-source rust-rdrand-0.4))
+;; regex 1.3
+;; regex-automata 0.1
+                    ;("regex-syntax" . #+(package-source rust-regex-syntax-0.6))
+;; rustc_version 0.2
+                    ("ryu" . #+(package-source rust-ryu-1.0))
+                    ("same-file" . #+(package-source rust-same-file-1.0))
+                    ("scopeguard" . #+(package-source rust-scopeguard-1.0))
+;; semver 0.9
+                    ;("semver-parser" . #+(package-source rust-semver-parser-0.7))
+                    ("serde" . #+(package-source rust-serde-1.0))
+                    ("serde_derive" . #+(package-source rust-serde-derive-1.0))
+                    ("serde_json" . #+(package-source rust-serde-json-1.0))
+;; siphasher 0.2
+;; smallvec 0.6
+;; string_cache 0.7
+;; string_cache_codegen 0.4
+;; string_cache_shared 0.3
+                    ("syn" . #+(package-source rust-syn-1.0))
+;; tendril 0.4
+                    ("textwrap" . #+(package-source rust-textwrap-0.11))
+                    ;("thread_local" . #+(package-source rust-thread-local-0.3))
+;; tinytemplate 1.0
+                    ;("typenum" . #+(package-source rust-typenum-1.10))
+;; unicode-bidi 0.3
+;; unicode-normalization 0.1
+                    ("unicode-width" . #+(package-source rust-unicode-width-0.1))
+                    ("unicode-xid" . #+(package-source rust-unicode-xid-0.2))
+;; url 2.1
+;; utf-8 0.7
+                    ("walkdir" . #+(package-source rust-walkdir-2.2))
+                    ("winapi" . #+(package-source rust-winapi-0.3))
+                    ;("winapi-i686-pc-windows-gnu" . #+(package-source rust-winapi-i686-pc-windows-gnu-0.4))
+                    ("winapi-util" . #+(package-source rust-winapi-util-0.1))
+                    ;("winapi-x86_64-pc-windows-gnu" . #+(package-source rust-winapi-x86-64-pc-windows-gnu-0.4))
+;; xml-rs 0.8
+                    )))
+              (format #t "Replacing vendored crates in the tarball and repacking ...~%")
+              (force-output)
+              (invoke "tar" "cfa" #$output
+                      ;; Avoid non-determinism in the archive.  We set the
+                      ;; mtime of files in the archive to early 1980 because
+                      ;; the build process fails if the mtime of source
+                      ;; files is pre-1980, due to the creation of zip
+                      ;; archives.
+                      "--mtime=@315619200" ; 1980-01-02 UTC
+                      "--owner=root:0"
+                      "--group=root:0"
+                      "--sort=name"
+                      (string-append "librsvg-" #$version))
+              #t)))))))
+
 (define-public librsvg-next
   (package
     (name "librsvg")
     (version "2.46.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/librsvg/"
-                                  (version-major+minor version)  "/"
-                                  "librsvg-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1s3a96i7f4pynjwxxvhysp4b6r7kyi8nasdxfyi62hc7gm34d3kn"))))
+    (source librsvg-next-source)
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        (list "--disable-static"
              "--enable-vala") ; needed for e.g. gnome-mines
        #:make-flags '("CC=gcc")
+       #:imported-modules ,%cargo-utils-modules ;for `generate-all-checksums'
        #:phases
        (modify-phases %standard-phases
-         ;; Don't patch anything in vendor/ to avoid having to recompute
-         ;; checksums for the bundled Cargo "crates".  TODO: Unbundle those.
-         (delete 'patch-source-shebangs)
-         (delete 'patch-generated-file-shebangs)
-         (delete 'patch-usr-bin-file)
-         (add-before 'configure 'patch-all-the-things
+         (add-after 'configure 'patch-cargo-checksums
            (lambda _
-             (for-each patch-shebang '("tap-driver.sh" "tap-test"))
-             (patch-/usr/bin/file "configure")
-             (patch-makefile-SHELL "po/Makefile.in.in")
-             #t))
+             (use-modules (guix build cargo-utils))
+             (substitute* "librsvg/Cargo.toml"
+               (("bitflags .*") "bitflags = \"1\"\n")) ; 1.2 is vendored
+             (for-each
+                (lambda (filename)
+                  (delete-file filename)
+                  (let ((dir (dirname filename)))
+                    (display (string-append
+                              "patch-cargo-checksums: generate-checksums for "
+                              dir "\n"))
+                    (generate-checksums dir)))
+                (find-files "vendor" "\\.cargo(-checksum|_vcs_info).json"))
+             (delete-file "Cargo.lock")
+             (invoke "cargo" "generate-lockfile")))
          (add-before 'configure 'pre-configure
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "gdk-pixbuf-loader/Makefile.in"
