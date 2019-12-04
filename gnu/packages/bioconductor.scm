@@ -547,12 +547,8 @@ track.  The database is exposed as a @code{TxDb} object.")
     (version "3.2.2")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib"
-                                  "/TxDb.Mmusculus.UCSC.mm9.knownGene_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "TxDb.Mmusculus.UCSC.mm9.knownGene"
+                                     version 'annotation))
               (sha256
                (base32
                 "16bjxy00363hf91ik2mqlqls86i07gia72qh92xc3l1ncch61mx2"))))
