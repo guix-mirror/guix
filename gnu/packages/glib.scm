@@ -105,6 +105,9 @@
         ;; Install the session bus socket under /tmp.
         "--with-session-socket-dir=/tmp"
 
+        ;; Build shared libraries only.
+        "--disable-static"
+
         ;; Use /etc/dbus-1 for system-wide config.
         ;; Look for configuration file under
         ;; /etc/dbus-1.  This is notably required by
