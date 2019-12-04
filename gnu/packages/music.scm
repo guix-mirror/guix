@@ -1830,7 +1830,7 @@ export.")
 (define-public pd
   (package
     (name "pd")
-    (version "0.50-0")
+    (version "0.50-2")
     (source (origin
               (method url-fetch)
               (uri
@@ -1838,7 +1838,7 @@ export.")
                               version ".src.tar.gz"))
               (sha256
                (base32
-                "0hg4n5b55f650qsc0mjx559072dp7vfza7w0pvk6rk2l831cvsps"))))
+                "0dz6r6jy0zfs1xy1xspnrxxks8kddi9c7pxz4vpg2ygwv83ghpg5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no "check" target
