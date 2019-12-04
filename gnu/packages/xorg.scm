@@ -4742,6 +4742,8 @@ protocol and arbitrary X extension protocol.")
           (base32
             "125hn06bd3d8y97hm2pbf5j55gg4r2hpd3ifad651i4sr7m16v6j"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (propagated-inputs
      `(("xorgproto" ,xorgproto)))
     (inputs
