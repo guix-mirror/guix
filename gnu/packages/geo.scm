@@ -4,7 +4,7 @@
 ;;; Copyright © 2017, 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018, 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
@@ -77,7 +77,7 @@
 (define-public geos
   (package
     (name "geos")
-    (version "3.7.1")
+    (version "3.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.osgeo.org/geos/geos-"
@@ -85,7 +85,7 @@
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1312m02xk4sp6f1xdpb9w0ic0zbxg90p5y66qnwidl5fksscf1h0"))))
+                "1mb2v9fy1gnbjhcgv0xny11ggfb17vkzsajdyibigwsxr4ylq4cr"))))
     (build-system gnu-build-system)
     (arguments `(#:phases
                  (modify-phases %standard-phases
