@@ -8239,6 +8239,35 @@ identify genotyping errors, and to perform single-QTL and two-QTL,
 two-dimensional genome scans.")
   (license license:gpl3)))
 
+(define-public r-qtl2
+  (package
+    (name "r-qtl2")
+    (version "0.20")
+    (source (origin
+      (method git-fetch)
+      ;; Not yet available in cran.
+      (uri (git-reference
+             (url "https://github.com/rqtl/qtl2.git")
+             (commit version)))
+      (file-name (git-file-name name version))
+      (sha256
+       (base32 "0l1asr28q25jzbwrbg5490962sg3y4sjrd0qf09p78ws1aq8vfs0"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppeigen" ,r-rcppeigen)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-yaml" ,r-yaml)))
+    (home-page "https://kbroman.org/qtl2/")
+    (synopsis
+     "QTL analysis software for high-dimensional data and complex cross designs")
+    (description
+     "R/qtl2 (aka qtl2) is a reimplementation of the QTL analysis software
+R/qtl, to better handle high-dimensional data and complex cross designs.")
+    (license license:gpl3)))
+
 (define-public r-zlibbioc
   (package
     (name "r-zlibbioc")
