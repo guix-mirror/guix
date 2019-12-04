@@ -2629,11 +2629,7 @@ Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
     ;; clause requiring us to give all recipients a copy.
     (license license:gpl1+)))
 
-(define-public sunxi-tools
-  (package
-    (name "sunxi-tools")
-    (version "1.4.2")
-    (source
+(define (sunxi-tools-source version)
      (origin
        (method git-fetch)
        (uri (git-reference
@@ -2648,14 +2644,49 @@ Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
         '(begin
            (delete-file-recursively "bin")
            #t))
-       (file-name (git-file-name name version))))
+       (file-name (git-file-name "sunxi-tools" version))))
+
+(define sunxi-target-tools
+  (package
+    (name "sunxi-target-tools")
+    (version "1.4.2")
+    (build-system gnu-build-system)
+    (source
+     (sunxi-tools-source version))
+    (arguments
+     `(#:system "armhf-linux"
+       #:tests? #f
+       #:make-flags (list (string-append "PREFIX="
+                                         (assoc-ref %outputs "out"))
+                          (string-append "CROSS_COMPILE=")
+                          "CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "target-tools" make-flags)))
+         (replace 'install
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "install-target-tools"
+                    make-flags))))))
+    (home-page "https://github.com/linux-sunxi/sunxi-tools")
+    (synopsis "Hardware management tools for Allwinner computers")
+    (description "This package contains tools for Allwinner devices:
+@enumerate
+@item @command{sunxi-meminfo}: Prints memory bus settings.
+@end enumerate")
+    (license license:gpl2+)))
+
+(define-public sunxi-tools
+  (package
+    (name "sunxi-tools")
+    (version "1.4.2")
+    (source
+     (sunxi-tools-source version))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("cross-gcc" ,(cross-gcc "arm-linux-gnueabihf"
-                                #:xbinutils (cross-binutils "arm-linux-gnueabihf")
-                                #:libc (cross-libc "arm-linux-gnueabihf")))
-       ("cross-libc" ,(cross-libc "arm-linux-gnueabihf")) ; header files
-       ("cross-libc-static" ,(cross-libc "arm-linux-gnueabihf") "static")))
+     `(("sunxi-target-tools" ,sunxi-target-tools)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("libusb" ,libusb)))
     (build-system gnu-build-system)
@@ -2663,50 +2694,22 @@ Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
      `(#:tests? #f                      ; no tests exist
        #:make-flags (list (string-append "PREFIX="
                                          (assoc-ref %outputs "out"))
-                          (string-append "CROSS_COMPILE="
-                                         "arm-linux-gnueabihf-")
+                          (string-append "CROSS_COMPILE=disabled")
                           "CC=gcc")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         (add-before 'build 'set-environment-up
-           (lambda* (#:key make-flags #:allow-other-keys)
-             (define (cross? x)
-               (string-contains x "cross-arm-linux"))
-             (define (filter-environment! filter-predicate
-                                          environment-variable-names)
-               (for-each
-                (lambda (env-name)
-                  (when (getenv env-name)
-                    (let* ((env-value (getenv env-name))
-                           (search-path (search-path-as-string->list env-value))
-                           (new-search-path (filter filter-predicate
-                                                    search-path))
-                           (new-env-value (list->search-path-as-string
-                                           new-search-path ":")))
-                      (setenv env-name new-env-value))))
-                environment-variable-names))
-             (setenv "CROSS_CPATH" (getenv "CPATH"))
-             (setenv "CROSS_C_INCLUDE_PATH" (getenv "C_INCLUDE_PATH"))
-             (setenv "CROSS_CPLUS_INCLUDE_PATH" (getenv "CPLUS_INCLUDE_PATH"))
-             (setenv "CROSS_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
-             (filter-environment! cross?
-              '("CROSS_CPATH" "CROSS_C_INCLUDE_PATH" "CROSS_CPLUS_INCLUDE_PATH"
-                "CROSS_LIBRARY_PATH"))
-             (filter-environment! (lambda (e) (not (cross? e)))
-              '("CPATH" "C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH"
-                "LIBRARY_PATH"))
-             #t))
          (replace 'build
            (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke "make" "tools" "misc" make-flags)))
-         (add-after 'build 'build-armhf
-           (lambda* (#:key make-flags #:allow-other-keys)
-             (setenv "LIBRARY_PATH" #f)
-             (apply invoke "make" "target-tools" make-flags)))
          (replace 'install
-           (lambda* (#:key make-flags #:allow-other-keys)
-             (apply invoke "make" "install-all" "install-misc"
+           (lambda* (#:key inputs outputs make-flags #:allow-other-keys)
+             ;; Those tools have been built for armhf but are part of the
+             ;; installation in the upstream package.  So do the same
+             ;; here.
+             (copy-recursively (assoc-ref inputs "sunxi-target-tools")
+                               (assoc-ref outputs "out"))
+             (apply invoke "make" "install-tools" "install-misc"
                     make-flags))))))
     (home-page "https://github.com/linux-sunxi/sunxi-tools")
     (synopsis "Hardware management tools for Allwinner computers")
