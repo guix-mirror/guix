@@ -174,14 +174,14 @@ spreadsheets and presentations.")
 (define-public libwpd
   (package
     (name "libwpd")
-    (version "0.10.2")
+    (version "0.10.3")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/libwpd/libwpd/"
                           "libwpd-" version "/libwpd-" version ".tar.xz"))
       (sha256 (base32
-               "0436gnidx45a9vx114hhh216jrh57mqb9zyssyjfadagmyz6hgrj"))))
+               "02fx8bngslcj7i5g1gx2kiign4vp09wrmp5wpvix9igxcavb0r94"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-werror")))
