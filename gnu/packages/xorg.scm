@@ -1471,6 +1471,8 @@ treat it as part of their software base when porting.")
           (base32
             "1m0jr0lbz9ixpp9ihk68349q0i7ry2379lnfzdy4mrl86ijc2xgz"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (inputs
       `(("xorgproto" ,xorgproto)
         ("libxext" ,libxext)
