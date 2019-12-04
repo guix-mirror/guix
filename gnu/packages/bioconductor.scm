@@ -361,11 +361,7 @@ annotations for the genome of the model fruit fly Drosophila melanogaster.")
     (version "3.7.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "org.Dr.eg.db_" version ".tar.gz"))
+              (uri (bioconductor-uri "org.Dr.eg.db" version 'annotation))
               (sha256
                (base32
                 "1xs5wsbcpy0iwbjyiv7fax57djqc529ai5fk1qfsdcvlja3cpglx"))))
