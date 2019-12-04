@@ -1008,14 +1008,14 @@ audio/video codec library.")
 (define-public ffmpeg-3.4
   (package
     (inherit ffmpeg)
-    (version "3.4.6")
+    (version "3.4.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0gmqbhg5jjcfanrxrl657zn12lzz73sfs8xwryfy7n9rn6f2fwim"))))
+               "1j7mdk9szrljgv4sdx69bm1pnbb3cldbdxbkr42jbdi9zn11gl7g"))))
     (arguments
      (substitute-keyword-arguments (package-arguments ffmpeg)
        ((#:configure-flags flags)
