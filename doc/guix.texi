@@ -9676,6 +9676,14 @@ and exit.
 Only enable the checkers specified in a comma-separated list using the
 names returned by @code{--list-checkers}.
 
+@item --load-path=@var{directory}
+@itemx -L @var{directory}
+Add @var{directory} to the front of the package module search path
+(@pxref{Package Modules}).
+
+This allows users to define their own packages and make them visible to
+the command-line tools.
+
 @end table
 
 @node Invoking guix size

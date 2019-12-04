@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2019 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
   #:use-module (guix lint)
   #:use-module (guix ui)
   #:use-module (guix scripts)
+  #:use-module (guix scripts build)
   #:use-module (gnu packages)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
@@ -94,6 +96,9 @@ run the checkers on all packages.\n"))
   -c, --checkers=CHECKER1,CHECKER2...
                          only run the specified checkers"))
   (display (G_ "
+  -L, --load-path=DIR    prepend DIR to the package module search path"))
+  (newline)
+  (display (G_ "
   -h, --help             display this help and exit"))
   (display (G_ "
   -l, --list-checkers    display the list of available lint checkers"))
@@ -128,6 +133,9 @@ run the checkers on all packages.\n"))
                               %local-checkers
                               (alist-delete 'checkers
                                             result))))
+        (find (lambda (option)
+                (member "load-path" (option-names option)))
+              %standard-build-options)
         (option '(#\h "help") #f #f
                 (lambda args
                   (show-help)
