@@ -3358,7 +3358,7 @@ word (to avoid repetitions for example).")
 (define-public emacs-elisp-demos
   (package
     (name "emacs-elisp-demos")
-    (version "2019.08.16")
+    (version "2019.12.01")
     (source
      (origin
        (method git-fetch)
@@ -3368,7 +3368,7 @@ word (to avoid repetitions for example).")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0lybadq66bl4snkwph9i1y0qxln29wyfjn222ii3nfwany28cj66"))))
+         "097d8xhvq0770z96wlhiv4gz98cq89pwx5fa42zpfh4p85qj4q9z"))))
     (build-system emacs-build-system)
     (arguments
      `(#:include '("\\.el$" "\\.org$")
