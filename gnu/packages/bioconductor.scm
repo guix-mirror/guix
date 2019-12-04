@@ -339,11 +339,7 @@ annotations for the genome of the model worm Caenorhabditis elegans.")
     (version "3.7.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "org.Dm.eg.db_" version ".tar.gz"))
+              (uri (bioconductor-uri "org.Dm.eg.db" version 'annotation))
               (sha256
                (base32
                 "1pqjrzlyg72bjpy8zsxvaglc7jsv176bnyi87xdajmkvsgxpm7b3"))))
