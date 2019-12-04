@@ -51,8 +51,6 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
-  ;; To provide gcc@5 and gcc@6, to work around <http://bugs.gnu.org/24703>.
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
