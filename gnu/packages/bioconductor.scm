@@ -317,11 +317,7 @@ in Biostrings objects.")
     (version "3.7.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "org.Ce.eg.db_" version ".tar.gz"))
+              (uri (bioconductor-uri "org.Ce.eg.db" version 'annotation))
               (sha256
                (base32
                 "1w5br1ss4ha8wv4v2saj7cmbjc2jw0dyj2f2y269l078z31wcnaz"))))
