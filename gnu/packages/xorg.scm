@@ -1097,6 +1097,8 @@ synchronization between the X server and direct-rendering clients.")
           (base32
             "0y90170dp8wsidr1dzza0grxr1lfh30ji3b5vkjz4j6x1n0wxz1c"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (inputs
       `(("zlib" ,zlib)
         ("xorgproto" ,xorgproto)))
