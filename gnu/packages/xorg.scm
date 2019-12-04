@@ -1316,6 +1316,8 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
           (base32
             "0ab53h0rkq721ihk5hi469x500f3pgbkm1wy01yf24x5m923nli0"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (inputs
       `(("libbsd" ,libbsd)
         ("xorgproto" ,xorgproto)))
