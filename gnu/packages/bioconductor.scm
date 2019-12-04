@@ -182,21 +182,14 @@ Finder (TRF mask).  Only the AGAPS and AMB masks are \"active\" by default.")
     (version "0.99.1")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "BSgenome.Hsapiens.1000genomes.hs37d5_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "BSgenome.Hsapiens.1000genomes.hs37d5"
+                                     version 'annotation))
               (sha256
                (base32
                 "1cg0g5fqmsvwyw2p9hp2yy4ilk21jkbbrnpgqvb5c36ihjwvc7sr"))))
     (properties
      `((upstream-name . "BSgenome.Hsapiens.1000genomes.hs37d5")))
     (build-system r-build-system)
-    ;; As this package provides little more than a very large data file it
-    ;; doesn't make sense to build substitutes.
-    (arguments `(#:substitutable? #f))
     (propagated-inputs
      `(("r-bsgenome" ,r-bsgenome)))
     (home-page
