@@ -20200,3 +20200,25 @@ each slide with left/right keys.")
 execution of buffer-exposing commands.")
     (license license:gpl3+)))
 
+(define-public emacs-repl-toggle
+  (package
+    (name "emacs-repl-toggle")
+    (version "0.6.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tomterl/repl-toggle.git")
+             (commit version)))
+       (sha256
+        (base32
+         "12h3xxja3isnhvrqx7m2g7a5d8h68cc85pbqyhiipfxyafyl1yxd"))
+       (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-fullframe" ,emacs-fullframe)))
+    (home-page "https://github.com/tomterl/repl-toggle")
+    (synopsis "Switch to and from current major mode's REPL")
+    (description "This package provides a function to switch to and from a
+REPL appropriate to the current major mode.")
+    (license license:gpl3+)))
