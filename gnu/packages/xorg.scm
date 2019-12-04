@@ -4942,6 +4942,8 @@ an X Window System display.")
           (base32
             "0hiji1bvpl78aj3a3141hkk353aich71wv8l5l2z51scfy878zqs"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (propagated-inputs
       `(("freetype" ,freetype)
         ("libfontenc" ,libfontenc)
