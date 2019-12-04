@@ -383,11 +383,7 @@ based on mapping using Entrez Gene identifiers.")
     (version "3.7.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "org.Hs.eg.db_" version ".tar.gz"))
+              (uri (bioconductor-uri "org.Hs.eg.db" version 'annotation))
               (sha256
                (base32
                 "1qxz9l80yg3qdqszs6dsscp7lrpfi1bgd0pxh9j7q34vprzwhdim"))))
