@@ -1,10 +1,12 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018 Mark Meyer <mark@ofosos.org>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -30,6 +32,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages apr)
   #:use-module (gnu packages boost)
@@ -44,6 +47,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages kde-plasma)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages pdf)
@@ -322,16 +326,15 @@ plugins, as well as code to create plugins, or complete applications.")
 (define-public krita
   (package
     (name "krita")
-    (version "4.2.5")
+    (version "4.2.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://kde/stable/krita/"
-                    (version-prefix version 3)
+                    "mirror://kde/stable/krita/" version
                     "/krita-" version ".tar.gz"))
               (sha256
                (base32
-                "1f14r2mrqasl6nr3sss0xy2h8xlxd5wdcjcd64m9nz2gwlm39r7w"))))
+                "0gcwq1w09gmx53i2fir73l222p41299wagvhbvsxwrz0v3crzliy"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f
@@ -409,52 +412,17 @@ illustrators, matte and texture artists, and the VFX industry.  Notable
 features include brush stabilizers, brush engines and wrap-around mode.")
     (license license:gpl2+)))
 
-(define-public kholidays
-  (package
-    (name "kholidays")
-    (version "17.12.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "mirror://kde/stable/applications/" version "/src/"
-             name "-" version ".tar.xz"))
-       (sha256
-        (base32 "0595d7wbnz8kyq1bnivdrp20lwdp8ykvdll1fmb0fgm4q24z0cl8"))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'check-setup
-           (lambda _
-             ;; blacklist a failing test function TODO: make it pass
-             (with-output-to-file "autotests/BLACKLIST"
-               (lambda _
-                 (display "[testDefaultRegions]\n*\n")))
-             #t)))))
-    (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("qttools" ,qttools)))
-    (inputs
-     `(("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)))
-    (home-page "https://cgit.kde.org/kholidays.git")
-    (synopsis "Library for regional holiday information")
-    (description "This library provides a C++ API that determines holiday and
-other special events for a geographical region.")
-    (license license:lgpl2.0+)))
-
 (define-public libkomparediff2
   (package
     (name "libkomparediff2")
-    (version "19.04.1")
+    (version "19.08.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "mirror://kde/stable/applications/" version
                             "/src/libkomparediff2-" version ".tar.xz"))
         (sha256
-         (base32 "1cyi7a5ss7jv87llk0k8c9g3h1qsp6j6nmdzh3xxcswr4p5skc9a"))))
+         (base32 "1mvihd0xpkl8kryf5dvsfgpbgs9af8c9bzq8mmr74gfsvfb8ywy5"))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)))
@@ -501,6 +469,38 @@ straightforward and cross-platform API for a range of cryptographic features,
 including SSL/TLS, X.509 certificates, SASL, OpenPGP, S/MIME CMS, and smart
 cards.")
     (license license:lgpl2.1)))
+
+(define-public kpmcore
+  (package
+    (name "kpmcore")
+    (version "4.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/kpmcore"
+                    "/" version "/src/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1sslkwcj2cyrn7bpjdjdwikp1q8wrsxpsg2sxxd8hsairgy7ygh3"))
+              (patches (search-patches "kpmcore-fix-tests.patch"
+                                       "kpmcore-remove-broken-test.patch"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("kauth" ,kauth)
+       ("kcoreaddons" ,kcoreaddons)
+       ("ki18n" ,ki18n)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("qtbase" ,qtbase)
+       ("qca" ,qca)
+       ("util-linux" ,util-linux)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Library for managing partitions")
+    (description "Library for managing partitions.")
+    (license license:gpl3+)))
 
 (define-public snorenotify
   (package
@@ -593,7 +593,7 @@ communicate with each other.  Here's a few things KDE Connect can do:
 (define-public kqtquickcharts
   (package
     (name "kqtquickcharts")
-    (version "19.08.1")
+    (version "19.08.2")
     (source
       (origin
         (method url-fetch)
@@ -601,7 +601,7 @@ communicate with each other.  Here's a few things KDE Connect can do:
                             version "/src/kqtquickcharts-" version ".tar.xz"))
         (sha256
          (base32
-          "1j3rivvh4sa94lsd0hi4xfvcikl05zrqd7634wxyaxs718ais6dg"))))
+          "1yy9fyd8y4g25ljdsbil19qdf4j3mzmzl489sx7rqpm3lfdzjh9k"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))

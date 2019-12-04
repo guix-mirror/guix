@@ -50,7 +50,8 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages xiph))
+  #:use-module (gnu packages xiph)
+  #:use-module (gnu packages xorg))
 
 (define-public libsndfile
   (package
@@ -130,7 +131,7 @@ rates.")
 (define-public pulseaudio
   (package
     (name "pulseaudio")
-    (version "12.2")
+    (version "13.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -138,7 +139,7 @@ rates.")
                    name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0ma0p8iry7fil7qb4pm2nx2pm65kq9hk9xc4r5wkf14nqbzni5l0"))
+               "0mw0ybrqj7hvf8lqs5gjzip464hfnixw453lr0mqzlng3b5266wn"))
              (modules '((guix build utils)))
              (snippet
               ;; Disable console-kit support by default since it's deprecated
@@ -160,11 +161,6 @@ rates.")
                                               (assoc-ref %outputs "out")
                                               "/lib/udev/rules.d"))
        #:phases (modify-phases %standard-phases
-                  (add-before 'configure 'fix-alsa-include
-                    (lambda _
-                      (substitute* '("configure" "src/modules/alsa/alsa-ucm.h")
-                        (("use-case\\.h") "alsa/use-case.h"))
-                      #t))
                  (add-before 'check 'pre-check
                    (lambda _
                      ;; 'tests/lock-autospawn-test.c' wants to create a file
@@ -187,6 +183,13 @@ rates.")
        ("libltdl" ,libltdl)
        ("fftwf" ,fftwf)
        ("avahi" ,avahi)
+
+       ;; For the optional X11 modules.
+       ("libice" ,libice)
+       ("libsm" ,libsm)
+       ("libxcb" ,libxcb)
+       ("libxtst" ,libxtst)
+
        ("eudev" ,eudev)))         ;for the detection of hardware audio devices
     (native-inputs
      `(("check" ,check)

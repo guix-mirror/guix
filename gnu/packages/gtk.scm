@@ -461,7 +461,7 @@ highlighting and other features typical of a source code editor.")
 (define-public gdk-pixbuf
   (package
    (name "gdk-pixbuf")
-   (version "2.38.1")
+   (version "2.40.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -469,7 +469,7 @@ highlighting and other features typical of a source code editor.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0fmbjgjcyym3qg46f64qgl7icdm4ii77flyc1mhk244rp8vgi7zi"))))
+              "1rnlx9yfw970maxi2x6niaxmih5la11q1ilr7gzshz2kk585k0hm"))))
    (build-system meson-build-system)
    (arguments
     `(#:configure-flags '("-Dinstalled_tests=false")
@@ -495,16 +495,7 @@ highlighting and other features typical of a source code editor.")
             '((replace 'check
               (lambda _
                 (invoke "meson" "test" "--timeout-multiplier" "5"))))
-            '())
-        (add-before 'configure 'aid-install-script
-          (lambda* (#:key outputs #:allow-other-keys)
-            ;; "build-aux/post-install.sh" invokes `gdk-pixbuf-query-loaders`
-            ;; for updating loader.cache, but it's not on PATH.  Make it use
-            ;; the one we're installing.  XXX: Won't work when cross-compiling.
-            (substitute* "build-aux/post-install.sh"
-              (("gdk-pixbuf-query-loaders" match)
-               (string-append (assoc-ref outputs "out") "/bin/" match)))
-            #t)))))
+            '()))))
    (propagated-inputs
     `(;; Required by gdk-pixbuf-2.0.pc
       ("glib" ,glib)
@@ -731,7 +722,7 @@ application suites.")
 (define-public gtk+
   (package (inherit gtk+-2)
    (name "gtk+")
-   (version "3.24.10")
+   (version "3.24.12")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -739,7 +730,7 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "00qvq1r96ikdalv7xzgng1kad9i0rcahqk01gwhxl3xrw83z3a1m"))
+              "10xyyhlfb0yk4hglngxh2zsv9xrxkqv343df8h01dvagc6jyp10k"))
             (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
                                      "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
    (outputs '("out" "bin" "doc"))
@@ -753,6 +744,7 @@ application suites.")
       ("libxinerama" ,libxinerama)
       ("libxkbcommon" ,libxkbcommon)
       ("libxdamage" ,libxdamage)
+      ("libxrandr" ,libxrandr)
       ("mesa" ,mesa)
       ("pango" ,pango)
       ("wayland" ,wayland)

@@ -11,6 +11,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2019 Hartmut Goebel <h.goebel@goebel-consult.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -597,21 +598,38 @@ Objective@tie{}C, D, Java, Pawn, and Vala).  Features:
        #:make-flags (list (string-append "prefix=" %output)
                           "INSTALL=install"
                           "all")
+       #:modules ((guix build gnu-build-system) ;; FIXME use %default-modules
+                  (guix build utils)
+                  (ice-9 regex))
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
            (lambda _ (chdir "build/gcc") #t))
          (add-after 'install 'install-libs
            (lambda* (#:key outputs #:allow-other-keys)
-             ;; Libraries are not installed by default
+             ;; Libraries and includes are not installed by default
              (let* ((output (assoc-ref outputs "out"))
+                    (incdir (string-append output "/include"))
                     (libdir (string-append output "/lib")))
-               (begin
-                 (mkdir-p libdir)
-                 (for-each (lambda (l)
-                             (copy-file
-                              l (string-append libdir "/" (basename l))))
-                           (find-files "bin" "lib*"))))
+               (define (make-so-link sofile strip-pattern)
+                 (symlink
+                  (basename sofile)
+                  (regexp-substitute #f
+                                     (string-match strip-pattern sofile)
+                                     'pre)))
+               (mkdir-p incdir)
+               (copy-file "../../src/astyle.h"
+                          (string-append incdir "/astyle.h"))
+               (mkdir-p libdir)
+               (for-each (lambda (l)
+                           (copy-file
+                            l (string-append libdir "/" (basename l))))
+                         (find-files "bin" "lib*"))
+               (for-each
+                (lambda (sofile)
+                  (make-so-link sofile "(\\.[0-9]){3}$")  ;; link .so
+                  (make-so-link sofile "(\\.[0-9]){2}$")) ;; link .so.3
+                (find-files libdir "lib.*\\.so\\..*")))
              #t)))))
     (home-page "http://astyle.sourceforge.net/")
     (synopsis "Source code indenter, formatter, and beautifier")

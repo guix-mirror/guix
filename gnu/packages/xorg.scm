@@ -4900,14 +4900,14 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxfont2
   (package
     (inherit libxfont)
-    (version "2.0.3")
+    (version "2.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://xorg/individual/lib/libXfont2-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0klwmimmhm3axpj8pwn5l41lbggh47r5aazhw63zxkbwfgyvg2hf"))))))
+                "1rk9pjxcm01lbr1dxhnvk4f2qrn6zp068qjbvvz5w0z5d0rin5bd"))))))
 
 (define-public libxi
   (package
@@ -4968,7 +4968,7 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxvmc
   (package
     (name "libxvmc")
-    (version "1.0.11")
+    (version "1.0.12")
     (source
       (origin
         (method url-fetch)
@@ -4978,7 +4978,7 @@ new API's in libXft, or the legacy API's in libX11.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0bb2c996p0smp2lwckffcfh4701bzv7266xh230ag0x68ka38bja"))))
+            "1kbdjsvkm5l7axv7g477qj18sab2wnqhliy6197syzizgfbsfgbb"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libxv" ,libxv)))

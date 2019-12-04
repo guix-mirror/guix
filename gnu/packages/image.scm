@@ -1130,11 +1130,7 @@ language bindings to VIGRA.")
     (arguments
      '(#:configure-flags '("--enable-libwebpmux"
                            "--enable-libwebpdemux"
-                           "--enable-libwebpdecoder")
-       #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'bootstrap
-                    (lambda _
-                      (invoke "autoreconf" "-vif"))))))
+                           "--enable-libwebpdecoder")))
     (home-page "https://developers.google.com/speed/webp/")
     (synopsis "Lossless and lossy image compression")
     (description

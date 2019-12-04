@@ -10,6 +10,7 @@
 ;;; Copyright © 2018, 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -192,7 +193,12 @@ language.")
               (patches (search-patches "jamvm-arm.patch"))
               (sha256
                (base32
-                "06lhi03l3b0h48pc7x58bk9my2nrcf1flpmglvys3wyad6yraf36"))))
+                "06lhi03l3b0h48pc7x58bk9my2nrcf1flpmglvys3wyad6yraf36"))
+              (snippet
+               '(begin
+                  ;; Remove precompiled software.
+                  (delete-file "lib/classes.zip")
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -205,6 +211,7 @@ language.")
      `(("classpath" ,classpath-bootstrap)
        ("jikes" ,jikes)
        ("libffi" ,libffi)
+       ("zip" ,zip)
        ("zlib" ,zlib)))
     ;; When built with a recent GCC and glibc the configure step of icedtea-6
     ;; fails with an invalid instruction error.
@@ -659,7 +666,12 @@ machine.")))
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1nl0zxz8y5x8gwsrm7n32bry4dx8x70p8z3s9jbdvs8avyb8whkn"))))
+                "1nl0zxz8y5x8gwsrm7n32bry4dx8x70p8z3s9jbdvs8avyb8whkn"))
+              (snippet
+               '(begin
+                  ;; Remove precompiled software.
+                  (delete-file "src/classlib/gnuclasspath/lib/classes.zip")
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -668,6 +680,7 @@ machine.")))
     (inputs
      `(("classpath" ,classpath-devel)
        ("ecj-javac-wrapper" ,ecj-javac-wrapper)
+       ("zip" ,zip)
        ("zlib" ,zlib)))))
 
 (define ecj-javac-wrapper-final
@@ -2594,6 +2607,45 @@ Main-Class: org.eclipse.jdt.internal.compiler.batch.Main\n"
     (native-inputs
      `(("unzip" ,unzip)))))
 
+(define-public java-ecj
+  (package (inherit java-ecj-3)
+           (version "4.6.3")
+           (source
+            (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://archive.eclipse.org/eclipse/downloads/drops4/R-"
+                    version
+                    "-201703010400/ecjsrc-"
+                    version
+                    ".jar"))
+              (sha256
+               (base32
+                "11cfgsdgznja1pvlxkjbqykxd7pcd5655vkm7s44xmahmap15gpl"))))
+           (arguments
+            `(#:tests? #f ; none included
+              #:build-target "build"
+              #:phases
+              (modify-phases %standard-phases
+                (add-after 'unpack 'fix-build.xml
+                  (lambda _
+                    (substitute* "src/build.xml"
+                      (("^.*MANIFEST.*$")
+                       ""))
+                    #t))
+                (add-after 'unpack 'fix-prop
+                  (lambda _
+                    (substitute* "src/build.xml"
+                      (("^.*properties.*$")
+                       "<include name=\"**/*.properties\"/>
+ <include name=\"**/*.props\"/>"))
+                    #t))
+                (add-before 'build 'chdir
+                  (lambda _
+                    (chdir "src")
+                    #t))
+                (replace 'install (install-jars ".")))))))
+
 (define-public java-cisd-base
   (let ((revision 38938)
         (base-version "14.12.0"))
@@ -3068,20 +3120,39 @@ API and version 2.1 of the Java ServerPages API.")
   (package
     (name "java-javaee-servletapi")
     (version "3.1.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/javaee/servlet-spec/"
-                                  "archive/" version ".zip"))
-              (file-name (string-append name "-" version ".zip"))
-              (sha256
-               (base32
-                "0m6p13vgfb1ihich1jp5j6fqlhkjsrkn32c86bsbkryp38ipwg8w"))))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/javaee/servlet-spec.git")
+                      (commit version)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0s03lj8w5an70lkqbjycgfrfk0kc07vbfav91jzk87gh3awf9ksl"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "javax-servletapi.jar"
        ;; no tests
        #:tests? #f
-       #:source-dir "src/main/java"))
+       #:source-dir "src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (mkdir-p "build/classes/javax/servlet/http")
+             (let ((from-prefix "src/main/java/javax/servlet/")
+                   (to-prefix "build/classes/javax/servlet/"))
+               (for-each (lambda (f)
+                           (copy-file (string-append from-prefix f)
+                                      (string-append to-prefix f)))
+                         (list "LocalStrings_ja.properties"
+                               "LocalStrings.properties"
+                               "LocalStrings_fr.properties"
+                               "http/LocalStrings_es.properties"
+                               "http/LocalStrings_ja.properties"
+                               "http/LocalStrings.properties"
+                               "http/LocalStrings_fr.properties")))
+               #t)))))
     (native-inputs
      `(("unzip" ,unzip)))
     (home-page "https://javaee.github.io/servlet-spec/")
@@ -6569,14 +6640,14 @@ This is a part of the Apache Commons Project.")
 (define-public java-commons-daemon
   (package
     (name "java-commons-daemon")
-    (version "1.0.15")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/commons/daemon/source/"
                                   "commons-daemon-" version "-src.tar.gz"))
               (sha256
                (base32
-                "0ci46kq8jpz084ccwq0mmkahcgsmh20ziclp2jf5i0djqv95gvhi"))))
+                "141gkhfzv5v3pdhic6y4ardq2dhsa3v36j8wmmhy6f8mac48fp7n"))))
     (build-system ant-build-system)
     (arguments
      `(#:test-target "test"

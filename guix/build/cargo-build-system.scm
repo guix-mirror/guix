@@ -40,21 +40,6 @@
 ;;
 ;; Code:
 
-;; TODO: Move this to (guix build cargo-utils). Will cause a full rebuild
-;; of all rust compilers.
-
-(define (generate-all-checksums dir-name)
-  (for-each
-    (lambda (filename)
-      (let* ((dir (dirname filename))
-             (checksum-file (string-append dir "/.cargo-checksum.json")))
-        (when (file-exists? checksum-file) (delete-file checksum-file))
-        (display (string-append
-                   "patch-cargo-checksums: generate-checksums for "
-                   dir "\n"))
-        (generate-checksums dir)))
-    (find-files dir-name "Cargo.toml$")))
-
 (define (manifest-targets)
   "Extract all targets from the Cargo.toml manifest"
   (let* ((port (open-input-pipe "cargo read-manifest"))

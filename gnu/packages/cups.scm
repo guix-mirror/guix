@@ -58,7 +58,7 @@
 (define-public cups-filters
   (package
     (name "cups-filters")
-    (version "1.25.1")
+    (version "1.25.11")
     (source(origin
               (method url-fetch)
               (uri
@@ -66,7 +66,7 @@
                               "cups-filters-" version ".tar.xz"))
               (sha256
                (base32
-                "0nlq44jnjcnrbdv0dv5myg5kaycmk6a4klynpvj65xvn3l9cq28s"))
+                "0ni8krr4rf5833livn9401cd41gspjvxj0iiqnc1rfg3x90i0fxh"))
               (modules '((guix build utils)))
               (snippet
                ;; install backends, banners and filters to cups-filters output
@@ -187,7 +187,7 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
 (define-public cups-minimal
   (package
     (name "cups-minimal")
-    (version "2.2.11")
+    (version "2.3.0")
     (source
      (origin
        (method url-fetch)
@@ -195,7 +195,7 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
                            version "/cups-" version "-source.tar.gz"))
        (sha256
         (base32
-         "0v5p10lyv8wv48s8ghkhjmdrxg6iwj8hn36v1ilkz46n7y0i107m"))))
+         "19d1jpdpxy0fclq37pchi7ldnw9dssxx3zskcgqai3h0rwlh5bxc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -225,7 +225,7 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
                #t)))
          (add-before 'build 'patch-tests
            (lambda _
-             (substitute* "test/ippserver.c"
+             (substitute* "tools/ippeveprinter.c"
                (("#  else /\\* HAVE_AVAHI \\*/")
                 "#elif defined(HAVE_AVAHI)"))
              #t)))))
@@ -245,7 +245,8 @@ networked printers, and printers can be shared from one computer to another.
 Internally, CUPS uses PostScript Printer Description (@dfn{PPD}) files to
 describe printer capabilities and features, and a wide variety of generic and
 device-specific programs to convert and print many types of files.")
-    (license license:gpl2)))
+    ;; CUPS is Apache 2.0 with exceptions, see the NOTICE file.
+    (license license:asl2.0)))
 
 (define-public cups
   (package (inherit cups-minimal)

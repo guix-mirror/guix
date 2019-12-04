@@ -155,14 +155,14 @@ freedesktop.org project.")
 (define-public libinput
   (package
     (name "libinput")
-    (version "1.13.4")
+    (version "1.14.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://freedesktop.org/software/libinput/"
                                   "libinput-" version ".tar.xz"))
               (sha256
                (base32
-                "07a0w7rak7rvnh6g4j0akwjxwinxfszc1xi9mrx12fv82k3mgsyk"))))
+                "0w7fas37mp2k06f12i3lnj717lw73asziknj6z51kh1m50ja6cz3"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Ddocumentation=false")
@@ -590,7 +590,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
 (define-public wayland-protocols
   (package
     (name "wayland-protocols")
-    (version "1.17")
+    (version "1.18")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -598,7 +598,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
                     "wayland-protocols-" version ".tar.xz"))
               (sha256
                (base32
-                "0bw1sqixqk2a7mqw630cs4dlgcp5yib90vyikzm3lr05jz7ij4yz"))))
+                "1cvl93h83ymbfhb567jv5gzyq08181w7c46rsw4xqqqpcvkvfwrx"))))
     (build-system gnu-build-system)
     (inputs
      `(("wayland" ,wayland)))
