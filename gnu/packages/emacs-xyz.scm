@@ -3644,7 +3644,7 @@ These are distributed in separate files and can be used individually.")
 (define-public emacs-irony-mode
   (package
     (name "emacs-irony-mode")
-    (version "1.2.0")
+    (version "1.4.0")
     (home-page "https://github.com/Sarcasm/irony-mode")
     (source (origin
               (method git-fetch)
@@ -3654,7 +3654,7 @@ These are distributed in separate files and can be used individually.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0nhjrnlmss535jbshjjd30vydbr8py21vkx4p294w6d8vg2rssf8"))))
+                "0n2nfcq58md1p2xdhq1smh8v7lsyj0ci7ma5xyd6bkg5rvhsh10i"))))
     (build-system emacs-build-system)
     (inputs `(("server" ,emacs-irony-mode-server)))
     (arguments `(#:phases
