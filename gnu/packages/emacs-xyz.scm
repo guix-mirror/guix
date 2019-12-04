@@ -4117,7 +4117,7 @@ to a key in your preferred mode.")
                (substitute* "el/CMakeLists.txt"
                  (("share/emacs/site-lisp/SuperCollider")
                   (string-append
-                   "share/emacs/site-lisp/guix.d/scel-" ,version)))
+                   "share/emacs/site-lisp")))
                ((assoc-ref cmake:%standard-phases 'configure)
                 #:outputs outputs
                 #:configure-flags '("-DSC_EL_BYTECOMPILE=OFF"))))
