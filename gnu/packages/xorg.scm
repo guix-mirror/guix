@@ -1441,6 +1441,8 @@ treat it as part of their software base when porting.")
           (base32
             "1v5xaiw4zlhxspvx76y3hq4wpxv7mpj6parqnwdqvpj8vbinsspx"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (inputs
       `(("gettext" ,gettext-minimal)
         ("libxt" ,libxt)
