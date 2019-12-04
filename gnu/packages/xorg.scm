@@ -1407,6 +1407,8 @@ configuration files.")
           (base32
             "0cdpqnx6258i4l6qhphvkdiyspysg0i5caqjy820kp63wwjk4d4w"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (inputs
       `(("libxt" ,libxt)
         ("xorgproto" ,xorgproto)
