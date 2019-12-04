@@ -5314,7 +5314,7 @@ draggable titlebars and borders.")
 (define-public libx11
   (package
     (name "libx11")
-    (version "1.6.8")
+    (version "1.6.9")
     (source
       (origin
         (method url-fetch)
@@ -5324,7 +5324,7 @@ draggable titlebars and borders.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1mbkwhhprhf49s2iwx7kiliprsdvd690zk44x3h53ql9q52si2dj"))))
+            "1ldyn9c6pyx54sxzaw120n3q42rqi7b503aqmyjky6fn038fiiww"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ;8 MiB of man pages + XML
