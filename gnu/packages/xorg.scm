@@ -1040,6 +1040,8 @@ of new capabilities and controls for text keyboards.")
           (base32
             "0hvjfhrcym770cr0zpqajdy3cda30aiwbjzv16iafkqkbl090gr5"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (inputs
       `(("xorgproto" ,xorgproto)
         ("libxext" ,libxext)
