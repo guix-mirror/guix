@@ -1285,6 +1285,8 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
           (base32
             "13sfcglvz87vl58hd9rszwr73z0z4nwga3c12rfh7f5s2ln8l8dk"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (propagated-inputs
      ;; xcomposite.pc refers to all these.
       `(("xorgproto" ,xorgproto)
