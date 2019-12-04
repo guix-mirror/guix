@@ -782,31 +782,31 @@ error-resilience, a Java-viewer for j2k-images, ...")
 (define-public giflib
   (package
     (name "giflib")
-    (version "5.1.4")
+    (version "5.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/giflib/giflib-"
-                                  version ".tar.bz2"))
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "1md83dip8rf29y40cm5r7nn19705f54iraz6545zhwa6y8zyq9yz"))
-              (patches (search-patches
-                        "giflib-make-reallocarray-private.patch"))))
+                "1gbrg03z1b6rlrvjyc6d41bc8j1bsr7rm8206gb1apscyii5bnii"))))
     (build-system gnu-build-system)
     (outputs '("bin"                    ; utility programs
                "out"))                  ; library
-    (inputs `(("libx11" ,libx11)
-              ("libice" ,libice)
-              ("libsm" ,libsm)
-              ("perl" ,perl)))
     (arguments
-     `(#:phases
+     '(#:make-flags (list "CC=gcc"
+                          (string-append "PREFIX="
+                                         (assoc-ref %outputs "out"))
+                          (string-append "BINDIR="
+                                         (assoc-ref %outputs "bin") "/bin"))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'disable-html-doc-gen
            (lambda _
-             (substitute* "doc/Makefile.in"
+             (substitute* "doc/Makefile"
                (("^all: allhtml manpages") ""))
              #t))
+         (delete 'configure)
          (add-after 'install 'install-manpages
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((bin (assoc-ref outputs "bin"))
