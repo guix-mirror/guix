@@ -5051,6 +5051,8 @@ new API's in libXft, or the legacy API's in libX11.")
           (base32
             "1kbdjsvkm5l7axv7g477qj18sab2wnqhliy6197syzizgfbsfgbb"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (propagated-inputs
       `(("libxv" ,libxv)))
     (inputs
