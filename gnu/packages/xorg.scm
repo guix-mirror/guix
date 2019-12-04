@@ -5663,6 +5663,8 @@ The XCB util-image module provides the following library:
               (base32
                "1nbd45pzc1wm6v5drr5338j4nicbgxa5hcakvsvm5pnyy47lky0f"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (propagated-inputs
      `(("libxcb" ,libxcb)))
     (native-inputs
