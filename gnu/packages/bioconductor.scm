@@ -835,11 +835,7 @@ resulting in a complete gene expression profile for each cell.")
     (version "1.26.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/experiment/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/experiment/src/contrib/"
-                                  "ALL_" version ".tar.gz"))
+              (uri (bioconductor-uri "ALL" version 'experiment))
               (sha256
                (base32
                 "1z7kpjw4ndj6fkxwvhqf3gawhrn26ksrlns7j2c78qzxqmjndik9"))))
