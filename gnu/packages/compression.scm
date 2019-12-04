@@ -1180,7 +1180,7 @@ for most inputs, but the resulting compressed files are anywhere from 20% to
              (invoke "make" "test")
              (invoke "make" "test_7z")
              (invoke "make" "test_7zr"))))))
-    (inputs
+    (native-inputs
      (let ((system (or (%current-target-system)
                        (%current-system))))
        `(,@(cond ((string-prefix? "x86_64" system)
