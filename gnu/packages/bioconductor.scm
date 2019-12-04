@@ -522,12 +522,8 @@ track.  The database is exposed as a @code{TxDb} object.")
     (version "3.4.6")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib"
-                                  "/TxDb.Hsapiens.UCSC.hg38.knownGene_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "TxDb.Hsapiens.UCSC.hg38.knownGene"
+                                     version 'annotation))
               (sha256
                (base32
                 "12j7rri9r129v9w1yiqadg952dx462dh092sxif3r5kk8l7bxkn9"))))
