@@ -192,7 +192,7 @@ inconclusive reports."
         (report (G_ "  no local build for '~a'~%") item))
     (for-each (lambda (narinfo)
                 (report (G_ "  ~50a: ~a~%")
-                        (uri->string (first (narinfo-uris narinfo)))
+                        (uri->string (narinfo-best-uri narinfo))
                         (hash->string
                          (narinfo-hash->sha256 (narinfo-hash narinfo)))))
               narinfos))

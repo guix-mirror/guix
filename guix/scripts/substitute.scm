@@ -80,6 +80,7 @@
             narinfo-signature
 
             narinfo-hash->sha256
+            narinfo-best-uri
 
             lookup-narinfos
             lookup-narinfos/diverse
@@ -913,7 +914,7 @@ expected by the daemon."
   (for-each (cute format #t "~a/~a~%" (%store-prefix) <>)
             (narinfo-references narinfo))
 
-  (let-values (((uri compression file-size) (select-uri narinfo)))
+  (let-values (((uri compression file-size) (narinfo-best-uri narinfo)))
     (format #t "~a\n~a\n"
             (or file-size 0)
             (or (narinfo-size narinfo) 0))))
@@ -967,7 +968,7 @@ this is a rough approximation."
     (_      (or (string=? compression2 "none")
                 (string=? compression2 "gzip")))))
 
-(define (select-uri narinfo)
+(define (narinfo-best-uri narinfo)
   "Select the \"best\" URI to download NARINFO's nar, and return three values:
 the URI, its compression method (a string), and the compressed file size."
   (define choices
@@ -1008,7 +1009,7 @@ DESTINATION as a nar file.  Verify the substitute against ACL."
            store-item))
 
   (let-values (((uri compression file-size)
-                (select-uri narinfo)))
+                (narinfo-best-uri narinfo)))
     ;; Tell the daemon what the expected hash of the Nar itself is.
     (format #t "~a~%" (narinfo-hash narinfo))
 
