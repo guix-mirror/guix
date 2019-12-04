@@ -5505,6 +5505,8 @@ keyboard focus, and user-specified key and pointer button bindings.")
               (base32
                "1sahmrgbpyki4bb72hxym0zvxwnycmswsxiisgqlln9vrdlr9r26"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (propagated-inputs
      `(("libxcb" ,libxcb)))
     (native-inputs
