@@ -5656,20 +5656,20 @@ inferring an appropriate positioning method.")
     (license license:gpl3)))
 
 (define-public r-catterplots
-  (let ((commit "40063ec57f9515d231508f135ca0ec769614efb9")
-        (revision "2"))
+  (let ((commit "ae17cd5e49ddda4ecfe0eba8a4c21df8c88e72c4")
+        (revision "3"))
     (package
       (name "r-catterplots")
-      (version (string-append "0-" revision "." (string-take commit 9)))
+      (version (git-version "0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                       (url "https://github.com/Gibbsdavidl/CatterPlots.git")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1wl80pgbz8d9kfpffvkh439hlgz2qldm9m75wqjfrgrg8lcjzrxg"))))
+                  "0qa8liylffpxgdg8xcgjar5dsvczqhn3akd4w35113hnyg1m4xyg"))))
       (build-system r-build-system)
       (propagated-inputs
        `(("r-png" ,r-png)))
