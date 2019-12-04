@@ -20321,3 +20321,28 @@ can specify how popup-displaying functions occupy the screen.")
 items.")
       (home-page "https://github.com/emacs-helm/helm-lacarte")
       (license license:gpl3+))))
+
+(define-public emacs-esh-help
+  (let ((commit "417673ed18a983930a66a6692dbfb288a995cb80")
+        (revision "1"))
+    (package
+      (name "emacs-esh-help")
+      (version (git-version "1.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tom-tan/esh-help.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0x7d51a6ljl014zy7mi27vzcqqbcwg9z4drq29fr2ajk82mqhlgd"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)))
+      (synopsis "Help functions for Eshell")
+      (description "This package provides a @code{run-help} function inspired
+by @code{zsh} as well as @code{eldoc} support.")
+      (home-page "https://github.com/tom-tan/esh-help")
+      (license license:gpl3+))))
