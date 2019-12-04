@@ -4914,6 +4914,8 @@ an X Window System display.")
           (base32
             "1miana3y4hwdqdparsccmygqr3ic3hs5jrqfzp70hvi2zwxd676y"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (propagated-inputs
       `(("xorgproto" ,xorgproto)))
     (inputs
