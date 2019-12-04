@@ -20369,3 +20369,28 @@ by @code{zsh} as well as @code{eldoc} support.")
 within @code{isearch-mode}.")
       (home-page "https://github.com/Dewdrops/isearch-dabbrev")
       (license license:gpl3+))))
+
+(define-public emacs-helm-linux-disks
+  (let ((commit "2cdc8116a08534289eb0dc76461d0f93a0bdf231")
+        (revision "1"))
+    (package
+      (name "emacs-helm-linux-disks")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Akirak/helm-linux-disks.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1limw82zd8jz3mhh9rqlmhj4cjhfgybs9argfjid1an3vpyhc85i"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)))
+      (synopsis "Mount/unmount volumes in Linux via Helm")
+      (description "This package provides a Helm interface to run operations
+on removable volumes in Linux.")
+      (home-page "https://github.com/Akirak/helm-linux-disks")
+      (license license:gpl3+))))
