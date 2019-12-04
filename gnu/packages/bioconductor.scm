@@ -427,21 +427,14 @@ annotations for the genome of the model mouse Mus musculus.")
     (version "1.4.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "BSgenome.Hsapiens.UCSC.hg19_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "BSgenome.Hsapiens.UCSC.hg19"
+                                     version 'annotation))
               (sha256
                (base32
                 "1y0nqpk8cw5a34sd9hmin3z4v7iqm6hf6l22cl81vlbxqbjibxc8"))))
     (properties
      `((upstream-name . "BSgenome.Hsapiens.UCSC.hg19")))
     (build-system r-build-system)
-    ;; As this package provides little more than a very large data file it
-    ;; doesn't make sense to build substitutes.
-    (arguments `(#:substitutable? #f))
     (propagated-inputs
      `(("r-bsgenome" ,r-bsgenome)))
     (home-page
