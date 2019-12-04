@@ -20294,3 +20294,30 @@ interface.")
 can specify how popup-displaying functions occupy the screen.")
       (home-page "https://github.com/wasamasa/shackle")
       (license license:gpl3+))))
+
+(define-public emacs-helm-lacarte
+  (let ((commit "40a6c449720be521435b6b1da7911af3a0b9dca0")
+        (revision "1"))
+    (package
+      (name "emacs-helm-lacarte")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacs-helm/helm-lacarte.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0dkfd3lap2v7b4nckzv8v7hczmzwzhbl75haqkra107ln91ldbwc"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)
+         ("emacs-lacarte" ,emacs-lacarte)))
+      (synopsis "Helm interface to @code{lacarte.el}")
+      (description "This package provides a Helm interface to
+@code{lacarte.el}, a package that displays mode-specific commands as menu
+items.")
+      (home-page "https://github.com/emacs-helm/helm-lacarte")
+      (license license:gpl3+))))
