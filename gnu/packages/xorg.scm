@@ -5731,6 +5731,8 @@ The XCB util-renderutil module provides the following library:
               (base32
                "0gra7hfyxajic4mjd63cpqvd20si53j1q3rbdlkqkahfciwq3gr8"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (propagated-inputs
      `(("libxcb" ,libxcb)))
     (native-inputs
