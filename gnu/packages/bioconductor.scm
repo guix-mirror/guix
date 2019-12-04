@@ -497,21 +497,14 @@ genomes and gene ID formats, largely based on the UCSC table browser.")
     (version "3.2.2")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib"
-                                  "/TxDb.Hsapiens.UCSC.hg19.knownGene_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "TxDb.Hsapiens.UCSC.hg19.knownGene"
+                                     version 'annotation))
               (sha256
                (base32
                 "1sajhcqqwazgz2lqbik7rd935i7kpnh08zxbp2ra10j72yqy4g86"))))
     (properties
      `((upstream-name . "TxDb.Hsapiens.UCSC.hg19.knownGene")))
     (build-system r-build-system)
-    ;; As this package provides little more than a very large data file it
-    ;; doesn't make sense to build substitutes.
-    (arguments `(#:substitutable? #f))
     (propagated-inputs
      `(("r-genomicfeatures" ,r-genomicfeatures)))
     (home-page
