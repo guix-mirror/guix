@@ -1063,6 +1063,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libexif-CVE-2017-7544.patch		\
   %D%/packages/patches/libexif-CVE-2018-20030.patch		\
   %D%/packages/patches/libextractor-exiv2.patch			\
+  %D%/packages/patches/libgeotiff-adapt-test-script-for-proj-6.2.patch		\
   %D%/packages/patches/libgit2-avoid-python.patch		\
   %D%/packages/patches/libgit2-mtime-0.patch			\
   %D%/packages/patches/libgnome-encoding.patch			\

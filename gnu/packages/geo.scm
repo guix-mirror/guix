@@ -43,6 +43,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (gnu packages)
   #:use-module (gnu packages astronomy)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
@@ -227,32 +228,30 @@ and driving.")
 (define-public libgeotiff
   (package
     (name "libgeotiff")
-    (version "1.4.3")
+    (version "1.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://download.osgeo.org/geotiff/libgeotiff/libgeotiff-"
                            version ".tar.gz"))
+       (patches (search-patches
+                 ;; See libgeotiff 1.5.1 issue
+                 ;; https://github.com/OSGeo/libgeotiff/issues/22
+                 "libgeotiff-adapt-test-script-for-proj-6.2.patch"))
        (sha256
-        (base32 "0rbjqixi4c8yz19larlzq6jda0px2gpmpp9c52cyhplbjsdhsldq"))
+        (base32 "0b31mlzcv5b1y7jdvb7p0pa3xradrg3x5g32ym911lbhq4rrgsgr"))
        (modules '((guix build utils)))
        (snippet
         '(begin
            ;; Remove .csv files, distributed from EPSG under a restricted
            ;; license. See LICENSE for full license text.
            (for-each delete-file (find-files "." "\\.csv$"))
-           ;; Now that we have removed the csv files, we need to modify the Makefile.
-           (substitute* "Makefile.in"
-             (("^all-am: .*$")
-              "all-am: Makefile $(LTLIBRARIES) $(HEADERS) geo_config.h\n")
-             (("^install-data-am: .*$")
-              "install-data-am: install-includeHEADERS"))
            #t))))
     (build-system gnu-build-system)
     (inputs
      `(("libjpeg-turbo" ,libjpeg-turbo)
        ("libtiff" ,libtiff)
-       ("proj.4" ,proj.4)
+       ("proj" ,proj)
        ("zlib" ,zlib)))
     (arguments
      `(#:configure-flags
