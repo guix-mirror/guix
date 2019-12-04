@@ -575,7 +575,7 @@ Extension (MIME).")
              #t)))))
     (native-inputs `(("flex" ,flex)))
     (inputs `(("bdb" ,bdb)))
-    (home-page "http://bogofilter.sourceforge.net/")
+    (home-page "https://bogofilter.sourceforge.io/")
     (synopsis "Mail classifier based on a Bayesian filter")
     (description
      "Bogofilter is a mail filter that classifies mail as spam or ham
