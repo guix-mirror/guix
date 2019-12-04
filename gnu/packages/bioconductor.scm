@@ -237,21 +237,14 @@ default.")
     (version "1.4.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "BSgenome.Mmusculus.UCSC.mm9_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "BSgenome.Mmusculus.UCSC.mm9"
+                                     version 'annotation))
               (sha256
                (base32
                 "1birqw30g2azimxpnjfzmkphan7x131yy8b9h85lfz5fjdg7841i"))))
     (properties
      `((upstream-name . "BSgenome.Mmusculus.UCSC.mm9")))
     (build-system r-build-system)
-    ;; As this package provides little more than a very large data file it
-    ;; doesn't make sense to build substitutes.
-    (arguments `(#:substitutable? #f))
     (propagated-inputs
      `(("r-bsgenome" ,r-bsgenome)))
     (home-page
