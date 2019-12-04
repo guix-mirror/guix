@@ -21,7 +21,8 @@
   #:use-module (guix utils)
   #:use-module (guix combinators)
   #:use-module ((guix build utils) #:select (mkdir-p))
-  #:use-module ((guix serialization) #:select (restore-file))
+  #:use-module ((guix serialization)
+                #:select (fold-archive restore-file))
   #:use-module (guix store)
   #:use-module ((guix status) #:select (with-status-verbosity))
   #:use-module (guix grafts)
@@ -43,6 +44,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 binary-ports)
+  #:use-module (rnrs bytevectors)
   #:export (guix-archive
             options->derivations+files))
 
@@ -76,6 +78,8 @@ Export/import one or more packages from/to the store.\n"))
       --missing          print the files from stdin that are missing"))
   (display (G_ "
   -x, --extract=DIR      extract the archive on stdin to DIR"))
+  (display (G_ "
+  -t, --list             list the files in the archive on stdin"))
   (newline)
   (display (G_ "
       --generate-key[=PARAMETERS]
@@ -137,6 +141,9 @@ Export/import one or more packages from/to the store.\n"))
          (option '("extract" #\x) #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'extract arg result)))
+         (option '("list" #\t) #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'list #t result)))
          (option '("generate-key") #f #t
                  (lambda (opt name arg result)
                    (catch 'gcry-error
@@ -319,6 +326,40 @@ the input port."
       (with-atomic-file-output %acl-file
         (cut write-acl acl <>)))))
 
+(define (list-contents port)
+  "Read a nar from PORT and print the list of files it contains to the current
+output port."
+  (define (consume-input port size)
+    (let ((bv (make-bytevector 32768)))
+      (let loop ((total size))
+        (unless (zero? total)
+          (let ((n (get-bytevector-n! port bv 0
+                                      (min total (bytevector-length bv)))))
+            (loop (- total n)))))))
+
+  (fold-archive (lambda (file type content result)
+                  (match type
+                    ('directory
+                     (format #t "D ~a~%" file))
+                    ('symlink
+                     (format #t "S ~a -> ~a~%" file content))
+                    ((or 'regular 'executable)
+                     (match content
+                       ((input . size)
+                        (format #t "~a ~60a ~10h B~%"
+                                (if (eq? type 'executable)
+                                    "x" "r")
+                                file size)
+                        (consume-input input size))))))
+                #t
+                port
+                ""))
+
+
+;;;
+;;; Entry point.
+;;;
+
 (define (guix-archive . args)
   (define (lines port)
     ;; Return lines read from PORT.
@@ -353,6 +394,8 @@ the input port."
                                    (missing (remove (cut valid-path? store <>)
                                                     files)))
                               (format #t "~{~a~%~}" missing)))
+                           ((assoc-ref opts 'list)
+                            (list-contents (current-input-port)))
                            ((assoc-ref opts 'extract)
                             =>
                             (lambda (target)

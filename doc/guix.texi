@@ -4598,6 +4598,18 @@ unsafe.
 The primary purpose of this operation is to facilitate inspection of
 archive contents coming from possibly untrusted substitute servers.
 
+@item --list
+@itemx -t
+Read a single-item archive as served by substitute servers
+(@pxref{Substitutes}) and print the list of files it contains, as in
+this example:
+
+@example
+$ wget -O - \
+  https://@value{SUBSTITUTE-SERVER}/nar/lzip/@dots{}-emacs-26.3 \
+  | lzip -d | guix archive -t
+@end example
+
 @end table
 
 
