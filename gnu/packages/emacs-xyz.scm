@@ -20018,7 +20018,7 @@ platform for GNU Emacs.")
 (define-public emacs-doom-modeline
   (package
     (name "emacs-doom-modeline")
-    (version "2.7.3")
+    (version "2.8.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -20026,7 +20026,7 @@ platform for GNU Emacs.")
                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "16qlakgbwwjfr013g0cly4js4v9cfhxb8fn7zmn124f788m22357"))
+                "12zksk0rwpgpdc00km3z0hmc8wm1j1r8lbwn4kivniw56mgy0n22"))
               (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (arguments
