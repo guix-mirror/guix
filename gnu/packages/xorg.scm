@@ -5697,6 +5697,8 @@ The XCB util-keysyms module provides the following library:
               (base32
                "0nza1csdvvxbmk8vgv8vpmq7q8h05xrw3cfx9lwxd1hjzd47xsf6"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (propagated-inputs
      `(("libxcb" ,libxcb)))
     (native-inputs
