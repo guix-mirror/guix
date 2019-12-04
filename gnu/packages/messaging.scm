@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016, 2017, 2018, 2019 Clément Lassieur <clement@lassieur.org>
@@ -271,12 +271,12 @@ access to servers running the Discord protocol.")
               (patches (search-patches "hexchat-crash-exit.patch"))))
     (build-system meson-build-system)
     (native-inputs `(("gettext" ,gettext-minimal)
+                     ("glib:bin" ,glib "bin")       ;need glib-genmarshal
                      ("perl" ,perl)
                      ("pkg-config" ,pkg-config)))
     (inputs `(("dbus-glib" ,dbus-glib)
               ("dbus" ,dbus)
               ("enchant" ,enchant)
-              ("glib:bin" ,glib "bin")            ;need glib-genmarshal
               ("gtk" ,gtk+-2)
               ("libcanberra" ,libcanberra)
               ("libnotify" ,libnotify)
