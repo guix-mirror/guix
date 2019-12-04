@@ -297,7 +297,7 @@ Currently all documentation resides in @file{pnglite.h}.")
 (define-public libimagequant
   (package
     (name "libimagequant")
-    (version "2.12.3")
+    (version "2.12.5")
     (source
      (origin
        (method git-fetch)
@@ -306,17 +306,17 @@ Currently all documentation resides in @file{pnglite.h}.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0qsfq1kv1m5jzn9v9iz0bac66k4clcis1c9877qabnwzwmwma5v0"))))
+        (base32 "0cp68w04ja5pv77ssfafsn958w9hh9zb8crrlb5j3gsrcmdc032k"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f)) ; no check target
+     '(#:tests? #f))                    ; no check target
     (home-page "https://pngquant.org/lib/")
     (synopsis "Image palette quantization library")
     (description "libimagequant is a small, portable C library for
 high-quality conversion of RGBA images to 8-bit indexed-color (palette)
 images.  This library can significantly reduces file sizes and powers pngquant
 and other PNG optimizers.")
-   (license license:gpl3+)))
+    (license license:gpl3+)))
 
 (define-public pngquant
   (package
