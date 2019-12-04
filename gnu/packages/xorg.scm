@@ -1068,6 +1068,8 @@ of new capabilities and controls for text keyboards.")
                (base32
                 "1ir0j92mnd1nk37mrv9bz5swnccqldicgszvfsh62jd14q6k115q"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("xorgproto" ,xorgproto)))
     (home-page "https://www.x.org/")
