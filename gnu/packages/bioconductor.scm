@@ -474,11 +474,7 @@ by UCSC (hg19, February 2009) and stored in Biostrings objects.")
     (source
      (origin
        (method url-fetch)
-       ;; We cannot use bioconductor-uri here because this tarball is
-       ;; located under "data/experiment/" instead of "bioc/".
-       (uri (string-append "https://bioconductor.org/packages/"
-                           "release/data/experiment/src/contrib"
-                           "/geneLenDataBase_" version ".tar.gz"))
+       (uri (bioconductor-uri "geneLenDataBase" version 'experiment))
        (sha256
         (base32
          "03gm4pvsfascx7kjg0jycpf4f572mja68wwmwigs390vbmawyb4a"))))
