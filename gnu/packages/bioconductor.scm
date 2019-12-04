@@ -151,12 +151,8 @@ Biostrings objects.")
     (version "1.3.99")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "http://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "BSgenome.Dmelanogaster.UCSC.dm3.masked_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "BSgenome.Dmelanogaster.UCSC.dm3.masked"
+                                     version 'annotation))
               (sha256
                (base32
                 "1756csb09f1br9rj1l3f08qyh4hlymdbd0cfn8x3fq39dn45m5ap"))))
