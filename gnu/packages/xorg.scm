@@ -1380,6 +1380,8 @@ configuration files.")
           (base32
             "1irq9crvscd3yb8sr802dhvvfr35jdy1n2yz094xplmd42mbv3bm"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (inputs
       `(("libx11" ,libx11)))
     (native-inputs
