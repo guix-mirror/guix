@@ -48,6 +48,7 @@
 
             write-file
             write-file-tree
+            fold-archive
             restore-file))
 
 ;;; Comment:
@@ -226,38 +227,25 @@ substitute invalid byte sequences with question marks.  This is a
       (dump input output size))
   (write-padding size output))
 
-(define (read-contents in out)
-  "Read the contents of a file from the Nar at IN, write it to OUT, and return
-the size in bytes."
-  (define executable?
-    (match (read-string in)
-      ("contents"
-       #f)
-      ("executable"
-       (match (list (read-string in) (read-string in))
-         (("" "contents") #t)
-         (x (raise
-             (condition (&message
-                         (message "unexpected executable file marker"))
-                        (&nar-read-error (port in)
-                                         (file #f)
-                                         (token x))))))
-       #t)
-      (x
-       (raise
-        (condition (&message (message "unsupported nar file type"))
-                   (&nar-read-error (port in) (file #f) (token x)))))))
-
-  (let ((size (read-long-long in)))
-    ;; Note: `sendfile' cannot be used here because of port buffering on IN.
-    (dump in out size)
-
-    (when executable?
-      (chmod out #o755))
-    (let ((m (modulo size 8)))
-      (unless (zero? m)
-        (get-bytevector-n* in (- 8 m))))
-    size))
+(define (read-file-type port)
+  "Read the file type tag from PORT, and return either 'regular or
+'executable."
+  (match (read-string port)
+    ("contents"
+     'regular)
+    ("executable"
+     (match (list (read-string port) (read-string port))
+       (("" "contents") 'executable)
+       (x (raise
+           (condition (&message
+                       (message "unexpected executable file marker"))
+                      (&nar-read-error (port port)
+                                       (file #f)
+                                       (token x)))))))
+    (x
+     (raise
+      (condition (&message (message "unsupported nar file type"))
+                 (&nar-read-error (port port) (file #f) (token x)))))))
 
 (define %archive-version-1
   ;; Magic cookie for Nix archives.
@@ -383,9 +371,14 @@ which case you can use 'identity'."
 (define port-conversion-strategy
   (fluid->parameter %default-port-conversion-strategy))
 
-(define (restore-file port file)
-  "Read a file (possibly a directory structure) in Nar format from PORT.
-Restore it as FILE."
+(define (fold-archive proc seed port file)
+  "Read a file (possibly a directory structure) in Nar format from PORT.  Call
+PROC on each file or directory read from PORT using:
+
+  (PROC FILE TYPE CONTENTS RESULT)
+
+using SEED as the first RESULT.  TYPE is a symbol like 'regular, and CONTENTS
+depends on TYPE."
   (parameterize ((currently-restored-file file)
 
                  ;; Error out if we can convert file names to the current
@@ -401,7 +394,8 @@ Restore it as FILE."
                                      (token signature)
                                      (file #f))))))
 
-    (let restore ((file file))
+    (let read ((file file)
+               (result seed))
       (define (read-eof-marker)
         (match (read-string port)
           (")" #t)
@@ -414,40 +408,49 @@ Restore it as FILE."
 
       (match (list (read-string port) (read-string port) (read-string port))
         (("(" "type" "regular")
-         (call-with-output-file file (cut read-contents port <>))
-         (read-eof-marker))
+         (let* ((type   (read-file-type port))
+                (size   (read-long-long port))
+
+                ;; The caller must read exactly SIZE bytes from PORT.
+                (result (proc file type `(,port . ,size) result)))
+           (let ((m (modulo size 8)))
+             (unless (zero? m)
+               (get-bytevector-n* port (- 8 m))))
+           (read-eof-marker)
+           result))
         (("(" "type" "symlink")
          (match (list (read-string port) (read-string port))
            (("target" target)
-            (symlink target file)
-            (read-eof-marker))
+            (let ((result (proc file 'symlink target result)))
+              (read-eof-marker)
+              result))
            (x (raise
                (condition
                 (&message (message "invalid symlink tokens"))
                 (&nar-read-error (port port) (file file) (token x)))))))
         (("(" "type" "directory")
          (let ((dir file))
-           (mkdir dir)
-           (let loop ((prefix (read-string port)))
+           (let loop ((prefix (read-string port))
+                      (result (proc file 'directory #f result)))
              (match prefix
                ("entry"
                 (match (list (read-string port)
                              (read-string port) (read-string port)
                              (read-string port))
                   (("(" "name" file "node")
-                   (restore (string-append dir "/" file))
-                   (match (read-string port)
-                     (")" #t)
-                     (x
-                      (raise
-                       (condition
-                        (&message
-                         (message "unexpected directory entry termination"))
-                        (&nar-read-error (port port)
-                                         (file file)
-                                         (token x))))))
-                   (loop (read-string port)))))
-               (")" #t)                            ; done with DIR
+                   (let ((result (read (string-append dir "/" file) result)))
+                     (match (read-string port)
+                       (")" #f)
+                       (x
+                        (raise
+                         (condition
+                          (&message
+                           (message "unexpected directory entry termination"))
+                          (&nar-read-error (port port)
+                                           (file file)
+                                           (token x))))))
+                     (loop (read-string port) result)))))
+               (")" result)                       ;done with DIR
                (x
                 (raise
                  (condition
@@ -458,6 +461,27 @@ Restore it as FILE."
           (condition
            (&message (message "unsupported nar entry type"))
            (&nar-read-error (port port) (file file) (token x)))))))))
+
+(define (restore-file port file)
+  "Read a file (possibly a directory structure) in Nar format from PORT.
+Restore it as FILE."
+  (fold-archive (lambda (file type content result)
+                  (match type
+                    ('directory
+                     (mkdir file))
+                    ('symlink
+                     (symlink content file))
+                    ((or 'regular 'executable)
+                     (match content
+                       ((input . size)
+                        (call-with-output-file file
+                          (lambda (output)
+                            (dump input output size)
+                            (when (eq? type 'executable)
+                              (chmod output #o755)))))))))
+                #t
+                port
+                file))
 
 ;;; Local Variables:
 ;;; eval: (put 'call-with-binary-input-file 'scheme-indent-function 1)

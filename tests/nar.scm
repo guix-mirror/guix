@@ -214,6 +214,80 @@
       (lambda ()
         (false-if-exception (rm-rf %test-dir))))))
 
+(test-equal "write-file-tree + fold-archive"
+  '(("R" directory #f)
+    ("R/dir" directory #f)
+    ("R/dir/exe" executable "1234")
+    ("R/foo" regular "abcdefg")
+    ("R/lnk" symlink "foo"))
+
+  (let ()
+    (define-values (port get-bytevector)
+      (open-bytevector-output-port))
+    (write-file-tree "root" port
+                     #:file-type+size
+                     (match-lambda
+                       ("root"
+                        (values 'directory 0))
+                       ("root/foo"
+                        (values 'regular 7))
+                       ("root/lnk"
+                        (values 'symlink 0))
+                       ("root/dir"
+                        (values 'directory 0))
+                       ("root/dir/exe"
+                        (values 'executable 4)))
+                     #:file-port
+                     (match-lambda
+                       ("root/foo" (open-input-string "abcdefg"))
+                       ("root/dir/exe" (open-input-string "1234")))
+                     #:symlink-target
+                     (match-lambda
+                       ("root/lnk" "foo"))
+                     #:directory-entries
+                     (match-lambda
+                       ("root" '("foo" "dir" "lnk"))
+                       ("root/dir" '("exe"))))
+    (close-port port)
+
+    (reverse
+     (fold-archive (lambda (file type contents result)
+                     (let ((contents (if (memq type '(regular executable))
+                                         (utf8->string
+                                          (get-bytevector-n (car contents)
+                                                            (cdr contents)))
+                                         contents)))
+                       (cons `(,file ,type ,contents)
+                             result)))
+                   '()
+                   (open-bytevector-input-port (get-bytevector))
+                   "R"))))
+
+(test-equal "write-file-tree + fold-archive, flat file"
+  '(("R" regular "abcdefg"))
+
+  (let ()
+    (define-values (port get-bytevector)
+      (open-bytevector-output-port))
+    (write-file-tree "root" port
+                     #:file-type+size
+                     (match-lambda
+                       ("root" (values 'regular 7)))
+                     #:file-port
+                     (match-lambda
+                       ("root" (open-input-string "abcdefg"))))
+    (close-port port)
+
+    (reverse
+     (fold-archive (lambda (file type contents result)
+                     (let ((contents (utf8->string
+                                      (get-bytevector-n (car contents)
+                                                        (cdr contents)))))
+                       (cons `(,file ,type ,contents) result)))
+                   '()
+                   (open-bytevector-input-port (get-bytevector))
+                   "R"))))
+
 (test-assert "write-file supports non-file output ports"
   (let ((input  (string-append (dirname (search-path %load-path "guix.scm"))
                                "/guix"))
