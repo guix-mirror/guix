@@ -126,21 +126,14 @@ objects.")
     (version "1.4.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "BSgenome.Dmelanogaster.UCSC.dm3_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "BSgenome.Dmelanogaster.UCSC.dm3"
+                                     version 'annotation))
               (sha256
                (base32
                 "19bm3lkhhkag3gnwp419211fh0cnr0x6fa0r1lr0ycwrikxdxsv8"))))
     (properties
      `((upstream-name . "BSgenome.Dmelanogaster.UCSC.dm3")))
     (build-system r-build-system)
-    ;; As this package provides little more than a very large data file it
-    ;; doesn't make sense to build substitutes.
-    (arguments `(#:substitutable? #f))
     (propagated-inputs
      `(("r-bsgenome" ,r-bsgenome)))
     (home-page
