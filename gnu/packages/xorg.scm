@@ -5333,6 +5333,8 @@ draggable titlebars and borders.")
        (list (string-append "--mandir="
                             (assoc-ref %outputs "doc")
                             "/share/man")
+             "--disable-static"
+
              ;; Disable zero malloc check that fails when cross-compiling.
              ,@(if (%current-target-system)
                    '("--disable-malloc0returnsnull")
