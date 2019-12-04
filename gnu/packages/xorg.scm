@@ -1527,6 +1527,8 @@ treat it as part of their software base when porting.")
        (sha256
         (base32 "00vjvcdlc1sga251jkxn6gkxmx9h5n290ffxxpa40qbca1gvr61b"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (propagated-inputs
      `(("xorgproto" ,xorgproto)))
     (inputs
