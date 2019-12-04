@@ -261,12 +261,8 @@ provided by UCSC (mm9, July 2007) and stored in Biostrings objects.")
     (version "1.3.99")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "http://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "BSgenome.Mmusculus.UCSC.mm9.masked_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "BSgenome.Mmusculus.UCSC.mm9.masked"
+                                     version 'annotation))
               (sha256
                (base32
                 "00bpbm3havqcxr4g63zhllsbpd9q6svgihks7qp7x73nm4gvq7fn"))))
