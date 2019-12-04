@@ -5020,6 +5020,8 @@ new API's in libXft, or the legacy API's in libX11.")
           (base32
             "08z0mqywrm7ij8bxlfrx0d2wy6kladdmkva1nw5k6qix82z0xsla"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (propagated-inputs
       ;; In accordance with xrandr.pc.
       `(("libx11" ,libx11)
