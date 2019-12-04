@@ -17804,19 +17804,14 @@ as Emacs Lisp.")
          #:imported-modules (,@%gnu-build-system-modules
                              (guix build emacs-utils))
          #:tests? #f                   ; tests are not included in the release
-         #:make-flags (list "lisp" "info"
-                            (string-append "LOAD_PATH=-L . -L "
-                                           (assoc-ref %build-inputs "dash")
-                                           "/share/emacs/site-lisp/guix.d/dash-"
-                                           ,(package-version emacs-dash)))
+         #:make-flags (list "lisp" "info")
          #:phases
          (modify-phases %standard-phases
            (delete 'configure)
            (replace 'install
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
-                      (lisp (string-append out "/share/emacs/site-lisp/guix.d/"
-                                           "transient" "-" ,version))
+                      (lisp (string-append out "/share/emacs/site-lisp"))
                       (info (string-append out "/share/info")))
                  (for-each (cut install-file <> lisp)
                            (find-files "." "\\.elc*$"))
