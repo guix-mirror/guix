@@ -1377,14 +1377,15 @@ and routines to assist in editing internationalized text.")
   (package
     (name "girara")
     (version "0.3.3")
-    (source (origin
-              (method url-fetch)
-              (uri
-               (string-append "https://pwmt.org/projects/girara/download/girara-"
-                              version ".tar.gz"))
-              (sha256
-               (base32
-                "13vr62kkkqs2xsrmsn114n6c6084ix1qyjksczqsc3s2y3bdsmj4"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.pwmt.org/pwmt/girara")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0q0yfv2777s72p473lw0ll435n7vz4v204cmp9naq8am7a6i6avn"))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("check" ,check)
                      ("gettext" ,gettext-minimal)
