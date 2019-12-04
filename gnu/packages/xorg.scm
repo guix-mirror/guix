@@ -5627,6 +5627,8 @@ numbers.")
               (base32
                "1z1gxacg7q4cw6jrd26gvi5y04npsyavblcdad1xccc8swvnmf9d"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (propagated-inputs
      `(("libxcb" ,libxcb)))
     (inputs
