@@ -2636,39 +2636,36 @@ supported players in addition to this package.")
 (define-public handbrake
   (package
     (name "handbrake")
-    (version "1.2.2")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.handbrake.fr/releases/"
                                   version "/HandBrake-" version "-source.tar.bz2"))
               (sha256
                (base32
-                "0k2yaqy7zi06k8mkp9az2mn9dlgj3a1339vacakfh2nn2zsics6z"))
+                "15hxncswmaj62hb40fxixsa6d519zb712z9xbdq979q4rasjxa59"))
               (modules '((guix build utils)))
               (snippet
                ;; Remove "contrib" and source not necessary for
                ;; building/running under a GNU environment.
                '(begin
                   (for-each delete-file-recursively
-                            '("contrib" "macosx" "win"))
+                            '("contrib" "macosx" "win")) ; 540KiB, 11MiB, 5.9MiB resp.
                   (substitute* "make/include/main.defs"
                     ;; Disable unconditional inclusion of "contrib" libraries
                     ;; (ffmpeg, libvpx, libdvdread, libdvdnav, and libbluray),
                     ;; which would lead to fetching and building of these
                     ;; libraries.  Use our own instead.
                     (("MODULES \\+= contrib") "# MODULES += contrib"))
-                  #t))
-              (patches (search-patches "handbrake-opt-in-nvenc.patch"))))
+                  #t))))
     (build-system  glib-or-gtk-build-system)
     (native-inputs
-     `(("automake" ,automake)           ;gui subpackage must be bootstrapped
+     `(("automake" ,automake)           ; GUI subpackage must be bootstrapped
        ("autoconf" ,autoconf)
-       ("cmake" ,cmake-minimal) ;TODO: could probably strip check from make/configure.py
-       ("curl" ,curl)                   ;not actually used, but tested for
        ("intltool" ,intltool)
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)
-       ("python" ,python-2)))           ;for configuration
+       ("python" ,python-2)))           ; For configuration
     (inputs
      `(("bzip2" ,bzip2)
        ("dbus-glib" ,dbus-glib)
@@ -2683,11 +2680,13 @@ supported players in addition to this package.")
        ("lame" ,lame)
        ("libass" ,libass)
        ("libbluray" ,libbluray)
+       ("libdav1d" ,dav1d)
        ("libdvdnav" ,libdvdnav)
        ("libdvdread" ,libdvdread)
        ("libgudev" ,libgudev)
        ("libmpeg2" ,libmpeg2)
        ("libnotify" ,libnotify)
+       ("libnuma" ,numactl)
        ("libogg" ,libogg)
        ("libopus" ,opus)
        ("libsamplerate" ,libsamplerate)
@@ -2703,6 +2702,7 @@ supported players in addition to this package.")
      `(#:tests? #f             ;tests require Ruby and claim to be unsupported
        #:configure-flags
        (list "--disable-gtk-update-checks"
+             "--disable-nvenc"
              (string-append "CPPFLAGS=-I"
                             (assoc-ref %build-inputs "libxml2")
                             "/include/libxml2")
@@ -2713,11 +2713,27 @@ supported players in addition to this package.")
            ;; Run bootstrap ahead of time so that shebangs get patched.
            (lambda _
              (setenv "CONFIG_SHELL" (which "sh"))
-             (setenv "NOCONFIGURE" "1")
              ;; Patch the Makefile so that it doesn't bootstrap again.
              (substitute* "gtk/module.rules"
-               ((".*autogen\\.sh.*") ""))
-             (invoke "sh" "./gtk/autogen.sh")))
+               ((".*autoreconf.*") ""))
+             (with-directory-excursion "gtk"
+               (invoke "autoreconf" "-fiv"))))
+         (add-before 'configure 'patch-SHELL
+           (lambda _
+             (substitute* "gtk/po/Makefile.in.in"
+               (("SHELL = /bin/sh") "SHELL = @SHELL@"))
+             #t))
+         (add-before 'configure 'relax-reqs
+           (lambda _
+             (substitute* "make/configure.py"
+               ;; cmake is checked for so that it can be used to build
+               ;; contrib/harfbuzz and contrib/x265, but we get these as
+               ;; inputs, so don't abort if it's not found.  Similarly, meson
+               ;; and ninja are only needed for contrib/libdav1d, and nasm
+               ;; only for libvpx
+               (("((cmake|meson|ninja|nasm) *=.*abort=)True" _ &)
+                (string-append & "False")))
+             #t))
          (replace 'configure
            (lambda* (#:key outputs configure-flags #:allow-other-keys)
              ;; 'configure' is not an autoconf-generated script, and

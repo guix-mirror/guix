@@ -962,7 +962,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gtkglext-disable-disable-deprecated.patch \
   %D%/packages/patches/gtksourceview-2-add-default-directory.patch \
   %D%/packages/patches/gzdoom-search-in-installed-share.patch	\
-  %D%/packages/patches/handbrake-opt-in-nvenc.patch		\
   %D%/packages/patches/haskell-mode-unused-variables.patch	\
   %D%/packages/patches/haskell-mode-make-check.patch		\
   %D%/packages/patches/hdf4-architectures.patch 		\
