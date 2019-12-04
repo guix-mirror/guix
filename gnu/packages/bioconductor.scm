@@ -806,11 +806,7 @@ from Illumina 450k methylation arrays.")
     (version "1.2.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/experiment/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/experiment/src/contrib/"
-                                  "HSMMSingleCell_" version ".tar.gz"))
+              (uri (bioconductor-uri "HSMMSingleCell" version 'experiment))
               (sha256
                (base32
                 "1vxnr8gr6md85g39csy7g2sqqajiqgyvznys2qa9yixd2b01yph9"))))
