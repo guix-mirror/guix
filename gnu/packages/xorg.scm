@@ -5444,6 +5444,8 @@ draggable titlebars and borders.")
           (base32
             "1kdhxplwrn43d9jp3v54llp05kwx210lrsdvqb6944jp29rhdy4f"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (propagated-inputs
       `(("libxext" ,libxext)
         ("libxmu" ,libxmu)
