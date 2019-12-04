@@ -1527,3 +1527,24 @@ The first three components of the version number match the upstream flot
 version.  The package is designed to meet the redistribution
 requirements of downstream users (e.g. Debian).")
     (license license:expat)))
+(define-public ghc-sendfile
+  (package
+    (name "ghc-sendfile")
+    (version "0.7.11.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/sendfile/sendfile-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0988snmx3bylpw3kcq8hsgji8idc6xcrcfp275qjv3apfdgc9rp0"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-network" ,ghc-network)))
+    (home-page
+     "https://hub.darcs.net/stepcut/sendfile")
+    (synopsis "Portable sendfile library for Haskell")
+    (description
+     "Haskell library which exposes zero-copy sendfile functionality in a portable way.")
+    (license license:bsd-3)))
