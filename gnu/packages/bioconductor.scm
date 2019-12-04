@@ -676,11 +676,7 @@ annotations.")
     (version "2.9")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "DO.db_" version ".tar.gz"))
+              (uri (bioconductor-uri "DO.db" version 'annotation))
               (sha256
                (base32
                 "10bqqa124l61ivzy4mdd3z3ar9a6537qbxw23pc4y9w8a6dwnavn"))))
