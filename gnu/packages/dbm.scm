@@ -138,7 +138,8 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
               (sha256
                (base32
                 "1p4ibds6z3ccy65lkmd6lm7js0kwifvl53r0fd759fjxgr917rl6"))))
-    (arguments `(#:configure-flags '("--enable-libgdbm-compat")))
+    (arguments `(#:configure-flags '("--enable-libgdbm-compat"
+                                     "--disable-static")))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org.ua/software/gdbm")
     (synopsis
