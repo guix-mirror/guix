@@ -20417,3 +20417,28 @@ on removable volumes in Linux.")
 on removable volumes in Linux.")
       (home-page "https://github.com/Oitofelix/tramp-auto-auth")
       (license license:gpl3+))))
+
+(define-public emacs-psession
+  (let ((commit "3e97267c92b164584e06a6c70ee7491714c7c12c")
+        (revision "1"))
+    (package
+      (name "emacs-psession")
+      (version (git-version "1.5" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/thierryvolpiatto/psession.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "15frl618393bc891d0yi3mdxzvbq790a86vfvp3dyd5riz4ddg95"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-async" ,emacs-async)))
+      (synopsis "Persistent save of @code{elisp} objects.")
+      (description "This package provides minor modes for saving Emacs session
+data, including buffers, window configuration, variables, and more.")
+      (home-page "https://github.com/thierryvolpiatto/psession")
+      (license license:gpl3+))))
