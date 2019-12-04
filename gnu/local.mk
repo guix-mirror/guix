@@ -1062,6 +1062,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libgnomeui-utf8.patch			\
   %D%/packages/patches/libgpg-error-gawk-compat.patch		\
   %D%/packages/patches/libffi-3.2.1-complex-alpha.patch		\
+  %D%/packages/patches/libjpeg-turbo-CVE-2019-2201.patch	\
   %D%/packages/patches/libjxr-fix-function-signature.patch	\
   %D%/packages/patches/libjxr-fix-typos.patch			\
   %D%/packages/patches/libotr-test-auth-fix.patch		\
