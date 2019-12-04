@@ -1047,16 +1047,17 @@ volunteers.")
 (define-public libspatialindex
   (package
     (name "libspatialindex")
-    (version "1.8.5")
+    (version "1.9.3")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://download.osgeo.org/libspatialindex/"
-                           "spatialindex-src-" version ".tar.gz"))
+       (uri (string-append "https://github.com/libspatialindex/libspatialindex/"
+                           "releases/download/" version "/spatialindex-src-"
+                           version ".tar.bz2"))
        (sha256
         (base32
-         "1vxzm7kczwnb6qdmc0hb00z8ykx11zk3sb68gc7rch4vrfi4dakw"))))
-    (build-system gnu-build-system)
+         "02n5vjcyk04w0djidyp21hfbxfpbbara8ifd9nml6158rwqr8lja"))))
+    (build-system cmake-build-system)
     (home-page "https://libspatialindex.org")
     (synopsis "Spatial indexing library")
     (description "The purpose of this library is to provide:
