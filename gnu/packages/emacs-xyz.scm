@@ -8014,7 +8014,7 @@ programming and reproducible research.")
                                  string=? contrib-files org+contrib-files)))
                (with-directory-excursion
                    (string-append
-                    out "/share/emacs/site-lisp/guix.d/org-contrib-" ,version)
+                    out "/share/emacs/site-lisp")
                  (for-each delete-file duplicates))
                #t))))))
     (propagated-inputs
