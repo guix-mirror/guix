@@ -20346,3 +20346,26 @@ items.")
 by @code{zsh} as well as @code{eldoc} support.")
       (home-page "https://github.com/tom-tan/esh-help")
       (license license:gpl3+))))
+
+(define-public emacs-isearch-dabbrev
+  (let ((commit "1efe7abba4923015cbc2462395deaec5446a9cc8")
+        (revision "1"))
+    (package
+      (name "emacs-isearch-dabbrev")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Dewdrops/isearch-dabbrev.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "17d0816awadvsw1qc7r0p6ira75jmgxaj9hsk9ypayxsaf6ynyrb"))))
+      (build-system emacs-build-system)
+      (synopsis "Use @code{dabbrev} within @code{isearch}")
+      (description "This package allows @code{dabbrev-expand} to be used
+within @code{isearch-mode}.")
+      (home-page "https://github.com/Dewdrops/isearch-dabbrev")
+      (license license:gpl3+))))
