@@ -20178,3 +20178,25 @@ top-level header, start the minor mode with @code{org-present}, and page through
 each slide with left/right keys.")
       (home-page "https://github.com/rlister/org-present")
       (license license:gpl2))))
+
+(define-public emacs-fullframe
+  (package
+    (name "emacs-fullframe")
+    (version "0.5.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tomterl/fullframe.git")
+             (commit version)))
+       (sha256
+        (base32
+         "0m43qnhp6ibsskpjkxc86p3lrjsjc0ndqml3lbd65s79x4x7i3fi"))
+       (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/tomterl/fullframe")
+    (synopsis "Generalized automatic execution in a single frame")
+    (description "This library provides helpers for single-window-per-frame
+execution of buffer-exposing commands.")
+    (license license:gpl3+)))
+
