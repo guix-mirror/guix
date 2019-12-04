@@ -2242,7 +2242,7 @@ a command.")
 (define-public emacs-olivetti
   (package
     (name "emacs-olivetti")
-    (version "1.8.0")
+    (version "1.8.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2251,7 +2251,7 @@ a command.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0ba30swqxxbpa8866chymywnahby1hk670zzkz44q49328i2wksj"))))
+                "1fbj9s49y5yx5i429awv9rybacfgvhwp7v5h0zw67bpgx4qs44pa"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/rnkn/olivetti")
     (synopsis "Emacs minor mode for a nice writing environment")
