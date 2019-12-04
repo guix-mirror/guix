@@ -65,7 +65,7 @@
 (define-public feh
   (package
     (name "feh")
-    (version "3.2.1")
+    (version "3.3")
     (home-page "https://feh.finalrewind.org/")
     (source (origin
               (method url-fetch)
@@ -73,9 +73,7 @@
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "070axq8jpibcabmjfv4fmjmpk3k349vzvh4qhsi4n62bkcwl35wg"))
-              (patches
-               (search-patches "feh-fix-tests-for-imlib2-1.6.patch"))))
+                "04c8cgwzkax481sz7lbzy23mk79bqmjy3qpvr7vxa4c14mc9k5gk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))
