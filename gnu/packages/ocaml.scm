@@ -1915,11 +1915,14 @@ representation of the data.")
     (name "ocaml-gen")
     (version "0.5.2")
     (source (origin
-              (method url-fetch)
-              (uri "https://github.com/c-cube/gen/archive/0.5.2.tar.gz")
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/c-cube/gen")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "01hvvynh580zxsaqg12md8m17rda0l33avjv00pij44ql6676il2"))))
+                "1h9g508rnj2j8va5nvhamzscp954vrkh0hdf4pn3d10pcfyslfg2"))))
     (build-system dune-build-system)
     (arguments
      `(#:tests? #f; no tests
