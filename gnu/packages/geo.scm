@@ -321,6 +321,39 @@ fully fledged Spatial SQL capabilities.")
                    license:mpl1.1
                    license:public-domain))))
 
+(define-public proj
+  (package
+    (name "proj")
+    (version "6.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.osgeo.org/proj/proj-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0l1as8f4zfg74fms6h5p5psziw0lpznja1xnirzsscpnfbwc005k"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("sqlite" ,sqlite)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://proj.org/")
+    (synopsis "Coordinate transformation software")
+    (description
+     "Proj is a generic coordinate transformation software that transforms
+geospatial coordinates from one coordinate reference system (CRS) to another.
+This includes cartographic projections as well as geodetic transformations.
+PROJ includes command line applications for easy conversion of coordinates
+from text files or directly from user input.  In addition, proj also exposes
+an application programming interface that lets developers use the
+functionality of proj in their own software.")
+    (license (list license:expat
+                   ;; src/projections/patterson.cpp
+                   license:asl2.0
+                   ;; src/geodesic.*, src/tests/geodtest.cpp
+                   license:x11))))
+
 (define-public proj.4
   (package
     (name "proj.4")
