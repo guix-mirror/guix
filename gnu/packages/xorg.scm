@@ -1500,6 +1500,8 @@ treat it as part of their software base when porting.")
           (base32
             "1y4vx1vabg7j9hamp0vrfrax5b0lmgm3h0lbgbb3hnkv3dd0f5zr"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (inputs
       `(("libxext" ,libxext)
         ("libx11" ,libx11)))
