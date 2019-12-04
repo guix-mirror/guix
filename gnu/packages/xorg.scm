@@ -4576,13 +4576,13 @@ cannot be adequately worked around on the client side of the wire.")
           (base32
             "0azqxllcsfxc3ilhz6kwc6x7m8wc477p59ir9p0yrsldx766zbar"))))
     (build-system gnu-build-system)
-    ;; Disable zero malloc check that fails when cross-compiling.
     (arguments
      `(#:configure-flags
-       (list
-        ,@(if (%current-target-system)
-              '("--disable-malloc0returnsnull")
-              '()))))
+       (list "--disable-static"
+             ;; Disable zero malloc check that fails when cross-compiling.
+             ,@(if (%current-target-system)
+                   '("--disable-malloc0returnsnull")
+                   '()))))
     (propagated-inputs
       `(("xorgproto" ,xorgproto)))
     (inputs
