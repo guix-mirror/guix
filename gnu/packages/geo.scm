@@ -566,7 +566,7 @@ development.")
 (define-public gdal
   (package
     (name "gdal")
-    (version "2.2.4")
+    (version "3.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -574,7 +574,7 @@ development.")
                      version ".tar.gz"))
               (sha256
                (base32
-                "1951f7b69x3d1vic0rmq92q8f4bj3hbxnxmj5jl0cc3zg0isgmdr"))
+                "0f80izh9wshrsw55kg9abpip74hk6frk3hgqrkqbyn3f6i8g2z3q"))
               (modules '((guix build utils)))
               (snippet
                 `(begin
@@ -626,6 +626,7 @@ development.")
        ("libtiff" ,libtiff)
        ("libwebp" ,libwebp)
        ("pcre" ,pcre)
+       ("proj" ,proj)
        ("zlib" ,zlib)))
     (home-page "http://www.gdal.org/")
     (synopsis "Raster and vector geospatial data format library")
