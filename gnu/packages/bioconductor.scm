@@ -405,11 +405,7 @@ on mapping using Entrez Gene identifiers.")
     (version "3.7.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "org.Mm.eg.db_" version ".tar.gz"))
+              (uri (bioconductor-uri "org.Mm.eg.db" version 'annotation))
               (sha256
                (base32
                 "1i3nvrd3wjigf1rmgxq1p5xxc3p8v02h5gwi62s30rkrsyjjfjxx"))))
