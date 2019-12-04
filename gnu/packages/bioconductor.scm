@@ -573,21 +573,14 @@ database is exposed as a @code{TxDb} object.")
     (version "3.4.7")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "TxDb.Mmusculus.UCSC.mm10.knownGene_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "TxDb.Mmusculus.UCSC.mm10.knownGene"
+                                     version 'annotation))
               (sha256
                (base32
                 "04impkl8zh1gpwwrpbf19jqznsjrq2306yyhm6cmx6hr1401bd6b"))))
     (properties
      `((upstream-name . "TxDb.Mmusculus.UCSC.mm10.knownGene")))
     (build-system r-build-system)
-    ;; As this package provides little more than a very large data file it
-    ;; doesn't make sense to build substitutes.
-    (arguments `(#:substitutable? #f))
     (propagated-inputs
      `(("r-bsgenome" ,r-bsgenome)
        ("r-genomicfeatures" ,r-genomicfeatures)
