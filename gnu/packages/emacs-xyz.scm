@@ -20271,3 +20271,26 @@ display of major and minor modes in the mode line.")
 interface.")
       (home-page "https://github.com/akirak/ivy-omni-org")
       (license license:gpl3+))))
+
+(define-public emacs-shackle
+  (let ((commit "7ccbe513852a1d1700b698547efca14b8940319d")
+        (revision "1"))
+    (package
+      (name "emacs-shackle")
+      (version (git-version "1.0.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/wasamasa/shackle.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0agsp8ia4irr540r898ifhjqp28n1zsq1pilv1kc272spn3qhvp9"))))
+      (build-system emacs-build-system)
+      (synopsis "Enforce rules for popups")
+      (description "This package provides a global minor mode in which users
+can specify how popup-displaying functions occupy the screen.")
+      (home-page "https://github.com/wasamasa/shackle")
+      (license license:gpl3+))))
