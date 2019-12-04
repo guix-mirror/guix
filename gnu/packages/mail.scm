@@ -884,8 +884,7 @@ invoking @command{notifymuch} from the post-new hook.")
 
                       (let* ((out (assoc-ref outputs "out"))
                              (elisp
-                              (string-append out "/share/emacs/site-lisp/guix.d/"
-                                             ,name "-" ,version)))
+                              (string-append out "/share/emacs/site-lisp/")))
                         (invoke "./configure"
                                 (string-append "--prefix=" out)
                                 (string-append "--emacslispdir=" elisp)
