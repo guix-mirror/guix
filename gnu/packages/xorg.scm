@@ -4588,6 +4588,8 @@ cannot be adequately worked around on the client side of the wire.")
           (base32
             "086p0axqj57nvkaqa6r00dnr9kyrn1m8blgf0zjy25zpxkbxn200"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (propagated-inputs
       `(("xorgproto" ,xorgproto)))
     (inputs
