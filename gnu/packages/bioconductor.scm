@@ -206,12 +206,8 @@ Finder (TRF mask).  Only the AGAPS and AMB masks are \"active\" by default.")
     (version "1.3.99")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "http://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "BSgenome.Hsapiens.UCSC.hg19.masked_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "BSgenome.Hsapiens.UCSC.hg19.masked"
+                                     version 'annotation))
               (sha256
                (base32
                 "0452pyah0kv1vsrsjbrqw4k2rm8lc2vc771dzib45gnnfz86qxrr"))))
