@@ -202,9 +202,7 @@ shared NFS home directories.")
       ("perl" ,perl)                              ; needed by GIO tests
       ("tzdata" ,tzdata-for-tests)))                  ; for tests/gdatetime.c
    (arguments
-    `(;; TODO: Uncomment on the next rebuild cycle.
-      ;; #:disallowed-references (,tzdata-for-tests)
-
+    `(#:disallowed-references (,tzdata-for-tests)
       #:phases
       (modify-phases %standard-phases
         (add-after 'unpack 'patch-dbus-launch-path
