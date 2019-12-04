@@ -4703,6 +4703,8 @@ cannot be adequately worked around on the client side of the wire.")
           (base32
             "012jpyj7xfm653a9jcfqbzxyywdmwb2b5wr1dwylx14f3f54jma6"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (propagated-inputs
      `(("libxi" ,libxi)
        ("xorgproto" ,xorgproto)))
