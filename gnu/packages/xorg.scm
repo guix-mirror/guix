@@ -5543,6 +5543,8 @@ The XCB util module provides the following libraries:
                (base32
                 "0krr4rcw6r42cncinzvzzdqnmxk3nrgpnadyg2h8k9x10q3hm885"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (native-inputs
      `(("m4" ,m4)
        ("pkg-config" ,pkg-config)))
