@@ -2851,7 +2851,7 @@ PGP handling, multiple servers, and secure connections.")
 (define-public imapfilter
   (package
     (name "imapfilter")
-    (version "2.6.12")
+    (version "2.6.16")
     (source
      (origin
        (method git-fetch)
@@ -2860,7 +2860,7 @@ PGP handling, multiple servers, and secure connections.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0vzpc54fjf5vb5vx5w0fl20xvx1k9cg6a3hbl86mm8kwsqf3wrab"))))
+        (base32 "0f65sg6hhv6778fxwsz4hvarbm97dsb8jj0mg7a9qs273r35pqck"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -2869,15 +2869,7 @@ PGP handling, multiple servers, and secure connections.")
              "CC=gcc")
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (add-after 'unpack 'fix-include-path
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((pcre (assoc-ref inputs "pcre")))
-               (substitute* "src/Makefile"
-                 (("INCDIRS =")
-                  (string-append "INCDIRS ="
-                                 "-I" pcre "/include")))
-               #t))))))
+         (delete 'configure))))         ; no configure script
     (native-inputs
      `(("lua" ,lua)
        ("pcre" ,pcre)
