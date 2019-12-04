@@ -5470,7 +5470,7 @@ the MTP device as a file system.")
 (define-public procenv
   (package
    (name "procenv")
-   (version "0.50")
+   (version "0.51")
    (source
     (origin
      (method url-fetch)
@@ -5478,7 +5478,7 @@ the MTP device as a file system.")
                          version ".tar.gz"))
      (file-name (string-append name "-" version ".tar.gz"))
      (sha256
-      (base32 "0dvscyf47i3j5ay0amncqmqw9kd916689r2pqdvpnsrhp6j46zp1"))))
+      (base32 "1javw97yw0qvjmj14js8vw6nsfyf2xc0kfiyq5f2hsp0553w2cdq"))))
    (build-system gnu-build-system)
    (arguments `(#:configure-flags '("--disable-silent-rules")))
    (native-inputs `(("pkg-config" ,pkg-config)))
