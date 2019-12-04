@@ -5413,7 +5413,8 @@ draggable titlebars and borders.")
     (arguments
      '(#:configure-flags (list (string-append "--mandir="
                                               (assoc-ref %outputs "doc")
-                                              "/share/man"))))
+                                              "/share/man")
+                               "--disable-static")))
     (propagated-inputs
       `(("libx11" ,libx11)
         ("libice" ,libice)
