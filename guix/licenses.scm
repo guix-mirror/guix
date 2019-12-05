@@ -80,6 +80,7 @@
             perl-license
             psfl public-domain
             qpl
+            qwt1.0
             repoze
             ruby
             sgifreeb2.0
@@ -554,6 +555,11 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "QPL"
            "http://directory.fsf.org/wiki/License:QPLv1.0"
            "http://www.gnu.org/licenses/license-list.html#QPL"))
+
+(define qwt1.0
+  (license "QWT 1.0"
+           "http://qwt.sourceforge.net/qwtlicense.html"
+           "GNU Lesser General Public License with exceptions"))
 
 (define repoze
   (license "Repoze"
