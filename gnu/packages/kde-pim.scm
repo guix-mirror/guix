@@ -110,3 +110,37 @@ data.
 This package contains the Akonadi PIM storage server and associated
 programs.")
     (license license:fdl1.2+)))
+
+(define-public kmime
+  (package
+    (name "kmime")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/kmime-" version ".tar.xz"))
+       (sha256
+        (base32 "1pc00pwwrngsyr7ppvqwfgvcgy2wiqdbqxhv9xidn4dw9way2ng6"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("kcodecs" ,kcodecs)
+       ("ki18n" ,ki18n)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-test-case
+           (lambda _
+             ;; This is curious: autotests/CMakeLists.txt sets LC_TIME=C, but
+             ;; the Qt locale returns different. See kmime commit 3a9651d26a.
+             (substitute* "autotests/dateformattertest.cpp"
+               (("(Today|Yesterday) 12:34:56" line day)
+                (string-append day " 12:34 PM")))
+             #t)))))
+    (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/")
+    (synopsis "Library for handling MIME data")
+    (description "A library for MIME handling.")
+    (license license:lgpl2.0+)))
