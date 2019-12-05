@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -65,6 +65,7 @@
               "0q4f57a5995wz9c7dfiqy9zwl0kn0b900nxwinqa3llv13dm0nlc"))))
    (build-system gnu-build-system)
    (inputs `(("readline" ,readline)))
+   (outputs '("out" "static"))
    (arguments
     `(#:configure-flags
       ;; Add -DSQLITE_SECURE_DELETE, -DSQLITE_ENABLE_FTS3,
@@ -75,7 +76,24 @@
                            "-DSQLITE_ENABLE_FTS3 "
                            "-DSQLITE_ENABLE_UNLOCK_NOTIFY "
                            "-DSQLITE_ENABLE_DBSTAT_VTAB "
-                           "-DSQLITE_ENABLE_COLUMN_METADATA"))))
+                           ;; Column metadata is required by GNU Jami and Qt, et.al.
+                           "-DSQLITE_ENABLE_COLUMN_METADATA"))
+      #:phases (modify-phases %standard-phases
+                 (add-after 'install 'move-static-library
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (let* ((out    (assoc-ref outputs "out"))
+                            (static (assoc-ref outputs "static"))
+                            (source (string-append out "/lib/libsqlite3.a")))
+                       (mkdir-p (string-append static "/lib"))
+                       (link source (string-append static "/lib/libsqlite3.a"))
+                       (delete-file source)
+
+                       ;; Remove reference to the static library from the .la file
+                       ;; so that Libtool looks for it in the usual places.
+                       (substitute* (string-append out "/lib/libsqlite3.la")
+                         (("^old_library=.*")
+                          "old_library=''\n"))
+                       #t))))))
    (home-page "https://www.sqlite.org/")
    (synopsis "The SQLite database management system")
    (description
