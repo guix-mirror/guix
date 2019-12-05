@@ -346,3 +346,31 @@ easier to do so.")
     (description "A library for PIM-specific text editing utilities.")
     (license ;; GPL for programs, LGPL for libraries, FDL for documentation
      (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
+
+(define-public ktnef
+  (package
+    (name "ktnef")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/ktnef-" version ".tar.xz"))
+       (sha256
+        (base32 "0kgfhh46130hg1xq8km5gjzxa3b620j1zdrg54qivxa782smgbl6"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("kcalendarcore" ,kcalendarcore)
+       ("kcalutils" ,kcalutils)
+       ("kcodecs" ,kcodecs)
+       ("kconfig" ,kconfig)
+       ("kcontacts" ,kcontacts)
+       ("kcoreaddons" ,kcoreaddons)
+       ("ki18n" ,ki18n)
+       ("qtbase" ,qtbase)))
+    (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/ktnef/html/")
+    (synopsis "Viewer for mail attachments using TNEF format")
+    (description "Viewer for mail attachments using TNEF format")
+    (license license:lgpl2.0+)))
