@@ -19989,6 +19989,16 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
                  (("python3 run_tests.py")
                   ""))
                #t))
+           ;; Modify telega-util to reflect unique dir name in
+           ;; `telega-install-data' phase.
+           (add-after 'unpack 'telega-data-patch
+             (lambda _
+               (substitute* "telega-util.el"
+                 (("\\(concat \"etc/\" filename\\) telega--lib-directory")
+                  "(concat \"telega-data/\" filename)
+                    (locate-dominating-file telega--lib-directory
+                                            \"telega-data\")"))
+               #t))
            ;; The telega test suite checks for a version of Emacs
            ;; compiled with imagemagick and svg support. Since we
            ;; are using `emacs-minimal`, this step will fail.
@@ -20019,11 +20029,20 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
            ;; Build emacs-side using `emacs-build-system'
            (add-after 'compress-documentation 'emacs-add-source-to-load-path
              (assoc-ref emacs:%standard-phases 'add-source-to-load-path))
-           (add-after 'emacs-set-emacs-load-path 'emacs-install
+           (add-after 'emacs-add-source-to-load-path 'emacs-install
              (assoc-ref emacs:%standard-phases 'install))
-           (add-after 'emacs-install 'emacs-build
+           ;; This step installs subdir /etc, which contains images, sounds and
+           ;; various other data, next to the site-lisp dir.
+           (add-after 'emacs-install 'telega-install-data
+             (lambda* (#:key outputs #:allow-other-keys)
+               (copy-recursively
+                "etc"
+                (string-append (assoc-ref outputs "out")
+                               "/share/emacs/telega-data/"))
+               #t))
+           (add-after 'telega-install-data 'emacs-build
              (assoc-ref emacs:%standard-phases 'build))
-           (add-after 'emacs-install 'emacs-make-autoloads
+           (add-after 'emacs-build 'emacs-make-autoloads
              (assoc-ref emacs:%standard-phases 'make-autoloads)))))
       (propagated-inputs
        `(("emacs-visual-fill-column" ,emacs-visual-fill-column)))
