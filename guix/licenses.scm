@@ -75,6 +75,7 @@
             ms-pl
             ncsa
             nmap
+            ogl-psi1.0
             openldap2.8 openssl
             perl-license
             psfl public-domain
@@ -516,6 +517,11 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "Nmap license"
            "https://svn.nmap.org/nmap/COPYING"
            "https://fedoraproject.org/wiki/Licensing/Nmap"))
+
+(define ogl-psi1.0
+  (license "Open Government Licence for Public Sector Information"
+           "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/1/"
+           #f))
 
 (define openssl
   (license "OpenSSL"
