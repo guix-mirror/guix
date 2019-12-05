@@ -129,6 +129,11 @@
      `(#:tests? #f                      ; no check target
        #:configure-flags (list "--with-modules"
                                "--disable-build-details")
+       #:modules ((guix build emacs-utils)
+                  (guix build glib-or-gtk-build-system)
+                  (guix build utils))
+       #:imported-modules ((guix build emacs-utils)
+                           ,@%glib-or-gtk-build-system-modules)
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'fix-/bin/pwd
@@ -145,7 +150,8 @@
            ;; automatically found.
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out      (assoc-ref outputs "out"))
-                    (lisp-dir (string-append out "/share/emacs/site-lisp")))
+                    (lisp-dir (string-append out "/share/emacs/site-lisp"))
+                    (emacs (string-append out "/bin/emacs")))
                (copy-file (assoc-ref inputs "guix-emacs.el")
                           (string-append lisp-dir "/guix-emacs.el"))
                (with-output-to-file (string-append lisp-dir "/site-start.el")
@@ -158,6 +164,9 @@
                ;; share/emacs/site-lisp union when added to EMACSLOADPATH,
                ;; which leads to conflicts.
                (delete-file (string-append lisp-dir "/subdirs.el"))
+               ;; Byte compile the site-start files.
+               (parameterize ((%emacs emacs))
+                 (emacs-byte-compile-directory lisp-dir))
                #t))))))
     (inputs
      `(("gnutls" ,gnutls)
@@ -326,6 +335,12 @@ languages.")
     (build-system gnu-build-system)
     (arguments
      (substitute-keyword-arguments (package-arguments emacs)
+       ((#:modules _)
+        `((guix build emacs-utils)
+          ,@%gnu-build-system-modules))
+       ((#:imported-modules _)
+        `((guix build emacs-utils)
+          ,@%gnu-build-system-modules))
        ((#:phases phases)
         `(modify-phases ,phases
            (delete 'install-site-start)))
@@ -345,6 +360,12 @@ editor (with xwidgets support)")
     (build-system gnu-build-system)
     (arguments
      (substitute-keyword-arguments (package-arguments emacs)
+       ((#:modules _)
+        `((guix build emacs-utils)
+          ,@%gnu-build-system-modules))
+       ((#:imported-modules _)
+        `((guix build emacs-utils)
+          ,@%gnu-build-system-modules))
        ((#:configure-flags flags ''())
         `(cons "--with-xwidgets" ,flags))))
     (inputs
@@ -358,6 +379,14 @@ editor (with xwidgets support)")
     (synopsis "The extensible, customizable, self-documenting text
 editor (console only)")
     (build-system gnu-build-system)
+    (arguments
+     (substitute-keyword-arguments (package-arguments emacs)
+       ((#:modules _)
+        `((guix build emacs-utils)
+          ,@%gnu-build-system-modules))
+       ((#:imported-modules _)
+        `((guix build emacs-utils)
+          ,@%gnu-build-system-modules))))
     (inputs (fold alist-delete
                   (package-inputs emacs)
                   '("libx11" "gtk+" "libxft" "libtiff" "giflib" "libjpeg"
@@ -376,9 +405,15 @@ editor (without an X toolkit)" )
     (inputs (append `(("inotify-tools" ,inotify-tools))
                     (alist-delete "gtk+" (package-inputs emacs))))
     (arguments
-     `(,@(substitute-keyword-arguments (package-arguments emacs)
-           ((#:configure-flags cf)
-            `(cons "--with-x-toolkit=no" ,cf)))))))
+     (substitute-keyword-arguments (package-arguments emacs)
+       ((#:modules _)
+        `((guix build emacs-utils)
+          ,@%gnu-build-system-modules))
+       ((#:imported-modules _)
+        `((guix build emacs-utils)
+          ,@%gnu-build-system-modules))
+       ((#:configure-flags cf)
+        `(cons "--with-x-toolkit=no" ,cf))))))
 
 (define-public guile-emacs
   (let ((commit "41120e0f595b16387eebfbf731fff70481de1b4b")
