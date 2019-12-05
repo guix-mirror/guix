@@ -1486,15 +1486,15 @@ is hereby granted."))))
 (define-public libjpeg-turbo
   (package
     (name "libjpeg-turbo")
-    (version "2.0.2")
-    (replacement libjpeg-turbo/fixed)
+    (version "2.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/libjpeg-turbo/"
                                   version "/libjpeg-turbo-" version ".tar.gz"))
+              (patches (search-patches "libjpeg-turbo-CVE-2019-2201.patch"))
               (sha256
                (base32
-                "1v9gx1gdzgxf51nd55ncq7rghmj4x9x91rby50ag36irwngmkf5c"))))
+                "1ds16bnj17v6hzd43w8pzijz3imd9am4hw75ir0fxm240m8dwij2"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("nasm" ,nasm)))
@@ -1516,20 +1516,6 @@ and decompress to 32-bit and big-endian pixel buffers (RGBX, XBGR, etc.).")
     (license (list license:bsd-3        ;the TurboJPEG API library and programs
                    license:ijg          ;the libjpeg library and associated tools
                    license:zlib))))     ;the libjpeg-turbo SIMD extensions
-
-;; Replacement package to fix CVE-2019-13960 and CVE-2019-2201.
-(define libjpeg-turbo/fixed
-  (package
-    (inherit libjpeg-turbo)
-    (version "2.0.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/libjpeg-turbo/"
-                                  version "/libjpeg-turbo-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1ds16bnj17v6hzd43w8pzijz3imd9am4hw75ir0fxm240m8dwij2"))
-              (patches (search-patches "libjpeg-turbo-CVE-2019-2201.patch"))))))
 
 (define-public niftilib
   (package
