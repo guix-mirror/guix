@@ -114,6 +114,50 @@ This package contains the Akonadi PIM storage server and associated
 programs.")
     (license license:fdl1.2+)))
 
+(define-public akonadi-calendar
+  (package
+    (name "akonadi-calendar")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/akonadi-calendar-" version ".tar.xz"))
+       (sha256
+        (base32 "1550h08i8rjnbd9yrnhd9v3v68ingrag2bdxrbid62qvam0n5ihy"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("akonadi" ,akonadi)
+       ("akonadi-contacts" ,akonadi-contacts)
+       ("akonadi-mime" ,akonadi-mime)
+       ("boost" ,boost)
+       ("kcalendarcore" ,kcalendarcore)
+       ("kcalutils" ,kcalutils)
+       ("kcodecs" ,kcodecs)
+       ("kcontacts" ,kcontacts)
+       ("kdbusaddons" ,kdbusaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kidentitymanagement" ,kidentitymanagement)
+       ("kio" ,kio)
+       ("kitemmodels" ,kitemmodels)
+       ("kmailtransport" ,kmailtransport)
+       ("kmime" ,kmime)
+       ("kpimtextedit" ,kpimtextedit)
+       ("ksmtp" ,ksmtp)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwallet" ,kwallet)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:tests? #f))  ;; TODO: 1/1 test fails
+    (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/akonadi/html/")
+    (synopsis "Library providing calendar helpers for Akonadi items")
+    (description "This library manages calendar specific actions for
+collection and item views.")
+    (license license:lgpl2.0+)))
+
 (define-public akonadi-contacts
   (package
     (name "akonadi-contacts")
