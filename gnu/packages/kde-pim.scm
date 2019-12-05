@@ -111,6 +111,29 @@ This package contains the Akonadi PIM storage server and associated
 programs.")
     (license license:fdl1.2+)))
 
+(define-public kmbox
+  (package
+    (name "kmbox")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/kmbox-" version ".tar.xz"))
+       (sha256
+        (base32 "13b5v1nx46k5ais3cms7yxrfi8p6xbljpkpg3f7v1asb6kshv7g2"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("kcodecs" ,kcodecs)
+       ("kmime" ,kmime)
+       ("qtbase" ,qtbase)))
+    (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/")
+    (synopsis "Library for handling mbox mailboxes")
+    (description "A library for accessing mail storages in MBox format.")
+    (license license:lgpl2.0+ )))
+
 (define-public kmime
   (package
     (name "kmime")
