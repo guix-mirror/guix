@@ -464,6 +464,48 @@ easier to do so.")
     (description "This library provides an API for LDAP.")
     (license license:lgpl2.0+)))
 
+(define-public kmailtransport
+  (package
+    (name "kmailtransport")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/kmailtransport-" version ".tar.xz"))
+       (sha256
+        (base32 "04jdnqxbp4382vjxh06rrvsigbrygqfkw0fvbbjnjymp585mgkr4"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("akonadi" ,akonadi)
+       ("akonadi-mime" ,akonadi-mime)
+       ("boost" ,boost)
+       ("cyrus-sasl" ,cyrus-sasl)
+       ("kcalendarcore" ,kcalendarcore)
+       ("kcmutils" ,kcmutils)
+       ("kcontacts" ,kcontacts)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("ki18n" ,ki18n)
+       ("kitemmodels", kitemmodels)
+       ("kio" ,kio)
+       ("kmime" ,kmime)
+       ("ksmtp" ,ksmtp)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwallet" ,kwallet)
+       ("libkgapi" ,libkgapi)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:tests? #f)) ;; TODO - 3/3 tests fail, require drkonqi
+    (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/")
+    (synopsis "Mail transport service library")
+    (description " This library provides an API and support code for managing
+mail transport.")
+    (license license:lgpl2.0+)))
+
 (define-public kmbox
   (package
     (name "kmbox")
