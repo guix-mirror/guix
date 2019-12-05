@@ -23,6 +23,8 @@
 # Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 # Copyright © 2019 John Soo <jsoo1@asu.edu>
 # Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
+# Copyright © 2019 Evan Straw <evan.straw99@gmail.com>
+# Copyright © 2019 Brett Gilio <brettg@posteo.de>
 #
 # This file is part of GNU Guix.
 #
@@ -1361,7 +1363,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/soundconverter-remove-gconf-dependency.patch	\
   %D%/packages/patches/steghide-fixes.patch			\
   %D%/packages/patches/streamlink-update-test.patch		\
-  %D%/packages/patches/stumpwm-fix-broken-read-one-line.patch	\
   %D%/packages/patches/supercollider-boost-1.70-build-fix.patch	\
   %D%/packages/patches/superlu-dist-awpm-grid.patch		\
   %D%/packages/patches/superlu-dist-fix-mpi-deprecations.patch	\
