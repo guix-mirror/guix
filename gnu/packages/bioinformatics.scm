@@ -84,10 +84,10 @@
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages java)
   #:use-module (gnu packages java-compression)
+  #:use-module (gnu packages javascript)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages dlang)
   #:use-module (gnu packages linux)
-  #:use-module (gnu packages lisp)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages man)
@@ -105,6 +105,7 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-compression)
+  #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
@@ -983,16 +984,17 @@ e.g. microbiome samples, genomes, metagenomes.")
       (version "1.7.0")
       (source
        (origin
-         (method url-fetch)
-         (uri (string-append "https://github.com/bioperl/bioperl-live/"
-                             "archive/release-"
-                             (string-map (lambda (c)
-                                           (if (char=? c #\.)
-                                               #\- c)) version)
-                             ".tar.gz"))
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/bioperl/bioperl-live")
+                (commit (string-append "release-"
+                                       (string-map (lambda (c)
+                                                     (if (char=? c #\.)
+                                                         #\- c)) version)))))
+         (file-name (git-file-name name version))
          (sha256
           (base32
-           "12phgpxwgkqflkwfb9dcqg7a31dpjlfhar8wcgv0aj5ln4akfz06"))))
+           "0wl8yvzcls59pwwk6m8ahy87pwg6nnibzy5cldbvmcwg2x2w7783"))))
       (build-system perl-build-system)
       (arguments
        `(#:phases
@@ -11271,7 +11273,8 @@ models.  TADbit is complemented by TADkit for visualizing 3D models.")
        ("tcsh" ,tcsh)
        ("perl" ,perl)
        ("libpng" ,libpng)
-       ("mariadb" ,mariadb)
+       ("mariadb" ,mariadb "lib")
+       ("mariadb-dev" ,mariadb "dev")
        ("openssl" ,openssl)))
     (home-page "http://genome.cse.ucsc.edu/index.html")
     (synopsis "Assorted bioinformatics utilities")
@@ -11570,35 +11573,6 @@ code that is used in the Cufflinks codebase.  The goal of this library is to
 provide this functionality without the necessity of drawing in a heavy-weight
 dependency like SeqAn.")
     (license (license:x11-style "https://www.boost.org/LICENSE_1_0.txt"))))
-
-(define-public libdivsufsort
-  (package
-    (name "libdivsufsort")
-    (version "2.0.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/y-256/libdivsufsort.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0fgdz9fzihlvjjrxy01md1bv9vh12rkgkwbm90b1hj5xpbaqp7z2"))))
-    (build-system cmake-build-system)
-    (arguments
-     '(#:tests? #f                      ; there are no tests
-       #:configure-flags
-       ;; Needed for rapmap and sailfish.
-       '("-DBUILD_DIVSUFSORT64=ON")))
-    (home-page "https://github.com/y-256/libdivsufsort")
-    (synopsis "Lightweight suffix-sorting library")
-    (description "libdivsufsort is a software library that implements a
-lightweight suffix array construction algorithm.  This library provides a
-simple and an efficient C API to construct a suffix array and a
-Burrows-Wheeler transformed string from a given string over a constant-size
-alphabet.  The algorithm runs in O(n log n) worst-case time using only 5n+O(1)
-bytes of memory space, where n is the length of the string.")
-    (license license:expat)))
 
 (define-public sailfish
   (package
@@ -13890,7 +13864,7 @@ datasets.")
 (define-public ngless
   (package
     (name "ngless")
-    (version "0.9.1")
+    (version "1.0.1")
     (source
      (origin
        (method git-fetch)
@@ -13900,7 +13874,7 @@ datasets.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0mc2gi7h4lx74zylvyp76mvc0w6706j858ii9vlgzqsw6acpr117"))))
+         "06ygv8q2zjqsnrid1302yrlhhvb8ik48nq6n0higk3i1mdc8r0dg"))))
     (build-system haskell-build-system)
     (arguments
      `(#:haddock? #f ; The haddock phase fails with: NGLess/CmdArgs.hs:20:1:
@@ -13908,7 +13882,24 @@ datasets.")
                      ; import Options.Applicative
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'create-cabal-file
+         (add-after 'unpack 'create-Versions.hs
+           (lambda _
+             (substitute* "Makefile"
+               (("BWA_VERSION = .*")
+                (string-append "BWA_VERSION = "
+                               ,(package-version bwa) "\n"))
+               (("SAM_VERSION = .*")
+                (string-append "SAM_VERSION = "
+                               ,(package-version samtools) "\n"))
+               (("PRODIGAL_VERSION = .*")
+                (string-append "PRODIGAL_VERSION = "
+                               ,(package-version prodigal) "\n"))
+               (("MINIMAP2_VERSION = .*")
+                (string-append "MINIMAP2_VERSION = "
+                               ,(package-version minimap2) "\n")))
+             (invoke "make" "NGLess/Dependencies/Versions.hs")
+             #t))
+         (add-after 'create-Versions.hs 'create-cabal-file
            (lambda _ (invoke "hpack") #t))
          ;; These tools are expected to be installed alongside ngless.
          (add-after 'install 'link-tools
@@ -13937,15 +13928,15 @@ datasets.")
        ("ghc-async" ,ghc-async)
        ("ghc-atomic-write" ,ghc-atomic-write)
        ("ghc-bytestring-lexing" ,ghc-bytestring-lexing)
-       ("ghc-chart" ,ghc-chart)
-       ("ghc-chart-cairo" ,ghc-chart-cairo)
        ("ghc-conduit" ,ghc-conduit)
        ("ghc-conduit-algorithms" ,ghc-conduit-algorithms)
-       ("ghc-conduit-combinators" ,ghc-conduit-combinators)
        ("ghc-conduit-extra" ,ghc-conduit-extra)
        ("ghc-configurator" ,ghc-configurator)
        ("ghc-convertible" ,ghc-convertible)
        ("ghc-data-default" ,ghc-data-default)
+       ("ghc-diagrams-core" ,ghc-diagrams-core)
+       ("ghc-diagrams-lib" ,ghc-diagrams-lib)
+       ("ghc-diagrams-svg" ,ghc-diagrams-svg)
        ("ghc-double-conversion" ,ghc-double-conversion)
        ("ghc-edit-distance" ,ghc-edit-distance)
        ("ghc-either" ,ghc-either)
@@ -13966,6 +13957,7 @@ datasets.")
        ("ghc-safeio" ,ghc-safeio)
        ("ghc-strict" ,ghc-strict)
        ("ghc-tar" ,ghc-tar)
+       ("ghc-tar-conduit" ,ghc-tar-conduit)
        ("ghc-unliftio" ,ghc-unliftio)
        ("ghc-unliftio-core" ,ghc-unliftio-core)
        ("ghc-vector" ,ghc-vector)

@@ -77,6 +77,7 @@
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages upnp)
   #:use-module (gnu packages version-control)
@@ -442,7 +443,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
   (package
     (inherit electrum)
     (name "electron-cash")
-    (version "4.0.7")
+    (version "4.0.10")
     (source
      (origin
        (method url-fetch)
@@ -453,13 +454,17 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
                            ".tar.gz"))
        (sha256
         (base32
-         "0xswmr68cm1c77lzisi3z812jzqczm9dfrshfhdq42zz5kaz4gnn"))
+         "1rcywlma6hk52ymisx536jvkdwa73rhn1jxhsbs4wbvajl90w9s8"))
        (modules '((guix build utils)))
        (snippet
         '(begin
            ;; Delete the bundled dependencies.
            (delete-file-recursively "packages")
            #t))))
+    (inputs
+     `(,@(package-inputs electrum)
+       ("python-dateutil", python-dateutil)
+       ("python-dnspython", python-dnspython)))
     (home-page "https://electroncash.org/")
     (synopsis "Bitcoin Cash wallet")
     (description
@@ -477,7 +482,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
   ;; the system's dynamically linked library.
   (package
     (name "monero")
-    (version "0.15.0.0")
+    (version "0.15.0.1")
     (source
      (origin
        (method git-fetch)
@@ -498,7 +503,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
            #t))
        (sha256
         (base32
-         "19y4kcj4agws7swfa3draysb1y18c3xb13r8cg0faxx1dlm0zbnr"))))
+         "0sypa235lf2bbib4b71xpaw39h9304slgsvnsz8wmy9fq1zx009m"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -592,7 +597,7 @@ the Monero command line client and daemon.")
 (define-public monero-gui
   (package
     (name "monero-gui")
-    (version "0.15.0.0")
+    (version "0.15.0.1")
     (source
      (origin
        (method git-fetch)
@@ -602,7 +607,7 @@ the Monero command line client and daemon.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1shpnly2dym5jhvk8zk10p69mz062dihx979djg74q6hgkhhhqsh"))))
+         "08j8kkncdn57xql0bhmlzjpjkdfhqbpda1p07r797q8qi0nl4w8n"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

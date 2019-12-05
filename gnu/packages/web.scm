@@ -105,6 +105,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages java)
+  #:use-module (gnu packages javascript)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
@@ -112,7 +113,6 @@
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages libunistring)
   #:use-module (gnu packages linux)
-  #:use-module (gnu packages lisp)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages markup)
   #:use-module (gnu packages ncurses)
@@ -216,14 +216,14 @@ Interface} specification.")
     ;; ’stable’ and recommends that “in general you deploy the NGINX mainline
     ;; branch at all times” (https://www.nginx.com/blog/nginx-1-6-1-7-released/)
     ;; Consider updating the nginx-documentation package together with this one.
-    (version "1.17.5")
+    (version "1.17.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1hqhziic4csci8xs4q8vbzpmj2qjkhmmx68zza7h5bvmbbhkbvk3"))))
+                "1dipq90h3n1xdslwbijwlhbk84r7q0bswlbvi970may09lqsbd1w"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
@@ -548,21 +548,24 @@ supported at your website.")
 (define-public fcgi
   (package
     (name "fcgi")
-    (version "2.4.0")
+    (version "2.4.2")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; Upstream has disappeared.
-       (uri (string-append "https://sources.archlinux.org/other/packages/fcgi/"
-                           "fcgi-" version ".tar.gz"))
+       (uri (git-reference
+             (url "https://github.com/FastCGI-Archives/fcgi2")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1f857wnl1d6jfrgfgfpz3zdaj8fch3vr13mnpcpvy8bang34bz36"))
-       (patches (search-patches "fcgi-2.4.0-poll.patch"
-                                "fcgi-2.4.0-gcc44-fixes.patch"))))
+        (base32 "1jhz6jfwv5kawa8kajvg18nfwc1b30f38zc0lggszd1vcmrwqkz1"))))
     (build-system gnu-build-system)
     ;; Parallel building is not supported.
     (arguments `(#:parallel-build? #f))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
     ;; This is an archived fork of the original home page, www.fastcgi.com.
     (home-page "https://fastcgi-archives.github.io/")
     (synopsis "Language-independent, high-performant extension to CGI")
@@ -1343,6 +1346,20 @@ hash/signatures.")
      "LibYAML is a YAML 1.1 parser and emitter written in C.")
     (license license:expat)))
 
+(define-public libyaml-2.1
+  (package
+    (inherit libyaml)
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://pyyaml.org/download/libyaml/yaml-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1karpcfgacgppa82wm2drcfn2kb6q2wqfykf5nrhy20sci2i2a3q"))))))
+
 (define-public libquvi-scripts
   (package
     (name "libquvi-scripts")
@@ -1584,14 +1601,14 @@ language known as SASS.")
 (define-public perl-apache-logformat-compiler
   (package
     (name "perl-apache-logformat-compiler")
-    (version "0.35")
+    (version "0.36")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/K/KA/KAZEBURO/"
                            "Apache-LogFormat-Compiler-" version ".tar.gz"))
        (sha256
-        (base32 "06i70ydxk2wa2rcqn16842kra2qz3jwk0vk1abq8lah4180c0m0n"))))
+        (base32 "05xcl7j65vakx7x79jqjikyw0nzf60bc2w6hhc0q5sklxq1ral4l"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-http-message" ,perl-http-message)
@@ -4178,8 +4195,8 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
   (package-with-python2 python-feedparser))
 
 (define-public guix-data-service
-  (let ((commit "5e2bc7c6e920e1542ab8fde39dbddca443a7cbc8")
-        (revision "4"))
+  (let ((commit "af1324855e1ecaf9b1dd7afcc714d09aaa38f081")
+        (revision "6"))
     (package
       (name "guix-data-service")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -4191,7 +4208,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0awfvps7k9bpg3gpgc93y401g7pjabx7mr9960vigad8vddhixqi"))))
+                  "1qxs1sbyx894njw4f898wzc5shjj85h9kgz95p8mq1acmazhlhkv"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
@@ -4201,12 +4218,6 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
          #:test-target "check-with-tmp-database"
          #:phases
          (modify-phases %standard-phases
-           (add-after 'set-paths 'set-GUIX_ENVIRONMENT
-             (lambda* (#:key inputs #:allow-other-keys)
-               ;; This means guix.el finds the Emacs modules
-               (setenv "GUIX_ENVIRONMENT"
-                       (assoc-ref inputs "emacs-with-modules"))
-               #t))
            (add-before 'build 'set-GUILE_AUTO_COMPILE
              (lambda _
                ;; To avoid errors relating to guild
@@ -4257,10 +4268,8 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
          ("autoconf" ,autoconf)
          ("automake" ,automake)
          ("ephemeralpg" ,ephemeralpg)
-         ("emacs-with-modules" ,(directory-union
-                                 "emacs-union"
-                                 (list emacs-no-x
-                                       emacs-htmlize)))
+         ("emacs-minimal" ,emacs-minimal)
+         ("emacs-htmlize" ,emacs-htmlize)
          ("pkg-config" ,pkg-config)))
       (synopsis "Store and provide data about GNU Guix")
       (description
@@ -5325,25 +5334,27 @@ additional capabilities.")
 (define-public xinetd
   (package
     (name "xinetd")
-    (version "2.3.15")
+    ;; This is the maintenance fork currently used by openSUSE and Debian.
+    (version "2.3.15.4")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/xinetd-org/xinetd.git")
-             (commit (string-append "xinetd-"
-                                    (string-join (string-split version #\.)
-                                                 "-")))))
+             (url "https://github.com/openSUSE/xinetd.git")
+             (commit version)))
        (file-name (git-file-name name version))
-       (patches (search-patches "xinetd-CVE-2013-4342.patch"
-                                "xinetd-fix-fd-leak.patch"))
        (sha256
-        (base32 "0wjai6qagcgxpa1khh639ih7kswgkryc7ll1i4hxhs29sc7irdcn"))))
+        (base32 "0lrp3lcj6azhjplwxws2rx40bkyp6i6bp7n77ndcisb7ninad30q"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-loadavg")
        #:tests? #f))                    ; no tests
-    (home-page "https://github.com/xinetd-org/xinetd")
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/openSUSE/xinetd")
     (synopsis "Internet services daemon")
     (description "@code{xinetd}, a more secure replacement for @code{inetd},
 listens for incoming requests over a network and launches the appropriate
@@ -5596,7 +5607,7 @@ inspired by Ruby's @code{fakeweb}.")
 (define-public jo
   (package
     (name "jo")
-    (version "1.2")
+    (version "1.3")
     (source
      (origin
        (method url-fetch)
@@ -5604,7 +5615,7 @@ inspired by Ruby's @code{fakeweb}.")
                            version "/jo-" version ".tar.gz"))
        (sha256
         (base32
-         "1bmdck53jslrl3anqqpm6iyjdxrz445qzcc4fr37hr3wjg22zv1n"))))
+         "0r6yb8pjsbcqfyac4240a0sj93pb91fv385bpk395cx3f5bcj9fy"))))
     (build-system gnu-build-system)
     (home-page "https://github.com/jpmens/jo")
     (synopsis "Output JSON from a shell")
@@ -5874,27 +5885,27 @@ encoder/decoder based on the draft-12 specification for UBJSON.")
 (define-public java-tomcat
   (package
     (name "java-tomcat")
-    (version "8.5.38")
+    (version "8.5.46")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/tomcat/tomcat-8/v"
                                   version "/src/apache-tomcat-" version "-src.tar.gz"))
               (sha256
                (base32
-                "13pbsyk39g1qph82nngp54mqycmg60rxlxwy4yszsssahrqnggb2"))
+                "0fb49gsqa3r6jrwc54yynvsakq9qbzr2pbxr7a29c2zvja2v65iq"))
               (modules '((guix build utils)))
               ;; Delete bundled jars.
               (snippet
                '(begin
                   (for-each delete-file (find-files "." "\\.jar$"))
+                  (for-each delete-file (find-files "." "\\.bat$"))
                   #t))))
     (build-system ant-build-system)
     (inputs
-     `(("java-eclipse-jdt-core" ,java-eclipse-jdt-core)))
-    (native-inputs
-     `(("java-junit" ,java-junit)))
+     `(("java-commons-daemon" ,java-commons-daemon)
+       ("java-ecj" ,java-ecj)))
     (arguments
-     `(#:build-target "package"
+     `(#:build-target "deploy"
        #:tests? #f; requires downloading some files.
        #:phases
        (modify-phases %standard-phases
@@ -5917,6 +5928,34 @@ encoder/decoder based on the draft-12 specification for UBJSON.")
                (("<filter token=\"VERSION_BUILT\" value=.*")
                 "<filter token=\"VERSION_BUILT\" value=\"Jan 1 1970 00:00:00 UTC\"/>"))
              #t))
+         (add-after 'unpack 'modify-deploy
+           (lambda _
+             ;; The Tomcat build downloads and copies these files to the
+             ;; bin and lib directory.
+             ;; We instead symlink to the input (see below).
+             (substitute* "build.xml"
+               (("<copy tofile=\"\\$\\{tomcat.build\\}/bin/commons-daemon.jar.*") "")
+               (("<copy file=\"\\$\\{jdt.jar\\}\" todir=\"\\$\\{tomcat.build\\}/lib\"/>")
+                ""))
+             #t))
+         (add-after 'install 'symlink-commons-daemon
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((commons-daemon (assoc-ref inputs "java-commons-daemon"))
+                    (files (find-files commons-daemon "commons-daemon-.*\\.jar"))
+                    (daemon-jar (car files))
+                    (out-bin (string-append (assoc-ref outputs "out") "/bin"))
+                    (target (string-append out-bin "/commons-daemon.jar")))
+               (symlink daemon-jar target)
+               #t)))
+         (add-after 'install 'symlink-java-ecj
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((java-ecj (assoc-ref inputs "java-ecj"))
+                    (files (find-files java-ecj "ecj.*\\.jar"))
+                    (java-ecj-jar (car files))
+                    (out-lib (string-append (assoc-ref outputs "out") "/lib"))
+                    (target (string-append out-lib "/java-ecj.jar")))
+               (symlink java-ecj-jar target)
+               #t)))
          (add-after 'unpack 'generate-properties
            (lambda _
              ;; This could have been passed to make-flags, but getcwd returns
@@ -5927,7 +5966,10 @@ encoder/decoder based on the draft-12 specification for UBJSON.")
                    (string-append "base.path=" (getcwd) "/downloads\n"))))
              #t))
          (replace 'install
-           (install-jars "output/build/lib")))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (copy-recursively "output/build" out))
+             #t)))))
     (home-page "https://tomcat.apache.org")
     (synopsis "Java Servlet, JavaServer Pages, Java Expression Language and Java
 WebSocket")
@@ -6038,7 +6080,7 @@ Web Server.")
              #t)))))
     (inputs
      `(("slf4j" ,java-slf4j-api)
-       ("servlet" ,java-tomcat)))
+       ("servlet" ,java-javaee-servletapi)))
     (native-inputs
      `(("junit" ,java-junit)
        ("hamcrest" ,java-hamcrest-all)
@@ -6226,7 +6268,7 @@ or embedded instantiation.  This package provides the JMX management.")))
              #t)))))
     (inputs
      `(("slf4j" ,java-slf4j-api)
-       ("servlet" ,java-tomcat)
+       ("java-javaee-servletapi" ,java-javaee-servletapi)
        ("http" ,java-eclipse-jetty-http)
        ("io" ,java-eclipse-jetty-io)
        ("util" ,java-eclipse-jetty-util)))))
@@ -6321,7 +6363,7 @@ artifact.")))
              #t)))))
     (inputs
      `(("slf4j" ,java-slf4j-api)
-       ("servlet" ,java-tomcat)
+       ("servlet" ,java-javaee-servletapi)
        ("http" ,java-eclipse-jetty-http)
        ("server" ,java-eclipse-jetty-server)
        ("util" ,java-eclipse-jetty-util)))
@@ -6364,7 +6406,7 @@ infrastructure")))
              #t)))))
     (inputs
      `(("slf4j" ,java-slf4j-api)
-       ("servlet" ,java-tomcat)
+       ("java-javaee-servletapi" ,java-javaee-servletapi)
        ("http" ,java-eclipse-jetty-http)
        ("http-test" ,java-eclipse-jetty-http-test-classes)
        ("io" ,java-eclipse-jetty-io)
@@ -6499,7 +6541,7 @@ container.")))
        ("java-eclipse-jetty-servlet-9.2" ,java-eclipse-jetty-servlet-9.2)
        ("java-eclipse-jetty-security-9.2" ,java-eclipse-jetty-security-9.2)
        ("java-eclipse-jetty-xml-9.2" ,java-eclipse-jetty-xml-9.2)
-       ("java-tomcat" ,java-tomcat)
+       ("java-javaee-servletapi" ,java-javaee-servletapi)
        ,@(package-inputs java-eclipse-jetty-util-9.2)))
     (native-inputs
      `(("java-eclipse-jetty-io-9.2" ,java-eclipse-jetty-io-9.2)

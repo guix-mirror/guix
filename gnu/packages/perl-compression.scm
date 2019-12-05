@@ -34,14 +34,14 @@
 (define-public perl-compress-raw-bzip2
   (package
     (name "perl-compress-raw-bzip2")
-    (version "2.090")
+    (version "2.091")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/"
                            "Compress-Raw-Bzip2-" version ".tar.gz"))
        (sha256
-        (base32 "0yi972il6i0ya65qar0767mm3sb2wbsrllsgx6296s5myh2838p6"))))
+        (base32 "0c5lwaynkcprjd18d3c82m8cniyq3c8mc4jk42gb32lp7cyyzmr7"))))
     (build-system perl-build-system)
     ;; TODO: Use our bzip2 package.
     (home-page "https://metacpan.org/release/Compress-Raw-Bzip2")
@@ -53,14 +53,14 @@ compression library.")
 (define-public perl-compress-raw-zlib
   (package
     (name "perl-compress-raw-zlib")
-    (version "2.090")
+    (version "2.091")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/"
                            "Compress-Raw-Zlib-" version ".tar.gz"))
        (sha256
-        (base32 "0ndgkv7z4zi3ffail9abp02x62dx1j3pnxn3rjw91py7pjd4kj7j"))))
+        (base32 "0vrzk1jzw2kwrsvnd190m7jl925cbd4skp6ipv5pndkn4y8gnzxn"))))
     (build-system perl-build-system)
     (inputs
      `(("zlib" ,zlib)))
@@ -88,14 +88,14 @@ compression library.")
 (define-public perl-io-compress
   (package
     (name "perl-io-compress")
-    (version "2.090")
+    (version "2.091")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/"
                            "IO-Compress-" version ".tar.gz"))
        (sha256
-        (base32 "11z9jkcpqyd4d1kziiq8q4rmqax93jd3hryx8cnkg4zrhd5fa4jc"))))
+        (base32 "15ayljvmxszkd5bvzd52l7gv71ldj8bhdqdnj9f48dipn681238z"))))
     (build-system perl-build-system)
     (propagated-inputs
      ;; These two packages should be updated to this one's version first.
@@ -110,15 +110,14 @@ writing of compressed data created with the zlib and bzip2 libraries.")
 (define-public perl-archive-extract
   (package
     (name "perl-archive-extract")
-    (version "0.80")
+    (version "0.82")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/B/BI/BINGOS/Archive-Extract-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "1x15j1q6w6z8hqyqgap0lz4qbq2174wfhksy1fdd653ccbaw5jr5"))))
+        (base32 "00zq2ishxk70192sjl1wciq14vhb9isz8rcafcy1j89va1srpvrn"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Archive-Extract")
     (synopsis "Generic archive extracting mechanism")

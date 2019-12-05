@@ -158,7 +158,7 @@ Copy ITEMS to or from the specified host over SSH.\n"))
 (define %default-options
   `((system . ,(%current-system))
     (substitutes? . #t)
-    (build-hook? . #t)
+    (offload? . #t)
     (graft? . #t)
     (print-build-trace? . #t)
     (print-extended-build-trace? . #t)

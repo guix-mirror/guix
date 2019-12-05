@@ -419,7 +419,7 @@ datetime type.")
 (define-public datefudge
   (package
     (name "datefudge")
-    (version "1.22")
+    (version "1.23")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -428,7 +428,7 @@ datetime type.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1fmd05r00wx4zc90lbi804jl7xwdl11jq2a1kp5lqimk3yyvfw4c"))))
+                "0r9g8v9xnv60hq3j20wqy34kyig3sc2pisjxl4irn7jjx85f1spv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"

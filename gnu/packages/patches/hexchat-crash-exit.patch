@@ -1,0 +1,31 @@
+From d9c637ae8a1137d3ca512d2c560589903a4bd79d Mon Sep 17 00:00:00 2001
+From: Adam Williamson <awilliam@redhat.com>
+Date: Tue, 30 Apr 2019 11:16:01 -0700
+Subject: [PATCH] Python plugin: Call EndInterpreter when deinit'ing the plugin
+
+This fixes https://github.com/hexchat/hexchat/issues/2237 , a
+commonly-encountered bug when using Hexchat 2.14 on Python 3.7.
+Thanks to @ncoghlan for the fix.
+
+Signed-off-by: Adam Williamson <awilliam@redhat.com>
+---
+ plugins/python/python.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/plugins/python/python.c b/plugins/python/python.c
+index 4403474d..475756ba 100644
+--- a/plugins/python/python.c
++++ b/plugins/python/python.c
+@@ -2806,6 +2806,9 @@ hexchat_plugin_deinit(void)
+ 	xchatout_buffer = NULL;
+ 
+ 	if (interp_plugin) {
++		PyThreadState *tstate = ((PluginObject*)interp_plugin)->tstate;
++		PyThreadState_Swap(tstate);
++		Py_EndInterpreter(tstate);
+ 		Py_DECREF(interp_plugin);
+ 		interp_plugin = NULL;
+ 	}
+-- 
+2.21.0
+

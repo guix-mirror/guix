@@ -264,7 +264,7 @@ problem, and shows the differences.")
 (define-public cmocka
   (package
     (name "cmocka")
-    (version "1.1.3")
+    (version "1.1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://cmocka.org/files/"
@@ -272,7 +272,7 @@ problem, and shows the differences.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1bxzzafjlwzgldcb07hjnlnqvh88wh21r2kw7z8f704w5bvvrsj3"))))
+                "1dm8pdvkyfa8dsbz9bpq7wwgixjij4sii9bbn5sgvqjm5ljdik7h"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; no test target
@@ -497,7 +497,7 @@ test coverage and has a web user interface that will refresh automatically.")
     (arguments
      `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
     (native-inputs
-     `(("python-2" ,python-2)))
+     `(("python" ,python-wrapper)))
     (home-page "https://github.com/google/googletest/")
     (synopsis "Test discovery and XUnit test framework")
     (description "Google Test features an XUnit test framework, automated test
@@ -2249,7 +2249,7 @@ portable to just about any platform.")
 (define-public libfaketime
   (package
     (name "libfaketime")
-    (version "0.9.7")
+    (version "0.9.8")
     (home-page "https://github.com/wolfcw/libfaketime")
     (source (origin
               (method git-fetch)
@@ -2258,7 +2258,7 @@ portable to just about any platform.")
                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "1cin1pqwpsswcv7amiwijirvcg3x1zf2l00s1x84nxc5602fzr5c"))
+                "1mfdl82ppgbdvy1ny8mb7xii7p0g7awvn4bn36jb8v4r545slmjc"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments

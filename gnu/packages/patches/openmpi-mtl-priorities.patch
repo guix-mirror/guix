@@ -19,3 +19,17 @@ See <https://www.mail-archive.com/users@lists.open-mpi.org/msg33581.html>.
                                              "priority", "Priority of the PSM2 MTL component",
                                              MCA_BASE_VAR_TYPE_INT, NULL, 0, 0,
 
+Likewise for PSM: we want InfiniPath to be taken care of by PSM, not by UCX,
+since UCX achieves worse performance.
+
+--- openmpi-4.0.2/ompi/mca/mtl/psm/mtl_psm_component.c
++++ openmpi-4.0.2/ompi/mca/mtl/psm/mtl_psm_component.c
+@@ -92,7 +92,7 @@ ompi_mtl_psm_component_register(void)
+ 
+ 
+     /* set priority high enough to beat ob1's default */
+-    param_priority = 30;
++    param_priority = 54;
+     (void) mca_base_component_var_register (&mca_mtl_psm_component.super.mtl_version,
+                                             "priority", "Priority of the PSM MTL component",
+                                             MCA_BASE_VAR_TYPE_INT, NULL, 0, 0,

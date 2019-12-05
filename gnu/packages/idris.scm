@@ -70,8 +70,8 @@
        ("ghc-fsnotify" ,ghc-fsnotify)
        ("ghc-ieee754" ,ghc-ieee754)
        ("ghc-libffi" ,ghc-libffi)
-       ("ghc-megaparsec" ,ghc-megaparsec-7)
-       ("ghc-network" ,ghc-network-2.8)
+       ("ghc-megaparsec" ,ghc-megaparsec)
+       ("ghc-network" ,ghc-network)
        ("ghc-optparse-applicative" ,ghc-optparse-applicative)
        ("ghc-regex-tdfa" ,ghc-regex-tdfa)
        ("ghc-safe" ,ghc-safe)
@@ -90,6 +90,11 @@
              "-fFFI" "-fGMP")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'update-constraints
+           (lambda _
+             (substitute* "idris.cabal"
+               (("ansi-terminal < 0\\.9") "ansi-terminal < 0.10"))
+             #t))
          (add-before 'configure 'set-cc-command
            (lambda _
              (setenv "CC" "gcc")

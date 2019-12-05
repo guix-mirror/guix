@@ -55,7 +55,9 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages upnp)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages vim)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages backup)
@@ -232,7 +234,7 @@ supports HTTP, HTTPS and GnuTLS.")
 (define-public gnunet
   (package
    (name "gnunet")
-   (version "0.10.1")
+   (version "0.11.8")
    (source
     (origin
       (method url-fetch)
@@ -240,53 +242,67 @@ supports HTTP, HTTPS and GnuTLS.")
                           ".tar.gz"))
       (sha256
        (base32
-        "04wxzm3wkgqbn42b8ksr4cx6m5cckyig5cls1adh0nwdczwvnp7n"))))
+        "1zkmcq75sfr3iyg8rgxp9dbl7fwsvc1a71rc0vgisghcbrx1n7yj"))))
    (build-system gnu-build-system)
    (inputs
-    `(("glpk" ,glpk)
+    `(("bluez" ,bluez)
+      ("glpk" ,glpk)
       ("gnurl" ,gnurl)
-      ("gstreamer" ,gstreamer)
-      ("gst-plugins-base" ,gst-plugins-base)
       ("gnutls" ,gnutls/dane)
+      ("gstreamer" ,gstreamer)
+      ("jansson" ,jansson)
       ("libextractor" ,libextractor)
+      ("libidn" ,libidn2)
       ("libgcrypt" ,libgcrypt)
-      ("libidn" ,libidn)
-      ("libmicrohttpd" ,libmicrohttpd) ; hostlist, pt, contrib, and more
       ("libltdl" ,libltdl)
-      ("libunistring" ,libunistring) ; fs and more
-      ("openssl" ,openssl) ; transport, certificate creation, contribs
-      ("opus" ,opus) ; gnunet-conversation
-      ("pulseaudio" ,pulseaudio) ; conversation
-      ("sqlite" ,sqlite) ; sqlite bindings, *store
-      ("zlib" ,zlib)
-      ("perl" ,perl) ; doxygen and more
-      ("jansson" ,jansson) ; identity, taler (external), gnunet-json, gns
-      ("nss" ,nss) ; gns
-      ("gmp" ,gmp) ; util
-      ("bluez" ,bluez) ; gnunet-transport
-      ("glib" ,glib)
-      ("libogg" ,libogg) ; gnunet-conversation
-      ("python-2" ,python-2))) ; tests, gnunet-qr
+      ("libmicrohttpd" ,libmicrohttpd)
+      ("libogg" ,libogg)
+      ("libunistring" ,libunistring)
+      ("miniupnpc" ,miniupnpc)
+      ("opus" ,opus)
+      ("pulseaudio" ,pulseaudio)
+      ("sqlite" ,sqlite)
+      ("zbar" ,zbar)
+      ("zlib" ,zlib)))
    (native-inputs
-    `(("pkg-config" ,pkg-config)))
+    `(("pkg-config" ,pkg-config)
+      ("python" ,python)
+      ("xxd" ,xxd)
+      ("which" ,(@ (gnu packages base) which))))
    (arguments
-    '(#:configure-flags
-      (list (string-append "--with-nssdir=" %output "/lib"))
-      #:parallel-tests? #f
-      ;; test_gnunet_service_arm fails; reported upstream
-      #:tests? #f
+    '(#:parallel-tests? #f ; Parallel tests aren't supported.
       #:phases
       (modify-phases %standard-phases
-        ;; swap check and install phases and set paths to installed binaries
+        (add-after 'configure 'remove-failing-tests
+          ;; These tests fail in Guix's building envrionment.
+          (lambda _
+            (substitute* "src/transport/Makefile"
+              (("test_transport_api_udp_nat\\$\\(EXEEXT\\) \\\\\n") "")
+              (("test_transport_api_manipulation_cfg\\$\\(EXEEXT\\) \\\\\n") ""))
+            (substitute* "src/topology/Makefile"
+              (("^check_PROGRAMS.*") "\n")
+              (("test_gnunet_daemon_topology\\$\\(EXEEXT\\)\n") ""))
+            (substitute* "src/namestore/Makefile"
+              (("\\$\\(am__append_2\\)") ""))
+            (substitute* "src/gns/Makefile"
+              (("\\$\\(am__append_4\\)") ""))
+            (substitute* "contrib/Makefile"
+              (("^check_PROGRAMS.*") "\n"))
+            ;; 'test' from coreutils doesn't behave as the test expects.
+            (substitute* '("src/gns/gnunet-gns-proxy-setup-ca.in"
+                           "src/transport/gnunet-transport-certificate-creation.in")
+              (("gnutls-certtool") "certtool"))
+            #t))
+        ;; Swap 'check and 'install phases and add installed binaries to $PATH.
         (add-before 'check 'set-path-for-check
           (lambda* (#:key outputs #:allow-other-keys)
            (let ((out (assoc-ref outputs "out")))
              (setenv "GNUNET_PREFIX" (string-append out "/lib"))
              (setenv "PATH" (string-append (getenv "PATH") ":" out "/bin")))
            #t))
+        (delete 'check)
         (add-after 'install 'check
-          (assoc-ref %standard-phases 'check))
-        (delete 'check))))
+          (assoc-ref %standard-phases 'check)))))
    (synopsis "Secure, decentralized, peer-to-peer networking framework")
    (description
      "GNUnet is a framework for secure peer-to-peer networking.  The
@@ -333,14 +349,14 @@ services.")
 (define-public gnunet-gtk
   (package (inherit gnunet)
     (name "gnunet-gtk")
-    (version (package-version gnunet))
+    (version "0.11.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gnunet/gnunet-gtk-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1p38k1s6a2fmcfc9a7cf1zrdycm9h06kqdyand4s3k500nj6mb4g"))))
+                "061ifhqk6q9kx71z5404fm4d60yj2dihlwwmdqmhkn5nn4bvcwb5"))))
     (arguments
      `(#:configure-flags
        (list "--with-libunique"
@@ -348,14 +364,17 @@ services.")
              (string-append "--with-gnunet="
                             (assoc-ref %build-inputs "gnunet")))))
     (inputs
-     `(("gnunet" ,gnunet)
-       ("libgcrypt" ,libgcrypt)
+     `(("glade3" ,glade3)
+       ("gnunet" ,gnunet)
+       ("gnutls" ,gnutls/dane)
        ("gtk+" ,gtk+)
        ("libextractor" ,libextractor)
-       ("glade3" ,glade3)
-       ("qrencode" ,qrencode)
-       ("libunique" ,libunique)))
+       ("libgcrypt" ,libgcrypt)
+       ("libunique" ,libunique)
+       ("qrencode" ,qrencode)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("libglade" ,libglade)))
-    (synopsis "Graphical front-end tools for GNUnet")))
+    (synopsis "Graphical front-end tools for GNUnet")
+    (properties '((ftp-server . "ftp.gnu.org")
+                  (ftp-directory . "/gnunet")))))

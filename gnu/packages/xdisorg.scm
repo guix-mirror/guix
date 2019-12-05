@@ -95,14 +95,14 @@
 (define-public arandr
   (package
     (name "arandr")
-    (version "0.1.9")
+    (version "0.1.10")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://christian.amsuess.com/tools/" name
-                                  "/files/" name "-" version ".tar.gz"))
+              (uri (string-append "https://christian.amsuess.com/tools/arandr"
+                                  "/files/arandr-" version ".tar.gz"))
               (sha256
                (base32
-                "1i3f1agixxbfy4kxikb2b241p7c2lg73cl9wqfvlwz3q6zf5faxv"))
+                "135q0llvm077jil2fr92ssw3p095m4r8jfj0lc5rr3m71n4srj6v"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -762,7 +762,7 @@ shows it again when the mouse cursor moves or a mouse button is pressed.")
 (define-public xlockmore
   (package
     (name "xlockmore")
-    (version "5.58")
+    (version "5.59")
     (source (origin
              (method url-fetch)
              (uri (list (string-append "http://sillycycle.com/xlock/"
@@ -773,7 +773,7 @@ shows it again when the mouse cursor moves or a mouse button is pressed.")
                                        "xlockmore-" version ".tar.xz")))
              (sha256
               (base32
-               "1va11sbv5lbkxkp0i0msz5md3n2n82nzppk27rzdrw7y79vq37zw"))))
+               "0lajc5a4lki33b9mzfsi74q4hbivbmhwysp7mib4ivnyxianhaid"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "--enable-appdefaultdir="
@@ -1107,6 +1107,49 @@ twilight and early morning, the color temperature transitions smoothly from
 night to daytime temperature to allow your eyes to slowly adapt.  At night the
 color temperature should be set to match the lamps in your room.")
     (license license:gpl3+)))
+
+(define-public redshift-wayland
+  (let ((commit "7da875d34854a6a34612d5ce4bd8718c32bec804")
+        (revision "1"))
+    (package
+      (name "redshift-wayland")
+      (version (string-append "1.12-"
+                              revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/minus7/redshift.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version))
+                (sha256
+                 (base32
+                  "0nbkcw3avmzjg1jr1g9yfpm80kzisy55idl09b6wvzv2sz27n957"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ("pkg-config" ,pkg-config)
+         ("intltool" ,intltool)))
+      (inputs
+       `(("libdrm" ,libdrm)
+         ("libx11" ,libx11)
+         ("libxcb" ,libxcb)
+         ("libxxf86vm" ,libxxf86vm)
+         ("glib" ,glib)                 ; for Geoclue2 support
+         ("wayland" ,wayland)))
+      (home-page "https://github.com/minus7/redshift")
+      (synopsis "Adjust the color temperature of your screen (with Wayland support)")
+      (description
+       "Redshift adjusts the color temperature according to the position of the
+sun.  A different color temperature is set during night and daytime.  During
+twilight and early morning, the color temperature transitions smoothly from
+night to daytime temperature to allow your eyes to slowly adapt.  At night the
+color temperature should be set to match the lamps in your room.
+
+This is a fork with added support for Wayland using the wlr-gamma-control
+protocol.")
+      (license license:gpl3+))))
 
 (define-public xscreensaver
   (package

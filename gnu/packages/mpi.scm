@@ -52,7 +52,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
 
-(define-public hwloc
+(define-public hwloc-1
   ;; Note: For now we keep 1.x as the default because many packages have yet
   ;; to migrate to 2.0.
   (package
@@ -134,7 +134,7 @@ bind processes, and much more.")
 (define-public hwloc-2
   ;; Note: 2.0 isn't the default yet, see above.
   (package
-    (inherit hwloc)
+    (inherit hwloc-1)
     (version "2.1.0")
     (source (origin
               (method url-fetch)
@@ -146,9 +146,9 @@ bind processes, and much more.")
                 "0qh8s7pphz0m5cwb7liqmc17xzfs23xhz5wn24r6ikvjyx99fhhr"))))
 
     ;; libnuma is no longer needed.
-    (inputs (alist-delete "numactl" (package-inputs hwloc)))
+    (inputs (alist-delete "numactl" (package-inputs hwloc-1)))
     (arguments
-     (substitute-keyword-arguments (package-arguments hwloc)
+     (substitute-keyword-arguments (package-arguments hwloc-1)
        ((#:phases phases)
         `(modify-phases ,phases
            (replace 'skip-linux-libnuma-test
@@ -163,6 +163,10 @@ bind processes, and much more.")
 (define-deprecated hwloc-2.0 'hwloc-2
   hwloc-2)
 
+(define-public hwloc
+  ;; The latest stable series of hwloc.
+  hwloc-2)
+
 (define-public openmpi
   (package
     (name "openmpi")
@@ -175,7 +179,7 @@ bind processes, and much more.")
                           "/downloads/openmpi-" version ".tar.bz2"))
       (sha256
        (base32 "0ms0zvyxyy3pnx9qwib6zaljyp2b3ixny64xvq3czv3jpr8zf2wh"))
-      (patches (search-patches "openmpi-psm2-priority.patch"))))
+      (patches (search-patches "openmpi-mtl-priorities.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("hwloc" ,hwloc-2 "lib")
@@ -342,6 +346,15 @@ only provides @code{MPI_THREAD_FUNNELED}.")))
      ;; Allow oversubscription in case there are less physical cores available
      ;; in the build environment than the package wants while testing.
      (setenv "OMPI_MCA_rmaps_base_mapping_policy" "core:OVERSUBSCRIBE")
+
+     ;; UCX sometimes outputs uninteresting warnings such as:
+     ;;
+     ;;   mpool.c:38   UCX  WARN  object 0x7ffff44fffc0 was not returned to mpool ucp_am_bufs
+     ;;
+     ;; These in turn leads to failures of test suites that capture and
+     ;; compare stdout, such as that of 'hdf5-parallel-openmpi'.  Thus, tell
+     ;; UCX to not emit those warnings.
+     (setenv "UCX_LOG_LEVEL" "error")
      #t))
 
 (define-public intel-mpi-benchmarks

@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
@@ -550,8 +550,8 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %icecat-version "68.2.0-guix0-preview3")
-(define %icecat-build-id "20191031000000") ;must be of the form YYYYMMDDhhmmss
+(define %icecat-version "68.3.0-guix0-preview1")
+(define %icecat-build-id "20191204000000") ;must be of the form YYYYMMDDhhmmss
 
 ;; 'icecat-source' is a "computed" origin that generates an IceCat tarball
 ;; from the corresponding upstream Firefox ESR tarball, using the 'makeicecat'
@@ -573,11 +573,11 @@ from forcing GEXP-PROMISE."
                   "firefox-" upstream-firefox-version ".source.tar.xz"))
             (sha256
              (base32
-              "0f3gf5gwhxabm6xs29nlxmfqdw3fs7v458vq1fydrglfyvmc5wc5"))))
+              "0sfwp9vyjizj1lkvj6z51r85dl41q3l8380fkdyqdbp7f2d18cg1"))))
 
-         (upstream-icecat-base-version "68.2.0") ; maybe older than base-version
+         (upstream-icecat-base-version "68.3.0") ; maybe older than base-version
          ;;(gnuzilla-commit (string-append "v" upstream-icecat-base-version))
-         (gnuzilla-commit "930298e1efff3e40721659d8fd7118cdd2477bd4")
+         (gnuzilla-commit "85e99badac11983f6d50b0d9942f66a30f55b8e5")
          (gnuzilla-source
           (origin
             (method git-fetch)
@@ -589,10 +589,8 @@ from forcing GEXP-PROMISE."
                                       (string-take gnuzilla-commit 8)))
             (sha256
              (base32
-              "14g57b0262qq5s0w8b1lrk8wkvg7m068dfi0ilvhg2q5jrxk3cd0"))))
+              "00mb734yvm0r7i64mbg7hvrvhbwkcii9f9hjgwi37aizd9k0n78a"))))
 
-         (gnuzilla-fixes-patch
-          (local-file (search-patch "icecat-gnuzilla-fixes.patch")))
          (makeicecat-patch
           (local-file (search-patch "icecat-makeicecat.patch"))))
 
@@ -639,8 +637,6 @@ from forcing GEXP-PROMISE."
                 (with-directory-excursion "/tmp/gnuzilla"
                   (make-file-writable "makeicecat")
                   (invoke "patch" "--force" "--no-backup-if-mismatch"
-                          "-p1" "--input" #+gnuzilla-fixes-patch)
-                  (invoke "patch" "--force" "--no-backup-if-mismatch"
                           "-p1" "--input" #+makeicecat-patch)
                   (patch-shebang "makeicecat")
                   (substitute* "makeicecat"
@@ -658,8 +654,6 @@ from forcing GEXP-PROMISE."
                      (string-append "FFSUB=" #$sub-version "\n"))
                     (("^DATA=.*")
                      "DATA=/tmp/gnuzilla/data\n")
-                    (("^find extensions/gnu/ ")
-                     "find extensions/gnu/ | sort ")
                     (("/bin/sed")
                      #+(file-append (canonical-package sed) "/bin/sed"))))
 
@@ -703,7 +697,7 @@ from forcing GEXP-PROMISE."
                   (force-output)
                   (invoke "bash" "/tmp/gnuzilla/makeicecat"))
 
-                (format #t "Packing new IceCat tarball...~%")
+                (format #t "Packing IceCat source tarball...~%")
                 (force-output)
                 (invoke "tar" "cfa" #$output
                         ;; Avoid non-determinism in the archive.  We set the
@@ -811,6 +805,10 @@ from forcing GEXP-PROMISE."
 
                            "--with-distribution-id=org.gnu"
 
+                           ;; Do not require addons in the global app
+                           ;; directory to be signed by Mozilla.
+                           "--with-unsigned-addon-scopes=app"
+
                            "--enable-startup-notification"
                            "--enable-pulseaudio"
 
@@ -877,7 +875,7 @@ from forcing GEXP-PROMISE."
                            ;; "--with-system-png"
                            )
 
-       #:imported-modules ,%cargo-utils-modules ;for `generate-checksums'
+       #:imported-modules ,%cargo-utils-modules ;for `generate-all-checksums'
 
        #:modules ((ice-9 ftw)
                   (ice-9 rdelim)
@@ -979,15 +977,7 @@ from forcing GEXP-PROMISE."
                (substitute* '("Cargo.lock" "gfx/wr/Cargo.lock")
                  (("(\"checksum .* = )\".*\"" all name)
                   (string-append name "\"" null-hash "\"")))
-               (for-each
-                (lambda (filename)
-                  (delete-file filename)
-                  (let ((dir (dirname filename)))
-                    (display (string-append
-                              "patch-cargo-checksums: generate-checksums for "
-                              dir "\n"))
-                    (generate-checksums dir)))
-                (find-files "third_party/rust" ".cargo-checksum.json")))
+               (generate-all-checksums "third_party/rust"))
              #t))
          (add-before 'configure 'augment-CPLUS_INCLUDE_PATH
            (lambda* (#:key build inputs #:allow-other-keys)

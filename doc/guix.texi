@@ -47,7 +47,7 @@ Copyright @copyright{} 2017 Thomas Danckaert@*
 Copyright @copyright{} 2017 humanitiesNerd@*
 Copyright @copyright{} 2017 Christopher Allan Webber@*
 Copyright @copyright{} 2017, 2018 Marius Bakke@*
-Copyright @copyright{} 2017 Hartmut Goebel@*
+Copyright @copyright{} 2017, 2019 Hartmut Goebel@*
 Copyright @copyright{} 2017, 2019 Maxim Cournoyer@*
 Copyright @copyright{} 2017, 2018, 2019 Tobias Geerinckx-Rice@*
 Copyright @copyright{} 2017 George Clemmer@*
@@ -68,6 +68,7 @@ Copyright @copyright{} 2019 Ivan Petkov@*
 Copyright @copyright{} 2019 Jakob L. Kreuze@*
 Copyright @copyright{} 2019 Kyle Andrews@*
 Copyright @copyright{} 2019 Alex Griffin@*
+Copyright @copyright{} 2019 Guillaume Le Vaillant@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -305,6 +306,7 @@ Services
 * Virtualization Services::     Virtualization services.
 * Version Control Services::    Providing remote access to Git repositories.
 * Game Services::               Game servers.
+* PAM Mount Service::           Service to mount volumes when logging in.
 * Miscellaneous Services::      Other services.
 
 Defining Services
@@ -1368,13 +1370,11 @@ source URLs.  When this option is omitted,
 This means that substitutes may be downloaded from @var{urls}, as long
 as they are signed by a trusted signature (@pxref{Substitutes}).
 
-@cindex build hook
-@item --no-build-hook
-Do not use the @dfn{build hook}.
-
-The build hook is a helper program that the daemon can start and to
-which it submits build requests.  This mechanism is used to offload
-builds to other machines (@pxref{Daemon Offload Setup}).
+@cindex offloading
+@item --no-offload
+Do not use offload builds to other machines (@pxref{Daemon Offload
+Setup}).  That is, always build things locally instead of offloading
+builds to remote machines.
 
 @item --cache-failures
 Cache build failures.  By default, only successful builds are cached.
@@ -2830,7 +2830,8 @@ $ guix package --upgrade . --do-not-upgrade emacs
 @cindex profile declaration
 @cindex profile manifest
 Create a new generation of the profile from the manifest object
-returned by the Scheme code in @var{file}.
+returned by the Scheme code in @var{file}.  This option can be repeated
+several times, in which case the manifests are concatenated.
 
 This allows you to @emph{declare} the profile's contents rather than
 constructing it through a sequence of @code{--install} and similar
@@ -4802,7 +4803,8 @@ As an example, @var{file} might contain a definition like this
 @item --manifest=@var{file}
 @itemx -m @var{file}
 Create an environment for the packages contained in the manifest object
-returned by the Scheme code in @var{file}.
+returned by the Scheme code in @var{file}.  This option can be repeated
+several times, in which case the manifests are concatenated.
 
 This is similar to the same-named option in @command{guix package}
 (@pxref{profile-manifest, @option{--manifest}}) and uses the same
@@ -5176,7 +5178,8 @@ build} (@pxref{Additional Build Options, @code{--expression} in
 @item --manifest=@var{file}
 @itemx -m @var{file}
 Use the packages contained in the manifest object returned by the Scheme
-code in @var{file}.
+code in @var{file}.  This option can be repeated several times, in which
+case the manifests are concatenated.
 
 This has a similar purpose as the same-named option in @command{guix
 package} (@pxref{profile-manifest, @option{--manifest}}) and uses the
@@ -5252,6 +5255,10 @@ added to it or removed from it after extraction of the pack.
 
 One use case for this is the Guix self-contained binary tarball
 (@pxref{Binary Installation}).
+
+@item --derivation
+@itemx -d
+Print the name of the derivation that builds the pack.
 
 @item --bootstrap
 Use the bootstrap binaries to build the pack.  This option is only
@@ -6401,6 +6408,25 @@ passes flags specified by the @code{#:make-maker-flags} or
 @code{#:module-build-flags} parameter, respectively.
 
 Which Perl package is used can be specified with @code{#:perl}.
+@end defvr
+
+@defvr {Scheme Variable} qt-build-system
+This variable is exported by @code{(guix build-system qt)}.  It
+is intended for use with applications using Qt or KDE.
+
+This build system adds the phase @code{qt-wrap} to the ones defined by
+@var{cmake-build-system}, after the @code{install} phase.
+
+This phase searches for Qt5 plugin paths, QML paths and some XDG in the inputs
+and output.  In case some path is found, all programs in the output's
+@file{bin/}, @file{sbin/}, @file{libexec/} and @file{lib/libexec/} directories
+are wrapped in scripts defining the necessary environment variables.
+
+It is possible to exclude specific package outputs from that wrapping process
+by listing their names in the @code{#:qt-wrap-excluded-outputs} parameter.
+This is useful when an output is known not to contain any Qt binaries, and
+where wrapping would gratuitously add a dependency of that output on Qt, KDE,
+or such.
 @end defvr
 
 @defvr {Scheme Variable} r-build-system
@@ -7677,10 +7703,13 @@ content is directly passed as a string.
 
 @deffn {Scheme Procedure} local-file @var{file} [@var{name}] @
    [#:recursive? #f] [#:select? (const #t)]
-Return an object representing local file @var{file} to add to the store; this
-object can be used in a gexp.  If @var{file} is a relative file name, it is looked
-up relative to the source file where this form appears.  @var{file} will be added to
-the store under @var{name}--by default the base name of @var{file}.
+Return an object representing local file @var{file} to add to the store;
+this object can be used in a gexp.  If @var{file} is a literal string
+denoting a relative file name, it is looked up relative to the source
+file where it appears; if @var{file} is not a literal string, it is
+looked up relative to the current working directory at run time.
+@var{file} will be added to the store under @var{name}--by default the
+base name of @var{file}.
 
 When @var{recursive?} is true, the contents of @var{file} are added recursively; if @var{file}
 designates a flat file and @var{recursive?} is true, its contents are added, and its
@@ -8046,9 +8075,9 @@ the end of the build log.  This is useful when debugging build issues.
 @xref{Debugging Build Failures}, for tips and tricks on how to debug
 build issues.
 
-This option has no effect when connecting to a remote daemon with a
-@code{guix://} URI (@pxref{The Store, the @code{GUIX_DAEMON_SOCKET}
-variable}).
+This option implies @option{--no-offload}, and it has no effect when
+connecting to a remote daemon with a @code{guix://} URI (@pxref{The
+Store, the @code{GUIX_DAEMON_SOCKET} variable}).
 
 @item --keep-going
 @itemx -k
@@ -8105,10 +8134,10 @@ stashing one of the build results with @code{guix archive --export}
 (@pxref{Invoking guix archive}), then rebuilding, and finally comparing
 the two results.
 
-@item --no-build-hook
-Do not attempt to offload builds @i{via} the ``build hook'' of the daemon
-(@pxref{Daemon Offload Setup}).  That is, always build things locally
-instead of offloading builds to remote machines.
+@item --no-offload
+Do not use offload builds to other machines (@pxref{Daemon Offload
+Setup}).  That is, always build things locally instead of offloading
+builds to remote machines.
 
 @item --max-silent-time=@var{seconds}
 When the build or substitution process remains silent for more than
@@ -11926,6 +11955,7 @@ declaration.
 * Virtualization Services::     Virtualization services.
 * Version Control Services::    Providing remote access to Git repositories.
 * Game Services::               Game servers.
+* PAM Mount Service::           Service to mount volumes when logging in.
 * Guix Services::               Services relating specifically to Guix.
 * Miscellaneous Services::      Other services.
 @end menu
@@ -15580,6 +15610,13 @@ capabilities to ordinary users.  For example, an ordinary user can be granted
 the capability to suspend the system if the user is logged in locally.
 @end deffn
 
+@defvr {Scheme Variable} polkit-wheel-service
+Service that adds the @code{wheel} group as admins to the Polkit
+service.  This makes it so that users in the @code{wheel} group are queried
+for their own passwords when performing administrative actions instead of
+@code{root}'s, similar to the behaviour used by @code{sudo}.
+@end defvr
+
 @defvr {Scheme Variable} upower-service-type
 Service that runs @uref{https://upower.freedesktop.org/, @command{upowerd}}, a
 system-wide monitor for power consumption and battery levels, with the given
@@ -15715,6 +15752,41 @@ bluetooth keyboard or mouse.
 
 Users need to be in the @code{lp} group to access the D-Bus service.
 @end deffn
+
+@defvr {Scheme Variable} gnome-keyring-service-type
+This is the type of the service that adds the
+@uref{https://wiki.gnome.org/Projects/GnomeKeyring, GNOME Keyring}.  Its
+value is a @code{gnome-keyring-configuration} object (see below.)
+
+This service adds the @code{gnome-keyring} package to the system profile
+and extends PAM with entries using @code{pam_gnome_keyring.so}, unlocking
+a user's login keyring when they log in or setting its password with passwd.
+@end defvr
+
+@deftp {Data Type} gnome-keyring-configuration
+Configuration record for the GNOME Keyring service.
+
+@table @asis
+@item @code{keyring} (default: @code{gnome-keyring})
+The GNOME keyring package to use.
+
+@item @code{pam-services}
+A list of @code{(@var{service} . @var{kind})} pairs denoting PAM
+services to extend, where @var{service} is the name of an existing
+service to extend and @var{kind} is one of @code{login} or
+@code{passwd}.
+
+If @code{login} is given, it adds an optional
+@code{pam_gnome_keyring.so} to the auth block without arguments and to
+the session block with @code{auto_start}.  If @code{passwd} is given, it
+adds an optional @code{pam_gnome_keyring.so} to the password block
+without arguments.
+
+By default, this field contains ``gdm-password'' with the value @code{login}
+and ``passwd'' is with the value @code{passwd}.
+@end table
+@end deftp
+
 
 @node Sound Services
 @subsection Sound Services
@@ -20302,7 +20374,7 @@ the corresponding user and/or group is present on the system.
 It is possible to configure a FastCGI-backed web service to pass HTTP
 authentication information from the front-end to the back-end, and to
 allow @code{fcgiwrap} to run the back-end process as a corresponding
-local user.  To enable this capability on the back-end., run
+local user.  To enable this capability on the back-end, run
 @code{fcgiwrap} as the @code{root} user and group.  Note that this
 capability also has to be configured on the front-end as well.
 @end table
@@ -20355,7 +20427,7 @@ User who will own the php worker processes.
 Group of the worker processes.
 @item @code{socket-user} (default: @code{php-fpm})
 User who can speak to the php-fpm socket.
-@item @code{socket-group} (default: @code{php-fpm})
+@item @code{socket-group} (default: @code{nginx})
 Group that can speak to the php-fpm socket.
 @item @code{pid-file} (default: @code{(string-append "/var/run/php" (version-major (package-version php)) "-fpm.pid")})
 The process id of the php-fpm process is written to this file
@@ -20364,7 +20436,7 @@ once the service has started.
 Log for the php-fpm master process.
 @item @code{process-manager} (default: @code{(php-fpm-dynamic-process-manager-configuration)})
 Detailed settings for the php-fpm process manager.
-Must be either:
+Must be one of:
 @table @asis
 @item @code{<php-fpm-dynamic-process-manager-configuration>}
 @item @code{<php-fpm-static-process-manager-configuration>}
@@ -24651,6 +24723,89 @@ The port to bind the server to.
 @end deftp
 
 
+@node PAM Mount Service
+@subsection PAM Mount Service
+@cindex pam-mount
+
+The @code{(gnu services pam-mount)} module provides a service allowing
+users to mount volumes when they log in.  It should be able to mount any
+volume format supported by the system.
+
+@defvar {Scheme Variable} pam-mount-service-type
+Service type for PAM Mount support.
+@end defvar
+
+@deftp {Data Type} pam-mount-configuration
+Data type representing the configuration of PAM Mount.
+
+It takes the following parameters:
+
+@table @asis
+@item @code{rules}
+The configuration rules that will be used to generate
+@file{/etc/security/pam_mount.conf.xml}.
+
+The configuration rules are SXML elements (@pxref{SXML,,, guile, GNU
+Guile Reference Manual}), and the the default ones don't mount anything
+for anyone at login:
+
+@lisp
+`((debug (@@ (enable "0")))
+  (mntoptions (@@ (allow ,(string-join
+                          '("nosuid" "nodev" "loop"
+                            "encryption" "fsck" "nonempty"
+                            "allow_root" "allow_other")
+                          ","))))
+  (mntoptions (@@ (require "nosuid,nodev")))
+  (logout (@@ (wait "0")
+             (hup "0")
+             (term "no")
+             (kill "no")))
+  (mkmountpoint (@@ (enable "1")
+                   (remove "true"))))
+@end lisp
+
+Some @code{volume} elements must be added to automatically mount volumes
+at login.  Here's an example allowing the user @code{alice} to mount her
+encrypted @code{HOME} directory and allowing the user @code{bob} to mount
+the partition where he stores his data:
+
+@lisp
+(define pam-mount-rules
+`((debug (@@ (enable "0")))
+            (volume (@@ (user "alice")
+                       (fstype "crypt")
+                       (path "/dev/sda2")
+                       (mountpoint "/home/alice")))
+            (volume (@@ (user "bob")
+                       (fstype "auto")
+                       (path "/dev/sdb3")
+                       (mountpoint "/home/bob/data")
+                       (options "defaults,autodefrag,compress")))
+            (mntoptions (@@ (allow ,(string-join
+                                    '("nosuid" "nodev" "loop"
+                                      "encryption" "fsck" "nonempty"
+                                      "allow_root" "allow_other")
+                                    ","))))
+            (mntoptions (@@ (require "nosuid,nodev")))
+            (logout (@@ (wait "0")
+                       (hup "0")
+                       (term "no")
+                       (kill "no")))
+            (mkmountpoint (@@ (enable "1")
+                             (remove "true")))))
+
+(service pam-mount-service-type
+         (pam-mount-configuration
+           (rules pam-mount-rules)))
+@end lisp
+
+The complete list of possible options can be found in the man page for
+@uref{http://pam-mount.sourceforge.net/pam_mount.conf.5.html, pam_mount.conf}.
+@end table
+@end deftp
+
+
 @node Guix Services
 @subsection Guix Services
 
@@ -26282,8 +26437,8 @@ with an @code{environment} of @code{managed-host-environment-type}.
 @item @code{build-locally?} (default: @code{#t})
 If false, system derivations will be built on the machine being deployed to.
 @item @code{system}
-The Nix system type describing the architecture of the machine being deployed
-to. This should look something like ``x86_64-linux''.
+The system type describing the architecture of the machine being deployed
+to---e.g., @code{"x86_64-linux"}.
 @item @code{authorize?} (default: @code{#t})
 If true, the coordinator's signing key will be added to the remote's ACL
 keyring.
@@ -26292,6 +26447,18 @@ keyring.
 @item @code{identity} (default: @code{#f})
 If specified, the path to the SSH private key to use to authenticate with the
 remote host.
+
+@item @code{host-key} (default: @code{#f})
+This should be the SSH host key of the machine, which looks like this:
+
+@example
+ssh-ed25519 AAAAC3Nz@dots{} root@@example.org
+@end example
+
+When @code{host-key} is @code{#f}, the server is authenticated against
+the @file{~/.ssh/known_hosts} file, just like the OpenSSH @command{ssh}
+client does.
+
 @end table
 @end deftp
 

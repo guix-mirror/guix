@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
@@ -364,10 +364,10 @@ and can dramatically shorten the lifespan of the drive if left unchecked.")
        ("glib" ,glib)
        ("gtkmm" ,gtkmm)
        ("libxml2" ,libxml2)
-       ("yelp-tools" ,yelp-tools)
-       ("itstool" ,itstool)))
+       ("yelp-tools" ,yelp-tools)))
     (native-inputs
      `(("intltool" ,intltool)
+       ("itstool" ,itstool)
        ("lvm2" ,lvm2) ; for tests
        ("pkg-config" ,pkg-config)))
     (home-page "https://gparted.org/")

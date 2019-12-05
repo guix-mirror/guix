@@ -114,6 +114,7 @@ joystick, and graphics hardware.")
              (uri
               (string-append "https://libsdl.org/release/SDL2-"
                              version ".tar.gz"))
+             (patches (search-patches "sdl2-mesa-compat.patch"))
              (sha256
               (base32
                "0mqxp6w5jhbq6y1j690g9r3gpzwjxh4czaglw8x05l7hl49nqrdl"))))
@@ -142,6 +143,7 @@ joystick, and graphics hardware.")
                ("glib" ,glib)
                ("ibus" ,ibus)
                ("libxkbcommon" ,libxkbcommon)
+               ("libxcursor" ,libxcursor) ; enables X11 cursor support
                ("wayland" ,wayland)
                ("wayland-protocols" ,wayland-protocols))
              (package-inputs sdl)))

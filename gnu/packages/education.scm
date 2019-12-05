@@ -58,6 +58,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system qt)
   #:use-module (guix build-system trivial)
   #:use-module (srfi srfi-1))
 
@@ -167,7 +168,7 @@ of categories with some of the activities available in that category.
        ("gettext" ,gettext-minimal)
        ("perl" ,perl)
        ("qttools" ,qttools)
-       ("xorg-server" ,xorg-server)))
+       ("xorg-server" ,xorg-server-for-tests)))
     (inputs
      `(("openssl" ,openssl)
        ("python-2" ,python-2)
@@ -253,7 +254,7 @@ easy.")
 (define-public snap
   (package
     (name "snap")
-    (version "5.2.5")
+    (version "5.3.8")
     (source
      (origin
        (method git-fetch)
@@ -263,7 +264,7 @@ easy.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0smlqxd8gqy26dlsal197848lhynv74m8myxs6fdlnzgva1f3zzw"))))
+         "1lm5vvykdzgn667kvnsv0ab5bl0kjsr05kvcd18a7pn0g8sykfpc"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -487,14 +488,14 @@ letters of the alphabet, spelling, eye-hand coordination, etc.")
 (define-public fet
   (package
     (name "fet")
-    (version "5.40.2")
+    (version "5.41.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.lalescu.ro/liviu/fet/download/"
                                   "fet-" version ".tar.bz2"))
               (sha256
                (base32
-                "068zdvb3rys7vvkq33i2jh89c7svvdaqp0548k99jmhbd24xnhgh"))))
+                "0ppa5h1p0y0z8x4xpn45b0x3nl1khyh56m22v6xysk3znxlak4q7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -554,7 +555,7 @@ language and very flexible regarding to new or unknown keyboard layouts.")
 (define-public ktouch
   (package
     (name "ktouch")
-    (version "19.08.1")
+    (version "19.08.2")
     (source
       (origin
         (method url-fetch)
@@ -562,16 +563,11 @@ language and very flexible regarding to new or unknown keyboard layouts.")
                             version "/src/ktouch-" version ".tar.xz"))
         (sha256
          (base32
-          "19rdk94pls75hdvx11hnfk3qpm6l28p9q45q5f04sknxagrfaznr"))))
-    (build-system cmake-build-system)
+          "0dm6xcwai0bx2h16rny1xa9n1509mfxvy39kfxx5qih53p15jrnk"))))
+    (build-system qt-build-system)
     (arguments
-     `(#:modules ((guix build cmake-build-system)
-                  (guix build qt-utils)
-                  (guix build utils))
-       #:imported-modules (,@%cmake-build-system-modules
-                            (guix build qt-utils))
-       #:phases
-       (modify-phases %standard-phases
+     `(#:phases
+       (modify-phases (@ (guix build qt-build-system) %standard-phases)
          (add-after 'configure 'patch-makefiles
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((qtdec (assoc-ref inputs "qtdeclarative")))
@@ -579,11 +575,6 @@ language and very flexible regarding to new or unknown keyboard layouts.")
                               "src/CMakeFiles/ktouch.dir/build.make")
                  (("/gnu/store/.*qmlcachegen")
                   (string-append qtdec "/bin/qmlcachegen"))))
-             #t))
-         (add-after 'install 'wrap-executable
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-qt-program out "ktouch"))
              #t)))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)

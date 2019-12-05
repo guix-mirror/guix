@@ -37,6 +37,8 @@
   #:use-module (ice-9 format)
   #:use-module (ice-9 binary-ports)
   #:export (open-ssh-session
+            authenticate-server*
+
             remote-inferior
             remote-daemon-channel
             connect-to-remote-daemon
@@ -60,15 +62,56 @@
 (define %compression
   "zlib@openssh.com,zlib")
 
+(define (host-key->type+key host-key)
+  "Destructure HOST-KEY, an OpenSSH host key string, and return two values:
+its key type as a symbol, and the actual base64-encoded string."
+  (define (type->symbol type)
+    (and (string-prefix? "ssh-" type)
+         (string->symbol (string-drop type 4))))
+
+  (match (string-tokenize host-key)
+    ((type key x)
+     (values (type->symbol type) key))
+    ((type key)
+     (values (type->symbol type) key))))
+
+(define (authenticate-server* session key)
+  "Make sure the server for SESSION has the given KEY, where KEY is a string
+such as \"ssh-ed25519 AAAAC3Nz… root@example.org\".  Raise an exception if the
+actual key does not match."
+  (let-values (((server)   (get-server-public-key session))
+               ((type key) (host-key->type+key key)))
+    (unless (and (or (not (get-key-type server))
+                     (eq? (get-key-type server) type))
+                 (string=? (public-key->string server) key))
+      ;; Key mismatch: something's wrong.  XXX: It could be that the server
+      ;; provided its Ed25519 key when we where expecting its RSA key.  XXX:
+      ;; Guile-SSH 0.10.1 doesn't know about ed25519 keys and 'get-key-type'
+      ;; returns #f in that case.
+      (raise (condition
+              (&message
+               (message (format #f (G_ "server at '~a' returned host key \
+'~a' of type '~a' instead of '~a' of type '~a'~%")
+                                (session-get session 'host)
+                                (public-key->string server)
+                                (get-key-type server)
+                                key type))))))))
+
 (define* (open-ssh-session host #:key user port identity
+                           host-key
                            (compression %compression)
                            (timeout 3600))
   "Open an SSH session for HOST and return it.  IDENTITY specifies the file
 name of a private key to use for authenticating with the host.  When USER,
 PORT, or IDENTITY are #f, use default values or whatever '~/.ssh/config'
-specifies; otherwise use them.  Install TIMEOUT as the maximum time in seconds
-after which a read or write operation on a channel of the returned session is
-considered as failing.
+specifies; otherwise use them.
+
+When HOST-KEY is true, it must be a string like \"ssh-ed25519 AAAAC3Nz…
+root@example.org\"; the server is authenticated and an error is raised if its
+host key is different from HOST-KEY.
+
+Install TIMEOUT as the maximum time in seconds after which a read or write
+operation on a channel of the returned session is considered as failing.
 
 Throw an error on failure."
   (let ((session (make-session #:user user
@@ -77,6 +120,11 @@ Throw an error on failure."
                                #:port port
                                #:timeout 10       ;seconds
                                ;; #:log-verbosity 'protocol
+
+                               ;; Prevent libssh from reading
+                               ;; ~/.ssh/known_hosts when the caller provides
+                               ;; a HOST-KEY to match against.
+                               #:knownhosts (and host-key "/dev/null")
 
                                ;; We need lightweight compression when
                                ;; exchanging full archives.
@@ -88,6 +136,21 @@ Throw an error on failure."
 
     (match (connect! session)
       ('ok
+       (if host-key
+           ;; Make sure the server's key is what we expect.
+           (authenticate-server* session host-key)
+
+           ;; Authenticate against ~/.ssh/known_hosts.
+           (match (authenticate-server session)
+             ('ok #f)
+             (reason
+              (raise (condition
+                      (&message
+                       (message (format #f (G_ "failed to authenticate \
+server at '~a': ~a")
+                                        (session-get session 'host)
+                                        reason))))))))
+
        ;; Use public key authentication, via the SSH agent if it's available.
        (match (userauth-public-key/auto! session)
          ('success

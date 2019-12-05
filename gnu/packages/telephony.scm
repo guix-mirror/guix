@@ -12,6 +12,7 @@
 ;;; Copyright © 2018 Jovany Leandro G.C <bit4bit@riseup.net>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -552,29 +553,32 @@ calls and messages")
 (define-public pjproject
   (package
     (name "pjproject")
-    (version "2.7.2")
+    (version "2.9")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "http://www.pjsip.org/release/" ;
-             version "/" name "-" version ".tar.bz2"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pjsip/pjproject.git")
+             (commit "5dfa75be7d69047387f9b0436dd9492bbbf03fe4")))
        (modules '((guix build utils)))
        (snippet
         '(begin
            (let ((third-party-directories
-                  (list "BaseClasses" "bdsound" "bin" "g7221" "gsm"
-                        "ilbc" "lib" "milenage" "mp3" "speex" "srtp"
-                        "resample"
+                  ;; Things we don't need:
+                  ;; BaseClasses - contains libraries from Windows SDK
+                  ;; we don't need it, at least not now.
+                  (list "BaseClasses" "g7221" "ilbc" "milenage"
+                        "speex" "threademulation" "yuv" "bdsound"
+                        "gsm" "mp3" "resample" "srtp" "webrtc"
                         ;; Keep only resample, build and README.txt.
                         "build/baseclasses" "build/g7221" "build/gsm"
-                        "build/ilbc" "build/milenage" "build/samplerate"
-                        "build/speex" "build/srtp"
-                        "build/resample" "build/yuv")))
+                        "build/ilbc" "build/milenage" "build/resample"
+                        "build/samplerate" "build/speex" "build/srtp"
+                        "build/webrtc" "build/yuv")))
              ;; Keep only Makefiles related to resample.
-             (for-each (lambda (file)
+             (for-each (lambda (directory)
                          (delete-file-recursively
-                          (string-append "third_party/" file)))
+                          (string-append "third_party/" directory)))
                        third-party-directories)
              #t)
            (let ((third-party-dirs
@@ -585,9 +589,10 @@ calls and messages")
                 (substitute* "third_party/build/os-linux.mak"
                   (((string-append "DIRS += " dirs)) "")))
               third-party-dirs))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0wiph6g51wanzwjjrpwsz63amgvly8g08jz033gnwqmppa584b4w"))))
+         "1ayj6n7zd5wvd1nzj2k9s57fb4ckc2fv92k5sjvhd87yg69k3393"))))
     (build-system gnu-build-system)
     (inputs
      `(("portaudio" ,portaudio)))
@@ -597,6 +602,7 @@ calls and messages")
      `(("speex" ,speex)
        ("libsrtp" ,libsrtp)
        ("gnutls" ,gnutls)
+       ("resample", resample)
        ("util-linux" ,util-linux)))
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -614,7 +620,7 @@ calls and messages")
            (lambda _ (invoke "make" "dep")))
          (add-before 'patch-source-shebangs 'autoconf
            (lambda _
-             (invoke "autoconf" "-vfi" "-o"
+             (invoke "autoconf" "-v" "-f" "-i" "-o"
                      "aconfigure" "aconfigure.ac")))
          (add-before 'autoconf 'disable-some-tests
            ;; Three of the six test programs fail due to missing network
@@ -630,12 +636,12 @@ calls and messages")
 Initiation Protocol (SIP) and a multimedia framework.")
     (license license:gpl2+)))
 
-(define %jami-version "20190319.4.a16a99f")
+(define %jami-version "20191101.3.67671e7")
 
 (define* (jami-source #:key without-daemon)
   (origin
     (method url-fetch)
-    (uri (string-append "http://dl.jami.net/ring-release/tarballs/ring_"
+    (uri (string-append "https://dl.jami.net/ring-release/tarballs/ring_"
                         %jami-version
                         ".tar.gz"))
     (modules '((guix build utils)))
@@ -646,7 +652,7 @@ Initiation Protocol (SIP) and a multimedia framework.")
        #f))
     (sha256
      (base32
-      "1c6n6sm7skw83v25g33g4jzbragz9j4przbzaz7asxw54jy33dwl"))))
+      "0kw172w2ccyz438kf5xqw14nhfm4xk6a2libnzib9j2wvhlpf4q0"))))
 
 (define-public pjproject-jami
   (package
@@ -679,35 +685,49 @@ Initiation Protocol (SIP) and a multimedia framework.")
              "--disable-openh264"
              "--disable-resample"
              "--disable-libwebrtc"
-             ;; "-fPIC" is required for libring.  Bug?
-             "CFLAGS=-fPIC -DPJ_ENABLE_EXTRA_CHECK=1 -DPJ_ICE_MAX_CAND=256 -DPJ_ICE_MAX_CHECKS=1024 -DPJ_ICE_COMP_BITS=2 -DPJ_ICE_MAX_STUN=3 -DPJSIP_MAX_PKT_LEN=8000 -DPJ_ICE_ST_MAX_CAND=32"
-             "CXXFLAGS=-fPIC -DPJ_ENABLE_EXTRA_CHECK=1 -DPJ_ICE_MAX_CAND=256 -DPJ_ICE_MAX_CHECKS=1024 -DPJ_ICE_COMP_BITS=2 -DPJ_ICE_MAX_STUN=3 -DPJSIP_MAX_PKT_LEN=8000 -DPJ_ICE_ST_MAX_CAND=32"
-             ;; Now deviating from the rules.mak file.
-             "--enable-ssl=gnutls"
-             "--with-external-srtp")
+             "--with-gnutls"
+             "--with-external-srtp"
+             ;; We need -fPIC or else we get the following error when linking
+             ;; against pjproject-jami:
+             ;;   relocation R_X86_64_32S against `.rodata' can not be used when
+             ;;   making a shared object;
+             "CFLAGS=-fPIC"
+             "CXXFLAGS=-fPIC")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-git-checkout-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
          (add-after 'unpack 'apply-patches
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((savoir-faire-linux-patches-directory "Savoir-faire Linux patches")
                    ;; Comes from
                    ;; "ring-project/daemon/contrib/src/pjproject/rules.mak".
                    ;; WARNING: These amount for huge changes in pjproject.
-                   ;; Particularly, they add support for GnuTLS.
                    (savoir-faire-linux-patches
-                    '("gnutls"
+                    '("fix_turn_alloc_failure"
                       "rfc2466"
                       "ipv6"
-                      "ice_config"
                       "multiple_listeners"
                       "pj_ice_sess"
                       "fix_turn_fallback"
                       "fix_ioqueue_ipv6_sendto"
                       "add_dtls_transport"
-                      "rfc6062")))
+                      "rfc6544"
+                      "ice_config"
+                      "sip_config"
+                      "fix_first_packet_turn_tcp"
+                      "fix_ebusy_turn"
+                      "ignore_ipv6_on_transport_check"
+                      "fix_turn_connection_failure"
+                      ;; "uwp_vs" ; for windows
+                      "disable_local_resolution")))
                (mkdir-p savoir-faire-linux-patches-directory)
                (invoke "tar" "-xvf" (assoc-ref inputs "savoir-faire-linux-patches")
-                       "-C" savoir-faire-linux-patches-directory "--strip-components=5" "ring-project/daemon/contrib/src/pjproject")
+                       "-C" savoir-faire-linux-patches-directory
+                       "--strip-components=5"
+                       "ring-project/daemon/contrib/src/pjproject")
                (for-each
                 (lambda (file)
                   (invoke "patch" "--force" "-p1" "-i"
@@ -771,8 +791,9 @@ Initiation Protocol (SIP) and a multimedia framework.")
        ("libsecp256k1" ,libsecp256k1)
        ("python" ,python)
        ("python-wrapper" ,python-wrapper)
-       ("restbed" ,restbed)
+       ("restinio" ,restinio)
        ("libx11" ,libx11)
+       ("asio" ,asio)
        ;; TODO: Upstream seems to rely on a custom pjproject (a.k.a. pjsip) version.
        ;; See https://git.jami.net/savoirfairelinux/ring-daemon/issues/24.
        ("pjproject" ,pjproject-jami)))
@@ -863,7 +884,7 @@ This package provides a library common to all Jami clients.")
        ("glib:bin" ,glib "bin")
        ("doxygen" ,doxygen)))
     (propagated-inputs
-     `(("libring" ,libring)             ; Contains `dring', the daemon, which is automatically by d-bus.
+     `(("libring" ,libring) ; Contains `dring', the daemon, which is automatically by d-bus.
        ("adwaita-icon-theme" ,adwaita-icon-theme)
        ("evolution-data-server" ,evolution-data-server)))
     (arguments
@@ -874,7 +895,7 @@ This package provides a library common to all Jami clients.")
            (lambda _
              (chdir "client-gnome")
              #t)))))
-    (synopsis "Distributed multimedia communications platform")
+    (synopsis "Distributed, privacy-respecting communication program")
     (description "Jami (formerly GNU Ring) is a secure and distributed voice,
 video and chat communication platform that requires no centralized server and
 leaves the power of privacy in the hands of the user.  It supports the SIP and

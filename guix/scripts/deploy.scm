@@ -62,6 +62,10 @@ Perform the deployment specified by FILE.\n"))
                  (lambda args
                    (show-help)
                    (exit 0)))
+         (option '(#\V "version") #f #f
+                 (lambda args
+                   (show-version-and-exit "guix deploy")))
+
          (option '(#\s "system") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'system arg
@@ -80,7 +84,7 @@ Perform the deployment specified by FILE.\n"))
     (debug . 0)
     (graft? . #t)
     (substitutes? . #t)
-    (build-hook? . #t)
+    (offload? . #t)
     (print-build-trace? . #t)
     (print-extended-build-trace? . #t)
     (multiplexed-build-output? . #t)))

@@ -4929,14 +4929,14 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxfont2
   (package
     (inherit libxfont)
-    (version "2.0.3")
+    (version "2.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://xorg/individual/lib/libXfont2-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0klwmimmhm3axpj8pwn5l41lbggh47r5aazhw63zxkbwfgyvg2hf"))))))
+                "1rk9pjxcm01lbr1dxhnvk4f2qrn6zp068qjbvvz5w0z5d0rin5bd"))))))
 
 (define-public libxi
   (package
@@ -4997,7 +4997,7 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxvmc
   (package
     (name "libxvmc")
-    (version "1.0.11")
+    (version "1.0.12")
     (source
       (origin
         (method url-fetch)
@@ -5007,7 +5007,7 @@ new API's in libXft, or the legacy API's in libX11.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0bb2c996p0smp2lwckffcfh4701bzv7266xh230ag0x68ka38bja"))))
+            "1kbdjsvkm5l7axv7g477qj18sab2wnqhliy6197syzizgfbsfgbb"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libxv" ,libxv)))
@@ -5101,7 +5101,7 @@ over Xlib, including:
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.20.5")
+    (version "1.20.6")
     (source
       (origin
         (method url-fetch)
@@ -5110,7 +5110,7 @@ over Xlib, including:
               "xorg-server-" version ".tar.bz2"))
         (sha256
          (base32
-          "17dc3g8cc55nbkx3np64dsz04n621dnzjmcc9wys0xbyyd1q47d8"))
+          "1laib9z17jksgzb67z69blcmnpbvj7i7m604b5ns7s760iii85k3"))
         (patches
          (list
           ;; See:
@@ -5232,7 +5232,16 @@ draggable titlebars and borders.")
 (define-public xorg-server-for-tests
   (hidden-package
    (package
-     (inherit xorg-server))))
+     (inherit xorg-server)
+     (version "1.20.5")
+     (source (origin
+               (inherit (package-source xorg-server))
+               (uri (string-append
+                     "mirror://xorg/individual/xserver/"
+                     "xorg-server-" version ".tar.bz2"))
+               (sha256
+                (base32
+                 "17dc3g8cc55nbkx3np64dsz04n621dnzjmcc9wys0xbyyd1q47d8")))))))
 
 (define-public xorg-server-xwayland
   (package
@@ -5743,14 +5752,14 @@ Intrinsics (Xt) Library.")
 (define-public xclock
   (package
     (name "xclock")
-    (version "1.0.8")
+    (version "1.0.9")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.x.org/releases/individual/app/"
-                           name "-" version ".tar.bz2"))
+                           "xclock-" version ".tar.bz2"))
        (sha256
-        (base32 "0m92zhamh15my9f2rqa14q41d6k2cn468azm3g7g3w9n7942024k"))))
+        (base32 "1fr3q4rszgx7x2zxy2ip592a3fgx20hfwac49p2l5b7jqsr1ying"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -5834,7 +5843,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
 (define-public xterm
   (package
     (name "xterm")
-    (version "350")
+    (version "351")
     (source (origin
               (method url-fetch)
               (uri (list
@@ -5844,7 +5853,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
                                    "xterm-" version ".tgz")))
               (sha256
                (base32
-                "0k8h0k1nrgq073yfrgrpcyd7mfcg6r3s940s1l46h0iizpp5kyxf"))))
+                "05kf586my4irrzz2bxgmwjdvynyrg9ybhvfqmx29g70w4888l2kn"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-wide-chars" "--enable-load-vt-fonts"
@@ -5966,7 +5975,7 @@ perl programs to display windows and graphics on X11 servers.")
 (define-public perl-x11-protocol-other
   (package
     (name "perl-x11-protocol-other")
-    (version "30")
+    (version "31")
     (source
      (origin
        (method url-fetch)
@@ -5974,8 +5983,7 @@ perl programs to display windows and graphics on X11 servers.")
              "mirror://cpan/authors/id/K/KR/KRYDE/X11-Protocol-Other-"
              version ".tar.gz"))
        (sha256
-        (base32
-         "1mambi57cdkj82wiw1l8y2f70a60qsamdas0165hlj10drryfgrj"))))
+        (base32 "1x3kvic52jgp2mvd5wzrqrprqi82cdk8l4075v8b33ksvj9mjqiw"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-encode-hanextra" ,perl-encode-hanextra)
@@ -6381,7 +6389,7 @@ output.")
 (define-public console-setup
   (package
     (name "console-setup")
-    (version "1.191")
+    (version "1.194")
     (source
      (origin
        (method git-fetch)
@@ -6389,7 +6397,7 @@ output.")
              (url "https://salsa.debian.org/installer-team/console-setup.git")
              (commit version)))
        (sha256
-        (base32 "0wplhjadk530fqxhfnizil32rcvkcl5m2r18yskspcib53r4pmim"))
+        (base32 "0fkabv05j5dj10mfrpjyvv7lnxl9qaqkbjhwj72r18i9i4019vgh"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments

@@ -1,0 +1,45 @@
+This patch is taken from upstream.  It fixes a test to work with GHC 8.6.
+The paths have been slightly altered to work with the release tarball.
+
+See <https://github.com/simonmar/monad-par/issues/66>.
+
+From e20f81c8060208e4fb038e8f0e0668b41d72a6fb Mon Sep 17 00:00:00 2001
+From: Clint Adams <clint@debian.org>
+Date: Sat, 31 Aug 2019 14:12:34 -0400
+Subject: [PATCH] Use a case statement instead of pattern-matching in
+ case_test_diamond
+
+This avoids the need for a MonadFail instance.  Closes #66
+---
+ monad-par/tests/ParTests_shared.hs | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
+
+diff --git a/tests/ParTests_shared.hs b/tests/ParTests_shared.hs
+index 31f438d..b2de50c 100644
+--- a/tests/ParTests_shared.hs
++++ b/tests/ParTests_shared.hs
+@@ -109,12 +109,15 @@ case_test_diamond :: Assertion
+ case_test_diamond = 9 @=? (m :: Int)
+  where 
+   m = runPar $ do
+-      [a,b,c,d] <- sequence [new,new,new,new]
+-      fork $ do x <- get a; put b (x+1)
+-      fork $ do x <- get a; put c (x+2)
+-      fork $ do x <- get b; y <- get c; put d (x+y)
+-      fork $ do put a 3
+-      get d
++      abcd <- sequence [new,new,new,new]
++      case abcd of
++          [a,b,c,d] -> do
++              fork $ do x <- get a; put b (x+1)
++              fork $ do x <- get a; put c (x+2)
++              fork $ do x <- get b; y <- get c; put d (x+y)
++              fork $ do put a 3
++              get d
++          _ -> error "Oops"
+ 
+ -- | Violate IVar single-assignment:
+ --
+-- 
+2.23.0
+

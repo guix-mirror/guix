@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,18 +37,17 @@
 (define-public gnu-efi
   (package
     (name "gnu-efi")
-    (version "3.0.9")
+    (version "3.0.11")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/gnu-efi/"
-                           name "-" version ".tar.bz2"))
+                           "gnu-efi-" version ".tar.bz2"))
        (sha256
-        (base32
-         "1w3p4aqlc5j93q44la7dc8cr3hky20zvsd0h0k2lyzhwmrzfl5b7"))))
+        (base32 "1ffnc4xbzfggs37ymrgfx76j56kk2644c081ivhr2bjkla9ag3gj"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; None exist.
+     `(#:tests? #f                      ; none exist
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases

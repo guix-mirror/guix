@@ -111,9 +111,10 @@ REPL} by running @code{guile} from the command line.
 Alternatively you can also run @code{guix environment --ad-hoc guile -- guile}
 if you'd rather not have Guile installed in your user profile.
 
-In the following examples we use the @code{>} symbol to denote the REPL
-prompt, that is, the line reserved for user input.  @xref{Using Guile
-Interactively,,, guile, GNU Guile Reference Manual}) for more details on the
+In the following examples, lines show what you would type at the REPL;
+lines starting with ``@result{}'' show evaluation results, while lines
+starting with ``@print{}'' show things that get printed.  @xref{Using Guile
+Interactively,,, guile, GNU Guile Reference Manual}), for more details on the
 REPL.
 
 @itemize
@@ -121,17 +122,20 @@ REPL.
 Scheme syntax boils down to a tree of expressions (or @emph{s-expression} in
 Lisp lingo).  An expression can be a literal such as numbers and strings, or a
 compound which is a parenthesized list of compounds and literals.  @code{#t}
-and @code{#f} stand for the booleans "true" and "false", respectively.
+and @code{#f} stand for the Booleans ``true'' and ``false'', respectively.
 
 Examples of valid expressions:
 
 @lisp
-> "Hello World!"
 "Hello World!"
-> 17
+@result{} "Hello World!"
+
 17
-> (display (string-append "Hello " "Guix" "\n"))
-"Hello Guix!"
+@result{} 17
+
+(display (string-append "Hello " "Guix" "\n"))
+@print{} Hello Guix!
+@result{} #<unspecified>
 @end lisp
 
 @item
@@ -144,8 +148,8 @@ last evaluated expression as its return value.
 Anonymous functions are declared with the @code{lambda} term:
 
 @lisp
-> (lambda (x) (* x x))
-#<procedure 120e348 at <unknown port>:24:0 (x)>
+(lambda (x) (* x x))
+@result{} #<procedure 120e348 at <unknown port>:24:0 (x)>
 @end lisp
 
 The above procedure returns the square of its argument.  Since everything is
@@ -153,18 +157,18 @@ an expression, the @code{lambda} expression returns an anonymous procedure,
 which can in turn be applied to an argument:
 
 @lisp
-> ((lambda (x) (* x x)) 3)
-9
+((lambda (x) (* x x)) 3)
+@result{} 9
 @end lisp
 
 @item
 Anything can be assigned a global name with @code{define}:
 
 @lisp
-> (define a 3)
-> (define square (lambda (x) (* x x)))
-> (square a)
-9
+(define a 3)
+(define square (lambda (x) (* x x)))
+(square a)
+@result{} 9
 @end lisp
 
 @item
@@ -178,58 +182,63 @@ Procedures can be defined more concisely with the following syntax:
 A list structure can be created with the @code{list} procedure:
 
 @lisp
-> (list 2 a 5 7)
-(2 3 5 7)
+(list 2 a 5 7)
+@result{} (2 3 5 7)
 @end lisp
 
 @item
-The @emph{quote} disables evaluation of a parenthesized expression: the first
-term is not called over the other terms.  Thus it effectively returns a list
-of terms.
+The @dfn{quote} disables evaluation of a parenthesized expression: the
+first term is not called over the other terms (@pxref{Expression Syntax,
+quote,, guile, GNU Guile Reference Manual}).  Thus it effectively
+returns a list of terms.
 
 @lisp
-> '(display (string-append "Hello " "Guix" "\n"))
-(display (string-append "Hello " "Guix" "\n"))
-> '(2 a 5 7)
-(2 a 5 7)
+'(display (string-append "Hello " "Guix" "\n"))
+@result{} (display (string-append "Hello " "Guix" "\n"))
+
+'(2 a 5 7)
+@result{} (2 a 5 7)
 @end lisp
 
 @item
-The @emph{quasiquote} disables evaluation of a parenthesized expression until
-a comma re-enables it.  Thus it provides us with fine-grained control over
-what is evaluated and what is not.
+The @dfn{quasiquote} disables evaluation of a parenthesized expression
+until @dfn{unquote} (a comma) re-enables it.  Thus it provides us with
+fine-grained control over what is evaluated and what is not.
 
 @lisp
-> `(2 a 5 7 (2 ,a 5 ,(+ a 4)))
-(2 a 5 7 (2 3 5 7))
+`(2 a 5 7 (2 ,a 5 ,(+ a 4)))
+@result{} (2 a 5 7 (2 3 5 7))
 @end lisp
 
 Note that the above result is a list of mixed elements: numbers, symbols (here
 @code{a}) and the last element is a list itself.
 
 @item
-Multiple variables can be named locally with @code{let}:
+Multiple variables can be named locally with @code{let} (@pxref{Local
+Bindings,,, guile, GNU Guile Reference Manual}):
 
 @lisp
-> (define x 10)
-> (let ((x 2)
-        (y 3))
-    (list x y))
-(2 3)
-> x
-10
-> y
-ERROR: In procedure module-lookup: Unbound variable: y
+(define x 10)
+(let ((x 2)
+      (y 3))
+  (list x y))
+@result{} (2 3)
+
+x
+@result{} 10
+
+y
+@error{} In procedure module-lookup: Unbound variable: y
 @end lisp
 
 Use @code{let*} to allow later variable declarations to refer to earlier
 definitions.
 
 @lisp
-> (let* ((x 2)
-         (y (* x 3)))
-    (list x y))
-(2 6)
+(let* ((x 2)
+       (y (* x 3)))
+  (list x y))
+@result{} (2 6)
 @end lisp
 
 @item
@@ -242,7 +251,8 @@ the build stage.  Note that it is merely a convention, like @code{_} in C.
 Scheme treats @code{%} exactly the same as any other letter.
 
 @item
-Modules are created with @code{define-module}.  For instance
+Modules are created with @code{define-module} (@pxref{Creating Guile
+Modules,,, guile, GNU Guile Reference Manual}).  For instance
 
 @lisp
 (define-module (guix build-system ruby)
@@ -331,14 +341,14 @@ It does not assume much knowledge of the Guix system nor of the Lisp language.
 The reader is only expected to be familiar with the command line and to have some
 basic programming knowledge.
 
-@node A "Hello World" package
-@subsection A "Hello World" package
+@node A ``Hello World'' package
+@subsection A ``Hello World'' package
 
-The “Defining Packages” section of the manual introduces the basics of Guix
+The ``Defining Packages'' section of the manual introduces the basics of Guix
 packaging (@pxref{Defining Packages,,, guix, GNU Guix Reference Manual}).  In
 the following section, we will partly go over those basics again.
 
-``GNU hello'' is a dummy project that serves as an idiomatic example for
+GNU@tie{}Hello is a dummy project that serves as an idiomatic example for
 packaging.  It uses the GNU build system (@code{./configure && make && make
 install}).  Guix already provides a package definition which is a perfect
 example to start with.  You can look up its declaration with @code{guix edit
@@ -416,10 +426,10 @@ available licenses.
 @end table
 
 Time to build our first package!  Nothing fancy here for now: we will stick to a
-dummy "my-hello", a copy of the above declaration.
+dummy @code{my-hello}, a copy of the above declaration.
 
-As with the ritualistic "Hello World" taught with most programming languages,
-this will possibly be the most "manual" approach.  We will work out an ideal
+As with the ritualistic ``Hello World'' taught with most programming languages,
+this will possibly be the most ``manual'' approach.  We will work out an ideal
 setup later; for now we will go the simplest route.
 
 Save the following to a file @file{my-hello.scm}.
@@ -554,20 +564,20 @@ earlier example.
 
 The @code{use-modules} expression tells which of the modules we need in the file.
 Modules are a collection of values and procedures.  They are commonly called
-"libraries" or "packages" in other programming languages.
+``libraries'' or ``packages'' in other programming languages.
 
 @node @samp{GUIX_PACKAGE_PATH}
 @subsubsection @samp{GUIX_PACKAGE_PATH}
 
-@emph{Note: Starting from Guix 0.16, the more flexible Guix "channels" are the
+@emph{Note: Starting from Guix 0.16, the more flexible Guix @dfn{channels} are the
 preferred way and supersede @samp{GUIX_PACKAGE_PATH}.  See next section.}
 
 It can be tedious to specify the file from the command line instead of simply
 calling @code{guix package --install my-hello} as you would do with the official
 packages.
 
-Guix makes it possible to streamline the process by adding as many "package
-declaration paths" as you want.
+Guix makes it possible to streamline the process by adding as many ``package
+declaration directories'' as you want.
 
 Create a directory, say @samp{~./guix-packages} and add it to the @samp{GUIX_PACKAGE_PATH}
 environment variable:
@@ -581,7 +591,7 @@ To add several directories, separate them with a colon (@code{:}).
 
 Our previous @samp{my-hello} needs some adjustments though:
 
-@example
+@lisp
 (define-module (my-hello)
   #:use-module (guix licenses)
   #:use-module (guix packages)
@@ -607,7 +617,7 @@ serves as an example of standard GNU coding practices.  As such, it supports
 command-line arguments, multiple languages, and so on.")
     (home-page "https://www.gnu.org/software/hello/")
     (license gpl3+)))
-@end example
+@end lisp
 
 Note that we have assigned the package value to an exported variable name with
 @code{define-public}.  This is effectively assigning the package to the @code{my-hello}
@@ -619,14 +629,14 @@ will fail because the last expression, @code{define-public}, does not return a
 package.  If you want to use @code{define-public} in this use-case nonetheless, make
 sure the file ends with an evaluation of @code{my-hello}:
 
-@example
+@lisp
 ; ...
 (define-public my-hello
   ; ...
   )
 
 my-hello
-@end example
+@end lisp
 
 This last example is not very typical.
 
@@ -670,7 +680,7 @@ In the rest of this article, we use @samp{$GUIX_CHECKOUT} to refer to the locati
 the checkout.
 
 
-Follow the instruction in the manual (@pxref{Contributing,,, guix, GNU Guix
+Follow the instructions in the manual (@pxref{Contributing,,, guix, GNU Guix
 Reference Manual}) to set up the repository environment.
 
 Once ready, you should be able to use the package definitions from the
@@ -679,7 +689,8 @@ repository environment.
 Feel free to edit package definitions found in @samp{$GUIX_CHECKOUT/gnu/packages}.
 
 The @samp{$GUIX_CHECKOUT/pre-inst-env} script lets you use @samp{guix} over the package
-collection of the repository.
+collection of the repository (@pxref{Running Guix Before It Is
+Installed,,, guix, GNU Guix Reference Manual}).
 
 @itemize
 @item
@@ -735,11 +746,11 @@ It's a community effort so the more join in, the better Guix becomes!
 @node Extended example
 @subsection Extended example
 
-The above "Hello World" example is as simple as it goes.  Packages can be more
+The above ``Hello World'' example is as simple as it goes.  Packages can be more
 complex than that and Guix can handle more advanced scenarios.  Let's look at
 another, more sophisticated package (slightly modified from the source):
 
-@example
+@lisp
 (define-module (gnu packages version-control)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
@@ -812,7 +823,7 @@ provided as a re-entrant linkable library with a solid API, allowing you to
 write native speed custom Git applications in any language with bindings.")
       ;; GPLv2 with linking exception
       (license license:gpl2))))
-@end example
+@end lisp
 
 (In those cases were you only want to tweak a few fields from a package
 definition, you should rely on inheritance instead of copy-pasting everything.
@@ -840,9 +851,7 @@ version when packaging programs for a specific commit.
 Snippets are quoted (i.e. non-evaluated) Scheme code that are a means of patching
 the source.  They are a Guix-y alternative to the traditional @samp{.patch} files.
 Because of the quote, the code in only evaluated when passed to the Guix daemon
-for building.
-
-There can be as many snippet as needed.
+for building.  There can be as many snippets as needed.
 
 Snippets might need additional Guile modules which can be imported from the
 @code{modules} field.
@@ -851,17 +860,17 @@ Snippets might need additional Guile modules which can be imported from the
 
 First, a syntactic comment: See the quasi-quote / comma syntax?
 
-@example
+@lisp
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-@end example
+@end lisp
 
 is equivalent to
 
-@example
+@lisp
     (native-inputs
      (list (list "pkg-config" pkg-config)))
-@end example
+@end lisp
 
 You'll mostly see the former because it's shorter.
 
@@ -883,7 +892,7 @@ being present at build time.
 
 The distinction between the various inputs is important: if a dependency can be
 handled as an @emph{input} instead of a @emph{propagated input}, it should be done so, or
-else it "pollutes" the user profile for no good reason.
+else it ``pollutes'' the user profile for no good reason.
 
 For instance, a user installing a graphical program that depends on a
 command line tool might only be interested in the graphical part, so there is no
@@ -930,10 +939,10 @@ Another  common argument is @code{:make-flags}, which specifies a list of flags 
 append when running make, as you would from the command line.  For instance, the
 following flags
 
-@example
+@lisp
 #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out"))
                    "CC=gcc")
-@end example
+@end lisp
 
 translate into
 
@@ -946,11 +955,11 @@ directory in Make parlance) to @code{(assoc-ref %outputs "out")}, which is a bui
 global variable pointing to the destination directory in the store (something like
 @samp{/gnu/store/...-my-libgit2-20180408}).
 
-Similarly, it's possible to set the "configure" flags.
+Similarly, it's possible to set the configure flags:
 
-@example
+@lisp
 #:configure-flags '("-DUSE_SHA1DC=ON")
-@end example
+@end lisp
 
 The @code{%build-inputs} variable is also generated in scope.  It's an association
 table that maps the input names to their store directories.
@@ -960,7 +969,7 @@ phases include @code{unpack}, @code{configure}, @code{build}, @code{install} and
 more about those phases, you need to work out the appropriate build system
 definition in @samp{$GUIX_CHECKOUT/guix/build/gnu-build-system.scm}:
 
-@example
+@lisp
 (define %standard-phases
   ;; Standard build phases, as a list of symbol/procedure pairs.
   (let-syntax ((phases (syntax-rules ()
@@ -978,16 +987,16 @@ definition in @samp{$GUIX_CHECKOUT/guix/build/gnu-build-system.scm}:
             install-license-files
             reset-gzip-timestamps
             compress-documentation)))
-@end example
+@end lisp
 
 Or from the REPL:
 
-@example
-> (add-to-load-path "/path/to/guix/checkout")
-> ,module (guix build gnu-build-system)
-> (map first %standard-phases)
-(set-SOURCE-DATE-EPOCH set-paths install-locale unpack bootstrap patch-usr-bin-file patch-source-shebangs configure patch-generated-file-shebangs build check install patch-shebangs strip validate-runpath validate-documentation-location delete-info-dir-file patch-dot-desktop-files install-license-files reset-gzip-timestamps compress-documentation)
-@end example
+@lisp
+(add-to-load-path "/path/to/guix/checkout")
+,use (guix build gnu-build-system)
+(map first %standard-phases)
+@result{} (set-SOURCE-DATE-EPOCH set-paths install-locale unpack bootstrap patch-usr-bin-file patch-source-shebangs configure patch-generated-file-shebangs build check install patch-shebangs strip validate-runpath validate-documentation-location delete-info-dir-file patch-dot-desktop-files install-license-files reset-gzip-timestamps compress-documentation)
+@end lisp
 
 If you want to know more about what happens during those phases, consult the
 associated procedures.
@@ -995,7 +1004,7 @@ associated procedures.
 For instance, as of this writing the definition of @code{unpack} for the GNU build
 system is
 
-@example
+@lisp
 (define* (unpack #:key source #:allow-other-keys)
   "Unpack SOURCE in the working directory, and change directory within the
 source.  When SOURCE is a directory, copy it in a sub-directory of the current
@@ -1015,7 +1024,7 @@ working directory."
             (invoke "tar" "xvf" source))
         (chdir (first-subdirectory "."))))
   #t)
-@end example
+@end lisp
 
 Note the @code{chdir} call: it changes the working directory to where the source was
 unpacked.
@@ -1045,14 +1054,14 @@ by their name in those variables.  Thus @code{(assoc-ref outputs "out")} is the 
 directory of the main output of the package.  A phase procedure may look like
 this:
 
-@example
+@lisp
 (lambda* (#:key inputs outputs #:allow-other-keys)
   (let (((bash-directory (assoc-ref inputs "bash"))
          (output-directory (assoc-ref outputs "out"))
          (doc-directory (assoc-ref outputs "doc"))
   ; ...
   #t)
-@end example
+@end lisp
 
 The procedure must return @code{#t} on success.  It's brittle to rely on the return
 value of the last expression used to tweak the phase because there is no
@@ -1066,11 +1075,11 @@ argument field.  Indeed, the build code in the package declaration should not be
 evaluated on the client side, but only when passed to the Guix daemon.  This
 mechanism of passing code around two running processes is called @uref{https://arxiv.org/abs/1709.00833, code staging}.
 
-@subsubsection "Utils" functions
+@subsubsection Utility functions
 
 When customizing @code{phases}, we often need to write code that mimics the
 equivalent system invocations (@code{make}, @code{mkdir}, @code{cp}, etc.) commonly used during
-regular "Unix-style" installations.
+regular ``Unix-style'' installations.
 
 Some like @code{chmod} are native to Guile.
 @xref{,,, guile, Guile reference manual} for a complete list.
@@ -1103,7 +1112,7 @@ Run an executable.  This should be used instead of @code{system*}.
 Run the body in a different working directory,
 then restore the previous working directory.
 @item substitute*
-A "sed-like" function.
+A ``@command{sed}-like'' function.
 @end table
 
 @subsubsection Module prefix
@@ -1233,7 +1242,7 @@ $ guix refresh hello --update
 If you've started browsing the existing package definitions, you might have
 noticed that a significant number of them have a @code{inherit} field:
 
-@example
+@lisp
 (define-public adwaita-icon-theme
   (package (inherit gnome-icon-theme)
     (name "adwaita-icon-theme")
@@ -1248,7 +1257,7 @@ noticed that a significant number of them have a @code{inherit} field:
                 "17fpahgh5dyckgz7rwqvzgnhx53cx9kr2xw0szprc6bnqy977fi8"))))
     (native-inputs
      `(("gtk-encode-symbolic-svg" ,gtk+ "bin")))))
-@end example
+@end lisp
 
 All unspecified fields are inherited from the parent package.  This is very
 convenient to create alternative packages, for instance with different source,
@@ -1299,7 +1308,7 @@ The @uref{https://www.gnu.org/software/guix/manual/en/html_node/Defining-Package
 @uref{https://gitlab.com/pjotrp/guix-notes/blob/master/HACKING.org, Pjotr’s hacking guide to GNU Guix}
 
 @item
-@uref{https://www.gnu.org/software/guix/guix-ghm-andreas-20130823.pdf, "GNU Guix: Package without a scheme!"}, by Andreas Enge
+@uref{https://www.gnu.org/software/guix/guix-ghm-andreas-20130823.pdf, ``GNU Guix: Package without a scheme!''}, by Andreas Enge
 @end itemize
 
 @c *********************************************************************
@@ -1533,7 +1542,7 @@ CONFIG_VIRTIO=m
 @end example
 
 After copying all the configuration options, run @code{make localmodconfig}
-again to make sure that you don't have any output starting with "module".
+again to make sure that you don't have any output starting with ``module''.
 After all of these machine specific modules there are a couple more left that
 are also needed.  @code{CONFIG_MODULES} is necessary so that you can build and
 load modules separately and not have everything built into the kernel.

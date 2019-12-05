@@ -47,8 +47,8 @@
   #:use-module ((guix licenses)
                 #:select (license? license-name license-uri))
   #:use-module ((guix build syscalls)
-                #:select (free-disk-space terminal-columns
-                                          terminal-rows))
+                #:select (free-disk-space terminal-columns terminal-rows
+                          with-file-lock/no-wait))
   #:use-module ((guix build utils)
                 ;; XXX: All we need are the bindings related to
                 ;; '&invoke-error'.  However, to work around the bug described
@@ -111,12 +111,15 @@
             package-specification->name+version+output
 
             supports-hyperlinks?
+            hyperlink
+            file-hyperlink
             location->hyperlink
 
             relevance
             package-relevance
             display-search-results
 
+            with-profile-lock
             string->generations
             string->duration
             matching-generations
@@ -372,7 +375,7 @@ ARGS is the list of arguments received by the 'throw' handler."
        (report-error loc (G_ "~a~%") message)))
     (('unbound-variable _ ...)
      (report-unbound-variable-error args #:frame frame))
-    (('srfi-34 obj)
+    (((or 'srfi-34 '%exception) obj)
      (if (message-condition? obj)
          (report-error (and (error-location? obj)
                             (error-location obj))
@@ -404,7 +407,7 @@ exiting.  ARGS is the list of arguments received by the 'throw' handler."
        (warning loc (G_ "~a~%") message)))
     (('unbound-variable _ ...)
      (report-unbound-variable-error args))
-    (('srfi-34 obj)
+    (((or 'srfi-34 '%exception) obj)
      (if (message-condition? obj)
          (warning (G_ "failed to load '~a': ~a~%")
                   file
@@ -813,7 +816,7 @@ similar."
         (match args
           (('syntax-error proc message properties form . rest)
            (report-error (G_ "syntax error: ~a~%") message))
-          (('srfi-34 obj)
+          (((or 'srfi-34 '%exception) obj)
            (if (message-condition? obj)
                (report-error (G_ "~a~%")
                              (gettext (condition-message obj)
@@ -1246,7 +1249,7 @@ documented at
   (string-append "\x1b]8;;" uri "\x1b\\"
                  text "\x1b]8;;\x1b\\"))
 
-(define (supports-hyperlinks? port)
+(define* (supports-hyperlinks? #:optional (port (current-output-port)))
   "Return true if PORT is a terminal that supports hyperlink escapes."
   ;; Note that terminals are supposed to ignore OSC escapes they don't
   ;; understand (this is the case of xterm as of version 349, for instance.)
@@ -1255,6 +1258,13 @@ documented at
   (and (isatty?* port)
        (not (getenv "INSIDE_EMACS"))))
 
+(define* (file-hyperlink file #:optional (text file))
+  "Return TEXT with escapes for a hyperlink to FILE."
+  (hyperlink (string-append "file://" (gethostname)
+                            (encode-and-join-uri-path
+                             (string-split file #\/)))
+             text))
+
 (define (location->hyperlink location)
   "Return a string corresponding to LOCATION, with escapes for a hyperlink."
   (let ((str  (location->string location))
@@ -1262,10 +1272,7 @@ documented at
                   (location-file location)
                   (search-path %load-path (location-file location)))))
     (if file
-        (hyperlink (string-append "file://" (gethostname)
-                                  (encode-and-join-uri-path
-                                   (string-split file #\/)))
-                   str)
+        (file-hyperlink file str)
         str)))
 
 (define* (package->recutils p port #:optional (width (%text-width))
@@ -1608,17 +1615,22 @@ DURATION-RELATION with the current time."
 (define (display-generation profile number)
   "Display a one-line summary of generation NUMBER of PROFILE."
   (unless (zero? number)
-    (let ((header (format #f (highlight (G_ "Generation ~a\t~a")) number
-                          (date->string
-                           (time-utc->date
-                            (generation-time profile number))
-                           ;; TRANSLATORS: This is a format-string for date->string.
-                           ;; Please choose a format that corresponds to the
-                           ;; usual way of presenting dates in your locale.
-                           ;; See https://www.gnu.org/software/guile/manual/html_node/SRFI_002d19-Date-to-string.html
-                           ;; for details.
-                           (G_ "~b ~d ~Y ~T"))))
-          (current (generation-number profile)))
+    (let* ((file   (generation-file-name profile number))
+           (link   (if (supports-hyperlinks?)
+                       (cut file-hyperlink file <>)
+                       identity))
+           (header (format #f (link (highlight (G_ "Generation ~a\t~a")))
+                           number
+                           (date->string
+                            (time-utc->date
+                             (generation-time profile number))
+                            ;; TRANSLATORS: This is a format-string for date->string.
+                            ;; Please choose a format that corresponds to the
+                            ;; usual way of presenting dates in your locale.
+                            ;; See https://www.gnu.org/software/guile/manual/html_node/SRFI_002d19-Date-to-string.html
+                            ;; for details.
+                            (G_ "~b ~d ~Y ~T"))))
+           (current (generation-number profile)))
       (if (= number current)
           ;; TRANSLATORS: The word "current" here is an adjective for
           ;; "Generation", as in "current generation".  Use the appropriate
@@ -1651,6 +1663,26 @@ DURATION-RELATION with the current time."
       (newline)))
 
   (display-diff profile gen1 gen2))
+
+(define (profile-lock-handler profile errno . _)
+  "Handle failure to acquire PROFILE's lock."
+  ;; NFS mounts can return ENOLCK.  When that happens, there's not much that
+  ;; can be done, so warn the user and keep going.
+  (if (= errno ENOLCK)
+      (warning (G_ "cannot lock profile ~a: ~a~%")
+               profile (strerror errno))
+      (leave (G_ "profile ~a is locked by another process~%")
+             profile)))
+
+(define profile-lock-file
+  (cut string-append <> ".lock"))
+
+(define-syntax-rule (with-profile-lock profile exp ...)
+  "Grab PROFILE's lock and evaluate EXP...  Call 'leave' if the lock is
+already taken."
+  (with-file-lock/no-wait (profile-lock-file profile)
+    (cut profile-lock-handler profile <...>)
+    exp ...))
 
 (define (display-profile-content profile number)
   "Display the packages in PROFILE, generation NUMBER, in a human-readable

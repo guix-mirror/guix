@@ -320,8 +320,15 @@ It is implemented as a macro to capture the current source directory where it
 appears."
     (syntax-case s ()
       ((_ file rest ...)
+       (string? (syntax->datum #'file))
+       ;; FILE is a literal, so resolve it relative to the source directory.
        #'(%local-file file
                       (delay (absolute-file-name file (current-source-directory)))
+                      rest ...))
+      ((_ file rest ...)
+       ;; Resolve FILE relative to the current directory.
+       #'(%local-file file
+                      (delay (absolute-file-name file (getcwd)))
                       rest ...))
       ((_)
        #'(syntax-error "missing file name"))

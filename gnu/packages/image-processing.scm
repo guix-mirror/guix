@@ -75,7 +75,7 @@
 (define-public dcmtk
   (package
     (name "dcmtk")
-    (version "3.6.4")
+    (version "3.6.5")
     (source
      (origin
        (method url-fetch)
@@ -84,7 +84,7 @@
                        "dcmtk" (string-join (string-split version #\.) "")
                        "/dcmtk-" version ".tar.gz"))
        (sha256
-        (base32 "1h22z8g0kmvhg8lgkbikyzyphhvxvq6018a00yd6i4g0z9ag6gx9"))))
+        (base32 "1fdyz5wwjp4grys61mxb2ia9fi6i3ax6s43l16xnv291bxk7hld0"))))
     (build-system cmake-build-system)
     (inputs
      `(;; Our ICU is too recent: “error: ‘UChar’ does not name a type“.
@@ -373,7 +373,7 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
              (zero? (system (format #f "~a/bin/Xvfb ~a &" xorg-server disp)))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("xorg-server" ,xorg-server) ; For running the tests
+       ("xorg-server" ,xorg-server-for-tests) ; For running the tests
        ("opencv-extra"
         ,(origin
            (method git-fetch)

@@ -87,7 +87,7 @@ _guix_list_installed_packages()
         '--no-substitutes[build instead of resorting to pre-built substitutes]' \
         '--substitute-urls=[fetch substitute from URLS if they are authorized]:URLS:_urls' \
         '--no-grafts[do not graft packages]' \
-        '--no-build-hook[do not attempt to offload builds via the build hook]' \
+        '--no-offload[do not attempt to offload builds]' \
         '--max-silent-time=[mark the build as failed after SECONDS of silence]:SECONDS' \
         '--timeout=[mark the build as failed after SECONDS of activity]:SECONDS' \
         '--verbosity=[use the given verbosity LEVEL]:LEVEL' \
@@ -158,7 +158,7 @@ _guix_list_installed_packages()
         '--no-substitutes[build instead of resorting to pre-built substitutes]' \
         '--substitute-urls=[fetch substitute from URLS if they are authorized]:URLS:_urls' \
         '--no-grafts[do not graft packages]' \
-        '--no-build-hook[do not attempt to offload builds via the build hook]' \
+        '--no-offload[do not attempt to offload builds]' \
         '--max-silent-time=[mark the build as failed after SECONDS of silence]:SECONDS' \
         '--timeout=[mark the build as failed after SECONDS of activity]:SECONDS' \
         '--verbosity=[use the given verbosity LEVEL]:LEVEL' \
@@ -282,7 +282,7 @@ _guix_list_installed_packages()
         '--no-substitutes[build instead of resorting to pre-built substitutes]' \
         '--substitute-urls=[fetch substitute from URLS if they are authorized]:URLS:_urls' \
         '--no-grafts[do not graft packages]' \
-        '--no-build-hook[do not attempt to offload builds via the build hook]' \
+        '--no-offload[do not attempt to offload builds]' \
         '--max-silent-time=[mark the build as failed after SECONDS of silence]:SECONDS' \
         '--timeout=[mark the build as failed after SECONDS of activity]:SECONDS' \
         '--verbosity=[use the given verbosity LEVEL]:LEVEL' \
@@ -374,7 +374,7 @@ _guix_list_installed_packages()
         '--no-substitutes[build instead of resorting to pre-built substitutes]' \
         '--substitute-urls=[fetch substitute from URLS if they are authorized]:URL:_urls' \
         '--no-grafts[do not graft packages]' \
-        '--no-build-hook[do not attempt to offload builds via the build hook]' \
+        '--no-offload[do not attempt to offload builds]' \
         '--max-silent-time=[mark the build as failed after SECONDS of silence]:SECONDS' \
         '--timeout=[mark the build as failed after SECONDS of activity]:SECONDS' \
         '--verbosity=[use the given verbosity LEVEL]:LEVEL' \

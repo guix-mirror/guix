@@ -30,14 +30,14 @@
 (define-public calcurse
   (package
     (name "calcurse")
-    (version "4.5.0")
+    (version "4.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://calcurse.org/files/calcurse-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1vjwcmp51h7dsvwn0qx93w9chp3wp970v7d9mjhk7jyamcbfywn3"))))
+        (base32 "0cgkd285x5pk62lmdx9fjxl46c5lj8wj2cqbxq7d99yb4il5fdjk"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)))
     (native-inputs `(("tzdata" ,tzdata-for-tests)))

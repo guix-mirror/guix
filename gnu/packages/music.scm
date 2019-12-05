@@ -3,7 +3,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
@@ -423,7 +423,10 @@ many input formats and provides a customisable Vi-style user interface.")
                             "Clarinet in Bb.denemo"))
              #t)))))
     (native-inputs
-     `(("glib:bin" ,glib "bin")         ; for gtester
+     `(("intltool" ,intltool)
+       ("glib:bin" ,glib "bin")         ; for gtester
+       ("gtk-doc" ,gtk-doc)
+       ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -433,13 +436,10 @@ many input formats and provides a customisable Vi-style user interface.")
        ("fluidsynth" ,fluidsynth)
        ("glib" ,glib)
        ("gtk+" ,gtk+)
-       ("gtk-doc" ,gtk-doc)
        ("gtksourceview" ,gtksourceview-3)
        ("guile" ,guile-2.0)
-       ("intltool" ,intltool)
        ("librsvg" ,librsvg)
        ("libsndfile" ,libsndfile)
-       ("libtool" ,libtool)
        ("libxml2" ,libxml2)
        ("lilypond" ,lilypond)
        ("portaudio" ,portaudio)
@@ -1128,6 +1128,40 @@ be used alone or in concert with Non Mixer and Non Sequencer to form a
 complete studio.")
     (license license:gpl2+)))
 
+(define-public bsequencer
+  (package
+    (name "bsequencer")
+    (version "1.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/sjaehn/BSEQuencer.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "08xwz5v8wrar0rx7qdr9pkpjz2k9sw6bn5glhpn6sp6453fabf8q"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #f ; there are none
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs
+     `(("cairo" ,cairo)
+       ("lv2" ,lv2)
+       ("libx11" ,libx11)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/sjaehn/BSEQuencer")
+    (synopsis "Multi-channel MIDI step sequencer LV2 plugin")
+    (description
+     "This package provides a multi-channel MIDI step sequencer LV2 plugin
+with a selectable pattern matrix size.")
+    (license license:gpl3+)))
+
 (define-public solfege
   (package
     (name "solfege")
@@ -1796,7 +1830,7 @@ export.")
 (define-public pd
   (package
     (name "pd")
-    (version "0.50-0")
+    (version "0.50-2")
     (source (origin
               (method url-fetch)
               (uri
@@ -1804,7 +1838,7 @@ export.")
                               version ".src.tar.gz"))
               (sha256
                (base32
-                "0hg4n5b55f650qsc0mjx559072dp7vfza7w0pvk6rk2l831cvsps"))))
+                "0dz6r6jy0zfs1xy1xspnrxxks8kddi9c7pxz4vpg2ygwv83ghpg5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no "check" target
@@ -2208,14 +2242,14 @@ improves on support for JACK features, such as JACK MIDI.")
 (define-public libgig
   (package
     (name "libgig")
-    (version "4.1.0")
+    (version "4.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.linuxsampler.org/packages/"
                                   "libgig-" version ".tar.bz2"))
               (sha256
                (base32
-                "02xx6bqxzgkvrawwnzrnxx1ypk244q4kpwfd58266f9ji8kq18h6"))))
+                "1zs5yy124bymfyapsnljr6rv2lnn5inwchm0xnwiw44b2d39l8hn"))))
     (build-system gnu-build-system)
     (inputs
      `(("libuuid" ,util-linux)
@@ -3804,7 +3838,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
 (define-public musescore
   (package
     (name "musescore")
-    (version "3.3")
+    (version "3.3.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3813,7 +3847,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "15ckjwvp3xigjkzmp1ddzvlm4d0vlk9i1axyfxg3hr2sia84yxvi"))
+                "11pcw2ihi7ddd4rr83y72i61yyc1qfj6v14a82zwlak2qnllpbmr"))
               (modules '((guix build utils)))
               (snippet
                ;; Un-bundle OpenSSL and remove unused libraries.
@@ -5013,3 +5047,62 @@ Soul Force), MVerb, Nekobi, and ProM.")
 MacArthur's AVLdrums.  This plugin provides a convenient way to sequence and mix
 MIDI drums and comes as two separate drumkits: Black Pearl and Red Zeppelin.")
     (license license:gpl2+)))
+
+(define-public helm
+  (package
+    (name "helm")
+    (version "0.9.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri
+          (git-reference
+            (url "https://github.com/mtytel/helm.git")
+            (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "17ys2vvhncx9i3ydg3xwgz1d3gqv4yr5mqi7vr0i0ca6nad6x3d4"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f  ; no "check" target
+       #:make-flags
+       (list (string-append "DESTDIR=" (assoc-ref %outputs "out"))
+             "lv2" "standalone")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'include-pnglib-code-and-remove-usr-from-paths
+           (lambda _
+             (substitute* "standalone/builds/linux/Makefile"
+               (("JUCE_INCLUDE_PNGLIB_CODE=0")
+                "JUCE_INCLUDE_PNGLIB_CODE=1"))
+             (substitute* "builds/linux/LV2/Makefile"
+               (("JUCE_INCLUDE_PNGLIB_CODE=0")
+                "JUCE_INCLUDE_PNGLIB_CODE=1"))
+             (substitute* "Makefile"
+               (("/usr") ""))
+             #t))
+         (add-before 'reset-gzip-timestamps 'make-gz-files-writable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (for-each make-file-writable
+                       (find-files (string-append (assoc-ref outputs "out"))
+                                   ".*\\.gz$"))
+             #t))
+         (delete 'configure))))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("curl" ,curl)
+       ("freetype2" ,freetype)
+       ("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("libxcursor" ,libxcursor)
+       ("libxinerama", libxinerama)
+       ("jack", jack-1)
+       ("mesa" ,mesa)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("lv2", lv2)))
+    (home-page "https://tytel.org/helm/")
+    (synopsis "Polyphonic synth with lots of modulation")
+    (description "Helm is a cross-platform polyphonic synthesizer available standalone
+and as an LV2 plugin.")
+    (license license:gpl3+)))

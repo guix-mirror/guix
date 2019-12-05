@@ -133,7 +133,7 @@ complete -f -c guix -n '__fish_guix_using_command pull' -l url -d 'download the 
 complete -f -c guix -n '__fish_guix_using_command pull' -l bootstrap -d 'use the bootstrap Guile to build the new Guix'
 
 #### system
-set -l remotecommands reconfigure roll-back switch-generation list-generations build container vm vm-image disk-image init extension-graph shepherd-graph load-path keep-failed keep-going dry-run fallback no-substitutes substitutes-urls no-grafts no-build-hook max-silent-time timeout verbosity rounds cores max-jobs derivation on-error image-size no-grub share expose full-boot
+set -l remotecommands reconfigure roll-back switch-generation list-generations build container vm vm-image disk-image init extension-graph shepherd-graph load-path keep-failed keep-going dry-run fallback no-substitutes substitutes-urls no-grafts no-offload max-silent-time timeout verbosity rounds cores max-jobs derivation on-error image-size no-grub share expose full-boot
 complete -f -c guix -n '__fish_guix_needs_command' -a system -d 'Build the operating system declared in FILE according to ACTION.'
 complete -f -c guix -n '__fish_guix_using_command system' -l reconfigure -d 'switch to a new operating system configuration'
 complete -f -c guix -n '__fish_guix_using_command system' -l roll-back -d 'switch to the previous operating system configuration'
@@ -156,7 +156,7 @@ complete -f -c guix -n '__fish_guix_using_command system' -l fallback -d 'fall b
 complete -f -c guix -n '__fish_guix_using_command system' -l no-substitutes -d 'build instead of resorting to pre-built substitutes'
 complete -f -c guix -n '__fish_guix_using_command system' -a "--substitute-urls=" -d 'fetch substitute from URLS if they are authorized'
 complete -f -c guix -n '__fish_guix_using_command system' -l no-grafts -d 'do not graft packages'
-complete -f -c guix -n '__fish_guix_using_command system' -l no-build-hook -d 'do not attempt to offload builds via the build hook'
+complete -f -c guix -n '__fish_guix_using_command system' -l no-offload -d 'do not attempt to offload builds'
 complete -f -c guix -n '__fish_guix_using_command system' -a "--max-silent-time=" -d 'mark the build as failed after SECONDS of silence'
 complete -f -c guix -n '__fish_guix_using_command system' -a "--timeout=" -d 'mark the build as failed after SECONDS of activity'
 complete -f -c guix -n '__fish_guix_using_command system' -a "--verbosity=" -d 'use the given verbosity LEVEL'
@@ -174,7 +174,7 @@ complete -f -c guix -n '__fish_guix_using_command system' -a "--expose=" -d 'for
 complete -f -c guix -n '__fish_guix_using_command system' -l full-boot -d 'for \'vm\', make a full boot sequence'
 
 #### build
-set -l remotecommands expression file source sources system target derivations check repair root quiet log-file load-path keep-failed keep-going dry-run fallback no-substitutes substitute-urls no-grafts no-build-hook max-silent-time timeout verbosity rounds cores max-jobs with-source with-input with-graft
+set -l remotecommands expression file source sources system target derivations check repair root quiet log-file load-path keep-failed keep-going dry-run fallback no-substitutes substitute-urls no-grafts no-offload max-silent-time timeout verbosity rounds cores max-jobs with-source with-input with-graft
 complete -f -c guix -n '__fish_guix_needs_command' -a build -d 'Build the given PACKAGE-OR-DERIVATION and return their output paths.'
 complete -f -c guix -n '__fish_guix_using_command build' -a "--expression=" -d 'build the package or derivation EXPR evaluates to'
 complete -f -c guix -n '__fish_guix_using_command build' -s f -d 'build the package or derivation that the code within FILE evaluates to' --exclusive --arguments "(ls -ap)"
@@ -201,7 +201,7 @@ complete -f -c guix -n '__fish_guix_using_command build' -l fallback -d 'fall ba
 complete -f -c guix -n '__fish_guix_using_command build' -l no-substitutes -d 'build instead of resorting to pre-built substitutes'
 complete -f -c guix -n '__fish_guix_using_command build' -a "--substitute-urls=" -d 'fetch substitute from URLS if they are authorized'
 complete -f -c guix -n '__fish_guix_using_command build' -l no-grafts -d 'do not graft packages'
-complete -f -c guix -n '__fish_guix_using_command build' -l no-build-hook -d 'do not attempt to offload builds via the build hook'
+complete -f -c guix -n '__fish_guix_using_command build' -l no-offload -d 'do not attempt to offload builds'
 complete -f -c guix -n '__fish_guix_using_command build' -a "--max-silent-time=" -d 'mark the build as failed after SECONDS of silence'
 complete -f -c guix -n '__fish_guix_using_command build' -a "--timeout=" -d 'mark the build as failed after SECONDS of activity'
 complete -f -c guix -n '__fish_guix_using_command build' -a "--verbosity=" -d 'use the given verbosity LEVEL'
@@ -215,7 +215,7 @@ complete -f -c guix -n '__fish_guix_using_command build' -a "--with-input=" -d '
 complete -f -c guix -n '__fish_guix_using_command build' -a "--with-graft=" -d 'PACKAGE=REPLACEMENT .. graft REPLACEMENT on packages that refer to PACKAGE'
 
 #### package
-set -l remotecommands install install-from-expression install-from-file remove upgrade manifest do-no-upgrade roll-back search-paths list-generations delete-generations switch-generation profile bootstrap verbose search list-installed list-available show load-path keep-failed keep-going dry-run fallback no.substitutes substitute-urls no-grafts no-build-hook max-silent-time timenout verbosity rounds cores max-jobs with-source with-input with-graft
+set -l remotecommands install install-from-expression install-from-file remove upgrade manifest do-no-upgrade roll-back search-paths list-generations delete-generations switch-generation profile bootstrap verbose search list-installed list-available show load-path keep-failed keep-going dry-run fallback no.substitutes substitute-urls no-grafts no-offload max-silent-time timenout verbosity rounds cores max-jobs with-source with-input with-graft
 complete -f -c guix -n '__fish_guix_needs_command' -a package -d 'Install, remove, or upgrade packages in a single transaction.'
 complete -f -c guix -n '__fish_guix_using_command package' -s i -l install -d 'install PACKAGEs'
 complete -f -c guix -n '__fish_guix_using_command package' -s e -d 'install the package EXP evaluates to'
@@ -252,7 +252,7 @@ complete -f -c guix -n '__fish_guix_using_command package' -l fallback -d 'fall 
 complete -f -c guix -n '__fish_guix_using_command package' -l no-substitutes -d 'build instead of resorting to pre-built substitutes'
 complete -f -c guix -n '__fish_guix_using_command package' -a "--substitute-urls=" -d 'URLS fetch substitute from URLS if they are authorized'
 complete -f -c guix -n '__fish_guix_using_command package' -l no-grafts -d 'do not graft packages'
-complete -f -c guix -n '__fish_guix_using_command package' -l no-build-hook -d 'do not attempt to offload builds via the build hook'
+complete -f -c guix -n '__fish_guix_using_command package' -l no-offload -d 'do not attempt to offload builds'
 complete -f -c guix -n '__fish_guix_using_command package' -a "--max-silent-time=" -d 'SECONDS mark the build as failed after SECONDS of silence'
 complete -f -c guix -n '__fish_guix_using_command package' -a "--timeout=" -d 'SECONDS mark the build as failed after SECONDS of activity'
 complete -f -c guix -n '__fish_guix_using_command package' -a "--verbosity=" -d 'LEVEL use the given verbosity LEVEL'
@@ -391,7 +391,7 @@ complete -f -c guix -n '__fish_guix_using_command gc' -l list-failures -d 'list 
 complete -f -c guix -n '__fish_guix_using_command gc' -l clear-failures -d 'remove PATHS from the set of cached failures'
 
 #### environment
-set -l remotecommands expression load ad-hoc pure search-paths system root container network share expose bootstrap load-path keep-failed keep-going dry-run fallback no-substitutes substitute-urls no-grafts no-build-hook max-silent-time timeout verbosity rounds cores max-jobs
+set -l remotecommands expression load ad-hoc pure search-paths system root container network share expose bootstrap load-path keep-failed keep-going dry-run fallback no-substitutes substitute-urls no-grafts no-offload max-silent-time timeout verbosity rounds cores max-jobs
 complete -f -c guix -n '__fish_guix_needs_command' -a environment -d 'Build an environment that includes the dependencies of PACKAGE and execute COMMAND or an interactive shell in that environment.'
 complete -f -c guix -n '__fish_guix_using_command environment' -s e -d 'Create environment for the package that EXPR evaluates to'
 complete -f -c guix -n '__fish_guix_using_command environment' -a "--expression=" -d 'Create environment for the package that EXPR evaluates to'
@@ -418,7 +418,7 @@ complete -f -c guix -n '__fish_guix_using_command environment' -l fallback -d 'f
 complete -f -c guix -n '__fish_guix_using_command environment' -l no-substitutes -d 'build instead of resorting to pre-built substitutes'
 complete -f -c guix -n '__fish_guix_using_command environment' -a "--substitute-urls=" -d 'fetch substitute from URLS if they are authorized'
 complete -f -c guix -n '__fish_guix_using_command environment' -l no-grafts -d 'do not graft packages'
-complete -f -c guix -n '__fish_guix_using_command environment' -l no-build-hook -d 'do not attempt to offload builds via the build hook'
+complete -f -c guix -n '__fish_guix_using_command environment' -l no-offload -d 'do not attempt to offload builds'
 complete -f -c guix -n '__fish_guix_using_command environment' -a "--max-silent-time=" -d 'mark the build as failed after SECONDS of silence'
 complete -f -c guix -n '__fish_guix_using_command environment' -a "--timeout=" -d 'mark the build as failed after SECONDS of activity'
 complete -f -c guix -n '__fish_guix_using_command environment' -a "--verbosity=" -d 'use the given verbosity LEVEL'
@@ -432,7 +432,7 @@ complete -f -c guix -n '__fish_guix_using_command environment' -a "--max-jobs=" 
 complete -f -c guix -n '__fish_guix_needs_command' -a edit -d 'Start $VISUAL or $EDITOR to edit the definitions of PACKAGE.'
 
 #### copy
-set -l remotecommands to= from= load-path= keep-failed keep-going dry-run fallback no-substitutes substitute-urls= no-grafts no-build-hook max-silent-time= timeout= verbosity= rounds= cores= max-jobs=
+set -l remotecommands to= from= load-path= keep-failed keep-going dry-run fallback no-substitutes substitute-urls= no-grafts no-offload max-silent-time= timeout= verbosity= rounds= cores= max-jobs=
 complete -f -c guix -n '__fish_guix_needs_command' -a copy -d 'Copy ITEMS to or from the specified host over SSH.'
 complete -f -c guix -n '__fish_guix_using_command copy' -a "--to=" -d 'send ITEMS to HOST'
 complete -f -c guix -n '__fish_guix_using_command copy' -a "--from=" -d 'receive ITEMS from HOST'
@@ -445,7 +445,7 @@ complete -f -c guix -n '__fish_guix_using_command copy' -l fallback -d 'fall bac
 complete -f -c guix -n '__fish_guix_using_command copy' -l no-substitutes -d 'build instead of resorting to pre-built substitutes'
 complete -f -c guix -n '__fish_guix_using_command copy' -a "--substitute-urls=" -d 'fetch substitute from URLS if they are authorized'
 complete -f -c guix -n '__fish_guix_using_command copy' -l no-grafts -d 'do not graft packages'
-complete -f -c guix -n '__fish_guix_using_command copy' -l no-build-hook -d 'do not attempt to offload builds via the build hook'
+complete -f -c guix -n '__fish_guix_using_command copy' -l no-offload -d 'do not attempt to offload builds'
 complete -f -c guix -n '__fish_guix_using_command copy' -a "--max-silent-time=" -d 'mark the build as failed after SECONDS of silence'
 complete -f -c guix -n '__fish_guix_using_command copy' -a "--timeout=" -d 'mark the build as failed after SECONDS of activity'
 complete -f -c guix -n '__fish_guix_using_command copy' -a "--verbosity=" -d 'use the given verbosity LEVEL'
@@ -467,7 +467,7 @@ complete -f -c guix -n '__fish_guix_using_command challenge' -a "--substitute-ur
 complete -f -c guix -n '__fish_guix_using_command challenge' -s v -l verbose -d 'show details about successful comparisons'
 
 #### archive
-set -l remotecommands export format= recursive import missing extract= generate-key authorize expression= source system= target= load-path= keep-failed keep-going dry-run fallback no-substitutes substitute-urls= no-grafts no-build-hook max-silent-time= timeout= verbosity= rounds= cores= max-jobs=
+set -l remotecommands export format= recursive import missing extract= generate-key authorize expression= source system= target= load-path= keep-failed keep-going dry-run fallback no-substitutes substitute-urls= no-grafts no-offload max-silent-time= timeout= verbosity= rounds= cores= max-jobs=
 complete -f -c guix -n '__fish_guix_needs_command' -a archive -d 'Export/import one or more packages from/to the store.'
 complete -f -c guix -n '__fish_guix_using_command archive' -l export -d 'export the specified files/packages to stdout'
 complete -f -c guix -n '__fish_guix_using_command archive' -a "--format=" -d 'export files/packages in the specified format FMT'
@@ -489,7 +489,7 @@ complete -f -c guix -n '__fish_guix_using_command archive' -l fallback -d 'fall 
 complete -f -c guix -n '__fish_guix_using_command archive' -l no-substitutes -d 'build instead of resorting to pre-built substitutes'
 complete -f -c guix -n '__fish_guix_using_command archive' -a "--substitute-urls=" -d 'fetch substitute from URLS if they are authorized'
 complete -f -c guix -n '__fish_guix_using_command archive' -l no-grafts -d 'do not graft packages'
-complete -f -c guix -n '__fish_guix_using_command archive' -l no-build-hook -d 'do not attempt to offload builds via the build hook'
+complete -f -c guix -n '__fish_guix_using_command archive' -l no-offload -d 'do not attempt to offload builds'
 complete -f -c guix -n '__fish_guix_using_command archive' -a "--max-silent-time=" -d 'mark the build as failed after SECONDS of silence'
 complete -f -c guix -n '__fish_guix_using_command archive' -a "--timeout=" -f -d 'mark the build as failed after SECONDS of activity'
 complete -f -c guix -n '__fish_guix_using_command archive' -a "--verbosity=" -d 'use the given verbosity LEVEL'
@@ -498,7 +498,7 @@ complete -f -c guix -n '__fish_guix_using_command archive' -a "--cores=" -d 'all
 complete -f -c guix -n '__fish_guix_using_command archive' -a "--max-jobs=" -d 'allow at most N build jobs'
 
 #### pack
-set -l remotecommands --load-path= --keep-failed --keep-going --dry-run --fallback --no-substitutes --substitute-urls= --no-grafts --no-build-hook --max-silent-time= --timeout= --verbosity= --rounds= --cores= --max-jobs= --with-source= --with-input= --with-graft= --format= --expression= --system= --target= --compression= --symlink= --localstatedir --help --version
+set -l remotecommands --load-path= --keep-failed --keep-going --dry-run --fallback --no-substitutes --substitute-urls= --no-grafts --no-offload --max-silent-time= --timeout= --verbosity= --rounds= --cores= --max-jobs= --with-source= --with-input= --with-graft= --format= --expression= --system= --target= --compression= --symlink= --localstatedir --help --version
 complete -f -c guix -n '__fish_guix_needs_command' -a pack -d 'Create a bundle of PACKAGE.'
 complete -f -c guix -n '__fish_guix_using_command pack' -a "--load-path=" -d 'prepend DIR to the package module search path'
 complete -f -c guix -n '__fish_guix_using_command pack' -s L -d 'prepend DIR to the package module search path'
@@ -512,7 +512,7 @@ complete -f -c guix -n '__fish_guix_using_command pack' -a "--fallback" -d 'fall
 complete -f -c guix -n '__fish_guix_using_command pack' -a "--no-substitutes" -d 'build instead of resorting to pre-built substitutes'
 complete -f -c guix -n '__fish_guix_using_command pack' -a "--substitute-urls=" -d 'fetch substitute from URLS if they are authorized'
 complete -f -c guix -n '__fish_guix_using_command pack' -a "--no-grafts" -d 'do not graft packages'
-complete -f -c guix -n '__fish_guix_using_command pack' -a "--no-build-hook" -d 'do not attempt to offload builds via the build hook'
+complete -f -c guix -n '__fish_guix_using_command pack' -a "--no-offload" -d 'do not attempt to offload builds via the build hook'
 complete -f -c guix -n '__fish_guix_using_command pack' -a "--max-silent-time=" -d 'mark the build as failed after SECONDS of silence'
 complete -f -c guix -n '__fish_guix_using_command pack' -a "--timeout=" -d 'mark the build as failed after SECONDS of activity'
 complete -f -c guix -n '__fish_guix_using_command pack' -a "--verbosity=" -d 'use the given verbosity LEVEL'

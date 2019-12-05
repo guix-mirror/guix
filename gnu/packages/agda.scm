@@ -37,7 +37,7 @@
 (define-public agda
   (package
     (name "agda")
-    (version "2.5.4.2")
+    (version "2.6.0.1")
     (source
      (origin
        (method url-fetch)
@@ -46,10 +46,11 @@
              version ".tar.gz"))
        (sha256
         (base32
-         "07wvawpfjhx3gw2w53v27ncv1bl0kkx08wkm6wzxldbslkcasign"))))
+         "1s600ry1qwizr3ynyj05rvlx7jdcw9a1viyc0ycjamm5sjf8mf3v"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-alex" ,ghc-alex)
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-alex" ,ghc-alex)
        ("ghc-async" ,ghc-async)
        ("ghc-blaze-html" ,ghc-blaze-html)
        ("ghc-boxes" ,ghc-boxes)
@@ -57,6 +58,7 @@
        ("ghc-edisoncore" ,ghc-edisoncore)
        ("ghc-edit-distance" ,ghc-edit-distance)
        ("ghc-equivalence" ,ghc-equivalence)
+       ("ghc-exceptions" ,ghc-exceptions)
        ("ghc-filemanip" ,ghc-filemanip)
        ("ghc-geniplate-mirror" ,ghc-geniplate-mirror)
        ("ghc-gitrev" ,ghc-gitrev)
@@ -66,7 +68,6 @@
        ("ghc-ieee754" ,ghc-ieee754)
        ("ghc-murmur-hash" ,ghc-murmur-hash)
        ("ghc-uri-encode" ,ghc-uri-encode)
-       ("ghc-parallel" ,ghc-parallel)
        ("ghc-regex-tdfa" ,ghc-regex-tdfa)
        ("ghc-strict" ,ghc-strict)
        ("ghc-unordered-containers" ,ghc-unordered-containers)

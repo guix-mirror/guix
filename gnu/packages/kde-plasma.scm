@@ -37,14 +37,14 @@
 (define-public kdecoration
   (package
     (name "kdecoration")
-    (version "5.15.1")
+    (version "5.17.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version
                                   "/kdecoration-" version ".tar.xz"))
               (sha256
                (base32
-                "03lxnjbhlnyiw2znflp0f2w77a5pzv5yvsbngvwgp89ig9mansi1"))))
+                "0rljpywpaqmar13jijphkpc9k1crma476j9my0d00hfrjil5xlnn"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -66,14 +66,14 @@ manager which re-parents a Client window to a window decoration frame.")
 (define-public kscreenlocker
   (package
     (name "kscreenlocker")
-    (version "5.15.1")
+    (version "5.17.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version
                                   "/kscreenlocker-" version ".tar.xz"))
               (sha256
                (base32
-                "1jp2z1wjsd99is31igkfnscs55h755cmp86ppkj596fcxv1krymq"))))
+                "1jzkq5m0hvcpsl7clai33ndiil8gls7ndir3mfcc5l8gv7df2ir0"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -96,7 +96,7 @@ manager which re-parents a Client window to a window decoration frame.")
 
        ;; For tests.
        ("dbus" ,dbus)
-       ("xorg-server" ,xorg-server)))
+       ("xorg-server" ,xorg-server-for-tests)))
     (inputs
      `(("kcmutils" ,kcmutils)
        ("kcrash" ,kcrash)
@@ -129,14 +129,14 @@ manager which re-parents a Client window to a window decoration frame.")
 (define-public libkscreen
   (package
     (name "libkscreen")
-    (version "5.15.1")
+    (version "5.17.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/plasma/" version "/"
                            name "-" version ".tar.xz"))
        (sha256
-        (base32 "1zpzqafrb576al10f5873nl1z135gscjza6gd3ickfzlvd9qmr18"))))
+        (base32 "0znxfqqyyij6i4dp95gf5g4vrhg4jsshgh2k13ldy294kby2mxw0"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -168,7 +168,7 @@ basic needs and easy to configure for those who want special setups.")
 (define-public libksysguard
   (package
     (name "libksysguard")
-    (version "5.15.1")
+    (version "5.17.0")
     (source
      (origin
        (method url-fetch)
@@ -176,7 +176,7 @@ basic needs and easy to configure for those who want special setups.")
                            "/libksysguard-" version ".tar.xz"))
        (sha256
         (base32
-         "0ml106yq4q9qagkrcaafgcky18wk76px5a1r6j36wfjqdd6wpzvs"))))
+         "1b79qxg6j9lqgyq8i677f00f7cbplqak1r9riyc9wj5s2r60ydw7"))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)))

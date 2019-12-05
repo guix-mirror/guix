@@ -604,7 +604,7 @@ interactive environment for the functional language Haskell.")
                                 (file-pattern ".*\\.conf\\.d$")
                                 (file-type 'directory))))))
 
-(define-public ghc-8 ghc-8.4)
+(define-public ghc-8 ghc-8.6)
 
 (define-public ghc ghc-8)
 

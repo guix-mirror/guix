@@ -229,7 +229,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "19.1.4")
+    (version "19.2.1")
     (source
       (origin
         (method url-fetch)
@@ -241,9 +241,10 @@ also known as DXTn or DXTC) for Mesa.")
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "1yvb7ja09i36zjifpyrf8jmbm9z0wqs2w3x8dlmxkkzdv6knilm6"))
+          "1s81kwcjkkahnf5y5mshmd3q9j057hhsai7awpq6yb6im2hkriac"))
         (patches
-         (search-patches "mesa-skip-disk-cache-test.patch"))))
+         (search-patches "mesa-skip-disk-cache-test.patch"
+                         "mesa-timespec-test-32bit.patch"))))
     (build-system meson-build-system)
     (propagated-inputs
       `(;; The following are in the Requires.private field of gl.pc.
@@ -277,13 +278,11 @@ also known as DXTn or DXTC) for Mesa.")
         ("gettext" ,gettext-minimal)
         ,@(match (%current-system)
             ((or "x86_64-linux" "i686-linux")
-             `(("glslang" ,glslang)
-               ("vulkan-headers" ,vulkan-headers)
-               ("vulkan-loader" ,vulkan-loader)))
+             `(("glslang" ,glslang)))
             (_
              `()))
         ("pkg-config" ,pkg-config)
-        ("python" ,python)
+        ("python" ,python-wrapper)
         ("python-mako" ,python-mako)
         ("which" ,(@ (gnu packages base) which))))
     (arguments

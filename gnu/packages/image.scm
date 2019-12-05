@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2014, 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
@@ -19,7 +19,7 @@
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
@@ -51,8 +51,6 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
-  ;; To provide gcc@5 and gcc@6, to work around <http://bugs.gnu.org/24703>.
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
@@ -63,6 +61,8 @@
   #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mcrypt)
+  #:use-module (gnu packages mp3)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
@@ -80,7 +80,6 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
-  #:use-module (guix build-system r)
   #:use-module (guix build-system scons)
   #:use-module (srfi srfi-1))
 
@@ -298,7 +297,7 @@ Currently all documentation resides in @file{pnglite.h}.")
 (define-public libimagequant
   (package
     (name "libimagequant")
-    (version "2.12.3")
+    (version "2.12.5")
     (source
      (origin
        (method git-fetch)
@@ -307,17 +306,17 @@ Currently all documentation resides in @file{pnglite.h}.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0qsfq1kv1m5jzn9v9iz0bac66k4clcis1c9877qabnwzwmwma5v0"))))
+        (base32 "0cp68w04ja5pv77ssfafsn958w9hh9zb8crrlb5j3gsrcmdc032k"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f)) ; no check target
+     '(#:tests? #f))                    ; no check target
     (home-page "https://pngquant.org/lib/")
     (synopsis "Image palette quantization library")
     (description "libimagequant is a small, portable C library for
 high-quality conversion of RGBA images to 8-bit indexed-color (palette)
 images.  This library can significantly reduces file sizes and powers pngquant
 and other PNG optimizers.")
-   (license license:gpl3+)))
+    (license license:gpl3+)))
 
 (define-public pngquant
   (package
@@ -853,7 +852,7 @@ compose, and analyze GIF images.")
 (define-public imlib2
   (package
     (name "imlib2")
-    (version "1.5.1")
+    (version "1.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -861,19 +860,21 @@ compose, and analyze GIF images.")
                     "/imlib2-" version ".tar.bz2"))
               (sha256
                (base32
-                "1bms2iwmvnvpz5jqq3r52glarqkafif47zbh1ykz8hw85d2mfkps"))))
+                "07b9v3ycwhici35fnczvpyjpgkc7gbcdhajpl9dwhpzdzbfl1i6g"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkgconfig" ,pkg-config)))
     (inputs
-     `(("libx11" ,libx11)
-       ("libxext" ,libxext)
+     `(("bzip2" ,bzip2)
        ("freetype" ,freetype)
+       ("giflib" ,giflib)
+       ("libid3tag" ,libid3tag)
        ("libjpeg" ,libjpeg)
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)
-       ("giflib" ,giflib)
-       ("bzip2" ,bzip2)))
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libwebp" ,libwebp)))
     (home-page "https://sourceforge.net/projects/enlightenment/")
     (synopsis
      "Loading, saving, rendering and manipulating image files")
@@ -1127,11 +1128,7 @@ language bindings to VIGRA.")
     (arguments
      '(#:configure-flags '("--enable-libwebpmux"
                            "--enable-libwebpdemux"
-                           "--enable-libwebpdecoder")
-       #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'bootstrap
-                    (lambda _
-                      (invoke "autoreconf" "-vif"))))))
+                           "--enable-libwebpdecoder")))
     (home-page "https://developers.google.com/speed/webp/")
     (synopsis "Lossless and lossy image compression")
     (description
@@ -1490,6 +1487,7 @@ is hereby granted."))))
   (package
     (name "libjpeg-turbo")
     (version "2.0.2")
+    (replacement libjpeg-turbo/fixed)
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/libjpeg-turbo/"
@@ -1518,6 +1516,20 @@ and decompress to 32-bit and big-endian pixel buffers (RGBX, XBGR, etc.).")
     (license (list license:bsd-3        ;the TurboJPEG API library and programs
                    license:ijg          ;the libjpeg library and associated tools
                    license:zlib))))     ;the libjpeg-turbo SIMD extensions
+
+;; Replacement package to fix CVE-2019-13960 and CVE-2019-2201.
+(define libjpeg-turbo/fixed
+  (package
+    (inherit libjpeg-turbo)
+    (version "2.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/libjpeg-turbo/"
+                                  version "/libjpeg-turbo-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1ds16bnj17v6hzd43w8pzijz3imd9am4hw75ir0fxm240m8dwij2"))
+              (patches (search-patches "libjpeg-turbo-CVE-2019-2201.patch"))))))
 
 (define-public niftilib
   (package
@@ -1668,26 +1680,6 @@ Features:
 @end itemize\n")
     (license license:gpl3+)))
 
-(define-public r-jpeg
-  (package
-   (name "r-jpeg")
-   (version "0.1-8.1")
-   (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "jpeg" version))
-       (sha256
-        (base32
-         "1a8mi70x79a691r40yiw684jkg1mr9n8agkxlcksxcnrdybs9c0x"))))
-   (build-system r-build-system)
-   (inputs `(("libjpeg" ,libjpeg)))
-   (home-page "http://www.rforge.net/jpeg/")
-   (synopsis "Read and write JPEG images with R")
-   (description "This package provides a way to read, write and display bitmap
-images stored in the JPEG format with R.  It can read and write both files and
-in-memory raw vectors.")
-   (license license:gpl2+)))
-
 (define-public gifsicle
   (package
    (name "gifsicle")
@@ -1734,28 +1726,24 @@ lightweight animated-GIF viewer, and @command{gifdiff} compares two GIFs for
 identical visual appearance.")
    (license license:gpl2+)))
 
+;; 1.0.7 is buggy and reverted in git repository.
 (define-public jp2a
   (package
     (name "jp2a")
-    (version "1.0.7")
+    (version "1.0.6")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/cslarsen/jp2a.git")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "12a1z9ba2j16y67f41y8ax5sgv1wdjd71pg7circdxkj263n78ql"))))
+       (method url-fetch)
+       (uri (string-append "mirror://debian/pool/main/j/jp2a/jp2a_"
+                           version ".orig.tar.gz"))
+        (sha256
+         (base32
+          "076frk3pa16s4r1b10zgy81vdlz0385zh3ykbnkaij25jn5aqc09"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libjpeg" ,libjpeg)
-       ("curl" ,curl)))
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+     `(("curl" ,curl)
+       ("libjpeg" ,libjpeg)
+       ("ncurses" ,ncurses)))
     (home-page "https://csl.name/jp2a/")
     (synopsis "Convert JPEG images to ASCII")
     (description

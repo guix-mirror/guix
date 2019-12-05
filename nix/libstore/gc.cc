@@ -11,6 +11,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <climits>
 
 
 namespace nix {
@@ -417,7 +418,15 @@ void LocalStore::deletePathRecursive(GCState & state, const Path & path)
         throw SysError(format("getting status of %1%") % path);
     }
 
-    printMsg(lvlInfo, format("deleting `%1%'") % path);
+    if (state.options.maxFreed != ULLONG_MAX) {
+	double fraction = state.results.bytesFreed + size
+	    / state.options.maxFreed;
+	unsigned int percentage = (fraction > 1. ? 1. : fraction) * 100.;
+	printMsg(lvlInfo, format("[%1%%%] deleting '%2%'") % percentage % path);
+    } else {
+	size_t total = (state.results.bytesFreed + size) / (1024 * 1024);
+	printMsg(lvlInfo, format("[%1% MiB] deleting '%2%'") % total % path);
+    }
 
     state.results.paths.insert(path);
 
@@ -561,8 +570,17 @@ void LocalStore::removeUnusedLinks(const GCState & state)
         if (name == "." || name == "..") continue;
         Path path = linksDir + "/" + name;
 
+#ifdef HAVE_STATX
+# define st_size stx_size
+# define st_nlink stx_nlink
+	struct statx st;
+	if (statx(AT_FDCWD, path.c_str(),
+		  AT_SYMLINK_NOFOLLOW | AT_STATX_DONT_SYNC,
+		  STATX_SIZE | STATX_NLINK, &st) == -1)
+#else
         struct stat st;
         if (lstat(path.c_str(), &st) == -1)
+#endif
             throw SysError(format("statting `%1%'") % path);
 
         if (st.st_nlink != 1) {
@@ -577,6 +595,8 @@ void LocalStore::removeUnusedLinks(const GCState & state)
             throw SysError(format("deleting `%1%'") % path);
 
         state.results.bytesFreed += st.st_size;
+#undef st_size
+#undef st_nlink
     }
 
     struct stat st;

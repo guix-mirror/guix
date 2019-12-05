@@ -1,0 +1,85 @@
+From c126eea11c4ee39cbe9c0c76f920626b618b6ee9 Mon Sep 17 00:00:00 2001
+From: Ralph Little <littlesincanada@yahoo.co.uk>
+Date: Sun, 1 Sep 2019 17:03:44 -0700
+Subject: [PATCH] Apply debian upstream patch 0135-fix_pdf_floats
+
+Original patch commentary:
+
+Description: Fix floats in PDF and PostScript
+ Set LC_NUMERIC to POSIX before printing floats when building
+ PostScript or PDF output.
+Author: Julien BLACHE <jblache@debian.org>
+Forwarded: yes
+
+------------
+Looks like float printing format is affected by the current locale.
+Ensures that we always get POSIX formatting of floats.
+---
+ src/xsane-save.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+diff --git a/src/xsane-save.c b/src/xsane-save.c
+index f14df05..63550cc 100644
+--- a/src/xsane-save.c
++++ b/src/xsane-save.c
+@@ -26,6 +26,8 @@
+ #include "xsane-back-gtk.h"
+ #include "xsane-front-gtk.h"
+ #include "xsane-save.h"
++#include <locale.h>
++#include <string.h>
+ #include <time.h>
+ #include <sys/wait.h> 
+ 
+@@ -2425,6 +2427,7 @@ static void xsane_save_ps_create_image_header(FILE *outfile,
+                                               int flatedecode)
+ {
+  int depth; 
++ char *save_locale;
+ 
+   depth = image_info->depth;
+ 
+@@ -2442,8 +2445,15 @@ static void xsane_save_ps_create_image_header(FILE *outfile,
+ 
+   fprintf(outfile, "%d rotate\n", degree);
+   fprintf(outfile, "%d %d translate\n", position_left, position_bottom);
++
++  save_locale = strdup(setlocale(LC_NUMERIC, NULL));
++  setlocale(LC_NUMERIC, "POSIX");
++
+   fprintf(outfile, "%f %f scale\n", width, height);
+ 
++  setlocale(LC_NUMERIC, save_locale);
++  free(save_locale);
++
+   fprintf(outfile, "<<\n");
+   fprintf(outfile, " /ImageType 1\n");
+   fprintf(outfile, " /Width %d\n", image_info->image_width);
+@@ -3921,6 +3931,7 @@ static void xsane_save_pdf_create_page_header(FILE *outfile, struct pdf_xref *xr
+  int position_left, position_bottom, box_left, box_bottom, box_right, box_top, depth;
+  int left, bottom;
+  float rad;
++ char *save_locale;
+ 
+   DBG(DBG_proc, "xsane_save_pdf_create_page_header\n");
+ 
+@@ -4035,8 +4046,16 @@ static void xsane_save_pdf_create_page_header(FILE *outfile, struct pdf_xref *xr
+ 
+   fprintf(outfile, "q\n");
+   fprintf(outfile, "1 0 0 1 %d %d cm\n", position_left, position_bottom); /* translate */
++
++  save_locale = strdup(setlocale(LC_NUMERIC, NULL));
++  setlocale(LC_NUMERIC, "POSIX");
++
+   fprintf(outfile, "%f %f -%f %f 0 0 cm\n", cos(rad), sin(rad), sin(rad), cos(rad)); /* rotate */
+   fprintf(outfile, "%f 0 0 %f 0 0 cm\n", width, height); /* scale */
++
++  setlocale(LC_NUMERIC, save_locale);
++  free(save_locale);
++
+   fprintf(outfile, "BI\n");
+   fprintf(outfile, "  /W %d\n", image_info->image_width);
+   fprintf(outfile, "  /H %d\n", image_info->image_height);
+-- 
+2.22.0
+

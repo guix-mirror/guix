@@ -33,6 +33,8 @@
 ;;; Copyright © 2019 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2019 Tonton <tonton@riseup.net>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
+;;; Copyright © 2019 Daniel Schaefer <git@danielschaefer.me>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -60,6 +62,7 @@
   #:use-module (guix build-system go)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages adns)
@@ -72,6 +75,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages code)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cpp)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages dejagnu)
@@ -95,6 +99,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
@@ -553,7 +558,7 @@ and up to 1 Mbit/s downstream.")
 (define-public whois
   (package
     (name "whois")
-    (version "5.5.2")
+    (version "5.5.3")
     (source
      (origin
        (method url-fetch)
@@ -561,7 +566,7 @@ and up to 1 Mbit/s downstream.")
                            "whois_" version ".tar.xz"))
        (sha256
         (base32
-         "1h55zs3cj4w9b0hq0x3z7s2mn46v0jyc39gz320ra4hwr0xlsnf0"))))
+         "0imb87iz17a530fg1x9wnsm4bvr61hxydv29chfwzh015af3zhsm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite
@@ -1942,27 +1947,24 @@ can be whipped up with little effort.")
 (define-public mtr
   (package
     (name "mtr")
-    (version "0.92")
+    (version "0.93")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "ftp://ftp.bitwizard.nl/" name "/"
-                           name "-" version ".tar.gz"))
+       (uri (string-append "ftp://ftp.bitwizard.nl/mtr/"
+                           "mtr-" version ".tar.gz"))
        (sha256
-        (base32 "10j3ds3p27jygys4x08kj8fi3zlsgiv72xsfazkah6plwawrv5zj"))))
+        (base32 "03gid8g4r6a9r40855s4345xm1bylj2kfqkicjwxpmvvccyng712"))))
     (build-system gnu-build-system)
     (inputs
      `(("libcap" ,libcap)
        ("ncurses" ,ncurses)))
-    (native-inputs
-     ;; The 0.92 release tarball still requires the ‘autoheader’ tool.
-     `(("autoconf" ,autoconf)))
     (arguments
      `(#:tests? #f))                    ; tests require network access
     (home-page "https://www.bitwizard.nl/mtr/")
     (synopsis "Network diagnostic tool")
     (description
-     "@dfn{mtr} (My TraceRoute) combines the functionality of the
+     "@acronym{mtr, My TraceRoute} combines the functionality of the
 @command{traceroute} and @command{ping} programs in a single network diagnostic
 tool.  @command{mtr} can use several network protocols to detect intermediate
 routers (or @dfn{hops}) between the local host and a user-specified destination.
@@ -2520,10 +2522,58 @@ communication over HTTP.")
       (home-page "https://github.com/Corvusoft/restbed")
       (license license:agpl3+))))
 
+(define fmt-restinio
+  (package
+    (inherit fmt)
+    (arguments
+     '(#:configure-flags '("-DCMAKE_CXX_FLAGS=-fPIC")))))
+
+(define-public restinio
+  (package
+    (name "restinio")
+    (version "0.6.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Stiffstream/restinio.git")
+                    (commit (string-append "v." version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1c25kpx652nng8m1sqf5an2c3c4g3k6zj85mkkaxzk88iwfzq1s8"))))
+    (build-system cmake-build-system)
+    (inputs                             ; TODO: Need to force-keep references on some inputs, e.g. boost.
+     `(("zlib" ,zlib)
+       ("catch2" ,catch-framework2)
+       ("openssl" ,openssl)
+       ("boost" ,boost)
+       ("pcre" ,pcre)
+       ("pcre2" ,pcre2)
+       ("sobjectizer" ,sobjectizer)))
+    (propagated-inputs
+     `(("asio", asio)
+       ("fmt" ,fmt-restinio)
+       ("http-parser", http-parser)))
+    (arguments
+     `(#:configure-flags '("-DRESTINIO_INSTALL=on")
+       #:tests? #f ; TODO: The tests are called from the root CMakelist, need RESTINIO_TEST=on.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'change-directory
+           (lambda _
+             (chdir "dev/restinio")
+             #t)))))
+    (home-page "https://stiffstream.com/en/products/restinio.html")
+    (synopsis "C++14 library that gives you an embedded HTTP/Websocket server")
+    (description "RESTinio is a header-only C++14 library that gives you an embedded
+HTTP/Websocket server.  It is based on standalone version of ASIO
+and targeted primarily for asynchronous processing of HTTP-requests.")
+    (license license:bsd-3)))
+
 (define-public opendht
   (package
     (name "opendht")
-    (version "1.8.1")
+    (version "2.0.0beta2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2532,26 +2582,36 @@ communication over HTTP.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0vninb5mak27wigajslyvr05vq7wbrwqhbr4wzl2nmqcb20wmlq2"))))
-    (build-system gnu-build-system)
+                "02ix0rvvyhq22gd5djcq84qz08ji7ln93faf23b27zjzni2klzv5"))))
+    ;; Since 2.0, the gnu-build-system does not seem to work anymore, upstream bug?
+    (build-system cmake-build-system)
     (inputs
      `(("gnutls" ,gnutls)
        ("nettle" ,nettle)
        ("readline" ,readline)
        ("jsoncpp" ,jsoncpp)
-       ("restbed" ,restbed)))
+       ("openssl" ,openssl)
+       ("fmt" ,fmt-restinio)))
     (propagated-inputs
-     `(("argon2" ,argon2)               ; TODO: Needed for the pkg-config .pc file to work?
+     `(("argon2" ,argon2)  ; TODO: Needed for the pkg-config .pc file to work?
        ("msgpack" ,msgpack)))           ;included in several installed headers
     (native-inputs
      `(("autoconf" ,autoconf)
        ("pkg-config" ,pkg-config)
+       ("restinio" ,restinio)
        ("automake" ,automake)
-       ("libtool" ,libtool)))
+       ("libtool" ,libtool)
+       ("cppunit" ,cppunit)))
     (arguments
-     `(#:configure-flags '("--disable-tools"
-                           "--disable-python"
-                           "--with-argon2")))
+     `(#:tests? #f                      ; Tests require network connection.
+       #:configure-flags
+       '(;; "-DOPENDHT_TESTS=on"
+         "-DOPENDHT_TOOLS=off"
+         "-DOPENDHT_PYTHON=off"
+         "-DOPENDHT_PROXY_SERVER=on"
+         "-DOPENDHT_PUSH_NOTIFICATIONS=on"
+         "-DOPENDHT_PROXY_SERVER_IDENTITY=on"
+         "-DOPENDHT_PROXY_CLIENT=on")))
     (home-page "https://github.com/savoirfairelinux/opendht/")
     (synopsis "Distributed Hash Table (DHT) library")
     (description "OpenDHT is a Distributed Hash Table (DHT) library.  It may
@@ -2682,21 +2742,19 @@ module @code{batman-adv}, for Layer 2.")
 (define-public pagekite
   (package
     (name "pagekite")
-    (version "1.0.0.190721")
+    (version "1.5.0.191126")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://pagekite.net/pk/src/pagekite-"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pagekite/PyPagekite.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0y4vaqd3pjr6if8jcnhjwignkxgrajmnx1rd1p37anj8xjg7l8zh"))))
+        (base32 "0mncfjfrr13sm84g5z49qxg5cy791h5qxphjsl77x91zs3m36c8l"))))
     (build-system python-build-system)
     (arguments
-     ;; Python 3 support is a work-in-progress and should come soon:
-     ;; https://github.com/pagekite/PyPagekite/issues/40
-     ;; https://github.com/pagekite/PyPagekite/pull/71
-     `(#:python ,python-2
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'install 'install-man-page
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -2708,7 +2766,8 @@ module @code{batman-adv}, for Layer 2.")
                (install-file "doc/pagekite.1" (string-append man "/man1"))
                #t))))))
     (inputs
-     `(("python2-socksipychain" ,python2-socksipychain)))
+     `(("python-six" ,python-six)
+       ("python-socksipychain" ,python-socksipychain)))
     (home-page "https://pagekite.net/")
     (synopsis "Make localhost servers publicly visible")
     (description
@@ -2717,3 +2776,49 @@ a service (such as an HTTP or SSH server) on localhost visible to the wider
 Internet, even behind NAT or restrictive firewalls.  A managed front-end relay
 service is available at @url{https://pagekite.net/}, or you can run your own.")
     (license license:agpl3+)))
+
+(define-public ipcalc
+  (package
+    (name "ipcalc")
+    (version "0.41")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://jodies.de/ipcalc-archive/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "12if9sm8h2ac0pgwkw835cgyqjxm6h27k4kfn2vfas9krrqwbafx"))))
+    (inputs `(("perl" ,perl)
+              ("tar" ,tar)
+              ("gzip" ,gzip)
+              ("tarball" ,source)))
+    (build-system trivial-build-system) ;no Makefile.PL
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (use-modules (srfi srfi-1))
+         (let* ((source (assoc-ref %build-inputs "source"))
+                (perl (string-append (assoc-ref %build-inputs "perl")
+                                     "/bin"))
+                (tar (assoc-ref %build-inputs "tar"))
+                (gz  (assoc-ref %build-inputs "gzip"))
+                (out (assoc-ref %outputs "out"))
+                (bin (string-append out "/bin"))
+                (doc (string-append out "/share/doc/ipcalc")))
+           (setenv "PATH" (string-append gz "/bin"))
+           (invoke (string-append tar "/bin/tar") "xvf" source)
+           (chdir (string-append ,name "-" ,version))
+
+           (install-file "ipcalc" bin)
+           (patch-shebang (string-append bin "/ipcalc") (list perl))
+           #t))))
+    (synopsis "Simple IP network calculator")
+    (description "ipcalc takes an IP address and netmask and calculates the
+resulting broadcast, network, Cisco wildcard mask, and host range.  By giving
+a second netmask, you can design subnets and supernets.  It is also intended
+to be a teaching tool and presents the subnetting results as
+easy-to-understand binary values.")
+    (home-page "http://jodies.de/ipcalc")
+    (license license:gpl2+)))

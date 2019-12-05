@@ -1062,7 +1062,18 @@ emulation community.  It provides highly accurate emulation.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0y7rcpz7psf8k3agsrq277jdm651vbnn9xpqvmj2in1a786idya7"))))
+        (base32 "0y7rcpz7psf8k3agsrq277jdm651vbnn9xpqvmj2in1a786idya7"))
+       (patches
+        (search-patches "retroarch-disable-online-updater.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Don't suggest using the Online Updater if available: it never
+           ;; is.  This disables translation of this particular message.
+           (substitute* (find-files "menu/drivers" "\\.c$")
+             (("msg_hash_to_str\\(MSG_MISSING_ASSETS\\)")
+              "\"Warning: Missing assets, go get some\""))
+           #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -1074,7 +1085,7 @@ emulation community.  It provides highly accurate emulation.")
                     (etc (string-append out "/etc"))
                     (vulkan (assoc-ref inputs "vulkan-loader"))
                     (wayland-protocols (assoc-ref inputs "wayland-protocols")))
-               ;; Hard-code the path to libvulkan.so.
+               ;; Hard-code some store file names.
                (substitute* "gfx/common/vulkan_common.c"
                  (("libvulkan.so") (string-append vulkan "/lib/libvulkan.so")))
                (substitute* "gfx/common/wayland/generate_wayland_protos.sh"
@@ -1082,10 +1093,12 @@ emulation community.  It provides highly accurate emulation.")
                  (string-append wayland-protocols "/share/wayland-protocols")))
                (substitute* "qb/qb.libs.sh"
                  (("/bin/true") (which "true")))
+
                ;; Use shared zlib.
                (substitute* '("libretro-common/file/archive_file_zlib.c"
                               "libretro-common/streams/trans_stream_zlib.c")
                  (("<compat/zlib.h>") "<zlib.h>"))
+
                ;; The configure script does not yet accept the extra arguments
                ;; (like ‘CONFIG_SHELL=’) passed by the default configure phase.
                (invoke
@@ -1095,7 +1108,8 @@ emulation community.  It provides highly accurate emulation.")
                        '("--enable-neon" "--enable-floathard")
                        '())
                  (string-append "--prefix=" out)
-                 (string-append "--global-config-dir=" etc))))))))
+                 (string-append "--global-config-dir=" etc)
+                 "--disable-builtinminiupnpc")))))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("ffmpeg" ,ffmpeg)
@@ -1106,6 +1120,7 @@ emulation community.  It provides highly accurate emulation.")
        ("libxrandr" ,libxrandr)
        ("libxv" ,libxv)
        ("mesa" ,mesa)
+       ("miniupnpc" ,miniupnpc)
        ("openal" ,openal)
        ("pulseaudio" ,pulseaudio)
        ("python" ,python)
@@ -1132,7 +1147,7 @@ multi-system game/emulator system.")
 (define-public scummvm
   (package
     (name "scummvm")
-    (version "2.0.0")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
@@ -1140,10 +1155,10 @@ multi-system game/emulator system.")
                            "/scummvm-" version ".tar.xz"))
        (sha256
         (base32
-         "0q6aiw97wsrf8cjw9vjilzhqqsr2rw2lll99s8i5i9svan6l314p"))))
+         "09zp2mxmida6sz5vrr5bzyv8c3yjvq2xqmpmcllbadhmd9cwcl3b"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ;require "git"
+     `(#:tests? #f                                 ;require "git"
        #:configure-flags (list "--enable-release") ;for optimizations
        #:phases
        (modify-phases %standard-phases
@@ -1165,6 +1180,7 @@ multi-system game/emulator system.")
        ("faad2" ,faad2)
        ("fluidsynth" ,fluidsynth)
        ("freetype" ,freetype)
+       ("liba52" ,liba52)
        ("libflac" ,flac)
        ("libjpeg-turbo" ,libjpeg-turbo)
        ("libmad" ,libmad)
@@ -1174,7 +1190,7 @@ multi-system game/emulator system.")
        ("libtheora" ,libtheora)
        ("libvorbis" ,libvorbis)
        ("nasm" ,nasm)
-       ("sdl2" ,sdl2)
+       ("sdl2" ,(sdl-union (list sdl2 sdl2-net)))
        ("zlib" ,zlib)))
     (home-page "https://www.scummvm.org/")
     (synopsis "Engine for several graphical adventure games")
@@ -1188,7 +1204,7 @@ play them on systems for which they were never designed!")
 (define-public mame
   (package
     (name "mame")
-    (version "0.215")
+    (version "0.216")
     (source
      (origin
        (method git-fetch)
@@ -1198,7 +1214,7 @@ play them on systems for which they were never designed!")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1fj2qahi0fpn41zxph06wdgjashy6vsgj0gqfly8hvcmv99r3d65"))
+         "1q3mrlinkg3hxry7ssl5713lclz3k243q30933flxh99fnzgajwc"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.
@@ -1213,6 +1229,8 @@ play them on systems for which they were never designed!")
     (arguments
      `(#:make-flags
        (cons*
+        ;; A 'strict-overflow' error pops up on i686 so disable '-Werror'.
+        "NOWERROR=1"
         (string-append "QT_HOME=" (assoc-ref %build-inputs "qtbase"))
         (string-append "SDL_INI_PATH="
                        (assoc-ref %outputs "out")

@@ -689,7 +689,7 @@ to USB sticks meant to be read-only."
                (initrd (lambda (file-systems . rest)
                          (apply (operating-system-initrd os)
                                 file-systems
-                                #:volatile-root? #t
+                                #:volatile-root? volatile?
                                 rest)))
 
                (bootloader (if (string=? "iso9660" file-system-type)

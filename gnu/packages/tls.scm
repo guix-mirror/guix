@@ -264,6 +264,39 @@ required structures.")
     (inputs `(("unbound" ,unbound)
               ,@(package-inputs gnutls)))))
 
+(define gnutls-3.6.10
+  ;; This is for 'guile3.0-gnutls', below.  Version 3.6.10 is the first to
+  ;; introduce Guile 2.9/3.0 support.
+  (package
+    (inherit gnutls)
+    (version "3.6.10")
+    (source (origin
+              (inherit (package-source gnutls))
+              (uri (string-append "mirror://gnupg/gnutls/v"
+                                  (version-major+minor version)
+                                  "/gnutls-" version ".tar.xz"))
+              (sha256
+               (base32
+                "14r2h73yfj66cm14k9mnb3kgzq5a7qjg5b31m53bf19vcxkwmwxi"))))))
+
+(define-public guile3.0-gnutls
+  (package
+    (inherit gnutls-3.6.10)
+    (name "guile3.0-gnutls")
+    (arguments
+     (substitute-keyword-arguments (package-arguments gnutls-3.6.10)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-before 'build 'leave-guile-stdout-open
+             (lambda _
+               ;; Work around <https://bugs.gnu.org/38348>.
+               (substitute* "guile/Makefile"
+                 (("out=-") "out=/dev/null"))
+               #t))))))
+    (inputs `(("guile" ,guile-next)
+              ,@(alist-delete "guile"
+                              (package-inputs gnutls-3.6.10))))))
+
 (define-public openssl
   (package
    (name "openssl")
@@ -414,8 +447,7 @@ required structures.")
   (package
     (inherit openssl)
     (name "openssl")
-    (version "1.0.2s")
-    (replacement openssl-1.0.2t)
+    (version "1.0.2t")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -427,7 +459,7 @@ required structures.")
                                         "/openssl-" version ".tar.gz")))
               (sha256
                (base32
-                "15mbmg8hf7s12vr3v2bdc0pi9y4pdbnsxhzk4fyyap42jaa5rgfa"))
+                "1g67ra0ph7gpz6fgvv1i96d792jmd6ymci5kk53vbikszr74djql"))
               (patches (search-patches "openssl-runpath.patch"
                                        "openssl-c-rehash-in.patch"))))
     (outputs '("out"
@@ -435,6 +467,8 @@ required structures.")
                "static"))               ;6MiB of .a files
     (arguments
      (substitute-keyword-arguments (package-arguments openssl)
+       ;; Parallel build is not supported in 1.0.x.
+       ((#:parallel-build? _ #f) #f)
        ((#:phases phases)
         `(modify-phases ,phases
            (add-before 'patch-source-shebangs 'patch-tests
@@ -501,27 +535,6 @@ required structures.")
                  (delete-file-recursively (string-append out "/share/openssl-"
                                                          ,version "/misc"))
                  #t)))))))))
-
-(define openssl-1.0.2t
-  (package
-    (inherit openssl)
-    (version "1.0.2t")
-    (source (origin
-              (inherit (package-source openssl-1.0))
-              (uri (list (string-append "https://www.openssl.org/source/openssl-"
-                                        version ".tar.gz")
-                         (string-append "ftp://ftp.openssl.org/source/"
-                                        "openssl-" version ".tar.gz")
-                         (string-append "ftp://ftp.openssl.org/source/old/"
-                                        (string-trim-right version char-set:letter)
-                                        "/openssl-" version ".tar.gz")))
-              (sha256
-               (base32
-                "1g67ra0ph7gpz6fgvv1i96d792jmd6ymci5kk53vbikszr74djql"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments openssl-1.0)
-       ;; Parallel build is not supported in 1.0.x.
-       ((#:parallel-build? _ #f) #f)))))
 
 (define-public libressl
   (package

@@ -120,7 +120,7 @@ header.")
 (define-public gnuastro
   (package
     (name "gnuastro")
-    (version "0.10")
+    (version "0.11")
     (source
      (origin
        (method url-fetch)
@@ -128,7 +128,7 @@ header.")
                            version ".tar.lz"))
        (sha256
         (base32
-         "0gmhmh0yddb2aql4hd5ffrr0d4hrmh4pa3yln0n186hslqinp81b"))))
+         "0c1yc2qb7vrqad96savfn06rn01izlfz0va738signv93qqj5k3v"))))
     (inputs
      `(("cfitsio" ,cfitsio)
        ("gsl" ,gsl)
@@ -149,7 +149,7 @@ programs for the manipulation and analysis of astronomical data.")
 (define-public stellarium
   (package
     (name "stellarium")
-    (version "0.19.1")
+    (version "0.19.2")
     (source
      (origin
        (method url-fetch)
@@ -157,7 +157,7 @@ programs for the manipulation and analysis of astronomical data.")
                            "/releases/download/v" version
                            "/stellarium-" version ".tar.gz"))
        (sha256
-        (base32 "0s7v5iyhah258k83kvy2a91a3mdf34r150lcar4mmdsrrcmas98g"))))
+        (base32 "10b05slj5fjakrjb20m68xql68plb64mwn0165dy2fry8z2hbl74"))))
     (build-system cmake-build-system)
     (inputs
      `(("qtbase" ,qtbase)

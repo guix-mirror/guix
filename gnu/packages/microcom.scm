@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,21 +29,20 @@
 (define-public microcom
   (package
     (name "microcom")
-    (version "2016.01.09")
+    (version "2017.03.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://git.pengutronix.de/git/tools/microcom.git")
-                    (commit "v2016.01.0")))
-              (file-name (string-append name "-" version "-checkout"))
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
-               (base32
-                "080ci5589bpyy5kcl51csmvpw9zysify189hw6awx69pi3cjnxly"))))
+               (base32 "060q42lf1bx403smxm97cz8r4ksq942mq5z708vavy6syv3fkap4"))))
     (build-system gnu-build-system)
     (inputs `(("readline" ,readline)))
     (native-inputs `(("automake" ,automake)
                      ("autoconf" ,autoconf)))
-    (home-page  "http://git.pengutronix.de/?p=tools/microcom.git")
+    (home-page  "https://git.pengutronix.de/?p=tools/microcom.git")
     (synopsis "Minimalistic serial line terminal program")
  (description "Microcom is a minimalistic terminal program for accessing
 devices via a serial connection.  It features connection via RS232 serial

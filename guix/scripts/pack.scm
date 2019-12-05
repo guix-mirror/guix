@@ -759,7 +759,7 @@ last resort for relocation."
     (profile-name . "guix-profile")
     (system . ,(%current-system))
     (substitutes? . #t)
-    (build-hook? . #t)
+    (offload? . #t)
     (graft? . #t)
     (print-build-trace? . #t)
     (print-extended-build-trace? . #t)
@@ -800,6 +800,10 @@ last resort for relocation."
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'dry-run? #t (alist-cons 'graft? #f result))))
+         (option '(#\d "derivation") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'derivation-only? #t result)))
+
          (option '(#\f "format") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'format (string->symbol arg) result)))
@@ -918,6 +922,8 @@ Create a bundle of PACKAGE.\n"))
   -r, --root=FILE        make FILE a symlink to the result, and register it
                          as a garbage collector root"))
   (display (G_ "
+  -d, --derivation       return the derivation of the pack"))
+  (display (G_ "
   -v, --verbosity=LEVEL  use the given verbosity LEVEL"))
   (display (G_ "
       --bootstrap        use the bootstrap binaries to build the pack"))
@@ -959,7 +965,10 @@ Create a bundle of PACKAGE.\n"))
                                   (list (transform store package) "out")))
                                (reverse
                                 (filter-map maybe-package-argument opts))))
-           (manifest-file (assoc-ref opts 'manifest)))
+           (manifests     (filter-map (match-lambda
+                                        (('manifest . file) file)
+                                        (_ #f))
+                                      opts)))
       (define properties
         (if (assoc-ref opts 'save-provenance?)
             (lambda (package)
@@ -973,11 +982,15 @@ Create a bundle of PACKAGE.\n"))
             (const '())))
 
       (cond
-       ((and manifest-file (not (null? packages)))
+       ((and (not (null? manifests)) (not (null? packages)))
         (leave (G_ "both a manifest and a package list were given~%")))
-       (manifest-file
-        (let ((user-module (make-user-module '((guix profiles) (gnu)))))
-          (load* manifest-file user-module)))
+       ((not (null? manifests))
+        (concatenate-manifests
+         (map (lambda (file)
+                (let ((user-module (make-user-module
+                                    '((guix profiles) (gnu)))))
+                  (load* file user-module)))
+              manifests)))
        (else
         (manifest
          (map (match-lambda
@@ -1002,6 +1015,7 @@ Create a bundle of PACKAGE.\n"))
                                           (assoc-ref opts 'system)
                                           #:graft? (assoc-ref opts 'graft?))))
           (let* ((dry-run?    (assoc-ref opts 'dry-run?))
+                 (derivation? (assoc-ref opts 'derivation-only?))
                  (relocatable? (assoc-ref opts 'relocatable?))
                  (proot?      (eq? relocatable? 'proot))
                  (manifest    (let ((manifest (manifest-from-args store opts)))
@@ -1070,11 +1084,15 @@ Create a bundle of PACKAGE.\n"))
                                                      #:archiver
                                                      archiver)))
                 (mbegin %store-monad
-                  (show-what-to-build* (list drv)
-                                       #:use-substitutes?
-                                       (assoc-ref opts 'substitutes?)
-                                       #:dry-run? dry-run?)
-                  (munless dry-run?
+                  (munless derivation?
+                    (show-what-to-build* (list drv)
+                                         #:use-substitutes?
+                                         (assoc-ref opts 'substitutes?)
+                                         #:dry-run? dry-run?))
+                  (mwhen derivation?
+                    (return (format #t "~a~%"
+                                    (derivation-file-name drv))))
+                  (munless (or derivation? dry-run?)
                     (built-derivations (list drv))
                     (mwhen gc-root
                       (register-root* (match (derivation->output-paths drv)

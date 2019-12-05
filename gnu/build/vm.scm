@@ -70,9 +70,10 @@
   (let ((cpu (substring system 0
                         (string-index system #\-))))
     (string-append "qemu-system-"
-                   (if (string-match "^i[3456]86$" cpu)
-                       "i386"
-                       cpu))))
+                   (cond
+                    ((string-match "^i[3456]86$" cpu) "i386")
+                    ((string-match "armhf" cpu) "arm")
+                    (else cpu)))))
 
 (define* (load-in-linux-vm builder
                            #:key

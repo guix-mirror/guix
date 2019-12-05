@@ -187,10 +187,13 @@ name decoding bug described at
 DIRECTORY.  Those authority certificates are checked when
 'peer-certificate-status' is later called."
   (let ((cred  (make-certificate-credentials))
-        (files (or (scandir directory
-                            (lambda (file)
-                              (string-suffix? ".pem" file)))
-                   '())))
+        (files (match (scandir directory (cut string-suffix? ".pem" <>))
+                 ((or #f ())
+                  ;; Some distros provide nothing but bundles (*.crt) under
+                  ;; /etc/ssl/certs, so look for them.
+                  (or (scandir directory (cut string-suffix? ".crt" <>))
+                      '()))
+                 (pem pem))))
     (for-each (lambda (file)
                 (let ((file (string-append directory "/" file)))
                   ;; Protect against dangling symlinks.
@@ -198,7 +201,7 @@ DIRECTORY.  Those authority certificates are checked when
                     (set-certificate-credentials-x509-trust-file!*
                      cred file
                      x509-certificate-format/pem))))
-              (or files '()))
+              files)
     cred))
 
 (define (peer-certificate session)

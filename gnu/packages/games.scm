@@ -27,7 +27,7 @@
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2019 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -463,13 +463,14 @@ want what you have.")
     (name "cowsay")
     (version "3.04")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/tnalpgge/"
-                                  "rank-amateur-cowsay/archive/"
-                                  "cowsay-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/tnalpgge/rank-amateur-cowsay.git")
+                     (commit (string-append name "-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "12w7apbf6a9qffk92r32b16w22na2fjcqbl32rn0n7zw5hrp3f6q"))))
+                "06455kq37hvq1xb7adyiwrx0djs50arsxvjgixyxks16lm1rlc7n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1880,30 +1881,38 @@ match, cannon keep, and grave-itation pit.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/minetest/minetest")
-                     (commit version)))
+                    (url "https://github.com/minetest/minetest")
+                    (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
                 "184n9gxfa7yr0j85z2x736maaymsnppd5jzm326wlqri3c0qqy3z"))
               (modules '((guix build utils)))
               (snippet
-                '(begin
-                   (delete-file-recursively "lib") #t))))
+               '(begin
+                  ;; Mimic upstream commit 706b6aad06, for compatibility with
+                  ;; newer jsoncpp.  Remove this for > 5.1.0.
+                  (substitute* "cmake/Modules/FindJson.cmake"
+                    (("features\\.h")
+                     "allocator.h"))
+
+                  ;; Delete bundled libraries.
+                  (delete-file-recursively "lib")
+                  #t))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-         (list "-DRUN_IN_PLACE=0"
-               "-DENABLE_FREETYPE=1"
-               "-DENABLE_GETTEXT=1"
-               "-DENABLE_SYSTEM_JSONCPP=TRUE"
-               (string-append "-DIRRLICHT_INCLUDE_DIR="
-                              (assoc-ref %build-inputs "irrlicht")
-                              "/include/irrlicht")
-               (string-append "-DCURL_INCLUDE_DIR="
-                              (assoc-ref %build-inputs "curl")
-                              "/include/curl"))
-       #:tests? #f)) ; no check target
+       (list "-DRUN_IN_PLACE=0"
+             "-DENABLE_FREETYPE=1"
+             "-DENABLE_GETTEXT=1"
+             "-DENABLE_SYSTEM_JSONCPP=TRUE"
+             (string-append "-DIRRLICHT_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "irrlicht")
+                            "/include/irrlicht")
+             (string-append "-DCURL_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "curl")
+                            "/include/curl"))
+       #:tests? #f))                    ;no check target
     (native-search-paths
      (list (search-path-specification
             (variable "MINETEST_SUBGAME_PATH")
@@ -3787,13 +3796,14 @@ Linux / Mac OS X servers, and an auto mapper with a VT100 map display.")
     (name "laby")
     (version "0.6.4")
     (source
-     (origin (method url-fetch)
-             (uri (string-append
-                   "https://github.com/sgimenez/laby/archive/"
-                   "laby-" version ".tar.gz"))
+     (origin (method git-fetch)
+             (uri (git-reference
+                    (url "https://github.com/sgimenez/laby.git")
+                    (commit (string-append name "-" version))))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "0gyrfa95l1qka7gbjf7l6mk7mbfvph00l0c995ia272qdw7rjhyf"))
+               "12fq9hhrxpzgfinmj9ra9ckss9yficwdlrmgjvvsq7agvh3sgyl1"))
              (patches (search-patches "laby-make-install.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -3830,29 +3840,22 @@ programmers may also add their own favorite language.")
 (define-public bambam
   (package
     (name "bambam")
-    (version "0.6")
+    (version "1.0.0")
     (source
       (origin
         (method git-fetch)
         (uri (git-reference
               (url "https://github.com/porridge/bambam")
-              (commit version)))
+              (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32
-          "08hcd0gzia3pz7fzk4pqc5kbq1074j4q0jcmbpgvr7n623nj2xa5"))))
+         (base32 "18cwd1wpyyx8y61cags9bkdhx9x858xicc4y1c9c2s0xjmgzhl3i"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2
-       #:tests? #f ; no tests
+     `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
-         (delete 'build)
-         (add-before 'install 'patch-data-dir-location
-           (lambda _
-             (substitute* "bambam.py"
-               (("'data'") "'../share/bambam/data'"))
-             #t))
+         (delete 'build)                ; nothing to build
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out   (assoc-ref outputs "out"))
@@ -3943,7 +3946,7 @@ throwing people around in pseudo-randomly generated buildings.")
 (define-public hyperrogue
   (package
     (name "hyperrogue")
-    (version "10.5d")
+    (version "11.2d")
     ;; When updating this package, be sure to update the "hyperrogue-data"
     ;; origin in native-inputs.
     (source (origin
@@ -3954,7 +3957,7 @@ throwing people around in pseudo-randomly generated buildings.")
                     "-src.tgz"))
               (sha256
                (base32
-                "1ls055v4pv2xmn2a8lav7wl370zn0wsd91q41bk0amxd168kcndy"))))
+                "1b532s94zv1jsni7bvh848m42arxcclsr0x3n7c689iamwqzrxmn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -4032,7 +4035,7 @@ throwing people around in pseudo-randomly generated buildings.")
              "-win.zip"))
            (sha256
             (base32
-             "13n9hcvf9yv7kjghm5jhjpwq1kh94i4bgvcczky9kvdvw1y9278n"))))
+             "0vq4l1xaqpjj3hmxn1vn2b3bbkn1hrag42ck9f30blinv347bwhf"))))
        ("unzip" ,unzip)))
     (inputs
      `(("font-dejavu" ,font-dejavu)
@@ -4935,9 +4938,9 @@ fight against their plot and save his fellow rabbits from slavery.")
     (home-page "https://play0ad.com")
     (license (list (license:fsdg-compatible
                     "http://tavmjong.free.fr/FONTS/ArevCopyright.txt"
-                    (license:license-comment
-                     (package-license font-bitstream-vera)))
-                   (package-license font-bitstream-vera)
+                    "Similar to the license of the Bitstream Vera fonts.")
+                   (license:fsdg-compatible
+                    "https://www.gnome.org/fonts/#Final_Bitstream_Vera_Fonts")
                    license:cc-by-sa3.0
                    license:expat
                    license:gfl1.0
@@ -5136,7 +5139,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
 (define-public tome4
   (package
     (name "tome4")
-    (version "1.6.0")
+    (version "1.6.4")
     (synopsis "Single-player, RPG roguelike game set in the world of Eyal")
     (source
      (origin
@@ -5145,7 +5148,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
                            version ".tar.bz2"))
        (sha256
         (base32
-         "1z1w4ycgl5wbm0sv7577vcdfwwf4k7vaf2njzyb21rvqjizpbkwr"))
+         "1hrh79aqmvwwd7idlr3lzpdpc9dgm1k5p7w2462chcjvd8vhfhb7"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -5436,14 +5439,14 @@ making Yamagi Quake II one of the most solid Quake II implementations available.
     (version "0.9.3.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/the-butterfly-effect/tbe/archive/"
-             "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/the-butterfly-effect/tbe.git")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "18qkp7fgdvyl3haqqa693mgyic7afsznsxgz98z9wn4csaqxsnby"))))
+         "1ag2cp346f9bz9qy6za6q54id44d2ypvkyhvnjha14qzzapwaysj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -5787,7 +5790,7 @@ affect gameplay).")
   (package
     (inherit chocolate-doom)
     (name "crispy-doom")
-    (version "5.5.2")
+    (version "5.6.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5795,7 +5798,7 @@ affect gameplay).")
                     (commit (string-append "crispy-doom-" version))))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "1a60ns0blhvml6gzj9qx18c18pbf02rq7vypaajd6nqy5h4fz3cn"))))
+               (base32 "0f319979wqfgm4pvsa6y5clg30p55l441kmrr8db0p5smyv3x2s4"))))
     (native-inputs
      (append
       (package-native-inputs chocolate-doom)
@@ -6803,7 +6806,7 @@ where the player draws runes in real time to effect the desired spell.")
 (define-public edgar
   (package
     (name "edgar")
-    (version "1.31")
+    (version "1.32")
     (source
      (origin
        (method url-fetch)
@@ -6811,7 +6814,7 @@ where the player draws runes in real time to effect the desired spell.")
         (string-append "https://github.com/riksweeney/edgar/releases/download/"
                        version "/edgar-" version "-1.tar.gz"))
        (sha256
-        (base32 "0i4851ci8a86ql4bhdq3xdfmf4b9z5zrd4xpc6vhi06697zgm13i"))))
+        (base32 "12lam6qcscc5ima1w2ksd1cvsvxbd17h6mqkgsqpzx8ap43p2r5p"))))
     (build-system gnu-build-system)
     (arguments '(#:tests? #f            ; there are no tests
                  #:make-flags
@@ -6879,6 +6882,22 @@ a fortress beyond the forbidden swamp.")
                (("PATH_SUFFIXES \"src\" \"gtest\"")
                 "PATH_SUFFIXES \"src\""))
              #t))
+         (add-after 'unpack 'adjust-backward-cpp-includes
+           (lambda _
+             ;; XXX: The bundled backward-cpp exports a CMake "interface"
+             ;; that includes external libraries such as libdl from glibc.
+             ;; By default, CMake interface includes are treated as "system
+             ;; headers", and GCC behaves poorly when glibc is passed as a
+             ;; system header (causing #include_next failures).
+
+             ;; Here we prevent targets that consume the Backward::Backward
+             ;; interface from treating it as "system includes".
+             (substitute* "CMakeLists.txt"
+               (("target_link_libraries\\((.+) Backward::Backward\\)" all target)
+                (string-append "set_property(TARGET " target " PROPERTY "
+                               "NO_SYSTEM_FROM_IMPORTED true)\n"
+                               all)))
+             #t))
          (add-after 'unpack 'add-libiberty
            ;; Build fails upon linking executables without this.
            (lambda _
@@ -6930,7 +6949,7 @@ a fortress beyond the forbidden swamp.")
      "Multiplayer action game where you control small and nimble humanoids")
     (description "OpenClonk is a multiplayer action/tactics/skill game.  It is
 often referred to as a mixture of The Settlers and Worms.  In a simple 2D
-antfarm-style landscape, the player controls his crew of Clonks, small but
+antfarm-style landscape, the player controls a crew of Clonks, small but
 robust humanoid beings.  The game encourages free play but the normal goal is
 to either exploit valuable resources from the earth by building a mine or
 fight each other on an arena-like map.")
@@ -7331,14 +7350,14 @@ play with up to four players simultaneously.  It has network support.")
 (define-public hedgewars
   (package
     (name "hedgewars")
-    (version "0.9.25")
+    (version "1.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.hedgewars.org/download/releases/"
                                   "hedgewars-src-" version ".tar.bz2"))
               (sha256
                (base32
-                "08x7fqpy0hpnbfq2k06g522xayi7s53bca819zfhalvqnqs76pdk"))))
+                "0nqm9w02m0xkndlsj6ys3wr0ik8zc14zgilq7k6fwjrf3zk385i1"))))
     (build-system cmake-build-system)
     (arguments
      ;; XXX: Engine is built as Pascal source code, requiring Free Pascal
@@ -7347,32 +7366,8 @@ play with up to four players simultaneously.  It has network support.")
      `(#:configure-flags (list "-DBUILD_ENGINE_C=ON")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'remove-failing-test
-           ;; XXX: Remove single failing test.  Note: it is marked
-           ;; a "non-critical" test.
-           (lambda _
-             (delete-file-recursively "tests/lua_noncritical")
-             #t))
-         (add-after 'unpack 'fix-compiler
-           ;; XXX: Flag BUILD_ENGINE_C, as set above, implies using Clang to
-           ;; compile files.  However, using `clang' globally leads to the
-           ;; error: qtbase-5.11.3/include/qt5/QtCore/qglobal.h:45:12: fatal
-           ;; error: 'type_traits' file not found.
-           ;;
-           ;; Therefore, we make sure to use `c++' everywhere but in the
-           ;; engine.
-           (lambda _
-             (substitute* "project_files/hwc/CMakeLists.txt"
-               (("find_package\\(SDL2_ttf 2 REQUIRED\\)" all)
-                (string-append all "\n"
-                               "set(CMAKE_C_COMPILER ${CLANG_EXECUTABLE})\n"
-                               "set(CMAKE_CXX_COMPILER ${CLANG_EXECUTABLE})")))
-             (substitute* "CMakeLists.txt"
-               (("set\\(CMAKE_C(XX)?_COMPILER" all) (string-append "#" all)))
-             #t))
          (replace 'check
-           (lambda _
-             (invoke "ctest"))))))
+           (lambda _ (invoke "ctest"))))))
     (inputs
      `(("ffmpeg" ,ffmpeg)
        ("freeglut" ,freeglut)
@@ -7813,3 +7808,84 @@ remake of that series or any other game.")
 the AlphaGo Zero paper.  The current best network weights file for the engine
 can be downloaded from @url{https://zero.sjeng.org/best-network}.")
    (license license:gpl3+)))
+
+(define-public q5go
+  (package
+   (name "q5go")
+   (version "1.0")
+   (source (origin
+            (method git-fetch)
+            (uri (git-reference
+                  (url "https://github.com/bernds/q5Go.git")
+                  (commit (string-append "q5go-" version))))
+            (file-name (git-file-name name version))
+            (sha256
+             (base32
+              "1gdlfqcqkqv7vph3qwq78d0qz6dhmdsranxq9bmixiisbzkqby31"))))
+   (build-system gnu-build-system)
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
+   (inputs
+    `(("qtbase" ,qtbase)
+      ("qtmultimedia" ,qtmultimedia)
+      ("qtsvg" ,qtsvg)))
+   (arguments
+    '(#:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'fix-configure-script
+          (lambda _
+            ;; Bypass the unavailable qtchooser program.
+            (substitute* "configure"
+              (("test -z \"QTCHOOSER\"")
+               "false")
+              (("qtchooser -run-tool=(.*) -qt=qt5" _ command)
+               command))
+            #t))
+        (add-after 'unpack 'fix-paths
+          (lambda _
+            (substitute* '("src/pics/Makefile.in"
+                           "src/translations/Makefile.in")
+              (("\\$\\(datadir\\)/qGo/")
+               "$(datadir)/q5go/"))
+            #t))
+        (add-after 'install 'install-desktop-file
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (apps (string-append out "/share/applications"))
+                   (pics (string-append out "/share/q5go/pics")))
+              (delete-file-recursively (string-append out "/share/applnk"))
+              (delete-file-recursively (string-append out "/share/mimelnk"))
+              (install-file "../source/src/pics/Bowl.ico" pics)
+              (mkdir-p apps)
+              (with-output-to-file (string-append apps "/q5go.desktop")
+                (lambda _
+                  (format #t
+                          "[Desktop Entry]~@
+                           Name=q5go~@
+                           Exec=~a/bin/q5go~@
+                           Icon=~a/Bowl.ico~@
+                           Categories=Game;~@
+                           Comment=Game of Go~@
+                           Comment[de]=Spiel des Go~@
+                           Comment[eo]=Goo~@
+                           Comment[es]=Juego de Go~@
+                           Comment[fr]=Jeu de Go~@
+                           Comment[ja]=囲碁~@
+                           Comment[ko]=바둑~@
+                           Comment[zh]=围棋~@
+                           Terminal=false~@
+                           Type=Application~%"
+                          out pics))))
+             #t)))))
+   (synopsis "Qt GUI to play the game of Go")
+   (description
+    "This a tool for Go players which performs the following functions:
+@itemize
+@item SGF editor,
+@item Analysis frontend for Leela Zero (or compatible engines),
+@item GTP interface (to play against an engine),
+@item IGS client (to play on the internet),
+@item Export games to a variety of formats.
+@end itemize")
+   (home-page "https://github.com/bernds/q5Go")
+   (license license:gpl2+)))

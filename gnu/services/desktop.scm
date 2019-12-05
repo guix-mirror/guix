@@ -135,6 +135,12 @@
             inputattach-configuration?
             inputattach-service-type
 
+            polkit-wheel-service
+
+            gnome-keyring-configuration
+            gnome-keyring-configuration?
+            gnome-keyring-service-type
+
             %desktop-services))
 
 ;;; Commentary:
@@ -1066,6 +1072,74 @@ dispatches events from it.")))
 
 
 ;;;
+;;; gnome-keyring-service-type
+;;;
+
+(define-record-type* <gnome-keyring-configuration> gnome-keyring-configuration
+  make-gnome-keyring-configuration
+  gnome-keyring-configuration?
+  (keyring gnome-keyring-package (default gnome-keyring))
+  (pam-services gnome-keyring-pam-services (default '(("gdm-password" . login)
+                                                      ("passwd" . passwd)))))
+
+(define (pam-gnome-keyring config)
+  (define (%pam-keyring-entry . arguments)
+    (pam-entry
+     (control "optional")
+     (module (file-append (gnome-keyring-package config)
+                          "/lib/security/pam_gnome_keyring.so"))
+     (arguments arguments)))
+
+  (list
+   (lambda (service)
+     (case (assoc-ref (gnome-keyring-pam-services config)
+                      (pam-service-name service))
+       ((login)
+        (pam-service
+         (inherit service)
+         (auth (append (pam-service-auth service)
+                       (list (%pam-keyring-entry))))
+         (session (append (pam-service-session service)
+                          (list (%pam-keyring-entry "auto_start"))))))
+       ((passwd)
+        (pam-service
+         (inherit service)
+         (password (append (pam-service-password service)
+                           (list (%pam-keyring-entry))))))
+       (else service)))))
+
+(define gnome-keyring-service-type
+  (service-type
+   (name 'gnome-keyring)
+   (extensions (list
+                (service-extension pam-root-service-type pam-gnome-keyring)))
+   (default-value (gnome-keyring-configuration))
+   (description "Return a service, that adds the @code{gnome-keyring} package
+to the system profile and extends PAM with entries using
+@code{pam_gnome_keyring.so}, unlocking a user's login keyring when they log in
+or setting its password with passwd.")))
+
+
+;;;
+;;; polkit-wheel-service -- Allow wheel group to perform admin actions
+;;;
+
+(define polkit-wheel
+  (file-union
+   "polkit-wheel"
+   `(("share/polkit-1/rules.d/wheel.rules"
+      ,(plain-file
+        "wheel.rules"
+        "polkit.addAdminRule(function(action, subject) {
+    return [\"unix-group:wheel\"];
+});
+")))))
+
+(define polkit-wheel-service
+  (simple-service 'polkit-wheel polkit-service-type (list polkit-wheel)))
+
+
+;;;
 ;;; The default set of desktop services.
 ;;;
 
@@ -1080,6 +1154,9 @@ dispatches events from it.")))
          ;; Add udev rules for MTP devices so that non-root users can access
          ;; them.
          (simple-service 'mtp udev-service-type (list libmtp))
+         ;; Add polkit rules, so that non-root users in the wheel group can
+         ;; perform administrative tasks (similar to "sudo").
+         polkit-wheel-service
 
          ;; NetworkManager and its applet.
          (service network-manager-service-type)

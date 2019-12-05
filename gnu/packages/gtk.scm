@@ -360,7 +360,7 @@ diagrams.")
        ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
        ("pkg-config" ,pkg-config)
        ;; For testing.
-       ("xorg-server" ,xorg-server)
+       ("xorg-server" ,xorg-server-for-tests)
        ("shared-mime-info" ,shared-mime-info)))
     (propagated-inputs
      ;; As per the pkg-config file.
@@ -431,7 +431,7 @@ printing and other features typical of a source code editor.")
       ("pkg-config" ,pkg-config)
       ("vala" ,vala)
       ;; For testing.
-      ("xorg-server" ,xorg-server)
+      ("xorg-server" ,xorg-server-for-tests)
       ("shared-mime-info" ,shared-mime-info)))
    (propagated-inputs
     ;; gtksourceview-3.0.pc refers to all these.
@@ -461,7 +461,7 @@ highlighting and other features typical of a source code editor.")
 (define-public gdk-pixbuf
   (package
    (name "gdk-pixbuf")
-   (version "2.38.1")
+   (version "2.40.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -469,7 +469,7 @@ highlighting and other features typical of a source code editor.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0fmbjgjcyym3qg46f64qgl7icdm4ii77flyc1mhk244rp8vgi7zi"))))
+              "1rnlx9yfw970maxi2x6niaxmih5la11q1ilr7gzshz2kk585k0hm"))))
    (build-system meson-build-system)
    (arguments
     `(#:configure-flags '("-Dinstalled_tests=false")
@@ -495,16 +495,7 @@ highlighting and other features typical of a source code editor.")
             '((replace 'check
               (lambda _
                 (invoke "meson" "test" "--timeout-multiplier" "5"))))
-            '())
-        (add-before 'configure 'aid-install-script
-          (lambda* (#:key outputs #:allow-other-keys)
-            ;; "build-aux/post-install.sh" invokes `gdk-pixbuf-query-loaders`
-            ;; for updating loader.cache, but it's not on PATH.  Make it use
-            ;; the one we're installing.  XXX: Won't work when cross-compiling.
-            (substitute* "build-aux/post-install.sh"
-              (("gdk-pixbuf-query-loaders" match)
-               (string-append (assoc-ref outputs "out") "/bin/" match)))
-            #t)))))
+            '()))))
    (propagated-inputs
     `(;; Required by gdk-pixbuf-2.0.pc
       ("glib" ,glib)
@@ -731,7 +722,7 @@ application suites.")
 (define-public gtk+
   (package (inherit gtk+-2)
    (name "gtk+")
-   (version "3.24.10")
+   (version "3.24.12")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -739,7 +730,7 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "00qvq1r96ikdalv7xzgng1kad9i0rcahqk01gwhxl3xrw83z3a1m"))
+              "10xyyhlfb0yk4hglngxh2zsv9xrxkqv343df8h01dvagc6jyp10k"))
             (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
                                      "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
    (outputs '("out" "bin" "doc"))
@@ -753,6 +744,7 @@ application suites.")
       ("libxinerama" ,libxinerama)
       ("libxkbcommon" ,libxkbcommon)
       ("libxdamage" ,libxdamage)
+      ("libxrandr" ,libxrandr)
       ("mesa" ,mesa)
       ("pango" ,pango)
       ("wayland" ,wayland)
@@ -1295,7 +1287,7 @@ write GNOME applications.")
 (define-public perl-cairo
   (package
     (name "perl-cairo")
-    (version "1.106")
+    (version "1.107")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1303,7 +1295,7 @@ write GNOME applications.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1i25kks408c54k2zxskvg54l5k3qadzm8n72ffga9jy7ic0h6j76"))))
+                "0sg1gf1f2pjq7pji0zsv4rbi3bzpsx82z98k7yqxafzrvlkf27ay"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-extutils-depends" ,perl-extutils-depends)
@@ -1384,15 +1376,16 @@ and routines to assist in editing internationalized text.")
 (define-public girara
   (package
     (name "girara")
-    (version "0.3.2")
-    (source (origin
-              (method url-fetch)
-              (uri
-               (string-append "https://pwmt.org/projects/girara/download/girara-"
-                              version ".tar.xz"))
-              (sha256
-               (base32
-                "1kc6n1mxjxa7wvwnqy94qfg8l9jvx9qrvrr2kc7m4g0z20x3a00p"))))
+    (version "0.3.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.pwmt.org/pwmt/girara")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0q0yfv2777s72p473lw0ll435n7vz4v204cmp9naq8am7a6i6avn"))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("check" ,check)
                      ("gettext" ,gettext-minimal)

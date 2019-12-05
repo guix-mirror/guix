@@ -76,21 +76,14 @@ objects.")
     (version "1.4.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "BSgenome.Celegans.UCSC.ce10_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "BSgenome.Celegans.UCSC.ce10"
+                                     version 'annotation))
               (sha256
                (base32
                 "1zaym97jk4npxk14ifvwz2rvhm4zx9xgs33r9vvx9rlynp0gydrk"))))
     (properties
      `((upstream-name . "BSgenome.Celegans.UCSC.ce10")))
     (build-system r-build-system)
-    ;; As this package provides little more than a very large data file it
-    ;; doesn't make sense to build substitutes.
-    (arguments `(#:substitutable? #f))
     (propagated-inputs
      `(("r-bsgenome" ,r-bsgenome)))
     (home-page
@@ -108,21 +101,14 @@ objects.")
     (version "1.4.1")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "BSgenome.Dmelanogaster.UCSC.dm6_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "BSgenome.Dmelanogaster.UCSC.dm6"
+                                     version 'annotation))
               (sha256
                (base32
                 "1bhj0rdgf7lspw4xby9y9mf7v7jxxz8001bc8vw8kf04rjsx6060"))))
     (properties
      `((upstream-name . "BSgenome.Dmelanogaster.UCSC.dm6")))
     (build-system r-build-system)
-    ;; As this package provides little more than a very large data file it
-    ;; doesn't make sense to build substitutes.
-    (arguments `(#:substitutable? #f))
     (propagated-inputs
      `(("r-bsgenome" ,r-bsgenome)))
     (home-page
@@ -140,21 +126,14 @@ objects.")
     (version "1.4.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "BSgenome.Dmelanogaster.UCSC.dm3_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "BSgenome.Dmelanogaster.UCSC.dm3"
+                                     version 'annotation))
               (sha256
                (base32
                 "19bm3lkhhkag3gnwp419211fh0cnr0x6fa0r1lr0ycwrikxdxsv8"))))
     (properties
      `((upstream-name . "BSgenome.Dmelanogaster.UCSC.dm3")))
     (build-system r-build-system)
-    ;; As this package provides little more than a very large data file it
-    ;; doesn't make sense to build substitutes.
-    (arguments `(#:substitutable? #f))
     (propagated-inputs
      `(("r-bsgenome" ,r-bsgenome)))
     (home-page
@@ -172,12 +151,8 @@ Biostrings objects.")
     (version "1.3.99")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "http://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "BSgenome.Dmelanogaster.UCSC.dm3.masked_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "BSgenome.Dmelanogaster.UCSC.dm3.masked"
+                                     version 'annotation))
               (sha256
                (base32
                 "1756csb09f1br9rj1l3f08qyh4hlymdbd0cfn8x3fq39dn45m5ap"))))
@@ -207,21 +182,14 @@ Finder (TRF mask).  Only the AGAPS and AMB masks are \"active\" by default.")
     (version "0.99.1")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "BSgenome.Hsapiens.1000genomes.hs37d5_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "BSgenome.Hsapiens.1000genomes.hs37d5"
+                                     version 'annotation))
               (sha256
                (base32
                 "1cg0g5fqmsvwyw2p9hp2yy4ilk21jkbbrnpgqvb5c36ihjwvc7sr"))))
     (properties
      `((upstream-name . "BSgenome.Hsapiens.1000genomes.hs37d5")))
     (build-system r-build-system)
-    ;; As this package provides little more than a very large data file it
-    ;; doesn't make sense to build substitutes.
-    (arguments `(#:substitutable? #f))
     (propagated-inputs
      `(("r-bsgenome" ,r-bsgenome)))
     (home-page
@@ -238,12 +206,8 @@ Finder (TRF mask).  Only the AGAPS and AMB masks are \"active\" by default.")
     (version "1.3.99")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "http://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "BSgenome.Hsapiens.UCSC.hg19.masked_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "BSgenome.Hsapiens.UCSC.hg19.masked"
+                                     version 'annotation))
               (sha256
                (base32
                 "0452pyah0kv1vsrsjbrqw4k2rm8lc2vc771dzib45gnnfz86qxrr"))))
@@ -273,21 +237,14 @@ default.")
     (version "1.4.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "BSgenome.Mmusculus.UCSC.mm9_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "BSgenome.Mmusculus.UCSC.mm9"
+                                     version 'annotation))
               (sha256
                (base32
                 "1birqw30g2azimxpnjfzmkphan7x131yy8b9h85lfz5fjdg7841i"))))
     (properties
      `((upstream-name . "BSgenome.Mmusculus.UCSC.mm9")))
     (build-system r-build-system)
-    ;; As this package provides little more than a very large data file it
-    ;; doesn't make sense to build substitutes.
-    (arguments `(#:substitutable? #f))
     (propagated-inputs
      `(("r-bsgenome" ,r-bsgenome)))
     (home-page
@@ -304,12 +261,8 @@ provided by UCSC (mm9, July 2007) and stored in Biostrings objects.")
     (version "1.3.99")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "http://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "BSgenome.Mmusculus.UCSC.mm9.masked_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "BSgenome.Mmusculus.UCSC.mm9.masked"
+                                     version 'annotation))
               (sha256
                (base32
                 "00bpbm3havqcxr4g63zhllsbpd9q6svgihks7qp7x73nm4gvq7fn"))))
@@ -339,21 +292,14 @@ default."  )
     (version "1.4.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "BSgenome.Mmusculus.UCSC.mm10_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "BSgenome.Mmusculus.UCSC.mm10"
+                                     version 'annotation))
               (sha256
                (base32
                 "12s0nm2na9brjad4rn9l7d3db2aj8qa1xvz0y1k7gk08wayb6bkf"))))
     (properties
      `((upstream-name . "BSgenome.Mmusculus.UCSC.mm10")))
     (build-system r-build-system)
-    ;; As this package provides little more than a very large data file it
-    ;; doesn't make sense to build substitutes.
-    (arguments `(#:substitutable? #f))
     (propagated-inputs
      `(("r-bsgenome" ,r-bsgenome)))
     (home-page
@@ -371,11 +317,7 @@ in Biostrings objects.")
     (version "3.7.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "org.Ce.eg.db_" version ".tar.gz"))
+              (uri (bioconductor-uri "org.Ce.eg.db" version 'annotation))
               (sha256
                (base32
                 "1w5br1ss4ha8wv4v2saj7cmbjc2jw0dyj2f2y269l078z31wcnaz"))))
@@ -397,11 +339,7 @@ annotations for the genome of the model worm Caenorhabditis elegans.")
     (version "3.7.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "org.Dm.eg.db_" version ".tar.gz"))
+              (uri (bioconductor-uri "org.Dm.eg.db" version 'annotation))
               (sha256
                (base32
                 "1pqjrzlyg72bjpy8zsxvaglc7jsv176bnyi87xdajmkvsgxpm7b3"))))
@@ -423,11 +361,7 @@ annotations for the genome of the model fruit fly Drosophila melanogaster.")
     (version "3.7.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "org.Dr.eg.db_" version ".tar.gz"))
+              (uri (bioconductor-uri "org.Dr.eg.db" version 'annotation))
               (sha256
                (base32
                 "1xs5wsbcpy0iwbjyiv7fax57djqc529ai5fk1qfsdcvlja3cpglx"))))
@@ -449,11 +383,7 @@ based on mapping using Entrez Gene identifiers.")
     (version "3.7.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "org.Hs.eg.db_" version ".tar.gz"))
+              (uri (bioconductor-uri "org.Hs.eg.db" version 'annotation))
               (sha256
                (base32
                 "1qxz9l80yg3qdqszs6dsscp7lrpfi1bgd0pxh9j7q34vprzwhdim"))))
@@ -475,11 +405,7 @@ on mapping using Entrez Gene identifiers.")
     (version "3.7.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "org.Mm.eg.db_" version ".tar.gz"))
+              (uri (bioconductor-uri "org.Mm.eg.db" version 'annotation))
               (sha256
                (base32
                 "1i3nvrd3wjigf1rmgxq1p5xxc3p8v02h5gwi62s30rkrsyjjfjxx"))))
@@ -501,21 +427,14 @@ annotations for the genome of the model mouse Mus musculus.")
     (version "1.4.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "BSgenome.Hsapiens.UCSC.hg19_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "BSgenome.Hsapiens.UCSC.hg19"
+                                     version 'annotation))
               (sha256
                (base32
                 "1y0nqpk8cw5a34sd9hmin3z4v7iqm6hf6l22cl81vlbxqbjibxc8"))))
     (properties
      `((upstream-name . "BSgenome.Hsapiens.UCSC.hg19")))
     (build-system r-build-system)
-    ;; As this package provides little more than a very large data file it
-    ;; doesn't make sense to build substitutes.
-    (arguments `(#:substitutable? #f))
     (propagated-inputs
      `(("r-bsgenome" ,r-bsgenome)))
     (home-page
@@ -555,11 +474,7 @@ by UCSC (hg19, February 2009) and stored in Biostrings objects.")
     (source
      (origin
        (method url-fetch)
-       ;; We cannot use bioconductor-uri here because this tarball is
-       ;; located under "data/experiment/" instead of "bioc/".
-       (uri (string-append "https://bioconductor.org/packages/"
-                           "release/data/experiment/src/contrib"
-                           "/geneLenDataBase_" version ".tar.gz"))
+       (uri (bioconductor-uri "geneLenDataBase" version 'experiment))
        (sha256
         (base32
          "03gm4pvsfascx7kjg0jycpf4f572mja68wwmwigs390vbmawyb4a"))))
@@ -582,21 +497,14 @@ genomes and gene ID formats, largely based on the UCSC table browser.")
     (version "3.2.2")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib"
-                                  "/TxDb.Hsapiens.UCSC.hg19.knownGene_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "TxDb.Hsapiens.UCSC.hg19.knownGene"
+                                     version 'annotation))
               (sha256
                (base32
                 "1sajhcqqwazgz2lqbik7rd935i7kpnh08zxbp2ra10j72yqy4g86"))))
     (properties
      `((upstream-name . "TxDb.Hsapiens.UCSC.hg19.knownGene")))
     (build-system r-build-system)
-    ;; As this package provides little more than a very large data file it
-    ;; doesn't make sense to build substitutes.
-    (arguments `(#:substitutable? #f))
     (propagated-inputs
      `(("r-genomicfeatures" ,r-genomicfeatures)))
     (home-page
@@ -614,12 +522,8 @@ track.  The database is exposed as a @code{TxDb} object.")
     (version "3.4.6")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib"
-                                  "/TxDb.Hsapiens.UCSC.hg38.knownGene_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "TxDb.Hsapiens.UCSC.hg38.knownGene"
+                                     version 'annotation))
               (sha256
                (base32
                 "12j7rri9r129v9w1yiqadg952dx462dh092sxif3r5kk8l7bxkn9"))))
@@ -643,12 +547,8 @@ track.  The database is exposed as a @code{TxDb} object.")
     (version "3.2.2")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib"
-                                  "/TxDb.Mmusculus.UCSC.mm9.knownGene_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "TxDb.Mmusculus.UCSC.mm9.knownGene"
+                                     version 'annotation))
               (sha256
                (base32
                 "16bjxy00363hf91ik2mqlqls86i07gia72qh92xc3l1ncch61mx2"))))
@@ -673,21 +573,14 @@ database is exposed as a @code{TxDb} object.")
     (version "3.4.7")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "TxDb.Mmusculus.UCSC.mm10.knownGene_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "TxDb.Mmusculus.UCSC.mm10.knownGene"
+                                     version 'annotation))
               (sha256
                (base32
                 "04impkl8zh1gpwwrpbf19jqznsjrq2306yyhm6cmx6hr1401bd6b"))))
     (properties
      `((upstream-name . "TxDb.Mmusculus.UCSC.mm10.knownGene")))
     (build-system r-build-system)
-    ;; As this package provides little more than a very large data file it
-    ;; doesn't make sense to build substitutes.
-    (arguments `(#:substitutable? #f))
     (propagated-inputs
      `(("r-bsgenome" ,r-bsgenome)
        ("r-genomicfeatures" ,r-genomicfeatures)
@@ -733,12 +626,8 @@ by exposing these as TxDb objects.")
     (version "2.2.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "FDb.InfiniumMethylation.hg19_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "FDb.InfiniumMethylation.hg19"
+                                     version 'annotation))
               (sha256
                (base32
                 "0gq90fvph6kgrpjb89nvzq6hl1k24swn19rgjh5g98l86mja6nk0"))))
@@ -765,12 +654,8 @@ annotations.")
     (version "0.3.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "IlluminaHumanMethylationEPICmanifest_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "IlluminaHumanMethylationEPICmanifest"
+                                     version 'annotation))
               (sha256
                (base32
                 "0alhjda5g186z8b1nsmnpfswrlj7prdz8mkwx60wkkl6hkcnk6p3"))))
@@ -791,11 +676,7 @@ annotations.")
     (version "2.9")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "DO.db_" version ".tar.gz"))
+              (uri (bioconductor-uri "DO.db" version 'annotation))
               (sha256
                (base32
                 "10bqqa124l61ivzy4mdd3z3ar9a6537qbxw23pc4y9w8a6dwnavn"))))
@@ -872,11 +753,7 @@ species.")
     (version "1.12.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/experiment/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/experiment/src/contrib/"
-                                  "ABAData_" version ".tar.gz"))
+              (uri (bioconductor-uri "ABAData" version 'experiment))
               (sha256
                (base32
                 "1bmj341xcymlrk02gss5vvrqc4ddas0rdw39lnpsj98hq6n11p5z"))))
@@ -909,11 +786,7 @@ All datasets are restricted to protein coding genes.")
     (version "1.18.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/experiment/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/experiment/src/contrib/"
-                                  "ARRmData_" version ".tar.gz"))
+              (uri (bioconductor-uri "ARRmData" version 'experiment))
               (sha256
                (base32
                 "0r1y3zn7ly4k3ngx55vfavn9s6aidbddlv2fbmj7hj3hvpslmyly"))))
@@ -933,11 +806,7 @@ from Illumina 450k methylation arrays.")
     (version "1.2.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/experiment/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/experiment/src/contrib/"
-                                  "HSMMSingleCell_" version ".tar.gz"))
+              (uri (bioconductor-uri "HSMMSingleCell" version 'experiment))
               (sha256
                (base32
                 "1vxnr8gr6md85g39csy7g2sqqajiqgyvznys2qa9yixd2b01yph9"))))
@@ -966,11 +835,7 @@ resulting in a complete gene expression profile for each cell.")
     (version "1.26.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/experiment/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/experiment/src/contrib/"
-                                  "ALL_" version ".tar.gz"))
+              (uri (bioconductor-uri "ALL" version 'experiment))
               (sha256
                (base32
                 "1z7kpjw4ndj6fkxwvhqf3gawhrn26ksrlns7j2c78qzxqmjndik9"))))

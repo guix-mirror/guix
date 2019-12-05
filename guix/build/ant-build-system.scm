@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -171,6 +172,12 @@ to the default GNU unpack strategy."
                 #:allow-other-keys)
   (apply invoke `("ant" ,build-target ,@make-flags)))
 
+(define (regular-jar-file-predicate file stat)
+  "Predicate returning true if FILE is ending on '.jar'
+and STAT indicates it is a regular file."
+    (and ((file-name-predicate "\\.jar$") file stat)
+         (eq? 'regular (stat:type stat))))
+
 (define* (generate-jar-indices #:key outputs #:allow-other-keys)
   "Generate file \"META-INF/INDEX.LIST\".  This file does not use word wraps
 and is preferred over \"META-INF/MANIFEST.MF\", which does use word wraps,
@@ -181,7 +188,10 @@ dependencies of this jar file."
     (invoke "jar" "-i" jar))
   (for-each (match-lambda
               ((output . directory)
-               (for-each generate-index (find-files directory "\\.jar$"))))
+               (for-each generate-index
+                         (find-files
+                          directory
+                          regular-jar-file-predicate))))
             outputs)
   #t)
 
@@ -222,7 +232,8 @@ repack them.  This is necessary to ensure that archives are reproducible."
 
   (for-each (match-lambda
               ((output . directory)
-               (for-each repack-archive (find-files directory "\\.jar$"))))
+               (for-each repack-archive
+                         (find-files directory regular-jar-file-predicate))))
             outputs)
   #t)
 

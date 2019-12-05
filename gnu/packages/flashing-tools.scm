@@ -211,14 +211,15 @@ firmware from it.")
   (let ((commit "f289b7a2e5627464044249f0e5742830e052e360"))
     (package
       (name "teensy-loader-cli")
-      (version (string-append "2.1-1." (string-take commit 7)))
+      (version (git-version "2.1" "1" commit))
       (source
        (origin
-         (method url-fetch)
-         (uri (string-append "https://github.com/PaulStoffregen/"
-                             "teensy_loader_cli/archive/" commit ".tar.gz"))
-         (sha256 (base32 "17wqc2q4fa473cy7f5m2yiyb9nq0qw7xal2kzrxzaikgm9rabsw8"))
-         (file-name (string-append "teensy-loader-cli-" version ".tar.gz" ))
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/PaulStoffregen/teensy_loader_cli.git")
+                (commit commit)))
+         (sha256 (base32 "0sssim56pwsxp5cp5dlf6mi9h5fx2592m6j1g7abnm0s09b0lpdx"))
+         (file-name (git-file-name name version))
          (modules '((guix build utils)))
          (snippet
           `(begin
@@ -294,13 +295,14 @@ RK3036, RK3066, RK312X, RK3168, RK3188, RK3288, RK3368.")
     (name "heimdall")
     (version "1.4.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/Benjamin-Dobell/Heimdall"
-                                  "/archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://gitlab.com/BenjaminDobell/Heimdall.git")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1y7gwg3lipyp2zcysm2vid1qg5nwin9bxbvgzs28lz2rya4fz6sq"))))
+                "1ygn4snvcmi98rgldgxf5hwm7zzi1zcsihfvm6awf9s6mpcjzbqz"))))
     (build-system cmake-build-system)
     (arguments
      `(#:build-type "Release"
@@ -327,7 +329,7 @@ RK3036, RK3066, RK312X, RK3168, RK3188, RK3288, RK3368.")
      `(("libusb" ,libusb)
        ("qtbase" ,qtbase)
        ("zlib" ,zlib)))
-    (home-page "http://glassechidna.com.au/heimdall/")
+    (home-page "https://glassechidna.com.au/heimdall/")
     (synopsis "Flash firmware onto Samsung mobile devices")
     (description "@command{heimdall} is a tool suite used to flash firmware (aka
 ROMs) onto Samsung mobile devices.  Heimdall connects to a mobile device over
@@ -415,13 +417,14 @@ Management Engine (ME).  You need to @code{sudo rmmod mei_me} and
     (name "me-cleaner")
     (version "1.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/corna/me_cleaner/"
-                                  "archive/v" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/corna/me_cleaner.git")
+                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "0hdnay1ai0r6l69z63jkiz6yfwdsqc2mrfyj77hgadv7xxxqm6na"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "1bdj2clm13ir441vn7sv860xsc5gh71ja5lc2wn0gggnff0adxj4"))
+              (file-name (git-file-name name version))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -444,15 +447,16 @@ ME as far as possible (it only edits ME firmware image files).")
 (define-public uefitool
   (package
     (name "uefitool")
-    (version "0.22.4")
+    (version "0.26.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/LongSoft/UEFITool/archive/"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/LongSoft/UEFITool.git")
+                     (commit version)))
               (sha256
                (base32
-                "05jmhv7jpq08kqbd1477y1lgyjvcic3njrd0bmzdy7v7b7lnhl82"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "1ka7i12swm9r5bmyz5vjr82abd2f3lj8p35f4208byalfbx51yq7"))
+              (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

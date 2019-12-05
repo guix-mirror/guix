@@ -52,7 +52,7 @@
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.nasm.us/pub/nasm/releasebuilds/"
-                                  version "/" name "-" version ".tar.xz"))
+                                  version "/nasm-" version ".tar.xz"))
               (sha256
                (base32
                 "1xg8dfr49py15vbwk1rzcjc3zpqydmr49ahlijm56wlgj8zdwjp2"))))

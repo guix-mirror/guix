@@ -32,6 +32,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module ((guix utils) #:select (target-64bit?))
   #:use-module (guix packages)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
@@ -43,6 +44,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages tcl)
@@ -52,14 +54,14 @@
 (define-public parallel
   (package
     (name "parallel")
-    (version "20191022")
+    (version "20191122")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/parallel/parallel-"
                           version ".tar.bz2"))
       (sha256
-       (base32 "1a89x5ix9kls1abj8zkgxdf3g3s5phzb83xcd4cwpz4szfjfw6v4"))))
+       (base32 "01wmk3sf34d2lmhl37j4ga7aims2hcnzv1bydg1xs4pablar6ahq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -158,7 +160,11 @@ and they are executed on lists of files, hosts, users or other items.")
             (string-append "--with-freeipmi=" (assoc-ref %build-inputs "freeipmi"))
             (string-append "--with-hwloc=" (assoc-ref %build-inputs "hwloc"))
             (string-append "--with-json=" (assoc-ref %build-inputs "json-c"))
-            (string-append "--with-munge=" (assoc-ref %build-inputs "munge")))
+            (string-append "--with-munge=" (assoc-ref %build-inputs "munge"))
+
+            ;; 32-bit support is marked as deprecated and needs to be
+            ;; explicitly enabled.
+            ,@(if (target-64bit?) '() '("--enable-deprecated")))
       #:phases
       (modify-phases %standard-phases
         (add-after 'unpack 'autoconf

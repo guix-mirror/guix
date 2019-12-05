@@ -854,14 +854,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.29.2")
+    (version "0.29.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1pjmrnbn0iavm5pnw7wgfw5d6hg5i6miqfa6s7s4027vn94n3nhv"))))
+                "0dfwa38vgnxk9cvvpza66szjgp8lir6iz6yy0cry9593lywh9xym"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -884,8 +884,7 @@ invoking @command{notifymuch} from the post-new hook.")
 
                       (let* ((out (assoc-ref outputs "out"))
                              (elisp
-                              (string-append out "/share/emacs/site-lisp/guix.d/"
-                                             ,name "-" ,version)))
+                              (string-append out "/share/emacs/site-lisp/")))
                         (invoke "./configure"
                                 (string-append "--prefix=" out)
                                 (string-append "--emacslispdir=" elisp)
@@ -1630,15 +1629,14 @@ header.")
 (define-public perl-email-sender
   (package
     (name "perl-email-sender")
-    (version "1.300031")
+    (version "1.300033")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
                            "Email-Sender-" version ".tar.gz"))
        (sha256
-        (base32
-         "052g0slw3h2lzn93j71fi47nfawww2aph4jhr3c860ji70lkf4n4"))))
+        (base32 "1flbnzyng4g0h1aksbsip1qa6sawgfihvblspqc0xsis8g9vcza7"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-capture-tiny" ,perl-capture-tiny)))
@@ -2078,14 +2076,14 @@ converts them to maildir format directories.")
 (define-public mpop
   (package
     (name "mpop")
-    (version "1.4.5")
+    (version "1.4.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://marlam.de/mpop/releases/"
                            "mpop-" version ".tar.xz"))
        (sha256
-        (base32 "1m6743j8g777lijvxqw2wz6pv2g5a9wlh6zq7awk0hvd44xp4sav"))))
+        (base32 "0q4ifzvl1gcndvqqqk7n9mc599r4s2knxjc7alflwb366fql58gv"))))
     (build-system gnu-build-system)
     (inputs
      `(("gnutls" ,gnutls)
@@ -2853,7 +2851,7 @@ PGP handling, multiple servers, and secure connections.")
 (define-public imapfilter
   (package
     (name "imapfilter")
-    (version "2.6.12")
+    (version "2.6.16")
     (source
      (origin
        (method git-fetch)
@@ -2862,7 +2860,7 @@ PGP handling, multiple servers, and secure connections.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0vzpc54fjf5vb5vx5w0fl20xvx1k9cg6a3hbl86mm8kwsqf3wrab"))))
+        (base32 "0f65sg6hhv6778fxwsz4hvarbm97dsb8jj0mg7a9qs273r35pqck"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -2871,15 +2869,7 @@ PGP handling, multiple servers, and secure connections.")
              "CC=gcc")
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (add-after 'unpack 'fix-include-path
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((pcre (assoc-ref inputs "pcre")))
-               (substitute* "src/Makefile"
-                 (("INCDIRS =")
-                  (string-append "INCDIRS ="
-                                 "-I" pcre "/include")))
-               #t))))))
+         (delete 'configure))))         ; no configure script
     (native-inputs
      `(("lua" ,lua)
        ("pcre" ,pcre)
@@ -2921,7 +2911,7 @@ replacement for the @code{urlview} program.")
 (define-public tnef
   (package
     (name "tnef")
-    (version "1.4.17")
+    (version "1.4.18")
     (source
      (origin
        (method git-fetch)
@@ -2929,8 +2919,7 @@ replacement for the @code{urlview} program.")
              (url "https://github.com/verdammelt/tnef.git")
              (commit version)))
        (sha256
-        (base32
-         "0cq2xh5wd74qn6k2nnw5rayxgqhjl3jbzf4zlc4babcwxrv32ldh"))
+        (base32 "104g48mcm00bgiyzas2vf86331w7bnw7h3bc11ib4lp7rz6zqfck"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs

@@ -113,6 +113,11 @@
       (manifest-matching-entries m (list p))
       #f)))
 
+(test-equal "concatenate-manifests"
+  (manifest (list guile-2.0.9 glibc))
+  (concatenate-manifests (list (manifest (list guile-2.0.9))
+                               (manifest (list glibc)))))
+
 (test-assert "manifest-remove"
   (let* ((m0 (manifest (list guile-2.0.9 guile-2.0.9:debug)))
          (m1 (manifest-remove m0

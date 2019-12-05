@@ -3,10 +3,10 @@ in a snippet without network access.  After this patch is applied, some
 additional changes will be made using 'substitute*'.
 
 diff --git a/makeicecat b/makeicecat
-index b04c731..06d1f3f 100644
+index 8be2362..48716f2 100755
 --- a/makeicecat
 +++ b/makeicecat
-@@ -30,55 +30,55 @@ SOURCEDIR=icecat-$FFVERSION
+@@ -31,55 +31,55 @@ SOURCEDIR=icecat-$FFVERSION
  
  DATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"/data
  
@@ -25,7 +25,7 @@ index b04c731..06d1f3f 100644
 -wget -N https://ftp.mozilla.org/pub/mozilla.org/firefox/releases/${FFVERSION}esr/source/firefox-${FFVERSION}esr.source.tar.xz.asc
 -gpg --recv-keys --keyserver keyserver.ubuntu.com 14F26682D0916CDD81E37B6D61B7B526D98F0353
 -gpg --verify firefox-${FFVERSION}esr.source.tar.xz.asc
--echo -n 85f1c2eaf68ebedcbc0b78a342f6d16ef0865dedd426a1bba94b75c85f716f38 firefox-${FFVERSION}esr.source.tar.xz |sha256sum -c -
+-echo -n e131149a70e7ae867d9b0ea081e8c081d056500ee51bb9270df247e977badc69 firefox-${FFVERSION}esr.source.tar.xz |sha256sum -c -
 -
 -echo Extracting Firefox tarball
 -tar -xf firefox-${FFVERSION}esr.source.tar.xz
@@ -37,7 +37,7 @@ index b04c731..06d1f3f 100644
 +# wget -N https://ftp.mozilla.org/pub/mozilla.org/firefox/releases/${FFVERSION}esr/source/firefox-${FFVERSION}esr.source.tar.xz.asc
 +# gpg --recv-keys --keyserver keyserver.ubuntu.com 14F26682D0916CDD81E37B6D61B7B526D98F0353
 +# gpg --verify firefox-${FFVERSION}esr.source.tar.xz.asc
-+# echo -n 85f1c2eaf68ebedcbc0b78a342f6d16ef0865dedd426a1bba94b75c85f716f38 firefox-${FFVERSION}esr.source.tar.xz |sha256sum -c -
++# echo -n e131149a70e7ae867d9b0ea081e8c081d056500ee51bb9270df247e977badc69 firefox-${FFVERSION}esr.source.tar.xz |sha256sum -c -
 +# 
 +# echo Extracting Firefox tarball
 +# tar -xf firefox-${FFVERSION}esr.source.tar.xz
@@ -98,7 +98,7 @@ index b04c731..06d1f3f 100644
  
  shopt -s nullglob
  for patch in $DATA/patches/*.patch; do
-@@ -611,6 +611,6 @@ sed 's/777/755/;' -i toolkit/crashreporter/google-breakpad/Makefile.in
+@@ -603,6 +603,6 @@ sed 's/777/755/;' -i toolkit/crashreporter/google-breakpad/Makefile.in
  # Fix CVE-2012-3386
  /bin/sed 's/chmod a+w/chmod u+w/' -i ./js/src/ctypes/libffi/Makefile.in ./toolkit/crashreporter/google-breakpad/Makefile.in ./toolkit/crashreporter/google-breakpad/src/third_party/glog/Makefile.in || true
  

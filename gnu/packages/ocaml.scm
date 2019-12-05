@@ -492,8 +492,7 @@ the opam file fomat.")
      `(("dune" ,dune)
        ("git" ,git)                               ;for the tests
        ("ocaml-cppo" ,ocaml-cppo)
-       ("python" ,python)                         ;for the tests
-       ("camlp4" ,camlp4)))
+       ("python" ,python)))                       ;for the tests
     (inputs
      `(("ocaml" ,ocaml)
        ("ncurses" ,ncurses)
@@ -514,67 +513,6 @@ Git-friendly development workflow.")
 
     ;; The 'LICENSE' file waives some requirements compared to LGPLv3.
     (license license:lgpl3)))
-
-(define-public camlp4-4.07
-  (package
-    (name "camlp4")
-    (version "4.07+1")
-    (source (origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://github.com/ocaml/camlp4.git")
-                   (commit version)))
-             (file-name (git-file-name name version))
-             (sha256
-              (base32
-               "0cxl4hkqcvspvkx4f2k83217rh6051fll9i2yz7cw6m3bq57mdvl"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("ocaml" ,ocaml-4.07)
-       ("ocamlbuild" ,ocamlbuild)
-       ("which" ,which)))
-    (inputs `(("ocaml" ,ocaml-4.07)))
-    (arguments
-     '(#:tests? #f                                ;no documented test target
-       ;; a race-condition will lead byte and native targets to  mkdir _build
-       ;; which  fails on the second attempt.
-       #:parallel-build? #f
-       #:make-flags '("all")
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; This is a home-made 'configure' script.
-             (let ((out (assoc-ref outputs "out")))
-               (invoke "./configure"
-                       (string-append "--libdir=" out
-                                      "/lib/ocaml/site-lib")
-                       (string-append "--bindir=" out "/bin")
-                       (string-append "--pkgdir=" out
-                                      "/lib/ocaml/site-lib")))))
-         (add-after 'install 'install-meta
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (substitute* "camlp4/META.in"
-                 (("directory = .*")
-                  (string-append "directory = \"" out
-                                 "/lib/ocaml/site-lib/camlp4\"\n")))
-               (invoke "make" "install-META")))))))
-    (home-page "https://github.com/ocaml/camlp4")
-    (synopsis "Write parsers in OCaml")
-    (description
-     "Camlp4 is a software system for writing extensible parsers for
-programming languages.  It provides a set of OCaml libraries that are used to
-define grammars as well as loadable syntax extensions of such grammars.
-Camlp4 stands for Caml Preprocessor and Pretty-Printer and one of its most
-important applications is the definition of domain-specific extensions of the
-syntax of OCaml.")
-
-    ;; This is LGPLv2 with an exception that allows packages statically-linked
-    ;; against the library to be released under any terms.
-    (license license:lgpl2.0)))
-
-(define-public camlp4 camlp4-4.07)
 
 (define-public camlp5
   (package
@@ -815,17 +753,19 @@ Knuth’s LR(1) parser construction technique.")
 (define-public lablgtk
   (package
     (name "lablgtk")
-    (version "2.18.6")
+    (version "2.18.8")
     (source (origin
-              (method url-fetch)
-              (uri (ocaml-forge-uri name version 1726))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/garrigue/lablgtk")
+                     (commit "lablgtk2188")))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1y38fdvswy6hmppm65qvgdk4pb3ghhnvz7n4ialf46340r1s5p2d"))))
+                "0gpww8bkwi5cl68kc006970zvzwvq73h1mwrnd239apmwlxc1l8a"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("camlp4" ,camlp4)
-       ("ocaml" ,ocaml)
+     `(("ocaml" ,ocaml)
        ("findlib" ,ocaml-findlib)
        ("pkg-config" ,pkg-config)))
     ;; FIXME: Add inputs gtkgl-2.0, libpanelapplet-2.0, gtkspell-2.0,
@@ -959,18 +899,17 @@ to the other.")
 (define-public ocaml-findlib
   (package
     (name "ocaml-findlib")
-    (version "1.8.0")
+    (version "1.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.camlcity.org/download/"
                                   "findlib" "-" version ".tar.gz"))
               (sha256
                (base32
-                "1b97zqjdriqd2ikgh4rmqajgxwdwn013riji5j53y3xvcmnpsyrb"))))
+                "00s3sfb02pnjmkax25pcnljcnhcggiliccfz69a72ic7gsjwz1cf"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("camlp4" ,camlp4)
-       ("m4" ,m4)
+     `(("m4" ,m4)
        ("ocaml" ,ocaml)))
     (arguments
      `(#:tests? #f  ; no test suite
@@ -993,13 +932,7 @@ to the other.")
                       (let ((out (assoc-ref outputs "out")))
                         (invoke "make" "install"
                                 (string-append "OCAML_CORE_STDLIB="
-                                               out "/lib/ocaml/site-lib")))))
-                  (add-after 'install 'remove-camlp4
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((out (assoc-ref outputs "out")))
-                        (delete-file-recursively
-                         (string-append out "/lib/ocaml/site-lib/camlp4"))
-                        #t))))))
+                                               out "/lib/ocaml/site-lib"))))))))
     (home-page "http://projects.camlcity.org/projects/findlib.html")
     (synopsis "Management tool for OCaml libraries")
     (description
@@ -1268,53 +1201,6 @@ full_split, cut, rcut, etc..")
     ;; where it says `mit'.
     (license license:expat)))
 
-(define-public ocaml-bisect
-  (package
-    (name "ocaml-bisect")
-    (version "1.3.1")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/gasche/bisect.git")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0hm5za61qydda6ri3887b4zqqbqilh42x712xnclm1rr7ggga2nh"))
-       (patches
-        (search-patches
-         "ocaml-bisect-fix-camlp4-in-another-directory.patch"))))
-    (build-system ocaml-build-system)
-    (native-inputs
-     `(("camlp4" ,camlp4)
-       ("libxml2" ,libxml2)
-       ("ocamlbuild" ,ocamlbuild)
-       ("which" ,which)))
-    (propagated-inputs
-     `(("camlp4" ,camlp4)))
-    (arguments
-     `(#:test-target "tests"
-       #:make-flags
-       (list "all" (string-append "CAMLP4_LIBDIR="
-                                  (assoc-ref %build-inputs "camlp4")
-                                  "/lib/ocaml/site-lib/camlp4"))
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (invoke "./configure" "-prefix" (assoc-ref outputs "out")
-                     "-ocaml-prefix" (assoc-ref inputs "ocaml")
-                     "-camlp4-prefix" (assoc-ref inputs "camlp4"))
-             #t)))))
-    (home-page "http://bisect.x9c.fr")
-    (synopsis "Code coverage tool for the OCaml language")
-    (description "Bisect is a code coverage tool for the OCaml language.  It is
-a camlp4-based tool that allows to instrument your application before running
-tests.  After application execution, it is possible to generate a report in HTML
-format that is the replica of the application source code annotated with code
-coverage information.")
-    (license license:gpl3+)))
-
 (define-public dune
   (package
     (name "dune")
@@ -1415,14 +1301,11 @@ ocaml-migrate-parsetree")
                 "15jjk2pq1vx311gl49s5ag6x5y0654x35w75z07g7kr2q334hqps"))))
     (build-system dune-build-system)
     (native-inputs
-     `(("camlp4" ,camlp4)
-       ("time" ,time)
+     `(("time" ,time)
        ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("bisect" ,ocaml-bisect)))
+       ("automake" ,automake)))
     (propagated-inputs
-     `(("camlp4" ,camlp4)
-       ("ocaml-ppx-tools-versioned" ,ocaml-ppx-tools-versioned)))
+     `(("ocaml-ppx-tools-versioned" ,ocaml-ppx-tools-versioned)))
     (arguments
      `(#:tests? #f; Tests fail to build
        #:jbuild? #t))
@@ -1555,7 +1438,7 @@ coexistence with the old (version 2) SQLite and its OCaml wrapper
 (define-public ocaml-csv
   (package
     (name "ocaml-csv")
-    (version "2.2")
+    (version "2.3")
     (source
      (origin
        (method git-fetch)
@@ -1565,7 +1448,7 @@ coexistence with the old (version 2) SQLite and its OCaml wrapper
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "07qdw8bbvprk78x96pnm807rhs82ks6sxis1cf5nyng8b5nvm2mv"))))
+         "19k48517s8y1zb91a1312a0n94cbh5i5dixndcrqjmf87kkz61zx"))))
     (build-system dune-build-system)
     (arguments
      `(#:package "csv"
@@ -1577,7 +1460,9 @@ coexistence with the old (version 2) SQLite and its OCaml wrapper
 by all major spreadsheets.  This library implements pure OCaml functions to
 read and write files in this format as well as some convenience functions to
 manipulate such data.")
-    (license (package-license camlp4))))
+    ;; This is LGPLv2.1 with an exception that allows packages statically-linked
+    ;; against the library to be released under any terms.
+    (license license:lgpl2.1)))
 
 (define-public ocaml-mtime
   (package
@@ -2025,31 +1910,96 @@ format.  It can process XML documents without a complete in-memory
 representation of the data.")
     (license license:isc)))
 
-(define-public ocaml-ulex
+(define-public ocaml-gen
   (package
-    (name "ocaml-ulex")
-    (version "1.2")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/whitequark/ulex.git")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "08yf2x9a52l2y4savjqfjd2xy4pjd1rpla2ylrr9qrz1drpfw4ic"))))
-    (build-system ocaml-build-system)
+    (name "ocaml-gen")
+    (version "0.5.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/c-cube/gen")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1h9g508rnj2j8va5nvhamzscp954vrkh0hdf4pn3d10pcfyslfg2"))))
+    (build-system dune-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases (delete 'configure))
-       #:tests? #f
-       #:make-flags
-       (list "all.opt"
-             (string-append "OCAMLBUILD=ocamlbuild -byte-plugin "
-                            "-cflags -I," (assoc-ref %build-inputs "camlp4")
-                            "/lib/ocaml/site-lib/camlp4"))))
+     `(#:tests? #f; no tests
+       #:package "gen"))
+    (propagated-inputs
+     `(("ocaml-odoc" ,ocaml-odoc)))
     (native-inputs
-     `(("camlp4" ,camlp4)
-       ("ocamlbuild" ,ocamlbuild)))
+     `(("ocaml-qtest" ,ocaml-qtest)
+       ("ocaml-qcheck" ,ocaml-qcheck)))
+    (home-page "https://github.com/c-cube/gen/")
+    (synopsis "Iterators for OCaml, both restartable and consumable")
+    (description "Gen implements iterators of OCaml, that are both restartable
+and consumable.")
+    (license license:bsd-2)))
+
+(define-public ocaml-sedlex
+  (package
+    (name "ocaml-sedlex")
+    (version "2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ocaml-community/sedlex")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "05f6qa8x3vhpdz1fcnpqk37fpnyyq13icqsk2gww5idjnh6kng26"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:tests? #f; no tests
+       #:package "sedlex"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "src/generator/data"
+               (for-each
+                 (lambda (file)
+                   (copy-file (assoc-ref inputs file) file))
+                 '("DerivedCoreProperties.txt" "DerivedGeneralCategory.txt"
+                   "PropList.txt")))
+             #t))
+         (add-before 'build 'chmod
+           (lambda _
+             (for-each (lambda (file) (chmod file #o644)) (find-files "." ".*"))
+             #t)))))
+    (native-inputs
+     `(("ocamlbuild" ,ocamlbuild)))
+    (propagated-inputs
+     `(("ocaml-gen" ,ocaml-gen)
+       ("ocaml-ppx-tools-versioned" ,ocaml-ppx-tools-versioned)
+       ("ocaml-uchar" ,ocaml-uchar)))
+    ;; These three files are needed by src/generator/data/dune, but would be
+    ;; downloaded using curl at build time.
+    (inputs
+     `(("DerivedCoreProperties.txt"
+        ,(origin
+           (method url-fetch)
+           (uri "https://www.unicode.org/Public/12.1.0/ucd/DerivedCoreProperties.txt")
+           (sha256
+            (base32
+             "0s6sn1yr9qmb2i6gf8dir2zpsbjv1frdfzy3i2yjylzvf637msx6"))))
+       ("DerivedGeneralCategory.txt"
+        ,(origin
+           (method url-fetch)
+           (uri "https://www.unicode.org/Public/12.1.0/ucd/extracted/DerivedGeneralCategory.txt")
+           (sha256
+            (base32
+             "1rifzq9ba6c58dn0lrmcb5l5k4ksx3zsdkira3m5p6h4i2wriy3q"))))
+       ("PropList.txt"
+        ,(origin
+           (method url-fetch)
+           (uri "https://www.unicode.org/Public/12.1.0/ucd/PropList.txt")
+           (sha256
+            (base32
+             "0gsb1jpj3mnqbjgbavi4l95gl6g4agq58j82km22fdfg63j3w3fk"))))))
     (home-page "http://www.cduce.org/download.html#side")
     (synopsis "Lexer generator for Unicode and OCaml")
     (description "Lexer generator for Unicode and OCaml.")
@@ -2292,9 +2242,7 @@ many additional enhancements, including:
     (build-system ocaml-build-system)
     (native-inputs
      `(("ocamlbuild" ,ocamlbuild)
-       ("qtest" ,ocaml-qtest)
-       ("bisect" ,ocaml-bisect)
-       ("ounit" ,ocaml-ounit)))
+       ("qtest" ,ocaml-qtest)))
     (propagated-inputs
      `(("ocaml-num" ,ocaml-num)))
     (arguments
@@ -2786,7 +2734,7 @@ Format module of the OCaml standard library.")
 (define-public ocaml-piqilib
   (package
     (name "ocaml-piqilib")
-    (version "0.6.14")
+    (version "0.6.15")
     (source
      (origin
        (method git-fetch)
@@ -2795,9 +2743,7 @@ Format module of the OCaml standard library.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0lyqllmfsxmwlg7qidy92kvxi9n39lvachmydcyi81f8p07ykd2d"))
-       (patches
-         (search-patches "ocaml-piqilib-Update-base64.patch"))))
+        (base32 "0v04hs85xv6d4ysqxyv1dik34dx49yab9shpi4x7iv19qlzl7csb"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:phases
@@ -2833,13 +2779,12 @@ Format module of the OCaml standard library.")
                       (string-append stubs "/dllpiqilib_stubs.so"))
              #t))))))
     (native-inputs
-     `(("which" ,which)
-       ("camlp4" ,camlp4)))
+     `(("which" ,which)))
     (propagated-inputs
-     `(("xmlm" ,ocaml-xmlm)
-       ("ulex" ,ocaml-ulex)
-       ("easy-format" ,ocaml-easy-format)
-       ("base64" ,ocaml-base64)))
+     `(("ocaml-xmlm" ,ocaml-xmlm)
+       ("ocaml-sedlex" ,ocaml-sedlex)
+       ("ocaml-easy-format" ,ocaml-easy-format)
+       ("ocaml-base64" ,ocaml-base64)))
     (home-page "http://piqi.org")
     (synopsis "Data serialization and conversion library")
     (description "Piqilib is the common library used by the piqi command-line
@@ -2908,7 +2853,7 @@ and 4 (random based) according to RFC 4122.")
 (define-public ocaml-piqi
   (package
     (name "ocaml-piqi")
-    (version "0.7.6")
+    (version "0.7.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/alavrik/piqi-ocaml/"
@@ -2916,7 +2861,7 @@ and 4 (random based) according to RFC 4122.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0da0v2v28aj65b0cwpvvmcqyrfvz94pp3j5zgfdr1jrl5s37c21g"))))
+                "1l0b4saxmwqgw9mb10mwrz31lvpj3l0abh3cwarqp0x4vdrzshbh"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:make-flags
@@ -2928,11 +2873,11 @@ and 4 (random based) according to RFC 4122.")
          (delete 'configure))))
     (native-inputs
      `(("which" ,which)
-       ("camlp4" ,camlp4)
        ("protobuf" ,protobuf))) ; for tests
     (propagated-inputs
-     `(("num" ,ocaml-num)
-       ("piqilib" ,ocaml-piqilib)))
+     `(("ocaml-num" ,ocaml-num)
+       ("ocaml-piqilib" ,ocaml-piqilib)
+       ("ocaml-stdlib-shims" ,ocaml-stdlib-shims)))
     (home-page "https://github.com/alavrik/piqi-ocaml")
     (synopsis "Protocol serialization system for OCaml")
     (description "Piqi is a multi-format data serialization system for OCaml.
@@ -3018,8 +2963,6 @@ the plugins facilitate extensibility, and the frontends serve as entry points.")
                (base32
                 "0chn7ldqb3wyf95yhmsxxq65cif56smgz1mhhc7m0dpwmyq1k97h"))))
     (build-system dune-build-system)
-    (native-inputs
-     `(("camlp4" ,camlp4)))
     (arguments
      `(#:build-flags (list "--profile" "release")
        #:test-target "camomile-test"
@@ -5199,7 +5142,7 @@ then run the Bisect_ppx report tool on the generated visitation files.")
 (define-public ocaml-odoc
   (package
     (name "ocaml-odoc")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method git-fetch)
@@ -5208,8 +5151,7 @@ then run the Bisect_ppx report tool on the generated visitation files.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1i2j0krbzvb1n3dcic9h1pyyqxmf051ky82nrcyzx1nwqjb8zfh6"))))
+        (base32 "0rvhx139jx6wmlfz355mja6mk03x4swq1xxvk5ky6jzhalq3cf5i"))))
     (build-system dune-build-system)
     (inputs
      `(("ocaml-alcotest" ,ocaml-alcotest)

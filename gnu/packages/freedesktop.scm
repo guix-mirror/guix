@@ -155,14 +155,14 @@ freedesktop.org project.")
 (define-public libinput
   (package
     (name "libinput")
-    (version "1.13.4")
+    (version "1.14.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://freedesktop.org/software/libinput/"
                                   "libinput-" version ".tar.xz"))
               (sha256
                (base32
-                "07a0w7rak7rvnh6g4j0akwjxwinxfszc1xi9mrx12fv82k3mgsyk"))))
+                "0w7fas37mp2k06f12i3lnj717lw73asziknj6z51kh1m50ja6cz3"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Ddocumentation=false")
@@ -879,13 +879,13 @@ message bus.")
   (package
     (name "accountsservice")
     (version "0.6.50")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://www.freedesktop.org/software/"
-                                  name "/" name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "0jn7vg1z4vxnna0hl33hbcb4bb3zpilxc2vyclh24vx4vvsjhn83"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.freedesktop.org/software/"
+                           "accountsservice/accountsservice-" version ".tar.xz"))
+       (sha256
+        (base32 "0jn7vg1z4vxnna0hl33hbcb4bb3zpilxc2vyclh24vx4vvsjhn83"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; XXX: tests require DocBook 4.1.2

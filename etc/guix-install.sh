@@ -439,6 +439,7 @@ main()
 
     _msg "${INF}system is ${ARCH_OS}"
 
+    umask 0022
     tmp_path="$(mktemp -t -d guix.XXX)"
 
     guix_get_bin_list "${GNU_URL}"

@@ -1,0 +1,62 @@
+The memory statistics code leads to segfaults during initialization (on
+machines with InfiniPath networking):
+
+  (gdb) bt full
+  #0  ips_ptl_init (ep=0x1fc6af8, ptl=0x1fc6f88, ctl=0x1fc6d78) at ptl.c:224
+	  err = PSM_OK
+	  num_of_send_bufs = 1024
+	  num_of_send_desc = 4096
+	  imm_size = 128
+	  context = 0x1fc6b70
+	  user_info = 0x1fc6b90
+	  enable_shcontexts = 0
+	  current_count = <optimized out>
+  #1  0x00007fb2aa672abf in __psm_ep_open_internal (
+      unique_job_key=unique_job_key@entry=0x7ffed1ee5800 "<\207\020#5\271\267\200\354x\242e8\364zo", 
+      devid_enabled=devid_enabled@entry=0x7ffed1ee5724, opts_i=opts_i@entry=0x7ffed1ee5810, mq=<optimized out>, 
+      epo=epo@entry=0x7ffed1ee5710, epido=epido@entry=0x7ffed1ee5708) at psm_ep.c:929
+	  ep = 0x1fc6af8
+	  num_units = 1
+	  len = <optimized out>
+	  err = <optimized out>
+	  epaddr = 0x1e9dd78
+	  buf = "miriel044:2.0.", '\000' <repeats 113 times>
+	  p = <optimized out>
+	  e = <optimized out>
+	  old_cpuaff = 0x0
+	  old_unit = 0x0
+	  yield_cnt = {e_void = 0xfa, e_str = 0xfa <error: Cannot access memory at address 0xfa>, e_int = 250, 
+	    e_uint = 250, e_long = 250, e_ulong = 250, e_ulonglong = 250}
+	  no_cpuaff = {e_void = 0x0, e_str = 0x0, e_int = 0, e_uint = 0, e_long = 0, e_ulong = 0, e_ulonglong = 0}
+	  env_unit_id = {e_void = 0xffffffffffffffff, 
+	    e_str = 0xffffffffffffffff <error: Cannot access memory at address 0xffffffffffffffff>, e_int = -1, 
+	    e_uint = 4294967295, e_long = -1, e_ulong = 18446744073709551615, e_ulonglong = 18446744073709551615}
+	  env_port_id = {e_void = 0x0, e_str = 0x0, e_int = 0, e_uint = 0, e_long = 0, e_ulong = 0, e_ulonglong = 0}
+	  env_sl = {e_void = 0x0, e_str = 0x0, e_int = 0, e_uint = 0, e_long = 0, e_ulong = 0, e_ulonglong = 0}
+	  ptl_sizes = <optimized out>
+	  default_cpuaff = <optimized out>
+	  opts = {timeout = 180000000000, unit = -1, affinity = 0, shm_mbytes = 10, sendbufs_num = 1024, 
+	    network_pkey = 65535, port = 0, outsl = 0, service_id = 1152940698815692800, 
+	    path_res_type = PSM_PATH_RES_NONE, senddesc_num = 4096, imm_size = 128}
+	  amsh_ptl = 0x1fc6e48
+	  ips_ptl = 0x1fc6f88
+	  self_ptl = 0x1fc99c8
+	  i = 3
+
+It looks like ptl.c:24 is writing past the region that was malloc'd.
+
+Turning stats off solves the problem.
+
+diff --git a/psm_utils.c b/psm_utils.c
+index c8651fe..5514921 100644
+--- a/psm_utils.c
++++ b/psm_utils.c
+@@ -1058,7 +1058,7 @@ psmi_log_memstats(psmi_memtype_t type, int64_t nbytes)
+     return;
+ }
+ 
+-#define psmi_stats_mask PSMI_STATSTYPE_MEMORY
++#define psmi_stats_mask 0
+ 
+ #ifdef malloc
+ #undef malloc

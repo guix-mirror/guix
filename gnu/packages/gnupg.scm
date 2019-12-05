@@ -260,14 +260,14 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.2.17")
+    (version "2.2.18")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "056mgy09lvsi03531a437qj58la1j2x1y1scvfi53diris3658mg"))))
+                "02pcdmb9p4a8hil88gyd86mnc85jldss3cl02jvbkcjmrbi7rlrh"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -934,15 +934,15 @@ passphrase when @code{gpg} is run and needs it.")))
 (define-public paperkey
   (package
     (name "paperkey")
-    (version "1.5")
+    (version "1.6")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.jabberwocky.com/"
+              (uri (string-append "https://www.jabberwocky.com/"
                                   "software/paperkey/paperkey-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1prd2jaf4zjad3xhv160hmi5n408ssljfg7iz90jxs9w111pjwy4"))))
+                "1xq5gni6gksjkd5avg0zpd73vsr97appksfx0gx2m38s4w9zsid2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -953,7 +953,7 @@ passphrase when @code{gpg} is run and needs it.")))
                             "checks/roundtrip-raw.sh")
                (("/bin/echo") "echo"))
              #t)))))
-    (home-page "http://www.jabberwocky.com/software/paperkey/")
+    (home-page "https://www.jabberwocky.com/software/paperkey/")
     (synopsis "Backup OpenPGP keys to paper")
     (description
      "Paperkey extracts the secret bytes from an OpenPGP (GnuPG, PGP, etc) key
@@ -1073,7 +1073,7 @@ files, to verify signatures, and to manage the private and public keys.")
        ("perl-xml-twig" ,perl-xml-twig)
        ("torsocks" ,torsocks)))
     (native-inputs
-     `(("xorg-server" ,xorg-server)))
+     `(("xorg-server" ,xorg-server-for-tests)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases

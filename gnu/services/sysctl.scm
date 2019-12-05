@@ -59,8 +59,7 @@
         (provision '(sysctl))
         (start #~(lambda _
                    (zero? (system* #$sysctl "--load" #$sysctl.conf))))
-        (stop #~(const #t))
-        (respawn? #f))))))
+        (one-shot? #t))))))
 
 (define sysctl-service-type
   (service-type

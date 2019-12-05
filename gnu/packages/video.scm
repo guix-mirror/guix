@@ -428,7 +428,7 @@ H.264 (MPEG-4 AVC) video streams.")
        ("gettext" ,gettext-minimal)
        ("googletest" ,googletest)
        ("libxslt" ,libxslt)
-       ("nlohmann-json-cpp" ,nlohmann-json-cpp)
+       ("json-modern-cxx" ,json-modern-cxx)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("po4a" ,po4a)
@@ -1008,14 +1008,14 @@ audio/video codec library.")
 (define-public ffmpeg-3.4
   (package
     (inherit ffmpeg)
-    (version "3.4.6")
+    (version "3.4.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0gmqbhg5jjcfanrxrl657zn12lzz73sfs8xwryfy7n9rn6f2fwim"))))
+               "1j7mdk9szrljgv4sdx69bm1pnbb3cldbdxbkr42jbdi9zn11gl7g"))))
     (arguments
      (substitute-keyword-arguments (package-arguments ffmpeg)
        ((#:configure-flags flags)
@@ -1266,7 +1266,8 @@ streaming protocols.")
     (build-system gnu-build-system)
     ;; FIXME: Add additional inputs once available.
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("yasm" ,yasm)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("cdparanoia" ,cdparanoia)
@@ -1297,7 +1298,6 @@ streaming protocols.")
        ("python" ,python-wrapper)
        ("sdl" ,sdl)
        ("speex" ,speex)
-       ("yasm" ,yasm)
        ("zlib" ,zlib)))
     (arguments
      `(#:tests? #f ; no test target
@@ -1497,7 +1497,7 @@ projects while introducing many more.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2019.11.05")
+    (version "2019.11.22")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ytdl-org/youtube-dl/"
@@ -1505,7 +1505,7 @@ projects while introducing many more.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "129461i4103slqj3nq69djnlmgjj3lfgmazn41avc5g967w29b85"))))
+                "0avdlp0dc9p3lm68mfnic21x6blxmr0zvlxa4br5vj4y4sckq2m8"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1943,7 +1943,11 @@ for use with HTML5 video.")
              (patches (search-patches "avidemux-install-to-lib.patch"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("qttools" ,qttools)
+       ("yasm" ,yasm)))
     ;; FIXME: Once packaged, add libraries not found during the build.
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -1958,14 +1962,9 @@ for use with HTML5 video.")
        ("libvorbis" ,libvorbis)
        ("libvpx" ,libvpx)
        ("libxv" ,libxv)
-       ("perl" ,perl)
        ("pulseaudio" ,pulseaudio)
-       ("python" ,python-wrapper)
        ("qtbase" ,qtbase)
-       ("qttools" ,qttools)
-       ("sdl" ,sdl)
        ("sqlite" ,sqlite)
-       ("yasm" ,yasm)
        ("zlib" ,zlib)))
     (arguments
      `(#:tests? #f                      ; no check target
@@ -2002,7 +2001,6 @@ for use with HTML5 video.")
                (let* ((out (assoc-ref outputs "out"))
                       (lib (string-append out "/lib"))
                       (top (getcwd))
-                      (sdl (assoc-ref inputs "sdl"))
                       (build_component
                        (lambda* (component srcdir #:optional (args '()))
                          (let ((builddir (string-append "build_" component)))
@@ -2015,8 +2013,6 @@ for use with HTML5 video.")
                                     (string-append "-DCMAKE_SHARED_LINKER_FLAGS="
                                                    "\"-Wl,-rpath=" lib "\"")
                                     (string-append "-DAVIDEMUX_SOURCE_DIR=" top)
-                                    (string-append "-DSDL_INCLUDE_DIR="
-                                                   sdl "/include/SDL")
                                     (string-append "../" srcdir)
                                     "-DENABLE_QT5=True"
                                     args)
@@ -2347,17 +2343,18 @@ and JACK.")
 (define-public libvdpau
   (package
     (name "libvdpau")
-    (version "1.2")
+    (version "1.3")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://gitlab.freedesktop.org/vdpau/libvdpau"
-                            "/uploads/14b620084c027d546fa0b3f083b800c6/"
-                            "libvdpau-" version ".tar.bz2"))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://gitlab.freedesktop.org/vdpau/libvdpau.git")
+              (commit version)))
+        (file-name (git-file-name name version))
         (sha256
          (base32
-          "01ps6g6p6q7j2mjm9vn44pmzq3g75mm7mdgmnhb1qkjjdwc9njba"))))
-    (build-system gnu-build-system)
+          "1fb1nh5apr9kzx9bm2lysjwpyva1s60b2l2p230nqgvb11q25hd2"))))
+    (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -2640,39 +2637,36 @@ supported players in addition to this package.")
 (define-public handbrake
   (package
     (name "handbrake")
-    (version "1.2.2")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.handbrake.fr/releases/"
                                   version "/HandBrake-" version "-source.tar.bz2"))
               (sha256
                (base32
-                "0k2yaqy7zi06k8mkp9az2mn9dlgj3a1339vacakfh2nn2zsics6z"))
+                "15hxncswmaj62hb40fxixsa6d519zb712z9xbdq979q4rasjxa59"))
               (modules '((guix build utils)))
               (snippet
                ;; Remove "contrib" and source not necessary for
                ;; building/running under a GNU environment.
                '(begin
                   (for-each delete-file-recursively
-                            '("contrib" "macosx" "win"))
+                            '("contrib" "macosx" "win")) ; 540KiB, 11MiB, 5.9MiB resp.
                   (substitute* "make/include/main.defs"
                     ;; Disable unconditional inclusion of "contrib" libraries
                     ;; (ffmpeg, libvpx, libdvdread, libdvdnav, and libbluray),
                     ;; which would lead to fetching and building of these
                     ;; libraries.  Use our own instead.
                     (("MODULES \\+= contrib") "# MODULES += contrib"))
-                  #t))
-              (patches (search-patches "handbrake-opt-in-nvenc.patch"))))
+                  #t))))
     (build-system  glib-or-gtk-build-system)
     (native-inputs
-     `(("automake" ,automake)           ;gui subpackage must be bootstrapped
+     `(("automake" ,automake)           ; GUI subpackage must be bootstrapped
        ("autoconf" ,autoconf)
-       ("cmake" ,cmake-minimal) ;TODO: could probably strip check from make/configure.py
-       ("curl" ,curl)                   ;not actually used, but tested for
        ("intltool" ,intltool)
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)
-       ("python" ,python-2)))           ;for configuration
+       ("python" ,python-2)))           ; For configuration
     (inputs
      `(("bzip2" ,bzip2)
        ("dbus-glib" ,dbus-glib)
@@ -2687,11 +2681,13 @@ supported players in addition to this package.")
        ("lame" ,lame)
        ("libass" ,libass)
        ("libbluray" ,libbluray)
+       ("libdav1d" ,dav1d)
        ("libdvdnav" ,libdvdnav)
        ("libdvdread" ,libdvdread)
        ("libgudev" ,libgudev)
        ("libmpeg2" ,libmpeg2)
        ("libnotify" ,libnotify)
+       ("libnuma" ,numactl)
        ("libogg" ,libogg)
        ("libopus" ,opus)
        ("libsamplerate" ,libsamplerate)
@@ -2707,6 +2703,7 @@ supported players in addition to this package.")
      `(#:tests? #f             ;tests require Ruby and claim to be unsupported
        #:configure-flags
        (list "--disable-gtk-update-checks"
+             "--disable-nvenc"
              (string-append "CPPFLAGS=-I"
                             (assoc-ref %build-inputs "libxml2")
                             "/include/libxml2")
@@ -2717,11 +2714,27 @@ supported players in addition to this package.")
            ;; Run bootstrap ahead of time so that shebangs get patched.
            (lambda _
              (setenv "CONFIG_SHELL" (which "sh"))
-             (setenv "NOCONFIGURE" "1")
              ;; Patch the Makefile so that it doesn't bootstrap again.
              (substitute* "gtk/module.rules"
-               ((".*autogen\\.sh.*") ""))
-             (invoke "sh" "./gtk/autogen.sh")))
+               ((".*autoreconf.*") ""))
+             (with-directory-excursion "gtk"
+               (invoke "autoreconf" "-fiv"))))
+         (add-before 'configure 'patch-SHELL
+           (lambda _
+             (substitute* "gtk/po/Makefile.in.in"
+               (("SHELL = /bin/sh") "SHELL = @SHELL@"))
+             #t))
+         (add-before 'configure 'relax-reqs
+           (lambda _
+             (substitute* "make/configure.py"
+               ;; cmake is checked for so that it can be used to build
+               ;; contrib/harfbuzz and contrib/x265, but we get these as
+               ;; inputs, so don't abort if it's not found.  Similarly, meson
+               ;; and ninja are only needed for contrib/libdav1d, and nasm
+               ;; only for libvpx
+               (("((cmake|meson|ninja|nasm) *=.*abort=)True" _ &)
+                (string-append & "False")))
+             #t))
          (replace 'configure
            (lambda* (#:key outputs configure-flags #:allow-other-keys)
              ;; 'configure' is not an autoconf-generated script, and

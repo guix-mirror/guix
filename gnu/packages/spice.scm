@@ -157,12 +157,14 @@ which allows users to view a desktop computing environment.")
     (native-inputs
       `(("glib:bin" ,glib "bin")
         ("intltool" ,intltool)
-        ("pkg-config" ,pkg-config)))
+        ("pkg-config" ,pkg-config)
+        ("vala" ,vala)))
     (arguments
       `(#:configure-flags
         '("--enable-gstaudio"
           "--enable-gstvideo"
           "--enable-pulse"
+          "--enable-vala"
           "--enable-introspection")
         #:phases
          (modify-phases %standard-phases

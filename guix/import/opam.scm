@@ -49,7 +49,7 @@
 (define-peg-pattern COLON none ":")
 ;; A string character is any character that is not a quote, or a quote preceded by a backslash.
 (define-peg-pattern STRCHR body
-                    (or " " "!" (and (ignore "\\") "\"")
+                    (or " " "!" "\n" (and (ignore "\\") "\"")
                         (and (ignore "\\") "\\") (range #\# #\頋)))
 (define-peg-pattern operator all (or "=" "!" "<" ">"))
 
@@ -249,10 +249,7 @@ path to the repository."
              (url-dict (metadata-ref opam-content "url"))
              (source-url (metadata-ref url-dict "src"))
              (requirements (metadata-ref opam-content "depends"))
-             (dependencies (filter
-                              (lambda (name)
-                                (not (member name '("dune" "jbuilder"))))
-                              (dependency-list->names requirements)))
+             (dependencies (dependency-list->names requirements))
              (native-dependencies (depends->native-inputs requirements))
              (inputs (dependency-list->inputs (depends->inputs requirements)))
              (native-inputs (dependency-list->inputs
@@ -264,8 +261,8 @@ path to the repository."
                                 native-dependencies))))
         ;; If one of these are required at build time, it means we
         ;; can use the much nicer dune-build-system.
-        (let ((use-dune? (or (member "dune" native-dependencies)
-                        (member "jbuilder" native-dependencies))))
+        (let ((use-dune? (or (member "dune" (append dependencies native-dependencies))
+                        (member "jbuilder" (append dependencies native-dependencies)))))
           (call-with-temporary-output-file
             (lambda (temp port)
               (and (url-fetch source-url temp)
@@ -297,7 +294,10 @@ path to the repository."
                        (synopsis ,(metadata-ref opam-content "synopsis"))
                        (description ,(metadata-ref opam-content "description"))
                        (license #f))
-                    dependencies)))))))
+                    (filter
+                      (lambda (name)
+                        (not (member name '("dune" "jbuilder"))))
+		      dependencies))))))))
 
 (define (opam-recursive-import package-name)
   (recursive-import package-name #f

@@ -1,14 +1,44 @@
-Remove timestamp to support reproducible builds.
+From <https://github.com/bmwiedemann/psm/commit/98acae1a6f2c9b2e6014eac4070a817c9d0fd8a2>.
 
---- psm-3.3/Makefile~	1970-01-01 01:00:00.000000000 +0100
-+++ psm-3.3/Makefile	2017-10-22 15:32:11.736949002 +0100
-@@ -326,7 +326,7 @@
+From 98acae1a6f2c9b2e6014eac4070a817c9d0fd8a2 Mon Sep 17 00:00:00 2001
+From: "Bernhard M. Wiedemann" <bwiedemann@suse.de>
+Date: Sun, 23 Jul 2017 07:02:28 +0200
+Subject: [PATCH] Allow to override build date
+
+in order to make builds reproducible.
+See https://reproducible-builds.org/ for why this is good
+and https://reproducible-builds.org/specs/source-date-epoch/
+for the definition of this variable.
+
+Also uses UTC to be independent of timezone settings.
+---
+ Makefile       | 2 +-
+ ipath/Makefile | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index d79c4bd..99406ef 100644
+--- a/Makefile
++++ b/Makefile
+@@ -270,7 +270,7 @@ ${TARGLIB}.so.${MAJOR}: ${TARGLIB}.so.${MAJOR}.${MINOR}
  # file around.  Generate it such that the ident command can find it
  # and strings -a | grep InfiniPath does a reasonable job as well.
  ${TARGLIB}.so.${MAJOR}.${MINOR}: ${${TARGLIB}-objs}
 -	date +'char psmi_infinipath_revision[] ="$$""Date: %F %R ${rpm_extra_description}InfiniPath $$";' > ${lib_build_dir}/_revision.c
-+	echo 'char psmi_infinipath_revision[] ="$$""Date: 1970-01-01 00:00 ${rpm_extra_description}InfiniPath $$";' > ${lib_build_dir}/_revision.c
++	date -u -d@$${SOURCE_DATE_EPOCH:-$$(date +%s)} +'char psmi_infinipath_revision[] ="$$""Date: %F %R ${rpm_extra_description}InfiniPath $$";' > ${lib_build_dir}/_revision.c
  	$(CC) -c $(BASECFLAGS) $(INCLUDES) _revision.c -o _revision.o
  	$(CC) $(LDFLAGS) -o $@ -Wl,-soname=${TARGLIB}.so.${MAJOR} -shared -Wl,--unique='*fastpath*' \
  		${${TARGLIB}-objs} _revision.o -L$(build_dir)/ipath $(LDLIBS)
-
+diff --git a/ipath/Makefile b/ipath/Makefile
+index 8c2cc6e..73abd6f 100644
+--- a/ipath/Makefile
++++ b/ipath/Makefile
+@@ -70,7 +70,7 @@ ${TARGLIB}.so.${MAJOR}: ${TARGLIB}.so.${MAJOR}.${MINOR}
+ # file around.  Generate it such that the ident command can find it
+ # and strings -a | grep InfiniPath does a reasonable job as well.
+ ${TARGLIB}.so.${MAJOR}.${MINOR}: ${${TARGLIB}-objs}
+-	date +'static __attribute__ ((unused)) char __psc_infinipath_revision[] ="$$""Date: %F %R ${rpm_extra_description}InfiniPath $$";' > _revision.c
++	date -u -d@$${SOURCE_DATE_EPOCH:-$$(date +%s)} +'static __attribute__ ((unused)) char __psc_infinipath_revision[] ="$$""Date: %F %R ${rpm_extra_description}InfiniPath $$";' > _revision.c
+ 	$(CC) -c $(BASECFLAGS) $(INCLUDES) _revision.c -o _revision.o
+ 	$(CC) -o $@ -Wl,-soname=${TARGLIB}.so.${MAJOR} -shared \
+ 		-Wl,--unique='*fastpath*' \

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -40,13 +40,14 @@
     (name "hoedown")
     (version "3.0.7")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "https://github.com/hoedown/hoedown/archive/"
-                                 version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                    (url "https://github.com/hoedown/hoedown.git")
+                    (commit version)))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "0859dc2xjasd6kgkshi8mb20kbyw5sql1ln0hw3bfaf33qdh5dh1"))))
+               "1kr3hxjg2dgmwy9738qgj3sh3f5cygx0zxskkfhrg7x19bq9yd26"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "CC=gcc" (string-append "PREFIX=" %output))
@@ -195,15 +196,16 @@ implementation.
 (define-public cmark
   (package
     (name "cmark")
-    (version "0.28.3")
+    (version "0.29.0")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "https://github.com/jgm/cmark/archive/"
-                                 version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                    (url "https://github.com/jgm/cmark.git")
+                    (commit version)))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "1z71pacl3ni1286c206pl8lazbcd32ackivsg3zibdf1sf2qdjdc"))))
+               "0r7jpqhgnssq444i8pwji2g36058vfzwkl70wbiwj13h4w5rfc8f"))))
     (build-system cmake-build-system)
     (arguments
      '(#:test-target "test"))

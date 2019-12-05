@@ -1127,7 +1127,9 @@ exception if it's already taken."
                 (lambda (key . args)
                   (match key
                     ('flock-error
-                     (handler args))
+                     (apply handler args)
+                     ;; No open port to the lock, so return #f.
+                     #f)
                     ('system-error
                       ;; When using the statically-linked Guile in the initrd,
                       ;; 'fcntl-flock' returns ENOSYS unconditionally.  Ignore

@@ -243,13 +243,14 @@ analogy is that InChI is the bar-code for chemistry and chemical structures.")
     (version "3.0.11")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://bitbucket.org/khinsen/"
-                           "nmoldyn3/downloads/nMOLDYN-"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/khinsen/nMOLDYN3")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1mvmz3lkr217kdrd8cvdr1d82y58wp1403c9rnd943mijgq8xb5a"))))
+         "016h4bqg419p6s7bcx55q5iik91gqmk26hbnfgj2j6zl0j36w51r"))))
     (build-system python-build-system)
     (inputs
      `(("python-matplotlib" ,(with-numpy-1.8 python2-matplotlib))

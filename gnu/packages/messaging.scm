@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016, 2017, 2018, 2019 Clément Lassieur <clement@lassieur.org>
@@ -16,6 +16,8 @@
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2019 Brett Gilio <brettg@posteo.net>
+;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,6 +59,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages icu4c)
@@ -72,6 +75,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
+  #:use-module (gnu packages php)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
@@ -97,6 +101,7 @@
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system qt)
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -181,11 +186,13 @@ end-to-end encryption.")
     (inputs `(("glib" ,glib)
               ("libotr" ,libotr)
               ("gnutls" ,gnutls)
-              ("python" ,python-2)
+              ("python" ,python)
               ("perl" ,perl)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'set-python
+           (lambda _ (setenv "PYTHON" (which "python3")) #t))
          (add-after 'install 'install-etc
            (lambda* (#:key (make-flags '()) #:allow-other-keys)
              (apply invoke "make" "install-etc" make-flags)))
@@ -263,15 +270,16 @@ access to servers running the Discord protocol.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "064nq151nzsljv97dmkifyl162d2738vbgvm1phx7yv04pjvk4kp"))))
+                "064nq151nzsljv97dmkifyl162d2738vbgvm1phx7yv04pjvk4kp"))
+              (patches (search-patches "hexchat-crash-exit.patch"))))
     (build-system meson-build-system)
     (native-inputs `(("gettext" ,gettext-minimal)
+                     ("glib:bin" ,glib "bin")       ;need glib-genmarshal
                      ("perl" ,perl)
                      ("pkg-config" ,pkg-config)))
     (inputs `(("dbus-glib" ,dbus-glib)
               ("dbus" ,dbus)
               ("enchant" ,enchant)
-              ("glib:bin" ,glib "bin")            ;need glib-genmarshal
               ("gtk" ,gtk+-2)
               ("libcanberra" ,libcanberra)
               ("libnotify" ,libnotify)
@@ -638,12 +646,17 @@ else [])"))
             (variable "PYTHONPATH")
             (files (list (string-append
                           "lib/python"
-                          (version-major+minor (package-version python))
+
+                          ;; FIXME: Cannot use this expression as it would
+                          ;; introduce a circular dependency at the top level.
+                          ;; (version-major+minor (package-version python))
+                          "3.7"
+
                           "/site-packages"))))))
     (native-inputs
      `(("intltool" ,intltool)
        ("python-docutils" ,python-docutils)
-       ("xorg-server" ,xorg-server)))
+       ("xorg-server" ,xorg-server-for-tests)))
     (inputs
      `(("adwaita-icon-theme" ,adwaita-icon-theme)
        ("gnome-keyring" ,gnome-keyring)
@@ -1785,7 +1798,7 @@ QMatrixClient project.")
        (file-name (git-file-name name version))
        (sha256
         (base32 "0gpv6b3nn3lsyym8809kiqkpdszfasldqjpk5s542zyn41gdlql4"))))
-    (build-system cmake-build-system)
+    (build-system qt-build-system)
     (inputs
      `(("libqmatrixclient" ,libqmatrixclient)
        ("qtbase" ,qtbase)
@@ -1796,19 +1809,7 @@ QMatrixClient project.")
        ("qtsvg" ,qtsvg)
        ("qttools" ,qttools)))
     (arguments
-     `(#:tests? #f                      ; no tests
-       #:modules ((guix build cmake-build-system)
-                  (guix build qt-utils)
-                  (guix build utils))
-       #:imported-modules (,@%cmake-build-system-modules
-                           (guix build qt-utils))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'wrap-program
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-qt-program out "quaternion")
-               #t))))))
+     `(#:tests? #f))                    ; no tests
     (home-page "https://matrix.org/docs/projects/client/quaternion.html")
     (synopsis "Graphical client for the Matrix instant messaging protocol")
     (description "Quaternion is a Qt5 desktop client for the Matrix instant
@@ -1821,13 +1822,13 @@ QMatrixClient project.")
 (define-public hangups
   (package
     (name "hangups")
-    (version "0.4.9")
+    (version "0.4.10")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "hangups" version))
        (sha256
-        (base32 "1jw4i58cd4j1ymsnhv9224xsi26w8y0qrj6z4nw50dnbl45b6aaa"))))
+        (base32 "0ww9z9kcb02pwnr8q1ll31wkzspc1fci1ly8ifrwzxysp4rxy3j5"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1944,5 +1945,49 @@ Telegram messenger.")
     ;; Code under tgl/ (the Telegram library) is LGPLv2.1+, but the plugin
     ;; itself is GPLv2+.
     (license license:gpl2+)))
+
+(define-public tdlib
+  (let ((commit "afca63a4f43531058a079e91eb5c81f54ad744b5")
+        (revision "1")
+        (version "1.5.0"))
+    (package
+      (name "tdlib")
+      (version (git-version version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/tdlib/td.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1aa3p4k32mfshgc6fv58gwg8pnaix39rv455hfx6znj7llr8na6k"))
+                (file-name (git-file-name name version))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #t
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'remove-failing-tests
+             (lambda _
+               (substitute* "test/CMakeLists.txt"
+                 ;; The test cases are compiled into a distinct binary
+                 ;; which uses mtproto.cpp to attempt to connect to
+                 ;; a remote server. Removing this file from the sources
+                 ;; list disables those specific test cases.
+                 (("\\$\\{CMAKE_CURRENT_SOURCE_DIR\\}/mtproto.cpp") ""))
+               #t)))))
+      (native-inputs
+       `(("gperf" ,gperf)
+         ("openssl" ,openssl)
+         ("zlib" ,zlib)
+         ("php" ,php)
+         ("doxygen" ,doxygen)))
+      (synopsis "Cross-platform library for building Telegram clients")
+      (description "Tdlib is a cross-platform library for creating custom
+Telegram clients following the official Telegram API.  It can be easily used
+from almost any programming language with a C-FFI and features first-class
+support for high performance Telegram Bot creation.")
+      (home-page "https://core.telegram.org/tdlib")
+      (license license:boost1.0))))
 
 ;;; messaging.scm ends here

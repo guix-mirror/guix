@@ -40,12 +40,14 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cpp)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages perl))
 
@@ -283,7 +285,7 @@ that implements both the msgpack and msgpack-rpc specifications.")
 (define-public jsoncpp
   (package
     (name "jsoncpp")
-    (version "1.9.1")
+    (version "1.9.2")
     (home-page "https://github.com/open-source-parsers/jsoncpp")
     (source (origin
               (method git-fetch)
@@ -291,7 +293,7 @@ that implements both the msgpack and msgpack-rpc specifications.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "00g356iv3kcp0gadj7gbyzf9jn9avvx9vxbxc7c2i5nnry8z72wj"))))
+                "037d1b1qdmn3rksmn1j71j26bv4hkjv7sn7da261k853xb5899sg"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_SHARED_LIBS:BOOL=YES")))
@@ -376,40 +378,6 @@ RPC system.  Think JSON, except binary.  Or think Protocol Buffers, except faste
 convert JSON documents to BSON and the opposite.  BSON stands for Binary JSON,
 it is comparable to protobuf.")
     (license license:asl2.0)))
-
-(define-public nlohmann-json-cpp
-  (package
-    (name "nlohmann-json-cpp")
-    (version "3.7.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/nlohmann/json.git")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0v7xih4zjixxxfvkfbs7a8j9qcvpwlsv4vrkbyns3hc7b44nb8ap"))))
-    (build-system cmake-build-system)
-    (native-inputs
-     ;; Integer overflow tests like those from
-     ;; <https://github.com/nlohmann/json/issues/1447> fail when building with
-     ;; gcc@5.  Thus, build with a newer GCC.
-     `(("gcc" ,gcc-9)))
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-before 'build 'unset-path-variables
-                    (lambda _
-                      (unsetenv "C_INCLUDE_PATH")
-                      (unsetenv "CPLUS_INCLUDE_PATH")
-                      #t)))))
-    (home-page "https://nlohmann.github.io/json/")
-    (synopsis "JSON library for C++")
-    (description
-     "JSON library for C++ trying to accomplish “Intuitive syntax”,
-“Trivial integration”, and “Serious testing”.
-However, “Memory efficiency” and “Speed” have not been primary goals.")
-    (license license:expat)))
 
 (define-public python-ruamel.yaml
   (package

@@ -22,6 +22,7 @@
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 swedebugia <swedebugia@riseup.net>
 ;;; Copyright © 2019 Amar Singh <nly@disroot.org>
+;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1921,17 +1922,22 @@ is no support for parsing block and inline level HTML.")
 (define-public mcron
   (package
     (name "mcron")
-    (version "1.1.2")
+    (version "1.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/mcron/mcron-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "069m3ri7nc8lgy3h9ka7gj3v3anqj69x9jw4l3cfq65nqkxsch4g"))))
+                "00kv7fgllzjpis0g1m9csycp4f6l11774m09dqy255cvmim2g743"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'fix-finding-guile
+                    (lambda _
+                      (substitute* "configure"
+                        (("2\\.0") "2.2 2.0"))
+                      #t))
                   (add-before 'check 'adjust-tests
                     (lambda _
                       (substitute* "tests/job-specifier.scm"
@@ -1948,11 +1954,7 @@ is no support for parsing block and inline level HTML.")
                         (("\\(test-equal \"next-year\"" all)
                          (string-append "(test-skip 4)\n" all)))
                       #t)))))
-    (native-inputs `(("autoconf" ,autoconf)
-                     ("automake" ,automake)
-                     ("help2man" ,help2man)
-                     ("pkg-config" ,pkg-config)
-                     ("texinfo" ,texinfo)
+    (native-inputs `(("pkg-config" ,pkg-config)
                      ("tzdata" ,tzdata-for-tests)))
     (inputs `(("guile" ,guile-2.2)))
     (home-page "https://www.gnu.org/software/mcron/")
@@ -2253,22 +2255,32 @@ list of components.  This module takes care of that for you.")
 (define-public guile-gi
   (package
     (name "guile-gi")
-    (version "0.2.0")
+    (version "0.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://lonelycactus.com/tarball/guile_gi-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1n4pbrmbrjkrx826a4m31ag5c35rgkj1sirqh4qalk7gg67cfb41"))))
+                "1ah5bmkzplsmkrk7v9vlxlqch7i91qv4cq2d2nar9xshbpcrj484"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--with-gnu-filesystem-hierarchy")))
+     `(#:configure-flags '("--with-gnu-filesystem-hierarchy")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'start-xorg-server
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The init_check test requires a running X server.
+             (system (format #f "~a/bin/Xvfb :1 &"
+                             (assoc-ref inputs "xorg-server")))
+             (setenv "DISPLAY" ":1")
+             #t)))))
     (native-inputs
      `(("gettext" ,gnu-gettext)
        ("glib:bin" ,glib "bin") ; for glib-compile-resources
        ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("xorg-server" ,xorg-server)))
     (propagated-inputs
      `(("glib" ,glib)
        ("gobject-introspection" ,gobject-introspection)
@@ -2617,8 +2629,8 @@ clean and easy to use high level API.")
     (license license:gpl3+)))
 
 (define-public guile-ffi-fftw
-  (let ((commit "95d7ffb55860f3163c5283ecec1ef43bc3d174dd")
-        (revision "1"))
+  (let ((commit "294ad9e7491dcb40026d2fec9be2af05263be1c0")
+        (revision "2"))
     (package
       (name "guile-ffi-fftw")
       (version (git-version "0" revision commit))
@@ -2630,7 +2642,7 @@ clean and easy to use high level API.")
                 (file-name (git-file-name "guile-ffi-fftw" version))
                 (sha256
                  (base32
-                  "0v9vk9cr4x9gn36lihi9gfkxyiqak0i598v5li6qw8bg95004p49"))))
+                  "08j40a5p6a8pgvhffmzb5rfdnrav2mksy3gfjkdqy93jfj1z5afg"))))
       (build-system guile-build-system)
       (arguments
        `(#:source-directory "mod"
@@ -2656,6 +2668,56 @@ library's ‘guru interface’.  It provides two functions: @code{fftw-dft! rank
 sign in out} and @code{fftw-dft rank sign in}.  These bindings being minimal,
 there is no support for computing & reusing plans, or split r/i transforms, or
 anything other than straight complex DFTs.")
-      ;; TODO: This might actually be LGPLv3+
-      ;; See https://github.com/lloda/guile-ffi-fftw/issues/1
-      (license license:gpl3+))))
+      (license license:lgpl3+))))
+
+(define-public srfi-64-driver
+  (package
+    (name "srfi-64-driver")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://files.ngyro.com/srfi-64-driver/"
+                                  "srfi-64-driver-" version ".tar.gz"))
+              (sha256
+               (base32
+                "188b6mb7sjjg0a8zldikinglf40ky8mg8rwh5768gjmch6gkk3ph"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'build))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,guile-2.2)))
+    (home-page "https://ngyro.com/software/srfi-64-driver.html")
+    (synopsis "Automake test driver for SRFI 64 test suites")
+    (description "This package provides an Automake test driver that can
+run SRFI 64 test suites.  It gives Automake insight into the individual
+tests being run, resulting clearer and more specific output.")
+    (license license:gpl3+)))
+
+(define-public guile-semver
+  (package
+    (name "guile-semver")
+    (version "0.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://files.ngyro.com/guile-semver/"
+                                  "guile-semver-" version ".tar.gz"))
+              (sha256
+               (base32
+                "06b66rj7nyhr6i3dpkwvfw1xb10w2pngrsw2hxfxkznwsbh9byfz"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("srfi-64-driver" ,srfi-64-driver)))
+    (inputs
+     `(("guile" ,guile-2.2)))
+    (home-page "https://ngyro.com/software/guile-semver.html")
+    (synopsis "Semantic Versioning (SemVer) for Guile")
+    (description "This Guile library provides tools for reading,
+comparing, and writing Semantic Versions.  It also includes ranges in
+the style of the Node Package Manager (NPM).")
+    (license license:gpl3+)))

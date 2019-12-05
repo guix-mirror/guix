@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2018, 2019 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +30,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (guix build utils)
   #:use-module (gnu packages)
@@ -47,6 +48,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages xorg)
@@ -1162,3 +1164,31 @@ raw USB commands.")
     ;; The flashloaders/stm32l0x.s and flashloaders/stm32lx.s source files are
     ;; licensed under the GPLv2+.
     (license (list license:bsd-3 license:gpl2+))))
+
+(define-public west
+  (package
+    (name "west")
+    (version "0.6.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "west" version))
+       (sha256
+        (base32
+         "0ql6ij1hrj2ir5wkxm96zgig5qwvfwa75w77wh2y13w6b9cqcr4b"))))
+    (propagated-inputs
+     `(("python-colorama" ,python-colorama)
+       ("python-configobj" ,python-configobj)
+       ("python-pykwalify" ,python-pykwalify)
+       ("python-pyyaml" ,python-pyyaml)))
+    (build-system python-build-system)
+    (home-page "https://github.com/zephyrproject-rtos/west")
+    (synopsis "Zephyr RTOS Project meta-tool")
+    (description "West is the swiss-army knife command line tool of the Zephyr
+project.  Its built-in commands provide a multiple repository management
+system with features inspired by Google’s Repo tool and Git submodules.  West
+simplifies configuration and is also pluggable: you can write your own west
+\"extension commands\" which add additional features to west.  Zephyr uses
+this feature to provide conveniences for building applications, flashing and
+debugging them, and more.")
+    (license license:expat)))

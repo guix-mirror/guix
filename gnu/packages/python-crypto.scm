@@ -20,6 +20,7 @@
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2018 Nam Nguyen <namn@berkeley.edu>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -108,14 +109,13 @@ Password Scheme\"} by Niels Provos and David Mazieres.")
 (define-public python-passlib
   (package
     (name "python-passlib")
-    (version "1.7.1")
+    (version "1.7.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "passlib" version))
        (sha256
-        (base32
-         "1q2khqpj9rlcgdmkypjdq1kswvhjf72bq0zk2cv669cc2dj8z51x"))))
+        (base32 "1a5ngap7kq0b4azq8nlfg6xg5bcl1i0v1sbynhmbr631jgpnqrld"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)))
@@ -128,8 +128,7 @@ Password Scheme\"} by Niels Provos and David Mazieres.")
            ;; some tests require access to "$HOME/.cython"
            (lambda* _ (setenv "PYTHON_EGG_CACHE" "/tmp") #t)))))
     (home-page "https://bitbucket.org/ecollins/passlib")
-    (synopsis
-     "Comprehensive password hashing framework")
+    (synopsis "Comprehensive password hashing framework")
     (description
      "Passlib is a password hashing library for Python 2 & 3, which provides
 cross-platform implementations of over 30 password hashing algorithms, as well
@@ -1090,3 +1089,41 @@ with state-tracking and configuration abstractions.")
 that leverages the infrastructure provided by the Linux kernel for safely
 storing and retrieving sensitive information in your programs.")
     (license license:asl2.0)))
+
+(define-public python-mcuboot-imgtool
+  (package
+    (name "python-mcuboot-imgtool")
+    (version "1.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuulLabs-OSS/mcuboot")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1m1csyvzq4jx81zg635ssy1n7sc0z539z0myh872ll3nwqx7wa0q"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-broken-test
+           (lambda _
+             (substitute* "scripts/imgtool/keys/ed25519_test.py"
+               (("raw_sign") "sign_digest"))
+             #t))
+         (add-before 'build 'change-directory
+           (lambda _
+             (chdir "scripts")
+             #t)))))
+    (propagated-inputs
+     `(("python-click" ,python-click)
+       ("python-intelhex" ,python-intelhex)
+       ("python-cryptography" ,python-cryptography)))
+    (home-page "https://mcuboot.com")
+    (synopsis "Tool to securely sign firmware images for booting by MCUboot")
+    (description "MCUboot is a secure bootloader for 32-bit MCUs.  This
+package provides a tool to securely sign firmware images for booting by
+MCUboot.")
+    (license license:expat)))

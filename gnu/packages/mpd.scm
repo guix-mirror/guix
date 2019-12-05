@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016, 2018, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Evan Straw <evan.straw99@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
@@ -90,7 +92,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
 (define-public mpd
   (package
     (name "mpd")
-    (version "0.21.14")
+    (version "0.21.16")
     (source (origin
               (method url-fetch)
               (uri
@@ -99,7 +101,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
                               "/mpd-" version ".tar.xz"))
               (sha256
                (base32
-                "0iknnm9xvwfgk8h82hjwrmbijpk9l0dgap0794c2nyg8i66qlb0y"))))
+                "14jd9byvxlxmn9ygkyap1izy0d7i2lsssib74y3q8f6pyzfipkrh"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Ddocumentation=true"))) ;the default is 'false'...
@@ -181,7 +183,7 @@ player daemon.")
 (define-public ncmpc
   (package
     (name "ncmpc")
-    (version "0.35")
+    (version "0.36")
     (source (origin
               (method url-fetch)
               (uri
@@ -190,7 +192,7 @@ player daemon.")
                               "/ncmpc-" version ".tar.xz"))
               (sha256
                (base32
-                "0hfjvm1p0z7x6gfn5xhl5c0jsmidvz0qfl04pq45x4chh9iiwkxx"))))
+                "0b1yg93is9057p9d7vfv5nz85d11p6jq94fw07jn3zlfzhyqfcj6"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
@@ -340,3 +342,27 @@ Daemon (MPD).  It supports playlists, multiple profiles (connecting to different
 MPD servers, search and multimedia key support.")
     (home-page "https://www.nongnu.org/sonata/")
     (license license:gpl3+)))
+
+(define-public ashuffle
+  (package
+    (name "ashuffle")
+    (version "2.0.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/joshkunz/ashuffle.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "11aa95cg0yca2m2d00sar6wr14g3lc7cfm9bin1h7lk7asdm8azp"))))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("libmpdclient" ,libmpdclient)))
+    (build-system meson-build-system)
+    (home-page "https://github.com/joshkunz/ashuffle")
+    (synopsis "Automatic library-wide shuffle for mpd")
+    (description "ashuffle is an application for automatically shuffling your
+MPD library in a similar way to many other music players' 'shuffle library'
+feature. ashuffle works like any other MPD client, and can be used alongside
+other MPD frontends.")
+    (license license:expat)))
