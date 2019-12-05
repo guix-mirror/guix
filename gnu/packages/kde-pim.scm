@@ -150,6 +150,45 @@ data")
 functions for accessing calendar data using the kcalcore API.")
     (license  license:lgpl2.0+)))
 
+(define-public kidentitymanagement
+  (package
+    (name "kidentitymanagement")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/kidentitymanagement-" version ".tar.xz"))
+       (sha256
+        (base32 "0dqz49sp5hq44590rrxav8688aqlzsww4q4n55ksfy13nk9i5mbf"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("kcodecs" ,kcodecs)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kemoticons" ,kemoticons)
+       ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)
+       ("kpimtextedit" ,kpimtextedit)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kxmlgui" ,kxmlgui)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-home
+           (lambda _
+             (setenv "HOME" "/tmp/dummy-home") ;; FIXME: what is this?
+             #t)))))
+    (home-page "https://kontact.kde.org/")
+    (synopsis "Library for shared identities between mail applications")
+    (description "Library for shared identities between mail applications.")
+    (license ;; GPL for programs, LGPL for libraries, FDL for documentation
+     (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
+
 (define-public kmbox
   (package
     (name "kmbox")
