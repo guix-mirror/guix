@@ -113,6 +113,59 @@ This package contains the Akonadi PIM storage server and associated
 programs.")
     (license license:fdl1.2+)))
 
+(define-public akonadi-mime
+  (package
+    (name "akonadi-mime")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/akonadi-mime-" version ".tar.xz"))
+       (sha256
+        (base32 "03q3dnhzcgmgcqvijnwi4ikg0m1zad2l679bqnp051v27fvs4yg7"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("libxslt" ,libxslt) ;; xslt for generating interface descriptions
+       ("shared-mime-info" ,shared-mime-info)))
+    (inputs
+     `(("akonadi" ,akonadi)
+       ("boost", boost)
+       ("kcodecs" ,kcodecs)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kdbusaddons" ,kdbusaddons)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("kitemmodels" ,kitemmodels)
+       ("kmime" ,kmime)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("qtbase" ,qtbase)))
+    (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/akonadi/html/")
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'copy-desktop-file-early
+           (lambda _
+             (let ((plugins-dir "/tmp/.local/share/akonadi/plugins/serializer"))
+               (mkdir-p plugins-dir)
+               (copy-file "serializers/akonadi_serializer_mail.desktop"
+                          (string-append plugins-dir "/akonadi_serializer_mail.desktop")))
+             #t))
+         (add-before 'check 'check-setup
+           (lambda _
+             (setenv "HOME" "/tmp")
+             #t)))))
+    (synopsis "Akonadi MIME handling library")
+    (description "Akonadi Mime is a library that effectively bridges the
+type-agnostic API of the Akonadi client libraries and the domain-specific
+KMime library.  It provides jobs, models and other helpers to make working
+with emails through Akonadi easier.")
+    (license ;; GPL for programs, LGPL for libraries
+     (list license:gpl2+ license:lgpl2.0+))))
+
 (define-public kalarmcal
   (package
     (name "kalarmcal")
