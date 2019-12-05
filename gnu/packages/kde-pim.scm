@@ -111,6 +111,45 @@ This package contains the Akonadi PIM storage server and associated
 programs.")
     (license license:fdl1.2+)))
 
+(define-public kcalutils
+  (package
+    (name "kcalutils")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/kcalutils-" version ".tar.xz"))
+       (sha256
+        (base32 "1nlkik4qiciyh1slgpis3n5h9pks2ygdba9yq4s16nnmip4l45w2"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("libxml2" ,libxml2))) ;; xmllint required for tests
+    (inputs
+     `(("grantlee" ,grantlee)
+       ("kcalendarcore" ,kcalendarcore)
+       ("kcodecs" ,kcodecs)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kidentitymanagement" ,kidentitymanagement)
+       ("kpimtextedit" ,kpimtextedit)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("oxygen-icons" ,oxygen-icons) ; default icon set, required for tests
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:tests? #f)) ;; TODO: seem to pull in some wrong theme
+    (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/")
+    (synopsis "Library with utility functions for the handling of calendar
+data")
+    (description "This library provides a utility and user interface
+functions for accessing calendar data using the kcalcore API.")
+    (license  license:lgpl2.0+)))
+
 (define-public kmbox
   (package
     (name "kmbox")
