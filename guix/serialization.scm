@@ -199,24 +199,6 @@ substitute invalid byte sequences with question marks.  This is a
                 (put-bytevector out buf 0 read)
                 (loop (- left read))))))))
 
-(define (write-contents file p size)
-  "Write SIZE bytes from FILE to output port P."
-  (define (call-with-binary-input-file file proc)
-    ;; Open FILE as a binary file.  This avoids scan-for-encoding, and thus
-    ;; avoids any initial buffering.  Disable file name canonicalization to
-    ;; avoid stat'ing like crazy.
-    (with-fluids ((%file-port-name-canonicalization #f))
-      (let ((port (open-file file "rb")))
-        (dynamic-wind
-          (const #t)
-          (cut proc port)
-          (lambda ()
-            (close-port port))))))
-
-  (call-with-binary-input-file file
-    (lambda (input)
-      (write-contents-from-port input p size))))
-
 (define (write-contents-from-port input output size)
   "Write SIZE bytes from port INPUT to port OUTPUT."
   (write-string "contents" output)
