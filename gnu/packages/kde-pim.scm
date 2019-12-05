@@ -29,6 +29,7 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages kde-frameworks)
+  #:use-module (gnu packages openldap)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages xml))
@@ -220,6 +221,34 @@ protocol.  This library does not implement an IMAP client; it merely makes it
 easier to do so.")
     (license ;; GPL for programs, LGPL for libraries
      (list license:gpl2+ license:lgpl2.0+))))
+
+(define-public kldap
+  (package
+    (name "kldap")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/kldap-" version ".tar.xz"))
+       (sha256
+        (base32 "1blbnj8av6h168g14gyphyd9sz87af773b1qglmbkv5pzbzaanxn"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("qtbase" ,qtbase)))
+    (propagated-inputs
+     `(("cyrus-sasl" ,cyrus-sasl)
+       ("openldap" ,openldap)))
+    (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/")
+    (synopsis "Library for accessing LDAP")
+    (description "This library provides an API for LDAP.")
+    (license license:lgpl2.0+)))
 
 (define-public kmbox
   (package
