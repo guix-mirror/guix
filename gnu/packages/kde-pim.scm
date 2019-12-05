@@ -31,6 +31,7 @@
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages search)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages xml))
 
@@ -192,6 +193,46 @@ with emails through Akonadi easier.")
 type-agnostic API of the Akonadi client libraries and the domain-specific
 KMime library.  It provides a helper class for note attachments and for
 wrapping notes into KMime::Message objects.")
+    (license ;; GPL for programs, LGPL for libraries
+     (list license:gpl2+ license:lgpl2.0+))))
+
+(define-public akonadi-search
+  (package
+    (name "akonadi-search")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/akonadi-search-" version ".tar.xz"))
+       (sha256
+        (base32 "16qzs2cs4nxwrpwcdgwry95qn6wmg8s1p4w3qajx1ahkgwmsh11s"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("akonadi" ,akonadi)
+       ("akonadi-mime" ,akonadi-mime)
+       ("boost" ,boost)
+       ("kcalendarcore" ,kcalendarcore)
+       ("kcmutils" ,kcmutils)
+       ("kcontacts" ,kcontacts)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("kitemmodels" ,kitemmodels)
+       ("kmime" ,kmime)
+       ("krunner" ,krunner)
+       ("kwindowsystem" ,kwindowsystem)
+       ("qtbase" ,qtbase)
+       ("xapian" ,xapian)))
+    (arguments
+     `(#:tests? #f)) ;; TODO: needs dbus
+    (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/akonadi/html/")
+    (synopsis "Akonadi search library")
+    (description "Xapian-based indexing and query infrastructure for
+Akonadi.")
     (license ;; GPL for programs, LGPL for libraries
      (list license:gpl2+ license:lgpl2.0+))))
 
