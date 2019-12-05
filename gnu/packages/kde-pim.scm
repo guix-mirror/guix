@@ -114,6 +114,57 @@ This package contains the Akonadi PIM storage server and associated
 programs.")
     (license license:fdl1.2+)))
 
+(define-public akonadi-contacts
+  (package
+    (name "akonadi-contacts")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/akonadi-contacts-" version ".tar.xz"))
+       (sha256
+        (base32 "1pw1s8c6dlcb103cw46p1ikvas3y8cwiwnfdny2jd3hr3rig4px9"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("akonadi" ,akonadi)
+       ("boost" ,boost)
+       ("kauth" ,kauth)
+       ("kcodecs" ,kcodecs)
+       ("kcompletion" ,kcompletion)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcontacts" ,kcontacts)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kdbusaddons" ,kdbusaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kitemmodels" ,kitemmodels)
+       ("kitemviews" ,kitemviews)
+       ("kjobwidgets" ,kjobwidgets)
+       ("kmime" ,kmime)
+       ("kservice" ,kservice)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("prison" ,prison)
+       ("kio" ,kio)
+       ("qtbase" ,qtbase)
+       ("solid" ,solid)
+       ("sonnet" ,sonnet)))
+    (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/akonadi/html/")
+    (synopsis "Akonadi contacts access library")
+    (description "Akonadi Contacts is a library that effectively bridges the
+type-agnostic API of the Akonadi client libraries and the domain-specific
+KContacts library.  It provides jobs, models and other helpers to make working
+with contacts and addressbooks through Akonadi easier.
+
+The library provides a complex dialog for editing contacts and several models
+to list and filter contacts.")
+    (license ;; GPL for programs, LGPL for libraries
+     (list license:gpl2+ license:lgpl2.0+))))
+
 (define-public akonadi-mime
   (package
     (name "akonadi-mime")
