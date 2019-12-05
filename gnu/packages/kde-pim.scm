@@ -113,6 +113,46 @@ This package contains the Akonadi PIM storage server and associated
 programs.")
     (license license:fdl1.2+)))
 
+(define-public kalarmcal
+  (package
+    (name "kalarmcal")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/kalarmcal-" version ".tar.xz"))
+       (sha256
+        (base32 "0w9qsx2gqwny2v4fsj4awn814s9b7yrxvqrawlick3r2kp4x1sgn"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("akonadi", akonadi)
+       ("boost" ,boost)
+       ("kcalendarcore" ,kcalendarcore)
+       ("kcalutils" ,kcalutils)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kholidays" ,kholidays)
+       ("ki18n" ,ki18n)
+       ("kidentitymanagement" ,kidentitymanagement)
+       ("kio" ,kio)
+       ("kitemmodels" ,kitemmodels)
+       ("kpimtextedit" ,kpimtextedit)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kxmlgui" ,kxmlgui)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:tests? #f)) ;; TODO: TZ setup
+    (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/")
+    (synopsis "Library for handling kalarm calendar data")
+    (description "This library provides an API for KAlarm alarms.")
+    (license  license:lgpl2.0+)))
+
 (define-public kcalutils
   (package
     (name "kcalutils")
