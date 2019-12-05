@@ -3768,7 +3768,10 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 (define coreutils-final
   ;; The final Coreutils.  Treat them specially because some packages, such as
   ;; Findutils, keep a reference to the Coreutils they were built with.
-  (with-boot5 (package-with-bootstrap-guile coreutils)
+  (with-boot5 (package-with-bootstrap-guile
+               (package
+                 (inherit coreutils-minimal)
+                 (name "coreutils")))
               ;; Use the final Guile, linked against the
               ;; final libc with working iconv, so that
               ;; 'substitute*' works well when touching
