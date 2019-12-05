@@ -27,6 +27,8 @@
 ;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
+;;; Copyright © 2019 Evan Straw <evan.straw99@gmail.com>
+;;; Copyright © 2019 Brett Gilio <brettg@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1495,7 +1497,7 @@ compositors that support the layer-shell protocol.")
 (define-public stumpwm
   (package
     (name "stumpwm")
-    (version "18.11")
+    (version "19.11")
     (source
      (origin
        (method git-fetch)
@@ -1504,11 +1506,7 @@ compositors that support the layer-shell protocol.")
              (commit version)))
        (file-name (git-file-name "stumpwm" version))
        (sha256
-        (base32 "003g1fmh7446ws49866kzny4lrk1wf034dq5fa4m9mq1nzc7cwv7"))
-       (patches
-        ;; This patch is included in the post-18.11 git master tree
-        ;; and can be removed when we move to the next release.
-        (search-patches "stumpwm-fix-broken-read-one-line.patch"))))
+        (base32 "1ha8803ll7472kqxsy2xz0v5d4sv8apmc9z631d67m31q0z1m9rz"))))
     (build-system asdf-build-system/sbcl)
     (native-inputs `(("fiasco" ,sbcl-fiasco)
                      ("texinfo" ,texinfo)))
