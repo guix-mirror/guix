@@ -16686,3 +16686,28 @@ scratch and manipulate data from Intel HEX file format.  It also includes
 several convenience Python scripts, including \"classic\" hex2bin and bin2hex
 converters and more, those based on the library itself.")
     (license license:bsd-3)))
+
+(define-public python-pykwalify
+  (package
+    (name "python-pykwalify")
+    (version "1.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pykwalify" version))
+       (sha256
+        (base32
+         "1cnfzkg1b01f825ikpw2fhjclf9c8akxjfrbd1vc22x1lg2kk2vy"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f))          ;missing dependencies
+    (propagated-inputs
+     `(("python-dateutil" ,python-dateutil)
+       ("python-docopt" ,python-docopt)
+       ("python-pyyaml" ,python-pyyaml)))
+    (home-page "https://github.com/grokzen/pykwalify")
+    (synopsis
+     "Python lib/cli for JSON/YAML schema validation")
+    (description
+     "This package provides a parser, schema validator, and data binding tool
+for YAML and JSON.")
+    (license license:expat)))
