@@ -24,6 +24,7 @@
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages gnome)
@@ -188,6 +189,37 @@ functions for accessing calendar data using the kcalcore API.")
     (description "Library for shared identities between mail applications.")
     (license ;; GPL for programs, LGPL for libraries, FDL for documentation
      (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
+
+(define-public kimap
+  (package
+    (name "kimap")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/kimap-" version ".tar.xz"))
+       (sha256
+        (base32 "0l8hb2z82jzbwr12lw5fismwk1a3ca4dk966p1fxg4bibck8vjj6"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("cyrus-sasl" ,cyrus-sasl)
+       ("kcoreaddons" ,kcoreaddons)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("kmime" ,kmime)
+       ("qtbase" ,qtbase)))
+    (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/")
+    (synopsis "Library for handling IMAP")
+    (description "This library provides a job-based API for interacting with
+an IMAP4rev1 server.  It manages connections, encryption and parameter quoting
+and encoding, but otherwise provides quite a low-level interface to the
+protocol.  This library does not implement an IMAP client; it merely makes it
+easier to do so.")
+    (license ;; GPL for programs, LGPL for libraries
+     (list license:gpl2+ license:lgpl2.0+))))
 
 (define-public kmbox
   (package
