@@ -284,6 +284,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/kde.scm				\
   %D%/packages/kde-frameworks.scm		\
   %D%/packages/kde-multimedia.scm		\
+  %D%/packages/kde-pim.scm			\
   %D%/packages/kde-plasma.scm			\
   %D%/packages/kde-systemtools.scm		\
   %D%/packages/kde-utils.scm			\
@@ -707,6 +708,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/aegisub-icu59-include-unistr.patch	\
   %D%/packages/patches/aegisub-boost68.patch                    \
   %D%/packages/patches/agg-am_c_prototype.patch			\
+  %D%/packages/patches/akonadi-paths.patch		\
+  %D%/packages/patches/akonadi-Revert-Make-installation-properly-relocatabl.patch \
+  %D%/packages/patches/akonadi-timestamps.patch		\
   %D%/packages/patches/allegro-mesa-18.2.5-and-later.patch	\
   %D%/packages/patches/amule-crypto-6.patch			\
   %D%/packages/patches/antiword-CVE-2014-8123.patch			\
