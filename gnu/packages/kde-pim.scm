@@ -206,3 +206,43 @@ functions for accessing calendar data using the kcalcore API.")
     (synopsis "Library for handling MIME data")
     (description "A library for MIME handling.")
     (license license:lgpl2.0+)))
+
+(define-public kpimtextedit
+  (package
+    (name "kpimtextedit")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/kpimtextedit-" version ".tar.xz"))
+       (sha256
+        (base32 "1as48j5qfpj9pqjck1615nlpk4a850m7xxcyl41gx8biww027zvm"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("grantlee" ,grantlee)
+       ("kcodecs" ,kcodecs)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kdesignerplugin" ,kdesignerplugin)
+       ("kemoticons" ,kemoticons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)
+       ("ksyntaxhighlighting" ,ksyntaxhighlighting)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("qtbase" ,qtbase)
+       ("qtspeech", qtspeech)
+       ("sonnet" ,sonnet)))
+    (arguments
+     `(#:tests? #f)) ;; TODO - test suite hangs
+    (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/")
+    (synopsis "Library providing a textedit with PIM-specific features")
+    (description "A library for PIM-specific text editing utilities.")
+    (license ;; GPL for programs, LGPL for libraries, FDL for documentation
+     (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
