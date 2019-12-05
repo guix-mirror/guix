@@ -521,6 +521,33 @@ easier to do so.")
     (description "A library for MIME handling.")
     (license license:lgpl2.0+)))
 
+(define-public kontactinterface
+  (package
+    (name "kontactinterface")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/kontactinterface-" version ".tar.xz"))
+       (sha256
+        (base32 "1p0iw9i8cxh3jn7094wvxhlpc2sw52q8csfdgch1lf3dwhkpp0k7"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("kcoreaddons" ,kcoreaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kparts" ,kparts)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kxmlgui" ,kxmlgui)
+       ("qtbase" ,qtbase)))
+    (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/")
+    (synopsis "Kontact interface library")
+    (description "Kontact Interface library.")
+    (license license:lgpl2.0+)))
+
 (define-public kpimtextedit
   (package
     (name "kpimtextedit")
