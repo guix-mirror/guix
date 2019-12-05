@@ -1642,15 +1642,7 @@ from forcing GEXP-PROMISE."
              (use-modules (guix build cargo-utils))
              (substitute* "librsvg/Cargo.toml"
                (("bitflags .*") "bitflags = \"1\"\n")) ; 1.2 is vendored
-             (for-each
-                (lambda (filename)
-                  (delete-file filename)
-                  (let ((dir (dirname filename)))
-                    (display (string-append
-                              "patch-cargo-checksums: generate-checksums for "
-                              dir "\n"))
-                    (generate-checksums dir)))
-                (find-files "vendor" "\\.cargo(-checksum|_vcs_info).json"))
+             (generate-all-checksums "vendor")
              (delete-file "Cargo.lock")
              (invoke "cargo" "generate-lockfile")))
          (add-before 'configure 'pre-configure
