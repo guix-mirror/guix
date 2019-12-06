@@ -2210,7 +2210,7 @@ non-consing thread safe queues and fibonacci priority queues.")
 (define sbcl-cffi-bootstrap
   (package
     (name "sbcl-cffi-bootstrap")
-    (version "0.19.0")
+    (version "0.20.1")
     (source
      (origin
        (method git-fetch)
@@ -2219,7 +2219,7 @@ non-consing thread safe queues and fibonacci priority queues.")
              (commit (string-append "v" version))))
        (file-name (git-file-name "cffi-bootstrap" version))
        (sha256
-        (base32 "09sfgc6r7ihmbkwfpvkq5fxc7h45cabpvgbvs47i5cvnmv3k72xy"))))
+        (base32 "1bzgdwd5yzkv9hwnxg6lqyh5z1vjgjyrl12c72afj7hxziadccm8"))))
     (build-system asdf-build-system/sbcl)
     (inputs
      `(("libffi" ,libffi)
@@ -2234,7 +2234,7 @@ non-consing thread safe queues and fibonacci priority queues.")
          (add-after 'unpack 'fix-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "libffi/libffi.lisp"
-               (("libffi.so.6" all) (string-append
+               (("libffi.so.7" all) (string-append
                                      (assoc-ref inputs "libffi")
                                      "/lib/" all)))
              (substitute* "toolchain/c-toolchain.lisp"
