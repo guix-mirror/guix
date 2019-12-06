@@ -15150,14 +15150,14 @@ in R, including a translation of the original algorithm into R.")
 (define-public r-uwot
   (package
     (name "r-uwot")
-    (version "0.1.4")
+    (version "0.1.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "uwot" version))
        (sha256
         (base32
-         "1y9wpzs92d1fl2x5figfywd48lkyhwx37j542z0rf6ckrl46n89n"))))
+         "0pz9wa89xq4d119q86lskrznf979m0r1db8iaprcz7kxbi6b8lrj"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dqrng" ,r-dqrng)
