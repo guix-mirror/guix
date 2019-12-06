@@ -64,7 +64,43 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
+
+(define-public grantleetheme
+  (package
+    (name "grantleetheme")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/grantleetheme-" version ".tar.xz"))
+       (sha256
+        (base32 "0j77q1yyfmggzgkqgcw2xr0v9xg3h5cdhh8jry8h2llw75ahy6xb"))
+       (patches (search-patches "grantlee-merge-theme-dirs.patch"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("libxml2" ,libxml2))) ;; xmllint required for tests
+    (inputs
+     `(("grantlee" ,grantlee)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("knewstuff" ,knewstuff)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
+    (home-page "https://cgit.kde.org/grantleetheme.git")
+    (synopsis "Library providing Grantlee theme support")
+    (description "This library provides Grantlee theme support.")
+    (license ;; LGPL for libraries, FDL for documentation
+     (list license:lgpl2.0+ license:fdl1.2+))))
 
 (define-public kdenlive
   (let ((version "18.08.1"))

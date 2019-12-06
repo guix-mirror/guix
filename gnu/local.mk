@@ -939,6 +939,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gpm-glibc-2.26.patch			\
   %D%/packages/patches/gpsbabel-minizip.patch     		\
   %D%/packages/patches/gpsbabel-qstring.patch     		\
+  %D%/packages/patches/grantlee-merge-theme-dirs.patch		\
   %D%/packages/patches/grep-timing-sensitive-test.patch		\
   %D%/packages/patches/groovy-add-exceptionutilsgenerator.patch	\
   %D%/packages/patches/grub-efi-fat-serial-number.patch		\
