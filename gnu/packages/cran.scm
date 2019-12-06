@@ -9231,14 +9231,14 @@ image formats, including PNG, Postscript, SVG, PGF.")
 (define-public r-multicool
   (package
     (name "r-multicool")
-    (version "0.1-10")
+    (version "0.1-11")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "multicool" version))
        (sha256
         (base32
-         "1ybg9piya9psqg42w9i3zsnavbxhkfklfwl7cb420i5nkq6wpc2v"))))
+         "0xk408qbz9cxwf51j3pmy55gcjcnws8mc6j3vyn9zhramxj7x40w"))))
     (build-system r-build-system)
     (propagated-inputs `(("r-rcpp" ,r-rcpp)))
     (home-page "https://cran.r-project.org/web/packages/multicool/")
