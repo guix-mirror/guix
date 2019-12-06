@@ -2218,7 +2218,7 @@ from @code{tree-il}.")
 (define-public guile-file-names
   (package
     (name "guile-file-names")
-    (version "0.2")
+    (version "0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://brandon.invergo.net/software/download/"
@@ -2226,7 +2226,7 @@ from @code{tree-il}.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1kwx5hanl40960w2nhyga7ry4l6c3c57zdrihk4yajj87vn3pmi8"))))
+                "01chizdxkhw6aqv629vxka9f5x3534ij7r0jqndawsg2vxm1r9sz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
