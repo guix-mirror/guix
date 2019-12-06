@@ -7493,13 +7493,13 @@ all known public suffixes.")
 (define-public ruby-addressable
   (package
     (name "ruby-addressable")
-    (version "2.6.0")
+    (version "2.7.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "addressable" version))
               (sha256
                (base32
-                "0bcm2hchn897xjhqj9zzsxf3n9xhddymj4lsclz508f4vw3av46l"))))
+                "1fvchp2rhp2rmigx7qglf69xvjqvzq7x0g49naliw29r2bz656sy"))))
     (build-system ruby-build-system)
     (arguments
      '(#:test-target "spec"
