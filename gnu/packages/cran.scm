@@ -11478,14 +11478,14 @@ by change of variable.")
 (define-public r-listenv
   (package
     (name "r-listenv")
-    (version "0.7.0")
+    (version "0.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "listenv" version))
        (sha256
         (base32
-         "0ma5jsri2zqkrlsm9nqpikl7imbwfy1glsmk13mblw0q245h49k1"))))
+         "0ps8bk7zlhbviawrw7vw25skjq81hkk3ijyi6g74dmfqy8zsyapx"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-r-rsp" ,r-r-rsp))) ; vignette builder
