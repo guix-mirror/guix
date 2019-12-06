@@ -282,6 +282,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/kawa.scm				\
   %D%/packages/kde.scm				\
   %D%/packages/kde-frameworks.scm		\
+  %D%/packages/kde-multimedia.scm		\
   %D%/packages/kde-plasma.scm			\
   %D%/packages/kde-utils.scm			\
   %D%/packages/kerberos.scm			\
