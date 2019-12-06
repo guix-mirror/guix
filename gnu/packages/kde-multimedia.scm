@@ -24,15 +24,19 @@
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages kde-frameworks)
+  #:use-module (gnu packages libcanberra)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages music)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages video)
-  #:use-module (gnu packages xiph))
+  #:use-module (gnu packages xiph)
+  #:use-module (gnu packages xorg))
 
 (define-public dragon
   (package
@@ -192,6 +196,59 @@ This package is part of the KDE multimedia module.")
 and provide an easily usable interface.  Features include burning audio CDs
 from .WAV and .MP3 audio files, configuring external programs and configuring
 devices.")
+    (license ;; GPL for programs, FDL for documentation
+     (list license:gpl2+ license:fdl1.2+))))
+
+(define-public kaffeine
+  (package
+    (name "kaffeine")
+    (version "2.0.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/kaffeine"
+                           "/kaffeine-" version ".tar.xz"))
+       (sha256
+        (base32 "10dnhr9v2jlki44i3gmjagky66ybixmv6f29z5imk9clgddrlyfr"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("eudev" ,eudev)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kdbusaddons" ,kdbusaddons)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kxmlgui" ,kxmlgui)
+       ("libxscrnsaver" ,libxscrnsaver)
+       ("oxygen-icons" ,oxygen-icons) ; default icon set
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)
+       ("solid" ,solid)
+       ("v4l-utils" ,v4l-utils) ; libdvbv5
+       ("vlc" ,vlc)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-code
+           (lambda _
+             (substitute* "src/dvb/dvbdevice_linux.cpp"
+               (("\\s*qPrintable\\(transponder\\.getTransmissionType\\(\\)\\)\\);")
+                 "transponder.getTransmissionType());"))
+             #t)))))
+    (home-page "https://kde.org/applications/multimedia/org.kde.kaffeine")
+    (synopsis "Versatile media player for KDE")
+    (description "Kaffeine is a media player for KDE.  While it supports
+multiple Phonon backends, its default backend is Xine, giving Kaffeine a wide
+variety of supported media types and letting Kaffeine access CDs, DVDs, and
+network streams easily.
+
+Kaffeine can keep track of multiple playlists simultaneously, and supports
+autoloading of subtitle files for use while playing video.")
     (license ;; GPL for programs, FDL for documentation
      (list license:gpl2+ license:fdl1.2+))))
 
