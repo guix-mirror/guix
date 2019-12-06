@@ -134,7 +134,7 @@ bootstrap to Guix and aims to help create full source bootstrapping for
 GNU/Linux distributions.  It consists of a mutual self-hosting Scheme
 interpreter in C and a Nyacc-based C compiler in Scheme and is compatible with
 Guile.")
-    (home-page "https://gnu.org/software/mes")
+    (home-page "https://www.gnu.org/software/mes/")
     (license gpl3+)))
 
 (define-public mes
@@ -145,6 +145,7 @@ Guile.")
               (method url-fetch)
               (uri (string-append "mirror://gnu/mes/"
                                   "mes-" version ".tar.gz"))
+              (patches (search-patches "mes-remove-store-name.patch"))
               (sha256
                (base32
                 "104qxngxyl7pql8vqrnli3wfyx0ayfaqg8gjfhmk4qzrafs46slm"))))
