@@ -46,7 +46,7 @@ Copyright @copyright{} 2017, 2018 Carlo Zancanaro@*
 Copyright @copyright{} 2017 Thomas Danckaert@*
 Copyright @copyright{} 2017 humanitiesNerd@*
 Copyright @copyright{} 2017 Christopher Allan Webber@*
-Copyright @copyright{} 2017, 2018 Marius Bakke@*
+Copyright @copyright{} 2017, 2018, 2019 Marius Bakke@*
 Copyright @copyright{} 2017, 2019 Hartmut Goebel@*
 Copyright @copyright{} 2017, 2019 Maxim Cournoyer@*
 Copyright @copyright{} 2017, 2018, 2019 Tobias Geerinckx-Rice@*
@@ -2472,7 +2472,7 @@ Boot the USB installation image in an VM:
 
 @example
 qemu-system-x86_64 -m 1024 -smp 1 -enable-kvm \
-  -net user -net nic,model=virtio -boot menu=on,order=d \
+  -nic user,model=virtio-net-pci -boot menu=on,order=d \
   -drive file=guix-system.img \
   -drive media=cdrom,file=guix-system-install-@value{VERSION}.@var{system}.iso
 @end example
@@ -26156,7 +26156,7 @@ below, which enables networking and requests 1@tie{}GiB of RAM for the
 emulated machine:
 
 @example
-$ /gnu/store/@dots{}-run-vm.sh -m 1024 -net user
+$ /gnu/store/@dots{}-run-vm.sh -m 1024 -smp 2 -net user,model=virtio-net-pci
 @end example
 
 The VM shares its store with the host system.
@@ -26642,7 +26642,7 @@ vm-image} on x86_64 hardware:
 
 @example
 $ qemu-system-x86_64 \
-   -net user -net nic,model=virtio \
+   -nic user,model=virtio-net-pci \
    -enable-kvm -m 1024 \
    -device virtio-blk,drive=myhd \
    -drive if=none,file=/tmp/qemu-image,id=myhd
@@ -26655,16 +26655,14 @@ Here is what each of these options means:
 This specifies the hardware platform to emulate.  This should match the
 host.
 
-@item -net user
+@item -nic user,model=virtio-net-pci
 Enable the unprivileged user-mode network stack.  The guest OS can
 access the host but not vice versa.  This is the simplest way to get the
-guest OS online.
-
-@item -net nic,model=virtio
-You must create a network interface of a given model.  If you do not
-create a NIC, the boot will fail.  Assuming your hardware platform is
+guest OS online.  @code{model} specifies which network device to emulate:
+@code{virtio-net-pci} is a special device made for virtualized operating
+systems and recommended for most uses.  Assuming your hardware platform is
 x86_64, you can get a list of available NIC models by running
-@command{qemu-system-x86_64 -net nic,model=help}.
+@command{qemu-system-x86_64 -nic model=help}.
 
 @item -enable-kvm
 If your system has hardware virtualization extensions, enabling the
@@ -26688,11 +26686,11 @@ the ``myhd'' drive.
 @end table
 
 The default @command{run-vm.sh} script that is returned by an invocation of
-@command{guix system vm} does not add a @command{-net user} flag by default.
+@command{guix system vm} does not add a @command{-nic user} flag by default.
 To get network access from within the vm add the @code{(dhcp-client-service)}
 to your system definition and start the VM using
-@command{`guix system vm config.scm` -net user}.  An important caveat of using
-@command{-net user} for networking is that @command{ping} will not work, because
+@command{`guix system vm config.scm` -nic user}.  An important caveat of using
+@command{-nic user} for networking is that @command{ping} will not work, because
 it uses the ICMP protocol.  You'll have to use a different command to check for
 network connectivity, for example @command{guix download}.
 
@@ -26706,7 +26704,7 @@ To enable SSH inside a VM you need to add an SSH server like
 22 by default, to the host.  You can do this with
 
 @example
-`guix system vm config.scm` -net user,hostfwd=tcp::10022-:22
+`guix system vm config.scm` -nic user,model=virtio-net-pci,hostfwd=tcp::10022-:22
 @end example
 
 To connect to the VM you can run

@@ -927,7 +927,6 @@ with '-virtfs' options for the host file systems listed in SHARED-FS."
             '())
 
      "-no-reboot"
-     "-net nic,model=virtio"
      "-object" "rng-random,filename=/dev/urandom,id=guixsd-vm-rng"
      "-device" "virtio-rng-pci,rng=guixsd-vm-rng"
 
@@ -1046,8 +1045,8 @@ FORWARDINGS is a list of host-port/guest-port pairs."
     (($ <virtual-machine> os qemu graphic? memory-size disk-image-size
                           forwardings)
      (let ((options
-            `("-net" ,(string-append
-                       "user,"
+            `("-nic" ,(string-append
+                       "user,model=virtio-net-pci,"
                        (port-forwardings->qemu-options forwardings)))))
        (system-qemu-image/shared-store-script os
                                               #:qemu qemu
