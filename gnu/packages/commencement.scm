@@ -222,6 +222,172 @@
                (install-file "scripts/bash" bin)
                #t))))))))
 
+(define gash-core-utils-boot
+  (package
+    (inherit gash-core-utils)
+    (name "gash-core-utils-boot")
+    (version "0.0.213-3f6eb")
+    (source (bootstrap-origin
+             (origin
+               (method url-fetch)
+               (uri (string-append "http://lilypond.org/janneke/"
+                                   "/gash-core-utils-" version ".tar.gz"))
+               (modules '((guix build utils)))
+               (snippet
+                '(begin
+                   ;; The Guile build system compiles *.scm; avoid
+                   ;; compiling included lalr.
+                   (delete-file "guix.scm")
+                   (delete-file-recursively "tests")
+                   (substitute* "system/base/lalr.scm"
+                     (("system/base/lalr.upstream.scm") "lalr.upstream.scm"))
+                   #t))
+               (sha256
+                (base32
+                 "0601c9hqbjrjjsllr2m3zmkglkd53d97in7a5c22ikd8islddp76")))))
+    (build-system guile-build-system)
+    (native-inputs `(("bash" ,(bootstrap-executable "bash" (%current-system)))
+                     ("tar" ,(bootstrap-executable "tar" (%current-system)))
+                     ("xz" ,(bootstrap-executable "xz" (%current-system)))
+                     ("guile-source" ,(bootstrap-origin
+                                       (package-source guile-2.0)))
+                     ;; We need the 2.0.9 lalr for %bootstrap-guile
+                     ("lalr.upstream"
+                      ,(origin
+                         (method url-fetch)
+                         (uri (string-append "http://git.savannah.gnu.org/cgit/guile.git/plain/module/system/base/lalr.upstream.scm?h=v2.0.9"))
+                         (file-name "lalr.upstream.scm")
+                         (sha256
+                          (base32
+                           "0h7gyjj8nr2qrgzwma146s7l22scp8bbcqzdy9wqf12bgyhbw7d5"))))))
+    (inputs `(("guile" ,%bootstrap-guile+guild)
+              ("gash" ,gash-boot)))
+    (arguments
+     `(#:implicit-inputs? #f
+       #:guile ,%bootstrap-guile+guild
+       #:not-compiled-file-regexp "upstream\\.scm$"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-guile-source
+           (lambda _
+             (let ((guile-source (assoc-ref %build-inputs "guile-source"))
+                   (bin (string-append (getcwd) "/zee-bin")))
+               (mkdir-p bin)
+               (with-directory-excursion bin
+                 (invoke "tar" "--strip-components=2"
+
+                         "-xvf" guile-source
+                         (string-append "guile-"
+                                        ,(package-version guile-2.0)
+                                        "/meta/guild.in"))
+                 (copy-file "guild.in" "guild")
+                 (chmod "guild" #o555))
+               #t)))
+         (add-before 'unpack 'set-path
+           (lambda _
+             (let ((bash (assoc-ref %build-inputs "bash"))
+                   (tar (assoc-ref %build-inputs "tar"))
+                   (xz (assoc-ref %build-inputs "xz"))
+                   (bin (string-append (getcwd) "/zee-bin")))
+               (mkdir-p bin)
+               (setenv "PATH" (string-append bin ":" (getenv "PATH")))
+               (copy-file bash (string-append bin "/bash"))
+               (copy-file bash (string-append bin "/sh"))
+               (copy-file tar (string-append bin "/tar"))
+               (copy-file xz (string-append bin "/xz"))
+               #t)))
+         (add-before 'build 'set-env
+           (lambda _
+             (let ((gash (assoc-ref %build-inputs "gash")))
+               (setenv "LANG" "C")
+               (setenv "LC_ALL" "C")
+               (setenv "GUILE_LOAD_PATH"
+                       (string-append (getcwd)
+                                      ":" (getcwd) "/system/base"
+                                      ":" gash "/share/guile/2.0"))
+               (setenv "GUILE_LOAD_COMPILED_PATH"
+                       (string-append ".:" gash "/lib/guile/2.0/site-ccache/"))
+               (format (current-error-port)
+                       "GUILE_LOAD_PATH=~s\n" (getenv "GUILE_LOAD_PATH"))
+               #t)))
+         (add-before 'build 'replace-lalr.upstream
+           (lambda _
+             (let ((lalr.upstream (assoc-ref %build-inputs "lalr.upstream")))
+               (copy-file lalr.upstream "system/base/lalr.upstream.scm")
+               #t)))
+         (add-after 'build 'build-scripts
+           (lambda _
+             (let* ((guile (assoc-ref %build-inputs "guile"))
+                    (guile (string-append guile "/bin/guile"))
+                    (gash (string-append guile "gash"))
+                    (out (assoc-ref %outputs "out"))
+                    (effective "2.0")
+                    (guilemoduledir (string-append gash "/share/guile/site/" effective "/"))
+                    (guileobjectdir (string-append gash "/lib/guile/" effective "/site-ccache/"))
+                    (gashmoduledir (string-append out "/share/guile/site/" effective "/"))
+                    (gashobjectdir (string-append out "/lib/guile/" effective "/site-ccache/"))
+                    (bin (string-append out "/bin")))
+               (define (wrap name)
+                 (copy-file "command.in" name)
+                 (chmod name #o555)
+                 (substitute* name
+                   (("@GUILE@") guile)
+                   (("@guilemoduledir@") guilemoduledir)
+                   (("@guileobjectdir") guileobjectdir)
+                   (("@gashmoduledir@") gashmoduledir)
+                   (("@gashobjectdir") gashobjectdir)
+                   (("@command@") name))
+                 (install-file name bin))
+               (mkdir-p bin)
+               (with-directory-excursion "bin"
+                 (for-each wrap '("awk"
+                                  "basename"
+                                  "cat"
+                                  "chmod"
+                                  "cmp"
+                                  "compress"
+                                  "cp"
+                                  "cut"
+                                  "diff"
+                                  "dirname"
+                                  "expr"
+                                  "false"
+                                  "find"
+                                  "grep"
+                                  "gzip"
+                                  "head"
+                                  "ln"
+                                  "ls"
+                                  "mkdir"
+                                  "mv"
+                                  "pwd"
+                                  "reboot"
+                                  "rm"
+                                  "rmdir"
+                                  "sed"
+                                  "sleep"
+                                  "sort"
+                                  "tar"
+                                  "test"
+                                  "touch"
+                                  "tr"
+                                  "true"
+                                  "uname"
+                                  "uniq"
+                                  "wc"
+                                  "which")))
+               (with-directory-excursion bin
+                 (copy-file "grep" "fgrep")
+                 (copy-file "grep" "egrep")
+                 (copy-file "test" "["))
+               #t))))))))
+
+(define (%boot-gash-inputs)
+  `(("bash" , gash-boot)                ; gnu-build-system wants "bash"
+    ("coreutils" , gash-core-utils-boot)
+    ("guile" ,%bootstrap-guile)
+    ("guile+guild" ,%bootstrap-guile+guild)))
+
 (define mes-boot
   (package
     (inherit mes)
