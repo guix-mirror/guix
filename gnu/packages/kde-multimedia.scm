@@ -23,9 +23,16 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages mp3)
-  #:use-module (gnu packages qt))
+  #:use-module (gnu packages music)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages video)
+  #:use-module (gnu packages xiph))
 
 (define-public dragon
   (package
@@ -127,3 +134,63 @@ Some of JuK's features include:
 
 This package is part of the KDE multimedia module.")
     (license license:gpl2+)))
+
+(define-public k3b
+  (package
+    (name "k3b")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/k3b-" version ".tar.xz"))
+       (sha256
+        (base32 "08rbiy1hz650srdksr7ciq8dpcz20wczs22613pghrpgm5zsczhr"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("ffmpeg" ,ffmpeg)
+       ("flac" ,flac)
+       ("karchive" ,karchive)
+       ("kcmutils" ,kcmutils)
+       ("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kfilemetadata" ,kfilemetadata)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)
+       ("kjobwidgets" ,kjobwidgets)
+       ("knewstuff" ,knewstuff)
+       ("knotifications" ,knotifications)
+       ("knotifyconfig" ,knotifyconfig)
+       ("kservice" ,kservice)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("lame" ,lame)
+       ("libdvdread" ,libdvdread)
+       ;; TODO: LibFuzzer
+       ("libiconv" ,libiconv)
+       ("libkcddb" ,libkcddb)
+       ("libmad" ,libmad)
+       ("libmpcdec" ,libmpcdec) ;; FIXME: why does cmake not find this?
+       ;;("libmusicbrainz" ,libmusicbrainz) ; wants old version 2
+       ("libsamplerate" ,libsamplerate)
+       ("libsndfile" ,libsndfile)
+       ("libvorbis" ,libvorbis)
+       ("oxygen-icons" ,oxygen-icons) ; default icon set
+       ("qtbase" ,qtbase)
+       ("qtwebkit" ,qtwebkit)
+       ("shared-mime-info" ,shared-mime-info)
+       ("solid" ,solid)
+       ("taglib" ,taglib)))
+    (home-page "https://kde.org/applications/multimedia/org.kde.k3b")
+    (synopsis "Sophisticated CD/DVD burning application")
+    (description "K3b is CD-writing software which intends to be feature-rich
+and provide an easily usable interface.  Features include burning audio CDs
+from .WAV and .MP3 audio files, configuring external programs and configuring
+devices.")
+    (license ;; GPL for programs, FDL for documentation
+     (list license:gpl2+ license:fdl1.2+))))
