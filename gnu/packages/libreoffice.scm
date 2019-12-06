@@ -482,6 +482,17 @@ library primarily intended for language guessing.")
       (sha256 (base32
                "1b1lvqh68rwij1yvmxy02hsmh7i74ma5767mk8mg5nx6chajshhf"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'build 'adjust-for-ICU-65
+                    (lambda _
+                      ;; Fix build with ICU 65 and later.  Taken from this
+                      ;; upstream commit, remove for libfreehand > 0.1.2:
+                      ;; https://gerrit.libreoffice.org/#/c/80224/
+                      (substitute* "src/lib/libfreehand_utils.cpp"
+                        (("U16_NEXT.*" all)
+                         (string-append all ";\n")))
+                      #t)))))
     (native-inputs
      `(("cppunit" ,cppunit)
        ("doxygen" ,doxygen)
