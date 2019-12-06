@@ -5895,14 +5895,14 @@ structured in groups, etc. and hierarchical cluster analysis.")
 (define-public r-factoextra
   (package
     (name "r-factoextra")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "factoextra" version))
        (sha256
         (base32
-         "1l6m8k7qhdw8ndar8nhmym0lfyd1i2iszl1cicjax0vq23ss6xw1"))))
+         "0bpsbcmp6jpa9qk53dhfzghrz98dh0h0n68brl7rjz724yjbvhn8"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-abind" ,r-abind)
