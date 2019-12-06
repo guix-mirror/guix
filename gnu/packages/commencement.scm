@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2018, 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -44,6 +44,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages hurd)
+  #:use-module (gnu packages shells)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages rsync)
@@ -51,6 +52,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system guile)
   #:use-module (guix build-system trivial)
   #:use-module (guix memoization)
   #:use-module (guix utils)
@@ -130,7 +132,95 @@
     (synopsis "Bootstrap Guile plus Guild")
     (description "Bootstrap Guile with added Guild")
     (home-page #f)
-    (license (package-license guile-2.0))))
+    (license (package-license guile-2.0))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "GUILE_LOAD_PATH")
+            (files '("share/guile/site/2.0")))
+           (search-path-specification
+            (variable "GUILE_LOAD_COMPILED_PATH")
+            (files '("lib/guile/2.0/site-ccache")))))))
+
+(define gash-boot
+  (package
+    (inherit gash)
+    (name "gash-boot")
+    (version "0.2.0")
+    (source (bootstrap-origin
+             (origin (inherit (package-source gash))
+                     (modules '((guix build utils)
+                                (srfi srfi-26)))
+                     (snippet
+                      '(begin
+                         ;; Remove Guix'y files that we cannot compile.
+                         (delete-file "guix.scm")
+                         (delete-file-recursively "tests")
+                         #t)))))
+    (build-system guile-build-system)
+    (native-inputs `(("bash" ,(bootstrap-executable "bash" (%current-system)))
+                     ("tar" ,(bootstrap-executable "tar" (%current-system)))
+                     ("xz" ,(bootstrap-executable "xz" (%current-system)))
+                     ("guile-source" ,(bootstrap-origin
+                                       (package-source guile-2.0)))))
+    (inputs `(("guile" ,%bootstrap-guile+guild)))
+    (arguments
+     `(#:implicit-inputs? #f
+       #:guile ,%bootstrap-guile+guild
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-guile-source
+           (lambda _
+             (let ((guile-source (assoc-ref %build-inputs "guile-source"))
+                   (bin (string-append (getcwd) "/zee-bin")))
+               (mkdir-p bin)
+               (with-directory-excursion bin
+                 (invoke "tar" "--strip-components=2"
+
+                         "-xvf" guile-source
+                         (string-append "guile-"
+                                        ,(package-version guile-2.0)
+                                        "/meta/guild.in"))
+                 (copy-file "guild.in" "guild")
+                 (chmod "guild" #o555))
+               #t)))
+         (add-before 'unpack 'set-path
+           (lambda _
+             (let ((bash (assoc-ref %build-inputs "bash"))
+                   (tar (assoc-ref %build-inputs "tar"))
+                   (xz (assoc-ref %build-inputs "xz"))
+                   (bin (string-append (getcwd) "/zee-bin")))
+               (mkdir-p bin)
+               (setenv "PATH" (string-append bin ":" (getenv "PATH")))
+               (copy-file bash (string-append bin "/bash"))
+               (copy-file bash (string-append bin "/sh"))
+               (copy-file tar (string-append bin "/tar"))
+               (copy-file xz (string-append bin "/xz"))
+               #t)))
+         (add-after 'build 'build-scripts
+           (lambda _
+             (let* ((guile (assoc-ref %build-inputs "guile"))
+                    (guile (string-append guile "/bin/guile"))
+                    (out (assoc-ref %outputs "out"))
+                    (effective "2.0")
+                    (moddir (string-append out "/share/guile/site/" effective "/"))
+                    (godir (string-append out "/lib/guile/" effective "/site-ccache/")))
+               (copy-file "scripts/gash.in" "scripts/gash")
+               (chmod "scripts/gash" #o555)
+               (substitute* "scripts/gash"
+                 (("@GUILE@") guile)
+                 (("@MODDIR@") moddir)
+                 (("@GODIR") godir))
+               #t)))
+         (add-after 'install 'install-scripts
+           (lambda _
+             (let* ((out (assoc-ref %outputs "out"))
+                    (bin (string-append out "/bin")))
+               (install-file "scripts/gash" bin)
+               (copy-file "scripts/gash" "scripts/sh")
+               (install-file "scripts/sh" bin)
+               (copy-file "scripts/gash" "scripts/bash")
+               (install-file "scripts/bash" bin)
+               #t))))))))
 
 (define mes-boot
   (package
