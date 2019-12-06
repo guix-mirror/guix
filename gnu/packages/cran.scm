@@ -4683,6 +4683,33 @@ ordered factor data types.")
 exponentiation.")
     (license license:gpl2)))
 
+(define-public r-egg
+  (package
+    (name "r-egg")
+    (version "0.4.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "egg" version))
+       (sha256
+        (base32
+         "1fy7srpiavfn8kyrr1m84an7acgwi6ydzrg71m3b0vk7y9ybmj0m"))))
+    (properties `((upstream-name . "egg")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-gtable" ,r-gtable)))
+    (home-page "https://cran.r-project.org/web/packages/egg")
+    (synopsis "Extensions for ggplot2")
+    (description
+     "This package provides miscellaneous functions to help customize ggplot2
+objects.  High-level functions are provided to post-process ggplot2 layouts
+and allow alignment between plot panels, as well as setting panel sizes to
+fixed values.  Other functions include a custom @code{geom}, and helper
+functions to enforce symmetric scales or add tags to facetted plots.")
+    (license license:gpl3)))
+
 (define-public r-heatmaply
   (package
     (name "r-heatmaply")
