@@ -687,3 +687,31 @@ Python, PHP, and Perl.")
     (synopsis "Runtime library for kdegames")
     (description "Runtime library for kdegames")
     (license (list license:gpl2+  license:fdl1.2+))))
+
+(define-public zeroconf-ioslave
+  (package
+    (name "zeroconf-ioslave")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/zeroconf-ioslave-" version ".tar.xz"))
+       (sha256
+        (base32 "1vbi4kpyrk530q2dj8ql2i0gxjybdbmkqpl8vkhrihl7r7f0xc5p"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("kdbusaddons" ,kdbusaddons)
+       ("kdnssd" ,kdnssd)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("qtbase" ,qtbase)))
+    (home-page "https://kde.org/applications/internet/org.kde.zeroconf_ioslave")
+    (synopsis "DNS-SD Service Discovery Monitor")
+    (description "Adds an entry to Dolphin's Network page to show local
+services such as printers which advertise themselves with DNSSD (called Avahi
+or Bonjour by other projects).")
+    (license ;; GPL for programs, LGPL for libraries, FDL for documentation
+     (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
