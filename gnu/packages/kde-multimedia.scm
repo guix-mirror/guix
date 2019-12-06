@@ -24,6 +24,7 @@
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages kde-frameworks)
+  #:use-module (gnu packages mp3)
   #:use-module (gnu packages qt))
 
 (define-public dragon
@@ -71,3 +72,58 @@ files.
 This package is part of the KDE multimedia module.")
     (license ;; GPL for programs, FDL for documentation
      (list license:gpl2+ license:fdl1.2+))))
+
+(define-public juk
+  (package
+    (name "juk")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/juk-" version ".tar.xz"))
+       (sha256
+        (base32 "0c1hrd1n4ah7qm8xr7bfswgbcmbvnnhai4bfawx6v6ab3frl7wvf"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("kcoreaddons" ,kcoreaddons)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdoctools" ,kdoctools)
+       ("kglobalaccel" ,kglobalaccel)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kjobwidgets" ,kjobwidgets)
+       ("kio" ,kio)
+       ("knotifications" ,knotifications)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwallet" ,kwallet)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kxmlgui" ,kxmlgui)
+       ("oxygen-icons" ,oxygen-icons) ; default icon set
+       ("phonon" ,phonon)
+       ("phonon-backend-gstreamer" ,phonon-backend-gstreamer)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("taglib" ,taglib)))
+    (home-page "https://kde.org/applications/multimedia/org.kde.juk")
+    (synopsis "Music jukebox / music player")
+    (description "JuK is a powerful music player capable of managing a large
+music collection.
+
+Some of JuK's features include:
+@itemize
+@item Music collection, playlists, and smart playlists
+@item Tag editing support, including the ability to edit multiple files at once
+@item Tag-based music file organization and renaming
+@item CD burning support using k3b
+@item Album art using Google Image Search
+@end itemize
+
+This package is part of the KDE multimedia module.")
+    (license license:gpl2+)))
