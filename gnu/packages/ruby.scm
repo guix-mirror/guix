@@ -7456,13 +7456,13 @@ programs running in the background, in Ruby.")
 (define-public ruby-public-suffix
   (package
     (name "ruby-public-suffix")
-    (version "3.0.3")
+    (version "4.0.1")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "public_suffix" version))
               (sha256
                (base32
-                "08q64b5br692dd3v0a9wq9q5dvycc6kmiqmjbdxkxbfizggsvx6l"))))
+                "0xnfv2j2bqgdpg2yq9i2rxby0w2sc9h5iyjkpaas2xknwrgmhdb0"))))
     (build-system ruby-build-system)
     (arguments
      '(#:phases
