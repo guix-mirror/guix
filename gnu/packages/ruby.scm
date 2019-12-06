@@ -372,13 +372,13 @@ hosts by wrapping the @file{rsync} binary.")
 (define-public ruby-i18n
   (package
     (name "ruby-i18n")
-    (version "1.1.0")
+    (version "1.7.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "i18n" version))
               (sha256
                (base32
-                "0ppvmla21hssvrfm8g1n2fnb4lxn4yhy9qmmba0imanflgldrjmr"))))
+                "0hmypvx9iyc0b4hski7aic2xzm09cg1c7q1qlpnk3k8s5acxzyhl"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; no tests
@@ -390,7 +390,7 @@ interpolation of values to translations, pluralization, customizable
 transliteration to ASCII, flexible defaults, bulk lookup, lambdas as
 translation data, custom key/scope separator, custom exception handlers, and
 an extensible architecture with a swappable backend.")
-    (home-page "https://github.com/svenfuchs/i18n")
+    (home-page "https://github.com/ruby-i18n/i18n")
     (license license:expat)))
 
 (define-public ruby-iruby
