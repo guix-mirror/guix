@@ -79,6 +79,9 @@
             file-append-base
             file-append-suffix
 
+            raw-derivation-file
+            raw-derivation-file?
+
             load-path-expression
             gexp-modules
 
@@ -264,6 +267,29 @@ The expander specifies how an object is converted to its sexp representation."
   ;; compiler.
   (with-monad %store-monad
     (return drv)))
+
+;; Expand to a raw ".drv" file for the lowerable object it wraps.  In other
+;; words, this gives the raw ".drv" file instead of its build result.
+(define-record-type <raw-derivation-file>
+  (raw-derivation-file obj)
+  raw-derivation-file?
+  (obj  raw-derivation-file-object))              ;lowerable object
+
+(define-gexp-compiler raw-derivation-file-compiler <raw-derivation-file>
+  compiler => (lambda (obj system target)
+                (mlet %store-monad ((obj (lower-object
+                                          (raw-derivation-file-object obj)
+                                          system #:target target)))
+                  ;; Returning the .drv file name instead of the <derivation>
+                  ;; record ensures that 'lower-gexp' will classify it as a
+                  ;; "source" and not as an "input".
+                  (return (if (derivation? obj)
+                              (derivation-file-name obj)
+                              obj))))
+  expander => (lambda (obj lowered output)
+                (if (derivation? lowered)
+                    (derivation-file-name lowered)
+                    lowered)))
 
 
 ;;;

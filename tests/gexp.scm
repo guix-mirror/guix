@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -879,6 +879,17 @@
                    (eq? (derivation-input-derivation (lowered-gexp-guile lexp))
                         (%guile-for-build)))))))
 
+(test-assertm "lower-gexp, raw-derivation-file"
+  (mlet* %store-monad ((thing -> (program-file "prog" #~(display "hi!")))
+                       (exp -> #~(list #$(raw-derivation-file thing)))
+                       (drv  (lower-object thing))
+                       (lexp (lower-gexp exp #:effective-version "2.0")))
+    (return (and (equal? `(list ,(derivation-file-name drv))
+                         (lowered-gexp-sexp lexp))
+                 (equal? (list (derivation-file-name drv))
+                         (lowered-gexp-sources lexp))
+                 (null? (lowered-gexp-inputs lexp))))))
+
 (test-eq "lower-gexp, non-self-quoting input"
   +
   (guard (c ((gexp-input-error? c)
@@ -1156,6 +1167,24 @@
           (return (and (equal? refs (list text))
                        (equal? `(list "foo" ,text)
                                (call-with-input-file out read)))))))))
+
+(test-assertm "raw-derivation-file"
+  (let* ((exp #~(let ((drv #$(raw-derivation-file coreutils)))
+                  (when (file-exists? drv)
+                    (symlink drv #$output)))))
+    (mlet* %store-monad ((dep    (lower-object coreutils))
+                         (drv    (gexp->derivation "drv-ref" exp))
+                         (out -> (derivation->output-path drv)))
+      (mbegin %store-monad
+        (built-derivations (list drv))
+        (mlet %store-monad ((refs (references* out)))
+          (return (and (member (derivation-file-name dep)
+                               (derivation-sources drv))
+                       (not (member (derivation-file-name dep)
+                                    (map derivation-input-path
+                                         (derivation-inputs drv))))
+                       (equal? (readlink out) (derivation-file-name dep))
+                       (equal? refs (list (derivation-file-name dep))))))))))
 
 (test-assert "text-file*"
   (run-with-store %store
