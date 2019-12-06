@@ -1226,6 +1226,8 @@ hit when running single-threaded.")
           (base32
             "1fwwfq9v3sqmpzpscymswxn76xhxnysa24pfim1mcpxhvjcl89id"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (propagated-inputs
       `(("libice" ,libice))) ; SMlib.h includes ICElib.h
     (inputs
