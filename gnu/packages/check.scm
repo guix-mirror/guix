@@ -2298,6 +2298,12 @@ portable to just about any platform.")
                       (let ((out (assoc-ref outputs "out")))
                         (setenv "CC" "gcc")
                         (setenv "PREFIX" out)
+
+                        ;; XXX: Without this flag, the CLOCK_REALTIME test hangs
+                        ;; indefinitely.  See README.packagers for more information.
+                        ;; Try removing this for future versions of libfaketime.
+                        (setenv "FAKETIME_COMPILE_CFLAGS" "-DFORCE_MONOTONIC_FIX")
+
                         #t)))
                   (add-before 'check 'pre-check
                     (lambda _
