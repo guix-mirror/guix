@@ -560,7 +560,7 @@ outcomes of a code example.")
 (define-public ruby-rspec-its
   (package
     (name "ruby-rspec-its")
-    (version "1.2.0")
+    (version "1.3.0")
     (source
      (origin
        (method git-fetch)
@@ -570,17 +570,7 @@ outcomes of a code example.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "190rz7v4q4wk80fzhr5hknvxx4vb2pywmqr8wc41w2blj9ylzi0f"))
-       (patches
-        (list
-         (origin (method url-fetch)
-                 (uri (string-append
-                       "https://github.com/rspec/rspec-its/commit/"
-                       "bfaab439c7c879f5ef25552f41827891f6308373.patch"))
-                 (file-name "ruby-rspec-its-fix-specs-for-ruby-2.4.patch")
-                 (sha256
-                  (base32
-                   "0lnik0kvrpgkakvdb2fmzg22pdlraf6kiidr9sv6rnfyviiqwxgh")))))))
+         "02mlsc9d4d1cjj5vahi8v3q8hyn9fyiv8nnlidhgfh186qp20g1p"))))
     (build-system ruby-build-system)
     (arguments
      `(#:test-target "spec"
@@ -592,13 +582,19 @@ outcomes of a code example.")
                (("rspec rspec-core rspec-expectations rspec-mocks rspec-support")
                 ""))
              #t))
+         (add-before 'build 'update-ffi-in-gemfile
+           (lambda _
+             (substitute* "Gemfile"
+               (("  gem 'ffi', '~> 1.9.25'") "  gem 'ffi', '~> 1.10.0'"))
+             #t))
          (add-before 'build 'remove-unnecessary-dependency-versions-from-gemfile
            (lambda _
              (substitute* "rspec-its.gemspec"
                (("rake.*") "rake'\n")
-               (("cucumber.*") "cucumber'\n")
+               (("spec.add_development_dependency 'cucumber'.*")
+                "spec.add_development_dependency 'cucumber'\n")
                (("bundler.*") "bundler'\n")
-               (("aruba.*") "aruba'\n"))
+               (("\"aruba.*") "'aruba'\n"))
              #t)))))
     (propagated-inputs
      `(("ruby-rspec-core" ,ruby-rspec-core)
@@ -606,6 +602,7 @@ outcomes of a code example.")
     (native-inputs
      `(("bundler" ,bundler)
        ("ruby-cucumber" ,ruby-cucumber)
+       ("ruby-ffi" ,ruby-ffi)
        ("ruby-aruba" ,ruby-aruba)))
     (synopsis "RSpec extension that provides the @code{its} method")
     (description
