@@ -12064,6 +12064,10 @@ match and total match information in the mode-line in various search modes.")
         (base32
          "0vb338bhjpsnrf60qgxny4z5rjrnifahnrv9axd4shay89d894zq"))))
     (build-system emacs-build-system)
+    ;; Byte compilation of the autoload file fails.
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'enable-autoloads-compilation))))
     (home-page "https://elpa.gnu.org/packages/seq.html")
     (synopsis
      "Forward @code{cl-generic} compatibility for Emacs before version 25")
