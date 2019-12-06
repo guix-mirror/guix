@@ -2851,6 +2851,7 @@ and RDP protocols.")
                     "mirror://gnome/sources/" name "/"
                     (version-major+minor version) "/"
                     name "-" version ".tar.xz"))
+              (patches (search-patches "dconf-meson-0.52.patch"))
               (sha256
                (base32
                 "1azz4hb9z76yxn34yrrsiib3iqz5z4vpwn5q7cncp55w365ygg38"))))

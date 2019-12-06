@@ -1,0 +1,19 @@
+Fix build failure with Meson 0.52.
+
+Taken from upstream:
+https://gitlab.gnome.org/GNOME/dconf/commit/7ad890fb7a2ec90a777a756a1fa20a615ec7245e
+https://gitlab.gnome.org/GNOME/dconf/merge_requests/54
+
+diff --git a/client/meson.build b/client/meson.build
+index f3b7122cb05bfa7bb481c487e3cd052aa1ad58e5..de6387e2cac2aba12b83f2614c277bada434fd16 100644
+--- a/client/meson.build
++++ b/client/meson.build
+@@ -28,7 +28,7 @@ libdconf_client = static_library(
+ 
+ libdconf_client_dep = declare_dependency(
+   dependencies: gio_dep,
+-  link_whole: libdconf_client,
++  link_with: libdconf_client,
+ )
+ 
+ libdconf = shared_library(
