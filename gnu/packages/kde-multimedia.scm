@@ -194,3 +194,34 @@ from .WAV and .MP3 audio files, configuring external programs and configuring
 devices.")
     (license ;; GPL for programs, FDL for documentation
      (list license:gpl2+ license:fdl1.2+))))
+
+(define-public libkcddb
+  (package
+    (name "libkcddb")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/libkcddb-" version ".tar.xz"))
+       (sha256
+        (base32 "1rla9sfzpdfiki0p265ga6d1axqpq37825maaw85hm84mg7hkzjn"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kcodecs" ,kcodecs)
+       ("kconfig" ,kconfig)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("libmusicbrainz" ,libmusicbrainz)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:tests? #f)) ; Most tests require network
+    (home-page "https://cgit.kde.org/libkcddb.git")
+    (synopsis "CDDB library for KDE Platform (runtime)")
+    (description "A library for retrieving and sending cddb information.")
+    (license ;; GPL for programs, LGPL for libraries, FDL for documentation
+     (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
