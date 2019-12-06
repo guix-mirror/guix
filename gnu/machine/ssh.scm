@@ -103,6 +103,9 @@ one from the configuration's parameters if one was not provided."
               (port (machine-ssh-configuration-port config))
               (identity (machine-ssh-configuration-identity config))
               (host-key (machine-ssh-configuration-host-key config)))
+          (unless host-key
+            (warning (G_ "<machine-ssh-configuration> without a 'host-key' \
+is deprecated~%")))
           (open-ssh-session host-name
                             #:user user
                             #:port port
