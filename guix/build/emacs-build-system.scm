@@ -239,15 +239,14 @@ second hyphen.  This corresponds to 'name-version' as used in ELPA packages."
     (add-after 'unpack 'add-source-to-load-path add-source-to-load-path)
     (delete 'bootstrap)
     (delete 'configure)
-    ;; Move the build phase after install: the .el files are byte compiled
-    ;; directly in the store.
     (delete 'build)
     (replace 'check check)
     (replace 'install install)
-    (add-after 'install 'build build)
     (add-after 'install 'make-autoloads make-autoloads)
     (add-after 'make-autoloads 'patch-el-files patch-el-files)
-    (add-after 'make-autoloads 'move-doc move-doc)))
+    ;; The .el files are byte compiled directly in the store.
+    (add-after 'patch-el-files 'build build)
+    (add-after 'build 'move-doc move-doc)))
 
 (define* (emacs-build #:key inputs (phases %standard-phases)
                       #:allow-other-keys #:rest args)
