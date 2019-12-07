@@ -8284,10 +8284,9 @@ indentation will probably be an issue and hence this gem.")
 (define-public ruby-safe-yaml
   (package
     (name "ruby-safe-yaml")
-    (version "1.0.4")
+    (version "1.0.5")
     (source
      (origin
-       ;; TODO Fetch from the git repository so a patch can be applied
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/dtao/safe_yaml.git")
@@ -8295,9 +8294,7 @@ indentation will probably be an issue and hence this gem.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1wnln8xdy8g6kwdj4amm8773xwffqxpf2sxslk6jjh2wxsy1lrig"))
-       (patches
-        (search-patches "ruby-safe-yaml-add-require-time.patch"))))
+         "1a0wh7y3va2m7bjza95na2snw0vrdh9syz40mpjvjphbc4ph3pzg"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-rspec" ,ruby-rspec)
