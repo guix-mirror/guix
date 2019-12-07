@@ -6338,14 +6338,14 @@ requests.  This is useful when testing software.")
 (define-public ruby-unicode-display-width
   (package
     (name "ruby-unicode-display-width")
-    (version "1.4.1")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "unicode-display_width" version))
        (sha256
         (base32
-         "0bq528fibi8s0jmxz0xzlgzggdq0x4fx46wfqz49478pv8gb2diq"))))
+         "08kfiniak1pvg3gn5k6snpigzvhvhyg7slmm0s2qx5zkj62c1z2w"))))
     (build-system ruby-build-system)
     (arguments
      '(;; Test data not included.
