@@ -46,7 +46,7 @@
     (version "3.16")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://brick.kernel.dk/snaps/"
+              (uri (string-append "https://brick.kernel.dk/snaps/"
                                   "fio-" version ".tar.bz2"))
               (sha256
                (base32
