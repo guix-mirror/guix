@@ -187,8 +187,8 @@
      (list (search-path-specification
             (variable "EMACSLOADPATH")
             ;; The versioned entry is for the Emacs' builtin libraries.
-            (files (list (string-append "share/emacs/" version "/lisp")
-                         "share/emacs/site-lisp")))
+            (files (list "share/emacs/site-lisp"
+                         (string-append "share/emacs/" version "/lisp"))))
            (search-path-specification
             (variable "INFOPATH")
             (files '("share/info")))))
