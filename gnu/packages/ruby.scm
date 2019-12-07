@@ -8380,13 +8380,13 @@ methods for your source as @code{Forwardable::Extended}.")
 (define-public ruby-pathutil
   (package
     (name "ruby-pathutil")
-    (version "0.16.1")
+    (version "0.16.2")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "pathutil" version))
               (sha256
                (base32
-                "0wc18ms1rzi44lpjychyw2a96jcmgxqdvy2949r4vvb5f4p0lgvz"))))
+                "12fm93ljw9fbxmv2krki5k5wkvr7560qy8p4spvb9jiiaqv78fz4"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("ruby-forwardable-extended" ,ruby-forwardable-extended)))
