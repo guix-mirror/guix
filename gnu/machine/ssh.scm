@@ -74,7 +74,6 @@
 (define-record-type* <machine-ssh-configuration> machine-ssh-configuration
   make-machine-ssh-configuration
   machine-ssh-configuration?
-  this-machine-ssh-configuration
   (host-name      machine-ssh-configuration-host-name)     ; string
   (system         machine-ssh-configuration-system)        ; string
   (build-locally? machine-ssh-configuration-build-locally? ; boolean

@@ -33,7 +33,6 @@
 
             machine
             machine?
-            this-machine
 
             machine-operating-system
             machine-environment
@@ -89,10 +88,8 @@
 ;;; Declarations for machines in a deployment.
 ;;;
 
-(define-record-type* <machine> machine
-  make-machine
+(define-record-type* <machine> machine make-machine
   machine?
-  this-machine
   (operating-system %machine-operating-system); <operating-system>
   (environment      machine-environment)      ; symbol
   (configuration    machine-configuration     ; configuration object
