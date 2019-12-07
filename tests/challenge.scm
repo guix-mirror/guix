@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,21 +18,31 @@
 
 (define-module (test-challenge)
   #:use-module (guix tests)
+  #:use-module (guix tests http)
   #:use-module (gcrypt hash)
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (guix derivations)
+  #:use-module (guix serialization)
+  #:use-module (guix packages)
   #:use-module (guix gexp)
+  #:use-module (guix base32)
   #:use-module (guix scripts challenge)
   #:use-module (guix scripts substitute)
+  #:use-module (gnu packages bootstrap)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64)
   #:use-module (rnrs bytevectors)
+  #:use-module (rnrs io ports)
   #:use-module (ice-9 match))
 
 (define query-path-hash*
   (store-lift query-path-hash))
+
+(define (query-path-size item)
+  (mlet %store-monad ((info (query-path-info* item)))
+    (return (path-info-nar-size info))))
 
 (define* (call-with-derivation-narinfo* drv thunk hash)
   (lambda (store)
@@ -138,7 +148,62 @@
                          (bytevector=? (narinfo-hash->sha256
                                         (narinfo-hash narinfo))
                                        hash))))))))))))
+(define (make-narinfo item size hash)
+  (format #f "StorePath: ~a
+Compression: none
+URL: nar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo
+NarSize: ~d
+NarHash: sha256:~a
+References: ~%" item size (bytevector->nix-base32-string hash)))
 
+(test-assertm "differing-files"
+  ;; Pretend we have two different results for the same store item, ITEM,
+  ;; with "/bin/guile" differing between the two nars, and make sure
+  ;; 'differing-files' returns it.
+  (mlet* %store-monad
+      ((drv1 (package->derivation %bootstrap-guile))
+       (drv2 (gexp->derivation
+              "broken-guile"
+              (with-imported-modules '((guix build utils))
+                #~(begin
+                    (use-modules (guix build utils))
+                    (copy-recursively #$drv1 #$output)
+                    (chmod (string-append #$output "/bin/guile")
+                           #o755)
+                    (call-with-output-file (string-append
+                                            #$output
+                                            "/bin/guile")
+                      (lambda (port)
+                        (display "corrupt!" port)))))))
+       (out1 -> (derivation->output-path drv1))
+       (out2 -> (derivation->output-path drv2))
+       (item -> (string-append (%store-prefix) "/"
+                               (make-string 32 #\a) "-foo")))
+    (mbegin %store-monad
+      (built-derivations (list drv1 drv2))
+      (mlet* %store-monad ((size1 (query-path-size out1))
+                           (size2 (query-path-size out2))
+                           (hash1 (query-path-hash* out1))
+                           (hash2 (query-path-hash* out2))
+                           (nar1 -> (call-with-bytevector-output-port
+                                      (lambda (port)
+                                        (write-file out1 port))))
+                           (nar2 -> (call-with-bytevector-output-port
+                                      (lambda (port)
+                                        (write-file out2 port)))))
+        (parameterize ((%http-server-port 9000))
+          (with-http-server `((200 ,(make-narinfo item size1 hash1))
+                              (200 ,nar1))
+            (parameterize ((%http-server-port 9001))
+              (with-http-server `((200 ,(make-narinfo item size2 hash2))
+                                  (200 ,nar2))
+                (mlet* %store-monad ((urls -> (list (%local-url 9000)
+                                                    (%local-url 9001)))
+                                     (reports (compare-contents (list item)
+                                                                urls)))
+                  (pk 'report reports)
+                  (return (equal? (differing-files (car reports))
+                                  '("/bin/guile"))))))))))))
 
 (test-end)
 
