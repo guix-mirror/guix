@@ -10366,8 +10366,20 @@ results, the inclusion of random numbers, and directory listings sorted
 by inode number.  See @uref{https://reproducible-builds.org/docs/}, for
 more information.
 
-To find out what is wrong with this Git binary, we can do something along
-these lines (@pxref{Invoking guix archive}):
+To find out what is wrong with this Git binary, the easiest approach is
+to run:
+
+@example
+guix challenge git \
+  --diff=diffoscope \
+  --substitute-urls="https://@value{SUBSTITUTE-SERVER} https://guix.example.org"
+@end example
+
+This automatically invokes @command{diffoscope}, which displays detailed
+information about files that differ.
+
+Alternately, we can do something along these lines (@pxref{Invoking guix
+archive}):
 
 @example
 $ wget -q -O - https://@value{SUBSTITUTE-SERVER}/nar/@dots{}-git-2.5.0 \
@@ -10429,6 +10441,14 @@ Upon mismatches, show differences according to @var{mode}, one of:
 @table @asis
 @item @code{simple} (the default)
 Show the list of files that differ.
+
+@item @code{diffoscope}
+@itemx @var{command}
+Invoke @uref{https://diffoscope.org/, Diffoscope}, passing it
+two directories whose contents do not match.
+
+When @var{command} is an absolute file name, run @var{command} instead
+of Diffoscope.
 
 @item @code{none}
 Do not show further details about the differences.

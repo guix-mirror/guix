@@ -29,6 +29,7 @@
   #:use-module (guix base32)
   #:use-module (guix scripts challenge)
   #:use-module (guix scripts substitute)
+  #:use-module ((guix build utils) #:select (find-files))
   #:use-module (gnu packages bootstrap)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -156,10 +157,12 @@ NarSize: ~d
 NarHash: sha256:~a
 References: ~%" item size (bytevector->nix-base32-string hash)))
 
-(test-assertm "differing-files"
-  ;; Pretend we have two different results for the same store item, ITEM,
-  ;; with "/bin/guile" differing between the two nars, and make sure
-  ;; 'differing-files' returns it.
+(define (call-mismatch-test proc)
+  "Pass PROC a <comparison-report> for a mismatch and return its return
+value."
+
+  ;; Pretend we have two different results for the same store item, ITEM, with
+  ;; "/bin/guile" differing between the two nars.
   (mlet* %store-monad
       ((drv1 (package->derivation %bootstrap-guile))
        (drv2 (gexp->derivation
@@ -178,7 +181,10 @@ References: ~%" item size (bytevector->nix-base32-string hash)))
        (out1 -> (derivation->output-path drv1))
        (out2 -> (derivation->output-path drv2))
        (item -> (string-append (%store-prefix) "/"
-                               (make-string 32 #\a) "-foo")))
+                               (bytevector->nix-base32-string
+                                (random-bytevector 32))
+                               "-foo"
+                               (number->string (current-time) 16))))
     (mbegin %store-monad
       (built-derivations (list drv1 drv2))
       (mlet* %store-monad ((size1 (query-path-size out1))
@@ -186,11 +192,11 @@ References: ~%" item size (bytevector->nix-base32-string hash)))
                            (hash1 (query-path-hash* out1))
                            (hash2 (query-path-hash* out2))
                            (nar1 -> (call-with-bytevector-output-port
-                                      (lambda (port)
-                                        (write-file out1 port))))
+                                     (lambda (port)
+                                       (write-file out1 port))))
                            (nar2 -> (call-with-bytevector-output-port
-                                      (lambda (port)
-                                        (write-file out2 port)))))
+                                     (lambda (port)
+                                       (write-file out2 port)))))
         (parameterize ((%http-server-port 9000))
           (with-http-server `((200 ,(make-narinfo item size1 hash1))
                               (200 ,nar1))
@@ -202,8 +208,31 @@ References: ~%" item size (bytevector->nix-base32-string hash)))
                                      (reports (compare-contents (list item)
                                                                 urls)))
                   (pk 'report reports)
-                  (return (equal? (differing-files (car reports))
-                                  '("/bin/guile"))))))))))))
+                  (return (proc (car reports))))))))))))
+
+(test-assertm "differing-files"
+  (call-mismatch-test
+   (lambda (report)
+     (equal? (differing-files report) '("/bin/guile")))))
+
+(test-assertm "call-with-mismatches"
+  (call-mismatch-test
+   (lambda (report)
+     (call-with-mismatches
+      report
+      (lambda (directory1 directory2)
+        (let* ((files1 (find-files directory1))
+               (files2 (find-files directory2))
+               (files  (map (cute string-drop <> (string-length directory1))
+                            files1)))
+          (and (equal? files
+                       (map (cute string-drop <> (string-length directory2))
+                            files2))
+               (equal? (remove (lambda (file)
+                                 (file=? (string-append directory1 "/" file)
+                                         (string-append directory2 "/" file)))
+                               files)
+                       '("/bin/guile")))))))))
 
 (test-end)
 

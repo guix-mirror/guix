@@ -56,6 +56,7 @@
             comparison-report-inconclusive?
 
             differing-files
+            call-with-mismatches
 
             guix-challenge))
 
@@ -248,9 +249,9 @@ taken since we do not import the archives."
                     item
                     lstat))
 
-(define (narinfo-contents narinfo)
-  "Fetch the nar described by NARINFO and return a list representing the file
-it contains."
+(define (call-with-nar narinfo proc)
+  "Call PROC with an input port from which it can read the nar pointed to by
+NARINFO."
   (let*-values (((uri compression size)
                  (narinfo-best-uri narinfo))
                 ((port response)
@@ -262,11 +263,16 @@ it contains."
     (define result
       (call-with-decompressed-port (string->symbol compression)
           (progress-report-port reporter port)
-        archive-contents))
+        proc))
 
     (close-port port)
     (erase-current-line (current-output-port))
     result))
+
+(define (narinfo-contents narinfo)
+  "Fetch the nar described by NARINFO and return a list representing the file
+it contains."
+  (call-with-nar narinfo archive-contents))
 
 (define (differing-files comparison-report)
   "Return a list of files that differ among the nars and possibly the local
@@ -299,6 +305,58 @@ specified in COMPARISON-REPORT."
                     "  differing files:~%"
                     (length files)))
      (format #t     "~{    ~a~%~}" files))))
+
+(define (call-with-mismatches comparison-report proc)
+  "Call PROC with two directories containing the mismatching store items."
+  (define local-hash
+    (comparison-report-local-sha256 comparison-report))
+
+  (define narinfos
+    (comparison-report-narinfos comparison-report))
+
+  (call-with-temporary-directory
+   (lambda (directory1)
+     (call-with-temporary-directory
+      (lambda (directory2)
+        (define narinfo1
+          (if local-hash
+              (find (lambda (narinfo)
+                      (not (string=? (narinfo-hash narinfo)
+                                     local-hash)))
+                    narinfos)
+              (first (comparison-report-narinfos comparison-report))))
+
+        (define narinfo2
+          (and (not local-hash)
+               (find (lambda (narinfo)
+                       (not (eq? narinfo narinfo1)))
+                     narinfos)))
+
+        (rmdir directory1)
+        (call-with-nar narinfo1 (cut restore-file <> directory1))
+        (when narinfo2
+          (rmdir directory2)
+          (call-with-nar narinfo2 (cut restore-file <> directory2)))
+        (proc directory1
+              (if local-hash
+                  (comparison-report-item comparison-report)
+                  directory2)))))))
+
+(define %diffoscope-command
+  ;; Default external diff command.  Pass "--exclude-directory-metadata" so
+  ;; that the mtime/ctime differences are ignored.
+  '("diffoscope" "--exclude-directory-metadata=yes"))
+
+(define* (report-differing-files/external comparison-report
+                                          #:optional
+                                          (command %diffoscope-command))
+  "Run COMMAND to show the file-level differences for the mismatches in
+COMPARISON-REPORT."
+  (call-with-mismatches comparison-report
+                        (lambda (directory1 directory2)
+                          (apply system*
+                                 (append command
+                                         (list directory1 directory2))))))
 
 (define* (summarize-report comparison-report
                            #:key
@@ -386,6 +444,10 @@ Challenge the substitutes for PACKAGE... provided by one or more servers.\n"))
                      (match arg
                        ("none" (const #t))
                        ("simple" report-differing-files)
+                       ("diffoscope" report-differing-files/external)
+                       ((and (? (cut string-prefix? "/" <>)) command)
+                        (cute report-differing-files/external <>
+                              (string-tokenize command)))
                        (_ (leave (G_ "~a: unknown diff mode~%") arg))))
 
                    (apply values
