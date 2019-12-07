@@ -176,9 +176,11 @@
       (version (string-append version "-" revision "." (string-take commit 7)))
       (source (origin
                 (method url-fetch)
-                (uri (string-append "https://gitlab.com/janneke/tinycc"
-                                    "/-/archive/" commit
-                                    "/tinycc-" commit ".tar.gz"))
+                (uri (list (string-append "mirror://gnu/guix/mirror"
+                                          "/tinycc-" commit ".tar.gz")
+                           (string-append "https://gitlab.com/janneke/tinycc"
+                                          "/-/archive/" commit
+                                          "/tinycc-" commit ".tar.gz")))
                 (sha256
                  (base32
                   "1hmzn1pq0x22ppd80hyrn5qzqq94mxd0ychzj6vrr2vnj2frjv5b"))))
