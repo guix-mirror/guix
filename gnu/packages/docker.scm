@@ -617,7 +617,15 @@ provisioning etc.")
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (out-bin (string-append out "/bin")))
+                    (out-bin (string-append out "/bin"))
+                    (etc (string-append out "/etc")))
+               (with-directory-excursion "src/github.com/docker/cli/contrib/completion"
+                 (install-file "bash/docker"
+                               (string-append etc "/bash_completion.d"))
+                 (install-file "fish/docker.fish"
+                               (string-append etc "/fish/completions"))
+                 (install-file "zsh/_docker"
+                               (string-append etc "/zsh/site-functions")))
                (chdir "build")
                (install-file "docker" out-bin)
                #t))))))
