@@ -87,6 +87,75 @@ This package is part of the KDE multimedia module.")
     (license ;; GPL for programs, FDL for documentation
      (list license:gpl2+ license:fdl1.2+))))
 
+(define-public elisa
+  (package
+    (name "elisa")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde//stable/elisa/0.4.2"
+                           "/elisa-" version ".tar.xz"))
+       (sha256
+        (base32 "0v9af6l89pgz1g7naf7gwcnq8znlicyh7z985kxalbdmv359c97w"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)
+       ("dbus" ,dbus)
+       ("kdoctools" ,kdoctools)
+       ("xorg-server" , xorg-server-for-tests)))
+    (inputs
+     `(("kconfig" ,kconfig)
+       ("baloo" ,baloo)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kcmutils" ,kcmutils)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdeclarative" ,kdeclarative)
+       ("kfilemetadata" ,kfilemetadata)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("kirigami" ,kirigami)
+       ("kmediaplayer" ,kmediaplayer)
+       ("kparts" ,kparts)
+       ("kpackage" ,kpackage)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("oxygen-icons" ,oxygen-icons) ; default icon set
+       ("phonon" ,phonon)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtgraphicaleffects" ,qtgraphicaleffects) ; not listed as dependency
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtquickcontrols" ,qtquickcontrols)
+       ("qtquickcontrols2" ,qtquickcontrols2)
+       ("qtsvg" ,qtsvg)
+       ("qtx11extras" ,qtx11extras)
+       ;; TODO: upnpqt https://gitlab.com/homeautomationqt/upnp-player-qt
+       ("vlc" ,vlc)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'start-xorg-server
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The test suite requires a running X server, setting
+             ;; QT_QPA_PLATFORM=offscreen does not suffice.
+             (system (string-append (assoc-ref inputs "xorg-server")
+                                    "/bin/Xvfb :1 -screen 0 640x480x24 &"))
+             (setenv "DISPLAY" ":1")
+             #t)))))
+    (home-page "https://kde.org/applications/multimedia/org.kde.elisa")
+    (synopsis "Powerful music player for Plasma 5")
+    (description "Elisa is a simple music player aiming to provide a nice
+experience for its users.  Elisa allows to browse music by album, artist or
+all tracks.  The music is indexed using either a private indexer or an indexer
+using Baloo.  The private one can be configured to scan music on chosen paths.
+The Baloo one is much faster because Baloo is providing all needed data from
+its own database.  You can build and play your own playlist.")
+    (license license:lgpl3+)))
+
 (define-public juk
   (package
     (name "juk")
