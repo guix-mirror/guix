@@ -26,6 +26,7 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cdrom)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
@@ -41,6 +42,46 @@
   #:use-module (gnu packages video)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xorg))
+
+(define-public audiocd-kio
+  (package
+    (name "audiocd-kio")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/audiocd-kio-" version ".tar.xz"))
+       (sha256
+        (base32 "1924w7li16qkmqsvbgfihjd7id6mb00m9k3acfwkkf32yzg3dn4q"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("cdparanoia" ,cdparanoia)
+       ("flac" ,flac)
+       ("kcmutils" ,kcmutils)
+       ("kconfig" ,kconfig)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("libkcddb" ,libkcddb)
+       ("libkcompactdisc", libkcompactdisc)
+       ("libvorbis" ,libvorbis)
+       ("phonon" ,phonon)
+       ("qtbase" ,qtbase)))
+    (home-page "https://kde.org/applications/multimedia/org.kde.kio_audiocd")
+    (synopsis "Transparent audio CD integration for applications using the KDE
+Platform")
+    (description "KIO AudioCD is a KIO slave that enables KIO-aware
+applications (such as Dolphin or k3b) to access audio and CD text data on the
+audio compact disks.  It allows transparent drag and drop conversion of audio
+data into the popular formats and has a configuration System Settings module
+available in the \"Multimedia\" section.
+
+This package is part of the KDE multimedia module.")
+    (license ;; GPL for programs, FDL for documentation
+     (list license:gpl2+ license:fdl1.2+))))
 
 (define-public dragon
   (package
