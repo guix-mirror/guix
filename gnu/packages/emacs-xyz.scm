@@ -20395,30 +20395,6 @@ on removable volumes in Linux.")
       (home-page "https://github.com/Akirak/helm-linux-disks")
       (license license:gpl3+))))
 
-(define-public emacs-tramp-auto-auth
-  (let ((commit "f15a12dfab651aff60f4a9d70f868030a12344ac")
-        (revision "1"))
-    (package
-      (name "emacs-tramp-auto-auth")
-      (version (git-version "20191027.1117" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/Oitofelix/tramp-auto-auth.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "09nkjgwppjfgv04q0gv468qihgx4y3p39lpwbd6vbh3wgbccas9k"))))
-      (build-system emacs-build-system)
-      (synopsis "TRAMP automatic authentication library")
-      (description "This library provides @code{tramp-auto-auth-mode}, a
-global minor mode whose purpose is to automatically feed TRAMP sub-processes
-with passwords for paths matching regexps.")
-      (home-page "https://github.com/Oitofelix/tramp-auto-auth")
-      (license license:gpl3+))))
-
 (define-public emacs-psession
   (let ((commit "3e97267c92b164584e06a6c70ee7491714c7c12c")
         (revision "1"))
