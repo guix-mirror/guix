@@ -20245,3 +20245,29 @@ REPL appropriate to the current major mode.")
       (description "This package provides a function for hiding and customizing
 display of major and minor modes in the mode line.")
       (license license:gpl3+))))
+
+(define-public emacs-ivy-omni-org
+  (let ((commit "5460a9fc061a4a5ae8372dc8df966ced94abab58")
+        (revision "1"))
+    (package
+      (name "emacs-ivy-omni-org")
+      (version (git-version "0.2.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/akirak/ivy-omni-org.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1np1f51hc3phkl5w02a9a79gl38ra2d535i784fn4pqaasvm0rq8"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-ivy" ,emacs-ivy)
+         ("emacs-dash" ,emacs-dash)))
+      (synopsis "Browse anything in Org mode")
+      (description "This package allows Org items to be accessed via the Ivy
+interface.")
+      (home-page "https://github.com/akirak/ivy-omni-org")
+      (license license:gpl3+))))
