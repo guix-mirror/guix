@@ -5282,14 +5282,14 @@ inspired by the Sinatra microframework style of specifying actions:
 (define-public ruby-rubocop
   (package
     (name "ruby-rubocop")
-    (version "0.64.0")
+    (version "0.77.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "rubocop" version))
        (sha256
         (base32
-         "07shi6kncwhkvlh9ci9rgccrjsq4448hbic3yrakh2w65ppynvbj"))))
+         "0m88b1bgbhmmbdnz2xv6n0il0j4q5qm9jbc0vf1zsaxmxqp06nx9"))))
     (build-system ruby-build-system)
     (arguments
      '(;; No included tests
