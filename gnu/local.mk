@@ -283,6 +283,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/kawa.scm				\
   %D%/packages/kde.scm				\
   %D%/packages/kde-frameworks.scm		\
+  %D%/packages/kde-internet.scm			\
   %D%/packages/kde-multimedia.scm		\
   %D%/packages/kde-pim.scm			\
   %D%/packages/kde-plasma.scm			\
@@ -771,6 +772,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ceph-disable-cpu-optimizations.patch	\
   %D%/packages/patches/ceph-volume-respect-PATH.patch		\
   %D%/packages/patches/chmlib-inttypes.patch			\
+  %D%/packages/patches/choqok-Fix-building-under-Qt-5.13.patch	\
   %D%/packages/patches/clamav-config-llvm-libs.patch		\
   %D%/packages/patches/clamav-system-tomsfastmath.patch		\
   %D%/packages/patches/clang-3.5-libc-search-path.patch		\
