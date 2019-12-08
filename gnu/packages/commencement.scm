@@ -388,6 +388,115 @@
     ("guile" ,%bootstrap-guile)
     ("guile+guild" ,%bootstrap-guile+guild)))
 
+(define %bootstrap-mes-rewired
+  (package
+    (inherit mes)
+    (name "bootstrap-mes-rewired")
+    (version "0.19")
+    (source #f)
+    (native-inputs `(("mes" ,(@ (gnu packages bootstrap) %bootstrap-mes))
+                     ("gash" ,gash-boot)))
+    (inputs '())
+    (propagated-inputs '())
+    (outputs '("out"))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:guile ,%bootstrap-guile
+       #:modules ((guix build utils)
+                  (srfi srfi-26))
+       #:builder (begin
+                   (use-modules (guix build utils)
+                                (srfi srfi-26))
+                   (let* ((mes (assoc-ref %build-inputs "mes"))
+                          (gash (assoc-ref %build-inputs "gash"))
+                          (mes-bin (string-append mes "/bin"))
+                          (guile (string-append mes-bin "/mes"))
+                          (mes-module (string-append mes "/share/mes/module"))
+                          (out (assoc-ref %outputs "out"))
+                          (bin (string-append out "/bin"))
+                          (mescc (string-append bin "/mescc"))
+                          (module (string-append out "/share/mes/module")))
+                     (define (rewire file)
+                       (substitute* file
+                         ((mes) out)
+                         (("/gnu/store[^ ]+mes-minimal-[^/)}\"]*") out)
+                         (("/gnu/store[^ ]+guile-[^/]*/bin/guile") guile)
+                         (("/gnu/store[^ ]+bash-[^/)}\"]*") gash)))
+
+                     (mkdir-p bin)
+                     (for-each (lambda (file) (install-file file bin))
+                               (find-files mes-bin))
+                     (mkdir-p module)
+                     (copy-recursively (string-append mes-module "/mes")
+                                       (string-append module "/mes"))
+                     (copy-recursively (string-append mes-module "/srfi")
+                                       (string-append module "/srfi"))
+                     (for-each rewire
+                               ;; Cannot easily rewire "mes" because it
+                               ;; contains NUL characters; would require
+                               ;; remove-store-references alike trick
+                               (filter (negate (cut string-suffix? "/mes" <>))
+                                       (find-files bin)))
+                     (rewire (string-append module "/mes/boot-0.scm"))
+
+                     (delete-file mescc)
+                     (with-output-to-file mescc
+                       (lambda _
+                         (display (string-append
+                                   "\
+#! " gash "/bin/sh
+LANG=C
+LC_ALL=C
+export LANG LC_ALL
+
+MES_PREFIX=${MES_REWIRED_PREFIX-" out "/share/mes}
+MES=" bin "/mes
+export MES MES_PREFIX
+
+MES_ARENA=${MES_REWIRED_ARENA-10000000}
+MES_MAX_ARENA=${MES_REWIRED_ARENA-10000000}
+MES_STACK=${MES_REWIRED_STACK-1000000}
+export MES_ARENA MES_MAX_ARENA MES_STACK
+
+$MES -e '(mescc)' module/mescc.scm -- \"$@\"
+"))))
+                     (chmod mescc #o555)
+
+                     (with-directory-excursion module
+                       (chmod "mes/base.mes" #o644)
+                       (copy-file "mes/base.mes" "mes/base.mes.orig")
+                       (let ((base.mes (open-file "mes/base.mes" "a")))
+                         (display "
+;; A fixed map, from Mes 0.21, required to bootstrap Mes 0.21
+(define (map f h . t)
+  (if (or (null? h)
+          (and (pair? t) (null? (car t)))
+          (and (pair? t) (pair? (cdr t)) (null? (cadr t)))) '()
+      (if (null? t) (cons (f (car h)) (map f (cdr h)))
+          (if (null? (cdr t))
+              (cons (f (car h) (caar t)) (map f (cdr h) (cdar t)))
+              (if (null? (cddr t))
+                  (cons (f (car h) (caar t) (caadr t)) (map f (cdr h) (cdar t) (cdadr t)))
+                  (if (null? (cdddr t))
+                      (cons (f (car h) (caar t) (caadr t) (car (caddr t))) (map f (cdr h) (cdar t) (cdadr t) (cdr (caddr t))))
+                      (error 'unsupported (cons* 'map-5: f h t))) )))))
+" base.mes)
+                         (close base.mes))
+
+                       (chmod "mes/guile.mes" #o644)
+                       (copy-file "mes/guile.mes" "mes/guile.mes.orig")
+                       (let ((guile.mes (open-file "mes/guile.mes" "a")))
+                         (display "
+;; After booting guile.scm; use Mes 0.21; especially: MesCC 0.21
+(let* ((self (car (command-line)))
+       (prefix (dirname (dirname self))))
+  (set! %moduledir (string-append prefix \"/mes/module/\"))
+  (setenv \"%numbered_arch\" \"true\"))
+
+" guile.mes)
+                         (close guile.mes)))
+                     #t))))))
+
 (define mes-boot
   (package
     (inherit mes)
