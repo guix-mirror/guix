@@ -29,6 +29,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages linux)
@@ -323,6 +324,53 @@ Kaffeine can keep track of multiple playlists simultaneously, and supports
 autoloading of subtitle files for use while playing video.")
     (license ;; GPL for programs, FDL for documentation
      (list license:gpl2+ license:fdl1.2+))))
+
+(define-public kamoso
+  (package
+    (name "kamoso")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/kamoso-" version ".tar.xz"))
+       (sha256
+        (base32 "0j0lr2gwaxwchgfp54dashm1b39gsaw4ly9p8ybavwwzhjkdqza3"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("glib:bin" ,glib "bin")
+       ("kdoctools" ,kdoctools)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("kconfig" ,kconfig)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("kirigami" ,kirigami)
+       ("knotifications" ,knotifications)
+       ("kparts" ,kparts)
+       ("oxygen-icons" ,oxygen-icons) ; default icon set
+       ("purpose" ,purpose)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtgraphicaleffects" ,qtgraphicaleffects)
+       ("qtquickcontrols" ,qtquickcontrols)
+       ("qtquickcontrols2" ,qtquickcontrols2) ; not listed as dependency
+       ("qtx11extras" ,qtx11extras)))
+    (arguments
+     `(#:tests? #f ; test program gets built, but is not found
+       #:configure-flags
+       (list (string-append "-DCMAKE_CXX_FLAGS=-I"
+                            (assoc-ref %build-inputs "gst-plugins-base")
+                            "/include/gstreamer-1.0"))))
+    (home-page "https://kde.org/applications/multimedia/org.kde.kamoso")
+    (synopsis "Take pictures and videos out of your webcam")
+    (description "Kamoso is a simple and friendly program to use your
+camera.  Use it to take pictures and make videos to share.")
+    (license ;; GPL for programs, LGPL for libraries
+     (list license:gpl2+ license:lgpl2.0+))))
 
 (define-public kmix
   (package
