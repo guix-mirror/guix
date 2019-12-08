@@ -76,10 +76,10 @@ archive, a directory, or an Emacs Lisp file."
 (define* (add-source-to-load-path #:key dummy #:allow-other-keys)
   "Augment the EMACSLOADPATH environment variable with the source directory."
   (let* ((source-directory (getcwd))
-         (emacs-load-path-value (string-append (getenv "EMACSLOADPATH") ":"
-                                               source-directory)))
+         (emacs-load-path-value (string-append source-directory ":"
+                                               (getenv "EMACSLOADPATH"))))
     (setenv "EMACSLOADPATH" emacs-load-path-value)
-    (format #t "source directory ~s appended to the `EMACSLOADPATH' \
+    (format #t "source directory ~s prepended to the `EMACSLOADPATH' \
 environment variable\n" source-directory)))
 
 (define* (build #:key outputs inputs #:allow-other-keys)
