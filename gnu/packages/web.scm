@@ -3486,6 +3486,28 @@ exists it is used instead.")
 https schemed URLs with LWP.")
     (license license:perl-license)))
 
+(define-public perl-lwp-useragent-cached
+  (package
+    (name "perl-lwp-useragent-cached")
+    (version "0.08")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/O/OL/OLEG/"
+                           "LWP-UserAgent-Cached-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1hw7wy7f82kl61xjwkgmhv1ixgg56dhgfr45wxn6ahc0qys5mkix"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-libwww" ,perl-libwww)))
+    (home-page "https://metacpan.org/release/LWP-UserAgent-Cached")
+    (synopsis "Simple caching for LWP::UserAgent")
+    (description "LWP::UserAgent::Cached is an LWP::UserAgent subclass with
+cache support.  It returns responses from the local filesystem if available
+instead of making an HTTP request.")
+    (license license:perl-license)))
+
 (define-public perl-lwp-useragent-determined
   (package
     (name "perl-lwp-useragent-determined")
