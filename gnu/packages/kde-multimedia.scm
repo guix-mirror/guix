@@ -23,8 +23,11 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages libcanberra)
@@ -364,6 +367,83 @@ Some features:
 @end itemize")
     (license ;; GPL for programs, LGPL for libraries, FDL for documentation
      (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
+
+(define-public kwave
+  (package
+    (name "kwave")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                          "/src/kwave-" version ".tar.xz"))
+       (sha256
+        (base32 "1vv3m3h9mvjr9sxajccqnvcgvz901n3qxhki0g7vsljvh31x5s5x"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("librsvg" ,librsvg)
+       ("pkg-config" ,pkg-config)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("also-lib" ,alsa-lib)
+       ("audiofile" ,audiofile)
+       ("flac" ,flac)
+       ("id3lib" ,id3lib)
+       ("karchive" ,karchive)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)
+       ("kservice" ,kservice)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("libmad" ,libmad)
+       ("libsamplerate" ,libsamplerate)
+       ("libvorbis" ,libvorbis)
+       ("opus" ,opus)
+       ("oxygen-icons" ,oxygen-icons) ; default icon set
+       ("pulseaudio" ,pulseaudio)
+       ("qtbase" ,qtbase)
+       ("qtmultimedia" ,qtmultimedia)
+       ("zlib" ,zlib)))
+    (home-page "https://kde.org/applications/multimedia/org.kde.kwave")
+    (synopsis "Sound editor for KDE")
+    (description "Kwave is a sound editor designed for the KDE Desktop
+Environment.
+
+With Kwave you can record, play back, import and edit many sorts of audio
+files including multi-channel files.  It includes some plugins to transform
+audio files in several ways and presents a graphical view with a complete
+zoom- and scroll capability.
+
+Its features include:
+@itemize
+@item 24 Bit Support
+@item Undo/Redo
+@item Use of multicore CPUs (SMP, hyperthreading)
+@item Simple Drag & Drop
+@item Realtime Pre-Listen for some effects
+@item Support for multi-track files
+@item Playback and recording via native ALSA (or OSS, deprecated)
+@item Playback via PulseAudio and Phonon
+@item Load and edit-capability for large files (can use virtual memory)
+@item Reading and auto-repair of damaged wav-files
+@item Supports multiple windows
+@item Extendable Plugin interface
+@item a nice splashscreen
+@item some label handling
+@end itemize")
+    (license ;; GPL for programs, LGPL for libraries, FDL for documentation
+     (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+
+           license:cc-by-sa3.0 license:cc-by-sa4.0 ;; icons, samples
+           license:cc0 license:bsd-3)))) ;; utilities files
 
 (define-public libkcddb
   (package
