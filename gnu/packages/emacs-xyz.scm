@@ -20412,9 +20412,10 @@ on removable volumes in Linux.")
           (base32
            "09nkjgwppjfgv04q0gv468qihgx4y3p39lpwbd6vbh3wgbccas9k"))))
       (build-system emacs-build-system)
-      (synopsis "Mount/unmount volumes in Linux via Helm")
-      (description "This package provides a Helm interface to run operations
-on removable volumes in Linux.")
+      (synopsis "TRAMP automatic authentication library")
+      (description "This library provides @code{tramp-auto-auth-mode}, a
+global minor mode whose purpose is to automatically feed TRAMP sub-processes
+with passwords for paths matching regexps.")
       (home-page "https://github.com/Oitofelix/tramp-auto-auth")
       (license license:gpl3+))))
 
