@@ -155,3 +155,75 @@ HTTP(S) as well as pausing downloads.
 This package is part of the KDE networking module.")
     (license ;; GPL for programs, LGPL for libraries, FDL for documentation
      (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
+
+(define-public konversation
+  (package
+    (name "konversation")
+    (version "1.7.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/konversation/" version
+                           "/src/konversation-" version ".tar.xz"))
+       (sha256
+        (base32 "0h098yhlp36ls6pdvs2r93ig8dv4fys62m0h6wxccprb0qrpbgv0"))
+       (patches (search-patches "konversation-Fix-build-with-Qt-5.11.patch"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("karchive" ,karchive)
+       ("kbookmarks" ,kbookmarks)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kemoticons" ,kemoticons)
+       ("kglobalaccel" ,kglobalaccel)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kidletime" ,kidletime)
+       ("kio" ,kio)
+       ("kitemviews" ,kitemviews)
+       ("knotifications" ,knotifications)
+       ("knotifyconfig" ,knotifyconfig)
+       ("kparts" ,kparts)
+       ("kwallet" ,kwallet)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("oxygen-icons" ,oxygen-icons) ; default icon set
+       ("phonon" ,phonon)
+       ("qtbase" ,qtbase)
+       ("qca" ,qca)
+       ("solid" ,solid)
+       ("sonnet" ,sonnet)))
+    (home-page "https://kde.org/applications/internet/org.kde.konversations")
+    (synopsis "Graphical Internet Relay Chat (IRC) client for KDE")
+    (description "Konversation is a graphical Internet Relay Chat client (IRC)
+with KDE support.
+
+Features are:
+@itemize
+@item Standard IRC features
+@item SSL server support
+@item Bookmarking support
+@item Easy to use graphical user interface
+@item Multiple servers and channels in one single window
+@item DCC file transfer with resume support
+@item Multiple identities for different servers
+@item Text decorations and colors
+@item Pattern-based message highlighting and OnScreen Display notifications
+@item Automatic UTF-8 detection
+@item Per channel encoding support
+@item Theme support for nick icons
+@item Highly configurable
+@item Multi-language scripting support (with DCOP)
+@item Customizable command aliases
+@item NickServ-aware log-on (for registered nicknames)
+@item Smart logging
+@item Traditional or enhanced-shell-style nick completion
+@end itemize")
+    (license ;; GPL for programs, FDL for documentation
+     (list license:gpl2+ license:fdl1.2+))))
