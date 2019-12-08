@@ -592,3 +592,30 @@ Its features include:
     (description "A library for retrieving and sending cddb information.")
     (license ;; GPL for programs, LGPL for libraries, FDL for documentation
      (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
+
+(define-public libkcompactdisc
+  (package
+    (name "libkcompactdisc")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/libkcompactdisc-" version ".tar.xz"))
+       (sha256
+        (base32 "09gl2dww5i50rpj92ryw4vq5ryy96cv9kflg6yqgdbznmmdqhawi"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("kcoreaddons" ,kcoreaddons)
+       ("ki18n" ,ki18n)
+       ("phonon" ,phonon)
+       ("qtbase" ,qtbase)
+       ("solid" ,solid)))
+    (home-page "https://cgit.kde.org/libkcompactdisc.git/")
+    (synopsis "KDE library for playing & ripping CDs")
+    (description "KDE library for playing & ripping CDs.")
+    (license ;; GPL for programs, LGPL for libraries
+     (list license:gpl2+ license:lgpl2.0+))))
