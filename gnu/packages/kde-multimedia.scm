@@ -252,6 +252,53 @@ autoloading of subtitle files for use while playing video.")
     (license ;; GPL for programs, FDL for documentation
      (list license:gpl2+ license:fdl1.2+))))
 
+(define-public kmix
+  (package
+    (name "kmix")
+    (version "19.08.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://kde/stable/applications/" version
+                          "/src/kmix-" version ".tar.xz"))
+      (sha256
+       (base32 "1g42hlmpdf0rrgqapps6v47z9cnwpkfzpwgavaq26m5k3bpanwfg"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("glib" ,glib)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdoctools" ,kdoctools)
+       ("kglobalaccel" ,kglobalaccel)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("knotifications" ,knotifications)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kxmlgui" ,kxmlgui)
+       ("libcanberra" ,libcanberra)
+       ("oxygen-icons" ,oxygen-icons) ; default icon set
+       ("plasma-framework" ,plasma-framework)
+       ("pulseaudio" ,pulseaudio)
+       ("qtbase" ,qtbase)
+       ("solid" ,solid)))
+    (home-page "https://kde.org/applications/multimedia/org.kde.kmix")
+    (synopsis "Volume control and mixer")
+    (description "KMix is an audio device mixer, used to adjust volume, select
+recording inputs, and set other hardware options.
+
+This package is part of the KDE multimedia module.")
+    (license ;; GPL for programs, LGPL for libraries, FDL for documentation
+     (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
+
 (define-public libkcddb
   (package
     (name "libkcddb")
