@@ -23,6 +23,8 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages)
+  #:use-module (gnu packages boost)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages kde)
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages kde-pim)
@@ -92,3 +94,64 @@ Other notable features include:
 @item Support for configuring status lists appearance.
 @end itemize")
     (license license:gpl3+)))
+
+(define-public kget
+  (package
+    (name "kget")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/kget-" version ".tar.xz"))
+       (sha256
+        (base32 "004qqq93iqidh2m9q2p2cwlbc2kfrz0g8a2mgd712c9p66l7s42s"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("boost" ,boost)
+       ("gmp" ,gmp)
+       ("gpgme" ,gpgme)
+       ("kcmutils" ,kcmutils)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdelibs4support" ,kdelibs4support) ;; KLocale
+       ("kdoctools" ,kdoctools)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)
+       ("kitemviews" ,kitemviews)
+       ("knotifications" ,knotifications)
+       ("knotifyconfig" ,knotifyconfig)
+       ("kparts" ,kparts)
+       ("kservice" ,kservice)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwallet" ,kwallet)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kxmlgui" ,kxmlgui)
+       ("libgcrypt" ,libgcrypt)
+       ("libktorrent" ,libktorrent)
+       ;; TODO: libmms
+       ;; TODO: LibKWorkspace - plasma-workspace?
+       ("oxygen-icons" ,oxygen-icons) ; default icon set
+       ("qca" ,qca)
+       ("qgpgme" ,qgpgme)
+       ("qtbase" ,qtbase)
+       ))
+    (home-page "http://www.kde.org/")
+    (synopsis "Versatile and user-friendly download manager")
+    (description "KGet is an advanced download manager with support for
+Metalink and Bittorrent.  Downloads are added to the list, where they can be
+paused, queued, or scheduled for later. KGet supports download via FTP anf
+HTTP(S) as well as pausing downloads.
+
+This package is part of the KDE networking module.")
+    (license ;; GPL for programs, LGPL for libraries, FDL for documentation
+     (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
