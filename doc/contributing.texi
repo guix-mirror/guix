@@ -968,6 +968,12 @@ guix environment --pure guix -- make
 @end example
 and look for warnings, especially those about use of undefined symbols.
 
+@item
+Make sure your changes do not break Guix and simulate a @code{guix pull} with:
+@example
+guix pull --url=/path/to/your/checkout --profile=/tmp/guix.master
+@end example
+
 @end enumerate
 
 When posting a patch to the mailing list, use @samp{[PATCH] @dots{}} as
