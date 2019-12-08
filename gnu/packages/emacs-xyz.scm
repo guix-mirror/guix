@@ -20222,3 +20222,26 @@ execution of buffer-exposing commands.")
     (description "This package provides a function to switch to and from a
 REPL appropriate to the current major mode.")
     (license license:gpl3+)))
+
+(define-public emacs-blackout
+  (let ((commit "4bac44671fca4c98d96aa94c79946bf4d4baf0ee")
+        (revision "1"))
+    (package
+      (name "emacs-blackout")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/raxod502/blackout.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "1wnh0nwy6r3a18sy9sqmrwv04vnmaflxy4g7mq8jiyyjijri7l1b"))
+         (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/raxod502/blackout")
+      (synopsis "Clean up mode lighters")
+      (description "This package provides a function for hiding and customizing
+display of major and minor modes in the mode line.")
+      (license license:gpl3+))))
