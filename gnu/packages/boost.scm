@@ -11,7 +11,7 @@
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2019, 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -42,7 +42,8 @@
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages shells))
+  #:use-module (gnu packages shells)
+  #:use-module (srfi srfi-1))
 
 (define-public boost
   (package
@@ -65,10 +66,14 @@
      `(("perl" ,perl)
        ,@(if (%current-target-system)
              '()
-             `(("python" ,python-2)))
+             `(("python" ,python-wrapper)))
        ("tcsh" ,tcsh)))
     (arguments
-     `(#:tests? #f
+     `(#:imported-modules ((guix build python-build-system)
+                           ,@%gnu-build-system-modules)
+       #:modules (((guix build python-build-system) #:select (python-version))
+                  ,@%gnu-build-system-modules)
+       #:tests? #f
        #:make-flags
        (list "threading=multi" "link=shared"
 
@@ -98,6 +103,7 @@
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((icu (assoc-ref inputs "icu4c"))
+                   (python (assoc-ref inputs "python"))
                    (out (assoc-ref outputs "out")))
                (substitute* '("libs/config/configure"
                               "libs/spirit/classic/phoenix/test/runtest.sh"
@@ -116,11 +122,23 @@
                                     ,(%current-target-system)))))
                      '())
 
+               (when (which "python3")
+                 (substitute* "tools/build/src/tools/python.jam"
+                   (("include/python\\$\\(version\\)")
+                    "include/python$(version)m")))
+
                (invoke "./bootstrap.sh"
                        (string-append "--prefix=" out)
                        ;; Auto-detection looks for ICU only in traditional
                        ;; install locations.
                        (string-append "--with-icu=" icu)
+                       ;; Ditto for Python.
+                       ,@(if (%current-target-system)
+                             '()
+                             `((string-append "--with-python-root=" python)
+                               (string-append "--with-python=" python "/bin/python")
+                               (string-append "--with-python-version="
+                                              (python-version python))))
                        "--with-toolset=gcc"))))
          (replace 'build
            (lambda* (#:key make-flags #:allow-other-keys)
@@ -133,16 +151,23 @@
          ,@(if (%current-target-system)
                '()
                '((add-after 'install 'provide-libboost_python
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((out (assoc-ref outputs "out")))
-                        ;; Boost can build support for both Python 2 and
-                        ;; Python 3 since version 1.67.0, and suffixes each
-                        ;; library with the Python version.  Many consumers
-                        ;; only check for libboost_python however, so we
-                        ;; provide it here as suggested in
-                        ;; <https://github.com/boostorg/python/issues/203>.
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (python-version (python-version
+                                              (assoc-ref inputs "python")))
+                             (libboost_pythonNN.so
+                              (string-append "libboost_python"
+                                             (string-join (string-split
+                                                           python-version #\.)
+                                                          "")
+                                             ".so")))
                         (with-directory-excursion (string-append out "/lib")
-                          (symlink "libboost_python27.so" "libboost_python.so"))
+                          (symlink libboost_pythonNN.so "libboost_python.so")
+                          ;; Some packages only look for the major version.
+                          (symlink libboost_pythonNN.so
+                                   (string-append "libboost_python"
+                                                  (string-take python-version 1)
+                                                  ".so")))
                         #t))))))))
 
     (home-page "https://www.boost.org")
@@ -153,54 +178,13 @@ across a broad spectrum of applications.")
     (license (license:x11-style "https://www.boost.org/LICENSE_1_0.txt"
                                 "Some components have other similar licences."))))
 
-;; TODO: Merge with 'Boost' in the next rebuild cycle.
-(define-public boost-with-python3
+(define-public boost-with-python2
   (package
     (inherit boost)
-    (name "boost-python3")
+    (name "boost-python2")
     (native-inputs
-     `(("perl" ,perl)
-       ("python" ,python)
-       ("tcsh" ,tcsh)))
-    (arguments (substitute-keyword-arguments (package-arguments boost)
-                 ((#:phases phases)
-                  `(modify-phases ,phases
-                     (replace 'configure
-                       (lambda* (#:key inputs outputs #:allow-other-keys)
-                         (let ((icu (assoc-ref inputs "icu4c"))
-                               (python (assoc-ref inputs "python"))
-                               (out (assoc-ref outputs "out")))
-                           (substitute* '("libs/config/configure"
-                                          "libs/spirit/classic/phoenix/test/runtest.sh"
-                                          "tools/build/src/engine/execunix.c"
-                                          "tools/build/src/engine/Jambase"
-                                          "tools/build/src/engine/jambase.c")
-                             (("/bin/sh") (which "sh")))
-
-                           (setenv "SHELL" (which "sh"))
-                           (setenv "CONFIG_SHELL" (which "sh"))
-
-                           (substitute* "tools/build/src/tools/python.jam"
-                             (("include/python\\$\\(version\\)")
-                              "include/python$(version)m"))
-
-                           (invoke "./bootstrap.sh"
-                                   (string-append "--prefix=" out)
-                                   ;; Auto-detection looks for dependencies only
-                                   ;; in traditional install locations.
-                                   (string-append "--with-icu=" icu)
-                                   (string-append "--with-python=" python "/bin/python3")
-                                   (string-append "--with-python-root=" python)
-                                   "--with-python-version=3.7"
-                                   "--with-toolset=gcc"))))
-                     (replace 'provide-libboost_python
-                       (lambda* (#:key outputs #:allow-other-keys)
-                         (let ((out (assoc-ref outputs "out")))
-                           (with-directory-excursion (string-append out "/lib")
-                             (symlink "libboost_python37.so" "libboost_python.so")
-                             ;; Some packages also look for libboost_python3.so
-                             (symlink "libboost_python37.so" "libboost_python3.so"))
-                           #t)))))))))
+     `(("python" ,python-2)
+       ,@(alist-delete "python" (package-native-inputs boost))))))
 
 (define-public boost-static
   (package
