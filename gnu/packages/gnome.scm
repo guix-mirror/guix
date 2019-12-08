@@ -5251,6 +5251,10 @@ javascript engine and the GObject introspection framework.")
        ;; Otherwise, the RUNPATH will lack the final path component.
        (list (string-append "-Dc_link_args=-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib/gedit"))
+
+       ;; XXX: Generated .h files are sometimes used before being built.
+       #:parallel-build? #f
+
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'skip-gtk-update-icon-cache
