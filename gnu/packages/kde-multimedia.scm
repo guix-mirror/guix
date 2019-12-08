@@ -198,6 +198,37 @@ The Baloo one is much faster because Baloo is providing all needed data from
 its own database.  You can build and play your own playlist.")
     (license license:lgpl3+)))
 
+(define-public ffmpegthumbs
+  (package
+    (name "ffmpegthumbs")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/ffmpegthumbs-" version ".tar.xz"))
+       (sha256
+        (base32 "1w6070ng40nf99wpl6p5s8nx0icfx2c26vvnz4f9fx7l7pldh6n9"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("ffmpeg" ,ffmpeg)
+       ("kconfig" ,kconfig)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("qtbase" ,qtbase)))
+    (home-page "https://kde.org/applications/multimedia/org.kde.ffmpegthumbs")
+    (synopsis "Video thumbnail generator for KDE using ffmpeg")
+    (description "
+FFMpegThumbs is a video thumbnail generator for KDE file managers
+like Dolphin and Konqueror.  It enables them to show preview images
+of video files using FFMpeg.
+
+This package is part of the KDE multimedia module.")
+    (license license:gpl2+)))
+
 (define-public juk
   (package
     (name "juk")
