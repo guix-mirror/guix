@@ -100,6 +100,8 @@ like Gnome, Unity, Budgie, Pantheon, XFCE, Mate and others.")
        (begin
          (use-modules (guix build utils))
          (copy-recursively (assoc-ref %build-inputs "source") "icons")
+         (substitute* "icons/Delft/index.theme"
+           (("gnome") "Adwaita"))
          (delete-file "icons/README.md")
          (delete-file "icons/LICENSE")
          (delete-file "icons/logo.jpg")
