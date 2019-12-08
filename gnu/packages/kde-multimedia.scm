@@ -299,6 +299,72 @@ This package is part of the KDE multimedia module.")
     (license ;; GPL for programs, LGPL for libraries, FDL for documentation
      (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
 
+(define-public kmplayer
+  (package
+    (name "kmplayer")
+    (version "0.12.0b")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/kmplayer/0.12"
+                           "/kmplayer-" version ".tar.bz2"))
+       (sha256
+        (base32 "0wzdxym4fc83wvqyhcwid65yv59a2wvp1lq303cn124mpnlwx62y"))
+       (patches (search-patches
+                 "kmplayer-aarch64.patch"
+                 "kmplayer-upstream_Fix-build-with-Qt-5.9.patch"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kdelibs4support" ,kdelibs4support)
+       ("ki18n" ,ki18n)
+       ("kinit" ,kinit)
+       ("kio" ,kio)
+       ("kparts" ,kparts)
+       ("kmediaplayer" ,kmediaplayer)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("libxcb" ,libxcb) ;; FIXME: why does cmake not find XEVIE and XPRINT?
+       ("oxygen-icons" ,oxygen-icons) ; default icon set
+       ("phonon" ,phonon)
+       ("qtbase" ,qtbase)
+       ("cairo" ,cairo)
+       ("qtsvg" ,qtsvg)
+       ("qtx11extras" ,qtx11extras)
+       ("xcb-util" ,xcb-util)
+       ("xcb-util-cursor" ,xcb-util-cursor)
+       ("xcb-util-errors" ,xcb-util-errors)
+       ("xcb-util-image" ,xcb-util-image)
+       ("xcb-util-keysyms" ,xcb-util-keysyms)
+       ("xcb-util-wm" ,xcb-util-wm)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append
+              "-DCMAKE_CXX_FLAGS=-I"
+              (assoc-ref %build-inputs "qtx11extras") "/include/qt5"))))
+    (home-page "https://kde.org/applications/multimedia/org.kde.kmplayer")
+    (synopsis "Media player using mplayer/phonon as backend")
+    (description "Kmplayer can play all the audio/video supported by
+mplayer/phonon from a local file or URL and be embedded in Konqueror and
+KHTML.  It also plays DVDs.
+
+Some features:
+@itemize
+@item play DVD/VCD movies (from file or url and from a video device)
+@item embed inside konqueror (movie is played inside konqueror)
+@item embed inside khtml (movie playback inside a html page)
+@item Movie recording using mencoder (part of the mplayer package)
+@item No video during recording, but you can always open a new window and play it
+@item Broadcasting, http streaming, using ffserver/ffmpeg
+@item For TV sources, you need v4lctl (part of the xawtv package)
+@end itemize")
+    (license ;; GPL for programs, LGPL for libraries, FDL for documentation
+     (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
+
 (define-public libkcddb
   (package
     (name "libkcddb")
