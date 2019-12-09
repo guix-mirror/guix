@@ -16749,3 +16749,26 @@ services such as upower, systemd, logind, gnome-session or others, and it is
 hard (or impossible without root privileges) to set the state of the real
 services to what you expect in your tests.")
   (license license:lgpl3+)))
+
+(define-public python-ujson
+  (package
+    (name "python-ujson")
+    (version "1.35")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ujson" version))
+       (sha256
+        (base32
+         "11jz5wi7mbgqcsz52iqhpyykiaasila4lq8cmc2d54bfa3jp6q7n"))))
+    (build-system python-build-system)
+    (home-page "http://www.esn.me")
+    (synopsis
+     "Ultra fast JSON encoder and decoder for Python")
+    (description
+     "UltraJSON is an ultra fast JSON encoder and decoder written in pure C with
+ bindings for Python 2.5+ and 3.")
+    (license license:bsd-3)))
+
+(define-public python2-ujson
+  (package-with-python2 python-ujson))
