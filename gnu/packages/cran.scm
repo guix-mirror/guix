@@ -4123,31 +4123,6 @@ functions to compile LaTeX documents, and install missing LaTeX packages
 automatically.")
     (license license:expat)))
 
-(define-public r-metap
-  (package
-    (name "r-metap")
-    (version "1.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "metap" version))
-       (sha256
-        (base32
-         "10kv7z8pik5iy374h399vws0ldf41y2nczlwh8axqf9dcwl084i0"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-lattice" ,r-lattice)
-       ("r-rdpack" ,r-rdpack)))
-    (home-page "http://www.dewey.myzen.co.uk/meta/meta.html")
-    (synopsis "Meta-analysis of significance values")
-    (description
-     "The canonical way to perform meta-analysis involves using effect sizes.
-When they are not available this package provides a number of methods for
-meta-analysis of significance values including the methods of Edgington,
-Fisher, Stouffer, Tippett, and Wilkinson; a number of data-sets to replicate
-published results; and a routine for graphical display.")
-    (license license:gpl2)))
-
 (define-public r-network
   (package
     (name "r-network")
