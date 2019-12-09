@@ -19,6 +19,7 @@
 ;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
 ;;; Copyright © 2019 Collin J. Doering <collin@rekahsoft.ca>
 ;;; Copyright © 2019 Diego N. Barbato <dnbarbato@posteo.de>
+;;; Copyright © 2019 Brett Gilio <brettg@posteo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -95,6 +96,7 @@
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
+       #:configure-flags '("--enable-shared") ; dynamic linking
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'replace-bin-sh-and-remove-libffi
