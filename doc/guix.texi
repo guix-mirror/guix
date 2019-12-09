@@ -18291,7 +18291,7 @@ When @var{interface} is @code{127.0.0.1}, only local clients can
 connect; when it is @code{0.0.0.0}, connections can come from any
 networking interface.
 
-@item @code{package} (default: @code{bitlbee})
+@item @code{bitlbee} (default: @code{bitlbee})
 The BitlBee package to use.
 
 @item @code{plugins} (default: @code{'()})

@@ -1,0 +1,27 @@
+From ed44908b1cc9bd65a17a1eb6d10523323f2a95c7 Mon Sep 17 00:00:00 2001
+From: Jelle Licht <jlicht@fsfe.org>
+Date: Mon, 9 Dec 2019 17:18:08 +0100
+Subject: [PATCH] doc: Fix typo.
+
+* doc/guix.texi (bitlbee-configuration): The field that contains bitlbee
+package is "bitlbee", not "package".
+---
+ doc/guix.texi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/doc/guix.texi b/doc/guix.texi
+index d6c84e949d..3f646cd2ca 100644
+--- a/doc/guix.texi
++++ b/doc/guix.texi
+@@ -18291,7 +18291,7 @@ When @var{interface} is @code{127.0.0.1}, only local clients can
+ connect; when it is @code{0.0.0.0}, connections can come from any
+ networking interface.
+ 
+-@item @code{package} (default: @code{bitlbee})
++@item @code{bitlbee} (default: @code{bitlbee})
+ The BitlBee package to use.
+ 
+ @item @code{plugins} (default: @code{'()})
+-- 
+2.24.0
+
