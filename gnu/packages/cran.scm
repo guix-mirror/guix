@@ -3745,18 +3745,20 @@ plots in @code{ggplot2}.")
 (define-public r-cli
   (package
     (name "r-cli")
-    (version "1.1.0")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "cli" version))
        (sha256
         (base32
-         "02hdwvdq5nic6dhxj88jbgsc9m8yrz3yibigg6szkggxyk6hzh2g"))))
+         "1gv3zqdipj29ivkw5dsi1qdlra7q4lcrcqvlg9fns7d670yglfki"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
-       ("r-crayon" ,r-crayon)))
+       ("r-crayon" ,r-crayon)
+       ("r-fansi" ,r-fansi)
+       ("r-glue" ,r-glue)))
     (home-page "https://github.com/r-lib/cli#readme")
     (synopsis "Helpers for developing command line interfaces")
     (description "This package provides a suite of tools designed to build
