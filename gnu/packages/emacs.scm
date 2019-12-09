@@ -143,6 +143,11 @@
                    (display
                     (string-append "(when (require 'guix-emacs nil t)\n"
                                    "  (guix-emacs-autoload-packages))\n"))))
+               ;; Remove the extraneous subdirs.el file, as it causes Emacs to
+               ;; add recursively all the the sub-directories of a profile's
+               ;; share/emacs/site-lisp union when added to EMACSLOADPATH,
+               ;; which leads to conflicts.
+               (delete-file (string-append lisp-dir "/subdirs.el"))
                #t))))))
     (inputs
      `(("gnutls" ,gnutls)
