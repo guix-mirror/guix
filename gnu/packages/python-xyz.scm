@@ -16716,40 +16716,40 @@ for YAML and JSON.")
 
 (define-public python-dbusmock
   (package
-  (name "python-dbusmock")
-  (version "0.18.3")
-  (source
-    (origin
-      (method url-fetch)
-      (uri (pypi-uri "python-dbusmock" version))
-      (sha256
+    (name "python-dbusmock")
+    (version "0.18.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-dbusmock" version))
+       (sha256
         (base32
-          "0hp2kyac88nh9iv6l8hlmv7s1sa1s5f1a3wc2pmlmmxnd211fjlr"))))
-  (build-system python-build-system)
-  (arguments
-   '(#:phases
-     (modify-phases %standard-phases
-       (add-after 'unpack 'patch-shell-path
-         (lambda _
-           (substitute* "tests/test_code.py"
-             (("/bin/bash") (which "bash")))
-           #t)))))
-  (native-inputs
-   `(;; For tests.
-     ("dbus" ,dbus) ; for dbus-daemon
-     ("python-nose" ,python-nose)
-     ("which" ,which)))
-  (propagated-inputs
-   `(("python-dbus" ,python-dbus)
-     ("python-pygobject" ,python-pygobject)))
-  (home-page "https://github.com/martinpitt/python-dbusmock")
-  (synopsis "Python library for mock D-Bus objects")
-  (description "python-dbusmock allows for the easy creation of mock objects on
+         "0hp2kyac88nh9iv6l8hlmv7s1sa1s5f1a3wc2pmlmmxnd211fjlr"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-shell-path
+           (lambda _
+             (substitute* "tests/test_code.py"
+               (("/bin/bash") (which "bash")))
+             #t)))))
+    (native-inputs
+     `(;; For tests.
+       ("dbus" ,dbus) ; for dbus-daemon
+       ("python-nose" ,python-nose)
+       ("which" ,which)))
+    (propagated-inputs
+     `(("python-dbus" ,python-dbus)
+       ("python-pygobject" ,python-pygobject)))
+    (home-page "https://github.com/martinpitt/python-dbusmock")
+    (synopsis "Python library for mock D-Bus objects")
+    (description "python-dbusmock allows for the easy creation of mock objects on
 D-Bus.  This is useful for writing tests for software which talks to D-Bus
 services such as upower, systemd, logind, gnome-session or others, and it is
 hard (or impossible without root privileges) to set the state of the real
 services to what you expect in your tests.")
-  (license license:lgpl3+)))
+    (license license:lgpl3+)))
 
 (define-public python-ujson
   (package
