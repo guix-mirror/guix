@@ -34,6 +34,7 @@
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages messaging)
+  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages rdesktop)
@@ -364,3 +365,39 @@ server.  VNC and RDP are supported.
 This package is part of the KDE networking module.")
     (license ;; GPL for programs, LGPL for libraries, FDL for documentation
      (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
+
+(define-public libktorrent
+  (package
+    (name "libktorrent")
+    (version "2.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       ;; TODO: Base on version of ktorrent
+       (uri (string-append "mirror://kde//stable/ktorrent/5.1.2"
+                           "/libktorrent-" version ".tar.xz"))
+       (sha256
+        (base32 "0051zh8bb4p9wmcfn5ql987brhsaiw9880xdck7b5dm1a05mri2w"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("boost" ,boost)
+       ("gmp" ,gmp)
+       ("karchive" ,karchive)
+       ("kcrash" ,kcrash)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("libgcrypt" ,libgcrypt)
+       ("qca" ,qca)
+       ("qtbase" ,qtbase)
+       ("solid" ,solid)))
+    (home-page "https://cgit.kde.org/libktorrent.git")
+    (synopsis "BitTorrent protocol library for C++ / Qt 5 / KDE Frameworks")
+    (description "The KTorrent library supports connectivity to HTTP and UDP
+trackers, mainline DHT and the new generation Micro Transport
+Protocol (uTP).  In addition, it provides many powerful BitTorrent network
+features including but not limited to torrent downloading and seeding, torrent
+creation and downloaded data verification, magnet links, advanced peer
+management, IP blocking lists.")
+    (license license:gpl2+)))
