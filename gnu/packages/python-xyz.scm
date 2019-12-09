@@ -3054,14 +3054,14 @@ Server (PLS).")
 (define-public python-language-server
   (package
     (name "python-language-server")
-    (version "0.29.1")
+    (version "0.31.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-language-server" version))
        (sha256
         (base32
-         "1f8qlflh6j3s7qfmzhirpl8fgidl6f0qbakdmiml96wdxzvka0s3"))))
+         "1iq69wc1fyhirfyq25ih41wq9yvr7bchiw0i116adpdgcq6m9idq"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pluggy" ,python-pluggy)
