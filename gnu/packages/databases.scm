@@ -686,7 +686,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.1.41")
+    (version "10.1.43")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.com/MariaDB"
@@ -694,7 +694,7 @@ Language.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1wh0073lqw3d9xs150bf2q3qvjwa6886mfi9khmsn7p8vapw6irb"))
+                "1pxyq37q4p7515by7k8hs3l3css68f3bm3akx99vw4m1rxwwbm63"))
               (patches (search-patches "mariadb-client-test-32bit.patch"))
               (modules '((guix build utils)))
               (snippet
@@ -815,6 +815,12 @@ Language.")
                          disabled-tests)
                (close-port unstable-tests)
 
+               ;; XXX: This test fails because it expects a latin1 charset and
+               ;; collation.  See <https://jira.mariadb.org/browse/MDEV-21264>.
+               (substitute* "mysql-test/r/gis_notembedded.result"
+                 (("latin1_swedish_ci") "utf8_general_ci")
+                 (("\tlatin1") "\tutf8"))
+
                (substitute* "mysql-test/mysql-test-run.pl"
                  (("/bin/ls") (which "ls"))
                  (("/bin/sh") (which "sh")))
@@ -883,6 +889,7 @@ Language.")
        ("libaio" ,libaio)
        ("libxml2" ,libxml2)
        ("ncurses" ,ncurses)
+       ("pam" ,linux-pam)
        ("pcre" ,pcre)
        ("xz" ,xz)
        ("zlib" ,zlib)))
