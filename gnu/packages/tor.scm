@@ -50,14 +50,14 @@
 (define-public tor
   (package
     (name "tor")
-    (version "0.4.1.6")
+    (version "0.4.2.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://dist.torproject.org/tor-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0wgdid8w7srd218hh4rwslzdx2ickxw1pg18p2wry1r6wi65521a"))))
+               "1hnqg6psf7shcmlvfk44mkpaz7v66mify3cnx7mzl23q5s37anad"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
