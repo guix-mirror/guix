@@ -4217,6 +4217,35 @@ methods, structural equivalence detection, network regression, random graph
 generation, and 2D/3D network visualization.")
     (license license:gpl2+)))
 
+(define-public r-tfisher
+  (package
+    (name "r-tfisher")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "TFisher" version))
+       (sha256
+        (base32
+         "0vz74ww1lf1prfwz74hfsi3a8nzq8ss7aqjr85c1d87vss2796xx"))))
+    (properties `((upstream-name . "TFisher")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-sn" ,r-sn)))
+    (home-page "https://cran.r-project.org/web/packages/TFisher/")
+    (synopsis "Optimal thresholding Fisher's p-value combination method")
+    (description
+     "This package provides the @dfn{cumulative distribution function} (CDF),
+quantile, and statistical power calculator for a collection of thresholding
+Fisher's p-value combination methods, including Fisher's p-value combination
+method, truncated product method and, in particular, soft-thresholding
+Fisher's p-value combination method which is proven to be optimal in some
+context of signal detection.  The p-value calculator for the omnibus version
+of these tests are also included.")
+    (license license:gpl2)))
+
 (define-public r-ttr
   (package
     (name "r-ttr")
