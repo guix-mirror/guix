@@ -910,14 +910,14 @@ as a drop-in replacement of MySQL.")
 (define-public postgresql
   (package
     (name "postgresql")
-    (version "10.10")
+    (version "10.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "0lzj46dwd9cw94gnqm36bxd7jlhfdyqjrfzr3c4xd3prfn2rnkxd"))
+                "02fcmvbh0mhplj3s2jd24s642ysx7bggnf0h8bs5amh7dgzi8p8d"))
               (patches (search-patches "postgresql-disable-resolve_symlinks.patch"))))
     (build-system gnu-build-system)
     (arguments
