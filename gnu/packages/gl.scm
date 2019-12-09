@@ -229,7 +229,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "19.2.1")
+    (version "19.2.7")
     (source
       (origin
         (method url-fetch)
@@ -241,10 +241,9 @@ also known as DXTn or DXTC) for Mesa.")
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "1s81kwcjkkahnf5y5mshmd3q9j057hhsai7awpq6yb6im2hkriac"))
+          "17jp8ghipgz62vqqz5llskxypkcmgf8gnlgnj0pyvnbgi6vryyg3"))
         (patches
-         (search-patches "mesa-skip-disk-cache-test.patch"
-                         "mesa-timespec-test-32bit.patch"))))
+         (search-patches "mesa-skip-disk-cache-test.patch"))))
     (build-system meson-build-system)
     (propagated-inputs
       `(;; The following are in the Requires.private field of gl.pc.
