@@ -3044,6 +3044,34 @@ for DNA and protein sequences.  This package supports several sequence
 kernels, including: gkmSVM, kmer-SVM, mismatch kernel and wildcard kernel.")
     (license license:gpl2+)))
 
+;; This is a CRAN package, but it depends on multtest from Bioconductor.
+(define-public r-mutoss
+  (package
+    (name "r-mutoss")
+    (version "0.1-12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mutoss" version))
+       (sha256
+        (base32
+         "1yk7p7pb2xm38d3j19ysgwmix48lvimbhkhjjwk5jmr1a0ysx298"))))
+    (properties `((upstream-name . "mutoss")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-multcomp" ,r-multcomp)
+       ("r-multtest" ,r-multtest)
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-plotrix" ,r-plotrix)))
+    (home-page "https://github.com/kornl/mutoss/")
+    (synopsis "Unified multiple testing procedures")
+    (description
+     "This package is designed to ease the application and comparison of
+multiple hypothesis testing procedures for FWER, gFWER, FDR and FDX.  Methods
+are standardized and usable by the accompanying mutossGUI package.")
+    ;; Any version of the GPL.
+    (license (list license:gpl2+ license:gpl3+))))
+
 (define-public r-triform
   (package
     (name "r-triform")
