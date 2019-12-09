@@ -34,6 +34,7 @@
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages messaging)
+  #:use-module (gnu packages mp3)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)
@@ -365,6 +366,63 @@ server.  VNC and RDP are supported.
 This package is part of the KDE networking module.")
     (license ;; GPL for programs, LGPL for libraries, FDL for documentation
      (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
+
+(define-public ktorrent
+  (package
+    (name "ktorrent")
+    (version "5.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/ktorrent/" version
+                           "/ktorrent-" version ".tar.xz"))
+       (sha256
+        (base32 "0kwd0npxfg4mdh7f3xadd2zjlqalpb1jxk61505qpcgcssijf534"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("boost" ,boost)
+       ("gmp" ,gmp)
+       ("karchive" ,karchive)
+       ("kcmutils" ,kcmutils)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdewebkit" ,kdewebkit)
+       ("kdnssd" ,kdnssd)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)
+       ("knotifications" ,knotifications)
+       ("knotifyconfig" ,knotifyconfig)
+       ("kparts" ,kparts)
+       ("kplotting" ,kplotting)
+       ("kross", kross)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kxmlgui" ,kxmlgui)
+       ("libgcrypt" ,libgcrypt)
+       ("libktorrent" ,libktorrent)
+       ;; TODO: LibKWorkspace -> plasma-workspace?
+       ("oxygen-icons" ,oxygen-icons) ; default icon set
+       ("phonon" ,phonon)
+       ("qtbase" ,qtbase)
+       ("qtscript" ,qtscript)
+       ("qtwebkit" ,qtwebkit)
+       ("solid" ,solid)
+       ("syndication" ,syndication)
+       ("taglib" ,taglib)))
+    (home-page "https://kde.org/applications/internet/org.kde.ktorrent")
+    (synopsis "BitTorrent client")
+    (description "KTorrent is a BitTorrent application by KDE which allows you
+to download files using the BitTorrent protocol.  It enables you to run
+multiple torrents at the same time and comes with extended features to make it
+a full-featured client for BitTorrent.")
+    (license license:gpl2+)))
 
 (define-public libktorrent
   (package
