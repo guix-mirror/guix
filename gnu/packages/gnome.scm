@@ -2343,6 +2343,10 @@ Hints specification (EWMH).")
               (sha256
                (base32
                 "15713yl0f8f3p99jzqqfmbicrdswd3vwpx7r3bkf1bgh6d9lvs4b"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
     (propagated-inputs
      `(("gtk+" ,gtk+-2)
        ("libxres" ,libxres)
