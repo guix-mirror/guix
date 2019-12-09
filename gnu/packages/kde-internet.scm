@@ -36,7 +36,9 @@
   #:use-module (gnu packages messaging)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages rdesktop)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages ssh)
   #:use-module (gnu packages telephony)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
@@ -313,6 +315,51 @@ The goal of Kopete is to provide users with a single easy-to-use way to access
 all of their instant messaging systems.  The interface puts people first, and
 is integrated with the system address book to let you access your contacts
 from other KDE applications.
+
+This package is part of the KDE networking module.")
+    (license ;; GPL for programs, LGPL for libraries, FDL for documentation
+     (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
+
+(define-public krdc
+  (package
+    (name "krdc")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/krdc-" version ".tar.xz"))
+       (sha256
+        (base32 "1p6g994whzjz9aarzrblh70xzs3jvygd1898qxgfymndlfxaxjyl"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kbookmarks" ,kbookmarks)
+       ("freerdp" ,freerdp)
+       ("kcmutils" ,kcmutils)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kdnssd" ,kdnssd)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("knotifications" ,knotifications)
+       ("knotifyconfig" ,knotifyconfig)
+       ("knotifyconfig" ,knotifyconfig)
+       ("kwallet" ,kwallet)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kxmlgui" ,kxmlgui)
+       ("libssh2" ,libssh)
+       ;; TODO: libvnc{server,client} - is not tigervnc-{server,client}
+       ("oxygen-icons" ,oxygen-icons) ; default icon set
+       ("qtbase" ,qtbase)))
+    (home-page "https://kde.org/applications/internet/org.kde.krdc")
+    (synopsis "Remote desktop client")
+    (description "KRDC is a client application that allows you to view or even
+control the desktop session on another machine that is running a compatible
+server.  VNC and RDP are supported.
 
 This package is part of the KDE networking module.")
     (license ;; GPL for programs, LGPL for libraries, FDL for documentation
