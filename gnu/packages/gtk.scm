@@ -722,7 +722,7 @@ application suites.")
 (define-public gtk+
   (package (inherit gtk+-2)
    (name "gtk+")
-   (version "3.24.12")
+   (version "3.24.13")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -730,7 +730,7 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "10xyyhlfb0yk4hglngxh2zsv9xrxkqv343df8h01dvagc6jyp10k"))
+              "1a9hi7k59q0kqx0n3xhsk1ly23w9g9ncllnay1756g0yrww5qxsc"))
             (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
                                      "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
    (outputs '("out" "bin" "doc"))
