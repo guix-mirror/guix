@@ -28,6 +28,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages qt)
@@ -777,3 +778,41 @@ API")
     (description "@code{LibKGAPI} is a C++ library that implements APIs for
 various Google services.")
     (license license:lgpl2.0+)))
+
+(define-public libkleo
+  (package
+    (name "libkleo")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/libkleo-" version ".tar.xz"))
+       (sha256
+        (base32 "0vjp07j102mi20c4q2fdvkjc0skb9q7msxp64n76wy3cciv346jz"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("boost" ,boost)
+       ("gpgme" ,gpgme)
+       ("kcodecs" ,kcodecs)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("ki18n" ,ki18n)
+       ("kitemmodels" ,kitemmodels)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kpimtextedit" ,kpimtextedit)
+       ("qgpgme" ,qgpgme)
+       ("qtbase" ,qtbase)))
+    (home-page "https://cgit.kde.org/libkleo.git/")
+    (synopsis "KDE PIM cryptographic library")
+    (description "@code{libkleo} is a library for Kleopatra and other parts of
+KDE using certificate-based crypto.")
+    (license ;; GPL for programs, LGPL for libraries
+     (list license:gpl2+ license:lgpl2.0+))))
