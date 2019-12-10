@@ -5259,8 +5259,10 @@ used by nftables.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://www.nftables.org/projects/nftables"
-                           "/files/nftables-" version ".tar.bz2"))
+       (uri (list (string-append "mirror://netfilter.org/nftables/nftables-"
+                                 version ".tar.bz2")
+                  (string-append "https://www.nftables.org/projects/nftables"
+                                 "/files/nftables-" version ".tar.bz2")))
        (sha256
         (base32
          "1x8kalbggjq44j4916i6vyv1rb20dlh1dcsf9xvzqsry2j063djw"))))
