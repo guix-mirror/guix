@@ -3216,7 +3216,7 @@ alpha blending etc).")
 (define-public frei0r-plugins
   (package
     (name "frei0r-plugins")
-    (version "1.6.1")
+    (version "1.7.0")
     (source
      (origin
        (method url-fetch)
@@ -3224,23 +3224,25 @@ alpha blending etc).")
                            "frei0r-plugins-" version ".tar.gz"))
        (sha256
         (base32
-         "0pji26fpd0dqrx1akyhqi6729s394irl73dacnyxk58ijqq4dhp0"))))
+         "0fjji3060r4fwr7vn91lwfzl80lg3my9lkp94kbyw8xwz7qgh7qv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autotools
+         (add-after 'unpack 'patch-Makefile
            (lambda _
-             (invoke "sh" "autogen.sh"))))))
+             ;; XXX: The 1.7.0 Makefile looks for files that have slightly different
+             ;; names in the tarball.  Try removing this for future versions.
+             (substitute* "Makefile.in"
+               (("README\\.md ChangeLog TODO AUTHORS")
+                "README.txt ChangeLog.txt TODO.txt AUTHORS.txt"))
+             #t)))))
     ;; TODO: opencv for additional face detection filters.
     (inputs
      `(("gavl" ,gavl)
        ("cairo" ,cairo)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("libtool" ,libtool)
-       ("automake" ,automake)
-       ("autoconf" ,autoconf)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://www.dyne.org/software/frei0r/")
     (synopsis "Minimalistic plugin API for video effects")
     (description
