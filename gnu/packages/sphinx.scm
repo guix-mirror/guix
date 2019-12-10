@@ -46,14 +46,14 @@
 (define-public python-sphinx
   (package
     (name "python-sphinx")
-    (version "2.2.0")
+    (version "2.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Sphinx" version))
        (sha256
         (base32
-         "0ig8s94xg0p6h9y5s3ns9x8i10b24ihzvs65b5jwrhrgih7nnn0d"))))
+         "1wjcm382824rq8ijls9mlqwl2h8l26s201v5fwprhnins671m72m"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
