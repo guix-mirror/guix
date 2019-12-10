@@ -9227,7 +9227,7 @@ configuration of Chinese fonts.")
 (define-public emacs-php-mode
   (package
     (name "emacs-php-mode")
-    (version "20171225.342")
+    (version "1.22.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -9236,7 +9236,7 @@ configuration of Chinese fonts.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1zz682f34v4wsm2dyj1gnrnvsrqdq1cy7j8p6cvc398w2fziyg3q"))))
+                "1yc7f39bv2ni8q5372r4kj04z7rikvc8w1mqx5c4zph5r02jab7i"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/ejmr/php-mode")
     (synopsis "Major mode for editing PHP code")
