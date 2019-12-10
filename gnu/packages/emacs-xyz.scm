@@ -10503,13 +10503,14 @@ query them from the comfort of your editor.")
     (version "0.1.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "http://stable.melpa.org/packages/prop-menu-"
-             version ".el"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/david-christiansen/prop-menu-el.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "01bk4sjafzz7gqrkv9jg0pa85qr34vbk3q8ga2b0m61bndywzgpr"))))
+         "18ap2liz5r5a8ja2zz9182fnfm47jnsbyblpq859zks356k37iwc"))))
     (build-system emacs-build-system)
     (home-page
      "https://github.com/david-christiansen/prop-menu-el")
