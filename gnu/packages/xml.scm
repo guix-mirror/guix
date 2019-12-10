@@ -2056,12 +2056,12 @@ modular implementation of XML-RPC for C and C++.")
     (name "python-xmltodict")
     (version "0.12.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "xmltodict" version))
-        (sha256
-          (base32
-            "08cadlb9vsb4pmzc99lz3a2lx6qcfazyvgk10pcqijvyxlwcdn2h"))))
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "xmltodict" version))
+       (sha256
+        (base32
+         "08cadlb9vsb4pmzc99lz3a2lx6qcfazyvgk10pcqijvyxlwcdn2h"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-coverage" ,python-coverage)
