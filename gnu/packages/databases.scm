@@ -851,10 +851,11 @@ Language.")
              #t))
          (add-after
           'install 'post-install
-          (lambda* (#:key outputs #:allow-other-keys)
+          (lambda* (#:key inputs outputs #:allow-other-keys)
             (let* ((out     (assoc-ref outputs "out"))
                    (dev     (assoc-ref outputs "dev"))
-                   (lib     (assoc-ref outputs "lib")))
+                   (lib     (assoc-ref outputs "lib"))
+                   (openssl (assoc-ref inputs "openssl")))
               (substitute* (string-append out "/bin/mysql_install_db")
                 (("basedir=\"\"")
                  (string-append "basedir=\"" out "\"")))
@@ -876,6 +877,14 @@ Language.")
                            (string-append dev "/share/pkgconfig"))
               (rename-file (string-append out "/bin/mysql_config")
                            (string-append dev "/bin/mysql_config"))
+
+              ;; Embed an absolute reference to OpenSSL in mysql_config
+              ;; and the pkg-config file to avoid propagation.
+              (substitute* (list (string-append dev "/bin/mysql_config")
+                                 (string-append dev "/share/pkgconfig/mariadb.pc"))
+                (("-lssl -lcrypto" all)
+                 (string-append "-L" openssl "/lib " all)))
+
               #t))))))
     (native-inputs
      `(("bison" ,bison)
@@ -889,13 +898,11 @@ Language.")
        ("libaio" ,libaio)
        ("libxml2" ,libxml2)
        ("ncurses" ,ncurses)
+       ("openssl" ,openssl-1.0)
        ("pam" ,linux-pam)
        ("pcre" ,pcre)
        ("xz" ,xz)
        ("zlib" ,zlib)))
-    (propagated-inputs
-     ;; mariadb.pc says -lssl -lcrypto, so propagate it.
-     `(("openssl" ,openssl-1.0)))
     ;; The test suite is very resource intensive and can take more than three
     ;; hours on a x86_64 system.  Give slow and busy machines some leeway.
     (properties '((timeout . 64800)))        ;18 hours
