@@ -2054,14 +2054,14 @@ modular implementation of XML-RPC for C and C++.")
 (define-public python-xmltodict
   (package
     (name "python-xmltodict")
-    (version "0.11.0")
+    (version "0.12.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "xmltodict" version))
         (sha256
           (base32
-            "1pxh4yjhvmxi1h6f92skv41g4kbsws3ams57150kzn18m907v3cg"))))
+            "08cadlb9vsb4pmzc99lz3a2lx6qcfazyvgk10pcqijvyxlwcdn2h"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-coverage" ,python-coverage)
