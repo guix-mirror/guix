@@ -19197,15 +19197,15 @@ text-property translator.")
     (name "emacs-org-noter")
     (version "1.3.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "https://stable.melpa.org/packages/org-noter-"
-               version
-               ".el"))
         (sha256
           (base32
             "1hczwva73gsyanl1ldhdvql01gy0hy2g861yzkaklyb763sx58x4"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/weirdNox/org-noter.git")
+              (commit version)))
+       (file-name (git-file-name name version))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-org" ,emacs-org)))
     (home-page "https://github.com/weirdNox/org-noter")
