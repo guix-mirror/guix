@@ -29,6 +29,7 @@
 ;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2019 Evan Straw <evan.straw99@gmail.com>
 ;;; Copyright © 2019 Brett Gilio <brettg@posteo.net>
+;;; Copyright © 2019 Noodles! <nnoodle@chiru.no>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1604,3 +1605,39 @@ productive, customizable lisp based systems.")
 
 (define-public sbcl-stumpwm+slynk
   (deprecated-package "sbcl-stumpwm-with-slynk" stumpwm+slynk))
+
+(define-public lemonbar
+  (let ((commit "35183ab81d2128dbb7b6d8e119cc57846bcefdb4")
+        (revision "1"))
+    (package
+      (name "lemonbar")
+      (version (git-version "1.3" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/LemonBoy/bar")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1wwqbph392iwz8skaqxb0xpklb1l6yganqz80g4x1fhrnz7idmlh"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:tests? #f ; no test suite
+         #:make-flags (list "CC=gcc"
+                            (string-append "PREFIX=" %output))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure))))
+      (inputs
+       `(("libxcb" ,libxcb)))
+      (native-inputs
+       `(("perl" ,perl)))
+      (home-page "https://github.com/LemonBoy/bar")
+      (synopsis "Featherweight status bar")
+      (description
+       "@code{lemonbar} (formerly known as @code{bar}) is a lightweight
+bar entirely based on XCB.  Provides full UTF-8 support, basic
+formatting, RandR and Xinerama support and EWMH compliance without
+wasting your precious memory.")
+      (license license:x11))))
