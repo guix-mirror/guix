@@ -764,10 +764,10 @@ collaboration using typical untrusted file hosts or services.")
         ,(origin
            (method url-fetch)
            ;; XXX CGit is currently incompatible with Git > 2.18.
-           (uri "mirror://kernel.org/software/scm/git/git-2.18.0.tar.xz")
+           (uri "mirror://kernel.org/software/scm/git/git-2.18.2.tar.xz")
            (sha256
             (base32
-             "14hfwfkrci829a9316hnvkglnqqw1p03cw9k56p4fcb078wbwh4b"))))
+             "1gmcz5k8sa6phzhhv6zjl8izbyqnxcdb8ns8kd2czyak0g409vrq"))))
        ("openssl" ,openssl)
        ("groff" ,groff)
        ("python" ,python)
