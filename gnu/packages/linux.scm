@@ -1674,7 +1674,7 @@ external rate conversion.")
 (define-public iptables
   (package
     (name "iptables")
-    (version "1.6.2")
+    (version "1.8.4")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1682,7 +1682,7 @@ external rate conversion.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "0crp0lvh5m2f15pr8cw97h8yb8zjj10x95zj06j46cr68vx2vl2m"))))
+               "0z0mgs1ghvn3slc868mgbf2g26njgrzcy5ggyb5w4i55j1a3lflr"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
