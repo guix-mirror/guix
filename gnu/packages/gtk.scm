@@ -89,7 +89,7 @@
 (define-public atk
   (package
    (name "atk")
-   (version "2.32.0")
+   (version "2.34.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -97,7 +97,7 @@
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1k4i817bd2w5b9z394f2yyx95591l2746wa40am0vvz4gzdgwhfb"))))
+              "1jwp16r6p5z66k4b2v8zlzhyshhwlmyi27ippkrgqr8jsary7w6l"))))
    (build-system meson-build-system)
    (propagated-inputs `(("glib" ,glib))) ; required by atk.pc
    (native-inputs
