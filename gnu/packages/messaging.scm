@@ -607,7 +607,10 @@ else [])"))
                   (let ((file (string-append out "/bin/" name))
                         (gi-typelib-path (getenv "GI_TYPELIB_PATH")))
                     (wrap-program file
-                      `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path)))))
+                      `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
+                      ;; For translations
+                      `("XDG_DATA_DIRS" ":" prefix
+                        (,(string-append (assoc-ref outputs "out") "/share"))))))
                 '("gajim" "gajim-remote" "gajim-history-manager")))
              #t))
          (add-after 'install 'install-icons
