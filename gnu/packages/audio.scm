@@ -1970,7 +1970,7 @@ lv2-c++-tools.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://openal-soft.org/openal-releases/openal-soft-"
+                    "https://openal-soft.org/openal-releases/openal-soft-"
                     version ".tar.bz2"))
               (sha256
                (base32
@@ -2007,7 +2007,7 @@ emitters are among the features handled by the API.  More advanced effects,
 including air absorption, occlusion, and environmental reverb, are available
 through the EFX extension.  It also facilitates streaming audio, multi-channel
 buffers, and audio capture.")
-    (home-page "http://openal-soft.org/")
+    (home-page "https://openal-soft.org/")
     (license license:lgpl2.0+)))
 
 (define-public freealut
