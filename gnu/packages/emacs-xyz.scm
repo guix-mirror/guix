@@ -9229,10 +9229,11 @@ configuration of Chinese fonts.")
     (name "emacs-php-mode")
     (version "20171225.342")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://melpa.org/packages/php-mode-"
-                    version ".tar"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ejmr/php-mode.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1zz682f34v4wsm2dyj1gnrnvsrqdq1cy7j8p6cvc398w2fziyg3q"))))
