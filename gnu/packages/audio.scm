@@ -1966,7 +1966,7 @@ lv2-c++-tools.")
 (define-public openal
   (package
     (name "openal")
-    (version "1.19.1")
+    (version "1.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1974,7 +1974,7 @@ lv2-c++-tools.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "1sdjhkz2gd6lbnwphi1b6aw3br4wv2lik5vnqh6mxfc8a7zqfbsw"))))
+                "03p6s5gap0lvig2fs0a8nib5rxsc24dbqjsydpwvlm5l49wlk2f0"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f  ; no check target
@@ -1983,26 +1983,19 @@ lv2-c++-tools.")
          (add-after
           'unpack 'use-full-library-paths
           (lambda* (#:key inputs #:allow-other-keys)
-            (substitute* "Alc/backends/pulseaudio.c"
+            (substitute* "alc/backends/pulseaudio.cpp"
               (("#define PALIB \"libpulse\\.so\\.0\"")
                (string-append "#define PALIB \""
                               (assoc-ref inputs "pulseaudio")
                               "/lib/libpulse.so.0"
                               "\"")))
-            (substitute* "Alc/backends/alsa.c"
+            (substitute* "alc/backends/alsa.cpp"
               (("LoadLib\\(\"libasound\\.so\\.2\"\\)")
                (string-append "LoadLib(\""
                               (assoc-ref inputs "alsa-lib")
                               "/lib/libasound.so.2"
                               "\")")))
             #t)))))
-    (native-inputs
-     `(;; FIXME: On i686-linux, GCC 7 hits an internal compiler error
-       ;; upon building utils/makehrtf.c:3281:
-       ;; "internal compiler error: in gen_rtx_SUBREG, at emit-rtl.c:908"
-       ;; https://ci.guix.gnu.org/log/r2fjx9m75m9rifg2yjbnn853wqy2547n-openal-1.19.1
-       ;; Remove this when the default compiler is GCC 9 or later.
-       ("gcc" ,gcc-9)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("pulseaudio" ,pulseaudio)))
