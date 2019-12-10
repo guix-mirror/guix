@@ -5257,7 +5257,7 @@ used by nftables.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.nftables.org/projects/nftables"
+       (uri (string-append "https://www.nftables.org/projects/nftables"
                            "/files/nftables-" version ".tar.bz2"))
        (sha256
         (base32
@@ -5272,7 +5272,7 @@ used by nftables.")
               ("libnftnl" ,libnftnl)
               ("readline" ,readline)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.nftables.org")
+    (home-page "https://www.nftables.org")
     (synopsis "Userspace utility for Linux packet filtering")
     (description "nftables is the project that aims to replace the existing
 {ip,ip6,arp,eb}tables framework.  Basically, this project provides a new packet
