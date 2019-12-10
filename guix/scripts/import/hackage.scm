@@ -130,9 +130,8 @@ version.\n"))
                              `(define-public ,(string->symbol name)
                                 ,pkg))
                             (_ #f))
-                          (reverse
-                           (stream->list
-                            (apply hackage-recursive-import arguments))))
+                          (stream->list
+                           (apply hackage-recursive-import arguments)))
                      ;; Single import
                      (apply hackage->guix-package arguments))))
       (unless sexp (error-fn))

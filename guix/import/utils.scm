@@ -34,12 +34,14 @@
   #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix download)
+  #:use-module (guix sets)
   #:use-module (gnu packages)
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 receive)
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-41)
@@ -377,40 +379,54 @@ separated by PRED."
                                       (chr (char-downcase chr)))
                                     name)))
 
+(define (topological-sort nodes
+                          node-dependencies
+                          node-name)
+  "Perform a breadth-first traversal of the graph rooted at NODES, a list of
+nodes, and return the list of nodes sorted in topological order.  Call
+NODE-DEPENDENCIES to obtain the dependencies of a node, and NODE-NAME to
+obtain a node's uniquely identifying \"key\"."
+  (let loop ((nodes nodes)
+             (result '())
+             (visited (set)))
+    (match nodes
+      (()
+       result)
+      ((head . tail)
+       (if (set-contains? visited (node-name head))
+           (loop tail result visited)
+           (let ((dependencies (node-dependencies head)))
+             (loop (append dependencies tail)
+                   (cons head result)
+                   (set-insert (node-name head) visited))))))))
+
 (define* (recursive-import package-name repo
                            #:key repo->guix-package guix-name
                            #:allow-other-keys)
-  "Generate a stream of package expressions for PACKAGE-NAME and all its
-dependencies."
-  (define (exists? dependency)
-    (not (null? (find-packages-by-name (guix-name dependency)))))
-  (define initial-state (list #f (list package-name) (list)))
-  (define (step state)
-    (match state
-      ((prev (next . rest) done)
-       (define (handle? dep)
-         (and
-           (not (equal? dep next))
-           (not (member dep done))
-           (not (exists? dep))))
-       (receive (package . dependencies) (repo->guix-package next repo)
-         (list
-           (if package package '()) ;; default #f on failure would interrupt
-           (if package
-             (lset-union equal? rest (filter handle? (car dependencies)))
-             rest)
-           (cons next done))))
-      ((prev '() done)
-       (list #f '() done))))
+  "Return a stream of package expressions for PACKAGE-NAME and all its
+dependencies, sorted in topological order.  For each package,
+call (REPO->GUIX-PACKAGE NAME REPO), which should return a package expression
+and a list of dependencies; call (GUIX-NAME NAME) to obtain the Guix package
+name corresponding to the upstream name."
+  (define-record-type <node>
+    (make-node name package dependencies)
+    node?
+    (name         node-name)
+    (package      node-package)
+    (dependencies node-dependencies))
 
-  ;; Generate a lazy stream of package expressions for all unknown
-  ;; dependencies in the graph.
-  (stream-unfold
-    ;; map: produce a stream element
-    (match-lambda ((latest queue done) latest))
-    ;; predicate
-    (match-lambda ((latest queue done) latest))
-    ;; generator: update the queue
-    step
-    ;; initial state
-    (step initial-state)))
+  (define (exists? name)
+    (not (null? (find-packages-by-name (guix-name name)))))
+
+  (define (lookup-node name)
+    (receive (package dependencies) (repo->guix-package name repo)
+      (make-node name package dependencies)))
+
+  (list->stream                                   ;TODO: remove streams
+   (map node-package
+        (topological-sort (list (lookup-node package-name))
+                          (lambda (node)
+                            (map lookup-node
+                                 (remove exists?
+                                         (node-dependencies node))))
+                          node-name))))

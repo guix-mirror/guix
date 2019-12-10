@@ -95,9 +95,8 @@ Import and convert the PyPI package for PACKAGE-NAME.\n"))
                    `(define-public ,(string->symbol name)
                       ,pkg))
                   (_ #f))
-                (reverse
-                 (stream->list
-                  (pypi-recursive-import package-name))))
+                (stream->list
+                 (pypi-recursive-import package-name)))
            ;; Single import
            (let ((sexp (pypi->guix-package package-name)))
              (unless sexp

@@ -94,9 +94,8 @@ Import and convert the opam package for PACKAGE-NAME.\n"))
                    `(define-public ,(string->symbol name)
                       ,pkg))
                   (_ #f))
-                (reverse
-                 (stream->list
-                  (opam-recursive-import package-name))))
+                (stream->list
+                 (opam-recursive-import package-name)))
            ;; Single import
            (let ((sexp (opam->guix-package package-name)))
              (unless sexp

@@ -110,9 +110,8 @@ Import and convert the LTS Stackage package for PACKAGE-NAME.\n"))
                              `(define-public ,(string->symbol name)
                                 ,pkg))
                             (_ #f))
-                          (reverse
-                           (stream->list
-                            (apply stackage-recursive-import arguments))))
+                          (stream->list
+                           (apply stackage-recursive-import arguments)))
                      ;; Single import
                      (apply stackage->guix-package arguments))))
       (unless sexp (error-fn))

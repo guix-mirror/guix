@@ -123,22 +123,21 @@
              (_ (error "Unexpected URL: " url)))))
         (match (stream->list (gem-recursive-import "foo"))
           ((('package
-              ('name "ruby-foo")
+              ('name "ruby-bar")
               ('version "1.0.0")
               ('source
                ('origin
                  ('method 'url-fetch)
-                 ('uri ('rubygems-uri "foo" 'version))
+                 ('uri ('rubygems-uri "bar" 'version))
                  ('sha256
                   ('base32
                    "1a270mlajhrmpqbhxcqjqypnvgrq4pgixpv3w9gwp1wrrapnwrzk"))))
               ('build-system 'ruby-build-system)
               ('propagated-inputs
                ('quasiquote
-                (("bundler" ('unquote 'bundler))
-                 ("ruby-bar" ('unquote 'ruby-bar)))))
-              ('synopsis "A cool gem")
-              ('description "This package provides a cool gem")
+                (('"bundler" ('unquote 'bundler)))))
+              ('synopsis "Another cool gem")
+              ('description "Another cool gem")
               ('home-page "https://example.com")
               ('license ('list 'license:expat 'license:asl2.0)))
             ('package
@@ -157,21 +156,22 @@
               ('home-page "https://bundler.io/")
               ('license 'license:expat))
             ('package
-              ('name "ruby-bar")
+              ('name "ruby-foo")
               ('version "1.0.0")
               ('source
                ('origin
                  ('method 'url-fetch)
-                 ('uri ('rubygems-uri "bar" 'version))
+                 ('uri ('rubygems-uri "foo" 'version))
                  ('sha256
                   ('base32
                    "1a270mlajhrmpqbhxcqjqypnvgrq4pgixpv3w9gwp1wrrapnwrzk"))))
               ('build-system 'ruby-build-system)
               ('propagated-inputs
                ('quasiquote
-                (('"bundler" ('unquote 'bundler)))))
-              ('synopsis "Another cool gem")
-              ('description "Another cool gem")
+                (("bundler" ('unquote 'bundler))
+                 ("ruby-bar" ('unquote 'ruby-bar)))))
+              ('synopsis "A cool gem")
+              ('description "This package provides a cool gem")
               ('home-page "https://example.com")
               ('license ('list 'license:expat 'license:asl2.0))))
            #t)
