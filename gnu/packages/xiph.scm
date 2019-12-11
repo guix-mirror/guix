@@ -179,7 +179,8 @@ stereo encoding, and voice activity detection.")
                 "0wa7sqpk3x61zz99m7lwkgr6yv62ml6lfgs5xja65vlvdzy44838"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '(,@(if (string=? "aarch64-linux"
+     `(#:configure-flags '("--disable-static"
+                           ,@(if (string=? "aarch64-linux"
                                            (%current-system))
                                '("--enable-neon=no") ; neon defaults to armv7-a
                                '()))))
