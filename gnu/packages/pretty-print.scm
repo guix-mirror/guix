@@ -174,6 +174,8 @@ different programming languages.")
                (base32
                 "0h148anbaqgch6n69pxsvs1c9wmykgd052wmzgdia7qpz8w6p8dl"))))
     (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
     (native-inputs
      `(("unzip" ,unzip)))
     (home-page "http://fmtlib.net/")
@@ -184,6 +186,13 @@ It can be used as a safe alternative to @code{printf} or as a fast alternative
 to @code{IOStreams}.")
     ;; The library is bsd-2, but documentation and tests include other licenses.
     (license (list bsd-2 bsd-3 psfl))))
+
+(define-public fmt-restinio
+  (hidden-package
+   (package/inherit
+    fmt
+    (arguments
+     '(#:configure-flags '("-DCMAKE_CXX_FLAGS=-fPIC"))))))
 
 (define-public source-highlight
   (package

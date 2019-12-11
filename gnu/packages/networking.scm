@@ -2523,12 +2523,6 @@ communication over HTTP.")
       (home-page "https://github.com/Corvusoft/restbed")
       (license license:agpl3+))))
 
-(define fmt-restinio
-  (package
-    (inherit fmt)
-    (arguments
-     '(#:configure-flags '("-DCMAKE_CXX_FLAGS=-fPIC")))))
-
 (define-public restinio
   (package
     (name "restinio")
@@ -2553,7 +2547,7 @@ communication over HTTP.")
        ("sobjectizer" ,sobjectizer)))
     (propagated-inputs
      `(("asio", asio)
-       ("fmt" ,fmt-restinio)
+       ("fmt" ,fmt)
        ("http-parser", http-parser)))
     (arguments
      `(#:configure-flags '("-DRESTINIO_INSTALL=on")
@@ -2592,7 +2586,7 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
        ("readline" ,readline)
        ("jsoncpp" ,jsoncpp)
        ("openssl" ,openssl)
-       ("fmt" ,fmt-restinio)))
+       ("fmt" ,fmt)))
     (propagated-inputs
      `(("argon2" ,argon2)  ; TODO: Needed for the pkg-config .pc file to work?
        ("msgpack" ,msgpack)))           ;included in several installed headers
