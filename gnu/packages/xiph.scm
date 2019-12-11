@@ -352,6 +352,8 @@ ogginfo, to obtain information (tags, bitrate, length, etc.) about
                (base32
                 "17gz8kxs4i7icsc1gj713gadiapyklynlwqlf0ai98dj4lg8xdb5"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (synopsis "Versatile audio codec")
     (description
      "Opus is a totally open, royalty-free, highly versatile audio codec.  Opus
