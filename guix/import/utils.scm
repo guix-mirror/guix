@@ -44,7 +44,6 @@
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
-  #:use-module (srfi srfi-41)
   #:export (factorize-uri
 
             flatten
@@ -422,11 +421,10 @@ name corresponding to the upstream name."
     (receive (package dependencies) (repo->guix-package name repo)
       (make-node name package dependencies)))
 
-  (list->stream                                   ;TODO: remove streams
-   (map node-package
-        (topological-sort (list (lookup-node package-name))
-                          (lambda (node)
-                            (map lookup-node
-                                 (remove exists?
-                                         (node-dependencies node))))
-                          node-name))))
+  (map node-package
+       (topological-sort (list (lookup-node package-name))
+                         (lambda (node)
+                           (map lookup-node
+                                (remove exists?
+                                        (node-dependencies node))))
+                         node-name)))

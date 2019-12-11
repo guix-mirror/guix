@@ -24,7 +24,6 @@
   #:use-module (gcrypt hash)
   #:use-module (guix tests)
   #:use-module ((guix build utils) #:select (delete-file-recursively))
-  #:use-module (srfi srfi-41)
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 match))
 
@@ -121,7 +120,7 @@
               (values (open-input-string test-bundler-json)
                       (string-length test-bundler-json)))
              (_ (error "Unexpected URL: " url)))))
-        (match (stream->list (gem-recursive-import "foo"))
+        (match (gem-recursive-import "foo")
           ((('package
               ('name "ruby-bar")
               ('version "1.0.0")

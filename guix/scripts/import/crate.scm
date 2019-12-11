@@ -28,7 +28,6 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-37)
-  #:use-module (srfi srfi-41)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:export (guix-import-crate))
@@ -101,8 +100,7 @@ Import and convert the crate.io package for PACKAGE-NAME.\n"))
                    `(define-public ,(string->symbol name)
                       ,pkg))
                   (_ #f))
-                (stream->list
-                 (crate-recursive-import name)))
+                (crate-recursive-import name))
            (let ((sexp (crate->guix-package name version)))
              (unless sexp
                (leave (G_ "failed to download meta-data for package '~a'~%")

@@ -24,7 +24,6 @@
   #:use-module (guix packages)
   #:use-module (guix build-system)
   #:use-module (gnu packages)
-  #:use-module (srfi srfi-41)
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 match))
 
@@ -49,20 +48,19 @@
     (package
       (name "foo")
       (inputs `(("bar" ,bar)))))
-  (stream->list
-   (recursive-import "foo" 'repo
-                     #:repo->guix-package
-                     (match-lambda*
-                       (("foo" 'repo)
-                        (values '(package
-                                   (name "foo")
-                                   (inputs `(("bar" ,bar))))
-                                '("bar")))
-                       (("bar" 'repo)
-                        (values '(package
-                                   (name "bar"))
-                                '())))
-                     #:guix-name identity)))
+  (recursive-import "foo" 'repo
+                    #:repo->guix-package
+                    (match-lambda*
+                      (("foo" 'repo)
+                       (values '(package
+                                  (name "foo")
+                                  (inputs `(("bar" ,bar))))
+                               '("bar")))
+                      (("bar" 'repo)
+                       (values '(package
+                                  (name "bar"))
+                               '())))
+                    #:guix-name identity))
 
 (test-assert "alist->package with simple source"
   (let* ((meta '(("name" . "hello")
