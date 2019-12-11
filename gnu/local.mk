@@ -1179,7 +1179,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ngircd-handle-zombies.patch		\
   %D%/packages/patches/nm-plugin-path.patch			\
   %D%/packages/patches/nsis-env-passthru.patch			\
-  %D%/packages/patches/nss-CVE-2019-11745.patch			\
   %D%/packages/patches/nss-freebl-stubs.patch			\
   %D%/packages/patches/nss-increase-test-timeout.patch		\
   %D%/packages/patches/nss-pkgconfig.patch			\
