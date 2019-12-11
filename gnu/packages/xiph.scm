@@ -122,6 +122,8 @@ polyphonic) audio and music at fixed and variable bitrates from 16 to
                "0q8wark9ribij57dciym5vdikg2464p8q2mgqvfb78ksjh4s8vgk"))
              (patches (search-patches "libtheora-config-guess.patch"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (inputs `(("libvorbis" ,libvorbis)))
     ;; The .pc files refer to libogg.
     (propagated-inputs `(("libogg" ,libogg)))
