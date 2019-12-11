@@ -14768,6 +14768,40 @@ linearly independent paths through a program's source code.  This package
 provides tools to compute this metric.")
     (license license:expat)))
 
+(define-public r-lintr
+  (package
+    (name "r-lintr")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "lintr" version))
+       (sha256
+        (base32
+         "09gbci4v5n4gsfzminly8332fw7faxdi1kkyvpa10dydx02sjcwb"))))
+    (properties `((upstream-name . "lintr")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-codetools" ,r-codetools)
+       ("r-crayon" ,r-crayon)
+       ("r-cyclocomp" ,r-cyclocomp)
+       ("r-digest" ,r-digest)
+       ("r-httr" ,r-httr)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-knitr" ,r-knitr)
+       ("r-rex" ,r-rex)
+       ("r-rstudioapi" ,r-rstudioapi)
+       ("r-stringdist" ,r-stringdist)
+       ("r-testthat" ,r-testthat)
+       ("r-xml2" ,r-xml2)
+       ("r-xmlparsedata" ,r-xmlparsedata)))
+    (home-page "https://github.com/jimhester/lintr")
+    (synopsis "Linter for R code")
+    (description "This package checks adherence to a given style, syntax
+errors and possible semantic issues.  It supports on the fly checking of R
+code edited with @code{RStudio IDE}, @code{Emacs} and @code{Vim}.")
+    (license license:expat)))
+
 (define-public r-sctransform
   (package
     (name "r-sctransform")
