@@ -2730,11 +2730,28 @@ exec " gcc "/bin/" program
        #:validate-runpath? #f
        ,@(package-arguments file)))))
 
+(define gawk-boot0
+  (package
+    (inherit patch)
+    (source (bootstrap-origin (package-source gawk)))
+    (name "gawk-boot0")
+    (native-inputs '())
+    (inputs
+     `(("make" ,gnu-make-boot0)
+       ,@(%bootstrap-inputs+toolchain)))
+    (arguments
+     `(#:tests? #f
+       #:implicit-inputs? #f
+       #:guile ,%bootstrap-guile
+       #:strip-binaries? #f
+       #:validate-runpath? #f))))
+
 (define (%boot0-inputs)
   `(("make" ,gnu-make-boot0)
     ("diffutils" ,diffutils-boot0)
     ("findutils" ,findutils-boot0)
     ("file" ,file-boot0)
+    ("gawk" ,gawk-boot0)
     ,@(%bootstrap-inputs+toolchain)))
 
 (define* (boot-triplet #:optional (system (%current-system)))
