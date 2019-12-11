@@ -2635,34 +2635,6 @@ exec " gcc "/bin/" program
     ,@(fold alist-delete (%boot-mesboot5-inputs)
             '("coreutils" "kernel-headers"))))
 
-(define m4-mesboot
-  (package
-    (inherit m4)
-    (name "m4-mesboot")
-    (version "1.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/m4/m4-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1f9bxj176kf3pvs350w2dfs8jgwhminywri5pyn01b11yc4yhsjw"))))
-    (supported-systems '("i686-linux" "x86_64-linux"))
-    (native-inputs `(("mes" ,mes-boot)
-                     ("tcc" ,tcc-boot)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (setenv "CONFIG_SHELL" (string-append
-                                       (assoc-ref %build-inputs "bash")
-                                       "/bin/sh"))
-               (setenv "CC" "tcc -static")
-               (setenv "CPP" "tcc -E")
-               (invoke "./configure" (string-append "--prefix=" out))))))))))
-
 (define (%bootstrap-inputs+toolchain)
   ;; The traditional bootstrap-inputs.  For the i686-linux Reduced Binary Seed
   ;; the actual reduced set with bootstrapped toolchain.
