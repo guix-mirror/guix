@@ -19816,6 +19816,33 @@ Emacs that integrate with major modes like Org-mode.")
     (home-page "https://github.com/hlissner/emacs-doom-themes")
     (license license:expat)))
 
+(define-public emacs-modus-themes
+  (package
+    (name "emacs-modus-themes")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/protesilaos/modus-themes.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "15g63675c5df2p0kk2sqj2c8qriyh69lcbggknqlaxapr13giz4x"))))
+    (build-system emacs-build-system)
+    (home-page "https://gitlab.com/protesilaos/modus-themes")
+    (synopsis "Emacs themes designed for colour-contrast accessibility")
+    (description
+     "This is a set of accessible themes for GNU Emacs.  The contrast ratio
+between foreground and background values should always be >= 7:1, which
+conforms with the WCAG AAA accessibility standard.
+
+The Modus themes project consists of two standalone items, one where dark text
+is cast on a light backdrop (Modus Operandi) and another where light text is
+displayed against a dark background (Modus Vivendi).")
+    (license license:gpl3+)))
+
 (define-public emacs-elixir-mode
   (package
     (name "emacs-elixir-mode")
