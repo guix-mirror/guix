@@ -71,7 +71,7 @@
 (define-public libssh
   (package
     (name "libssh")
-    (version "0.9.2")
+    (version "0.9.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -79,22 +79,12 @@
                      (commit (string-append "libssh-" version))))
               (sha256
                (base32
-                "14g4rvp91skn2hlsjyhkv58vhng65xrf34cfqffixa4al869hzgj"))
+                "175i3xybg69d5lb078334v6dd3njm743kww8f67ix9w33969rmzf"))
               (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (outputs '("out" "debug"))
     (arguments
      '(#:configure-flags '("-DWITH_GCRYPT=ON")
-
-       #:phases (modify-phases %standard-phases
-                  (add-before 'configure 'avoid-werror
-                    (lambda _
-                      ;; Avoid '-Werror'.  Presumably this works fine with
-                      ;; gcc@8 on x86_64 but leads to errors with our older
-                      ;; compiler.
-                      (substitute* "CompilerChecks.cmake"
-                        (("-Werror=") "-W"))
-                      #t)))
 
        ;; TODO: Add 'CMockery' and '-DWITH_TESTING=ON' for the test suite.
        #:tests? #f))
