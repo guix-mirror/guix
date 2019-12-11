@@ -95,7 +95,8 @@ periodic timestamps for seeking.")
               "05dlzjkdpv46zb837wysxqyn8l636x3dw8v8ymlrwz2fg1dbn05g"))))
    (build-system gnu-build-system)
    (propagated-inputs `(("libogg" ,libogg)))
-   (arguments `(#:configure-flags '("LDFLAGS=-lm")
+   (arguments `(#:configure-flags '("LDFLAGS=-lm"
+                                    "--disable-static")
                 #:parallel-tests? #f))
    (synopsis "Library implementing the vorbis audio format")
    (description
