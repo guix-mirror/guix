@@ -19734,6 +19734,30 @@ You can customize: @code{tao-theme-scale-fn}, that returns 16 2-digit numbers;
 @code{tao-theme-use-height}.")
       (license license:gpl3+))))
 
+(define-public emacs-almost-mono-themes
+  (let ((commit "c3a85c1a665530a5d830665969725cdba8eceb75")
+        (revision "0"))
+    (package
+      (name "emacs-almost-mono-themes")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/cryon/almost-mono-themes.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "034k32xkr5ma415hlkbl35z0jxc4sa1inf87hg3y6lrlfl83fyjh"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/cryon/almost-mono-themes")
+      (synopsis "Almost monochromatic themes for emacs in a few variants")
+      (description
+       "This package provides a collection of almost monochrome Emacs themes:
+@code{almost-mono-black} and @code{almost-mono-white}.")
+      (license license:gpl3+))))
+
 (define-public emacs-doom-themes
   (package
     (name "emacs-doom-themes")
