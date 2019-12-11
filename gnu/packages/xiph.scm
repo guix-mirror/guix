@@ -69,6 +69,8 @@
              (base32
               "1zlk33vxvxr0l9lhkbhkdwvylw96d2n0fnd3d8dl031hph9bqqy1"))))
    (build-system gnu-build-system)
+   (arguments
+    '(#:configure-flags '("--disable-static")))
    (synopsis "Library for manipulating the ogg multimedia format")
    (description
     "The libogg library allows to manipulate the ogg multimedia container
