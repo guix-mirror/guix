@@ -19758,6 +19758,30 @@ You can customize: @code{tao-theme-scale-fn}, that returns 16 2-digit numbers;
 @code{almost-mono-black} and @code{almost-mono-white}.")
       (license license:gpl3+))))
 
+(define-public emacs-quasi-monochrome
+  (let ((commit "68060dbbc0bbfe4924387392874186c5a29bb434")
+        (revision "0"))
+    (package
+      (name "emacs-quasi-monochrome")
+      (version (git-version "1.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/lbolla/emacs-quasi-monochrome.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0zp2xr0bjfqrpb0bqczzick1vvbjmipjavrdi70kw6a9caynvq22"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/lbolla/emacs-quasi-monochrome")
+      (synopsis "Dark color theme for Emacs")
+      (description
+       "This package provides a dark color theme with a black background, high
+contrast and few colors.")
+      (license license:gpl3+))))
+
 (define-public emacs-doom-themes
   (package
     (name "emacs-doom-themes")
