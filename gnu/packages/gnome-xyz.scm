@@ -151,6 +151,45 @@ faster window switching.")
     (home-page "https://micheleg.github.io/dash-to-dock/")
     (license license:gpl2+)))
 
+(define-public gnome-shell-extension-dash-to-panel
+  (package
+    (name "gnome-shell-extension-dash-to-panel")
+    (version "26")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/home-sweet-gnome/dash-to-panel.git")
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "1phfx2pblygpcvsppsqqqflm7qnz46mqkw29hj0nv2dn69hf4xbc"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:make-flags (list (string-append "INSTALLBASE="
+                                         (assoc-ref %outputs "out")
+                                         "/share/gnome-shell/extensions")
+                          (string-append "VERSION="
+                                         ,(package-version
+                                           gnome-shell-extension-dash-to-panel)))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'bootstrap)
+         (delete 'configure))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("glib" ,glib)
+       ("glib" ,glib "bin")))
+    (synopsis "Icon taskbar for GNOME Shell")
+    (description "This extension moves the dash into the gnome main
+panel so that the application launchers and system tray are combined
+into a single panel, similar to that found in KDE Plasma and Windows 7+.")
+    (home-page "https://github.com/home-sweet-gnome/dash-to-panel/")
+    (license license:gpl2+)))
+
 (define-public gnome-shell-extension-noannoyance
   (package
     (name "gnome-shell-extension-noannoyance")
