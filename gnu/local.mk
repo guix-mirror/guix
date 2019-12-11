@@ -1222,7 +1222,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/pam-mount-luks2-support.patch		\
   %D%/packages/patches/patchutils-test-perms.patch		\
   %D%/packages/patches/patch-hurd-path-max.patch		\
-  %D%/packages/patches/pcre2-fix-jit_match-crash.patch		\
   %D%/packages/patches/perl-autosplit-default-time.patch	\
   %D%/packages/patches/perl-deterministic-ordering.patch	\
   %D%/packages/patches/perl-finance-quote-unuse-mozilla-ca.patch \
