@@ -2740,3 +2740,54 @@ tests being run, resulting clearer and more specific output.")
 comparing, and writing Semantic Versions.  It also includes ranges in
 the style of the Node Package Manager (NPM).")
     (license license:gpl3+)))
+
+(define-public guile-hashing
+  (package
+    (name "guile-hashing")
+    (version "1.2.0")
+    (home-page "https://github.com/weinholt/hashing")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1362d3lmpv7slmv1zmr9wy8panq9sjr9787gc2hagd646mpsfpkl"))))
+    (build-system guile-build-system)
+    (arguments
+     `(#:modules ((guix build guile-build-system)
+                  (guix build utils)
+                  (srfi srfi-26)
+                  (ice-9 ftw))
+       #:implicit-inputs? #f                      ;needs nothing but Guile
+       #:phases (modify-phases %standard-phases
+                  (add-before 'build 'move-sls-files
+                    (lambda _
+                      ;; Move the source under hashing/ in order to match
+                      ;; module names, and rename .sls files to .scm.
+                      (define (target file)
+                        (string-append "hashing/" file))
+
+                      (define (sls->scm sls)
+                        (string-append (string-drop-right sls 4)
+                                       ".scm"))
+
+                      (mkdir "hashing")
+                      (for-each (lambda (file)
+                                  (rename-file file (sls->scm file)))
+                                (find-files "." "\\.sls$"))
+                      (for-each (lambda (file)
+                                  (rename-file file (target file)))
+                                (scandir "." (cut string-suffix? ".scm" <>)))
+                      (rename-file "private" "hashing/private")
+                      #t)))))
+    (native-inputs
+     `(("guile" ,guile-2.2)))
+    (synopsis "Cryprographic hash functions implemented in Scheme")
+    (description
+     "The @code{(hashing @dots{})} modules implement cryptographic hash
+functions in pure R6RS Scheme: CRC, HMAC, MD5, SHA-1, and SHA-2 (SHA-256,
+SHA-512).")
+    (license license:expat)))
