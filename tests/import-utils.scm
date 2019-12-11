@@ -24,7 +24,8 @@
   #:use-module (guix packages)
   #:use-module (guix build-system)
   #:use-module (gnu packages)
-  #:use-module (srfi srfi-64))
+  #:use-module (srfi srfi-64)
+  #:use-module (ice-9 match))
 
 (test-begin "import-utils")
 
@@ -40,6 +41,26 @@
 (test-equal "license->symbol"
   'license:lgpl2.0
   (license->symbol license:lgpl2.0))
+
+(test-equal "recursive-import"
+  '((package                         ;package expressions in topological order
+      (name "bar"))
+    (package
+      (name "foo")
+      (inputs `(("bar" ,bar)))))
+  (recursive-import "foo" 'repo
+                    #:repo->guix-package
+                    (match-lambda*
+                      (("foo" 'repo)
+                       (values '(package
+                                  (name "foo")
+                                  (inputs `(("bar" ,bar))))
+                               '("bar")))
+                      (("bar" 'repo)
+                       (values '(package
+                                  (name "bar"))
+                               '())))
+                    #:guix-name identity))
 
 (test-assert "alist->package with simple source"
   (let* ((meta '(("name" . "hello")

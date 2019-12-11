@@ -531,7 +531,7 @@ everything from small to very large projects with speed and efficiency.")
 (define-public libgit2
   (package
     (name "libgit2")
-    (version "0.28.3")
+    (version "0.28.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -540,7 +540,7 @@ everything from small to very large projects with speed and efficiency.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "07068flm9xi25wmcs65nyfg6a7ikgfv96i2nhgyj5gzs9gljqiz2"))
+                "171b25aym4q88bidc4c76y4l6jmdwifm3q9zjqsll0wjhlkycfy1"))
               (patches (search-patches "libgit2-avoid-python.patch"
                                        "libgit2-mtime-0.patch"))
 

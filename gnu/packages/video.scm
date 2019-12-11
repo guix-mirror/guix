@@ -1454,6 +1454,7 @@ projects while introducing many more.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-shared"
+                               "--disable-static"
                                "--as=yasm"
                                ;; Limit size to avoid CVE-2015-1258
                                "--size-limit=16384x16384"

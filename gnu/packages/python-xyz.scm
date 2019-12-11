@@ -11768,19 +11768,41 @@ PNG, JPEG, JPEG2000 and GIF files in pure Python.")
 (define-public python-argcomplete
   (package
     (name "python-argcomplete")
-    (version "1.7.0")
+    (version "1.10.3")
     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "argcomplete" version))
-        (sha256
-          (base32
-            "11bwiw6j0nilgz81xnw6f1npyga3prp8asjqrm87cdr3ria5l03x"))))
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "argcomplete" version))
+       (sha256
+        (base32
+         "02jkc44drb0yjz6x28lvg6rj607n8r2irdpdvyylm8xnycn54zx3"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'embed-tool-references
+           (lambda _
+             (substitute* "argcomplete/bash_completion.d/python-argcomplete.sh"
+               ((" grep")
+                (string-append " " (which "grep")))
+               ((" egrep")
+                (string-append " " (which "egrep")))
+               (("elif which")
+                (string-append "elif " (which "which")))
+               (("\\$\\(which")
+                (string-append "$(" (which "which"))))
+             #t)))))
+    (inputs
+     `(("grep" ,grep)
+       ("which" ,which)))
     (native-inputs
-     `(("python-pexpect" ,python-pexpect)
+     `(("python-coverage" ,python-coverage)
+       ("python-flake8" ,python-flake8)
+       ("python-pexpect" ,python-pexpect)
+       ("python-wheel" ,python-wheel)
        ("tcsh" ,tcsh)
-       ("bash-full" ,bash)))             ;full Bash for 'test_file_completion'
+       ("fish" ,fish)
+       ("bash-full" ,bash)))            ;full Bash for 'test_file_completion'
     (home-page "https://github.com/kislyuk/argcomplete")
     (synopsis "Shell tab completion for Python argparse")
     (description "argcomplete provides extensible command line tab completion

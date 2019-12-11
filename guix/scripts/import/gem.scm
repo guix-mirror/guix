@@ -26,7 +26,6 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-37)
-  #:use-module (srfi srfi-41)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:export (guix-import-gem))
@@ -95,9 +94,7 @@ Import and convert the RubyGems package for PACKAGE-NAME.\n"))
                    `(define-public ,(string->symbol name)
                       ,pkg))
                   (_ #f))
-                (reverse
-                 (stream->list
-                  (gem-recursive-import package-name 'rubygems))))
+                (gem-recursive-import package-name 'rubygems))
            (let ((sexp (gem->guix-package package-name)))
              (unless sexp
                (leave (G_ "failed to download meta-data for package '~a'~%")

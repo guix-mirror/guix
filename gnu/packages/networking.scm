@@ -35,6 +35,7 @@
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 ;;; Copyright © 2019 Daniel Schaefer <git@danielschaefer.me>
+;;; Copyright © 2019 Diego N. Barbato <dnbarbato@posteo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2522,12 +2523,6 @@ communication over HTTP.")
       (home-page "https://github.com/Corvusoft/restbed")
       (license license:agpl3+))))
 
-(define fmt-restinio
-  (package
-    (inherit fmt)
-    (arguments
-     '(#:configure-flags '("-DCMAKE_CXX_FLAGS=-fPIC")))))
-
 (define-public restinio
   (package
     (name "restinio")
@@ -2552,7 +2547,7 @@ communication over HTTP.")
        ("sobjectizer" ,sobjectizer)))
     (propagated-inputs
      `(("asio", asio)
-       ("fmt" ,fmt-restinio)
+       ("fmt" ,fmt)
        ("http-parser", http-parser)))
     (arguments
      `(#:configure-flags '("-DRESTINIO_INSTALL=on")
@@ -2591,7 +2586,7 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
        ("readline" ,readline)
        ("jsoncpp" ,jsoncpp)
        ("openssl" ,openssl)
-       ("fmt" ,fmt-restinio)))
+       ("fmt" ,fmt)))
     (propagated-inputs
      `(("argon2" ,argon2)  ; TODO: Needed for the pkg-config .pc file to work?
        ("msgpack" ,msgpack)))           ;included in several installed headers
@@ -2822,3 +2817,33 @@ to be a teaching tool and presents the subnetting results as
 easy-to-understand binary values.")
     (home-page "http://jodies.de/ipcalc")
     (license license:gpl2+)))
+
+(define-public vde2
+  (package
+    (name "vde2")
+    (version "2.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "mirror://sourceforge/vde/vde2/2.3.2/vde2-2.3.2.tar.gz")
+       (sha256
+        (base32 "14xga0ib6p1wrv3hkl4sa89yzjxv7f1vfqaxsch87j6scdm59pr2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:parallel-build? #f))           ; Build fails if #t.
+    (inputs
+     `(("python" ,python)
+       ("libpcap" ,libpcap)
+       ("openssl" ,openssl-1.0)))       ; Build fails with 1.1.
+    (home-page "https://github.com/virtualsquare/vde-2")
+    (synopsis "Virtual Distributed Ethernet")
+    (description "VDE is a set of programs to provide virtual software-defined
+Ethernet network interface controllers across multiple virtual or
+physical, local or remote devices.  The VDE architecture provides
+virtual counterparts to hardware components such as switches and
+cables.")
+    (license (list license:gpl2
+                   license:lgpl2.1       ; libvdeplug
+                   (license:non-copyleft ; slirpvde
+                    "file://COPYING.slirpvde"
+                    "See COPYING.slirpvde in the distribution.")))))

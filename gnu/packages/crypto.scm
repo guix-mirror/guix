@@ -852,15 +852,16 @@ cannot sign messages in OpenBSD format yet.")
 (define-public enchive
   (package
     (name "enchive")
-    (version "3.4")
+    (version "3.5")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/skeeto/" name "/archive/"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "17hrxpp4cpn10bk48sfvfjc8hghky34agsnypam1v9f36kbalqfk"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/skeeto/enchive")
+                      (commit version)))
+                (sha256
+                 (base32
+                  "0fdrfc5l42lj2bvmv9dmkmhmm7qiszwk7cmdvnqad3fs7652g0qa"))
+                (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no check target         '

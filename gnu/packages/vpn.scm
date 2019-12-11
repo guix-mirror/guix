@@ -10,6 +10,7 @@
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +43,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages nss)
@@ -134,7 +136,8 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
                  (base32
                   "1g41yarz2bl0f73kbjqnywr485ghanbp7nmspklfb0n07yp0z6ak"))))
       (build-system gnu-build-system)
-      (inputs `(("coreutils" ,coreutils)
+      (inputs `(("guile" ,guile-2.2) ; for the wrapper scripts
+                ("coreutils" ,coreutils)
                 ("grep" ,grep)
                 ("iproute2" ,iproute)    ; for ‘ip’
                 ("net-tools" ,net-tools) ; for ‘ifconfig’, ‘route’
@@ -177,7 +180,7 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
                (let ((out (assoc-ref outputs "out")))
                  (for-each
                   (lambda (script)
-                    (wrap-program script
+                    (wrap-script (string-append out "/etc/vpnc/" script)
                       `("PATH" ":" prefix
                         ,(map (lambda (name)
                                 (let ((input (assoc-ref inputs name)))
@@ -189,8 +192,9 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
                                     "net-tools"
                                     "sed"
                                     "which")))))
-                  (find-files (string-append out "/etc/vpnc/vpnc-script")
-                              "^vpnc-script"))
+                  (list "vpnc-script-ptrtd"
+                        "vpnc-script-sshd"
+                        "vpnc-script"))
                  #t))))
          #:tests? #f))                  ; no tests
       (home-page "http://git.infradead.org/users/dwmw2/vpnc-scripts.git")

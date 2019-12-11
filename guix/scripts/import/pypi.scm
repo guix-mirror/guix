@@ -26,7 +26,6 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-37)
-  #:use-module (srfi srfi-41)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:export (guix-import-pypi))
@@ -95,9 +94,7 @@ Import and convert the PyPI package for PACKAGE-NAME.\n"))
                    `(define-public ,(string->symbol name)
                       ,pkg))
                   (_ #f))
-                (reverse
-                 (stream->list
-                  (pypi-recursive-import package-name))))
+                (pypi-recursive-import package-name))
            ;; Single import
            (let ((sexp (pypi->guix-package package-name)))
              (unless sexp

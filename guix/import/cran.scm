@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -505,7 +505,7 @@ s-expression corresponding to that package, or #f on failure."
              ((bioconductor)
               ;; Retry import from CRAN
               (cran->guix-package package-name 'cran))
-             (else #f)))))))
+             (else (values #f '()))))))))
 
 (define* (cran-recursive-import package-name #:optional (repo 'cran))
   (recursive-import package-name repo

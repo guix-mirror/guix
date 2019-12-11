@@ -4168,6 +4168,30 @@ supports arbitrary vertex/edge/graph attributes.")
 software developed by the Statnet Project.")
     (license license:gpl3)))
 
+(define-public r-statcheck
+  (package
+    (name "r-statcheck")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "statcheck" version))
+       (sha256
+        (base32
+         "0ivybdcrymlsfv6pg6p5bv70qdvgxf2vgp0kf4r0pf2fcvav1mcp"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-plyr" ,r-plyr)
+       ("r-rmarkdown" ,r-rmarkdown)))
+    (home-page "https://cran.r-project.org/web/packages/statcheck/")
+    (synopsis "Extract statistics from articles and recompute p-values")
+    (description "This package can automatically extract statistical
+null-hypothesis significant testing (NHST) results from articles and recompute
+the p-values based on the reported test statistic and degrees of freedom to
+detect possible inconsistencies.")
+    (license license:gpl2)))
+
 (define-public r-sna
   (package
     (name "r-sna")
@@ -14693,6 +14717,89 @@ external dependencies.  This package has is implemented purely in R.")
 regular expressions.  Regular expressions are a very powerful feature, however
 they are often difficult to interpret.  Rex allows you to build complex
 regular expressions from human readable expressions")
+    (license license:expat)))
+
+(define-public r-xmlparsedata
+  (package
+    (name "r-xmlparsedata")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "xmlparsedata" version))
+       (sha256
+        (base32
+         "0gjr3l5z5dp276lchr2649as1rkj56d2mlvbr66yg393zzw50lsh"))))
+    (properties `((upstream-name . "xmlparsedata")))
+    (build-system r-build-system)
+    (home-page "https://github.com/r-lib/xmlparsedata#readme")
+    (synopsis "Parse data of @code{R} code as an @code{XML} tree")
+    (description
+     "This package provides tools to convert the output of
+@code{utils::getParseData()} to an @code{XML} tree, that one can search via
+@code{XPath}, and is easier to manipulate in general.")
+    (license license:expat)))
+
+(define-public r-cyclocomp
+  (package
+    (name "r-cyclocomp")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "cyclocomp" version))
+       (sha256
+        (base32
+         "0gky3svk02wiajw7nfjh30684h3qxili4bvsab0m7b6cggw6bgyd"))))
+    (properties `((upstream-name . "cyclocomp")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-callr" ,r-callr)
+       ("r-crayon" ,r-crayon)
+       ("r-desc" ,r-desc)
+       ("r-remotes" ,r-remotes)
+       ("r-withr" ,r-withr)))
+    (home-page "https://github.com/MangoTheCat/cyclocomp")
+    (synopsis "Cyclomatic complexity of R code")
+    (description
+     "Cyclomatic complexity is a software metric, used to indicate the
+complexity of a program.  It is a quantitative measure of the number of
+linearly independent paths through a program's source code.  This package
+provides tools to compute this metric.")
+    (license license:expat)))
+
+(define-public r-lintr
+  (package
+    (name "r-lintr")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "lintr" version))
+       (sha256
+        (base32
+         "09gbci4v5n4gsfzminly8332fw7faxdi1kkyvpa10dydx02sjcwb"))))
+    (properties `((upstream-name . "lintr")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-codetools" ,r-codetools)
+       ("r-crayon" ,r-crayon)
+       ("r-cyclocomp" ,r-cyclocomp)
+       ("r-digest" ,r-digest)
+       ("r-httr" ,r-httr)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-knitr" ,r-knitr)
+       ("r-rex" ,r-rex)
+       ("r-rstudioapi" ,r-rstudioapi)
+       ("r-stringdist" ,r-stringdist)
+       ("r-testthat" ,r-testthat)
+       ("r-xml2" ,r-xml2)
+       ("r-xmlparsedata" ,r-xmlparsedata)))
+    (home-page "https://github.com/jimhester/lintr")
+    (synopsis "Linter for R code")
+    (description "This package checks adherence to a given style, syntax
+errors and possible semantic issues.  It supports on the fly checking of R
+code edited with @code{RStudio IDE}, @code{Emacs} and @code{Vim}.")
     (license license:expat)))
 
 (define-public r-sctransform

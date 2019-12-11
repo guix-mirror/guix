@@ -629,7 +629,7 @@ would need and has several interesting built-in capabilities.")
 (define-public netcat-openbsd
   (package
     (name "netcat-openbsd")
-    (version "1.203-2")
+    (version "1.206-1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -638,7 +638,7 @@ would need and has several interesting built-in capabilities.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0j85gzbjzs6yrhgabh3zkwzd27qkr5s0zjjczl0hah8q7yhrjk3m"))))
+                "08r3mmck3s5pbvwyq19wp5g8jqcxza3cm8nkc6jm7rqn4jdydc4z"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no test suite
