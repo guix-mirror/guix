@@ -187,13 +187,6 @@ to @code{IOStreams}.")
     ;; The library is bsd-2, but documentation and tests include other licenses.
     (license (list bsd-2 bsd-3 psfl))))
 
-(define-public fmt-restinio
-  (hidden-package
-   (package/inherit
-    fmt
-    (arguments
-     '(#:configure-flags '("-DCMAKE_CXX_FLAGS=-fPIC"))))))
-
 (define-public source-highlight
   (package
     (name "source-highlight")
