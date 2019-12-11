@@ -4168,6 +4168,30 @@ supports arbitrary vertex/edge/graph attributes.")
 software developed by the Statnet Project.")
     (license license:gpl3)))
 
+(define-public r-statcheck
+  (package
+    (name "r-statcheck")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "statcheck" version))
+       (sha256
+        (base32
+         "0ivybdcrymlsfv6pg6p5bv70qdvgxf2vgp0kf4r0pf2fcvav1mcp"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-plyr" ,r-plyr)
+       ("r-rmarkdown" ,r-rmarkdown)))
+    (home-page "https://cran.r-project.org/web/packages/statcheck/")
+    (synopsis "Extract statistics from articles and recompute p-values")
+    (description "This package can automatically extract statistical
+null-hypothesis significant testing (NHST) results from articles and recompute
+the p-values based on the reported test statistic and degrees of freedom to
+detect possible inconsistencies.")
+    (license license:gpl2)))
+
 (define-public r-sna
   (package
     (name "r-sna")
