@@ -14719,6 +14719,27 @@ they are often difficult to interpret.  Rex allows you to build complex
 regular expressions from human readable expressions")
     (license license:expat)))
 
+(define-public r-xmlparsedata
+  (package
+    (name "r-xmlparsedata")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "xmlparsedata" version))
+       (sha256
+        (base32
+         "0gjr3l5z5dp276lchr2649as1rkj56d2mlvbr66yg393zzw50lsh"))))
+    (properties `((upstream-name . "xmlparsedata")))
+    (build-system r-build-system)
+    (home-page "https://github.com/r-lib/xmlparsedata#readme")
+    (synopsis "Parse data of @code{R} code as an @code{XML} tree")
+    (description
+     "This package provides tools to convert the output of
+@code{utils::getParseData()} to an @code{XML} tree, that one can search via
+@code{XPath}, and is easier to manipulate in general.")
+    (license license:expat)))
+
 (define-public r-sctransform
   (package
     (name "r-sctransform")
