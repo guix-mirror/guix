@@ -108,7 +108,8 @@ POSIX regular expression API.")
                           "--enable-pcre2test-libreadline"
                           "--enable-pcre2-16"
                           "--enable-pcre2-32"
-                          "--enable-jit")
+                          "--enable-jit"
+                          "--disable-static")
       #:phases
       (modify-phases %standard-phases
         (add-after 'unpack 'patch-paths
