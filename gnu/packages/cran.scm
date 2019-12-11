@@ -14740,6 +14740,34 @@ regular expressions from human readable expressions")
 @code{XPath}, and is easier to manipulate in general.")
     (license license:expat)))
 
+(define-public r-cyclocomp
+  (package
+    (name "r-cyclocomp")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "cyclocomp" version))
+       (sha256
+        (base32
+         "0gky3svk02wiajw7nfjh30684h3qxili4bvsab0m7b6cggw6bgyd"))))
+    (properties `((upstream-name . "cyclocomp")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-callr" ,r-callr)
+       ("r-crayon" ,r-crayon)
+       ("r-desc" ,r-desc)
+       ("r-remotes" ,r-remotes)
+       ("r-withr" ,r-withr)))
+    (home-page "https://github.com/MangoTheCat/cyclocomp")
+    (synopsis "Cyclomatic complexity of R code")
+    (description
+     "Cyclomatic complexity is a software metric, used to indicate the
+complexity of a program.  It is a quantitative measure of the number of
+linearly independent paths through a program's source code.  This package
+provides tools to compute this metric.")
+    (license license:expat)))
+
 (define-public r-sctransform
   (package
     (name "r-sctransform")
