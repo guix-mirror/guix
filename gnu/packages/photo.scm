@@ -388,9 +388,6 @@ photographic equipment.")
                      (string-append (assoc-ref inputs "ilmbase")
                                     "/include/OpenEXR:" (or (getenv "CPATH") "")))
              #t)))))
-    (native-inputs
-     `(("llvm" ,llvm-3.9.1)
-       ("clang" ,clang-3.9.1)))
     (inputs
      `(("libxslt" ,libxslt)
        ("libxml2" ,libxml2)
