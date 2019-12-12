@@ -111,6 +111,40 @@ files.  Since the HTTP protocol itself has no notion of directories, only a
 single file can be mounted.")
     (license license:gpl2+)))
 
+(define-public jfsutils
+  (package
+    (name "jfsutils")
+    (version "1.1.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://jfs.sourceforge.net/project/pub/jfsutils-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "0kbsy2sk1jv4m82rxyl25gwrlkzvl3hzdga9gshkxkhm83v1aji4"))
+       (patches (search-patches "jfsutils-add-sysmacros.patch"
+                                "jfsutils-include-systypes.patch"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("util-linux" ,util-linux)))
+    (home-page "http://jfs.sourceforge.net/home.html")
+    (synopsis "Utilities for managing JFS file systems")
+    (description
+     "The JFSutils are a collection of utilities for managing the @acronym{JFS,
+Journaled File System}, a 64-bit journaling file system created by IBM and later
+ported to the kernel Linux.  The following commands are available:
+@enumerate
+@item @command{fsck.jfs}: check and repair a JFS file system or replay its
+transaction log.
+@item @command{logdump}: dump the JFS journal log.
+@item @command{logredo}: replay the JFS journal log.
+@item @command{mkfs.jfs}: create a new JFS file system.
+@item @command{xchklog}: save a JFS fsck log to a file.
+@item @command{xchkdmp}: dump the contents of such a log file.
+@item @command{xpeek}: a JFS file system editor with a shell-like interface.
+@end enumerate\n")
+    (license license:gpl3+)))          ; no explicit version given
+
 (define-public disorderfs
   (package
     (name "disorderfs")
