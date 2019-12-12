@@ -39,7 +39,7 @@ Copyright @copyright{} 2016, 2017, 2018, 2019 Jan Nieuwenhuizen@*
 Copyright @copyright{} 2016 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
 Copyright @copyright{} 2016, 2017, 2018, 2019 Christopher Baines@*
-Copyright @copyright{} 2017, 2018 Clément Lassieur@*
+Copyright @copyright{} 2017, 2018, 2019 Clément Lassieur@*
 Copyright @copyright{} 2017, 2018 Mathieu Othacehe@*
 Copyright @copyright{} 2017 Federico Beffa@*
 Copyright @copyright{} 2017, 2018 Carlo Zancanaro@*
@@ -7457,6 +7457,7 @@ native package build:
 (gexp->derivation "vi"
    #~(begin
        (mkdir #$output)
+       (mkdir (string-append #$output "/bin"))
        (system* (string-append #+coreutils "/bin/ln")
                 "-s"
                 (string-append #$emacs "/bin/emacs")
