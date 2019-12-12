@@ -9,6 +9,16 @@
 (channel-news
  (version 0)
 
+ (entry (commit "828a39da68a9169ef1d9f9ff02a1c66b1bcbe884")
+        (title (en "New @option{--diff} option for @command{guix challenge}"))
+        (body (en "The @command{guix challenge} command, which compares
+binaries provided by different substitute servers as well as those built
+locally, has a new @option{--diff} option.  With @option{--diff=simple} (the
+default), @command{guix challenge} automatically downloads binaries and
+reports the list of differing files; @option{--diff=diffoscope} instructs it
+to pass them to @command{diffoscope}, which simplifies the comparison process.
+Run @command{info \"(guix) Invoking guix challenge\"}, for more info.")))
+
  (entry (commit "f675f8dec73d02e319e607559ed2316c299ae8c7")
         (title (en "New command @command{guix time-machine}")
                (de "Neuer Befehl @command{guix time-machine}")
