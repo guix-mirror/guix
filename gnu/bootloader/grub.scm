@@ -384,7 +384,13 @@ set timeout=~a~%"
 submenu \"GNU system, old configurations...\" {~%")
                     #$@(map menu-entry->gexp old-entries)
                     (format port "}~%"))
-                 #~()))))
+                 #~())
+          (format port "
+if [ \"${grub_platform}\" == efi ]; then
+  menuentry \"Firmware setup\" {
+    fwsetup
+  }
+fi~%"))))
 
   (computed-file "grub.cfg" builder))
 
