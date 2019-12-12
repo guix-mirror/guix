@@ -57,7 +57,7 @@
     (native-inputs `(("boost" ,boost)
                      ("pcre" ,pcre "bin")       ;for 'pcre-config'
                      ;; The following are for tests and examples:
-                     ("guile" ,guile-2.0)
+                     ("guile" ,guile-2.2)
                      ("perl" ,perl)))
                      ;;("python" ,python-wrapper)
     (inputs `(("pcre" ,pcre)))
