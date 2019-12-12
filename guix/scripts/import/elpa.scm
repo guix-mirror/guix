@@ -27,7 +27,6 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-37)
-  #:use-module (srfi srfi-41)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:export (guix-import-elpa))
@@ -101,10 +100,8 @@ Import the latest package named PACKAGE-NAME from an ELPA repository.\n"))
                    `(define-public ,(string->symbol name)
                       ,pkg))
                   (_ #f))
-                (reverse
-                 (stream->list
-                  (elpa-recursive-import package-name
-                                         (or (assoc-ref opts 'repo) 'gnu)))))
+                (elpa-recursive-import package-name
+                                       (or (assoc-ref opts 'repo) 'gnu)))
            (let ((sexp (elpa->guix-package package-name (assoc-ref opts 'repo))))
              (unless sexp
                (leave (G_ "failed to download package '~a'~%") package-name))

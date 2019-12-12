@@ -21,6 +21,9 @@
 (define-module (gnu packages mes)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
+  #:use-module (gnu packages bootstrap)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages graphviz)
@@ -134,7 +137,7 @@ bootstrap to Guix and aims to help create full source bootstrapping for
 GNU/Linux distributions.  It consists of a mutual self-hosting Scheme
 interpreter in C and a Nyacc-based C compiler in Scheme and is compatible with
 Guile.")
-    (home-page "https://gnu.org/software/mes")
+    (home-page "https://www.gnu.org/software/mes/")
     (license gpl3+)))
 
 (define-public mes
@@ -145,12 +148,86 @@ Guile.")
               (method url-fetch)
               (uri (string-append "mirror://gnu/mes/"
                                   "mes-" version ".tar.gz"))
+              (patches (search-patches "mes-remove-store-name.patch"))
               (sha256
                (base32
                 "104qxngxyl7pql8vqrnli3wfyx0ayfaqg8gjfhmk4qzrafs46slm"))))
     (propagated-inputs
      `(("mescc-tools" ,mescc-tools)
-       ("nyacc" ,nyacc)))))
+       ("nyacc" ,nyacc)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "C_INCLUDE_PATH")
+            (files '("include")))
+           (search-path-specification
+            (variable "LIBRARY_PATH")
+            (files '("lib")))))))
+
+(define-public mes-rb5
+  ;; This is the Reproducible-Builds summit 5's Mes, also built on Debian
+  ;; GNU/Linux and NixOS to produce the same, bit-for-bit identical result.
+  (package
+    (inherit mes)
+    (name "mes-rb5")
+    (inputs '())
+    (propagated-inputs '())
+    (native-inputs
+     `(("bash" ,bash)
+       ("coreutils" ,coreutils)
+       ("grep" ,grep)
+       ("guile" ,guile-2.2)
+       ("libc" ,glibc)
+       ("locales" ,glibc-utf8-locales)
+       ("make" ,gnu-make)
+       ("mes" ,mes)
+       ("mescc-tools" ,mescc-tools)
+       ("nyacc" ,nyacc)
+       ("sed" ,sed)
+       ("tar" ,tar)
+       ("xz" ,xz)))
+    (supported-systems '("i686-linux"))
+    (arguments
+     `(#:implicit-inputs? #f
+       #:strip-binaries? #f    ; binutil's strip b0rkes MesCC/M1/hex2 binaries
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (ice-9 popen)
+                  (ice-9 rdelim))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'setenv
+           (lambda _
+             (setenv "AR" "mesar")
+             (setenv "CC" "mescc")
+             (setenv "GUILD" "true")
+             (setenv "SCHEME" "mes")
+             (setenv "LC_ALL" "en_US.UTF-8")
+             #t))
+         (replace 'configure
+           (lambda _
+             (let ((out (assoc-ref %outputs "out")))
+               (invoke "sh" "configure.sh"
+                       (string-append "--prefix=" out)
+                       "--host=i686-unkown-linux-gnu"
+                       "--with-courage"))))
+         (replace 'build
+           (lambda _
+             (invoke "sh" "bootstrap.sh")))
+         (replace 'check
+           (lambda _
+             (let ((sha256sum
+                    (read-delimited
+                     " "
+                     (open-pipe* OPEN_READ "sha256sum" "src/mes"))))
+               (unless
+                   (equal?
+                    sha256sum
+                    "9e0bcb1633c58e7bc415f6ea27cee7951d6b0658e13cdc147e992b31a14625fb")
+                 (throw 'error "mes checksum failure"))
+               #t)))
+         (replace 'install
+           (lambda _
+             (invoke "sh" "install.sh"))))))))
 
 (define-public mescc-tools-0.5.2
   ;; Mescc-tools used for bootstrap.

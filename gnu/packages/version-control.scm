@@ -150,14 +150,14 @@ as well as the classic centralized workflow.")
    (name "git")
    ;; XXX When updating Git, check if the special 'git-source' input to cgit
    ;; needs to be updated as well.
-   (version "2.24.0")
+   (version "2.24.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "06rpakbwzck85ncfsgv4xmq3iwab9d4f5y6dqhl8nvb2fccxcwcz"))))
+              "0ql5z31vgl7b785gwrf00m129mg7zi9pa65n12ij3mpxx3f28gvj"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -170,7 +170,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "19h4bhk78rljxk921fcz5xy1z4ss75zw03n9nqf2r512dz0p5j5h"))))
+            "1yzy5jikkv67ynp576j926kg8zdldh8j4b57l0ixcnjdcyr4lc17"))))
       ;; For subtree documentation.
       ("asciidoc" ,asciidoc)
       ("docbook-xsl" ,docbook-xsl)
@@ -550,7 +550,7 @@ everything from small to very large projects with speed and efficiency.")
 (define-public libgit2
   (package
     (name "libgit2")
-    (version "0.28.3")
+    (version "0.28.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -559,7 +559,7 @@ everything from small to very large projects with speed and efficiency.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "07068flm9xi25wmcs65nyfg6a7ikgfv96i2nhgyj5gzs9gljqiz2"))
+                "171b25aym4q88bidc4c76y4l6jmdwifm3q9zjqsll0wjhlkycfy1"))
               (patches (search-patches "libgit2-avoid-python.patch"
                                        "libgit2-mtime-0.patch"))
 
@@ -794,10 +794,10 @@ collaboration using typical untrusted file hosts or services.")
         ,(origin
            (method url-fetch)
            ;; XXX CGit is currently incompatible with Git > 2.18.
-           (uri "mirror://kernel.org/software/scm/git/git-2.18.0.tar.xz")
+           (uri "mirror://kernel.org/software/scm/git/git-2.18.2.tar.xz")
            (sha256
             (base32
-             "14hfwfkrci829a9316hnvkglnqqw1p03cw9k56p4fcb078wbwh4b"))))
+             "1gmcz5k8sa6phzhhv6zjl8izbyqnxcdb8ns8kd2czyak0g409vrq"))))
        ("openssl" ,openssl)
        ("groff" ,groff)
        ("python" ,python)

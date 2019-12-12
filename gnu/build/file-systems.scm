@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -577,6 +578,10 @@ corresponds to the symbols listed in FLAGS."
        (logior MS_NOEXEC (loop rest)))
       (('no-atime rest ...)
        (logior MS_NOATIME (loop rest)))
+      (('strict-atime rest ...)
+       (logior MS_STRICTATIME (loop rest)))
+      (('lazy-time rest ...)
+       (logior MS_LAZYTIME (loop rest)))
       (()
        0))))
 

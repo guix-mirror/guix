@@ -978,6 +978,24 @@
                                          #:mode (build-mode check))
                   (list drv dep))))))
 
+(test-assert "derivation-input-fold"
+  (let* ((builder (add-text-to-store %store "my-builder.sh"
+                                     "echo hello, world > \"$out\"\n"
+                                     '()))
+         (drv1    (derivation %store "foo"
+                              %bash `(,builder)
+                              #:sources `(,%bash ,builder)))
+         (drv2    (derivation %store "bar"
+                              %bash `(,builder)
+                              #:inputs `((,drv1))
+                              #:sources `(,%bash ,builder))))
+    (equal? (derivation-input-fold (lambda (input result)
+                                     (cons (derivation-input-derivation input)
+                                           result))
+                                   '()
+                                   (list (derivation-input drv2)))
+            (list drv1 drv2))))
+
 (test-assert "substitution-oracle and #:substitute? #f"
   (with-store store
     (let* ((dep   (build-expression->derivation store "dep"

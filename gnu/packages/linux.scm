@@ -37,6 +37,7 @@
 ;;; Copyright © 2019 Stefan Stefanović <stefanx2ovic@gmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -83,6 +84,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages libusb)
@@ -104,6 +106,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages rrdtool)
   #:use-module (gnu packages samba)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages slang)
   #:use-module (gnu packages texinfo)
@@ -122,6 +125,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system linux-module)
@@ -352,42 +356,42 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-(define-public linux-libre-5.3-version "5.3.14")
+(define-public linux-libre-5.3-version "5.3.15")
 (define-public linux-libre-5.3-pristine-source
   (let ((version linux-libre-5.3-version)
-        (hash (base32 "0ckrbzwsc4lxd3l287wsd88mkfsd0kpf8nzchd9nfmkjiil14mwm")))
+        (hash (base32 "15qidl06lyfylx1b43b4wz2zfkr4000bkr7ialslmb7yi7mamj6f")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.3)))
 
-(define-public linux-libre-4.19-version "4.19.87")
+(define-public linux-libre-4.19-version "4.19.88")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "07fsds2k0hxqgny86winzl46d79g6mb9s28bp7nwlvwf67l22wm5")))
+        (hash (base32 "1gizkdmq46ykw7ya3hibd6lalww2kvsia346pq3xvrk6s5mkp4n1")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.157")
+(define-public linux-libre-4.14-version "4.14.158")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "0cvpagbjwpj63lpybfq1rnwdnxcjw49z0b5prah39krf0nd7dylh")))
+        (hash (base32 "1cqvr8pgqx005a9qyphqykakzwc54adq8mmdc9sgrxkkw9rfqj8d")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.205")
+(define-public linux-libre-4.9-version "4.9.206")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "01cbqxw77g6rdg7dgk73pg9a2n9v4sxp48q2a77w1b068xjfifcq")))
+        (hash (base32 "1mnabj0d5ra40hijwynnzxnh5w1qnvkvj2l3ydsdhkdwm6cpiwhx")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.205")
+(define-public linux-libre-4.4-version "4.4.206")
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "19pasidvfmf94rs86v80x7hpirz9gavmkxwcl76ya61fq7lqy7zs")))
+        (hash (base32 "14ylg9cm7z12mvkzg8z92gsw0libw9xz392ayzw0d9cgw1py39ax")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -1480,7 +1484,7 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
 (define-public strace
   (package
     (name "strace")
-    (version "5.3")
+    (version "5.4")
     (home-page "https://strace.io")
     (source (origin
              (method url-fetch)
@@ -1488,7 +1492,7 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
                                  "/strace-" version ".tar.xz"))
              (sha256
               (base32
-               "0ix06z4vnc49mv76f22kixz8dsh7daqv9mpgwcgl0mlnfjc124vc"))))
+               "0hd7sb7l99y9rcj8jjc1b6m3ryds17krsymdg3dvd40jsla0bl7p"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -3078,9 +3082,9 @@ country-specific regulations for the wireless spectrum.")
                (("cat ")
                 (string-append (assoc-ref inputs "coreutils")
                                "/bin/cat "))
-               (("egrep ")
+               (("grep ")
                 (string-append (assoc-ref inputs "grep")
-                               "/bin/egrep "))
+                               "/bin/grep "))
                (("sed -e")
                 (string-append (assoc-ref inputs "sed")
                                "/bin/sed -e"))
@@ -6138,6 +6142,47 @@ have to construct the archives directly, without using the archiver.")
     (description "inputattach dispatches input events from several device
 types and interfaces and translates so that the X server can use them.")
     (license license:gpl2+)))
+
+(define-public pipewire
+  (package
+    (name "pipewire")
+    (version "0.2.7")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/PipeWire/pipewire")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1q5wrqnhhs6r49p8yvkw1pl0cnsd4rndxy4h5lvdydwgf1civcwc"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:configure-flags '("-Dsystemd=false")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("dbus" ,dbus)
+       ("eudev" ,eudev)
+       ("ffmpeg" ,ffmpeg)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("libva" ,libva)
+       ("sbc" ,sbc)
+       ("sdl2" ,sdl2)))
+    (home-page "https://pipewire.org/")
+    (synopsis "Server and user space API to deal with multimedia pipelines")
+    (description
+     "PipeWire is a project that aims to greatly improve handling of audio and
+video under Linux.  It aims to support the usecases currently handled by both
+PulseAudio and Jack and at the same time provide same level of powerful handling
+of Video input and output.  It also introduces a security model that makes
+interacting with audio and video devices from containerized applications easy,
+with supporting Flatpak applications being the primary goal.  Alongside Wayland
+and Flatpak we expect PipeWire to provide a core building block for the future
+of Linux application development.")
+    (license license:lgpl2.0+)))
 
 (define-public ell
   (package

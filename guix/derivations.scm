@@ -86,6 +86,7 @@
             fixed-output-derivation?
             offloadable-derivation?
             substitutable-derivation?
+            derivation-input-fold
             substitution-oracle
             derivation-hash
             derivation-properties
@@ -303,6 +304,29 @@ result is the set of prerequisites of DRV not already in valid."
             (derivation-output-path (assoc-ref outputs sub-drv)))
           sub-drvs))))
 
+(define* (derivation-input-fold proc seed inputs
+                                #:key (cut? (const #f)))
+  "Perform a breadth-first traversal of INPUTS, calling PROC on each input
+with the current result, starting from SEED.  Skip recursion on inputs that
+match CUT?."
+  (let loop ((inputs inputs)
+             (result seed)
+             (visited (set)))
+    (match inputs
+      (()
+       result)
+      ((input rest ...)
+       (let ((key (derivation-input-key input)))
+         (cond ((set-contains? visited key)
+                (loop rest result visited))
+               ((cut? input)
+                (loop rest result (set-insert key visited)))
+               (else
+                (let ((drv (derivation-input-derivation input)))
+                  (loop (append (derivation-inputs drv) rest)
+                        (proc input result)
+                        (set-insert key visited))))))))))
+
 (define* (substitution-oracle store inputs-or-drv
                               #:key (mode (build-mode normal)))
   "Return a one-argument procedure that, when passed a store file name,
@@ -322,25 +346,15 @@ substituter many times."
     (cut valid-derivation-input? store <>))
 
   (define (closure inputs)
-    (let loop ((inputs inputs)
-               (closure '())
-               (visited (set)))
-      (match inputs
-        (()
-         (reverse closure))
-        ((input rest ...)
-         (let ((key (derivation-input-key input)))
-           (cond ((set-contains? visited key)
-                  (loop rest closure visited))
-                 ((valid-input? input)
-                  (loop rest closure (set-insert key visited)))
-                 (else
-                  (let ((drv (derivation-input-derivation input)))
-                    (loop (append (derivation-inputs drv) rest)
-                          (if (substitutable-derivation? drv)
-                              (cons input closure)
-                              closure)
-                          (set-insert key visited))))))))))
+    (reverse
+     (derivation-input-fold (lambda (input closure)
+                              (let ((drv (derivation-input-derivation input)))
+                                (if (substitutable-derivation? drv)
+                                    (cons input closure)
+                                    closure)))
+                            '()
+                            inputs
+                            #:cut? valid-input?)))
 
   (let* ((inputs (closure (map (match-lambda
                                  ((? derivation-input? input)

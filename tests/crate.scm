@@ -28,7 +28,7 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-64))
 
-(define test-crate
+(define test-foo-crate
   "{
   \"crate\": {
     \"max_version\": \"1.0.0\",
@@ -50,7 +50,7 @@
   }
 }")
 
-(define test-dependencies
+(define test-foo-dependencies
   "{
   \"dependencies\": [
      {
@@ -60,8 +60,181 @@
   ]
 }")
 
+(define test-root-crate
+  "{
+  \"crate\": {
+    \"max_version\": \"1.0.0\",
+    \"name\": \"root\",
+    \"description\": \"summary\",
+    \"homepage\": \"http://example.com\",
+    \"repository\": \"http://example.com\",
+    \"keywords\": [\"dummy\" \"test\"],
+    \"categories\": [\"test\"]
+    \"actual_versions\": [
+      { \"id\": \"foo\",
+        \"num\": \"1.0.0\",
+        \"license\": \"MIT OR Apache-2.0\",
+        \"links\": {
+          \"dependencies\": \"/api/v1/crates/root/1.0.0/dependencies\"
+        }
+      }
+    ]
+  }
+}")
+
+(define test-root-dependencies
+  "{
+  \"dependencies\": [
+     {
+       \"crate_id\": \"intermediate-1\",
+       \"kind\": \"normal\",
+     },
+     {
+       \"crate_id\": \"intermediate-2\",
+       \"kind\": \"normal\",
+     }
+     {
+       \"crate_id\": \"leaf-alice\",
+       \"kind\": \"normal\",
+     },
+     {
+       \"crate_id\": \"leaf-bob\",
+       \"kind\": \"normal\",
+     },
+  ]
+}")
+
+(define test-intermediate-1-crate
+  "{
+  \"crate\": {
+    \"max_version\": \"1.0.0\",
+    \"name\": \"intermediate-1\",
+    \"description\": \"summary\",
+    \"homepage\": \"http://example.com\",
+    \"repository\": \"http://example.com\",
+    \"keywords\": [\"dummy\" \"test\"],
+    \"categories\": [\"test\"]
+    \"actual_versions\": [
+      { \"id\": \"intermediate-1\",
+        \"num\": \"1.0.0\",
+        \"license\": \"MIT OR Apache-2.0\",
+        \"links\": {
+          \"dependencies\": \"/api/v1/crates/intermediate-1/1.0.0/dependencies\"
+        }
+      }
+    ]
+  }
+}")
+
+(define test-intermediate-1-dependencies
+  "{
+  \"dependencies\": [
+     {
+       \"crate_id\": \"intermediate-2\",
+       \"kind\": \"normal\",
+     },
+     {
+       \"crate_id\": \"leaf-alice\",
+       \"kind\": \"normal\",
+     },
+     {
+       \"crate_id\": \"leaf-bob\",
+       \"kind\": \"normal\",
+     }
+  ]
+}")
+
+(define test-intermediate-2-crate
+  "{
+  \"crate\": {
+    \"max_version\": \"1.0.0\",
+    \"name\": \"intermediate-2\",
+    \"description\": \"summary\",
+    \"homepage\": \"http://example.com\",
+    \"repository\": \"http://example.com\",
+    \"keywords\": [\"dummy\" \"test\"],
+    \"categories\": [\"test\"]
+    \"actual_versions\": [
+      { \"id\": \"intermediate-2\",
+        \"num\": \"1.0.0\",
+        \"license\": \"MIT OR Apache-2.0\",
+        \"links\": {
+          \"dependencies\": \"/api/v1/crates/intermediate-2/1.0.0/dependencies\"
+        }
+      }
+    ]
+  }
+}")
+
+(define test-intermediate-2-dependencies
+  "{
+  \"dependencies\": [
+     {
+       \"crate_id\": \"leaf-bob\",
+       \"kind\": \"normal\",
+     },
+  ]
+}")
+
+(define test-leaf-alice-crate
+  "{
+  \"crate\": {
+    \"max_version\": \"1.0.0\",
+    \"name\": \"leaf-alice\",
+    \"description\": \"summary\",
+    \"homepage\": \"http://example.com\",
+    \"repository\": \"http://example.com\",
+    \"keywords\": [\"dummy\" \"test\"],
+    \"categories\": [\"test\"]
+    \"actual_versions\": [
+      { \"id\": \"leaf-alice\",
+        \"num\": \"1.0.0\",
+        \"license\": \"MIT OR Apache-2.0\",
+        \"links\": {
+          \"dependencies\": \"/api/v1/crates/leaf-alice/1.0.0/dependencies\"
+        }
+      }
+    ]
+  }
+}")
+
+(define test-leaf-alice-dependencies
+  "{
+  \"dependencies\": []
+}")
+
+(define test-leaf-bob-crate
+  "{
+  \"crate\": {
+    \"max_version\": \"1.0.0\",
+    \"name\": \"leaf-bob\",
+    \"description\": \"summary\",
+    \"homepage\": \"http://example.com\",
+    \"repository\": \"http://example.com\",
+    \"keywords\": [\"dummy\" \"test\"],
+    \"categories\": [\"test\"]
+    \"actual_versions\": [
+      { \"id\": \"leaf-bob\",
+        \"num\": \"1.0.0\",
+        \"license\": \"MIT OR Apache-2.0\",
+        \"links\": {
+          \"dependencies\": \"/api/v1/crates/leaf-bob/1.0.0/dependencies\"
+        }
+      }
+    ]
+  }
+}")
+
+(define test-leaf-bob-dependencies
+  "{
+  \"dependencies\": []
+}")
+
 (define test-source-hash
   "")
+
+(define string->license
+  (@@ (guix import crate) string->license))
 
 (test-begin "crate")
 
@@ -79,14 +252,14 @@
          (lambda (url . rest)
            (match url
              ("https://crates.io/api/v1/crates/foo"
-              (open-input-string test-crate))
+              (open-input-string test-foo-crate))
              ("https://crates.io/api/v1/crates/foo/1.0.0/download"
               (set! test-source-hash
                 (bytevector->nix-base32-string
                  (sha256 (string->bytevector "empty file\n" "utf-8"))))
               (open-input-string "empty file\n"))
              ("https://crates.io/api/v1/crates/foo/1.0.0/dependencies"
-              (open-input-string test-dependencies))
+              (open-input-string test-foo-dependencies))
              (_ (error "Unexpected URL: " url)))))
     (match (crate->guix-package "foo")
       (('package
@@ -110,5 +283,181 @@
        (string=? test-source-hash hash))
       (x
        (pk 'fail x #f)))))
+
+(test-assert "cargo-recursive-import"
+  ;; Replace network resources with sample data.
+  (mock ((guix http-client) http-fetch
+         (lambda (url . rest)
+           (match url
+             ("https://crates.io/api/v1/crates/root"
+              (open-input-string test-root-crate))
+             ("https://crates.io/api/v1/crates/root/1.0.0/download"
+              (set! test-source-hash
+                    (bytevector->nix-base32-string
+                     (sha256 (string->bytevector "empty file\n" "utf-8"))))
+              (open-input-string "empty file\n"))
+             ("https://crates.io/api/v1/crates/root/1.0.0/dependencies"
+              (open-input-string test-root-dependencies))
+             ("https://crates.io/api/v1/crates/intermediate-1"
+              (open-input-string test-intermediate-1-crate))
+             ("https://crates.io/api/v1/crates/intermediate-1/1.0.0/download"
+              (set! test-source-hash
+                    (bytevector->nix-base32-string
+                     (sha256 (string->bytevector "empty file\n" "utf-8"))))
+              (open-input-string "empty file\n"))
+             ("https://crates.io/api/v1/crates/intermediate-1/1.0.0/dependencies"
+              (open-input-string test-intermediate-1-dependencies))
+             ("https://crates.io/api/v1/crates/intermediate-2"
+              (open-input-string test-intermediate-2-crate))
+             ("https://crates.io/api/v1/crates/intermediate-2/1.0.0/download"
+              (set! test-source-hash
+                    (bytevector->nix-base32-string
+                     (sha256 (string->bytevector "empty file\n" "utf-8"))))
+              (open-input-string "empty file\n"))
+             ("https://crates.io/api/v1/crates/intermediate-2/1.0.0/dependencies"
+              (open-input-string test-intermediate-2-dependencies))
+             ("https://crates.io/api/v1/crates/leaf-alice"
+              (open-input-string test-leaf-alice-crate))
+             ("https://crates.io/api/v1/crates/leaf-alice/1.0.0/download"
+              (set! test-source-hash
+                    (bytevector->nix-base32-string
+                     (sha256 (string->bytevector "empty file\n" "utf-8"))))
+              (open-input-string "empty file\n"))
+             ("https://crates.io/api/v1/crates/leaf-alice/1.0.0/dependencies"
+              (open-input-string test-leaf-alice-dependencies))
+             ("https://crates.io/api/v1/crates/leaf-bob"
+              (open-input-string test-leaf-bob-crate))
+             ("https://crates.io/api/v1/crates/leaf-bob/1.0.0/download"
+              (set! test-source-hash
+                    (bytevector->nix-base32-string
+                     (sha256 (string->bytevector "empty file\n" "utf-8"))))
+              (open-input-string "empty file\n"))
+             ("https://crates.io/api/v1/crates/leaf-bob/1.0.0/dependencies"
+              (open-input-string test-leaf-bob-dependencies))
+             (_ (error "Unexpected URL: " url)))))
+        (match (crate-recursive-import "root")
+          ;; rust-intermediate-2 has no dependency on the rust-leaf-alice package, so this is a valid ordering
+          ((('package
+              ('name "rust-leaf-alice")
+              ('version (? string? ver))
+              ('source
+               ('origin
+                 ('method 'url-fetch)
+                 ('uri ('crate-uri "leaf-alice" 'version))
+                 ('file-name
+                  ('string-append 'name "-" 'version ".tar.gz"))
+                 ('sha256
+                  ('base32
+                   (? string? hash)))))
+              ('build-system 'cargo-build-system)
+              ('home-page "http://example.com")
+              ('synopsis "summary")
+              ('description "summary")
+              ('license ('list 'license:expat 'license:asl2.0)))
+            ('package
+              ('name "rust-leaf-bob")
+              ('version (? string? ver))
+              ('source
+               ('origin
+                 ('method 'url-fetch)
+                 ('uri ('crate-uri "leaf-bob" 'version))
+                 ('file-name
+                  ('string-append 'name "-" 'version ".tar.gz"))
+                 ('sha256
+                  ('base32
+                   (? string? hash)))))
+              ('build-system 'cargo-build-system)
+              ('home-page "http://example.com")
+              ('synopsis "summary")
+              ('description "summary")
+              ('license ('list 'license:expat 'license:asl2.0)))
+            ('package
+              ('name "rust-intermediate-2")
+              ('version (? string? ver))
+              ('source
+               ('origin
+                 ('method 'url-fetch)
+                 ('uri ('crate-uri "intermediate-2" 'version))
+                 ('file-name
+                  ('string-append 'name "-" 'version ".tar.gz"))
+                 ('sha256
+                  ('base32
+                   (? string? hash)))))
+              ('build-system 'cargo-build-system)
+              ('arguments
+               ('quasiquote
+                ('#:cargo-inputs (("rust-leaf-bob" ('unquote rust-leaf-bob))))))
+              ('home-page "http://example.com")
+              ('synopsis "summary")
+              ('description "summary")
+              ('license ('list 'license:expat 'license:asl2.0)))
+            ('package
+              ('name "rust-intermediate-1")
+              ('version (? string? ver))
+              ('source
+               ('origin
+                 ('method 'url-fetch)
+                 ('uri ('crate-uri "intermediate-1" 'version))
+                 ('file-name
+                  ('string-append 'name "-" 'version ".tar.gz"))
+                 ('sha256
+                  ('base32
+                   (? string? hash)))))
+              ('build-system 'cargo-build-system)
+              ('arguments
+               ('quasiquote
+                ('#:cargo-inputs (("rust-intermediate-2" ('unquote rust-intermediate-2))
+                                  ("rust-leaf-alice" ('unquote rust-leaf-alice))
+                                  ("rust-leaf-bob" ('unquote rust-leaf-bob))))))
+              ('home-page "http://example.com")
+              ('synopsis "summary")
+              ('description "summary")
+              ('license ('list 'license:expat 'license:asl2.0)))
+            ('package
+              ('name "rust-root")
+              ('version (? string? ver))
+              ('source
+               ('origin
+                 ('method 'url-fetch)
+                 ('uri ('crate-uri "root" 'version))
+                 ('file-name
+                  ('string-append 'name "-" 'version ".tar.gz"))
+                 ('sha256
+                  ('base32
+                   (? string? hash)))))
+              ('build-system 'cargo-build-system)
+              ('arguments
+               ('quasiquote
+                ('#:cargo-inputs (("rust-intermediate-1" ('unquote rust-intermediate-1))
+                                  ("rust-intermediate-2" ('unquote rust-intermediate-2))
+                                  ("rust-leaf-alice" ('unquote rust-leaf-alice))
+                                  ("rust-leaf-bob" ('unquote rust-leaf-bob))))))
+              ('home-page "http://example.com")
+              ('synopsis "summary")
+              ('description "summary")
+              ('license ('list 'license:expat 'license:asl2.0))))
+           #t)
+          (x
+           (pk 'fail x #f)))))
+
+(test-equal "licenses: MIT OR Apache-2.0"
+  '(license:expat license:asl2.0)
+  (string->license "MIT OR Apache-2.0"))
+
+(test-equal "licenses: Apache-2.0 / MIT"
+  '(license:asl2.0 license:expat)
+  (string->license "Apache-2.0 / MIT"))
+
+(test-equal "licenses: Apache-2.0 WITH LLVM-exception"
+  '(license:asl2.0 unknown-license!)
+  (string->license "Apache-2.0 WITH LLVM-exception"))
+
+(test-equal "licenses: MIT/Apache-2.0 AND BSD-2-Clause"
+  '(license:expat license:asl2.0 unknown-license!)
+  (string->license "MIT/Apache-2.0 AND BSD-2-Clause"))
+
+(test-equal "licenses: MIT/Apache-2.0"
+  '(license:expat license:asl2.0)
+  (string->license "MIT/Apache-2.0"))
 
 (test-end "crate")

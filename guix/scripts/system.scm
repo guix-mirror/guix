@@ -36,9 +36,11 @@
   #:use-module (guix records)
   #:use-module (guix profiles)
   #:use-module (guix scripts)
+  #:use-module (guix channels)
   #:use-module (guix scripts build)
   #:autoload   (guix scripts package) (delete-generations
                                        delete-matching-generations)
+  #:autoload   (guix scripts pull) (channel-commit-hyperlink)
   #:use-module (guix graph)
   #:use-module (guix scripts graph)
   #:use-module (guix scripts system reconfigure)
@@ -456,9 +458,30 @@ list of services."
 ;;; Generations.
 ;;;
 
+(define (sexp->channel sexp)
+  "Return the channel corresponding to SEXP, an sexp as found in the
+\"provenance\" file produced by 'provenance-service-type'."
+  (match sexp
+    (('channel ('name name)
+               ('url url)
+               ('branch branch)
+               ('commit commit))
+     (channel (name name) (url url)
+              (branch branch) (commit commit)))))
+
 (define* (display-system-generation number
                                     #:optional (profile %system-profile))
   "Display a summary of system generation NUMBER in a human-readable format."
+  (define (display-channel channel)
+    (format #t     "    ~a:~%" (channel-name channel))
+    (format #t (G_ "      repository URL: ~a~%") (channel-url channel))
+    (when (channel-branch channel)
+      (format #t (G_ "      branch: ~a~%") (channel-branch channel)))
+    (format #t (G_ "      commit: ~a~%")
+            (if (supports-hyperlinks?)
+                (channel-commit-hyperlink channel)
+                (channel-commit channel))))
+
   (unless (zero? number)
     (let* ((generation  (generation-file-name profile number))
            (params      (read-boot-parameters-file generation))
@@ -468,7 +491,13 @@ list of services."
            (root-device (if (bytevector? root)
                             (uuid->string root)
                             root))
-           (kernel      (boot-parameters-kernel params)))
+           (kernel      (boot-parameters-kernel params))
+           (provenance  (catch 'system-error
+                          (lambda ()
+                            (call-with-input-file
+                                (string-append generation "/provenance")
+                              read))
+                          (const #f))))
       (display-generation profile number)
       (format #t (G_ "  file name: ~a~%") generation)
       (format #t (G_ "  canonical file name: ~a~%") (readlink* generation))
@@ -495,7 +524,23 @@ list of services."
                     (else
                      root-device)))
 
-      (format #t (G_ "  kernel: ~a~%") kernel))))
+      (format #t (G_ "  kernel: ~a~%") kernel)
+
+      (match provenance
+        (#f #t)
+        (('provenance ('version 0)
+                      ('channels channels ...)
+                      ('configuration-file config-file))
+         (unless (null? channels)
+           ;; TRANSLATORS: Here "channel" is the same terminology as used in
+           ;; "guix describe" and "guix pull --channels".
+           (format #t (G_ "  channels:~%"))
+           (for-each display-channel (map sexp->channel channels)))
+         (when config-file
+           (format #t (G_ "  configuration file: ~a~%")
+                   (if (supports-hyperlinks?)
+                       (file-hyperlink config-file)
+                       config-file))))))))
 
 (define* (list-generations pattern #:optional (profile %system-profile))
   "Display in a human-readable format all the system generations matching
@@ -722,7 +767,9 @@ and TARGET arguments."
      (return (primitive-eval (lowered-gexp-sexp lowered))))))
 
 (define* (perform-action action os
-                         #:key skip-safety-checks?
+                         #:key
+                         save-provenance?
+                         skip-safety-checks?
                          install-bootloader?
                          dry-run? derivations-only?
                          use-substitutes? bootloader-target target
@@ -875,6 +922,8 @@ Some ACTIONS support additional ARGS.\n"))
   (display (G_ "\
    roll-back        switch to the previous operating system configuration\n"))
   (display (G_ "\
+   describe         describe the current system\n"))
+  (display (G_ "\
    list-generations list the system generations\n"))
   (display (G_ "\
    switch-generation switch to an existing operating system configuration\n"))
@@ -918,15 +967,17 @@ Some ACTIONS support additional ARGS.\n"))
   (display (G_ "
       --no-bootloader    for 'init', do not install a bootloader"))
   (display (G_ "
+      --save-provenance  save provenance information"))
+  (display (G_ "
       --share=SPEC       for 'vm', share host file system according to SPEC"))
+  (display (G_ "
+      --expose=SPEC      for 'vm', expose host file system according to SPEC"))
   (display (G_ "
   -N, --network          for 'container', allow containers to access the network"))
   (display (G_ "
   -r, --root=FILE        for 'vm', 'vm-image', 'disk-image', 'container',
                          and 'build', make FILE a symlink to the result, and
                          register it as a garbage collector root"))
-  (display (G_ "
-      --expose=SPEC      for 'vm', expose host file system according to SPEC"))
   (display (G_ "
       --full-boot        for 'vm', make a full boot sequence"))
   (display (G_ "
@@ -979,6 +1030,9 @@ Some ACTIONS support additional ARGS.\n"))
          (option '("full-boot") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'full-boot? #t result)))
+         (option '("save-provenance") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'save-provenance? #t result)))
          (option '("skip-checks") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'skip-safety-checks? #t result)))
@@ -1047,25 +1101,33 @@ resulting from command-line parsing."
              file-or-exp))
     obj)
 
+  (define save-provenance?
+    (or (assoc-ref opts 'save-provenance?)
+        (memq action '(init reconfigure))))
+
   (let* ((file        (match args
                         (() #f)
                         ((x . _) x)))
          (expr        (assoc-ref opts 'expression))
          (system      (assoc-ref opts 'system))
          (target      (assoc-ref opts 'target))
-         (os          (ensure-operating-system
-                       (or file expr)
-                       (cond
-                        ((and expr file)
-                         (leave
-                          (G_ "both file and expression cannot be specified~%")))
-                        (expr
-                         (read/eval expr))
-                        (file
-                         (load* file %user-module
-                                #:on-error (assoc-ref opts 'on-error)))
-                        (else
-                         (leave (G_ "no configuration specified~%"))))))
+         (transform   (if save-provenance?
+                          (cut operating-system-with-provenance <> file)
+                          identity))
+         (os          (transform
+                       (ensure-operating-system
+                        (or file expr)
+                        (cond
+                         ((and expr file)
+                          (leave
+                           (G_ "both file and expression cannot be specified~%")))
+                         (expr
+                          (read/eval expr))
+                         (file
+                          (load* file %user-module
+                                 #:on-error (assoc-ref opts 'on-error)))
+                         (else
+                          (leave (G_ "no configuration specified~%")))))))
 
          (dry?        (assoc-ref opts 'dry-run?))
          (bootloader? (assoc-ref opts 'install-bootloader?))
@@ -1136,6 +1198,12 @@ argument list and OPTS is the option alist."
                       ((pattern) pattern)
                       (x (leave (G_ "wrong number of arguments~%"))))))
        (list-generations pattern)))
+    ((describe)
+     (match (generation-number %system-profile)
+       (0
+        (error (G_ "no system generation, nothing to describe~%")))
+       (generation
+        (display-system-generation generation))))
     ((search)
      (apply (resolve-subcommand "search") args))
     ;; The following commands need to use the store, but they do not need an
@@ -1175,7 +1243,8 @@ argument list and OPTS is the option alist."
           (case action
             ((build container vm vm-image disk-image reconfigure init
               extension-graph shepherd-graph
-              list-generations delete-generations roll-back
+              list-generations describe
+              delete-generations roll-back
               switch-generation search docker-image)
              (alist-cons 'action action result))
             (else (leave (G_ "~a: unknown action~%") action))))))

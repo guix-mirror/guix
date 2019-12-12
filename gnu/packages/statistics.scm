@@ -1799,13 +1799,13 @@ times.")
 (define-public r-data-table
   (package
     (name "r-data-table")
-    (version "1.12.6")
+    (version "1.12.8")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "data.table" version))
               (sha256
                (base32
-                "1kgbnm5gv7ax7qn8irpz7qsry2ci21axga8y7qpkidcqkxkkndn2"))))
+                "1p7rf4v3ysflpgcmy9krkwmcy7z22wb08xm443649waz6lx5z9yk"))))
     (build-system r-build-system)
     (inputs
      `(("zlib" ,zlib)))
@@ -2505,13 +2505,13 @@ disk (or a connection).")
 (define-public r-plotrix
   (package
     (name "r-plotrix")
-    (version "3.7-6")
+    (version "3.7-7")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "plotrix" version))
               (sha256
                (base32
-                "0ijfjlr7ls5hvfyzdmwab6bx0w3nvp0c8fgynj4355cj8mbzgmc3"))))
+                "1x92mmyfry127zzr6cmcj6kjsc4zhxrrdlr0jcxn3bb0hpdfps54"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/plotrix")
     (synopsis "Various plotting functions")
@@ -2564,13 +2564,13 @@ well as additional utilities such as panel and axis annotation functions.")
 (define-public r-rcpparmadillo
   (package
     (name "r-rcpparmadillo")
-    (version "0.9.800.1.0")
+    (version "0.9.800.3.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RcppArmadillo" version))
               (sha256
                (base32
-                "1frg7y3fb571jf9dp1kkc75x0nxvw8j3qccsrm1brg5l1z2jmlaz"))))
+                "0kpcspg3mafi5kncjfhnbcwimvlf19jvrxilvhbpd20sap473mh3"))))
     (properties `((upstream-name . "RcppArmadillo")))
     (build-system r-build-system)
     ;; All needed for vignettes
@@ -2777,13 +2777,13 @@ a column in data frame.")
 (define-public r-rsqlite
   (package
     (name "r-rsqlite")
-    (version "2.1.3")
+    (version "2.1.4")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RSQLite" version))
               (sha256
                (base32
-                "0c5s67s8w4q6p57rnh14n4gcmymyardg8lhnrdlimmjcfawj15h7"))))
+                "1vhaq6zfqilya669l100adcw51xz0p370zabnk2dnk1xhdih1f34"))))
     (properties `((upstream-name . "RSQLite")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3511,13 +3511,13 @@ maintenance for package developers.")
 (define-public r-r-utils
   (package
     (name "r-r-utils")
-    (version "2.9.0")
+    (version "2.9.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "R.utils" version))
               (sha256
                (base32
-                "1w4zn2db15bggfnh64fbyi2z2sj47rcd4xn53b28dsnkamdcramj"))))
+                "1krj1ny7y43lpm2q8c7swxfdc3ngy2j8knzv71f8bfsgh673nsxc"))))
     (properties `((upstream-name . "R.utils")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3533,13 +3533,13 @@ developing R packages.")
 (define-public r-r-cache
   (package
     (name "r-r-cache")
-    (version "0.13.0")
+    (version "0.14.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "R.cache" version))
               (sha256
                (base32
-                "1hf5cb7xvnca5zlh9245b5g62sgsaxwdhiv7x59yld37cydakm6k"))))
+                "1n8n5ihkryrbxv630dwhz4r048nyv676qd3i9f5z5fa04hvlxbqq"))))
     (properties `((upstream-name . "R.cache")))
     (build-system r-build-system)
     (propagated-inputs

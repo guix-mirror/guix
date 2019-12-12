@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,15 +33,48 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 threads))
 
+;; When using --system argument, binfmt-misc mechanism may be used. In that
+;; case, (guix script processes) won't work because:
+;;
+;; * ARGV0 is qemu-user and not guix-daemon.
+;; * Guix-daemon won't be able to stuff client PID in ARGV1 of forked
+;;   processes.
+;;
+;; See: https://lists.gnu.org/archive/html/bug-guix/2019-12/msg00017.html.
+;;
+;; If we detect that we are running with binfmt emulation, all the following
+;; tests must be skipped.
+
+(define (binfmt-misc?)
+  (let ((pid (getpid))
+        (cmdline (call-with-input-file "/proc/self/cmdline" get-string-all)))
+    (match (primitive-fork)
+      (0 (dynamic-wind
+           (const #t)
+           (lambda ()
+             (exit
+              (not (equal?
+                    (call-with-input-file (format #f "/proc/~a/cmdline" pid)
+                      get-string-all)
+                    cmdline))))
+           (const #t)))
+      (x (zero? (cdr (waitpid x)))))))
+
+(define-syntax-rule (test-assert* description exp)
+  (begin
+    (when (binfmt-misc?)
+      (test-skip 1))
+    (test-assert description exp)))
+
 (test-begin "processes")
 
-(test-assert "not a client"
+(test-assert* "not a client"
   (not (find (lambda (session)
                (= (getpid)
                   (process-id (daemon-session-client session))))
              (daemon-sessions))))
 
-(test-assert "client"
+(test-assert* "client"
   (with-store store
     (let* ((session (find (lambda (session)
                             (= (getpid)
@@ -50,7 +84,7 @@
       (and (kill (process-id daemon) 0)
            (string-suffix? "guix-daemon" (first (process-command daemon)))))))
 
-(test-assert "client + lock"
+(test-assert* "client + lock"
   (with-store store
     (call-with-temporary-directory
      (lambda (directory)

@@ -174,6 +174,8 @@ different programming languages.")
                (base32
                 "0h148anbaqgch6n69pxsvs1c9wmykgd052wmzgdia7qpz8w6p8dl"))))
     (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
     (native-inputs
      `(("unzip" ,unzip)))
     (home-page "http://fmtlib.net/")

@@ -27,7 +27,6 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-37)
-  #:use-module (srfi srfi-41)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:export (guix-import-cran))
@@ -98,10 +97,8 @@ Import and convert the CRAN package for PACKAGE-NAME.\n"))
        (if (assoc-ref opts 'recursive)
            ;; Recursive import
            (map package->definition
-                (reverse
-                 (stream->list
-                  (cran-recursive-import package-name
-                                         (or (assoc-ref opts 'repo) 'cran)))))
+                (cran-recursive-import package-name
+                                       (or (assoc-ref opts 'repo) 'cran)))
            ;; Single import
            (let ((sexp (cran->guix-package package-name
                                            (or (assoc-ref opts 'repo) 'cran))))

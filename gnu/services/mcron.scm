@@ -130,6 +130,8 @@ files."
 
 (define mcron-service-type
   (service-type (name 'mcron)
+                (description
+                 "Run the mcron job scheduling daemon.")
                 (extensions
                  (list (service-extension shepherd-root-service-type
                                           mcron-shepherd-services)

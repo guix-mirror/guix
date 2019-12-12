@@ -187,7 +187,7 @@ by the b43-open driver of Linux-libre.")
 (define-public seabios
   (package
     (name "seabios")
-    (version "1.12.1")
+    (version "1.13.0")
     (source
      (origin
        (method git-fetch)
@@ -196,10 +196,10 @@ by the b43-open driver of Linux-libre.")
              (commit (string-append "rel-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1g9y03r5ky58q2g9rhbwfhs42z0zb9f59wfxpwh6zjqa6fyv1r80"))))
+        (base32 "1n1bd6msfs7xn8844sz2qnm7hb5x2qfl3zb06kp4bx9vdc3i6619"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("python-2" ,python-2)))
+     `(("python" ,python-wrapper)))
     (arguments
      `(#:tests? #f                      ; no check target
        #:phases

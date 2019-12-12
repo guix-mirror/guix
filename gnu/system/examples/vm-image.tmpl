@@ -24,11 +24,6 @@ Run '\x1b[1;37minfo guix\x1b[0m' to browse documentation.
 accounts.\x1b[0m
 "))
 
-(define this-file
-  (local-file (basename (assoc-ref (current-source-location) 'filename))
-              "config.scm"))
-
-
 (operating-system
   (host-name "gnu")
   (timezone "Etc/UTC")
@@ -72,10 +67,6 @@ root ALL=(ALL) ALL
 
   (services
    (append (list (service xfce-desktop-service-type)
-
-                 ;; Copy this file to /etc/config.scm in the OS.
-                 (simple-service 'config-file etc-service-type
-                                 `(("config.scm" ,this-file)))
 
                  ;; Choose SLiM, which is lighter than the default GDM.
                  (service slim-service-type

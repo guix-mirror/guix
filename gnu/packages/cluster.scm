@@ -26,6 +26,7 @@
   #:use-module (guix packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages sphinx)
@@ -87,7 +88,7 @@ independently or together to provide resilient infrastructures.")
 (define-public libraft
   (package
     (name "libraft")
-    (version "0.9.5")
+    (version "0.9.11")
     (home-page "https://github.com/canonical/raft")
     (source (origin
               (method git-fetch)
@@ -96,10 +97,17 @@ independently or together to provide resilient infrastructures.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1q49f5mmv6nr6dxhnp044xwc6jlczgh0nj0bl6718wiqh28411x0"))))
-    (arguments '(#:configure-flags '("--disable-uv")))
-    ;; The uv plugin tests fail, if libuv (or the example) is enabled,
-    ;; because setting up the environment requires too much privileges.
+                "00rsq4z9nykmf7r5rlpv1y6bvckcmg3zv57vh1h681y5pij6cch1"))))
+    (arguments '(#:configure-flags '("--enable-uv")
+                 #:phases
+                 (modify-phases %standard-phases
+                   (add-after 'unpack 'disable-failing-tests
+                     (lambda _
+                       (substitute* "Makefile.am"
+                         ((".*test_uv_append.c.*") ""))
+                       #t)))))
+    (inputs
+     `(("libuv" ,libuv)))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)

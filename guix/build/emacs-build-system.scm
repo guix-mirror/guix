@@ -76,10 +76,10 @@ archive, a directory, or an Emacs Lisp file."
 (define* (add-source-to-load-path #:key dummy #:allow-other-keys)
   "Augment the EMACSLOADPATH environment variable with the source directory."
   (let* ((source-directory (getcwd))
-         (emacs-load-path-value (string-append (getenv "EMACSLOADPATH") ":"
-                                               source-directory)))
+         (emacs-load-path-value (string-append source-directory ":"
+                                               (getenv "EMACSLOADPATH"))))
     (setenv "EMACSLOADPATH" emacs-load-path-value)
-    (format #t "source directory ~s appended to the `EMACSLOADPATH' \
+    (format #t "source directory ~s prepended to the `EMACSLOADPATH' \
 environment variable\n" source-directory)))
 
 (define* (build #:key outputs inputs #:allow-other-keys)
@@ -239,15 +239,14 @@ second hyphen.  This corresponds to 'name-version' as used in ELPA packages."
     (add-after 'unpack 'add-source-to-load-path add-source-to-load-path)
     (delete 'bootstrap)
     (delete 'configure)
-    ;; Move the build phase after install: the .el files are byte compiled
-    ;; directly in the store.
     (delete 'build)
     (replace 'check check)
     (replace 'install install)
-    (add-after 'install 'build build)
     (add-after 'install 'make-autoloads make-autoloads)
     (add-after 'make-autoloads 'patch-el-files patch-el-files)
-    (add-after 'make-autoloads 'move-doc move-doc)))
+    ;; The .el files are byte compiled directly in the store.
+    (add-after 'patch-el-files 'build build)
+    (add-after 'build 'move-doc move-doc)))
 
 (define* (emacs-build #:key inputs (phases %standard-phases)
                       #:allow-other-keys #:rest args)

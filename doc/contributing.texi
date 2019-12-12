@@ -961,6 +961,19 @@ often better to clone the repository.  Don't use the @command{name} field in
 the URL: it is not very useful and if the name changes, the URL will probably
 be wrong.
 
+@item
+See if Guix builds with
+@example
+guix environment --pure guix -- make
+@end example
+and look for warnings, especially those about use of undefined symbols.
+
+@item
+Make sure your changes do not break Guix and simulate a @code{guix pull} with:
+@example
+guix pull --url=/path/to/your/checkout --profile=/tmp/guix.master
+@end example
+
 @end enumerate
 
 When posting a patch to the mailing list, use @samp{[PATCH] @dots{}} as

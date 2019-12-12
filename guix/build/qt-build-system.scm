@@ -90,8 +90,8 @@ add a dependency of that output on Qt."
       (unless (member output qt-wrap-excluded-outputs)
         (let ((bin-list     (find-files-to-wrap directory))
               (vars-to-wrap (variables-for-wrapping
-                             (append (list output)
-                                         input-directories))))
+                             (append (list directory)
+                                     input-directories))))
           (when (not (null? vars-to-wrap))
             (for-each (cut apply wrap-program <> vars-to-wrap)
                       bin-list)))))))

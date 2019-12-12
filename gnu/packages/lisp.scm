@@ -10,7 +10,7 @@
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright © 2019 Jesse Gildersleve <jessejohngildersleve@protonmail.com>
@@ -354,10 +354,10 @@ an interpreter, a compiler, a debugger, and much more.")
      ;;
      ;; CCL is not bootstrappable so it won't do.  CLISP 2.49 seems to work.
      ;; ECL too.  ECL builds SBCL about 20% slower than CLISP.  As of
-     ;; 2019-09-05, ECL was last updated in 2016 while CLISP was last update
+     ;; 2019-09-05, ECL was last updated in 2016 while CLISP was last updated
      ;; in 2010.
      ;;
-     ;; For now we stick to CLISP for all systems.  We keep the `match' in to
+     ;; For now we stick to CLISP for all systems.  We keep the `match' here to
      ;; make it easier to change the host compiler for various architectures.
      `(,@(match (%current-system)
            ((or "x86_64-linux" "i686-linux")
@@ -422,7 +422,8 @@ an interpreter, a compiler, a debugger, and much more.")
                  (("\\(deftest pwent\\.[12]" all)
                   (string-append "#+nil ;disabled by Guix\n" all))
                  (("\\(deftest grent\\.[12]" all)
-                  (string-append "#+nil ;disabled by Guix\n" all))))))
+                  (string-append "#+nil ;disabled by Guix\n" all))))
+             #t))
          ;; FIXME: the texlive-union insists on regenerating fonts.  It stores
          ;; them in HOME, so it needs to be writeable.
          (add-before 'build 'set-HOME
@@ -444,6 +445,7 @@ an interpreter, a compiler, a debugger, and much more.")
              (invoke "sh" "install.sh")))
          (add-after 'build 'build-doc
            (lambda _
+             ;; TODO: Doc is not deterministic, maybe there is a timespamp?
              (with-directory-excursion "doc/manual"
                (and  (invoke "make" "info")
                      (invoke "make" "dist")))))

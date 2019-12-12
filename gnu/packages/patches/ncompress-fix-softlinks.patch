@@ -1,0 +1,24 @@
+Patch taken from Debian sid.
+
+Description: Support uncompressing and compressing soft links.
+ Historically, ncompress for Debian has been built using a command line
+ directly in debian/rules.  For 4.2.4.5-1, I simplified by swtching to the
+ upstream Makefile.  However, that caused a regression - the Debian version of
+ ncompress has always successfully handled soft links, but this stopped
+ working.  To revert to the original behavior, I need to remove -DLSTAT from
+ the build options, to be consistent with how the code was previously built.
+Author: Kenneth J. Pronovici <pronovic@debian.org>
+Bug-Debian: http://bugs.debian.org/918836
+Index: ncompress/GNUmakefile
+===================================================================
+--- ncompress.orig/GNUmakefile
++++ ncompress/GNUmakefile
+@@ -9,7 +9,7 @@ distclean: cleanup
+ 
+ Makefile: Makefile.def GNUmakefile
+ 	sed \
+-		-e 's:options= :options= $$(CFLAGS) -DNOFUNCDEF -DUTIME_H -DLSTAT $$(LDFLAGS) :' \
++		-e 's:options= :options= $$(CFLAGS) -DNOFUNCDEF -DUTIME_H $$(LDFLAGS) :' \
+ 		Makefile.def > Makefile
+ 
+ check:

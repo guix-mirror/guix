@@ -23,6 +23,8 @@
 # Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 # Copyright © 2019 John Soo <jsoo1@asu.edu>
 # Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
+# Copyright © 2019 Evan Straw <evan.straw99@gmail.com>
+# Copyright © 2019 Brett Gilio <brettg@posteo.de>
 #
 # This file is part of GNU Guix.
 #
@@ -924,10 +926,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/glibc-2.28-supported-locales.patch     	\
   %D%/packages/patches/glibc-supported-locales.patch     	\
   %D%/packages/patches/glm-restore-install-target.patch		\
-  %D%/packages/patches/glusterfs-use-PATH-instead-of-hardcodes.patch		\
   %D%/packages/patches/gmp-arm-asm-nothumb.patch		\
   %D%/packages/patches/gmp-faulty-test.patch			\
-  %D%/packages/patches/gnome-control-center-udisks.patch	\
   %D%/packages/patches/gnome-shell-theme.patch			\
   %D%/packages/patches/gnome-tweaks-search-paths.patch		\
   %D%/packages/patches/gnutls-skip-trust-store-test.patch	\
@@ -947,6 +947,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/guile-2.2-skip-oom-test.patch            \
   %D%/packages/patches/guile-default-utf8.patch			\
   %D%/packages/patches/guile-gdbm-ffi-support-gdbm-1.14.patch	\
+  %D%/packages/patches/guile-finalization-crash.patch		\
   %D%/packages/patches/guile-linux-syscalls.patch		\
   %D%/packages/patches/guile-present-coding.patch		\
   %D%/packages/patches/guile-relocatable.patch			\
@@ -1132,6 +1133,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mcrypt-CVE-2012-4409.patch			\
   %D%/packages/patches/mcrypt-CVE-2012-4426.patch			\
   %D%/packages/patches/mcrypt-CVE-2012-4527.patch			\
+  %D%/packages/patches/mes-remove-store-name.patch		\
   %D%/packages/patches/mesa-skip-disk-cache-test.patch		\
   %D%/packages/patches/mesa-timespec-test-32bit.patch		\
   %D%/packages/patches/mescc-tools-boot.patch			\
@@ -1164,6 +1166,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mupen64plus-video-z64-glew-correct-path.patch    \
   %D%/packages/patches/mutt-store-references.patch		\
   %D%/packages/patches/m4-gnulib-libio.patch			\
+  %D%/packages/patches/ncompress-fix-softlinks.patch		\
   %D%/packages/patches/netcdf-date-time.patch			\
   %D%/packages/patches/netcdf-tst_h_par.patch			\
   %D%/packages/patches/netpbm-CVE-2017-2586.patch		\
@@ -1176,6 +1179,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ngircd-handle-zombies.patch		\
   %D%/packages/patches/nm-plugin-path.patch			\
   %D%/packages/patches/nsis-env-passthru.patch			\
+  %D%/packages/patches/nss-CVE-2019-11745.patch			\
   %D%/packages/patches/nss-freebl-stubs.patch			\
   %D%/packages/patches/nss-increase-test-timeout.patch		\
   %D%/packages/patches/nss-pkgconfig.patch			\
@@ -1295,7 +1299,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-mox3-python3.6-compat.patch	\
   %D%/packages/patches/python-testtools.patch			\
   %D%/packages/patches/python-paste-remove-timing-test.patch	\
-  %D%/packages/patches/python-pyatspi-python-37.patch	\
   %D%/packages/patches/python-pycrypto-CVE-2013-7459.patch	\
   %D%/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   %D%/packages/patches/python-pygpgme-fix-pinentry-tests.patch	\
@@ -1332,7 +1335,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/retroarch-disable-online-updater.patch	\
   %D%/packages/patches/ruby-rubygems-276-for-ruby24.patch	\
   %D%/packages/patches/ruby-rack-ignore-failing-test.patch      \
-  %D%/packages/patches/ruby-safe-yaml-add-require-time.patch	\
   %D%/packages/patches/ruby-tzinfo-data-ignore-broken-test.patch\
   %D%/packages/patches/runc-CVE-2019-5736.patch			\
   %D%/packages/patches/rust-1.19-mrustc.patch			\
@@ -1363,7 +1365,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/soundconverter-remove-gconf-dependency.patch	\
   %D%/packages/patches/steghide-fixes.patch			\
   %D%/packages/patches/streamlink-update-test.patch		\
-  %D%/packages/patches/stumpwm-fix-broken-read-one-line.patch	\
   %D%/packages/patches/supercollider-boost-1.70-build-fix.patch	\
   %D%/packages/patches/superlu-dist-awpm-grid.patch		\
   %D%/packages/patches/superlu-dist-fix-mpi-deprecations.patch	\
@@ -1400,8 +1401,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ttf2eot-cstddef.patch			\
   %D%/packages/patches/ttfautohint-source-date-epoch.patch	\
   %D%/packages/patches/tomb-fix-errors-on-open.patch		\
-  %D%/packages/patches/totem-meson-compat.patch			\
-  %D%/packages/patches/totem-meson-easy-codec.patch		\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
   %D%/packages/patches/txr-shell.patch				\
   %D%/packages/patches/u-boot-fix-mkimage-header-verification.patch	\
@@ -1443,6 +1442,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/wavpack-CVE-2018-7253.patch		\
   %D%/packages/patches/wavpack-CVE-2018-7254.patch		\
   %D%/packages/patches/weasyprint-library-paths.patch		\
+  %D%/packages/patches/websocketpp-fix-for-boost-1.70.patch	\
   %D%/packages/patches/wicd-bitrate-none-fix.patch		\
   %D%/packages/patches/wicd-get-selected-profile-fix.patch	\
   %D%/packages/patches/wicd-urwid-1.3.patch			\

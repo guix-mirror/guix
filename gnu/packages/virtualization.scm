@@ -220,7 +220,7 @@ exec smbd $@")))
        ("spice" ,spice)
        ("usbredir" ,usbredir)
        ("util-linux" ,util-linux)
-       ;; ("vde2" ,vde2)
+       ("vde2" ,vde2)
        ("virglrenderer" ,virglrenderer)
        ("zlib" ,zlib)))
     (native-inputs `(("gettext" ,gettext-minimal)
@@ -268,7 +268,7 @@ server and embedded PowerPC, and S390 guests.")
                   '("gettext")))
     (inputs (fold alist-delete (package-inputs qemu)
                   '("libusb" "mesa" "sdl2" "spice" "virglrenderer" "gtk+"
-                    "usbredir" "libdrm" "libepoxy" "pulseaudio")))))
+                    "usbredir" "libdrm" "libepoxy" "pulseaudio" "vde2")))))
 
 ;; The GRUB test suite fails with later versions of Qemu, so we
 ;; keep it at 2.10 for now.  See

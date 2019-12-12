@@ -33,7 +33,6 @@
 
             machine
             machine?
-            this-machine
 
             machine-operating-system
             machine-environment
@@ -89,14 +88,17 @@
 ;;; Declarations for machines in a deployment.
 ;;;
 
-(define-record-type* <machine> machine
-  make-machine
+(define-record-type* <machine> machine make-machine
   machine?
-  this-machine
-  (operating-system machine-operating-system) ; <operating-system>
+  (operating-system %machine-operating-system); <operating-system>
   (environment      machine-environment)      ; symbol
   (configuration    machine-configuration     ; configuration object
                     (default #f)))            ; specific to environment
+
+(define (machine-operating-system machine)
+  "Return the operating system of MACHINE."
+  (operating-system-with-provenance
+   (%machine-operating-system machine)))
 
 (define (machine-display-name machine)
   "Return the host-name identifying MACHINE."

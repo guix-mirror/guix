@@ -9,6 +9,7 @@
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Nam Nguyen <namn@berkeley.edu>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Brett Gilio <brettg@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -416,7 +417,7 @@ desktops.")
 (define-public qbittorrent
   (package
     (name "qbittorrent")
-    (version "4.1.9.1")
+    (version "4.2.0")
     (source
      (origin
        (method git-fetch)
@@ -425,7 +426,7 @@ desktops.")
              (commit (string-append "release-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "19zgqlby7i1kr20wa4zd99qzd062a879xxxbmlf40rnqiqy4bhyi"))))
+        (base32 "17vm6aa2k8k1q14z9r2r06c794bcr4m0l0fdsn08wid6mj1zjsbx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

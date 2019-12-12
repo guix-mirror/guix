@@ -100,6 +100,8 @@ like Gnome, Unity, Budgie, Pantheon, XFCE, Mate and others.")
        (begin
          (use-modules (guix build utils))
          (copy-recursively (assoc-ref %build-inputs "source") "icons")
+         (substitute* "icons/Delft/index.theme"
+           (("gnome") "Adwaita"))
          (delete-file "icons/README.md")
          (delete-file "icons/LICENSE")
          (delete-file "icons/logo.jpg")
@@ -115,7 +117,7 @@ the Obsidian icon theme.")
 (define-public gnome-shell-extension-dash-to-dock
   (package
     (name "gnome-shell-extension-dash-to-dock")
-    (version "65")
+    (version "66")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -124,7 +126,7 @@ the Obsidian icon theme.")
                                            version))))
               (sha256
                (base32
-                "0ln49l9s0yfl30pi77pz7xlmh63l9vjppi863kry5lay10dsvz47"))
+                "04krl6rxlp1qc97psraf2kwin7h0mx4c7pnfpi7vhplmvasrwkfh"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments

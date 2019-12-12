@@ -334,6 +334,16 @@ added to the pack."
   (define environment
     (singularity-environment-file profile))
 
+  (define symlinks*
+    ;; Singularity requires /bin (specifically /bin/sh), so ensure that
+    ;; symlink is created.
+    (if (find (match-lambda
+                (("/bin" . _) #t)
+                (_            #f))
+              symlinks)
+        symlinks
+        `(("/bin" -> "bin") ,@symlinks)))
+
   (define build
     (with-imported-modules (source-module-closure
                             '((guix build utils)
@@ -407,7 +417,7 @@ added to the pack."
                                         "s" "777" "0" "0"
                                         (relative-file-name (dirname source)
                                                             target)))))))
-                      '#$symlinks)
+                      '#$symlinks*)
 
                    "-p" "/.singularity.d d 555 0 0"
 
@@ -1049,8 +1059,17 @@ Create a bundle of PACKAGE.\n"))
                  (entry-point    (assoc-ref opts 'entry-point))
                  (profile-name   (assoc-ref opts 'profile-name))
                  (gc-root        (assoc-ref opts 'gc-root)))
+            (define (lookup-package package)
+              (manifest-lookup manifest (manifest-pattern (name package))))
+
             (when (null? (manifest-entries manifest))
               (warning (G_ "no packages specified; building an empty pack~%")))
+
+            (when (and (eq? pack-format 'squashfs)
+                       (not (any lookup-package '("bash" "bash-minimal"))))
+              (warning (G_ "Singularity requires you to provide a shell~%"))
+              (display-hint (G_ "Add @code{bash} or @code{bash-minimal} \
+to your package list.")))
 
             (run-with-store store
               (mlet* %store-monad ((profile (profile-derivation

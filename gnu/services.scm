@@ -25,6 +25,8 @@
   #:use-module (guix profiles)
   #:use-module (guix discovery)
   #:use-module (guix combinators)
+  #:use-module (guix channels)
+  #:use-module (guix describe)
   #:use-module (guix sets)
   #:use-module (guix ui)
   #:use-module ((guix utils) #:select (source-properties->location))
@@ -39,6 +41,7 @@
   #:use-module (srfi srfi-35)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 match)
+  #:autoload   (ice-9 pretty-print) (pretty-print)
   #:export (service-extension
             service-extension?
             service-extension-target
@@ -82,6 +85,7 @@
             ambiguous-target-service-error-target-type
 
             system-service-type
+            provenance-service-type
             boot-service-type
             cleanup-service-type
             activation-service-type
@@ -369,6 +373,89 @@ by the initrd once the root file system is mounted.")))
 (define %boot-service
   ;; The service that produces the boot script.
   (service boot-service-type #t))
+
+
+;;;
+;;; Provenance tracking.
+;;;
+
+(define (object->pretty-string obj)
+  "Like 'object->string', but using 'pretty-print'."
+  (call-with-output-string
+    (lambda (port)
+      (pretty-print obj port))))
+
+(define (channel->code channel)
+  "Return code to build CHANNEL, ready to be dropped in a 'channels.scm'
+file."
+  `(channel (name ',(channel-name channel))
+            (url ,(channel-url channel))
+            (branch ,(channel-branch channel))
+            (commit ,(channel-commit channel))))
+
+(define (channel->sexp channel)
+  "Return an sexp describing CHANNEL.  The sexp is _not_ code and is meant to
+be parsed by tools; it's potentially more future-proof than code."
+  `(channel (name ,(channel-name channel))
+            (url ,(channel-url channel))
+            (branch ,(channel-branch channel))
+            (commit ,(channel-commit channel))))
+
+(define (provenance-file channels config-file)
+  "Return a 'provenance' file describing CHANNELS, a list of channels, and
+CONFIG-FILE, which can be either #f or a <local-file> containing the OS
+configuration being used."
+  (scheme-file "provenance"
+               #~(provenance
+                  (version 0)
+                  (channels #+@(if channels
+                                   (map channel->sexp channels)
+                                   '()))
+                  (configuration-file #+config-file))))
+
+(define (provenance-entry config-file)
+  "Return system entries describing the operating system provenance: the
+channels in use and CONFIG-FILE, if it is true."
+  (define profile
+    (current-profile))
+
+  (define channels
+    (and=> profile profile-channels))
+
+  (mbegin %store-monad
+    (let ((config-file (cond ((string? config-file)
+                              (local-file config-file "configuration.scm"))
+                             ((not config-file)
+                              #f)
+                             (else
+                              config-file))))
+      (return `(("provenance" ,(provenance-file channels config-file))
+                ,@(if channels
+                      `(("channels.scm"
+                         ,(plain-file "channels.scm"
+                                      (object->pretty-string
+                                       `(list
+                                         ,@(map channel->code channels))))))
+                      '())
+                ,@(if config-file
+                      `(("configuration.scm" ,config-file))
+                      '()))))))
+
+(define provenance-service-type
+  (service-type (name 'provenance)
+                (extensions
+                 (list (service-extension system-service-type
+                                          provenance-entry)))
+                (default-value #f)                ;the OS config file
+                (description
+                 "Store provenance information about the system in the system
+itself: the channels used when building the system, and its configuration
+file, when available.")))
+
+
+;;;
+;;; Cleanup.
+;;;
 
 (define (cleanup-gexp _)
   "Return a gexp to clean up /tmp and similar places upon boot."

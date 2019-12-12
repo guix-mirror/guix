@@ -372,13 +372,13 @@ hosts by wrapping the @file{rsync} binary.")
 (define-public ruby-i18n
   (package
     (name "ruby-i18n")
-    (version "1.1.0")
+    (version "1.7.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "i18n" version))
               (sha256
                (base32
-                "0ppvmla21hssvrfm8g1n2fnb4lxn4yhy9qmmba0imanflgldrjmr"))))
+                "0hmypvx9iyc0b4hski7aic2xzm09cg1c7q1qlpnk3k8s5acxzyhl"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; no tests
@@ -390,7 +390,7 @@ interpolation of values to translations, pluralization, customizable
 transliteration to ASCII, flexible defaults, bulk lookup, lambdas as
 translation data, custom key/scope separator, custom exception handlers, and
 an extensible architecture with a swappable backend.")
-    (home-page "https://github.com/svenfuchs/i18n")
+    (home-page "https://github.com/ruby-i18n/i18n")
     (license license:expat)))
 
 (define-public ruby-iruby
@@ -560,7 +560,7 @@ outcomes of a code example.")
 (define-public ruby-rspec-its
   (package
     (name "ruby-rspec-its")
-    (version "1.2.0")
+    (version "1.3.0")
     (source
      (origin
        (method git-fetch)
@@ -570,17 +570,7 @@ outcomes of a code example.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "190rz7v4q4wk80fzhr5hknvxx4vb2pywmqr8wc41w2blj9ylzi0f"))
-       (patches
-        (list
-         (origin (method url-fetch)
-                 (uri (string-append
-                       "https://github.com/rspec/rspec-its/commit/"
-                       "bfaab439c7c879f5ef25552f41827891f6308373.patch"))
-                 (file-name "ruby-rspec-its-fix-specs-for-ruby-2.4.patch")
-                 (sha256
-                  (base32
-                   "0lnik0kvrpgkakvdb2fmzg22pdlraf6kiidr9sv6rnfyviiqwxgh")))))))
+         "02mlsc9d4d1cjj5vahi8v3q8hyn9fyiv8nnlidhgfh186qp20g1p"))))
     (build-system ruby-build-system)
     (arguments
      `(#:test-target "spec"
@@ -592,13 +582,19 @@ outcomes of a code example.")
                (("rspec rspec-core rspec-expectations rspec-mocks rspec-support")
                 ""))
              #t))
+         (add-before 'build 'update-ffi-in-gemfile
+           (lambda _
+             (substitute* "Gemfile"
+               (("  gem 'ffi', '~> 1.9.25'") "  gem 'ffi', '~> 1.10.0'"))
+             #t))
          (add-before 'build 'remove-unnecessary-dependency-versions-from-gemfile
            (lambda _
              (substitute* "rspec-its.gemspec"
                (("rake.*") "rake'\n")
-               (("cucumber.*") "cucumber'\n")
+               (("spec.add_development_dependency 'cucumber'.*")
+                "spec.add_development_dependency 'cucumber'\n")
                (("bundler.*") "bundler'\n")
-               (("aruba.*") "aruba'\n"))
+               (("\"aruba.*") "'aruba'\n"))
              #t)))))
     (propagated-inputs
      `(("ruby-rspec-core" ,ruby-rspec-core)
@@ -606,6 +602,7 @@ outcomes of a code example.")
     (native-inputs
      `(("bundler" ,bundler)
        ("ruby-cucumber" ,ruby-cucumber)
+       ("ruby-ffi" ,ruby-ffi)
        ("ruby-aruba" ,ruby-aruba)))
     (synopsis "RSpec extension that provides the @code{its} method")
     (description
@@ -5285,14 +5282,14 @@ inspired by the Sinatra microframework style of specifying actions:
 (define-public ruby-rubocop
   (package
     (name "ruby-rubocop")
-    (version "0.64.0")
+    (version "0.77.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "rubocop" version))
        (sha256
         (base32
-         "07shi6kncwhkvlh9ci9rgccrjsq4448hbic3yrakh2w65ppynvbj"))))
+         "0m88b1bgbhmmbdnz2xv6n0il0j4q5qm9jbc0vf1zsaxmxqp06nx9"))))
     (build-system ruby-build-system)
     (arguments
      '(;; No included tests
@@ -6341,14 +6338,14 @@ requests.  This is useful when testing software.")
 (define-public ruby-unicode-display-width
   (package
     (name "ruby-unicode-display-width")
-    (version "1.4.1")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "unicode-display_width" version))
        (sha256
         (base32
-         "0bq528fibi8s0jmxz0xzlgzggdq0x4fx46wfqz49478pv8gb2diq"))))
+         "08kfiniak1pvg3gn5k6snpigzvhvhyg7slmm0s2qx5zkj62c1z2w"))))
     (build-system ruby-build-system)
     (arguments
      '(;; Test data not included.
@@ -7459,13 +7456,13 @@ programs running in the background, in Ruby.")
 (define-public ruby-public-suffix
   (package
     (name "ruby-public-suffix")
-    (version "3.0.3")
+    (version "4.0.1")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "public_suffix" version))
               (sha256
                (base32
-                "08q64b5br692dd3v0a9wq9q5dvycc6kmiqmjbdxkxbfizggsvx6l"))))
+                "0xnfv2j2bqgdpg2yq9i2rxby0w2sc9h5iyjkpaas2xknwrgmhdb0"))))
     (build-system ruby-build-system)
     (arguments
      '(#:phases
@@ -7496,13 +7493,13 @@ all known public suffixes.")
 (define-public ruby-addressable
   (package
     (name "ruby-addressable")
-    (version "2.6.0")
+    (version "2.7.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "addressable" version))
               (sha256
                (base32
-                "0bcm2hchn897xjhqj9zzsxf3n9xhddymj4lsclz508f4vw3av46l"))))
+                "1fvchp2rhp2rmigx7qglf69xvjqvzq7x0g49naliw29r2bz656sy"))))
     (build-system ruby-build-system)
     (arguments
      '(#:test-target "spec"
@@ -8207,13 +8204,13 @@ implementation.")
 (define-public ruby-rouge
   (package
     (name "ruby-rouge")
-    (version "3.2.1")
+    (version "3.13.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rouge" version))
               (sha256
                (base32
-                "0h79gn2wmn1wix2d27lgiaimccyj8gvizrllyym500pir408x62f"))))
+                "1y90nx9ph9adnrpcsvs2adca2l3dyz8am2d2kzxkwd3a086ji7aw"))))
     (build-system ruby-build-system)
     (arguments `(#:tests? #f)); No rakefile
     (home-page "http://rouge.jneen.net/")
@@ -8287,10 +8284,9 @@ indentation will probably be an issue and hence this gem.")
 (define-public ruby-safe-yaml
   (package
     (name "ruby-safe-yaml")
-    (version "1.0.4")
+    (version "1.0.5")
     (source
      (origin
-       ;; TODO Fetch from the git repository so a patch can be applied
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/dtao/safe_yaml.git")
@@ -8298,9 +8294,7 @@ indentation will probably be an issue and hence this gem.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1wnln8xdy8g6kwdj4amm8773xwffqxpf2sxslk6jjh2wxsy1lrig"))
-       (patches
-        (search-patches "ruby-safe-yaml-add-require-time.patch"))))
+         "1a0wh7y3va2m7bjza95na2snw0vrdh9syz40mpjvjphbc4ph3pzg"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-rspec" ,ruby-rspec)
@@ -8383,13 +8377,13 @@ methods for your source as @code{Forwardable::Extended}.")
 (define-public ruby-pathutil
   (package
     (name "ruby-pathutil")
-    (version "0.16.1")
+    (version "0.16.2")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "pathutil" version))
               (sha256
                (base32
-                "0wc18ms1rzi44lpjychyw2a96jcmgxqdvy2949r4vvb5f4p0lgvz"))))
+                "12fm93ljw9fbxmv2krki5k5wkvr7560qy8p4spvb9jiiaqv78fz4"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("ruby-forwardable-extended" ,ruby-forwardable-extended)))
@@ -8489,14 +8483,14 @@ interface over different adapters.")
 (define-public ruby-nio4r
   (package
    (name "ruby-nio4r")
-   (version "2.4.0")
+   (version "2.5.2")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "nio4r" version))
      (sha256
       (base32
-       "0v2cpqmw6dmysa91ffzl736kgjjzmnf4xlgz6g16fk4yqhn71340"))))
+       "0gnmvbryr521r135yz5bv8354m7xn6miiapfgpg1bnwsvxz8xj6c"))))
    (build-system ruby-build-system)
    (arguments
     '(#:phases

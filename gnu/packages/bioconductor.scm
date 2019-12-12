@@ -3044,6 +3044,63 @@ for DNA and protein sequences.  This package supports several sequence
 kernels, including: gkmSVM, kmer-SVM, mismatch kernel and wildcard kernel.")
     (license license:gpl2+)))
 
+;; This is a CRAN package, but it depends on multtest from Bioconductor.
+(define-public r-mutoss
+  (package
+    (name "r-mutoss")
+    (version "0.1-12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mutoss" version))
+       (sha256
+        (base32
+         "1yk7p7pb2xm38d3j19ysgwmix48lvimbhkhjjwk5jmr1a0ysx298"))))
+    (properties `((upstream-name . "mutoss")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-multcomp" ,r-multcomp)
+       ("r-multtest" ,r-multtest)
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-plotrix" ,r-plotrix)))
+    (home-page "https://github.com/kornl/mutoss/")
+    (synopsis "Unified multiple testing procedures")
+    (description
+     "This package is designed to ease the application and comparison of
+multiple hypothesis testing procedures for FWER, gFWER, FDR and FDX.  Methods
+are standardized and usable by the accompanying mutossGUI package.")
+    ;; Any version of the GPL.
+    (license (list license:gpl2+ license:gpl3+))))
+
+;; This is a CRAN package, but it depends on mutoss, which depends on multtest
+;; from Bioconductor, so we put it here.
+(define-public r-metap
+  (package
+    (name "r-metap")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "metap" version))
+       (sha256
+        (base32
+         "0pfbcixjrzx81l9wqhlp55khg9k63zf8pvg2n39c19akr4ppzhvf"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)
+       ("r-mutoss" ,r-mutoss)
+       ("r-rdpack" ,r-rdpack)
+       ("r-tfisher" ,r-tfisher)))
+    (home-page "http://www.dewey.myzen.co.uk/meta/meta.html")
+    (synopsis "Meta-analysis of significance values")
+    (description
+     "The canonical way to perform meta-analysis involves using effect sizes.
+When they are not available this package provides a number of methods for
+meta-analysis of significance values including the methods of Edgington,
+Fisher, Stouffer, Tippett, and Wilkinson; a number of data-sets to replicate
+published results; and a routine for graphical display.")
+    (license license:gpl2)))
+
 (define-public r-triform
   (package
     (name "r-triform")

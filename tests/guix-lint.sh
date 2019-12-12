@@ -76,3 +76,14 @@ then true; else false; fi
 
 # Make sure specifying multiple packages works.
 guix lint -c inputs-should-be-native dummy dummy@42 dummy
+
+
+# Use --load-path instead.
+unset GUIX_PACKAGE_PATH
+
+out=`guix lint -L $module_dir -c synopsis,description dummy 2>&1`
+if [ `grep_warning "$out"` -ne 3 ]
+then false; else true; fi
+
+# Make sure specifying multiple packages works.
+guix lint -L $module_dir -c inputs-should-be-native dummy dummy@42 dummy

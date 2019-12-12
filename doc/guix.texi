@@ -39,7 +39,7 @@ Copyright @copyright{} 2016, 2017, 2018, 2019 Jan Nieuwenhuizen@*
 Copyright @copyright{} 2016 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
 Copyright @copyright{} 2016, 2017, 2018, 2019 Christopher Baines@*
-Copyright @copyright{} 2017, 2018 Clément Lassieur@*
+Copyright @copyright{} 2017, 2018, 2019 Clément Lassieur@*
 Copyright @copyright{} 2017, 2018 Mathieu Othacehe@*
 Copyright @copyright{} 2017 Federico Beffa@*
 Copyright @copyright{} 2017, 2018 Carlo Zancanaro@*
@@ -5053,7 +5053,7 @@ Yet another option is to produce a SquashFS image with the following
 command:
 
 @example
-guix pack -f squashfs guile emacs geiser
+guix pack -f squashfs bash guile emacs geiser
 @end example
 
 @noindent
@@ -5088,6 +5088,21 @@ package names passed on the command line or in the manifest file.
 This produces a SquashFS image containing all the specified binaries and
 symlinks, as well as empty mount points for virtual file systems like
 procfs.
+
+@quotation Note
+Singularity @emph{requires} you to provide @file{/bin/sh} in the image.
+For that reason, @command{guix pack -f squashfs} always implies @code{-S
+/bin=bin}.  Thus, your @command{guix pack} invocation must always start
+with something like:
+
+@example
+guix pack -f squashfs bash @dots{}
+@end example
+
+If you forget the @code{bash} (or similar) package, @command{singularity
+run} and @command{singularity exec} will fail with an unhelpful ``no
+such file or directory'' message.
+@end quotation
 @end table
 
 @cindex relocatable binaries
@@ -7442,6 +7457,7 @@ native package build:
 (gexp->derivation "vi"
    #~(begin
        (mkdir #$output)
+       (mkdir (string-append #$output "/bin"))
        (system* (string-append #+coreutils "/bin/ln")
                 "-s"
                 (string-append #$emacs "/bin/emacs")
@@ -9676,6 +9692,14 @@ and exit.
 Only enable the checkers specified in a comma-separated list using the
 names returned by @code{--list-checkers}.
 
+@item --load-path=@var{directory}
+@itemx -L @var{directory}
+Add @var{directory} to the front of the package module search path
+(@pxref{Package Modules}).
+
+This allows users to define their own packages and make them visible to
+the command-line tools.
+
 @end table
 
 @node Invoking guix size
@@ -11244,9 +11268,12 @@ corresponding device mapping established.
 This is a list of symbols denoting mount flags.  Recognized flags
 include @code{read-only}, @code{bind-mount}, @code{no-dev} (disallow
 access to special files), @code{no-suid} (ignore setuid and setgid
-bits), @code{no-atime} (do not update file access times), and @code{no-exec}
-(disallow program execution).  @xref{Mount-Unmount-Remount,,, libc, The GNU C
-Library Reference Manual}, for more information on these flags.
+bits), @code{no-atime} (do not update file access times),
+@code{strict-atime} (update file access time), @code{lazy-time} (only
+update time on the in-memory version of the file inode), and
+@code{no-exec} (disallow program execution).
+@xref{Mount-Unmount-Remount,,, libc, The GNU C Library Reference
+Manual}, for more information on these flags.
 
 @item @code{options} (default: @code{#f})
 This is either @code{#f}, or a string denoting mount options passed to the
@@ -18280,7 +18307,7 @@ When @var{interface} is @code{127.0.0.1}, only local clients can
 connect; when it is @code{0.0.0.0}, connections can come from any
 networking interface.
 
-@item @code{package} (default: @code{bitlbee})
+@item @code{bitlbee} (default: @code{bitlbee})
 The BitlBee package to use.
 
 @item @code{plugins} (default: @code{'()})
@@ -25900,6 +25927,15 @@ switch to it@footnote{This action (and the related actions
 @code{switch-generation} and @code{roll-back}) are usable only on
 systems already running Guix System.}.
 
+@quotation Note
+@c The paragraph below refers to the problem discussed at
+@c <https://lists.gnu.org/archive/html/guix-devel/2014-08/msg00057.html>.
+It is highly recommended to run @command{guix pull} once before you run
+@command{guix system reconfigure} for the first time (@pxref{Invoking
+guix pull}).  Failing to do that you would see an older version of Guix
+once @command{reconfigure} has completed.
+@end quotation
+
 This effects all the configuration specified in @var{file}: user
 accounts, system services, global package list, setuid programs, etc.
 The command starts system services specified in @var{file} that are not
@@ -25918,14 +25954,27 @@ It also adds a bootloader menu entry for the new OS configuration,
 entries for older configurations to a submenu, allowing you to choose
 an older system generation at boot time should you need it.
 
-@quotation Note
-@c The paragraph below refers to the problem discussed at
-@c <https://lists.gnu.org/archive/html/guix-devel/2014-08/msg00057.html>.
-It is highly recommended to run @command{guix pull} once before you run
-@command{guix system reconfigure} for the first time (@pxref{Invoking
-guix pull}).  Failing to do that you would see an older version of Guix
-once @command{reconfigure} has completed.
-@end quotation
+@cindex provenance tracking, of the operating system
+Upon completion, the new system is deployed under
+@file{/run/current-system}.  This directory contains @dfn{provenance
+meta-data}: the list of channels in use (@pxref{Channels}) and
+@var{file} itself, when available.  This information is useful should
+you later want to inspect how this particular generation was built.
+
+In fact, assuming @var{file} is self-contained, you can later rebuild
+generation @var{n} of your operating system with:
+
+@example
+guix time-machine \
+  -C /var/guix/profiles/system-@var{n}-link/channels.scm -- \
+  system reconfigure \
+  /var/guix/profiles/system-@var{n}-link/configuration.scm
+@end example
+
+You can think of it as some sort of built-in version control!  Your
+system is not just a binary artifact: @emph{it carries its own source}.
+@xref{Service Reference, @code{provenance-service-type}}, for more
+information on provenance tracking.
 
 @item switch-generation
 @cindex generations
@@ -26187,6 +26236,25 @@ This works as per @command{guix build} (@pxref{Invoking guix build}).
 Return the derivation file name of the given operating system without
 building anything.
 
+@cindex provenance tracking, of the operating system
+@item --save-provenance
+As discussed above, @command{guix system init} and @command{guix system
+reconfigure} always save provenance information @i{via} a dedicated
+service (@pxref{Service Reference, @code{provenance-service-type}}).
+However, other commands don't do that by default.  If you wish to, say,
+create a virtual machine image that contains provenance information, you
+can run:
+
+@example
+guix system vm-image --save-provenance config.scm
+@end example
+
+That way, the resulting image will effectively ``embed its own source''
+in the form of meta-data in @file{/run/current-system}.  With that
+information, one can rebuild the image to make sure it really contains
+what it pretends to contain; or they could use that to derive a variant
+of the image.
+
 @item --file-system-type=@var{type}
 @itemx -t @var{type}
 For the @code{disk-image} action, create a file system of the given
@@ -26259,6 +26327,10 @@ system generations available on disk---and that you can choose from the
 bootloader boot menu:
 
 @table @code
+
+@item describe
+Describe the current system generation: its file name, the kernel and
+bootloader used, etc., as well as provenance information when available.
 
 @item list-generations
 List a summary of each generation of the operating system available on
@@ -27043,6 +27115,54 @@ programs under @file{/run/current-system/profile}.  Other services can
 extend it by passing it lists of packages to add to the system profile.
 @end defvr
 
+@cindex provenance tracking, of the operating system
+@defvr {Scheme Variable} provenance-service-type
+This is the type of the service that records @dfn{provenance meta-data}
+in the system itself.  It creates several files under
+@file{/run/current-system}:
+
+@table @file
+@item channels.scm
+This is a ``channel file'' that can be passed to @command{guix pull -C}
+or @command{guix time-machine -C}, and which describes the channels used
+to build the system, if that information was available
+(@pxref{Channels}).
+
+@item configuration.scm
+This is the file that was passed as the value for this
+@code{provenance-service-type} service.  By default, @command{guix
+system reconfigure} automatically passes the OS configuration file it
+received on the command line.
+
+@item provenance
+This contains the same information as the two other files but in a
+format that is more readily processable.
+@end table
+
+In general, these two pieces of information (channels and configuration
+file) are enough to reproduce the operating system ``from source''.
+
+@quotation Caveats
+This information is necessary to rebuild your operating system, but it
+is not always sufficient.  In particular, @file{configuration.scm}
+itself is insufficient if it is not self-contained---if it refers to
+external Guile modules or to extra files.  If you want
+@file{configuration.scm} to be self-contained, we recommend that modules
+or files it refers to be part of a channel.
+
+Besides, provenance meta-data is ``silent'' in the sense that it does
+not change the bits contained in your system, @emph{except for the
+meta-data bits themselves}.  Two different OS configurations or sets of
+channels can lead to the same system, bit-for-bit; when
+@code{provenance-service-type} is used, these two systems will have
+different meta-data and thus different store file names, which makes
+comparison less trivial.
+@end quotation
+
+This service is automatically added to your operating system
+configuration when you use @command{guix system reconfigure},
+@command{guix system init}, or @command{guix deploy}.
+@end defvr
 
 @node Shepherd Services
 @subsection Shepherd Services

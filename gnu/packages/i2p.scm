@@ -30,7 +30,7 @@
 (define-public i2pd
   (package
     (name "i2pd")
-    (version "2.27.0")
+    (version "2.29.0")
     (source
      (origin
        (method git-fetch)
@@ -39,7 +39,7 @@
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "00y0y57z84gakwa88zzm0g3ixgc6y7zm35rjiysiajzvmdq5w1wf"))))
+        (base32 "1issg3aidwikk4g12sa8q81zzp0hd0g8wdy2dx4899z8yrscl300"))))
     (build-system cmake-build-system)
     (inputs `(("boost" ,boost)
               ("miniupnpc" ,miniupnpc)
@@ -68,7 +68,12 @@
                                            "./tests")
                          (with-directory-excursion "tests"
                            (substitute* "Makefile"
-                             (("../libi2pd/") (string-append source "/libi2pd/")))
+                             (("../libi2pd/") (string-append source "/libi2pd/"))
+                             ;; Disable the x25519 test, which only compiles if
+                             ;; openssl doesn't have X25519 support, but the
+                             ;; version we use has it.
+                             (("test-base-64 test-x25519 test-aeadchacha20poly1305")
+                              "test-base-64 test-aeadchacha20poly1305"))
                            (apply invoke "make" "all"
                                   `(,@(if parallel-tests?
                                           `("-j" ,(number->string

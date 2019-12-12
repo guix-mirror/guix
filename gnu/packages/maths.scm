@@ -482,6 +482,45 @@ in arbitrary dimension.  It can also be used for the converse operation of
 computing convex hulls.")
     (license license:gpl2+)))
 
+(define-public lrslib
+  (package
+    (name "lrslib")
+    (version "7.0a")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://cgm.cs.mcgill.ca/~avis/C/lrslib/archive/"
+                           "lrslib-0"
+                           (string-delete #\. version) ".tar.gz"))
+       (sha256
+        (base32
+         "034fa45r9hwx6ljmgpxk2872q34nklkalpdkc6s9hqw57rivi36k"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gmp" ,gmp)))
+    (arguments
+     `(#:tests? #f                      ; no check phase
+       #:make-flags `("CC=gcc"
+                      ,(string-append "prefix=" (assoc-ref %outputs "out"))
+                      "all-shared")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (substitute* "makefile"
+               (("-L \\.") "-L . -Wl,-rpath='$$ORIGIN/../lib'"))
+             #t)))))
+    (home-page "http://cgm.cs.mcgill.ca/~avis/C/lrs.html")
+    (synopsis "Convex hulls of polyhedra with exact arithmetic")
+    (description
+     "The C code of lrslib implements the reverse search algorithm for
+vertex enumeration and convex hull problems.  Its input file format is
+compatible with cddlib.  All computations are done exactly in either
+multiple precision or fixed integer arithmetic.  Output is not stored
+in memory, so even problems with very large output sizes can sometimes
+be solved.")
+    (license license:gpl2+)))
+
 (define-public arpack-ng
   (package
     (name "arpack-ng")

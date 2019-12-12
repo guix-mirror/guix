@@ -240,7 +240,7 @@ the freedesktop.org XDG Base Directory specification.")
 (define-public elogind
   (package
     (name "elogind")
-    (version "241.3")
+    (version "241.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -249,7 +249,7 @@ the freedesktop.org XDG Base Directory specification.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0jpb55prqq5cm3w2gy9766cbaqknjvbrbniyshb8bz1q31vf4jlq"))))
+                "13nd0chackqclgvw43910k4pkw2q773dh6wq9s5f3d97ibnik48k"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
@@ -991,7 +991,7 @@ which speak the Qualcomm MSM Interface (QMI) protocol.")
 (define-public modem-manager
   (package
     (name "modem-manager")
-    (version "1.4.14")
+    (version "1.10.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -999,7 +999,7 @@ which speak the Qualcomm MSM Interface (QMI) protocol.")
                     "ModemManager-" version ".tar.xz"))
               (sha256
                (base32
-                "18hvffwcncwz14kdzk42jbkh362n0kjv3kgx7axbqx572pawvrmb"))))
+                "16hnl0sdriqgv4v30mfs64mdl9rw7lsh802zlm3ggwxxil3p9qfb"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags

@@ -10,6 +10,7 @@
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
+;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -64,6 +65,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sqlite)
@@ -112,7 +114,7 @@ topology functions.")
 (define-public gnome-maps
   (package
     (name "gnome-maps")
-    (version "3.30.3.1")
+    (version "3.32.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -120,7 +122,7 @@ topology functions.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0xqk3yrds0w8bjmpf4jw0370phvm65av82nqrx7fp1648h9nq7xi"))))
+                "1m191iq1gjaqz79ci3dkbmwrkxp7pzknngimlf5bqib5x8yairlb"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -1213,3 +1215,79 @@ supports loading GPX tracks, background imagery and OSM data from local
 sources as well as from online sources and allows to edit the OSM data (nodes,
 ways, and relations) and their metadata tags.")
     (license license:gpl2+)))
+
+(define-public libmaxminddb
+  (package
+    (name "libmaxminddb")
+    (version "1.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/maxmind/libmaxminddb"
+                           "/releases/download/" version "/"
+                           "/libmaxminddb-" version ".tar.gz"))
+       (sha256
+        (base32 "0mnimbaxnnarlw7g1rh8lpxsyf7xnmzwcczcc3lxw8xyf6ljln6x"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-cc-to-gcc
+           (lambda _
+             (setenv "CC" "gcc"))))))
+    (native-inputs
+     `(("perl" ,perl)))
+    (home-page "https://maxmind.github.io/libmaxminddb/")
+    (synopsis "C library for the MaxMind DB file format")
+    (description "The libmaxminddb library provides a C library for reading
+MaxMind DB files, including the GeoIP2 databases from MaxMind.  The MaxMind DB
+format is a custom, but open, binary format designed to facilitate fast
+lookups of IP addresses while allowing flexibility in the type of data
+associated with an address.")
+    (license license:asl2.0)))
+
+(define-public python-maxminddb
+  (package
+    (name "python-maxminddb")
+    (version "1.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "maxminddb" version))
+       (sha256
+        (base32
+         "0y9giw81k4wdmpryr4k42w50z292mf364a6vs1vxf83ksc9ig6j4"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ;; Tests require a copy of the maxmind database
+    (inputs
+     `(("libmaxminddb" ,libmaxminddb)))
+    (home-page "http://www.maxmind.com/")
+    (synopsis "Reader for the MaxMind DB format")
+    (description "MaxMind DB is a binary file format that stores data indexed
+by IP address subnets (IPv4 or IPv6).  This is a Python module for reading
+MaxMind DB files.")
+    (license license:asl2.0)))
+
+(define-public python-geoip2
+  (package
+    (name "python-geoip2")
+    (version "2.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "geoip2" version))
+       (sha256
+        (base32
+         "1w7cay5q6zawjzivqbwz5cqx1qbdjw6kbriccb7l46p7b39fkzzp"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ;; Tests require a copy of the maxmind database
+    (inputs
+     `(("python-maxminddb" ,python-maxminddb)
+       ("python-requests" ,python-requests)))
+    (home-page "http://www.maxmind.com/")
+    (synopsis "MaxMind GeoIP2 API")
+    (description "Provides an API for the GeoIP2 web services and databases.
+The API also works with MaxMind’s free GeoLite2 databases.")
+    (license license:asl2.0)))

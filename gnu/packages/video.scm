@@ -1454,6 +1454,7 @@ projects while introducing many more.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-shared"
+                               "--disable-static"
                                "--as=yasm"
                                ;; Limit size to avoid CVE-2015-1258
                                "--size-limit=16384x16384"
@@ -1497,7 +1498,7 @@ projects while introducing many more.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2019.11.22")
+    (version "2019.11.28")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ytdl-org/youtube-dl/"
@@ -1505,7 +1506,7 @@ projects while introducing many more.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0avdlp0dc9p3lm68mfnic21x6blxmr0zvlxa4br5vj4y4sckq2m8"))))
+                "19xiwdn3l0kizyj7cik9vyhgrlwg7ss4wl4hy2pbbbqwh5vwppwk"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -3216,7 +3217,7 @@ alpha blending etc).")
 (define-public frei0r-plugins
   (package
     (name "frei0r-plugins")
-    (version "1.6.1")
+    (version "1.7.0")
     (source
      (origin
        (method url-fetch)
@@ -3224,23 +3225,25 @@ alpha blending etc).")
                            "frei0r-plugins-" version ".tar.gz"))
        (sha256
         (base32
-         "0pji26fpd0dqrx1akyhqi6729s394irl73dacnyxk58ijqq4dhp0"))))
+         "0fjji3060r4fwr7vn91lwfzl80lg3my9lkp94kbyw8xwz7qgh7qv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autotools
+         (add-after 'unpack 'patch-Makefile
            (lambda _
-             (invoke "sh" "autogen.sh"))))))
+             ;; XXX: The 1.7.0 Makefile looks for files that have slightly different
+             ;; names in the tarball.  Try removing this for future versions.
+             (substitute* "Makefile.in"
+               (("README\\.md ChangeLog TODO AUTHORS")
+                "README.txt ChangeLog.txt TODO.txt AUTHORS.txt"))
+             #t)))))
     ;; TODO: opencv for additional face detection filters.
     (inputs
      `(("gavl" ,gavl)
        ("cairo" ,cairo)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("libtool" ,libtool)
-       ("automake" ,automake)
-       ("autoconf" ,autoconf)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://www.dyne.org/software/frei0r/")
     (synopsis "Minimalistic plugin API for video effects")
     (description
@@ -3560,7 +3563,7 @@ transitions, and effects and then export your film to many common formats.")
 (define-public dav1d
   (package
     (name "dav1d")
-    (version "0.5.1")
+    (version "0.5.2")
     (source
       (origin
         (method url-fetch)
@@ -3568,7 +3571,7 @@ transitions, and effects and then export your film to many common formats.")
                             "/dav1d/" version "/dav1d-" version ".tar.xz"))
         (sha256
          (base32
-          "03cf6f9if45prq97qp7llzi1p71dyw9ymc87hc225iy89kmzjsdd"))))
+          "02hgarv2x2bqbac15pdj7pbm8f4lyn78ws0dncygvhis9a6ghk7r"))))
     (build-system meson-build-system)
     (native-inputs `(("nasm" ,nasm)))
     (home-page "https://code.videolan.org/videolan/dav1d")

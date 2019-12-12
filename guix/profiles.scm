@@ -1727,7 +1727,9 @@ because the NUMBER is zero.)"
 (define %profile-directory
   (string-append %state-directory "/profiles/"
                  (or (and=> (or (getenv "USER")
-                                (getenv "LOGNAME"))
+                                (getenv "LOGNAME")
+                                (false-if-exception
+                                 (passwd:name (getpwuid (getuid)))))
                             (cut string-append "per-user/" <>))
                      "default")))
 

@@ -7965,14 +7965,14 @@ passive voice.")
     (name "emacs-org")
     ;; emacs-org-contrib inherits from this package.  Please update its sha256
     ;; checksum as well.
-    (version "9.2.6")
+    (version "9.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "0ikd78k4yw4sm5x7l3dsbvfcmvnv5qna2mxirr560gvcnzhr0zg4"))))
+                "0pyfx4xzzi3qqip958rs7j5ca1r4i5v6dfkx5kbp2ndhqmxbfxjw"))))
     (build-system emacs-build-system)
     (home-page "https://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
@@ -7986,14 +7986,14 @@ programming and reproducible research.")
   (package
     (inherit emacs-org)
     (name "emacs-org-contrib")
-    (version "20190904")
+    (version "20191203")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://orgmode.org/elpa/"
                                   "org-plus-contrib-" version ".tar"))
               (sha256
                (base32
-                "08s3fk3jim0y2v00l6ah8y08ba8wbcf29z6fxqzyaxj58a5sq81a"))))
+                "1kvw95492acb7gqn8gxbp1vg4fyw80w43yvflxnfxdf6jnnw2wah"))))
     (arguments
      `(#:modules ((guix build emacs-build-system)
                   (guix build utils)
@@ -9227,15 +9227,16 @@ configuration of Chinese fonts.")
 (define-public emacs-php-mode
   (package
     (name "emacs-php-mode")
-    (version "20171225.342")
+    (version "1.22.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://melpa.org/packages/php-mode-"
-                    version ".tar"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ejmr/php-mode.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1zz682f34v4wsm2dyj1gnrnvsrqdq1cy7j8p6cvc398w2fziyg3q"))))
+                "1yc7f39bv2ni8q5372r4kj04z7rikvc8w1mqx5c4zph5r02jab7i"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/ejmr/php-mode")
     (synopsis "Major mode for editing PHP code")
@@ -10149,19 +10150,19 @@ additions:
       (license license:gpl3+))))
 
 (define-public emacs-dired-sidebar
-  (let ((commit "06bd0d40bab812c61a668129daf29ba359424454")
-        (revision "0"))
+  (let ((commit "21ccb6723bea69f2e2ca25998268d8a039f904cc")
+        (revision "1"))
     (package
       (name "emacs-dired-sidebar")
       (home-page "https://github.com/jojojames/dired-sidebar")
-      (version (git-version "0.0.1" revision commit))
+      (version (git-version "0.1.0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference (url home-page) (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0lvwvq6sl80sha9fq5m4568sg534dhmifyjqw75bqddcbf3by84x"))))
+                  "0mck4qk6srbbf8xnn2sg11j822z4ybxvgavvy402d5sli515i8ca"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-dired-subtree" ,emacs-dired-hacks)))
@@ -10499,13 +10500,14 @@ query them from the comfort of your editor.")
     (version "0.1.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "http://stable.melpa.org/packages/prop-menu-"
-             version ".el"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/david-christiansen/prop-menu-el.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "01bk4sjafzz7gqrkv9jg0pa85qr34vbk3q8ga2b0m61bndywzgpr"))))
+         "18ap2liz5r5a8ja2zz9182fnfm47jnsbyblpq859zks356k37iwc"))))
     (build-system emacs-build-system)
     (home-page
      "https://github.com/david-christiansen/prop-menu-el")
@@ -17229,6 +17231,52 @@ Nix expressions.  It supports syntax highlighting, indenting and refilling of
 comments.")
     (license license:lgpl2.1+)))
 
+(define-public emacs-libmpdel
+  (package
+    (name "emacs-libmpdel")
+    (version "1.1.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitea.petton.fr/mpdel/libmpdel.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0dnjndpv6bmz5blfs75ynmbm32g23l4slg5p3941b1i94a08qzpy"))))
+    (build-system emacs-build-system)
+    (home-page "https://gitea.petton.fr/mpdel/libmpdel")
+    (synopsis "Emacs library to communicate with Music Player Daemon (MPD)")
+    (description
+     "An Emacs library client to communicate with Music Player Daemon (MPD), a
+flexible, powerful, server-side application for playing music.")
+    (license license:gpl3+)))
+
+(define-public emacs-mpdel
+  (package
+    (name "emacs-mpdel")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitea.petton.fr/mpdel/mpdel.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0pyyvbzskr44dxbmlp3y0r6s459fd51cvwjmnjaqxfxflr5v891g"))))
+    (build-system emacs-build-system)
+    (inputs
+     `(("emacs-libmpdel" ,emacs-libmpdel)))
+    (home-page "https://gitea.petton.fr/mpdel/mpdel")
+    (synopsis "Emacs user interface for Music Player Daemon (MPD)")
+    (description
+     "MPDel provides an Emacs user interface to control playback (play, pause,
+next, volume) and display and control the current playlist as well as your
+stored playlists.")
+    (license license:gpl3+)))
+
 (define-public emacs-simple-mpc
   ;; There have been no releases.
   (let ((commit "bee8520e81292b4c7353e45b193f9a13b482f5b2")
@@ -17618,7 +17666,7 @@ the standard @code{Dockerfile} file format.")
 (define-public emacs-lsp-mode
   (package
     (name "emacs-lsp-mode")
-    (version "6.1")
+    (version "6.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -17627,14 +17675,15 @@ the standard @code{Dockerfile} file format.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0jn5slhv9zfs446a5966bfg9dq144g22v79wnkx9hxq7if78p652"))))
+                "0f9d0zhblcjzrpggqclww2g7fyjky5rzpp7zj424005ahv0zd3xf"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
        ("emacs-f" ,emacs-f)
        ("emacs-ht" ,emacs-ht)
        ("emacs-markdown-mode" ,emacs-markdown-mode)
-       ("emacs-spinner" ,emacs-spinner)))
+       ("emacs-spinner" ,emacs-spinner)
+       ("emacs-hydra" ,emacs-hydra)))
     (home-page "https://github.com/emacs-lsp/lsp-mode")
     (synopsis "Emacs client and library for the Language Server Protocol")
     (description "@code{LSP-mode} is a client and library implementation for
@@ -19145,17 +19194,17 @@ text-property translator.")
 (define-public emacs-org-noter
   (package
     (name "emacs-org-noter")
-    (version "1.3.0")
+    (version "1.4.1")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "https://stable.melpa.org/packages/org-noter-"
-               version
-               ".el"))
-        (sha256
-          (base32
-            "1hczwva73gsyanl1ldhdvql01gy0hy2g861yzkaklyb763sx58x4"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/weirdNox/org-noter.git")
+              (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1vwfpdi7hfkxx4vi0cwg7rvqby3i0mymzdkyzrqzv30dazmcjpag"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-org" ,emacs-org)))
     (home-page "https://github.com/weirdNox/org-noter")
@@ -19682,6 +19731,54 @@ You can customize: @code{tao-theme-scale-fn}, that returns 16 2-digit numbers;
 @code{tao-theme-use-height}.")
       (license license:gpl3+))))
 
+(define-public emacs-almost-mono-themes
+  (let ((commit "c3a85c1a665530a5d830665969725cdba8eceb75")
+        (revision "0"))
+    (package
+      (name "emacs-almost-mono-themes")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/cryon/almost-mono-themes.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "034k32xkr5ma415hlkbl35z0jxc4sa1inf87hg3y6lrlfl83fyjh"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/cryon/almost-mono-themes")
+      (synopsis "Almost monochromatic themes for emacs in a few variants")
+      (description
+       "This package provides a collection of almost monochrome Emacs themes:
+@code{almost-mono-black} and @code{almost-mono-white}.")
+      (license license:gpl3+))))
+
+(define-public emacs-quasi-monochrome
+  (let ((commit "68060dbbc0bbfe4924387392874186c5a29bb434")
+        (revision "0"))
+    (package
+      (name "emacs-quasi-monochrome")
+      (version (git-version "1.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/lbolla/emacs-quasi-monochrome.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0zp2xr0bjfqrpb0bqczzick1vvbjmipjavrdi70kw6a9caynvq22"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/lbolla/emacs-quasi-monochrome")
+      (synopsis "Dark color theme for Emacs")
+      (description
+       "This package provides a dark color theme with a black background, high
+contrast and few colors.")
+      (license license:gpl3+))))
+
 (define-public emacs-doom-themes
   (package
     (name "emacs-doom-themes")
@@ -19715,6 +19812,33 @@ You can customize: @code{tao-theme-scale-fn}, that returns 16 2-digit numbers;
 Emacs that integrate with major modes like Org-mode.")
     (home-page "https://github.com/hlissner/emacs-doom-themes")
     (license license:expat)))
+
+(define-public emacs-modus-themes
+  (package
+    (name "emacs-modus-themes")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/protesilaos/modus-themes.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "15g63675c5df2p0kk2sqj2c8qriyh69lcbggknqlaxapr13giz4x"))))
+    (build-system emacs-build-system)
+    (home-page "https://gitlab.com/protesilaos/modus-themes")
+    (synopsis "Emacs themes designed for colour-contrast accessibility")
+    (description
+     "This is a set of accessible themes for GNU Emacs.  The contrast ratio
+between foreground and background values should always be >= 7:1, which
+conforms with the WCAG AAA accessibility standard.
+
+The Modus themes project consists of two standalone items, one where dark text
+is cast on a light backdrop (Modus Operandi) and another where light text is
+displayed against a dark background (Modus Vivendi).")
+    (license license:gpl3+)))
 
 (define-public emacs-elixir-mode
   (package
@@ -19946,8 +20070,8 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
       (license license:gpl3+))))
 
 (define-public emacs-telega
-  (let ((commit "019e923f933370d75dbe0a8473a18eb66fe94c0e")
-	(revision "1")
+  (let ((commit "56aef884921d99e5170d5425dbe0fce645620511")
+	(revision "2")
 	(version "0.4.4"))
     (package
       (name "emacs-telega")
@@ -19960,11 +20084,11 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
                (commit commit)))
          (sha256
           (base32
-           "058814agkq8mp9ajpj8sz51rm9nigs2xpsdij05wjkxhfq30kqva"))
+           "0a8k3j20nz4xwswg9qp9xpaakk3q3ibiz8mkryk92zmrdmaah5mi"))
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
-       `(#:tests? #f
+       `(#:test-target "test"
          #:modules ((guix build gnu-build-system)
                     ((guix build emacs-build-system) #:prefix emacs:)
                     (guix build utils)
@@ -19974,31 +20098,79 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
                              (guix build emacs-utils))
          #:phases
          (modify-phases %standard-phases
-           (add-after 'unpack 'unpack-patch
+           (add-after 'unpack 'prefix-patch
              (lambda _
                (substitute* "server/Makefile"
                  (("CC=cc")
                   "CC=gcc")
                  (("INSTALL_PREFIX=\\$\\(HOME\\)/.telega")
                   (string-append "INSTALL_PREFIX=" (assoc-ref %outputs "out")
-                                 "/bin")))
+                                 "/bin"))
+                 ;; Manually invoke `run_tests.py` after install phase.
+                 (("python3 run_tests.py")
+                  ""))
+               #t))
+           ;; Modify telega-util to reflect unique dir name in
+           ;; `telega-install-data' phase.
+           (add-after 'unpack 'telega-data-patch
+             (lambda _
+               (substitute* "telega-util.el"
+                 (("\\(concat \"etc/\" filename\\) telega--lib-directory")
+                  "(concat \"telega-data/\" filename)
+                    (locate-dominating-file telega--lib-directory
+                                            \"telega-data\")"))
+               #t))
+           ;; The telega test suite checks for a version of Emacs
+           ;; compiled with imagemagick and svg support. Since we
+           ;; are using `emacs-minimal`, this step will fail.
+           ;; Grok the failing test, and remove problematic assertions.
+           (add-after 'unpack 'ert-suite-patch
+             (lambda _
+               (substitute* "telega-core.el"
+                 (("\\(image-type-available-p 'imagemagick\\) nil")
+                  "t")
+                 (("\\(image-type-available-p 'svg\\) nil")
+                  "t"))
+               #t))
+           ;; The server test suite has a hardcoded path.
+           ;; Reset this behavior to use the proper path.
+           (add-after 'unpack 'server-suite-patch
+             (lambda _
+               (substitute* "server/run_tests.py"
+                 (("~/.telega/telega-server")
+                  (string-append (assoc-ref %outputs "out")
+                                 "/bin/telega-server")))
+               #t))
+           (add-after 'install 'run-server-suite
+             (lambda _
+               (invoke "python3" "server/run_tests.py")
                #t))
            (delete 'configure)
-
+           
            ;; Build emacs-side using `emacs-build-system'
            (add-after 'compress-documentation 'emacs-add-source-to-load-path
              (assoc-ref emacs:%standard-phases 'add-source-to-load-path))
-           (add-after 'emacs-set-emacs-load-path 'emacs-install
+           (add-after 'emacs-add-source-to-load-path 'emacs-install
              (assoc-ref emacs:%standard-phases 'install))
-           (add-after 'emacs-install 'emacs-build
+           ;; This step installs subdir /etc, which contains images, sounds and
+           ;; various other data, next to the site-lisp dir.
+           (add-after 'emacs-install 'telega-install-data
+             (lambda* (#:key outputs #:allow-other-keys)
+               (copy-recursively
+                "etc"
+                (string-append (assoc-ref outputs "out")
+                               "/share/emacs/telega-data/"))
+               #t))
+           (add-after 'telega-install-data 'emacs-build
              (assoc-ref emacs:%standard-phases 'build))
-           (add-after 'emacs-install 'emacs-make-autoloads
+           (add-after 'emacs-build 'emacs-make-autoloads
              (assoc-ref emacs:%standard-phases 'make-autoloads)))))
       (propagated-inputs
        `(("emacs-visual-fill-column" ,emacs-visual-fill-column)))
       (native-inputs
        `(("tdlib" ,tdlib)
-         ("emacs" ,emacs-minimal)))
+         ("emacs" ,emacs-minimal)
+         ("python" ,python)))
       (synopsis "GNU Emacs client for the Telegram messenger")
       (description
        "Telega is full-featured, unofficial client for the Telegram messaging
@@ -20081,3 +20253,244 @@ top-level header, start the minor mode with @code{org-present}, and page through
 each slide with left/right keys.")
       (home-page "https://github.com/rlister/org-present")
       (license license:gpl2))))
+
+(define-public emacs-fullframe
+  (package
+    (name "emacs-fullframe")
+    (version "0.5.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tomterl/fullframe.git")
+             (commit version)))
+       (sha256
+        (base32
+         "0m43qnhp6ibsskpjkxc86p3lrjsjc0ndqml3lbd65s79x4x7i3fi"))
+       (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/tomterl/fullframe")
+    (synopsis "Generalized automatic execution in a single frame")
+    (description "This library provides helpers for single-window-per-frame
+execution of buffer-exposing commands.")
+    (license license:gpl3+)))
+
+(define-public emacs-repl-toggle
+  (package
+    (name "emacs-repl-toggle")
+    (version "0.6.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tomterl/repl-toggle.git")
+             (commit version)))
+       (sha256
+        (base32
+         "12h3xxja3isnhvrqx7m2g7a5d8h68cc85pbqyhiipfxyafyl1yxd"))
+       (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-fullframe" ,emacs-fullframe)))
+    (home-page "https://github.com/tomterl/repl-toggle")
+    (synopsis "Switch to and from current major mode's REPL")
+    (description "This package provides a function to switch to and from a
+REPL appropriate to the current major mode.")
+    (license license:gpl3+)))
+
+(define-public emacs-blackout
+  (let ((commit "4bac44671fca4c98d96aa94c79946bf4d4baf0ee")
+        (revision "1"))
+    (package
+      (name "emacs-blackout")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/raxod502/blackout.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "1wnh0nwy6r3a18sy9sqmrwv04vnmaflxy4g7mq8jiyyjijri7l1b"))
+         (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/raxod502/blackout")
+      (synopsis "Clean up mode lighters")
+      (description "This package provides a function for hiding and customizing
+display of major and minor modes in the mode line.")
+      (license license:gpl3+))))
+
+(define-public emacs-ivy-omni-org
+  (let ((commit "5460a9fc061a4a5ae8372dc8df966ced94abab58")
+        (revision "1"))
+    (package
+      (name "emacs-ivy-omni-org")
+      (version (git-version "0.2.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/akirak/ivy-omni-org.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1np1f51hc3phkl5w02a9a79gl38ra2d535i784fn4pqaasvm0rq8"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-ivy" ,emacs-ivy)
+         ("emacs-dash" ,emacs-dash)))
+      (synopsis "Browse anything in Org mode")
+      (description "This package allows Org items to be accessed via the Ivy
+interface.")
+      (home-page "https://github.com/akirak/ivy-omni-org")
+      (license license:gpl3+))))
+
+(define-public emacs-shackle
+  (let ((commit "7ccbe513852a1d1700b698547efca14b8940319d")
+        (revision "1"))
+    (package
+      (name "emacs-shackle")
+      (version (git-version "1.0.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/wasamasa/shackle.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0agsp8ia4irr540r898ifhjqp28n1zsq1pilv1kc272spn3qhvp9"))))
+      (build-system emacs-build-system)
+      (synopsis "Enforce rules for popups")
+      (description "This package provides a global minor mode in which users
+can specify how popup-displaying functions occupy the screen.")
+      (home-page "https://github.com/wasamasa/shackle")
+      (license license:gpl3+))))
+
+(define-public emacs-helm-lacarte
+  (let ((commit "40a6c449720be521435b6b1da7911af3a0b9dca0")
+        (revision "1"))
+    (package
+      (name "emacs-helm-lacarte")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacs-helm/helm-lacarte.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0dkfd3lap2v7b4nckzv8v7hczmzwzhbl75haqkra107ln91ldbwc"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)
+         ("emacs-lacarte" ,emacs-lacarte)))
+      (synopsis "Helm interface to @code{lacarte.el}")
+      (description "This package provides a Helm interface to
+@code{lacarte.el}, a package that displays mode-specific commands as menu
+items.")
+      (home-page "https://github.com/emacs-helm/helm-lacarte")
+      (license license:gpl3+))))
+
+(define-public emacs-esh-help
+  (let ((commit "417673ed18a983930a66a6692dbfb288a995cb80")
+        (revision "1"))
+    (package
+      (name "emacs-esh-help")
+      (version (git-version "1.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tom-tan/esh-help.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0x7d51a6ljl014zy7mi27vzcqqbcwg9z4drq29fr2ajk82mqhlgd"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)))
+      (synopsis "Help functions for Eshell")
+      (description "This package provides a @code{run-help} function inspired
+by @code{zsh} as well as @code{eldoc} support.")
+      (home-page "https://github.com/tom-tan/esh-help")
+      (license license:gpl3+))))
+
+(define-public emacs-isearch-dabbrev
+  (let ((commit "1efe7abba4923015cbc2462395deaec5446a9cc8")
+        (revision "1"))
+    (package
+      (name "emacs-isearch-dabbrev")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Dewdrops/isearch-dabbrev.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "17d0816awadvsw1qc7r0p6ira75jmgxaj9hsk9ypayxsaf6ynyrb"))))
+      (build-system emacs-build-system)
+      (synopsis "Use @code{dabbrev} within @code{isearch}")
+      (description "This package allows @code{dabbrev-expand} to be used
+within @code{isearch-mode}.")
+      (home-page "https://github.com/Dewdrops/isearch-dabbrev")
+      (license license:gpl3+))))
+
+(define-public emacs-helm-linux-disks
+  (let ((commit "2cdc8116a08534289eb0dc76461d0f93a0bdf231")
+        (revision "1"))
+    (package
+      (name "emacs-helm-linux-disks")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Akirak/helm-linux-disks.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1limw82zd8jz3mhh9rqlmhj4cjhfgybs9argfjid1an3vpyhc85i"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)))
+      (synopsis "Mount/unmount volumes in Linux via Helm")
+      (description "This package provides a Helm interface to run operations
+on removable volumes in Linux.")
+      (home-page "https://github.com/Akirak/helm-linux-disks")
+      (license license:gpl3+))))
+
+(define-public emacs-psession
+  (let ((commit "3e97267c92b164584e06a6c70ee7491714c7c12c")
+        (revision "1"))
+    (package
+      (name "emacs-psession")
+      (version (git-version "1.5" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/thierryvolpiatto/psession.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "15frl618393bc891d0yi3mdxzvbq790a86vfvp3dyd5riz4ddg95"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-async" ,emacs-async)))
+      (synopsis "Persistent save of @code{elisp} objects.")
+      (description "This package provides minor modes for saving Emacs session
+data, including buffers, window configuration, variables, and more.")
+      (home-page "https://github.com/thierryvolpiatto/psession")
+      (license license:gpl3+))))

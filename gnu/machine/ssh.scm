@@ -74,7 +74,6 @@
 (define-record-type* <machine-ssh-configuration> machine-ssh-configuration
   make-machine-ssh-configuration
   machine-ssh-configuration?
-  this-machine-ssh-configuration
   (host-name      machine-ssh-configuration-host-name)     ; string
   (system         machine-ssh-configuration-system)        ; string
   (build-locally? machine-ssh-configuration-build-locally? ; boolean
@@ -103,6 +102,9 @@ one from the configuration's parameters if one was not provided."
               (port (machine-ssh-configuration-port config))
               (identity (machine-ssh-configuration-identity config))
               (host-key (machine-ssh-configuration-host-key config)))
+          (unless host-key
+            (warning (G_ "<machine-ssh-configuration> without a 'host-key' \
+is deprecated~%")))
           (open-ssh-session host-name
                             #:user user
                             #:port port

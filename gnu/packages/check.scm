@@ -1749,7 +1749,7 @@ possible to write plugins to add your own checks.")
   (let ((pylint (package-with-python2
                  (strip-python2-variant python-pylint))))
     (package (inherit pylint)
-             (version "1.7.2")
+             (version "1.9.5")
              (source
               (origin
                 (method git-fetch)
@@ -1759,7 +1759,7 @@ possible to write plugins to add your own checks.")
                 (file-name (git-file-name (package-name pylint) version))
                 (sha256
                  (base32
-                  "0yyc1gxq66li2adyx8njs83dh1pliylzkdmihw0k5bn6z4aakh8s"))))
+                  "02a89d8a47s7nfiv1ady3j0sg2sbyja3np145brarfp5x9qxz9x2"))))
              (arguments
               `(,@(package-arguments pylint)
                 #:phases

@@ -41,7 +41,7 @@
 ;;; Copyright © 2017, 2018, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017, 2018 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2017, 2018, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
 ;;; Copyright © 2017, 2019 Brendan Tildesley <mail@brendan.scot>
@@ -103,6 +103,7 @@
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages graphics)
   #:use-module (gnu packages gstreamer)
@@ -3006,19 +3007,20 @@ Language (TOML) configuration files.")
 (define-public python-jsonrpc-server
   (package
     (name "python-jsonrpc-server")
-    (version "0.1.2")
+    (version "0.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-jsonrpc-server" version))
        (sha256
         (base32
-         "0m4ykpcdy52x37n1ikysp07j7p8ialcdvvvsrjp3545sn7iiid09"))))
+         "0ddgdp26dfxaz6isjbb12974b3rxavgsqrn2zrmck62cmipg5g05"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-future" ,python-future)
        ("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)))
+       ("python-pytest" ,python-pytest)
+       ("python-ujson" ,python-ujson)))
     (home-page
      "https://github.com/palantir/python-jsonrpc-server")
     (synopsis "JSON RPC 2.0 server library")
@@ -3052,14 +3054,14 @@ Server (PLS).")
 (define-public python-language-server
   (package
     (name "python-language-server")
-    (version "0.29.1")
+    (version "0.31.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-language-server" version))
        (sha256
         (base32
-         "1f8qlflh6j3s7qfmzhirpl8fgidl6f0qbakdmiml96wdxzvka0s3"))))
+         "1iq69wc1fyhirfyq25ih41wq9yvr7bchiw0i116adpdgcq6m9idq"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pluggy" ,python-pluggy)
@@ -11776,19 +11778,41 @@ PNG, JPEG, JPEG2000 and GIF files in pure Python.")
 (define-public python-argcomplete
   (package
     (name "python-argcomplete")
-    (version "1.7.0")
+    (version "1.10.3")
     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "argcomplete" version))
-        (sha256
-          (base32
-            "11bwiw6j0nilgz81xnw6f1npyga3prp8asjqrm87cdr3ria5l03x"))))
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "argcomplete" version))
+       (sha256
+        (base32
+         "02jkc44drb0yjz6x28lvg6rj607n8r2irdpdvyylm8xnycn54zx3"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'embed-tool-references
+           (lambda _
+             (substitute* "argcomplete/bash_completion.d/python-argcomplete.sh"
+               ((" grep")
+                (string-append " " (which "grep")))
+               ((" egrep")
+                (string-append " " (which "egrep")))
+               (("elif which")
+                (string-append "elif " (which "which")))
+               (("\\$\\(which")
+                (string-append "$(" (which "which"))))
+             #t)))))
+    (inputs
+     `(("grep" ,grep)
+       ("which" ,which)))
     (native-inputs
-     `(("python-pexpect" ,python-pexpect)
+     `(("python-coverage" ,python-coverage)
+       ("python-flake8" ,python-flake8)
+       ("python-pexpect" ,python-pexpect)
+       ("python-wheel" ,python-wheel)
        ("tcsh" ,tcsh)
-       ("bash-full" ,bash)))             ;full Bash for 'test_file_completion'
+       ("fish" ,fish)
+       ("bash-full" ,bash)))            ;full Bash for 'test_file_completion'
     (home-page "https://github.com/kislyuk/argcomplete")
     (synopsis "Shell tab completion for Python argparse")
     (description "argcomplete provides extensible command line tab completion
@@ -16721,3 +16745,63 @@ converters and more, those based on the library itself.")
      "This package provides a parser, schema validator, and data binding tool
 for YAML and JSON.")
     (license license:expat)))
+
+(define-public python-dbusmock
+  (package
+    (name "python-dbusmock")
+    (version "0.18.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-dbusmock" version))
+       (sha256
+        (base32
+         "0hp2kyac88nh9iv6l8hlmv7s1sa1s5f1a3wc2pmlmmxnd211fjlr"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-shell-path
+           (lambda _
+             (substitute* "tests/test_code.py"
+               (("/bin/bash") (which "bash")))
+             #t)))))
+    (native-inputs
+     `(;; For tests.
+       ("dbus" ,dbus) ; for dbus-daemon
+       ("python-nose" ,python-nose)
+       ("which" ,which)))
+    (propagated-inputs
+     `(("python-dbus" ,python-dbus)
+       ("python-pygobject" ,python-pygobject)))
+    (home-page "https://github.com/martinpitt/python-dbusmock")
+    (synopsis "Python library for mock D-Bus objects")
+    (description "python-dbusmock allows for the easy creation of mock objects on
+D-Bus.  This is useful for writing tests for software which talks to D-Bus
+services such as upower, systemd, logind, gnome-session or others, and it is
+hard (or impossible without root privileges) to set the state of the real
+services to what you expect in your tests.")
+    (license license:lgpl3+)))
+
+(define-public python-ujson
+  (package
+    (name "python-ujson")
+    (version "1.35")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ujson" version))
+       (sha256
+        (base32
+         "11jz5wi7mbgqcsz52iqhpyykiaasila4lq8cmc2d54bfa3jp6q7n"))))
+    (build-system python-build-system)
+    (home-page "http://www.esn.me")
+    (synopsis
+     "Ultra fast JSON encoder and decoder for Python")
+    (description
+     "UltraJSON is an ultra fast JSON encoder and decoder written in pure C with
+ bindings for Python 2.5+ and 3.")
+    (license license:bsd-3)))
+
+(define-public python2-ujson
+  (package-with-python2 python-ujson))

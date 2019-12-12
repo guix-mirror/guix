@@ -1527,3 +1527,71 @@ The first three components of the version number match the upstream flot
 version.  The package is designed to meet the redistribution
 requirements of downstream users (e.g. Debian).")
     (license license:expat)))
+
+(define-public ghc-happstack-server
+  (package
+    (name "ghc-happstack-server")
+    (version "7.5.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/happstack-server/happstack-server-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0i7csvmwv7n68gkwqzi985p2mjdgzipjnlj873sdiknhx9pfmq70"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-network" ,ghc-network)
+       ("ghc-network-bsd" ,ghc-network-bsd)
+       ("ghc-network-uri" ,ghc-network-uri)
+       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-blaze-html" ,ghc-blaze-html)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-extensible-exceptions"
+        ,ghc-extensible-exceptions)
+       ("ghc-hslogger" ,ghc-hslogger)
+       ("ghc-html" ,ghc-html)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-old-locale" ,ghc-old-locale)
+       ("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-sendfile" ,ghc-sendfile)
+       ("ghc-system-filepath" ,ghc-system-filepath)
+       ("ghc-syb" ,ghc-syb)
+       ("ghc-threads" ,ghc-threads)
+       ("ghc-transformers-base" ,ghc-transformers-base)
+       ("ghc-transformers-compat"
+        ,ghc-transformers-compat)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-zlib" ,ghc-zlib)))
+    (native-inputs `(("ghc-hunit" ,ghc-hunit)))
+    (home-page "http://happstack.com")
+    (synopsis "Web related tools and services for Haskell")
+    (description
+     "Happstack Server provides an HTTP server and a rich set of functions for
+routing requests, handling query parameters, generating responses, working with
+cookies, serving files, and more.")
+    (license license:bsd-3)))
+
+(define-public ghc-sendfile
+  (package
+    (name "ghc-sendfile")
+    (version "0.7.11.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/sendfile/sendfile-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0988snmx3bylpw3kcq8hsgji8idc6xcrcfp275qjv3apfdgc9rp0"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-network" ,ghc-network)))
+    (home-page
+     "https://hub.darcs.net/stepcut/sendfile")
+    (synopsis "Portable sendfile library for Haskell")
+    (description
+     "Haskell library which exposes zero-copy sendfile functionality in a portable way.")
+    (license license:bsd-3)))

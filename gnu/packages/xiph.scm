@@ -143,6 +143,8 @@ compressed video format.")
        (base32
         "150047wnllz4r94whb9r73l5qf0z5z3rlhy98bawfbblmkq8mbpa"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs

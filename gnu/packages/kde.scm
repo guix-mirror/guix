@@ -27,6 +27,7 @@
 (define-module (gnu packages kde)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system qt)
+  #:use-module (guix deprecation)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -35,7 +36,9 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages apr)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages code)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
@@ -54,6 +57,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages qt)
@@ -143,7 +147,7 @@ projects.")
 (define-public kdevelop
   (package
     (name "kdevelop")
-    (version "5.1.2")
+    (version "5.4.5")
     (source
       (origin
         (method url-fetch)
@@ -152,73 +156,79 @@ projects.")
                             version ".tar.xz"))
         (sha256
          (base32
-          "1iqaq0ilijjigqb34v5wq9in6bnjs0p9cmgbygjmy53xhh3yhm5g"))))
-    (build-system cmake-build-system)
+          "08vhbg9ql0402bw3y3xw1kdxhig9sv3ss8g0h4477vy3z17m1h4j"))))
+    (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)
+       ("shared-mime-info" ,shared-mime-info)
        ("qttools" ,qttools)))
     (inputs
-     `(("kdevplatform" ,kdevplatform)
-       ("kdevelop-pg-qt" ,kdevelop-pg-qt)
-       ("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtquickcontrols" ,qtquickcontrols)
-       ("qtwebkit" ,qtwebkit)
+     `(("boost" ,boost)
+       ("clang" ,clang)
+       ("grantlee" ,grantlee)
        ("karchive" ,karchive)
        ("kcmutils" ,kcmutils)
-       ("kconfig" ,kconfig)
+       ("kcrash" ,kcrash)
        ("kdeclarative" ,kdeclarative)
        ("kdoctools" ,kdoctools)
        ("kguiaddons" ,kguiaddons)
        ("ki18n" ,ki18n)
-       ("kio" ,kio)
        ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)  ;; not checked as requirement
        ("kitemmodels" ,kitemmodels)
        ("kitemviews" ,kitemviews)
        ("kjobwidgets" ,kjobwidgets)
-       ("knotifyconfig" ,knotifyconfig)
        ("knotifications" ,knotifications)
+       ("knotifyconfig" ,knotifyconfig)
        ("kparts" ,kparts)
-       ("kcrash" ,kcrash)
-       ("knewstuff" ,knewstuff)
-       ("krunner" ,krunner)
-       ("kxmlgui" ,kxmlgui)
-       ("libksysguard" ,libksysguard)
-       ("threadweaver" ,threadweaver)
+       ("kservice" ,kservice)
        ("ktexteditor" ,ktexteditor)
        ("kwindowsystem" ,kwindowsystem)
+       ("kxmlgui" ,kxmlgui)
+       ("libkomparediff2" ,libkomparediff2)
+       ("oxygen-icons" ,oxygen-icons)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtquickcontrols" ,qtquickcontrols)  ;; not checked as requirement
+       ("qtquickcontrols2" ,qtquickcontrols2)  ;; not checked as requirement
+       ("qtwebkit" ,qtwebkit)
+       ("threadweaver" ,threadweaver)
+
+       ;; recommendes
+       ("astyle" ,astyle)
+       ("kdevelop-pg-qt" ,kdevelop-pg-qt)
+       ("libksysguard" ,libksysguard)
+
+       ;; optional
+       ("apr" ,apr)            ; required for subversion support
+       ("apr-util" ,apr-util)  ; required for subversion support
+       ("attica" ,attica)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("knewstuff" ,knewstuff)
+       ("krunner" ,krunner)
+       ;; TODO: OktetaGui, OktetaKastenControllers
        ("plasma" ,plasma-framework)
-       ("grantlee" ,grantlee)
-       ("libepoxy" ,libepoxy)
-       ("clang" ,clang)
-       ("shared-mime-info" ,shared-mime-info)))
+       ;; TODO: purpose
+       ("sonnet" ,sonnet)
+       ("subversion" ,subversion)))
+
+       ;; run-time packages - TODO
+       ;; ClazyStandalone
+       ;; Cppcheck
+       ;; heaptrack
+       ;; heaptrack_gui
+       ;; meson
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (delete 'check) ;; there are some issues with the test suite
-         (add-after 'install 'wrap-executable
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out  (assoc-ref outputs "out"))
-                    (kdevplatform (assoc-ref inputs "kdevplatform"))
-                    (kio (assoc-ref inputs "kio"))
-                    (kcmutils (assoc-ref inputs "kcmutils"))
-                    (qtquickcontrols (assoc-ref inputs "qtquickcontrols"))
-                    (qtbase (assoc-ref inputs "qtbase"))
-                    (qtdeclarative (assoc-ref inputs "qtdeclarative"))
-                    (qml "/qml"))
-               (wrap-program (string-append out "/bin/kdevelop")
-                 `("XDG_DATA_DIRS" ":" prefix
-                   ,(map (lambda (s) (string-append s "/share"))
-                         (list out kdevplatform kcmutils)))
-                 `("QT_QPA_PLATFORM_PLUGIN_PATH" ":" =
-                   (,(string-append qtbase "/plugins/platforms")))
-                 `("QT_PLUGIN_PATH" ":" prefix
-                   ,(map (lambda (s) (string-append s "/lib/plugins"))
-                         (list out kdevplatform kio)))
-                 `("QML2_IMPORT_PATH" ":" prefix
-                   (,(string-append qtquickcontrols qml)
-                    ,(string-append qtdeclarative qml))))))))))
+     `(#:tests? #f  ;; there are some issues with the test suite
+       #:phases
+       (modify-phases (@ (guix build qt-build-system) %standard-phases)
+         (add-before 'configure 'add-include-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "cmake/modules/FindClang.cmake"
+               (("^\\s*PATHS \"\\$\\{CLANG_LIBRARY_DIRS\\}\"" line)
+                (string-append line " " (assoc-ref inputs "clang") "/lib")))
+             #t)))))
     (home-page "https://kdevelop.org")
     (synopsis "IDE for C, C++, Python, Javascript and PHP")
     (description "The KDevelop IDE provides semantic syntax highlighting, as
@@ -231,7 +241,7 @@ software (Git, Subversion, Mercurial, CVS and Bazaar).")
 (define-public kdevelop-pg-qt
   (package
     (name "kdevelop-pg-qt")
-    (version "2.0.0")
+    (version "2.2.0")
     (source
      (origin
        (method url-fetch)
@@ -239,7 +249,7 @@ software (Git, Subversion, Mercurial, CVS and Bazaar).")
                            version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1av8plqz7hyhrd07avnmn6ryslqlarmxn0pw7swzvb6ddiqp59j4"))))
+        (base32 "15ja19gg6x7gww4ch12hy585x55ghbkpsiyr8fqiyjk0j6v07hh5"))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
@@ -251,77 +261,8 @@ software (Git, Subversion, Mercurial, CVS and Bazaar).")
 for some KDevelop language plugins (Ruby, PHP, CSS...).")
     (license license:lgpl2.0+)))
 
-(define-public kdevplatform
-  (package
-    (name "kdevplatform")
-    (version "5.1.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://kde/stable/kdevelop"
-                                  "/" version "/src/kdevplatform-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "0jk6g1kiqpyjy8pca0236b9944gxqnymqv8ny6m8nrraannxs8p6"))))
-    (build-system cmake-build-system)
-    (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)))
-    (inputs
-     `(("apr" ,apr)
-       ("apr-util" ,apr-util)
-       ("boost" ,boost)
-       ("karchive" ,karchive)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcmutils" ,kcmutils)
-       ("kiconthemes" ,kiconthemes)
-       ("kdeclarative" ,kdeclarative)
-       ("kdoctools" ,kdoctools)
-       ("kguiaddons" ,kguiaddons)
-       ("kinit" ,kinit)
-       ("kitemmodels" ,kitemmodels)
-       ("knewstuff" ,knewstuff)
-       ("knotifications" ,knotifications)
-       ("knotifyconfig" ,knotifyconfig)
-       ("kwindowsystem" ,kwindowsystem)
-       ("kio" ,kio)
-       ("ki18n" ,ki18n)
-       ("kparts" ,kparts)
-       ("kservice" ,kservice)
-       ("grantlee" ,grantlee)
-       ("libkomparediff2" ,libkomparediff2)
-       ("sonnet" ,sonnet)
-       ("threadweaver" ,threadweaver)
-       ("ktexteditor" ,ktexteditor)
-       ("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtscript" ,qtscript)
-       ("qtwebkit" ,qtwebkit)
-       ("qtx11extras" ,qtx11extras)
-       ("plasma" ,plasma-framework)
-       ("subversion" ,subversion)
-       ("zlib" ,zlib)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (delete 'check)
-         (add-after 'install 'check
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
-               (setenv "QT_PLUGIN_PATH"
-                       (string-append out "/lib/plugins:"
-                                      (getenv "QT_PLUGIN_PATH")))
-               (setenv "XDG_DATA_DIRS"
-                       (string-append out "/share:"
-                                      (getenv "XDG_DATA_DIRS")))
-               (invoke "ctest" "-R" ; almost all tests require a display
-                       "filteringstrategy|kdevvarlengtharray|kdevhash")))))))
-    (home-page "https://github.com/KDE/kdevplatform")
-    (synopsis "Framework to build integrated development environments (IDEs)")
-    (description "KDevPlatform is the basis of KDevelop and contains some
-plugins, as well as code to create plugins, or complete applications.")
-    (license license:gpl3+)))
+;; kdevplatform was merged into kdevelop as of 5.2.x
+(define-deprecated kdevplatform kdevelop kdevelop)
 
 (define-public krita
   (package
@@ -656,3 +597,57 @@ system-wide profiler for Linux using statistical sampling with hardware
 performance counters.  There also exist converters for profiling output of
 Python, PHP, and Perl.")
     (license license:gpl2)))
+
+(define-public libkdegames
+  (package
+    (name "libkdegames")
+    (version "19.08.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://kde/stable/applications/" version
+                          "/src/libkdegames-" version ".tar.xz"))
+      (sha256
+       (base32 "12dvkmjgbi8dp9y55zmx1pw3zr2i374c4vn3mfn9r31bf06dr701"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("karchive" ,karchive)
+       ("kbookmarks" ,kbookmarks)
+       ("kcodecs" ,kcodecs)
+       ("kcompletion" ,kcompletion)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdeclarative" ,kdeclarative)
+       ("kdnssd" ,kdnssd)
+       ("kglobalaccel" ,kglobalaccel)
+       ("kguiaddons" ,kguiaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ;("kio" ,kio)
+       ("kitemviews" ,kitemviews)
+       ("kjobwidgets" ,kjobwidgets)
+       ("knewstuff" ,knewstuff)
+       ("kservice" ,kservice)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("libsndfile" ,libsndfile)
+       ("openal" ,openal)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtsvg" ,qtsvg)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             ;; make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
+    (home-page "https://games.kde.org/")
+    (synopsis "Runtime library for kdegames")
+    (description "Runtime library for kdegames")
+    (license (list license:gpl2+  license:fdl1.2+))))
