@@ -88,6 +88,7 @@ as \"x86_64-linux\"."
        (base32
         "0k124sxkfhfi1rca6kzkdraf4axhx99x3cw2rk55056628dvwwl8"))))
     (build-system cmake-build-system)
+    (outputs '("out" "opt-viewer"))
     (native-inputs
      `(("python" ,python-2) ;bytes->str conversion in clang>=3.7 needs python-2
        ("perl"   ,perl)))
@@ -105,16 +106,27 @@ as \"x86_64-linux\"."
 
        ;; Don't use '-g' during the build, to save space.
        #:build-type "Release"
-       #:phases (modify-phases %standard-phases
-                  (add-before 'build 'shared-lib-workaround
-                    ;; Even with CMAKE_SKIP_BUILD_RPATH=FALSE, llvm-tblgen
-                    ;; doesn't seem to get the correct rpath to be able to run
-                    ;; from the build directory.  Set LD_LIBRARY_PATH as a
-                    ;; workaround.
-                    (lambda _
-                      (setenv "LD_LIBRARY_PATH"
-                              (string-append (getcwd) "/lib"))
-                      #t)))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'shared-lib-workaround
+           ;; Even with CMAKE_SKIP_BUILD_RPATH=FALSE, llvm-tblgen
+           ;; doesn't seem to get the correct rpath to be able to run
+           ;; from the build directory.  Set LD_LIBRARY_PATH as a
+           ;; workaround.
+           (lambda _
+             (setenv "LD_LIBRARY_PATH"
+                     (string-append (getcwd) "/lib"))
+             #t))
+         (add-after 'install 'install-opt-viewer
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (opt-viewer-out (assoc-ref outputs "opt-viewer"))
+                    (opt-viewer-share-dir (string-append opt-viewer-out "/share"))
+                    (opt-viewer-dir (string-append opt-viewer-share-dir "/opt-viewer")))
+               (mkdir-p opt-viewer-share-dir)
+               (rename-file (string-append out "/share/opt-viewer")
+                            opt-viewer-dir))
+             #t)))))
     (home-page "https://www.llvm.org")
     (synopsis "Optimizing compiler infrastructure")
     (description
