@@ -12575,6 +12575,12 @@ running IRkernel session.")
                        "--name" "ir"
                        "--prefix" out
                        (string-append out "/site-library/IRkernel/kernelspec"))
+               ;; Record the absolute file name of the 'R' executable in
+               ;; 'kernel.json'.
+               (substitute* (string-append out "/share/jupyter"
+                                           "/kernels/ir/kernel.json")
+                 (("\\[\"R\",")
+                  (string-append "[\"" (which "R") "\",")))
                #t))))))
     (inputs
      `(("jupyter" ,jupyter)))
@@ -12584,6 +12590,8 @@ running IRkernel session.")
        ("r-evaluate" ,r-evaluate)
        ("r-irdisplay" ,r-irdisplay)
        ("r-jsonlite" ,r-jsonlite)
+       ;; sets R_LIBS_SITE, so R can actually find this package (IRkernel)
+       ("r-minimal" ,r-minimal)
        ("r-pbdzmq" ,r-pbdzmq)
        ("r-repr" ,r-repr)
        ("r-uuid" ,r-uuid)))
