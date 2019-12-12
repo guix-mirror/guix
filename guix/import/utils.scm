@@ -402,7 +402,7 @@ obtain a node's uniquely identifying \"key\"."
 (define* (recursive-import package-name repo
                            #:key repo->guix-package guix-name
                            #:allow-other-keys)
-  "Return a stream of package expressions for PACKAGE-NAME and all its
+  "Return a list of package expressions for PACKAGE-NAME and all its
 dependencies, sorted in topological order.  For each package,
 call (REPO->GUIX-PACKAGE NAME REPO), which should return a package expression
 and a list of dependencies; call (GUIX-NAME NAME) to obtain the Guix package
