@@ -374,18 +374,19 @@ photographic equipment.")
     (arguments
      `(#:tests? #f                      ; there are no tests
        #:configure-flags '("-DBINARY_PACKAGE_BUILD=On")
-       #:make-flags
-       (list
-        (string-append "CPATH=" (assoc-ref %build-inputs "ilmbase")
-                       "/include/OpenEXR:" (or (getenv "CPATH") "")))
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'set-ldflags
-           (lambda* (#:key outputs #:allow-other-keys)
+         (add-before 'configure 'set-LDFLAGS-and-CPATH
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              (setenv "LDFLAGS"
                      (string-append
                       "-Wl,-rpath="
                       (assoc-ref outputs "out") "/lib/darktable"))
+
+             ;; Ensure the OpenEXR headers are found.
+             (setenv "CPATH"
+                     (string-append (assoc-ref inputs "ilmbase")
+                                    "/include/OpenEXR:" (or (getenv "CPATH") "")))
              #t)))))
     (native-inputs
      `(("llvm" ,llvm-3.9.1)
