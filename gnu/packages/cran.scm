@@ -17423,3 +17423,32 @@ resonance quality factor, entropy, cross correlation and autocorrelation,
 zero-crossing, dominant frequency, analytic signal, frequency coherence, 2D
 and 3D spectrograms and many other analyses.")
     (license license:gpl2+)))
+
+(define-public r-acousticndlcoder
+  (package
+    (name "r-acousticndlcoder")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "AcousticNDLCodeR" version))
+       (sha256
+        (base32
+         "1fgzgwanpv2pzy74xdk3hamc44p8qch467wh163dxby8jr9ik0sb"))))
+    (properties
+     `((upstream-name . "AcousticNDLCodeR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-seewave" ,r-seewave)
+       ("r-tuner" ,r-tuner)
+       ("r-zoo" ,r-zoo)))
+    (home-page "https://cran.r-project.org/web/packages/AcousticNDLCodeR/")
+    (synopsis "Coding sound files for use with NDL")
+    (description
+     "Make acoustic cues to use with the R package @code{ndl}.
+The package implements functions used in the PLoS ONE paper \"Words from
+spontaneous conversational speech can be recognized with human-like accuracy
+by an error-driven learning algorithm that discriminates between meanings
+straight from smart acoustic features, bypassing the phoneme as recognition
+unit.\" @url{doi:10.1371/journal.pone.0174623}")
+    (license license:gpl2+)))
