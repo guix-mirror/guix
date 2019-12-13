@@ -555,15 +555,14 @@ Extension (MIME).")
 (define-public bogofilter
   (package
     (name "bogofilter")
-    (version "1.2.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/bogofilter/bogofilter-"
-                                  version "/bogofilter-"
-                                  version ".tar.bz2"))
-              (sha256
-               (base32
-                "1d56n2m9inm8gnzm88aa27xl2a7sp7aff3484vmflpqkinjqf0p1"))))
+    (version "1.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/bogofilter/bogofilter-stable/"
+                           "bogofilter-" version ".tar.xz"))
+       (sha256
+        (base32 "1sl9xrnnlk2sn8gmibhn8li09vnansjbxb9l1182qmgz7cvs2j1j"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -576,14 +575,14 @@ Extension (MIME).")
              #t)))))
     (native-inputs `(("flex" ,flex)))
     (inputs `(("bdb" ,bdb)))
-    (home-page "http://bogofilter.sourceforge.net/")
+    (home-page "https://bogofilter.sourceforge.io/")
     (synopsis "Mail classifier based on a Bayesian filter")
     (description
      "Bogofilter is a mail filter that classifies mail as spam or ham
  (non-spam) by a statistical analysis of the message's header and
 content (body).  The program is able to learn from the user's classifications
 and corrections.  It is based on a Bayesian filter.")
-    (license gpl2)))
+    (license gpl3+)))
 
 (define-public offlineimap
   (package

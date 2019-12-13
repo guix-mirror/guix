@@ -1678,7 +1678,7 @@ external rate conversion.")
 (define-public iptables
   (package
     (name "iptables")
-    (version "1.6.2")
+    (version "1.8.4")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1686,7 +1686,7 @@ external rate conversion.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "0crp0lvh5m2f15pr8cw97h8yb8zjj10x95zj06j46cr68vx2vl2m"))))
+               "0z0mgs1ghvn3slc868mgbf2g26njgrzcy5ggyb5w4i55j1a3lflr"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -5233,14 +5233,16 @@ re-use code and to avoid re-inventing the wheel.")
 (define-public libnftnl
   (package
     (name "libnftnl")
-    (version "1.1.4")
+    (version "1.1.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://netfilter.org/libnftnl/"
                            "libnftnl-" version ".tar.bz2"))
        (sha256
-        (base32 "087dfc2n4saf2k68hyi4byvgz5grwpw5kfjvmkpn3wmd8y1riiy8"))))
+        (base32 "1wqlxf76bkqf3qhka9sw32qhb2ni20q1k6rn3iril2kw482lvpk6"))
+       (patches
+        (search-patches "libnftnl-dont-check-NFTNL_FLOWTABLE_SIZE.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -5257,15 +5259,16 @@ used by nftables.")
 (define-public nftables
   (package
     (name "nftables")
-    (version "0.9.2")
+    (version "0.9.3")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.nftables.org/projects/nftables"
-                           "/files/nftables-" version ".tar.bz2"))
+       (uri (list (string-append "mirror://netfilter.org/nftables/nftables-"
+                                 version ".tar.bz2")
+                  (string-append "https://www.nftables.org/projects/nftables"
+                                 "/files/nftables-" version ".tar.bz2")))
        (sha256
-        (base32
-         "1x8kalbggjq44j4916i6vyv1rb20dlh1dcsf9xvzqsry2j063djw"))))
+        (base32 "0y6vbqp6x8w165q65h4n9sba1406gaz0d4744gqszbm7w9f92swm"))))
     (build-system gnu-build-system)
     (arguments `(#:configure-flags
                  '("--disable-man-doc"))) ; FIXME: Needs docbook2x.
@@ -5276,7 +5279,7 @@ used by nftables.")
               ("libnftnl" ,libnftnl)
               ("readline" ,readline)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.nftables.org")
+    (home-page "https://www.nftables.org")
     (synopsis "Userspace utility for Linux packet filtering")
     (description "nftables is the project that aims to replace the existing
 {ip,ip6,arp,eb}tables framework.  Basically, this project provides a new packet

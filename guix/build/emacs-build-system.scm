@@ -76,8 +76,18 @@ archive, a directory, or an Emacs Lisp file."
 (define* (add-source-to-load-path #:key dummy #:allow-other-keys)
   "Augment the EMACSLOADPATH environment variable with the source directory."
   (let* ((source-directory (getcwd))
-         (emacs-load-path-value (string-append source-directory ":"
-                                               (getenv "EMACSLOADPATH"))))
+         (emacs-load-path (string-split (getenv "EMACSLOADPATH") #\:))
+         ;; XXX: Make sure the Emacs core libraries appear at the end of
+         ;; EMACSLOADPATH, to avoid shadowing any other libraries depended
+         ;; upon.
+         (emacs-load-path-non-core (filter (cut string-contains <>
+                                                "/share/emacs/site-lisp")
+                                           emacs-load-path))
+         (emacs-load-path-value (string-append
+                                 (string-join (cons source-directory
+                                                    emacs-load-path-non-core)
+                                              ":")
+                                 ":")))
     (setenv "EMACSLOADPATH" emacs-load-path-value)
     (format #t "source directory ~s prepended to the `EMACSLOADPATH' \
 environment variable\n" source-directory)))

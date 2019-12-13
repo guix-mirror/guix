@@ -25,17 +25,23 @@
   #:use-module (guix monads)
   #:use-module (guix base32)
   #:use-module (guix packages)
+  #:use-module (guix progress)
   #:use-module (guix serialization)
   #:use-module (guix scripts substitute)
   #:use-module (rnrs bytevectors)
+  #:autoload   (guix http-client) (http-fetch)
+  #:use-module ((guix build syscalls) #:select (terminal-columns))
+  #:use-module (gcrypt hash)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 format)
+  #:use-module (ice-9 ftw)
   #:use-module (web uri)
   #:export (compare-contents
 
@@ -48,6 +54,9 @@
             comparison-report-match?
             comparison-report-mismatch?
             comparison-report-inconclusive?
+
+            differing-files
+            call-with-mismatches
 
             guix-challenge))
 
@@ -179,20 +188,192 @@ taken since we do not import the archives."
                  items
                  local))))
 
+
+;;;
+;;; Reporting.
+;;;
+
+(define dump-port*                                ;FIXME: deduplicate
+  (@@ (guix serialization) dump))
+
+(define (port-sha256* port size)
+  ;; Like 'port-sha256', but limited to SIZE bytes.
+  (let-values (((out get) (open-sha256-port)))
+    (dump-port* port out size)
+    (close-port out)
+    (get)))
+
+(define (archive-contents port)
+  "Return a list representing the files contained in the nar read from PORT."
+  (fold-archive (lambda (file type contents result)
+                  (match type
+                    ((or 'regular 'executable)
+                     (match contents
+                       ((port . size)
+                        (cons `(,file ,type ,(port-sha256* port size))
+                              result))))
+                    ('directory result)
+                    ('symlink
+                     (cons `(,file ,type ,contents) result))))
+                '()
+                port
+                ""))
+
+(define (store-item-contents item)
+  "Return a list of files and contents for ITEM in the same format as
+'archive-contents'."
+  (file-system-fold (const #t)                    ;enter?
+                    (lambda (file stat result)    ;leaf
+                      (define short
+                        (string-drop file (string-length item)))
+
+                      (match (stat:type stat)
+                        ('regular
+                         (let ((size (stat:size stat))
+                               (type (if (zero? (logand (stat:mode stat)
+                                                        #o100))
+                                         'regular
+                                         'executable)))
+                           (cons `(,short ,type
+                                          ,(call-with-input-file file
+                                             (cut port-sha256* <> size)))
+                                 result)))
+                        ('symlink
+                         (cons `(,short symlink ,(readlink file))
+                               result))))
+                    (lambda (directory stat result) result)  ;down
+                    (lambda (directory stat result) result)  ;up
+                    (lambda (file stat result) result)       ;skip
+                    (lambda (file stat errno result) result) ;error
+                    '()
+                    item
+                    lstat))
+
+(define (call-with-nar narinfo proc)
+  "Call PROC with an input port from which it can read the nar pointed to by
+NARINFO."
+  (let*-values (((uri compression size)
+                 (narinfo-best-uri narinfo))
+                ((port response)
+                 (http-fetch uri)))
+    (define reporter
+      (progress-reporter/file (narinfo-path narinfo) size
+                              #:abbreviation (const (uri-host uri))))
+
+    (define result
+      (call-with-decompressed-port (string->symbol compression)
+          (progress-report-port reporter port)
+        proc))
+
+    (close-port port)
+    (erase-current-line (current-output-port))
+    result))
+
+(define (narinfo-contents narinfo)
+  "Fetch the nar described by NARINFO and return a list representing the file
+it contains."
+  (call-with-nar narinfo archive-contents))
+
+(define (differing-files comparison-report)
+  "Return a list of files that differ among the nars and possibly the local
+store item specified in COMPARISON-REPORT."
+  (define contents
+    (map narinfo-contents
+         (comparison-report-narinfos comparison-report)))
+
+  (define local-contents
+    (and (comparison-report-local-sha256 comparison-report)
+         (store-item-contents (comparison-report-item comparison-report))))
+
+  (match (apply lset-difference equal?
+                (take (delete-duplicates
+                       (if local-contents
+                           (cons local-contents contents)
+                           contents))
+                      2))
+    (((files _ ...) ...)
+     files)))
+
+(define (report-differing-files comparison-report)
+  "Report differences among the nars and possibly the local store item
+specified in COMPARISON-REPORT."
+  (match (differing-files comparison-report)
+    (()
+     #t)
+    ((files ...)
+     (format #t (N_ "  differing file:~%"
+                    "  differing files:~%"
+                    (length files)))
+     (format #t     "~{    ~a~%~}" files))))
+
+(define (call-with-mismatches comparison-report proc)
+  "Call PROC with two directories containing the mismatching store items."
+  (define local-hash
+    (comparison-report-local-sha256 comparison-report))
+
+  (define narinfos
+    (comparison-report-narinfos comparison-report))
+
+  (call-with-temporary-directory
+   (lambda (directory1)
+     (call-with-temporary-directory
+      (lambda (directory2)
+        (define narinfo1
+          (if local-hash
+              (find (lambda (narinfo)
+                      (not (string=? (narinfo-hash narinfo)
+                                     local-hash)))
+                    narinfos)
+              (first (comparison-report-narinfos comparison-report))))
+
+        (define narinfo2
+          (and (not local-hash)
+               (find (lambda (narinfo)
+                       (not (eq? narinfo narinfo1)))
+                     narinfos)))
+
+        (rmdir directory1)
+        (call-with-nar narinfo1 (cut restore-file <> directory1))
+        (when narinfo2
+          (rmdir directory2)
+          (call-with-nar narinfo2 (cut restore-file <> directory2)))
+        (proc directory1
+              (if local-hash
+                  (comparison-report-item comparison-report)
+                  directory2)))))))
+
+(define %diffoscope-command
+  ;; Default external diff command.  Pass "--exclude-directory-metadata" so
+  ;; that the mtime/ctime differences are ignored.
+  '("diffoscope" "--exclude-directory-metadata=yes"))
+
+(define* (report-differing-files/external comparison-report
+                                          #:optional
+                                          (command %diffoscope-command))
+  "Run COMMAND to show the file-level differences for the mismatches in
+COMPARISON-REPORT."
+  (call-with-mismatches comparison-report
+                        (lambda (directory1 directory2)
+                          (apply system*
+                                 (append command
+                                         (list directory1 directory2))))))
+
 (define* (summarize-report comparison-report
                            #:key
+                           (report-differences (const #f))
                            (hash->string bytevector->nix-base32-string)
                            verbose?)
-  "Write to the current error port a summary of REPORT, a <comparison-report>
-object.  When VERBOSE?, display matches in addition to mismatches and
-inconclusive reports."
+  "Write to the current error port a summary of COMPARISON-REPORT, a
+<comparison-report> object.  When VERBOSE?, display matches in addition to
+mismatches and inconclusive reports.  Upon mismatch, call REPORT-DIFFERENCES
+with COMPARISON-REPORT."
   (define (report-hashes item local narinfos)
     (if local
         (report (G_ "  local hash: ~a~%") (hash->string local))
         (report (G_ "  no local build for '~a'~%") item))
     (for-each (lambda (narinfo)
                 (report (G_ "  ~50a: ~a~%")
-                        (uri->string (first (narinfo-uris narinfo)))
+                        (uri->string (narinfo-best-uri narinfo))
                         (hash->string
                          (narinfo-hash->sha256 (narinfo-hash narinfo)))))
               narinfos))
@@ -200,7 +381,8 @@ inconclusive reports."
   (match comparison-report
     (($ <comparison-report> item 'mismatch local (narinfos ...))
      (report (G_ "~a contents differ:~%") item)
-     (report-hashes item local narinfos))
+     (report-hashes item local narinfos)
+     (report-differences comparison-report))
     (($ <comparison-report> item 'inconclusive #f narinfos)
      (warning (G_ "could not challenge '~a': no local build~%") item))
     (($ <comparison-report> item 'inconclusive locals ())
@@ -237,6 +419,8 @@ Challenge the substitutes for PACKAGE... provided by one or more servers.\n"))
                          compare build results with those at URLS"))
   (display (G_ "
       -v, --verbose      show details about successful comparisons"))
+  (display (G_ "
+          --diff=MODE    show differences according to MODE"))
   (newline)
   (display (G_ "
   -h, --help             display this help and exit"))
@@ -254,6 +438,22 @@ Challenge the substitutes for PACKAGE... provided by one or more servers.\n"))
                  (lambda args
                    (show-version-and-exit "guix challenge")))
 
+         (option '("diff") #t #f
+                 (lambda (opt name arg result . rest)
+                   (define mode
+                     (match arg
+                       ("none" (const #t))
+                       ("simple" report-differing-files)
+                       ("diffoscope" report-differing-files/external)
+                       ((and (? (cut string-prefix? "/" <>)) command)
+                        (cute report-differing-files/external <>
+                              (string-tokenize command)))
+                       (_ (leave (G_ "~a: unknown diff mode~%") arg))))
+
+                   (apply values
+                          (alist-cons 'difference-report mode result)
+                          rest)))
+
          (option '("substitute-urls") #t #f
                  (lambda (opt name arg result . rest)
                    (apply values
@@ -269,7 +469,8 @@ Challenge the substitutes for PACKAGE... provided by one or more servers.\n"))
 
 (define %default-options
   `((system . ,(%current-system))
-    (substitute-urls . ,%default-substitute-urls)))
+    (substitute-urls . ,%default-substitute-urls)
+    (difference-report . ,report-differing-files)))
 
 
 ;;;
@@ -286,12 +487,14 @@ Challenge the substitutes for PACKAGE... provided by one or more servers.\n"))
                                  opts))
            (system   (assoc-ref opts 'system))
            (urls     (assoc-ref opts 'substitute-urls))
+           (diff     (assoc-ref opts 'difference-report))
            (verbose? (assoc-ref opts 'verbose?)))
       (leave-on-EPIPE
        (with-store store
          ;; Disable grafts since substitute servers normally provide only
          ;; ungrafted stuff.
-         (parameterize ((%graft? #f))
+         (parameterize ((%graft? #f)
+                        (current-terminal-columns (terminal-columns)))
            (let ((files (match files
                           (()
                            (filter (cut locally-built? store <>)
@@ -305,7 +508,8 @@ Challenge the substitutes for PACKAGE... provided by one or more servers.\n"))
                (mlet* %store-monad ((items   (mapm %store-monad
                                                    ensure-store-item files))
                                     (reports (compare-contents items urls)))
-                 (for-each (cut summarize-report <> #:verbose? verbose?)
+                 (for-each (cut summarize-report <> #:verbose? verbose?
+                                #:report-differences diff)
                            reports)
                  (report "\n")
                  (summarize-report-list reports)

@@ -456,14 +456,14 @@ The peer-to-peer VPN implements a Layer 2 (Ethernet) network between the peers
 (define-public wireguard
   (package
     (name "wireguard")
-    (version "0.0.20191127")
+    (version "0.0.20191212")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.zx2c4.com/WireGuard/snapshot/"
                                   "WireGuard-" version ".tar.xz"))
               (sha256
                (base32
-                "01ixdhbvx5yiq07msd60f98685wdksss4pfhdn1d8r25z2k80kkx"))))
+                "0wdhl7i4zkb7yf0jj03ig2ks7bsfz9if8x9dy6r2523s1ww1imxh"))))
     (build-system gnu-build-system)
     (outputs '("out" ; The WireGuard userspace tools
                "kernel-patch")) ; A patch to build Linux with WireGuard support

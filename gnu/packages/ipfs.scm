@@ -104,7 +104,7 @@ that are shared between @command{go-ipfs/commands} and its rewrite
 (define-public gx
   (package
     (name "gx")
-    (version "0.14.1")
+    (version "0.14.2")
     (source
      (origin
        (method git-fetch)
@@ -113,8 +113,7 @@ that are shared between @command{go-ipfs/commands} and its rewrite
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0pfx2p59xdbmqzfbgaf8xvlnzh8m05hkg596glq5kvl8ib65i4ha"))))
+        (base32 "048bx6khzcwxnvz3lf7kgp6fkg8mxqcqchxh0jxm9fg2iwizsi0k"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/whyrusleeping/gx"))

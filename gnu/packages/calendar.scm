@@ -155,7 +155,7 @@ able to synchronize with CalDAV servers through vdirsyncer.")
 (define-public remind
   (package
     (name "remind")
-    (version "3.1.16")
+    (version "3.1.17")
     (source
      (origin
        (method url-fetch)
@@ -166,7 +166,7 @@ able to synchronize with CalDAV servers through vdirsyncer.")
                                         ".")
                            ".tar.gz"))
        (sha256
-        (base32 "14yavwqmimba8rdpwx3wlav9sfb0v5rcd1iyzqrs08wx07a9pdzf"))))
+        (base32 "0lgyc2j69aqqk4knywr8inz4fsnni0zq54dgqh7p4s6kzybc2mf9"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f))                    ; no "check" target

@@ -14327,24 +14327,15 @@ such as figshare or Zenodo.")
 (define-public python-semver
   (package
     (name "python-semver")
-    (version "2.7.9")
+    (version "2.9.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "semver" version))
-        (sha256
-          (base32
-            "0hhgqppchv59rqj0yzi1prdg2nfsywqmjsqy2rycyxm0hvxmbyqz"))))
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "semver" version))
+       (sha256
+        (base32
+         "183kg1rhzz3hqizvphkd8hlbf1zxfx8737zhfkmqzxi71jmdw7pd"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-test-requirements
-           (lambda _
-             (substitute* "setup.py"
-               ;; Our Python is new enough.
-               (("'virtualenv<14\\.0\\.0'") "'virtualenv'"))
-             #t)))))
     (native-inputs
      `(("python-tox" ,python-tox)
        ("python-virtualenv" ,python-virtualenv)))
@@ -14564,14 +14555,14 @@ user's @file{~/Trash} directory.")
 (define-public python-yapf
   (package
     (name "python-yapf")
-    (version "0.24.0")
+    (version "0.29.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "yapf" version))
        (sha256
         (base32
-         "0anwby0ydmyzcsgjc5dn1ryddwvii4dq61vck447q0n96npnzfyf"))))
+         "1pj3xzblmbssshi889b6n9hwqbjpabw6j0fimlng2sshd3226bki"))))
     (build-system python-build-system)
     (home-page "https://github.com/google/yapf")
     (synopsis "Formatter for Python code")

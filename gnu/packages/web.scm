@@ -4194,8 +4194,8 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
   (package-with-python2 python-feedparser))
 
 (define-public guix-data-service
-  (let ((commit "af1324855e1ecaf9b1dd7afcc714d09aaa38f081")
-        (revision "6"))
+  (let ((commit "156b7eea7e7d538e332d8cfcf482c5ebec0a25c0")
+        (revision "7"))
     (package
       (name "guix-data-service")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -4207,7 +4207,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1qxs1sbyx894njw4f898wzc5shjj85h9kgz95p8mq1acmazhlhkv"))))
+                  "1cg7jzk7pabfp3mgnkpycasv7fs522xp3nqdvna1y76aif3pd3zh"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
@@ -4251,6 +4251,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                     "guix-data-service-process-branch-updated-mbox"
                     "guix-data-service-process-job"
                     "guix-data-service-process-jobs"
+                    "guix-data-service-manage-build-servers"
                     "guix-data-service-query-build-servers"))
                  #t)))
            (delete 'strip))))           ; As the .go files aren't compatible

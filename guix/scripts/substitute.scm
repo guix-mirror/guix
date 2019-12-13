@@ -80,6 +80,7 @@
             narinfo-signature
 
             narinfo-hash->sha256
+            narinfo-best-uri
 
             lookup-narinfos
             lookup-narinfos/diverse
@@ -822,35 +823,6 @@ was found."
                                 (= (string-length file) 32)))))
               (narinfo-cache-directories directory)))
 
-(define (progress-report-port reporter port)
-  "Return a port that continuously reports the bytes read from PORT using
-REPORTER, which should be a <progress-reporter> object."
-  (match reporter
-    (($ <progress-reporter> start report stop)
-     (let* ((total 0)
-            (read! (lambda (bv start count)
-                     (let ((n (match (get-bytevector-n! port bv start count)
-                                ((? eof-object?) 0)
-                                (x x))))
-                       (set! total (+ total n))
-                       (report total)
-                       n))))
-       (start)
-       (make-custom-binary-input-port "progress-port-proc"
-                                      read! #f #f
-                                      (lambda ()
-                                        ;; XXX: Kludge!  When used through
-                                        ;; 'decompressed-port', this port ends
-                                        ;; up being closed twice: once in a
-                                        ;; child process early on, and at the
-                                        ;; end in the parent process.  Ignore
-                                        ;; the early close so we don't output
-                                        ;; a spurious "download-succeeded"
-                                        ;; trace.
-                                        (unless (zero? total)
-                                          (stop))
-                                        (close-port port)))))))
-
 (define-syntax with-networking
   (syntax-rules ()
     "Catch DNS lookup errors and TLS errors and gracefully exit."
@@ -913,7 +885,7 @@ expected by the daemon."
   (for-each (cute format #t "~a/~a~%" (%store-prefix) <>)
             (narinfo-references narinfo))
 
-  (let-values (((uri compression file-size) (select-uri narinfo)))
+  (let-values (((uri compression file-size) (narinfo-best-uri narinfo)))
     (format #t "~a\n~a\n"
             (or file-size 0)
             (or (narinfo-size narinfo) 0))))
@@ -967,7 +939,7 @@ this is a rough approximation."
     (_      (or (string=? compression2 "none")
                 (string=? compression2 "gzip")))))
 
-(define (select-uri narinfo)
+(define (narinfo-best-uri narinfo)
   "Select the \"best\" URI to download NARINFO's nar, and return three values:
 the URI, its compression method (a string), and the compressed file size."
   (define choices
@@ -1008,7 +980,7 @@ DESTINATION as a nar file.  Verify the substitute against ACL."
            store-item))
 
   (let-values (((uri compression file-size)
-                (select-uri narinfo)))
+                (narinfo-best-uri narinfo)))
     ;; Tell the daemon what the expected hash of the Nar itself is.
     (format #t "~a~%" (narinfo-hash narinfo))
 

@@ -3924,7 +3924,7 @@ sample library.")
                                            (string-map (lambda (c)
                                                          (if (char=? c #\.)
                                                              #\_ c)) version)))))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1nninz8qyqlxxjdnrm79y3gr3056pga9l2fsqh674jd3cjvafya3"))))

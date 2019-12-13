@@ -16,6 +16,7 @@
 ;;; Copyright © 2018, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2019 Brett Gilio <brettg@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -828,20 +829,21 @@ of VT100 terminal.")
 (define-public python-blessings
   (package
     (name "python-blessings")
-    (version "1.6.1")
+    (version "1.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "blessings" version))
        (sha256
         (base32
-         "1smngy65p8mi62lgm04icasx22v976szhs2aq95y2ljmi1srb4bl"))))
+         "0z8mgkbmisxs10rz88qg46l1c9a8n08k8cy2iassal2zh16qbrcq"))))
     (build-system python-build-system)
     (arguments
-     ;; TODO: For py3, 2to2 is used to convert the code, but test-suite fails
+     ;; FIXME: Test suite is unable to detect TTY conditions.
      `(#:tests? #f))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-nose" ,python-nose)
+       ("python-six" ,python-six)))
     (home-page "https://github.com/erikrose/blessings")
     (synopsis "Python module to manage terminal color, styling, and
 positioning")

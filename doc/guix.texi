@@ -39,7 +39,7 @@ Copyright @copyright{} 2016, 2017, 2018, 2019 Jan Nieuwenhuizen@*
 Copyright @copyright{} 2016 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
 Copyright @copyright{} 2016, 2017, 2018, 2019 Christopher Baines@*
-Copyright @copyright{} 2017, 2018 Clément Lassieur@*
+Copyright @copyright{} 2017, 2018, 2019 Clément Lassieur@*
 Copyright @copyright{} 2017, 2018 Mathieu Othacehe@*
 Copyright @copyright{} 2017 Federico Beffa@*
 Copyright @copyright{} 2017, 2018 Carlo Zancanaro@*
@@ -4598,6 +4598,18 @@ unsafe.
 The primary purpose of this operation is to facilitate inspection of
 archive contents coming from possibly untrusted substitute servers.
 
+@item --list
+@itemx -t
+Read a single-item archive as served by substitute servers
+(@pxref{Substitutes}) and print the list of files it contains, as in
+this example:
+
+@example
+$ wget -O - \
+  https://@value{SUBSTITUTE-SERVER}/nar/lzip/@dots{}-emacs-26.3 \
+  | lzip -d | guix archive -t
+@end example
+
 @end table
 
 
@@ -7457,6 +7469,7 @@ native package build:
 (gexp->derivation "vi"
    #~(begin
        (mkdir #$output)
+       (mkdir (string-append #$output "/bin"))
        (system* (string-append #+coreutils "/bin/ln")
                 "-s"
                 (string-append #$emacs "/bin/emacs")
@@ -10308,14 +10321,23 @@ updating list of substitutes from 'https://guix.example.org'... 100.0%
   local hash: 0725l22r5jnzazaacncwsvp9kgf42266ayyp814v7djxs7nk963q
   https://@value{SUBSTITUTE-SERVER}/nar/@dots{}-openssl-1.0.2d: 0725l22r5jnzazaacncwsvp9kgf42266ayyp814v7djxs7nk963q
   https://guix.example.org/nar/@dots{}-openssl-1.0.2d: 1zy4fmaaqcnjrzzajkdn3f5gmjk754b43qkq47llbyak9z0qjyim
+  differing files:
+    /lib/libcrypto.so.1.1
+    /lib/libssl.so.1.1
+
 /gnu/store/@dots{}-git-2.5.0 contents differ:
   local hash: 00p3bmryhjxrhpn2gxs2fy0a15lnip05l97205pgbk5ra395hyha
   https://@value{SUBSTITUTE-SERVER}/nar/@dots{}-git-2.5.0: 069nb85bv4d4a6slrwjdy8v1cn4cwspm3kdbmyb81d6zckj3nq9f
   https://guix.example.org/nar/@dots{}-git-2.5.0: 0mdqa9w1p6cmli6976v4wi0sw9r4p5prkj7lzfd1877wk11c9c73
+  differing file:
+    /libexec/git-core/git-fsck
+
 /gnu/store/@dots{}-pius-2.1.1 contents differ:
   local hash: 0k4v3m9z1zp8xzzizb7d8kjj72f9172xv078sq4wl73vnq9ig3ax
   https://@value{SUBSTITUTE-SERVER}/nar/@dots{}-pius-2.1.1: 0k4v3m9z1zp8xzzizb7d8kjj72f9172xv078sq4wl73vnq9ig3ax
   https://guix.example.org/nar/@dots{}-pius-2.1.1: 1cy25x1a4fzq5rk0pmvc8xhwyffnqz95h2bpvqsz2mpvlbccy0gs
+  differing file:
+    /share/man/man1/pius.1.gz
 
 @dots{}
 
@@ -10344,8 +10366,20 @@ results, the inclusion of random numbers, and directory listings sorted
 by inode number.  See @uref{https://reproducible-builds.org/docs/}, for
 more information.
 
-To find out what is wrong with this Git binary, we can do something along
-these lines (@pxref{Invoking guix archive}):
+To find out what is wrong with this Git binary, the easiest approach is
+to run:
+
+@example
+guix challenge git \
+  --diff=diffoscope \
+  --substitute-urls="https://@value{SUBSTITUTE-SERVER} https://guix.example.org"
+@end example
+
+This automatically invokes @command{diffoscope}, which displays detailed
+information about files that differ.
+
+Alternately, we can do something along these lines (@pxref{Invoking guix
+archive}):
 
 @example
 $ wget -q -O - https://@value{SUBSTITUTE-SERVER}/nar/@dots{}-git-2.5.0 \
@@ -10400,6 +10434,29 @@ The one option that matters is:
 @item --substitute-urls=@var{urls}
 Consider @var{urls} the whitespace-separated list of substitute source
 URLs to compare to.
+
+@item --diff=@var{mode}
+Upon mismatches, show differences according to @var{mode}, one of:
+
+@table @asis
+@item @code{simple} (the default)
+Show the list of files that differ.
+
+@item @code{diffoscope}
+@itemx @var{command}
+Invoke @uref{https://diffoscope.org/, Diffoscope}, passing it
+two directories whose contents do not match.
+
+When @var{command} is an absolute file name, run @var{command} instead
+of Diffoscope.
+
+@item @code{none}
+Do not show further details about the differences.
+@end table
+
+Thus, unless @code{--diff=none} is passed, @command{guix challenge}
+downloads the store items from the given substitute servers so that it
+can compare them.
 
 @item --verbose
 @itemx -v

@@ -19816,6 +19816,33 @@ Emacs that integrate with major modes like Org-mode.")
     (home-page "https://github.com/hlissner/emacs-doom-themes")
     (license license:expat)))
 
+(define-public emacs-modus-themes
+  (package
+    (name "emacs-modus-themes")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/protesilaos/modus-themes.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "15g63675c5df2p0kk2sqj2c8qriyh69lcbggknqlaxapr13giz4x"))))
+    (build-system emacs-build-system)
+    (home-page "https://gitlab.com/protesilaos/modus-themes")
+    (synopsis "Emacs themes designed for colour-contrast accessibility")
+    (description
+     "This is a set of accessible themes for GNU Emacs.  The contrast ratio
+between foreground and background values should always be >= 7:1, which
+conforms with the WCAG AAA accessibility standard.
+
+The Modus themes project consists of two standalone items, one where dark text
+is cast on a light backdrop (Modus Operandi) and another where light text is
+displayed against a dark background (Modus Vivendi).")
+    (license license:gpl3+)))
+
 (define-public emacs-elixir-mode
   (package
     (name "emacs-elixir-mode")
@@ -20046,9 +20073,9 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
       (license license:gpl3+))))
 
 (define-public emacs-telega
-  (let ((commit "56aef884921d99e5170d5425dbe0fce645620511")
+  (let ((commit "6184e76990db395bea02f7b5d3169e746111e1ad")
 	(revision "2")
-	(version "0.4.4"))
+	(version "0.5.2"))
     (package
       (name "emacs-telega")
       (version (git-version version revision commit))
@@ -20060,7 +20087,7 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
                (commit commit)))
          (sha256
           (base32
-           "0a8k3j20nz4xwswg9qp9xpaakk3q3ibiz8mkryk92zmrdmaah5mi"))
+           "1kfmmfc9dv3r2wxm1njflgas51qm0j8sj7yr7vfvwaz5sz7p121b"))
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
@@ -20142,15 +20169,17 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
            (add-after 'emacs-build 'emacs-make-autoloads
              (assoc-ref emacs:%standard-phases 'make-autoloads)))))
       (propagated-inputs
-       `(("emacs-visual-fill-column" ,emacs-visual-fill-column)))
+       `(("emacs-visual-fill-column" ,emacs-visual-fill-column)
+         ("ffmpeg" ,ffmpeg) ; mp4/gif support.
+         ("libwebp" ,libwebp))) ; sticker support.
       (native-inputs
        `(("tdlib" ,tdlib)
          ("emacs" ,emacs-minimal)
          ("python" ,python)))
       (synopsis "GNU Emacs client for the Telegram messenger")
       (description
-       "Telega is full-featured, unofficial client for the Telegram messaging
-platform for GNU Emacs.")
+       "Telega is a full-featured, unofficial GNU Emacs-based client for the
+Telegram messaging platform.")
       (home-page "https://github.com/zevlg/telega.el")
       (license license:gpl3+))))
 
