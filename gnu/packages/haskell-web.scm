@@ -1840,3 +1840,34 @@ proposed by Google and Mozilla here
      "Parses Javascript into an Abstract Syntax Tree (AST).  Initially intended
 as frontend to hjsmin.")
     (license license:bsd-3)))
+
+(define-public ghc-bower-json
+  (package
+    (name "ghc-bower-json")
+    (version "1.0.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/bower-json/bower-json-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0wvygg3rdbxzrmr61a9w6ddv9pfric85ih8hnxyk0ydzn7i59abs"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-aeson-better-errors" ,ghc-aeson-better-errors)
+       ("ghc-scientific" ,ghc-scientific)
+       ("ghc-transformers" ,ghc-transformers)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+    (home-page "https://github.com/hdgarrood/bower-json")
+    (synopsis "Read bower.json from Haskell")
+    (description
+     "This package provides a data type and ToJSON/FromJSON instances for
+Bower's package manifest file, bower.json.")
+    (license license:expat)))
