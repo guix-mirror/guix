@@ -16013,3 +16013,34 @@ graphics directly in the terminal window.  This package provides a basic
 plotting function (and equivalents of curve, density, acf and barplot) as well
 as a boxplot function.")
     (license license:lgpl3+)))
+
+(define-public r-bio3d
+  (package
+    (name "r-bio3d")
+    (version "2.4-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "bio3d" version))
+       (sha256
+        (base32
+         "0ikpk1ppdp50m9kd289z616i382j9i7ji1zchyd4xqfyk8lnxf4s"))))
+    (properties `((upstream-name . "bio3d")))
+    (build-system r-build-system)
+    (inputs `(("zlib" ,zlib)))
+    (propagated-inputs `(("r-rcpp" ,r-rcpp)))
+    (home-page "http://thegrantlab.org/bio3d/")
+    (synopsis "Biological structure analysis")
+    (description
+     "This package provides utilities to process, organize and explore protein
+structure, sequence and dynamics data.  Features include the ability to read
+and write structure, sequence and dynamic trajectory data, perform sequence
+and structure database searches, data summaries, atom selection, alignment,
+superposition, rigid core identification, clustering, torsion analysis,
+distance matrix analysis, structure and sequence conservation analysis, normal
+mode analysis, principal component analysis of heterogeneous structure data,
+and correlation network analysis from normal mode and molecular dynamics data.
+In addition, various utility functions are provided to enable the statistical
+and graphical power of the R environment to work with biological sequence and
+structural data.")
+    (license license:gpl2+)))
