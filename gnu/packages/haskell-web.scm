@@ -1808,3 +1808,35 @@ declarative and monadic interface.")
 proposed by Google and Mozilla here
 @url{https://wiki.mozilla.org/DevTools/Features/SourceMap}.")
     (license license:bsd-3)))
+
+(define-public ghc-language-javascript
+  (package
+    (name "ghc-language-javascript")
+    (version "0.7.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/language-javascript/language-javascript-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "15bpqpkjf2y3fk8wff9zlnkpsjc63bnbvhlkxrs9alj0bikq17nk"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-utf8-string" ,ghc-utf8-string)))
+    (native-inputs
+     `(("ghc-alex" ,ghc-alex)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-happy" ,ghc-happy)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-utf8-light" ,ghc-utf8-light)))
+    (home-page
+     "https://github.com/erikd/language-javascript")
+    (synopsis "Parser for JavaScript")
+    (description
+     "Parses Javascript into an Abstract Syntax Tree (AST).  Initially intended
+as frontend to hjsmin.")
+    (license license:bsd-3)))
