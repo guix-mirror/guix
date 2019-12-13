@@ -56,8 +56,8 @@
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/httpfs/" name "/"
-                           name "-" version ".tar.gz"))
+       (uri (string-append "mirror://sourceforge/httpfs/httpfs2/"
+                           "httpfs2-" version ".tar.gz"))
        (sha256
         (base32
          "1h8ggvhw30n2r6w11n1s458ypggdqx6ldwd61ma4yd7binrlpjq1"))))
