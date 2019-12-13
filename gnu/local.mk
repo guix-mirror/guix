@@ -1357,6 +1357,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/psm-repro.patch				\
   %D%/packages/patches/pulseaudio-fix-mult-test.patch		\
   %D%/packages/patches/pulseaudio-longer-test-timeout.patch	\
+  %D%/packages/patches/purescript-relax-dependencies.patch	\
   %D%/packages/patches/pybugz-encode-error.patch		\
   %D%/packages/patches/pybugz-stty.patch			\
   %D%/packages/patches/pygpgme-disable-problematic-tests.patch  \

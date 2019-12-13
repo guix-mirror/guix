@@ -1,0 +1,42 @@
+Allow the purescript dependencies to better match the available packages in
+Guix.
+
+diff --git purescript-0.13.6/purescript.cabal purescript-0.13.6/purescript.cabal.orig
+index 7e38070..0724a0b 100644
+--- purescript-0.13.6/purescript.cabal
++++ purescript-0.13.6/purescript.cabal.orig
+@@ -1167,1 +1167,1 @@ library
+-        Glob ==0.9.*,
++        Glob ==0.10.*,
+@@ -1171,1 +1171,1 @@ library
+-        ansi-terminal >=0.7.1 && <0.9,
++        ansi-terminal ==0.9.*,
+@@ -1180,1 +1180,1 @@ library
+-        clock <0.8,
++        clock ==0.8.*,
+@@ -1246,1 +1246,1 @@ executable purs
+-        Glob ==0.9.*,
++        Glob ==0.10.*,
+@@ -1250,1 +1250,1 @@ executable purs
+-        ansi-terminal >=0.7.1 && <0.9,
++        ansi-terminal ==0.9.*,
+@@ -1260,1 +1260,1 @@ executable purs
+-        clock <0.8,
++        clock ==0.8.*,
+@@ -1281,1 +1281,1 @@ executable purs
+-        network >=3.0.1.1 && <3.1,
++        network >=2.8 && <3.1,
+@@ -1358,1 +1358,1 @@ test-suite tests
+-        Glob ==0.9.*,
++        Glob ==0.10.*,
+@@ -1363,1 +1363,1 @@ test-suite tests
+-        ansi-terminal >=0.7.1 && <0.9,
++        ansi-terminal ==0.9.*,
+@@ -1372,1 +1372,1 @@ test-suite tests
+-        clock <0.8,
++        clock ==0.8.*,
+@@ -1384,2 +1384,2 @@ test-suite tests
+-        hspec <2.7,
+-        hspec-discover <2.7,
++        hspec ==2.7.*,
++        hspec-discover ==2.7.*,
