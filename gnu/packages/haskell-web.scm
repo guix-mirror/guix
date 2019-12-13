@@ -1774,3 +1774,37 @@ non-Haskell dependencies.")
 and Perl's @code{Web::Scraper}.  Scalpel builds on top of TagSoup to provide a
 declarative and monadic interface.")
     (license license:asl2.0)))
+
+(define-public ghc-sourcemap
+  (package
+    (name "ghc-sourcemap")
+    (version "0.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/sourcemap/sourcemap-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0ynfm44ym8y592wnzdwa0d05dbkffyyg5sm26y5ylzpynk64r85r"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-utf8-string" ,ghc-utf8-string)))
+    (arguments
+     `(#:tests? #f ; FIXME: Fail to compile
+       #:cabal-revision
+       ("1" "1f7q44ar6qfip8fsllg43jyn7r15ifn2r0vz32cbmx0sb0d38dax")))
+    (home-page
+     "http://hackage.haskell.org/package/sourcemap")
+    (synopsis
+     "Implementation of source maps as proposed by Google and Mozilla")
+    (description
+     "Sourcemap provides an implementation of source maps, revision 3,
+proposed by Google and Mozilla here
+@url{https://wiki.mozilla.org/DevTools/Features/SourceMap}.")
+    (license license:bsd-3)))
