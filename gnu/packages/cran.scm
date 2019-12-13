@@ -16738,3 +16738,23 @@ current study, providing reliable prediction on accrual rate for clinical
 studies.  It provides functions for Bayesian accrual prediction which can be
 easily used by statisticians and clinical researchers.")
     (license license:gpl2)))
+
+(define-public r-accrued
+  (package
+    (name "r-accrued")
+    (version "1.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "accrued" version))
+       (sha256
+        (base32
+         "05g1jb5914z18rcai1ahn7nihn27vr2rnadwv94gc1j7ivvikvs5"))))
+    (properties `((upstream-name . "accrued")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/accrued/")
+    (synopsis "Data quality visualization tools for partially accruing data")
+    (description
+     "This is a package for visualizing data quality of partially accruing
+data.")
+    (license license:gpl3)))
