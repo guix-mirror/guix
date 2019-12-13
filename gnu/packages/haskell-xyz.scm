@@ -9281,6 +9281,33 @@ project-template tries to provide a canonical Haskell library for implementing
 the ideal templating system.")
     (license license:bsd-3)))
 
+(define-public ghc-protolude
+  (package
+    (name "ghc-protolude")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/protolude/protolude-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0zzkyxz0vmcbncpid7gp72fpjj0fla3gqhlfkij5c5lg12skjgfj"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-async" ,ghc-async)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-mtl-compat" ,ghc-mtl-compat)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)))
+    (home-page "https://github.com/protolude/protolude")
+    (synopsis "Sensible set of defaults for writing custom Preludes")
+    (description
+     "Protolude gives you sensible defaults for writing custom Preludes to
+replace the standard one provided by GHC.")
+    (license license:expat)))
+
 (define-public ghc-psqueues
   (package
     (name "ghc-psqueues")
