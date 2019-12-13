@@ -706,6 +706,36 @@ See also:
 @end itemize")
     (license license:bsd-3)))
 
+(define-public ghc-wai-websockets
+  (package
+    (name "ghc-wai-websockets")
+    (version "3.0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/wai-websockets/wai-websockets-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0b2xmdsrsqpssyib53wbr6r8hf75789ndyyanv37sv99iyqcwz4i"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-wai" ,ghc-wai)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-network" ,ghc-network)
+       ("ghc-websockets" ,ghc-websockets)
+       ("ghc-http-types" ,ghc-http-types)))
+    (arguments
+     `(#:configure-flags '("--flags=-example")))
+    (home-page "https://github.com/yesodweb/wai")
+    (synopsis
+     "Provide a bridge between WAI and the websockets package")
+    (description
+     "Use websockets with WAI applications, primarily those hosted via Warp.")
+    (license license:expat)))
+
 (define-public ghc-xss-sanitize
   (package
     (name "ghc-xss-sanitize")
