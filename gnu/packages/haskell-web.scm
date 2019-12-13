@@ -655,6 +655,57 @@ limitation, automatic pruning, energy saving and replay resistance.")
 a WAI handler, via the native Haskell TLS implementation.")
     (license license:expat)))
 
+(define-public ghc-websockets
+  (package
+    (name "ghc-websockets")
+    (version "0.12.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/websockets/websockets-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1vp3790w3hmr6v96314vdx74f7sg2c7hvnc93gafq0xhbxnr7nvx"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-bytestring-builder" ,ghc-bytestring-builder)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-network" ,ghc-network)
+       ("ghc-random" ,ghc-random)
+       ("ghc-sha" ,ghc-sha)
+       ("ghc-streaming-commons" ,ghc-streaming-commons)
+       ("ghc-entropy" ,ghc-entropy)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+    (home-page "https://jaspervdj.be/websockets/")
+    (synopsis
+     "Write WebSocket-capable servers in Haskell")
+    (description
+     "This library allows you to write WebSocket-capable servers.
+
+An example server:
+@url{https://github.com/jaspervdj/websockets/blob/master/example/server.lhs}
+An example client:
+@url{https://github.com/jaspervdj/websockets/blob/master/example/client.hs}
+
+See also:
+@itemize
+@item The specification of the WebSocket protocol:
+@url{http://www.whatwg.org/specs/web-socket-protocol/}
+@item The JavaScript API for dealing with WebSockets:
+@url{http://www.w3.org/TR/websockets/}
+@end itemize")
+    (license license:bsd-3)))
+
 (define-public ghc-xss-sanitize
   (package
     (name "ghc-xss-sanitize")
