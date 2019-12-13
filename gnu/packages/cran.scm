@@ -16204,3 +16204,28 @@ assess the effects of substitutions along sequence length.  The aaSEA package
 is intended to help researchers to rapidly analyze property changes caused by
 single, multiple and correlated amino acid substitutions in proteins.")
     (license license:gpl3)))
+
+(define-public r-abacus
+  (package
+    (name "r-abacus")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ABACUS" version))
+       (sha256
+        (base32
+         "0m1dnkwjr1522l9ddbzzx7ayxvli17sbmk6s28adpmzzjwh2kd1i"))))
+    (properties `((upstream-name . "ABACUS")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-shiny" ,r-shiny)))
+    (home-page "https://shiny.abdn.ac.uk/Stats/apps/")
+    (synopsis "Apps-based activities for communicating and understanding statistics")
+    (description
+     "This package provides a set of Shiny apps for effective communication
+and understanding in statistics.  The current version includes properties of
+normal distribution, properties of sampling distribution, one-sample z and t
+tests, two samples independent (unpaired) t test and analysis of variance.")
+    (license license:gpl3)))
