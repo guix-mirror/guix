@@ -16860,3 +16860,29 @@ Functions for performing cross validation are also supplied along with basic
 prediction and plotting functions.  @dfn{Sparse zero variance
 discriminant} (SZVD) analysis is also included in the package.")
     (license license:gpl2+)))
+
+(define-public r-ace2fastq
+  (package
+    (name "r-ace2fastq")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ace2fastq" version))
+       (sha256
+        (base32
+         "09kk3yyqnr2xp820g0p3aai9a21figigjr9lxkr3zjq2d8gzwfic"))))
+    (properties `((upstream-name . "ace2fastq")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-stringr" ,r-stringr)))
+    (home-page "https://github.com/c5sire/ace2fastq")
+    (synopsis "ACE file to FASTQ converter")
+    (description
+     "The ACE file format is used in genomics to store contigs from sequencing
+machines.  This tools converts it into FASTQ format.  Both formats contain the
+sequence characters and their corresponding quality information.  Unlike the
+FASTQ file, the ACE file stores the quality values numerically.  The
+conversion algorithm uses the standard Sanger formula.  The package
+facilitates insertion into pipelines, and content inspection.")
+    (license license:gpl3)))
