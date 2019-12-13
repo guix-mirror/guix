@@ -17072,3 +17072,34 @@ discussed in Reisen et al. (2017) @url{doi:10.1016/j.jspi.2017.02.008}.")
 models.")
     ;; Either version of the license
     (license (list license:gpl2 license:gpl3))))
+
+(define-public r-gamlss
+  (package
+    (name "r-gamlss")
+    (version "5.1-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gamlss" version))
+       (sha256
+        (base32
+         "0gcngfck0dk2rhjg0z1fnc61dqs0s049jy2rkywaf57531s2k8bc"))))
+    (properties `((upstream-name . "gamlss")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-gamlss-data" ,r-gamlss-data)
+       ("r-gamlss-dist" ,r-gamlss-dist)
+       ("r-mass" ,r-mass)
+       ("r-nlme" ,r-nlme)
+       ("r-survival" ,r-survival)))
+    (home-page "http://www.gamlss.org/")
+    (synopsis "Generalized additive models for location scale and shape")
+    (description
+     "This package provides functions for fitting the generalized additive
+models for location scale and shape introduced by Rigby and
+Stasinopoulos (2005), @url{doi:10.1111/j.1467-9876.2005.00510.x}.  The models
+use a distributional regression approach where all the parameters of the
+conditional distribution of the response variable are modelled using
+explanatory variables.")
+    ;; Either version of the license
+    (license (list license:gpl2 license:gpl3))))
