@@ -20169,7 +20169,8 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
            (add-after 'emacs-build 'emacs-make-autoloads
              (assoc-ref emacs:%standard-phases 'make-autoloads)))))
       (propagated-inputs
-       `(("emacs-visual-fill-column" ,emacs-visual-fill-column)))
+       `(("emacs-visual-fill-column" ,emacs-visual-fill-column)
+         ("libwebp" ,libwebp))) ; sticker support.
       (native-inputs
        `(("tdlib" ,tdlib)
          ("emacs" ,emacs-minimal)
