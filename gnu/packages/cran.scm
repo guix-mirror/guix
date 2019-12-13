@@ -16250,3 +16250,28 @@ tests, two samples independent (unpaired) t test and analysis of variance.")
 methylated between cases and controls.  It applies Student's t-test and delta
 beta analysis to identify candidate genes containing multiple CpG sites.")
     (license license:gpl3)))
+
+(define-public r-abcadm
+  (package
+    (name "r-abcadm")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abcADM" version))
+       (sha256
+        (base32
+         "0vcabnnnwc0psv9v3rda5aap9s8cq1pjh02zva3ki64hlavf2a10"))))
+    (properties `((upstream-name . "abcADM")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://cran.r-project.org/web/packages/abcADM/")
+    (synopsis "Fit accumulated damage models and estimate reliability using ABC")
+    (description
+     "This package provides tools to estimate parameters of accumulated
+damage (load duration) models based on failure time data under a Bayesian
+framework, using @dfn{Approximate Bayesian Computation} (ABC), and to assess
+long-term reliability under stochastic load profiles.")
+    (license license:gpl3)))
