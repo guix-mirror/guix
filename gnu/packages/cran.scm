@@ -17476,3 +17476,27 @@ unit.\" @url{doi:10.1371/journal.pone.0174623}")
 autoregressive properties, using the @dfn{Autoregressive Conditional Poisson}
 model (ACP(p,q)) proposed by Heinen (2003).")
     (license license:gpl2)))
+
+(define-public r-ada
+  (package
+    (name "r-ada")
+    (version "2.0-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ada" version))
+       (sha256
+        (base32
+         "1h3a07czp0w3hrhjcg1fz721y8vsfclzqi3rq8qfzgpfb4h1f06r"))))
+    (properties `((upstream-name . "ada")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-rpart" ,r-rpart)))
+    (home-page "https://cran.r-project.org/web/packages/ada/")
+    (synopsis "Stochastic boosting")
+    (description
+     "This package provides a straightforward, well-documented, and broad
+boosting routine for classification, ideally suited for small to
+moderate-sized data sets.  It performs discrete, real, and gentle boost under
+both exponential and logistic loss on a given data set.")
+    ;; Any version of the GPL.
+    (license (list license:gpl2+ license:gpl3+))))
