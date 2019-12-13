@@ -17452,3 +17452,27 @@ by an error-driven learning algorithm that discriminates between meanings
 straight from smart acoustic features, bypassing the phoneme as recognition
 unit.\" @url{doi:10.1371/journal.pone.0174623}")
     (license license:gpl2+)))
+
+(define-public r-acp
+  (package
+    (name "r-acp")
+    (version "2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "acp" version))
+       (sha256
+        (base32
+         "0lcwbjcyyr32m6qjmjqh25qjwrbyqj1n092xhgbhxzd8fslppnmn"))))
+    (properties `((upstream-name . "acp")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-quantmod" ,r-quantmod)
+       ("r-tseries" ,r-tseries)))
+    (home-page "https://cran.r-project.org/web/packages/acp/")
+    (synopsis "Autoregressive conditional Poisson")
+    (description
+     "This package supports the analysis of count data exhibiting
+autoregressive properties, using the @dfn{Autoregressive Conditional Poisson}
+model (ACP(p,q)) proposed by Heinen (2003).")
+    (license license:gpl2)))
