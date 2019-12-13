@@ -16301,3 +16301,29 @@ software for solving large-scale @dfn{linear programming} (LP), @dfn{mixed
 integer linear programming} (MILP) and other related problems.")
     ;; Either license
     (license (list license:gpl2 license:gpl3))))
+
+(define-public r-abcdefba
+  (package
+    (name "r-abcdefba")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abcdeFBA" version))
+       (sha256
+        (base32
+         "1rxjripy8v6bxi25vdfjnbk24zkmf752qbl73cin6nvnqflwxkx4"))))
+    (properties `((upstream-name . "abcdeFBA")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-corrplot" ,r-corrplot)
+       ("r-lattice" ,r-lattice)
+       ("r-rgl" ,r-rgl)
+       ("r-rglpk" ,r-rglpk)))
+    (home-page "https://cran.r-project.org/web/packages/abcdeFBA/")
+    (synopsis "A-Biologist-Can-Do-Everything of Flux Balance Analysis with this package")
+    (description
+     "This package provides functions for Constraint Based Simulation using
+Flux Balance Analysis and informative analysis of the data generated during
+simulation.")
+    (license license:gpl2)))
