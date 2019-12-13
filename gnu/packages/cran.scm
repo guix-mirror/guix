@@ -16630,3 +16630,30 @@ future acute exacerbation in @dfn{Chronic Obstructive Pulmonary
 Disease} (COPD) patients, based on the clinical prediction model published in
 Adibi et al. (2019) @url{doi:10.1101/651901}.")
     (license license:gpl3)))
+
+(define-public r-smpracticals
+  (package
+    (name "r-smpracticals")
+    (version "1.4-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "SMPracticals" version))
+       (sha256
+        (base32
+         "0zxq84f9i3b86xx6msb25b61gyj9k09iab2b7wg4d93yas9qzayf"))))
+    (properties `((upstream-name . "SMPracticals")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ellipse" ,r-ellipse)
+       ("r-mass" ,r-mass)
+       ("r-nlme" ,r-nlme)
+       ("r-survival" ,r-survival)))
+    (home-page "http://statwww.epfl.ch/davison/SM/")
+    (synopsis "Practicals for use with Davison (2003) Statistical Models")
+    (description
+     "This package contains the datasets and a few functions for use with the
+practicals outlined in Appendix A of the book Statistical Models (Davison,
+2003, Cambridge University Press).  The practicals themselves can be found at
+@url{http://statwww.epfl.ch/davison/SM/}.")
+    (license license:gpl2+)))
