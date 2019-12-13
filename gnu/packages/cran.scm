@@ -16517,3 +16517,28 @@ will be converted into polygons or raster images, hence after the plot has
 been created, it no longer relies on the font files.  No external software
 such as Ghostscript is needed to use this package.")
     (license license:asl2.0)))
+
+(define-public r-emojifont
+  (package
+    (name "r-emojifont")
+    (version "0.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "emojifont" version))
+       (sha256
+        (base32
+         "1cdrrl3hvrs8rskyy6zgr7q2mmg8yb9k8sld1m64zsp7y009g19k"))))
+    (properties `((upstream-name . "emojifont")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-proto" ,r-proto)
+       ("r-showtext" ,r-showtext)
+       ("r-sysfonts" ,r-sysfonts)))
+    (home-page "https://guangchuangyu.github.io/emojifont")
+    (synopsis "Emoji and Font Awesome in R graphics")
+    (description
+     "This package enables the use of emoji and the Font Awesome glyphs in
+both base and ggplot2 graphics.")
+    (license license:artistic2.0)))
