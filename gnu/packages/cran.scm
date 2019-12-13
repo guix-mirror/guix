@@ -16827,3 +16827,36 @@ Components.  The Lasso solution paths can be computed by the same function.")
      "This package performs sparse linear discriminant analysis for Gaussians
 and mixture of Gaussian models.")
     (license license:gpl2+)))
+
+(define-public r-accsda
+  (package
+    (name "r-accsda")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "accSDA" version))
+       (sha256
+        (base32
+         "0sgxy5y8kkc1n35657kifwfjsba7y5m1vbr7rkk5lmbpkzahqm61"))))
+    (properties `((upstream-name . "accSDA")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-ggthemes" ,r-ggthemes)
+       ("r-gridextra" ,r-gridextra)
+       ("r-mass" ,r-mass)
+       ("r-rarpack" ,r-rarpack)
+       ("r-sparselda" ,r-sparselda)))
+    (home-page "https://github.com/gumeo/accSDA/wiki")
+    (synopsis "Accelerated sparse discriminant analysis")
+    (description
+     "This package provides an implementation of sparse linear discriminant
+analysis, which is a supervised classification method for multiple classes.
+Various novel optimization approaches to this problem are implemented
+including @dfn{alternating direction method of multipliers} (ADMM),
+@dfn{proximal gradient} (PG) and @dfn{accelerated proximal gradient} (APG).
+Functions for performing cross validation are also supplied along with basic
+prediction and plotting functions.  @dfn{Sparse zero variance
+discriminant} (SZVD) analysis is also included in the package.")
+    (license license:gpl2+)))
