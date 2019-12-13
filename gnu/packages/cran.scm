@@ -17211,3 +17211,30 @@ With non-linear least-squares algorithm the maximum likelihood parameters can
 be estimated.  The ACME model provides interpretable effect size estimates and
 p-values with well controlled Type-I error.")
     (license license:lgpl3)))
+
+(define-public r-acmer
+  (package
+    (name "r-acmer")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "acmeR" version))
+       (sha256
+        (base32
+         "000b2hqlhj93958nddw0fqb15ahigs08najv2miivym046x04mf7"))))
+    (properties `((upstream-name . "acmeR")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-foreign" ,r-foreign)))
+    (home-page "https://cran.r-project.org/web/packages/acmeR/")
+    (synopsis "ACME estimator of bird and bat mortality by wind turbines")
+    (description
+     "This package provides an implementation of the ACME estimator, described
+in Wolpert (2015), ACME: A Partially Periodic Estimator of Avian & Chiropteran
+Mortality at Wind Turbines.  Unlike most other models, this estimator supports
+decreasing-hazard Weibull model for persistence; decreasing search proficiency
+as carcasses age; variable bleed-through at successive searches; and interval
+mortality estimates.  The package provides, based on search data, functions
+for estimating the mortality inflation factor in Frequentist and Bayesian
+settings.")
+    (license license:expat)))
