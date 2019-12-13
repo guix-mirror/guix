@@ -6059,3 +6059,37 @@ features (e.g.  genes, microRNAs).")
 data.  This modified test allows for testing differential expression in qPCR
 data.")
     (license license:gpl2+)))
+
+;; This is a CRAN package, but it depends on Bioconductor packages, so we put
+;; it here.
+(define-public r-activedriverwgs
+  (package
+    (name "r-activedriverwgs")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ActiveDriverWGS" version))
+       (sha256
+        (base32
+         "08l9dj8d3cd74z1dqn8n4yqykwvqjxsfa067wnxyh7xnfvvnm5v1"))))
+    (properties
+     `((upstream-name . "ActiveDriverWGS")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biostrings" ,r-biostrings)
+       ("r-bsgenome" ,r-bsgenome)
+       ("r-bsgenome-hsapiens-ucsc-hg19" ,r-bsgenome-hsapiens-ucsc-hg19)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-plyr" ,r-plyr)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://cran.r-project.org/web/packages/ActiveDriverWGS/")
+    (synopsis "Driver discovery tool for cancer whole genomes")
+    (description
+     "This package provides a method for finding an enrichment of cancer
+simple somatic mutations (SNVs and Indels) in functional elements across the
+human genome.  ActiveDriverWGS detects coding and noncoding driver elements
+using whole genome sequencing data.")
+    (license license:gpl3)))
