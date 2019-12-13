@@ -16542,3 +16542,32 @@ such as Ghostscript is needed to use this package.")
      "This package enables the use of emoji and the Font Awesome glyphs in
 both base and ggplot2 graphics.")
     (license license:artistic2.0)))
+
+(define-public r-abstractr
+  (package
+    (name "r-abstractr")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abstractr" version))
+       (sha256
+        (base32
+         "1ymwp7syrynwd4i8aj2x5n8jdi9d96fjzl6jb09n0bnr5fgl7vig"))))
+    (properties `((upstream-name . "abstractr")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-colourpicker" ,r-colourpicker)
+       ("r-emojifont" ,r-emojifont)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-rintrojs" ,r-rintrojs)
+       ("r-shiny" ,r-shiny)
+       ("r-shinythemes" ,r-shinythemes)))
+    (home-page "https://matt-kumar.shinyapps.io/portfolio")
+    (synopsis "R-Shiny application for creating visual abstracts")
+    (description
+     "This package provides an R Shiny application to create visual abstracts
+for original research.  A variety of user defined options and formatting are
+included.")
+    (license license:gpl3)))
