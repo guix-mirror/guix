@@ -17565,3 +17565,29 @@ forest) is fit on the kernel matrix of a subset of the training data.")
      "This package lets you expand factors, characters and other eligible
 classes into dummy/indicator variables.")
     (license license:gpl2+)))
+
+(define-public r-acrm
+  (package
+    (name "r-acrm")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "aCRM" version))
+       (sha256
+        (base32
+         "0kzp568hd9c9a9qgniia5s5gv0q5f89xfvvwpzb197gqhs3x092v"))))
+    (properties `((upstream-name . "aCRM")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ada" ,r-ada)
+       ("r-dummies" ,r-dummies)
+       ("r-kernelfactory" ,r-kernelfactory)
+       ("r-randomforest" ,r-randomforest)))
+    (home-page "https://cran.r-project.org/web/packages/aCRM/")
+    (synopsis "Convenience functions for analytical customer relationship management")
+    (description
+     "This package provides convenience functions for data preparation and
+modeling often used in @dfn{analytical customer relationship
+management} (aCRM).")
+    (license license:gpl2+)))
