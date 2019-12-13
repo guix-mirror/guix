@@ -17397,3 +17397,29 @@ representation in various ways, read MP3, read MIDI, perform steps of a
 transcription, ...")
     ;; Either of these versions.
     (license (list license:gpl2 license:gpl3))))
+
+(define-public r-seewave
+  (package
+    (name "r-seewave")
+    (version "2.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "seewave" version))
+       (sha256
+        (base32
+         "1qg8f5gik9pw6f9mcxqmrc9x3003s8vdm6g01pjjpyc9qaqiz2vi"))))
+    (properties `((upstream-name . "seewave")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-tuner" ,r-tuner)))
+    (home-page "http://rug.mnhn.fr/seewave")
+    (synopsis "Sound analysis and synthesis")
+    (description
+     "This package provides functions for analysing, manipulating, displaying,
+editing and synthesizing time waves (particularly sound).  This package
+processes time analysis (oscillograms and envelopes), spectral content,
+resonance quality factor, entropy, cross correlation and autocorrelation,
+zero-crossing, dominant frequency, analytic signal, frequency coherence, 2D
+and 3D spectrograms and many other analyses.")
+    (license license:gpl2+)))
