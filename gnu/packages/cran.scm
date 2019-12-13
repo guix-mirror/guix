@@ -17326,3 +17326,24 @@ changes in code.  This package is ideal for large-scale batch processing,
 because it will never leave open graphics devices or incomplete image files
 behind, even on errors or user interrupts.")
     (license license:lgpl2.1+)))
+
+(define-public r-acnr
+  (package
+    (name "r-acnr")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "acnr" version))
+       (sha256
+        (base32
+         "087hq4i7jp67ba2finzsqjfnqbiprl33na6ryjv9zqzsdawj9cym"))))
+    (properties `((upstream-name . "acnr")))
+    (build-system r-build-system)
+    (home-page "https://github.com/mpierrejean/acnr")
+    (synopsis "Annotated copy-number regions")
+    (description
+     "This package provides SNP array data from different types of copy-number
+regions.  These regions were identified manually by the authors of the package
+and may be used to generate realistic data sets with known truth.")
+    (license license:lgpl2.1+)))
