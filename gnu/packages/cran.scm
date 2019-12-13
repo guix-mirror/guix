@@ -16657,3 +16657,30 @@ practicals outlined in Appendix A of the book Statistical Models (Davison,
 2003, Cambridge University Press).  The practicals themselves can be found at
 @url{http://statwww.epfl.ch/davison/SM/}.")
     (license license:gpl2+)))
+
+(define-public r-fgui
+  (package
+    (name "r-fgui")
+    (version "1.0-8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fgui" version))
+       (sha256
+        (base32
+         "024fzd1c7iwqprn26hwjb9l2qlvvyzl449d7iixy0x69djwsrysv"))))
+    (properties `((upstream-name . "fgui")))
+    (build-system r-build-system)
+    (home-page
+     "https://sites.google.com/site/thomashoffmannproject/software/fgui")
+    (synopsis "Create GUI for R functions")
+    (description
+     "Rapidly create a GUI for a function you created by automatically
+creating widgets for arguments of the function.  This package automatically
+parses help routines for context-sensitive help to these arguments.  The
+interface is essentially a wrapper to some Tcl/Tk routines to both simplify
+and facilitate GUI creation.  More advanced Tcl/Tk routines/GUI objects can be
+incorporated into the interface for greater customization for the more
+experienced.")
+    ;; Any version of the GPL.
+    (license (list license:gpl2+ license:gpl3+))))
