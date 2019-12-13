@@ -17615,3 +17615,27 @@ management} (aCRM).")
 dissimilarity useful for clustering mixed data, and, optionally, perform the
 clustering.")
     (license license:gpl2+)))
+
+(define-public r-acrosstic
+  (package
+    (name "r-acrosstic")
+    (version "1.0-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "AcrossTic" version))
+       (sha256
+        (base32
+         "03180h79jhjd66ibrnsfp3yyp2jlfysp7cymw46phzj2palghsc0"))))
+    (properties `((upstream-name . "AcrossTic")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lpsolve" ,r-lpsolve)
+       ("r-treeclust" ,r-treeclust)))
+    (home-page "https://cran.r-project.org/web/packages/AcrossTic/")
+    (synopsis "Cost-minimal regular spanning subgraph with TreeClust")
+    (description
+     "This is a package for constructing minimum-cost regular spanning
+subgraph as part of a non-parametric two-sample test for equality of
+distribution.")
+    (license license:gpl2+)))
