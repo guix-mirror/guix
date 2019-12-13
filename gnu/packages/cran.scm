@@ -17022,3 +17022,32 @@ to maximise an approximation to the expectation of the utility function.")
 behaviour of the variance components in the classical twin models with respect
 to age using B-splines and P-splines.")
     (license license:gpl2+)))
+
+(define-public r-acfmperiod
+  (package
+    (name "r-acfmperiod")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "acfMPeriod" version))
+       (sha256
+        (base32
+         "1yww8isfrbs2v9s94hx7p2imyszcgadwafdgpj438n2ik0q6p9d5"))))
+    (properties `((upstream-name . "acfMPeriod")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)))
+    (home-page "https://cran.r-project.org/web/packages/acfMPeriod/")
+    (synopsis "Estimation of the ACF from the M-periodogram")
+    (description
+     "This package support non-robust and robust computations of the sample
+autocovariance (ACOVF) and sample autocorrelation functions (ACF) of
+univariate and multivariate processes.  The methodology consists in reversing
+the diagonalization procedure involving the periodogram or the
+cross-periodogram and the Fourier transform vectors, and, thus, obtaining the
+ACOVF or the ACF as discussed in Fuller (1995)
+@url{doi:10.1002/9780470316917}.  The robust version is obtained by fitting
+robust M-regressors to obtain the M-periodogram or M-cross-periodogram as
+discussed in Reisen et al. (2017) @url{doi:10.1016/j.jspi.2017.02.008}.")
+    (license license:gpl2+)))
