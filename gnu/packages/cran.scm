@@ -17238,3 +17238,29 @@ mortality estimates.  The package provides, based on search data, functions
 for estimating the mortality inflation factor in Frequentist and Bayesian
 settings.")
     (license license:expat)))
+
+(define-public r-r-huge
+  (package
+    (name "r-r-huge")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "R.huge" version))
+       (sha256
+        (base32
+         "13p558qalv60pgr24nsm6mi92ryj65rsbqa6pgdwy0snjqx12bgi"))))
+    (properties `((upstream-name . "R.huge")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-r-methodss3" ,r-r-methodss3)
+       ("r-r-oo" ,r-r-oo)
+       ("r-r-utils" ,r-r-utils)))
+    (home-page "https://github.com/HenrikBengtsson/R.huge")
+    (synopsis "Methods for accessing huge amounts of data")
+    (description
+     "This is a deprecated package for accessing huge amounts of data.
+  Cross-platform alternatives are the following packages: bigmemory (CRAN),
+ff (CRAN), or BufferedMatrix (Bioconductor).  The main usage of it was inside
+the @code{aroma.affymetrix} package.")
+    (license license:lgpl2.1+)))
