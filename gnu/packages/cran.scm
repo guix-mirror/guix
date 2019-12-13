@@ -16077,3 +16077,69 @@ representation and principal components analysis.  In addition, several
 utility functions are based on the R graphical environment to provide friendly
 tools for help in data interpretation.")
     (license license:gpl2+)))
+
+;; This package includes minified JavaScript files.  When upgrading please
+;; check that there are no new minified JavaScript files.
+(define-public r-networkd3
+  (package
+    (name "r-networkd3")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "networkD3" version))
+       (sha256
+        (base32
+         "02wxki67drppgfka1is1ykg1f2rxf0x0657c0crj7ipfy62jbf1k"))
+       (snippet
+        '(begin
+           (delete-file "inst/htmlwidgets/lib/d3-4.5.0/d3.min.js")
+           #t))))
+    (properties `((upstream-name . "networkD3")))
+    (build-system r-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build r-build-system)
+                  (srfi srfi-1)
+                  (ice-9 popen))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'process-javascript
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "inst/htmlwidgets/lib/"
+               (call-with-values
+                   (lambda ()
+                     (unzip2
+                      `((,(assoc-ref inputs "d3.v4.js")
+                         "d3-4.5.0/d3.min.js"))))
+                 (lambda (sources targets)
+                   (for-each (lambda (source target)
+                               (format #t "Processing ~a --> ~a~%"
+                                       source target)
+                               (let ((minified (open-pipe* OPEN_READ "uglify-js" source)))
+                                 (call-with-output-file target
+                                   (lambda (port)
+                                     (dump-port minified port)))))
+                             sources targets))))
+             #t)))))
+    (native-inputs
+     `(("uglify-js" ,uglify-js)
+       ;; NOTE: Make sure that this version of d3 is still valid when
+       ;; upgrading the package.
+       ("d3.v4.js"
+        ,(origin
+           (method url-fetch)
+           (uri "https://d3js.org/d3.v4.js")
+           (sha256
+            (base32
+             "0y7byf6kcinfz9ac59jxc4v6kppdazmnyqfav0dm4h550fzfqqlg"))))))
+    (propagated-inputs
+     `(("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-igraph" ,r-igraph)
+       ("r-magrittr" ,r-magrittr)))
+    (home-page "https://cran.r-project.org/package=networkD3")
+    (synopsis "D3 JavaScript network graphs from R")
+    (description
+     "This package creates D3 JavaScript network, tree, dendrogram, and Sankey
+graphs from R.")
+    (license license:gpl3+)))
