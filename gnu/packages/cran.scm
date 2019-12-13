@@ -16275,3 +16275,29 @@ damage (load duration) models based on failure time data under a Bayesian
 framework, using @dfn{Approximate Bayesian Computation} (ABC), and to assess
 long-term reliability under stochastic load profiles.")
     (license license:gpl3)))
+
+(define-public r-rglpk
+  (package
+    (name "r-rglpk")
+    (version "0.6-4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Rglpk" version))
+       (sha256
+        (base32
+         "19mzpyimzq9zqnbi05j79b2di3nzaln8swggs9p8sqdr60qvr3d2"))))
+    (properties `((upstream-name . "Rglpk")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-slam" ,r-slam)))
+    (inputs
+     `(("glpk" ,glpk)))
+    (home-page "http://R-Forge.R-project.org/projects/rglp/")
+    (synopsis "R interface to the GNU Linear Programming Kit")
+    (description
+     "This package provides an R interface to the GNU Linear Programming Kit,
+software for solving large-scale @dfn{linear programming} (LP), @dfn{mixed
+integer linear programming} (MILP) and other related problems.")
+    ;; Either license
+    (license (list license:gpl2 license:gpl3))))
