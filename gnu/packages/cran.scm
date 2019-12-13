@@ -17051,3 +17051,24 @@ ACOVF or the ACF as discussed in Fuller (1995)
 robust M-regressors to obtain the M-periodogram or M-cross-periodogram as
 discussed in Reisen et al. (2017) @url{doi:10.1016/j.jspi.2017.02.008}.")
     (license license:gpl2+)))
+
+(define-public r-gamlss-data
+  (package
+    (name "r-gamlss-data")
+    (version "5.1-4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gamlss.data" version))
+       (sha256
+        (base32
+         "1dgfspbmps6ipzcmw681wjdp320nm50dwsxafgrcwxndqgc7fdqd"))))
+    (properties `((upstream-name . "gamlss.data")))
+    (build-system r-build-system)
+    (home-page "http://www.gamlss.org/")
+    (synopsis "GAMLSS data")
+    (description
+     "This package provides data used as examples to demonstrate GAMLSS
+models.")
+    ;; Either version of the license
+    (license (list license:gpl2 license:gpl3))))
