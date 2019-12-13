@@ -2754,6 +2754,7 @@ exec " gcc "/bin/" program
      `(#:tests? #f                      ; merge test fails
        #:implicit-inputs? #f
        #:guile ,%bootstrap-guile
+       #:configure-flags '("--disable-bzlib")
        #:strip-binaries? #f
        #:validate-runpath? #f
        ,@(package-arguments file)))))
