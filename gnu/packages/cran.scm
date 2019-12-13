@@ -756,7 +756,7 @@ data structures in C++.")
 (define-public r-shiny
   (package
     (name "r-shiny")
-    (version "1.2.0")
+    (version "1.4.0")
     (source
      (origin
        (method git-fetch)
@@ -766,7 +766,7 @@ data structures in C++.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1kl3dh68h4cnrm3rqn9pddk5n6bsmr5x0626bkfv0qqi0q92zin4"))))
+         "17ac48g414h9dhi0k4wrah4gyik0q5r0xw3kc01c02qfjwimqsx7"))))
     (build-system r-build-system)
     (arguments
      `(#:modules ((guix build r-build-system)
@@ -795,7 +795,7 @@ data structures in C++.")
                                               "/share/javascript/html5shiv.min.js"))
                  (replace-file "json2-min.js"
                                (string-append (assoc-ref inputs "js-json2")
-                                              "/share/javascript/json2.min.js"))
+                                              "/share/javascript/json2-min.js"))
                  (replace-file "strftime/strftime-min.js"
                                (string-append (assoc-ref inputs "js-strftime")
                                               "/share/javascript/strftime.min.js"))
@@ -826,10 +826,15 @@ data structures in C++.")
                              ("shiny.js" .
                               "shiny.min.js")
                              ("jquery.js" .
-                              "jquery.min.js")))))
+                              "jquery.min.js")
+                             ("legacy/jquery.js" .
+                              "legacy/jquery.min.js")
+                             ("showdown/src/showdown.js" .
+                              "showdown/compressed/showdown.js")))))
              #t)))))
     (propagated-inputs
      `(("r-crayon" ,r-crayon)
+       ("r-fastmap" ,r-fastmap)
        ("r-httpuv" ,r-httpuv)
        ("r-mime" ,r-mime)
        ("r-jsonlite" ,r-jsonlite)
