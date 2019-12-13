@@ -610,7 +610,7 @@ netcat implementation that supports TLS.")
               (uri (pypi-uri "certbot" version))
               (sha256
                (base32
-                "1l8h7ggq75h59246mmzigmjr5jvzi29hihrnz9aiqh6g8hq1pj4d"))))
+                "0aih7sir5byy8ah9lrgzwcaga7hjw98qj8bb1pxzzzqrvcqjvf46"))))
     (build-system python-build-system)
     (arguments
      `(,@(substitute-keyword-arguments (package-arguments python-acme)
