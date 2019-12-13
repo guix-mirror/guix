@@ -16803,3 +16803,27 @@ data.")
 the Elastic-Net and also provides functions for estimating sparse Principal
 Components.  The Lasso solution paths can be computed by the same function.")
     (license license:gpl2+)))
+
+(define-public r-sparselda
+  (package
+    (name "r-sparselda")
+    (version "0.1-9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sparseLDA" version))
+       (sha256
+        (base32
+         "1k3sw9kc40yxnfss4vrsx34qxmv8ssddyhbfjhxrdldvblhbwchb"))))
+    (properties `((upstream-name . "sparseLDA")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-elasticnet" ,r-elasticnet)
+       ("r-mass" ,r-mass)
+       ("r-mda" ,r-mda)))
+    (home-page "http://www.imm.dtu.dk/~lhc")
+    (synopsis "Sparse discriminant analysis")
+    (description
+     "This package performs sparse linear discriminant analysis for Gaussians
+and mixture of Gaussian models.")
+    (license license:gpl2+)))
