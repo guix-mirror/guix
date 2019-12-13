@@ -17520,3 +17520,28 @@ both exponential and logistic loss on a given data set.")
      "This package provides an R based genetic algorithm for binary and
 floating point chromosomes.")
     (license license:gpl2)))
+
+(define-public r-kernelfactory
+  (package
+    (name "r-kernelfactory")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "kernelFactory" version))
+       (sha256
+        (base32
+         "001kw9k3ivd4drd4mwqapkkk3f4jgljiaprhg2630hmll064s89j"))))
+    (properties `((upstream-name . "kernelFactory")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-auc" ,r-auc)
+       ("r-genalg" ,r-genalg)
+       ("r-kernlab" ,r-kernlab)
+       ("r-randomforest" ,r-randomforest)))
+    (home-page "https://cran.r-project.org/web/packages/kernelFactory/")
+    (synopsis "Ensemble of kernel machines")
+    (description
+     "Kernel factory is an ensemble method where each base classifier (random
+forest) is fit on the kernel matrix of a subset of the training data.")
+    (license license:gpl2+)))
