@@ -14336,15 +14336,6 @@ such as figshare or Zenodo.")
           (base32
             "183kg1rhzz3hqizvphkd8hlbf1zxfx8737zhfkmqzxi71jmdw7pd"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-test-requirements
-           (lambda _
-             (substitute* "setup.py"
-               ;; Our Python is new enough.
-               (("'virtualenv<14\\.0\\.0'") "'virtualenv'"))
-             #t)))))
     (native-inputs
      `(("python-tox" ,python-tox)
        ("python-virtualenv" ,python-virtualenv)))
