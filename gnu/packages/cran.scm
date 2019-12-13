@@ -16907,3 +16907,40 @@ facilitates insertion into pipelines, and content inspection.")
 introduced in Panneton et al. (2006), ``Improved Long-Period Generators Based
 on Linear Recurrences Modulo 2'', ACM Transactions on Mathematical Software.")
     (license license:bsd-3)))
+
+(define-public r-randtoolbox
+  (package
+    (name "r-randtoolbox")
+    (version "1.30.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "randtoolbox" version))
+       (sha256
+        (base32
+         "141p13ajgzmb2s89rlac7zrra92mi1izvpfrngb4kqzlf3igdsqd"))))
+    (properties `((upstream-name . "randtoolbox")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rngwell" ,r-rngwell)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/randtoolbox/")
+    (synopsis "Toolbox for pseudo and quasi random number generation")
+    (description
+     "This package provides
+
+@enumerate
+@item pseudo random generators, such as general linear
+congruential generators, multiple recursive generators and generalized
+feedback shift register (SF-Mersenne Twister algorithm and WELL
+generators)
+
+@item quasi random generators, such as the Torus algorithm, the Sobol
+sequence, the Halton sequence (including the Van der Corput sequence), and
+
+@item some generator tests: the gap test, the serial test, the poker test.
+@end enumerate
+
+See e.g. Gentle (2003) @url{doi:10.1007/b97336}.")
+    (license license:bsd-3)))
