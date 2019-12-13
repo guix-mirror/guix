@@ -17156,3 +17156,33 @@ weights from pairs of lanes.  The number of matching bands in the
 the align-and-count method.")
     ;; Any version of the GPL
     (license (list license:gpl2+ license:gpl3+))))
+
+(define-public r-filematrix
+  (package
+    (name "r-filematrix")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "filematrix" version))
+       (sha256
+        (base32
+         "1v3aj1ng742msb0sfdnjsbqb508mqjf8jlq2v33vxldhradw5w0b"))))
+    (properties `((upstream-name . "filematrix")))
+    (build-system r-build-system)
+    ;; These inputs are needed for vignettes
+    (native-inputs
+     `(("r-knitr" ,r-knitr)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("pandoc-citeproc" ,ghc-pandoc-citeproc)))
+    (home-page "https://github.com/andreyshabalin/filematrix")
+    (synopsis "File-backed matrix class with convenient read and write access")
+    (description
+     "This package provides an interface for working with large matrices
+stored in files, not in computer memory.  It supports multiple non-character
+data types (double, integer, logical and raw) of various sizes (e.g.  8 and 4
+byte real values).  Access to parts of the matrix is done by indexing, exactly
+as with usual R matrices.  It supports very large matrices; the package has
+been tested on multi-terabyte matrices.  It allows for more than 2^32 rows or
+columns, ad allows for quick addition of extra columns to a filematrix.")
+    (license license:lgpl3)))
