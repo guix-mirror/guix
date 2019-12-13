@@ -1005,6 +1005,39 @@ the function @code{aesonQQ} that compile-time converts a string representation
 of a JSON value into a @code{Data.Aeson.Value}.")
     (license license:expat)))
 
+(define-public ghc-aeson-better-errors
+  (package
+    (name "ghc-aeson-better-errors")
+    (version "0.9.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/aeson-better-errors/aeson-better-errors-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "09vkyrhwak3bmpfsqcd2az8hfqqkxyhg468hv5avgisy0nzh3w38"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-dlist" ,ghc-dlist)
+       ("ghc-scientific" ,ghc-scientific)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)
+       ("ghc-void" ,ghc-void)))
+    (home-page
+     "https://github.com/hdgarrood/aeson-better-errors")
+    (synopsis
+     "Better error messages when decoding JSON values in Haskell")
+    (description
+     "Gives you the tools to build parsers to decode JSON values, and gives
+good error messages when parsing fails.  See also
+@url{http://harry.garrood.me/blog/aeson-better-errors/}.")
+    (license license:expat)))
+
 (define-public ghc-multipart
   (package
     (name "ghc-multipart")
