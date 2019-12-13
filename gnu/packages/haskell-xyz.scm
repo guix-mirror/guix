@@ -12000,6 +12000,63 @@ and @code{Eq} instances.  These instances used to live in the haskell-src-meta
 package, and that's where the version number started.")
     (license license:bsd-3)))
 
+(define-public ghc-these
+  (package
+    (name "ghc-these")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/these/these-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1k0pi65g7cm9hzdw6my6bzz2zvddkmj1qs45ymqmi316bpiixk3r"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-base-compat" ,ghc-base-compat)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-assoc" ,ghc-assoc)
+       ("ghc-semigroupoids" ,ghc-semigroupoids)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (arguments
+     `(#:cabal-revision
+       ("1"
+        "0923r86fnmgpx0msm68aszirh2n19nn5bccgjxfh2146jw4z7w3z")))
+    (home-page
+     "https://github.com/isomorphism/these")
+    (synopsis "Either-or-both data type")
+    (description
+     "This package provides a data type @code{These a b} which can
+hold a value of either type or values of each type.  This is usually
+thought of as an \"inclusive or\" type (contrasting @code{Either a b} as
+\"exclusive or\") or as an \"outer join\" type (contrasting @code{(a, b)}
+as \"inner join\").
+
+@code{data These a b = This a | That b | These a b}
+
+Since version 1, this package was split into parts:
+
+@itemize
+@item
+https://hackage.haskell.org/package/semialign For @code{Align} and
+@code{Zip} type-classes.
+@item
+https://hackage.haskell.org/package/semialign-indexed For
+@code{SemialignWithIndex} class, providing @code{ialignWith} and
+@code{izipWith}
+@item
+https://hackage.haskell.org/package/these-lens For lens combinators.
+@item
+http://hackage.haskell.org/package/monad-chronicle For transformers
+variant of @code{These}.
+@end itemize")
+    (license license:bsd-3)))
+
 (define-public ghc-threads
   (package
     (name "ghc-threads")
