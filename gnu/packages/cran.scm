@@ -16886,3 +16886,24 @@ FASTQ file, the ACE file stores the quality values numerically.  The
 conversion algorithm uses the standard Sanger formula.  The package
 facilitates insertion into pipelines, and content inspection.")
     (license license:gpl3)))
+
+(define-public r-rngwell
+  (package
+    (name "r-rngwell")
+    (version "0.10-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rngWELL" version))
+       (sha256
+        (base32
+         "0b4ys525gksgqwqx9id4bdgyi9mwj6n3r87xdzf4fc9hp3cc16jb"))))
+    (properties `((upstream-name . "rngWELL")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/rngWELL/")
+    (synopsis "Toolbox for WELL random number generators")
+    (description
+     "This is a dedicated package to WELL pseudo random generators, which were
+introduced in Panneton et al. (2006), ``Improved Long-Period Generators Based
+on Linear Recurrences Modulo 2'', ACM Transactions on Mathematical Software.")
+    (license license:bsd-3)))
