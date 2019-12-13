@@ -16485,3 +16485,35 @@ into R, in order to support other packages.")
      "This package provides font files that can be used by the @code{showtext}
 package.")
     (license license:asl2.0)))
+
+(define-public r-showtext
+  (package
+    (name "r-showtext")
+    (version "0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "showtext" version))
+       (sha256
+        (base32
+         "1ihgqzfia36b0n9aa41p1w98wxxvs1lxh1zz0570hbfqmph1sk73"))))
+    (properties `((upstream-name . "showtext")))
+    (build-system r-build-system)
+    (inputs
+     `(("freetype" ,freetype)
+       ("libpng" ,libpng)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-showtextdb" ,r-showtextdb)
+       ("r-sysfonts" ,r-sysfonts)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/yixuan/showtext")
+    (synopsis "Using fonts more easily in R graphs")
+    (description
+     "This package aims to make it easy to use various types of
+fonts (TrueType, OpenType, Type 1, web fonts, etc.) in R graphs, and supports
+most output formats of R graphics including PNG, PDF and SVG.  Text glyphs
+will be converted into polygons or raster images, hence after the plot has
+been created, it no longer relies on the font files.  No external software
+such as Ghostscript is needed to use this package.")
+    (license license:asl2.0)))
