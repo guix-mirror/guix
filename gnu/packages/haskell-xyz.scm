@@ -12671,6 +12671,31 @@ a style ready for qualification, that is, you should import them by
 parser that uses ByteStrings for parsing and representing the URI data.")
     (license license:bsd-3)))
 
+(define-public ghc-utf8-light
+  (package
+    (name "ghc-utf8-light")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/utf8-light/utf8-light-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0rwyc5z331yfnm4hpx0sph6i1zvkd1z10vvglhnp0vc9wy644k0q"))))
+    (build-system haskell-build-system)
+    (home-page
+     "http://hackage.haskell.org/package/utf8-light")
+    (synopsis "Lightweight unicode support for Haskell")
+    (description
+     "This package profides a class for encoding and decoding UTF8 strings
+with instances for several common types.  It also includes several functions
+for working with UTF8.  It aims to be lightweight, depending only on Base and
+including only one module.")
+    (license license:bsd-3)))
+
 (define-public ghc-utf8-string
   (package
     (name "ghc-utf8-string")
