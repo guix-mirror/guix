@@ -17186,3 +17186,28 @@ as with usual R matrices.  It supports very large matrices; the package has
 been tested on multi-terabyte matrices.  It allows for more than 2^32 rows or
 columns, ad allows for quick addition of extra columns to a filematrix.")
     (license license:lgpl3)))
+
+(define-public r-acmeeqtl
+  (package
+    (name "r-acmeeqtl")
+    (version "1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ACMEeqtl" version))
+       (sha256
+        (base32
+         "049xjv2ym35bbn43zwi68cq27fwdh404vp0r2ca5gxgmmx8kj1cz"))))
+    (properties `((upstream-name . "ACMEeqtl")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-filematrix" ,r-filematrix)))
+    (home-page "https://github.com/andreyshabalin/ACMEeqtl")
+    (synopsis "Estimation of interpretable eQTL effect sizes")
+    (description
+     "This package provides a non-linear model, termed ACME, that reflects a
+parsimonious biological model for allelic contributions of cis-acting eQTLs.
+With non-linear least-squares algorithm the maximum likelihood parameters can
+be estimated.  The ACME model provides interpretable effect size estimates and
+p-values with well controlled Type-I error.")
+    (license license:lgpl3)))
