@@ -16229,3 +16229,24 @@ and understanding in statistics.  The current version includes properties of
 normal distribution, properties of sampling distribution, one-sample z and t
 tests, two samples independent (unpaired) t test and analysis of variance.")
     (license license:gpl3)))
+
+(define-public r-abc-rap
+  (package
+    (name "r-abc-rap")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ABC.RAP" version))
+       (sha256
+        (base32
+         "1kdspln17v0krvahcd55vib4dv5azp60b3r1zf489x10qqbp1mxk"))))
+    (properties `((upstream-name . "ABC.RAP")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/ABC.RAP/")
+    (synopsis "Array-based CpG region analysis pipeline")
+    (description
+     "This package aims to identify candidate genes that are differentially
+methylated between cases and controls.  It applies Student's t-test and delta
+beta analysis to identify candidate genes containing multiple CpG sites.")
+    (license license:gpl3)))
