@@ -16601,3 +16601,32 @@ included.")
 elicitation options based on Kass and Vaidyanathan (1992)
 @url{doi:10.1111/j.2517-6161.1992.tb01868.x}.")
     (license license:gpl2+)))
+
+(define-public r-accept
+  (package
+    (name "r-accept")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "accept" version))
+       (sha256
+        (base32
+         "1r4mhy9g4wjcjgdd0gwdarmr09292il3vdkmx0hz7vh9mffyr9kx"))))
+    (properties `((upstream-name . "accept")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-extrafont" ,r-extrafont)
+       ("r-mass" ,r-mass)
+       ("r-plotly" ,r-plotly)
+       ("r-stringr" ,r-stringr)
+       ("r-viridis" ,r-viridis)))
+    (home-page "https://cran.r-project.org/web/packages/accept/")
+    (synopsis "Acute COPD Exacerbation Prediction Tool (ACCEPT)")
+    (description
+     "This package allows clinicians to predict the rate and severity of
+future acute exacerbation in @dfn{Chronic Obstructive Pulmonary
+Disease} (COPD) patients, based on the clinical prediction model published in
+Adibi et al. (2019) @url{doi:10.1101/651901}.")
+    (license license:gpl3)))
