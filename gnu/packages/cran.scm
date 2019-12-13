@@ -17639,3 +17639,28 @@ clustering.")
 subgraph as part of a non-parametric two-sample test for equality of
 distribution.")
     (license license:gpl2+)))
+
+(define-public r-acrt
+  (package
+    (name "r-acrt")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "acrt" version))
+       (sha256
+        (base32
+         "0y9ndcq8ffpfrv7w9rikm4zn68jpsj6baqisq9kp2433xrwzdb6s"))))
+    (properties `((upstream-name . "acrt")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-rcppeigen" ,r-rcppeigen)
+       ("r-sandwich" ,r-sandwich)))
+    (home-page "https://cran.r-project.org/web/packages/acrt/")
+    (synopsis "Autocorrelation robust testing")
+    (description
+     "This package provides functions for testing affine hypotheses on the
+regression coefficient vector in regression models with autocorrelated
+errors.")
+    (license license:gpl2)))
