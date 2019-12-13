@@ -12127,6 +12127,45 @@ from a shell.  The @code{tldr} pages are a community effort to simplify the
 man pages with practical examples.")
     (license license:bsd-3)))
 
+(define-public ghc-transformers
+  (package
+    (name "ghc-transformers")
+    (version "0.5.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/transformers/transformers-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0v66j5k0xqk51pmca55wq192qyw2p43s2mgxlz4f95q2c1fpjs5n"))))
+    (build-system haskell-build-system)
+    (home-page
+     "http://hackage.haskell.org/package/transformers")
+    (synopsis "Concrete functor and monad transformers")
+    (description
+     "Transformers provides functor and monad transformers, inspired by the
+paper \"Functional Programming with Overloading and Higher-Order
+Polymorphism\", by Mark P Jones, in Advanced School of Functional Programming,
+1995 @url{http://web.cecs.pdx.edu/~mpj/pubs/springschool.html}.
+
+This package contains:
+@itemize
+@item the monad transformer class (in @code{Control.Monad.Trans.Class})
+@item concrete functor and monad transformers, each with associated operations
+and functions to lift operations associated with other transformers.
+@end itemize
+
+This package can be used on its own in portable Haskell code, in which case
+operations need to be manually lifted through transformer stacks (see
+@code{Control.Monad.Trans.Class} for some examples).  Alternatively, it can be
+used with the non-portable monad classes in the mtl or monads-tf packages,
+which automatically lift operations introduced by monad transformers through
+other transformers.")
+    (license license:bsd-3)))
+
 (define-public ghc-transformers-base
   (package
     (name "ghc-transformers-base")
