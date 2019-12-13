@@ -16143,3 +16143,35 @@ tools for help in data interpretation.")
      "This package creates D3 JavaScript network, tree, dendrogram, and Sankey
 graphs from R.")
     (license license:gpl3+)))
+
+(define-public r-aasea
+  (package
+    (name "r-aasea")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "aaSEA" version))
+       (sha256
+        (base32
+         "0him4r8qyp0xssgrmdxjs45yn4d28h5anv4jyxxbbs9phb0m6j3h"))))
+    (properties `((upstream-name . "aaSEA")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bios2cor" ,r-bios2cor)
+       ("r-dt" ,r-dt)
+       ("r-hmisc" ,r-hmisc)
+       ("r-magrittr" ,r-magrittr)
+       ("r-networkd3" ,r-networkd3)
+       ("r-plotly" ,r-plotly)
+       ("r-seqinr" ,r-seqinr)
+       ("r-shiny" ,r-shiny)
+       ("r-shinydashboard" ,r-shinydashboard)))
+    (home-page "https://cran.r-project.org/web/packages/aaSEA/")
+    (synopsis "Amino acid substitution effect analyzer")
+    (description
+     "Given a protein multiple sequence alignment, it is a daunting task to
+assess the effects of substitutions along sequence length.  The aaSEA package
+is intended to help researchers to rapidly analyze property changes caused by
+single, multiple and correlated amino acid substitutions in proteins.")
+    (license license:gpl3)))
