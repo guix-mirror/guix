@@ -16437,3 +16437,29 @@ introductions, and clickable hints in a Shiny application.  It supports both
 static introductions in the UI, and programmatic introductions from the
 server-side.")
     (license license:agpl3+)))
+
+(define-public r-sysfonts
+  (package
+    (name "r-sysfonts")
+    (version "0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sysfonts" version))
+       (sha256
+        (base32
+         "0wng902plryf2d8fc7k7m3jx11acz51kb2d91cqbyhq7xpk06z43"))))
+    (properties `((upstream-name . "sysfonts")))
+    (build-system r-build-system)
+    (inputs
+     `(("freetype" ,freetype)
+       ("libpng" ,libpng)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/yixuan/sysfonts")
+    (synopsis "Loading fonts into R")
+    (description
+     "This is a package to simplify loading of system fonts and Google Fonts
+into R, in order to support other packages.")
+    (license license:gpl2)))
