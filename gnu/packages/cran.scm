@@ -16965,3 +16965,34 @@ See e.g. Gentle (2003) @url{doi:10.1007/b97336}.")
      "This package provides a number of methods for creating and augmenting
 Latin Hypercube Samples.")
     (license license:gpl3)))
+
+(define-public r-acebayes
+  (package
+    (name "r-acebayes")
+    (version "1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "acebayes" version))
+       (sha256
+        (base32
+         "1xm6bw0qm2vlcrk274x0bawzb2lnacb1wsmzba5mg3i75a55pqln"))))
+    (properties `((upstream-name . "acebayes")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-compare" ,r-compare)
+       ("r-lhs" ,r-lhs)
+       ("r-randtoolbox" ,r-randtoolbox)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)))
+    (home-page "https://cran.r-project.org/web/packages/acebayes/")
+    (synopsis "Optimal Bayesian experimental design using the ACE algorithm")
+    (description
+     "Finding an optimal Bayesian experimental design involves maximizing an
+objective function given by the expectation of some appropriately chosen
+utility function with respect to the joint distribution of unknown
+quantities (including responses).  This objective function is usually not
+available in closed form and the design space can be continuous and of high
+dimensionality.  This package uses @dfn{Approximate Coordinate Exchange} (ACE)
+to maximise an approximation to the expectation of the utility function.")
+    (license license:gpl2)))
