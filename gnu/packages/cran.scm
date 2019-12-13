@@ -17591,3 +17591,27 @@ classes into dummy/indicator variables.")
 modeling often used in @dfn{analytical customer relationship
 management} (aCRM).")
     (license license:gpl2+)))
+
+(define-public r-treeclust
+  (package
+    (name "r-treeclust")
+    (version "1.1-7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "treeClust" version))
+       (sha256
+        (base32
+         "1s7kh6q0bkixsygrip95zf1bi10ihddsa5lq9dfxd68yh8rsby6z"))))
+    (properties `((upstream-name . "treeClust")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cluster" ,r-cluster)
+       ("r-rpart" ,r-rpart)))
+    (home-page "https://cran.r-project.org/web/packages/treeClust/")
+    (synopsis "Cluster distances through trees")
+    (description
+     "This package provides tools to create a measure of inter-point
+dissimilarity useful for clustering mixed data, and, optionally, perform the
+clustering.")
+    (license license:gpl2+)))
