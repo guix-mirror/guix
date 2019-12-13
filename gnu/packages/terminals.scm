@@ -839,10 +839,11 @@ of VT100 terminal.")
          "0z8mgkbmisxs10rz88qg46l1c9a8n08k8cy2iassal2zh16qbrcq"))))
     (build-system python-build-system)
     (arguments
-     ;; TODO: For py3, 2to2 is used to convert the code, but test-suite fails
+     ;; FIXME: Test suite is unable to detect TTY conditions.
      `(#:tests? #f))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-nose" ,python-nose)
+       ("python-six" ,python-six)))
     (home-page "https://github.com/erikrose/blessings")
     (synopsis "Python module to manage terminal color, styling, and
 positioning")
