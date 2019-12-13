@@ -16044,3 +16044,36 @@ In addition, various utility functions are provided to enable the statistical
 and graphical power of the R environment to work with biological sequence and
 structural data.")
     (license license:gpl2+)))
+
+(define-public r-bios2cor
+  (package
+    (name "r-bios2cor")
+    (version "2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Bios2cor" version))
+       (sha256
+        (base32
+         "1rrz0vs6wbkwys3l5jv1rdnlhyb4r1q9pv7jlnmsx6c1b4f4vz5n"))))
+    (properties `((upstream-name . "Bios2cor")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bigmemory" ,r-bigmemory)
+       ("r-bio3d" ,r-bio3d)
+       ("r-circular" ,r-circular)
+       ("r-igraph" ,r-igraph)))
+    (home-page "https://cran.r-project.org/web/packages/Bios2cor/")
+    (synopsis "From biological sequences and simulations to correlation analysis")
+    (description
+     "This package provides utilities for computation and analysis of
+correlation/covariation in multiple sequence alignments and in side chain
+motions during molecular dynamics simulations.  Features include the
+computation of correlation/covariation scores using a variety of scoring
+functions between either sequence positions in alignments or side chain
+dihedral angles in molecular dynamics simulations and utilities to analyze the
+correlation/covariation matrix through a variety of tools including network
+representation and principal components analysis.  In addition, several
+utility functions are based on the R graphical environment to provide friendly
+tools for help in data interpretation.")
+    (license license:gpl2+)))
