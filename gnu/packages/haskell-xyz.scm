@@ -456,6 +456,34 @@ colored output using the ansi-terminal package.")
 style.")
     (license license:bsd-3)))
 
+(define-public ghc-assoc
+  (package
+    (name "ghc-assoc")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/assoc/assoc-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1m9n4vp190bvn2wcrd4ggfwa9pi93jp0zgx02mdgywn2zfidw020"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-bifunctors" ,ghc-bifunctors)
+       ("ghc-tagged" ,ghc-tagged)))
+    (home-page
+     "http://hackage.haskell.org/package/assoc")
+    (synopsis
+     "Swap and assoc: Symmetric and Semigroupy Bifunctors")
+    (description
+     "Provides generalisations of @code{swap :: (a,b) -> (b,a)} and
+@code{assoc :: ((a,b),c) -> (a,(b,c))} to @code{Bifunctor}s supporting
+similar operations (e.g. @code{Either}, @code{These}).")
+    (license license:bsd-3)))
+
 (define-public ghc-async
   (package
     (name "ghc-async")
