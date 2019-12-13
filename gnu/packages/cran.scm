@@ -16350,3 +16350,28 @@ cost-sensitive binary classification.  The bias-correction is an estimate of
 the bias term added to regularized discriminant analysis that minimizes the
 overall risk.")
     (license license:gpl3)))
+
+(define-public r-abemus
+  (package
+    (name "r-abemus")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abemus" version))
+       (sha256
+        (base32
+         "1dhllb184byp1yl15rg2w02zgw3iajag7cxshirg47mnmm7n70bb"))))
+    (properties `((upstream-name . "abemus")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)))
+    (home-page "https://cran.r-project.org/web/packages/abemus/")
+    (synopsis "Adaptive base error model in ultra-deep sequencing data")
+    (description
+     "This package provides an implementation of @dfn{Adaptive Base Error
+Model in Ultra-deep Sequencing data} (ABEMUS), which combines
+platform-specific genetic knowledge and empirical signal to readily detect and
+quantify somatic @dfn{single nucleotide variants} (SNVs) in @dfn{circulating
+cell free DNA} (cfDNA).")
+    (license license:gpl3)))
