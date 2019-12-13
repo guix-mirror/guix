@@ -17264,3 +17264,35 @@ settings.")
 ff (CRAN), or BufferedMatrix (Bioconductor).  The main usage of it was inside
 the @code{aroma.affymetrix} package.")
     (license license:lgpl2.1+)))
+
+(define-public r-r-filesets
+  (package
+    (name "r-r-filesets")
+    (version "2.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "R.filesets" version))
+       (sha256
+        (base32
+         "124rygq0bl9n4akxcm868nl30cyk3rz0iprb98zlpk62gci9f5fg"))))
+    (properties `((upstream-name . "R.filesets")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-digest" ,r-digest)
+       ("r-r-cache" ,r-r-cache)
+       ("r-r-methodss3" ,r-r-methodss3)
+       ("r-r-oo" ,r-r-oo)
+       ("r-r-utils" ,r-r-utils)))
+    (home-page "https://github.com/HenrikBengtsson/R.filesets")
+    (synopsis "Easy handling of and access to files")
+    (description
+     "This package provides classes and methods to locate, setup, subset,
+navigate and iterate file sets, i.e. sets of files located in one or more
+directories on the file system.  The API is designed such that these classes
+can be extended via inheritance to provide a richer API for special file
+formats.  Moreover, a specific name format is defined such that filenames and
+directories can be considered to have full names which consists of a name
+followed by comma-separated tags.  This adds additional flexibility to
+identify file sets and individual files.")
+    (license license:lgpl2.1+)))
