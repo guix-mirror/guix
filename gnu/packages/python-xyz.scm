@@ -14329,12 +14329,12 @@ such as figshare or Zenodo.")
     (name "python-semver")
     (version "2.9.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "semver" version))
-        (sha256
-          (base32
-            "183kg1rhzz3hqizvphkd8hlbf1zxfx8737zhfkmqzxi71jmdw7pd"))))
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "semver" version))
+       (sha256
+        (base32
+         "183kg1rhzz3hqizvphkd8hlbf1zxfx8737zhfkmqzxi71jmdw7pd"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-tox" ,python-tox)
