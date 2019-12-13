@@ -15940,16 +15940,17 @@ programming problems.")
      `(("gfortran" ,gfortran)))
     (home-page "https://desolve.r-forge.r-project.org/")
     (synopsis "Solvers for initial value problems of differential equations")
-    (description "This package provides functions that solve initial
-value problems of a system of first-order ordinary differential equations (ODE),
-of partial differential equations (PDE), of differential algebraic equations
-(DAE), and of delay differential equations.  The functions provide an interface
-to the FORTRAN functions lsoda, lsodar, lsode, lsodes of the ODEPACK collection,
-to the FORTRAN functions dvode and daspk and a C-implementation of solvers of
-the Runge-Kutta family with fixed or variable time steps.  The package contains
-routines designed for solving ODEs resulting from 1-D, 2-D and 3-D partial
-differential equations (PDE) that have been converted to ODEs by numerical
-differencing.")
+    (description "This package provides functions that solve initial value
+problems of a system of first-order @dfn{ordinary differential
+equations} (ODE), of @dfn{partial differential equations} (PDE), of
+@dfn{differential algebraic equations} (DAE), and of delay differential
+equations.  The functions provide an interface to the FORTRAN functions
+@code{lsoda}, @code{lsodar}, @code{lsode}, @code{lsodes} of the ODEPACK
+collection, to the FORTRAN functions @code{dvode} and @code{daspk} and a
+C-implementation of solvers of the Runge-Kutta family with fixed or variable
+time steps.  The package contains routines designed for solving ODEs resulting
+from 1-D, 2-D and 3-D partial differential equations that have been converted
+to ODEs by numerical differencing.")
     (license license:gpl2+)))
 
 (define-public r-pracma
