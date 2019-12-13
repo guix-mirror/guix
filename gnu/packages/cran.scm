@@ -16708,3 +16708,33 @@ experienced.")
      "This package provides a series of additional Tcl commands and Tk widgets
 with style and various functions to supplement the tcltk package")
     (license license:lgpl3)))
+
+(define-public r-accrual
+  (package
+    (name "r-accrual")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "accrual" version))
+       (sha256
+        (base32
+         "11clm9s5c5518nmp6hd6pjnp0s28y92b2i2x0xgj4j5g816p4j3z"))))
+    (properties `((upstream-name . "accrual")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-fgui" ,r-fgui)
+       ("r-smpracticals" ,r-smpracticals)
+       ("r-tcltk2" ,r-tcltk2)))
+    (home-page "https://cran.r-project.org/web/packages/accrual/")
+    (synopsis "Bayesian accrual prediction")
+    (description
+     "Subject recruitment for medical research is challenging.  Slow patient
+accrual leads to delay in research.  Accrual monitoring during the process of
+recruitment is critical.  Researchers need reliable tools to manage the
+accrual rate.  This package provides an implementation of a Bayesian method
+that integrates researcher's experience on previous trials and data from the
+current study, providing reliable prediction on accrual rate for clinical
+studies.  It provides functions for Bayesian accrual prediction which can be
+easily used by statisticians and clinical researchers.")
+    (license license:gpl2)))
