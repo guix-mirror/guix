@@ -17296,3 +17296,33 @@ directories can be considered to have full names which consists of a name
 followed by comma-separated tags.  This adds additional flexibility to
 identify file sets and individual files.")
     (license license:lgpl2.1+)))
+
+(define-public r-r-devices
+  (package
+    (name "r-r-devices")
+    (version "2.16.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "R.devices" version))
+       (sha256
+        (base32
+         "15zlnq3g27whq26fbcy5zfl5hiddm256h4rga4frblg6wqlbkvdd"))))
+    (properties `((upstream-name . "R.devices")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-base64enc" ,r-base64enc)
+       ("r-r-methodss3" ,r-r-methodss3)
+       ("r-r-oo" ,r-r-oo)
+       ("r-r-utils" ,r-r-utils)))
+    (home-page "https://github.com/HenrikBengtsson/R.devices")
+    (synopsis "Unified handling of graphics devices")
+    (description
+     "This package provides functions for creating plots and image files in a
+unified way regardless of output format (EPS, PDF, PNG, SVG, TIFF, WMF, etc.).
+Default device options as well as scales and aspect ratios are controlled in a
+uniform way across all device types.  Switching output format requires minimal
+changes in code.  This package is ideal for large-scale batch processing,
+because it will never leave open graphics devices or incomplete image files
+behind, even on errors or user interrupts.")
+    (license license:lgpl2.1+)))
