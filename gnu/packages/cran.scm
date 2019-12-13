@@ -73,6 +73,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages statistics)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xorg))
@@ -16684,3 +16685,26 @@ incorporated into the interface for greater customization for the more
 experienced.")
     ;; Any version of the GPL.
     (license (list license:gpl2+ license:gpl3+))))
+
+(define-public r-tcltk2
+  (package
+    (name "r-tcltk2")
+    (version "1.2-11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tcltk2" version))
+       (sha256
+        (base32
+         "1ibxld379600xx7kiqq3fck083s8psry12859980218rnzikl65d"))))
+    (properties `((upstream-name . "tcltk2")))
+    (build-system r-build-system)
+    (inputs
+     `(("tcl" ,tcl)
+       ("tk" ,tk)))
+    (home-page "http://www.sciviews.org/SciViews-R")
+    (synopsis "Tcl/Tk additions")
+    (description
+     "This package provides a series of additional Tcl commands and Tk widgets
+with style and various functions to supplement the tcltk package")
+    (license license:lgpl3)))
