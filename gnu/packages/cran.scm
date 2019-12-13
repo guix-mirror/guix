@@ -16463,3 +16463,25 @@ server-side.")
      "This is a package to simplify loading of system fonts and Google Fonts
 into R, in order to support other packages.")
     (license license:gpl2)))
+
+(define-public r-showtextdb
+  (package
+    (name "r-showtextdb")
+    (version "2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "showtextdb" version))
+       (sha256
+        (base32
+         "1qwwj9x2jvadvwn60h75k99c9xi7yhqjsgaakahz5paxgj583bsh"))))
+    (properties `((upstream-name . "showtextdb")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-sysfonts" ,r-sysfonts)))
+    (home-page "https://cran.r-project.org/web/packages/showtextdb/")
+    (synopsis "Font files for the 'showtext' package")
+    (description
+     "This package provides font files that can be used by the @code{showtext}
+package.")
+    (license license:asl2.0)))
