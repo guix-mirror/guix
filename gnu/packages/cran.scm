@@ -16944,3 +16944,24 @@ sequence, the Halton sequence (including the Van der Corput sequence), and
 
 See e.g. Gentle (2003) @url{doi:10.1007/b97336}.")
     (license license:bsd-3)))
+
+(define-public r-lhs
+  (package
+    (name "r-lhs")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "lhs" version))
+       (sha256
+        (base32
+         "0lzaqr7xi3ckln5nglv5xf5njm359slpz1jc6s02hpsqdw6armd4"))))
+    (properties `((upstream-name . "lhs")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/bertcarnell/lhs")
+    (synopsis "Latin Hypercube Samples")
+    (description
+     "This package provides a number of methods for creating and augmenting
+Latin Hypercube Samples.")
+    (license license:gpl3)))
