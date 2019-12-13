@@ -729,6 +729,30 @@ objects in HTML format.")
 and vice-versa.")
     (license license:gpl2+)))
 
+(define-public r-fastmap
+  (package
+    (name "r-fastmap")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fastmap" version))
+       (sha256
+        (base32
+         "1v7sp56xiha0bh78g3w92k52p9vkp7ryzpw0z66nyddxzrfv0y27"))))
+    (properties `((upstream-name . "fastmap")))
+    (build-system r-build-system)
+    (home-page "https://r-lib.github.io/fastmap/")
+    (synopsis "Fast implementation of a key-value store")
+    (description
+     "This package provides a fast implementation of a key-value store.
+Environments are commonly used as key-value stores, but every time a new key
+is used, it is added to R's global symbol table, causing a small amount of
+memory leakage.  This can be problematic in cases where many different keys
+are used.  Fastmap avoids this memory leak issue by implementing the map using
+data structures in C++.")
+    (license license:expat)))
+
 (define-public r-shiny
   (package
     (name "r-shiny")
