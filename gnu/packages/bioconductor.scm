@@ -6093,3 +6093,33 @@ simple somatic mutations (SNVs and Indels) in functional elements across the
 human genome.  ActiveDriverWGS detects coding and noncoding driver elements
 using whole genome sequencing data.")
     (license license:gpl3)))
+
+;; This is a CRAN package, but it depends on Bioconductor packages, so we put
+;; it here.
+(define-public r-activepathways
+  (package
+    (name "r-activepathways")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ActivePathways" version))
+       (sha256
+        (base32
+         "1xb0d1svmzw404pv8ja6wr4773k7x2lxkrzrayilvzqbfzj1wx20"))))
+    (properties
+     `((upstream-name . "ActivePathways")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-metap" ,r-metap)))
+    (home-page "https://cran.r-project.org/web/packages/ActivePathways/")
+    (synopsis "Multivariate pathway enrichment analysis")
+    (description
+     "This package represents an integrative method of analyzing multi omics
+data that conducts enrichment analysis of annotated gene sets.  ActivePathways
+uses a statistical data fusion approach, rationalizes contributing evidence
+and highlights associated genes, improving systems-level understanding of
+cellular organization in health and disease.")
+    (license license:gpl3)))
