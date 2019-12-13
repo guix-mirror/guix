@@ -17545,3 +17545,23 @@ floating point chromosomes.")
      "Kernel factory is an ensemble method where each base classifier (random
 forest) is fit on the kernel matrix of a subset of the training data.")
     (license license:gpl2+)))
+
+(define-public r-dummies
+  (package
+    (name "r-dummies")
+    (version "1.5.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "dummies" version))
+       (sha256
+        (base32
+         "01f84crqx17xd6xy55qxlvsj3knm8lhw7jl26p2rh2w3y0nvqlbm"))))
+    (properties `((upstream-name . "dummies")))
+    (build-system r-build-system)
+    (home-page "http://www.decisionpatterns.com")
+    (synopsis "Create dummy/indicator variables flexibly and efficiently")
+    (description
+     "This package lets you expand factors, characters and other eligible
+classes into dummy/indicator variables.")
+    (license license:gpl2+)))
