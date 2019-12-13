@@ -17664,3 +17664,36 @@ distribution.")
 regression coefficient vector in regression models with autocorrelated
 errors.")
     (license license:gpl2)))
+
+(define-public r-acs
+  (package
+    (name "r-acs")
+    (version "2.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "acs" version))
+       (sha256
+        (base32
+         "0ajw9rf8l8akcvgqvbxjvryc6wjx74521xyxswz2b0bky3m6kah5"))))
+    (properties `((upstream-name . "acs")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-httr" ,r-httr)
+       ("r-plyr" ,r-plyr)
+       ("r-rcpp" ,r-rcpp)
+       ("r-stringr" ,r-stringr)
+       ("r-xml" ,r-xml)))
+    (home-page "http://dusp.mit.edu/faculty/ezra-glenn")
+    (synopsis "Work with data from the US Census")
+    (description
+     "This package provides a general toolkit for downloading, managing,
+analyzing, and presenting data from the
+@url{https://www.census.gov/data/developers/data-sets.html, U.S.  Census},
+including SF1 (Decennial short-form), SF3 (Decennial long-form), and the
+American Community Survey (ACS).  Confidence intervals provided with ACS data
+are converted to standard errors to be bundled with estimates in complex
+@code{acs} objects.  The package provides new methods to conduct standard
+operations on @code{acs} objects and present/plot data in statistically
+appropriate ways.")
+    (license license:gpl3)))
