@@ -21,7 +21,7 @@
 # Copyright © 2018 Stefan Stefanović <stefanx2ovic@gmail.com>
 # Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 # Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
-# Copyright © 2019 John Soo <jsoo1@asu.edu>
+# Copyright © 2019, 2020 John Soo <jsoo1@asu.edu>
 # Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 # Copyright © 2019 Evan Straw <evan.straw99@gmail.com>
 # Copyright © 2019 Brett Gilio <brettg@gnu.org>
@@ -430,6 +430,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/pretty-print.scm			\
   %D%/packages/protobuf.scm			\
   %D%/packages/pure.scm				\
+  %D%/packages/purescript.scm			\
   %D%/packages/pv.scm				\
   %D%/packages/python.scm			\
   %D%/packages/python-check.scm			\
