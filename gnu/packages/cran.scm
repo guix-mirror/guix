@@ -16571,3 +16571,33 @@ both base and ggplot2 graphics.")
 for original research.  A variety of user defined options and formatting are
 included.")
     (license license:gpl3)))
+
+(define-public r-abtest
+  (package
+    (name "r-abtest")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abtest" version))
+       (sha256
+        (base32
+         "1ky3cf827kj24bhcpk00v5zl5jdkii1gca0x81ay1cjkzfispgws"))))
+    (properties `((upstream-name . "abtest")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-plotrix" ,r-plotrix)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rcpp" ,r-rcpp)
+       ("r-sn" ,r-sn)
+       ("r-truncnorm" ,r-truncnorm)
+       ("r-vgam" ,r-vgam)))
+    (home-page "https://cran.r-project.org/web/packages/abtest/")
+    (synopsis "Bayesian A/B testing")
+    (description
+     "This package provides functions for Bayesian A/B testing including prior
+elicitation options based on Kass and Vaidyanathan (1992)
+@url{doi:10.1111/j.2517-6161.1992.tb01868.x}.")
+    (license license:gpl2+)))
