@@ -16996,3 +16996,29 @@ available in closed form and the design space can be continuous and of high
 dimensionality.  This package uses @dfn{Approximate Coordinate Exchange} (ACE)
 to maximise an approximation to the expectation of the utility function.")
     (license license:gpl2)))
+
+(define-public r-acet
+  (package
+    (name "r-acet")
+    (version "1.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ACEt" version))
+       (sha256
+        (base32
+         "0626d6kg485xjya164wagrr5z223jvi93ywbwpdns7fkm03c0dlq"))))
+    (properties `((upstream-name . "ACEt")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-mass" ,r-mass)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)))
+    (home-page "https://cran.r-project.org/web/packages/ACEt/")
+    (synopsis "Estimating dynamic heritability and twin model comparison")
+    (description
+     "This package supports twin models that are able to estimate the dynamic
+behaviour of the variance components in the classical twin models with respect
+to age using B-splines and P-splines.")
+    (license license:gpl2+)))
