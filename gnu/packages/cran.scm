@@ -16758,3 +16758,25 @@ easily used by statisticians and clinical researchers.")
      "This is a package for visualizing data quality of partially accruing
 data.")
     (license license:gpl3)))
+
+(define-public r-mda
+  (package
+    (name "r-mda")
+    (version "0.4-10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mda" version))
+       (sha256
+        (base32
+         "19g6kn6g0shidrjfffklbmzc5w7mcimrxhagx4nmpslg59ibqdkh"))))
+    (properties `((upstream-name . "mda")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-class" ,r-class)))
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/mda/")
+    (synopsis "Mixture and flexible discriminant analysis")
+    (description
+     "This is a package for mixture and flexible discriminant analysis,
+@dfn{multivariate adaptive regression splines} (MARS), BRUTO, and so on.")
+    (license license:gpl2)))
