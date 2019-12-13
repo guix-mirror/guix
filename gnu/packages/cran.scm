@@ -17373,3 +17373,27 @@ are used, contrary to higher dimensions when all derivatives are linearly
 approximated.  Several non-archimax families (normal, FGM, Plackett) are
 provided as well.")
     (license license:gpl2)))
+
+(define-public r-tuner
+  (package
+    (name "r-tuner")
+    (version "1.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tuneR" version))
+       (sha256
+        (base32
+         "0av978m4h2iqazyfq6n2cgkh4wpllihh7s29lah2nb8ngc0w5hxx"))))
+    (properties `((upstream-name . "tuneR")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-signal" ,r-signal)))
+    (home-page "https://cran.r-project.org/web/packages/tuneR/")
+    (synopsis "Analysis of music and speech")
+    (description
+     "This is a package for the analysis of music and speech.  Analyze music
+and speech, extract features like MFCCs, handle wave files and their
+representation in various ways, read MP3, read MIDI, perform steps of a
+transcription, ...")
+    ;; Either of these versions.
+    (license (list license:gpl2 license:gpl3))))
