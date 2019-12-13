@@ -20073,9 +20073,9 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
       (license license:gpl3+))))
 
 (define-public emacs-telega
-  (let ((commit "56aef884921d99e5170d5425dbe0fce645620511")
-	(revision "2")
-	(version "0.4.4"))
+  (let ((commit "57fb6089aac3c7bd84fd9a2d9ccb1937c9836275")
+	(revision "1")
+	(version "0.5.2"))
     (package
       (name "emacs-telega")
       (version (git-version version revision commit))
@@ -20087,7 +20087,7 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
                (commit commit)))
          (sha256
           (base32
-           "0a8k3j20nz4xwswg9qp9xpaakk3q3ibiz8mkryk92zmrdmaah5mi"))
+           "0v46jnkphsd7glndcxz05b3xbgyw0i8zl0ybzbrjx24764svn69f"))
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
