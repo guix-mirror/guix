@@ -16327,3 +16327,26 @@ integer linear programming} (MILP) and other related problems.")
 Flux Balance Analysis and informative analysis of the data generated during
 simulation.")
     (license license:gpl2)))
+
+(define-public r-abcrlda
+  (package
+    (name "r-abcrlda")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abcrlda" version))
+       (sha256
+        (base32
+         "0j29ifsvmxfx2g6v4bpbb4s6miwfpf4vlkpbgj6f2q078s4clc85"))))
+    (properties `((upstream-name . "abcrlda")))
+    (build-system r-build-system)
+    (home-page "https://ieeexplore.ieee.org/document/8720003/")
+    (synopsis "Asymptotically bias-corrected regularized linear discriminant analysis")
+    (description
+     "This package offers methods to perform @dfn{asymptotically
+bias-corrected regularized linear discriminant analysis} (ABC_RLDA) for
+cost-sensitive binary classification.  The bias-correction is an estimate of
+the bias term added to regularized discriminant analysis that minimizes the
+overall risk.")
+    (license license:gpl3)))
