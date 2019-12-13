@@ -20113,10 +20113,18 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
                  (("python3 run_tests.py")
                   ""))
                #t))
-           ;; Modify telega-util to reflect unique dir name in
-           ;; `telega-install-data' phase.
-           (add-after 'unpack 'telega-data-patch
-             (lambda _
+           (add-after 'unpack 'telega-paths-patch
+             (lambda* (#:key inputs #:allow-other-keys)
+               ;; Hard-code path to `ffplay`.
+               (let ((ffplay-bin (string-append (assoc-ref inputs "ffmpeg")
+                                                "/bin/ffplay")))
+                 (substitute* "telega-ffplay.el"
+                   (("\\(executable-find \"ffplay\"\\)")
+                    (string-append
+                     "(and (file-executable-p \"" ffplay-bin "\")"
+                     "\"" ffplay-bin "\")"))))
+               ;; Modify telega-util to reflect unique dir name in
+               ;; `telega-install-data' phase.
                (substitute* "telega-util.el"
                  (("\\(concat \"etc/\" filename\\) telega--lib-directory")
                   "(concat \"telega-data/\" filename)
@@ -20149,7 +20157,6 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
                (invoke "python3" "server/run_tests.py")
                #t))
            (delete 'configure)
-           
            ;; Build emacs-side using `emacs-build-system'
            (add-after 'compress-documentation 'emacs-add-source-to-load-path
              (assoc-ref emacs:%standard-phases 'add-source-to-load-path))
@@ -20168,9 +20175,10 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
              (assoc-ref emacs:%standard-phases 'build))
            (add-after 'emacs-build 'emacs-make-autoloads
              (assoc-ref emacs:%standard-phases 'make-autoloads)))))
+      (inputs
+       `(("ffmpeg" ,ffmpeg))) ; mp4/gif support.
       (propagated-inputs
        `(("emacs-visual-fill-column" ,emacs-visual-fill-column)
-         ("ffmpeg" ,ffmpeg) ; mp4/gif support.
          ("libwebp" ,libwebp))) ; sticker support.
       (native-inputs
        `(("tdlib" ,tdlib)
