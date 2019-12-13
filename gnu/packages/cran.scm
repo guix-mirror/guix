@@ -16780,3 +16780,26 @@ data.")
      "This is a package for mixture and flexible discriminant analysis,
 @dfn{multivariate adaptive regression splines} (MARS), BRUTO, and so on.")
     (license license:gpl2)))
+
+(define-public r-elasticnet
+  (package
+    (name "r-elasticnet")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "elasticnet" version))
+       (sha256
+        (base32
+         "0p9dplnsp28z4s2fl6afbwrgd0aj339fak8mmndicmrh7bb7rpmb"))))
+    (properties `((upstream-name . "elasticnet")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lars" ,r-lars)))
+    (home-page "http://www.stat.umn.edu/~hzou")
+    (synopsis "Elastic-Net for sparse estimation and sparse PCA")
+    (description
+     "This package provides functions for fitting the entire solution path of
+the Elastic-Net and also provides functions for estimating sparse Principal
+Components.  The Lasso solution paths can be computed by the same function.")
+    (license license:gpl2+)))
