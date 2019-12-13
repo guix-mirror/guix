@@ -10519,6 +10519,46 @@ Haskell")
 a memory chunk that will be auto-scrubbed after it run out of scope.")
     (license license:bsd-3)))
 
+(define-public ghc-semialign
+  (package
+    (name "ghc-semialign")
+    (version "1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/semialign/semialign-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "004x0a80sqqdgvsyk4z0nasxpi6z3g1d8kgwj804bj9ka8dlc75m"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-these" ,ghc-these)
+       ("ghc-base-compat" ,ghc-base-compat)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-tagged" ,ghc-tagged)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-semigroupoids" ,ghc-semigroupoids)))
+    (arguments
+     `(#:cabal-revision
+       ("1"
+        "0qnqnyfng4kwy2h2anrcy5id2ijnawava3zcc5h5b8ri1y6ks6zi")))
+    (home-page
+     "https://github.com/isomorphism/these")
+    (synopsis
+     "Align and Zip type-classes from the common Semialign ancestor ")
+    (description
+     "The major use of @code{These} of this is provided by the
+@code{align} member of @code{Semialign} class, representing a
+generalized notion of \"zipping with padding\" that combines
+structures without truncating to the size of the smaller input.  It
+turns out that @code{zip} operation fits well the @code{Semialign}
+class, forming lattice-like structure.")
+    (license license:bsd-3)))
+
 (define-public ghc-semigroupoids
   (package
     (name "ghc-semigroupoids")
