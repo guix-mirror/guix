@@ -8759,6 +8759,29 @@ of two versions of a source file.  It provides a good balance between
 performance, nice output for humans, and simplicity of implementation.")
     (license license:bsd-3)))
 
+(define-public ghc-pattern-arrows
+  (package
+    (name "ghc-pattern-arrows")
+    (version "0.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/pattern-arrows/pattern-arrows-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "13q7bj19hd60rnjfc05wxlyck8llxy11z3mns8kxg197wxrdkhkg"))))
+    (build-system haskell-build-system)
+    (home-page
+     "https://blog.functorial.com/posts/2013-10-27-Pretty-Printing-Arrows.html")
+    (synopsis "Arrows for Pretty Printing")
+    (description
+     "A library for generating concise pretty printers based on precedence
+rules.")
+    (license license:expat)))
+
 (define-public ghc-pcre-light
   (package
     (name "ghc-pcre-light")
