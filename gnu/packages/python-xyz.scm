@@ -14327,14 +14327,14 @@ such as figshare or Zenodo.")
 (define-public python-semver
   (package
     (name "python-semver")
-    (version "2.7.9")
+    (version "2.9.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "semver" version))
         (sha256
           (base32
-            "0hhgqppchv59rqj0yzi1prdg2nfsywqmjsqy2rycyxm0hvxmbyqz"))))
+            "183kg1rhzz3hqizvphkd8hlbf1zxfx8737zhfkmqzxi71jmdw7pd"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
