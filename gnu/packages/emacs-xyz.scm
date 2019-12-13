@@ -20177,8 +20177,8 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
          ("python" ,python)))
       (synopsis "GNU Emacs client for the Telegram messenger")
       (description
-       "Telega is full-featured, unofficial client for the Telegram messaging
-platform for GNU Emacs.")
+       "Telega is a full-featured, unofficial GNU Emacs-based client for the
+Telegram messaging platform.")
       (home-page "https://github.com/zevlg/telega.el")
       (license license:gpl3+))))
 
