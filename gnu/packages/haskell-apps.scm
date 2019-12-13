@@ -754,8 +754,26 @@ advanced user's otherwise working script to fail under future circumstances.
        ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
     (home-page "https://github.com/jaspervdj/stylish-haskell")
     (synopsis "Haskell code prettifier")
-    (description
-     "A simple Haskell code prettifier.  The goal is not to format all of the
-code in a file, just clean up import statements and a few other tedious
-items.  This tool tries to help where necessary without getting in the way.")
+    (description "Stylish-haskell is a Haskell code prettifier.  The goal is
+not to format all of the code in a file, to avoid \"getting in the way\".
+However, this tool can e.g. clean up import statements and help doing various
+tasks that get tedious very quickly.  It can
+@itemize
+@item
+Align and sort @code{import} statements
+@item
+Group and wrap @code{{-# LANGUAGE #-}} pragmas, remove (some) redundant
+pragmas
+@item
+Remove trailing whitespaces
+@item
+Align branches in @code{case} and fields in records
+@item
+Convert line endings (customisable)
+@item
+Replace tabs by four spaces (turned off by default)
+@item
+Replace some ASCII sequences by their Unicode equivalent (turned off by
+default)
+@end itemize")
     (license license:bsd-3)))
