@@ -17103,3 +17103,32 @@ conditional distribution of the response variable are modelled using
 explanatory variables.")
     ;; Either version of the license
     (license (list license:gpl2 license:gpl3))))
+
+(define-public r-acid
+  (package
+    (name "r-acid")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "acid" version))
+       (sha256
+        (base32
+         "030i0y8s283ivbsmjccpbv9v7mgbcg2jk9df7vgcbbns74swf9hd"))))
+    (properties `((upstream-name . "acid")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-gamlss" ,r-gamlss)
+       ("r-gamlss-dist" ,r-gamlss-dist)
+       ("r-hmisc" ,r-hmisc)))
+    (home-page "https://cran.r-project.org/web/packages/acid/")
+    (synopsis "Analysing conditional income distributions")
+    (description
+     "This package provides functions for the analysis of income distributions
+for subgroups of the population as defined by a set of variables like age,
+gender, region, etc.  This entails a Kolmogorov-Smirnov test for a mixture
+distribution as well as functions for moments, inequality measures, entropy
+measures and polarisation measures of income distributions.  This package thus
+aides the analysis of income inequality by offering tools for the exploratory
+analysis of income distributions at the disaggregated level.")
+    (license license:gpl3)))
