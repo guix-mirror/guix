@@ -17500,3 +17500,23 @@ moderate-sized data sets.  It performs discrete, real, and gentle boost under
 both exponential and logistic loss on a given data set.")
     ;; Any version of the GPL.
     (license (list license:gpl2+ license:gpl3+))))
+
+(define-public r-genalg
+  (package
+    (name "r-genalg")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "genalg" version))
+       (sha256
+        (base32
+         "1wzfamq8k5yhwbdx0wy1w5bks93brj0p890xxc4yqrja4w38ja3s"))))
+    (properties `((upstream-name . "genalg")))
+    (build-system r-build-system)
+    (home-page "https://github.com/egonw/genalg")
+    (synopsis "R based genetic algorithm")
+    (description
+     "This package provides an R based genetic algorithm for binary and
+floating point chromosomes.")
+    (license license:gpl2)))
