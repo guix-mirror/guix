@@ -17132,3 +17132,27 @@ measures and polarisation measures of income distributions.  This package thus
 aides the analysis of income inequality by offering tools for the exploratory
 analysis of income distributions at the disaggregated level.")
     (license license:gpl3)))
+
+(define-public r-acm4r
+  (package
+    (name "r-acm4r")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "acm4r" version))
+       (sha256
+        (base32
+         "1wqzc35i1rshx0zlmas8y4qkkvy6h9r4i4apscjjv1xg2wjflzxa"))))
+    (properties `((upstream-name . "acm4r")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-mass" ,r-mass)))
+    (home-page "https://cran.r-project.org/web/packages/acm4r/")
+    (synopsis "Align-and-count method comparisons of RFLP data")
+    (description
+     "This is a package to compare sequence fragment lengths or molecular
+weights from pairs of lanes.  The number of matching bands in the
+@dfn{Restriction Fragment Length Polymorphism} (RFLP) data is calculated using
+the align-and-count method.")
+    ;; Any version of the GPL
+    (license (list license:gpl2+ license:gpl3+))))
