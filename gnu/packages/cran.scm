@@ -17347,3 +17347,29 @@ behind, even on errors or user interrupts.")
 regions.  These regions were identified manually by the authors of the package
 and may be used to generate realistic data sets with known truth.")
     (license license:lgpl2.1+)))
+
+(define-public r-acopula
+  (package
+    (name "r-acopula")
+    (version "0.9.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "acopula" version))
+       (sha256
+        (base32
+         "0vvbbw8pfs9jwfz5c57lw48pr0qj661r0ys007q6zf9jmlrhx1ln"))))
+    (properties `((upstream-name . "acopula")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/acopula/")
+    (synopsis "Modelling dependence with multivariate Archimax copulas")
+    (description
+     "Archimax copulas are a mixture of Archimedean and EV copulas.  This
+package provides definitions of several parametric families of generator and
+dependence function, computes CDF and PDF, estimates parameters, tests for
+goodness of fit, generates random sample and checks copula properties for
+custom constructs.  In the 2-dimensional case explicit formulas for density
+are used, contrary to higher dimensions when all derivatives are linearly
+approximated.  Several non-archimax families (normal, FGM, Plackett) are
+provided as well.")
+    (license license:gpl2)))
