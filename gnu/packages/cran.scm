@@ -17753,3 +17753,25 @@ returning the posterior probability that a given string was produced by a
 random process.  In addition, two traditional (but problematic) measures of
 complexity are also provided: entropy and change complexity.")
     (license license:gpl2+)))
+
+(define-public r-acswr
+  (package
+    (name "r-acswr")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ACSWR" version))
+       (sha256
+        (base32
+         "195vjrkang5cl7gwsna0aq4p0h4jym9xg9yh94bnf8vq6wf8j83n"))))
+    (properties `((upstream-name . "ACSWR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)))
+    (home-page "https://cran.r-project.org/web/packages/ACSWR/")
+    (synopsis "Companion package for the book \"A Course in Statistics with R\"")
+    (description
+     "This is a companion package for the book \"A Course in Statistics with
+R\" (ISBN 978-1-119-15272-9.)")
+    (license license:gpl2)))
