@@ -18349,3 +18349,29 @@ e.g. knapsack and subset sum procedures, derivative-free Nelder-Mead and
 Hooke-Jeeves minimization, and some (evolutionary) global optimization
 functions.")
     (license license:gpl3+)))
+
+(define-public r-univoutl
+  (package
+    (name "r-univoutl")
+    (version "0.1-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "univOutl" version))
+       (sha256
+        (base32
+         "193wrpkvgmlrx43nag8w3ivrlqm37nm6g86wcvd3bgw3hchs70gi"))))
+    (properties `((upstream-name . "univOutl")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-hmisc" ,r-hmisc)
+       ("r-robustbase" ,r-robustbase)))
+    (home-page "https://github.com/marcellodo/univOutl")
+    (synopsis "Detection of univariate outliers")
+    (description
+     "This package provides well-known outlier detection techniques in the
+univariate case.  Methods to deal with skewed distribution are included too.
+The Hidiroglou-Berthelot (1986) method to search for outliers in ratios of
+historical data is implemented as well.  When available, survey weights can be
+used in outliers detection.")
+    (license license:gpl2+)))
