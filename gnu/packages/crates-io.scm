@@ -389,6 +389,41 @@ archive to be linked into Rustcode.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-chrono-0.4
+  (package
+    (name "rust-chrono")
+    (version "0.4.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "chrono" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1glam3iqhshbamzgf0npn7hgghski92r31lm7gg8841hnxc1zn3p"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-num-integer" ,rust-num-integer-0.1)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-time" ,rust-time-0.1))
+       #:cargo-development-inputs
+       (("rust-bincode" ,rust-bincode-1.1)
+        ("rust-doc-comment" ,rust-doc-comment-0.3)
+        ("rust-num-iter" ,rust-num-iter-0.1)
+        ("rust-serde-derive" ,rust-serde-derive-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0))))
+    (home-page
+     "https://github.com/chronotope/chrono")
+    (synopsis "Date and time library for Rust")
+    (description "Date and time library for Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-cfg-if-0.1
   (package
     (name "rust-cfg-if")
