@@ -18539,3 +18539,27 @@ depth-based location estimators, the package includes functions or drawing
 contour plots and perspective plots of depth functions.  Euclidian and
 spherical depths are supported.")
     (license license:gpl2)))
+
+(define-public r-archetypes
+  (package
+    (name "r-archetypes")
+    (version "2.2-0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "archetypes" version))
+       (sha256
+        (base32
+         "0ibxsr173ib77gjhid91m85s8gjii4mi2w3d52q5301igv20p7r0"))))
+    (properties `((upstream-name . "archetypes")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-modeltools" ,r-modeltools)
+       ("r-nnls" ,r-nnls)))
+    (home-page "https://cran.r-project.org/web/packages/archetypes")
+    (synopsis "Archetypal analysis")
+    (description
+     "The main function @code{archetypes} implements a framework for
+archetypal analysis supporting arbitrary problem solving mechanisms for the
+different conceptual parts of the algorithm.")
+    (license license:gpl2+)))
