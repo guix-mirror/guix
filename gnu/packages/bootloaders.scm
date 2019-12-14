@@ -662,9 +662,11 @@ it fits within common partitioning schemes.")
           ((#:phases phases)
            `(modify-phases ,phases
               (add-after 'unpack 'set-environment
-                (lambda* (#:key inputs #:allow-other-keys)
-                  (let ((bl31 (string-append (assoc-ref inputs "firmware")
-                                             "/bl31.bin")))
+                (lambda* (#:key native-inputs inputs #:allow-other-keys)
+                  (let ((bl31
+                         (string-append
+                          (assoc-ref (or native-inputs inputs) "firmware")
+                          "/bl31.bin")))
                     (setenv "BL31" bl31)
                     ;; This is necessary when we're using the bundled dtc.
                     ;(setenv "PATH" (string-append (getenv "PATH") ":"
