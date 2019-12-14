@@ -18734,3 +18734,29 @@ which functions similar to its singular form, but allows the use of multiple
 statistics per bin.  Those statistics can be mapped to multiple bin
 aesthetics.")
     (license license:gpl3)))
+
+(define-public r-knn-covertree
+  (package
+    (name "r-knn-covertree")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "knn.covertree" version))
+       (sha256
+        (base32
+         "0msfcmwydws7q7m5jdb0dxab0nkbl7mq5llg6v3r4qrnlvrdggvz"))))
+    (properties `((upstream-name . "knn.covertree")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppeigen" ,r-rcppeigen)))
+    (home-page "https://github.com/flying-sheep/knn.covertree")
+    (synopsis "Accurate kNN Implementation with multiple distance measures")
+    (description
+     "Similarly to the FNN package, this package allows calculation of the k
+nearest neighbors (kNN) of a data matrix.  The implementation is based on
+cover trees introduced by Alina Beygelzimer, Sham Kakade, and John
+Langford (2006) @url{doi:10.1145/1143844.1143857}.")
+    (license license:agpl3+)))
