@@ -788,6 +788,37 @@ It is inspired by the Linux kernel's @code{crypto_memneq}.")
     (description "Criterion's plotting library.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-crossbeam-epoch-0.7
+  (package
+    (name "rust-crossbeam-epoch")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crossbeam-epoch" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1d408b9x82mdbnb405gw58v5mmdbj2rl28a1h7b9rmn25h8f7j84"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-arrayvec" ,rust-arrayvec-0.4)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6)
+        ("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-memoffset" ,rust-memoffset-0.2)
+        ("rust-scopeguard" ,rust-scopeguard-0.3))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.4))))
+    (home-page
+     "https://github.com/crossbeam-rs/crossbeam/tree/master/crossbeam-epoch")
+    (synopsis "Epoch-based garbage collection")
+    (description "Epoch-based garbage collection.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-crossbeam-utils-0.6
   (package
     (name "rust-crossbeam-utils")
