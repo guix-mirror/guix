@@ -1331,6 +1331,31 @@ path simultaneously, and returning all of the globs that matched.")
      "Utilities for search oriented command line applications.")
     (license license:expat)))
 
+(define-public rust-grep-pcre2-0.1
+  (package
+    (name "rust-grep-pcre2")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "grep-pcre2" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wjc3gsan20gapga8nji6jcrmwn9n85q5zf2yfq6g50c7abkc2ql"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-grep-matcher" ,rust-grep-matcher-0.1)
+        ("rust-pcre2" ,rust-pcre2-0.2))))
+    (home-page
+     "https://github.com/BurntSushi/ripgrep")
+    (synopsis "Use PCRE2 with the grep crate")
+    (description "Use PCRE2 with the grep crate.")
+    (license (list license:expat license:unlicense))))
+
 (define-public rust-heapsize-0.4
   (package
     (name "rust-heapsize")
@@ -1948,7 +1973,7 @@ whether an expression matches a pattern.")
          "0f8wdra7yaggsr4jzlrvpd8yknnqhd990iijdr6llgc8gk2ppz1f"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build #t
+     `(#:skip-build? #t
        #:cargo-inputs
        (("rust-libc" ,rust-libc-0.2))
        #:cargo-development-inputs
@@ -1956,7 +1981,8 @@ whether an expression matches a pattern.")
     (home-page
      "https://github.com/BurntSushi/rust-memchr")
     (synopsis "Safe interface to memchr")
-    (description "Safe interface to memchr.")
+    (description "The @code{memchr} crate provides heavily optimized routines
+for searching bytes.")
     (license (list license:expat license:unlicense))))
 
 (define-public rust-memchr-1.0
