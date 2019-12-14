@@ -18183,3 +18183,23 @@ distribution; zero-truncated and zero-modified extensions of the standard
 discrete distributions.  It also supports phase-type distributions commonly
 used to compute ruin probabilities.")
     (license license:gpl2+)))
+
+(define-public r-bmp
+  (package
+    (name "r-bmp")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "bmp" version))
+       (sha256
+        (base32
+         "0jd67r11bn98hjwgyr6gas423787xy7ji2hq7ay80blkkcj91xxx"))))
+    (properties `((upstream-name . "bmp")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/bmp/")
+    (synopsis "Read Bitmap (BMP) images")
+    (description
+     "This package provides pure R tools to read BMP format images.  It is
+currently limited to 8 bit greyscale images and 24, 32 bit (A)RGB images.")
+    (license license:gpl2+)))
