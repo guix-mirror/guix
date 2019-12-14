@@ -17798,3 +17798,43 @@ Algorithm; it is used for optimizing smooth nonlinear objective functions with
 constraints.  Linear or nonlinear equality and inequality constraints are
 allowed.")
     (license license:gpl2+)))
+
+(define-public r-gdina
+  (package
+    (name "r-gdina")
+    (version "2.7.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "GDINA" version))
+       (sha256
+        (base32
+         "0875xfbm36gqzr0116xzlbm8rlff85rybr4s4hjzfflfvjdhgvfx"))))
+    (properties `((upstream-name . "GDINA")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-alabama" ,r-alabama)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-mass" ,r-mass)
+       ("r-nloptr" ,r-nloptr)
+       ("r-numderiv" ,r-numderiv)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-rsolnp" ,r-rsolnp)
+       ("r-shiny" ,r-shiny)
+       ("r-shinydashboard" ,r-shinydashboard)))
+    (home-page "https://github.com/Wenchao-Ma/GDINA")
+    (synopsis "Generalized DINA model framework")
+    (description
+     "This package provides a set of psychometric tools for cognitive
+diagnosis modeling based on the generalized deterministic inputs, noisy and
+gate (G-DINA) model by de la Torre (2011) @url{doi:10.1007/s11336-011-9207-7}
+and its extensions, including the sequential G-DINA model by Ma and de la
+Torre (2016) @url{doi:10.1111/bmsp.12070} for polytomous responses, and the
+polytomous G-DINA model by Chen and de la Torre
+@url{doi:10.1177/0146621613479818} for polytomous attributes.  Joint attribute
+distribution can be independent, saturated, higher-order, loglinear smoothed
+or structured.  Q-matrix validation, item and model fit statistics, model
+comparison at test and item level and differential item functioning can also
+be conducted.  A graphical user interface is also provided.")
+    (license license:gpl3)))
