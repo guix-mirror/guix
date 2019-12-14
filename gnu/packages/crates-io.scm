@@ -2953,6 +2953,33 @@ useful types and distributions, and some randomness-related algorithms.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-rand-core-0.5
+  (package
+    (name "rust-rand-core")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rand_core" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jis94x9ri8xlxki2w2w5k29sjpfwgzkjylg7paganp74hrnhpk1"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-getrandom" ,rust-getrandom-0.1)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0))))
+    (home-page "https://crates.io/crates/rand-core")
+    (synopsis
+     "Core random number generator traits and tools for implementation")
+    (description
+     "Core random number generator traits and tools for implementation.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rand-core-0.4
   (package
     (name "rust-rand-core")
