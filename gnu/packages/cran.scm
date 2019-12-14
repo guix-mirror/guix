@@ -18655,3 +18655,32 @@ archetypoids with small and large databases and with both classical
 multivariate data and functional data (univariate and multivariate).  Some of
 these algorithms also allow to detect anomalies (outliers).")
     (license license:gpl2+)))
+
+(define-public r-idpmisc
+  (package
+    (name "r-idpmisc")
+    (version "1.1.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "IDPmisc" version))
+       (sha256
+        (base32
+         "13qcvfm703frs367paddz1wq9k3p17f9p5347m56bhky5hjkaphd"))))
+    (properties `((upstream-name . "IDPmisc")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)))
+    (home-page "https://cran.r-project.org/web/packages/IDPmisc/")
+    (synopsis "Functions for data analyses and visualization")
+    (description
+     "This package provides different high-level graphics functions for
+displaying large datasets, displaying circular data in a very flexible way,
+finding local maxima, brewing color ramps, drawing nice arrows, zooming
+2D-plots, creating figures with differently colored margin and plot region.
+In addition, the package contains auxiliary functions for data manipulation
+like omitting observations with irregular values or selecting data by logical
+vectors, which include NAs.  Other functions are especially useful in
+spectroscopy and analyses of environmental data: robust baseline fitting,
+finding peaks in spectra, converting humidity measures.")
+    (license license:gpl3+)))
