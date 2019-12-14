@@ -2547,6 +2547,28 @@ file IO.")
          (base32
           "1zy6s0ni0lx9rjzq3gq2zz9r8zgjmbp02332g3gsj4fyhv4s5zz2"))))))
 
+(define-public rust-memoffset-0.2
+  (package
+    (name "rust-memoffset")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "memoffset" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1cvm2z7dy138s302ii7wlzcxbka5a8yfl5pl5di7lbdnw9hw578g"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/Gilnaa/memoffset")
+    (synopsis
+     "offset_of functionality for Rust structs")
+    (description
+     "@code{offset_of} functionality for Rust structs.")
+    (license license:expat)))
+
 (define-public rust-mime-0.3
   (package
     (name "rust-mime")
