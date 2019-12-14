@@ -1100,6 +1100,32 @@ hexadecimal, base32, and base64.")
     (description "Demo of proc-macro-hack.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-diff-0.1
+  (package
+    (name "rust-diff")
+    (version "0.1.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "diff" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fhavni46a2rib93ig5fgbqmm48ysms5sxzb3h9bp7vp2bwnjarw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-development-inputs
+       (("rust-quickcheck" ,rust-quickcheck-0.8)
+        ("rust-speculate" ,rust-speculate-0.1))))
+    (home-page "https://github.com/utkarshkukreti/diff.rs")
+    (synopsis
+     "LCS based slice and string diffing implementation")
+    (description
+     "An LCS based slice and string diffing implementation.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-dirs-1.0
   (package
     (name "rust-dirs")
