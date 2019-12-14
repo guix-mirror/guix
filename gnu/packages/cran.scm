@@ -18375,3 +18375,33 @@ The Hidiroglou-Berthelot (1986) method to search for outliers in ratios of
 historical data is implemented as well.  When available, survey weights can be
 used in outliers detection.")
     (license license:gpl2+)))
+
+(define-public r-tolerance
+  (package
+    (name "r-tolerance")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tolerance" version))
+       (sha256
+        (base32
+         "17qh4ad1f3fbcpwlxxqh8qr9bnwjcl4yxk0l3fkbr6b2l4rc5p86"))))
+    (properties `((upstream-name . "tolerance")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rgl" ,r-rgl)))
+    (home-page "https://cran.r-project.org/web/packages/tolerance/")
+    (synopsis "Statistical tolerance intervals and regions")
+    (description
+     "This package provides functions for estimating tolerance
+limits (intervals) for various univariate distributions (binomial, Cauchy,
+discrete Pareto, exponential, two-parameter exponential, extreme value,
+hypergeometric, Laplace, logistic, negative binomial, negative hypergeometric,
+normal, Pareto, Poisson-Lindley, Poisson, uniform, and Zipf-Mandelbrot),
+Bayesian normal tolerance limits, multivariate normal tolerance regions,
+nonparametric tolerance intervals, tolerance bands for regression
+settings (linear regression, nonlinear regression, nonparametric regression,
+and multivariate regression), and analysis of variance tolerance intervals.
+Visualizations are also available for most of these settings.")
+    (license license:gpl2+)))
