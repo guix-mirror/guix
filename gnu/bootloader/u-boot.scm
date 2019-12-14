@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 David Craven <david@craven.ch>
-;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +33,7 @@
             u-boot-nintendo-nes-classic-edition-bootloader
             u-boot-novena-bootloader
             u-boot-pine64-plus-bootloader
+            u-boot-pine64-lts-bootloader
             u-boot-pinebook-bootloader
             u-boot-puma-rk3399-bootloader
             u-boot-rock64-rk3328-bootloader
@@ -205,6 +206,11 @@
   (bootloader
    (inherit u-boot-allwinner64-bootloader)
    (package u-boot-pine64-plus)))
+
+(define u-boot-pine64-lts-bootloader
+  (bootloader
+   (inherit u-boot-allwinner-bootloader)
+   (package u-boot-pine64-lts)))
 
 (define u-boot-pinebook-bootloader
   (bootloader
