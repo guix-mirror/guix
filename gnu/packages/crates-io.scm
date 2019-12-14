@@ -1540,6 +1540,46 @@ futures-rs library.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-futures-util-preview-0.3
+  (package
+    (name "rust-futures-util-preview")
+    (version "0.3.0-alpha.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "futures-util-preview" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0kizm86wgr5qldyavskfi0r1msg6m4x2pkj0d4r04br2ig29i0dg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-futures" ,rust-futures-0.1)
+        ("rust-futures-channel-preview" ,rust-futures-channel-preview-0.3)
+        ("rust-futures-core-preview" ,rust-futures-core-preview-0.3)
+        ("rust-futures-io-preview" ,rust-futures-io-preview-0.3)
+        ("rust-futures-select-macro-preview"
+         ,rust-futures-select-macro-preview-0.3)
+        ("rust-futures-sink-preview" ,rust-futures-sink-preview-0.3)
+        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-pin-utils" ,rust-pin-utils-0.1)
+        ("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5)
+        ("rust-proc-macro-nested" ,rust-proc-macro-nested-0.1)
+        ("rust-rand" ,rust-rand-0.4)
+        ("rust-rand-core" ,rust-rand-core-0.5)
+        ("rust-slab" ,rust-slab-0.4)
+        ("rust-tokio-io" ,rust-tokio-io-0.1))))
+    (home-page "https://github.com/rust-lang/futures-rs")
+    (synopsis
+     "Utilities and extension traits for futures-rs library")
+    (description
+     "Common utilities and extension traits for the futures-rs
+library.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-gcc-0.3
   (package
     (inherit rust-cc-1.0)
