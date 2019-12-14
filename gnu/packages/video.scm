@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
-;;; Copyright © 2016, 2018, 2019 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016, 2018, 2019, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -1721,7 +1721,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
 (define-public youtube-viewer
   (package
     (name "youtube-viewer")
-    (version "3.5.8")
+    (version "3.7.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1730,12 +1730,10 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0zz0r3vd2pg9zzykhrq0vnvqp5842dbgsg8cfygw9vzb9j8mlq0a"))))
+                "1h0m8rn7najdrzvg5md9albiax287273b40ncrihh9amsvvb47c9"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
-    ;; FIXME: Add optional dependencies once available:
-    ;; perl-lwp-useragent-cached and perl-term-readline-gnu
     (inputs
      `(("perl-data-dump" ,perl-data-dump)
        ("perl-file-sharedir" ,perl-file-sharedir)
@@ -1743,8 +1741,11 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
        ("perl-json" ,perl-json)
        ("perl-libwww" ,perl-libwww)
        ("perl-lwp-protocol-https" ,perl-lwp-protocol-https)
+       ("perl-lwp-useragent-cached" ,perl-lwp-useragent-cached)
        ("perl-mozilla-ca" ,perl-mozilla-ca)
+       ("perl-term-readline-gnu" ,perl-term-readline-gnu)
        ("perl-unicode-linebreak" ,perl-unicode-linebreak)
+       ("xdg-utils" ,xdg-utils)
 
        ;; Some videos play without youtube-dl, but others silently fail to.
        ("youtube-dl" ,youtube-dl)))
@@ -1761,6 +1762,11 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
                (("'youtube-dl'")
                 (format #f "'~a/bin/youtube-dl'"
                         (assoc-ref inputs "youtube-dl"))))
+             (substitute* '("bin/gtk2-youtube-viewer"
+                            "bin/gtk3-youtube-viewer")
+               (("'xdg-open'")
+                (format #f "'~a/bin/xdg-open'"
+                        (assoc-ref inputs "xdg-utils"))))
              #t))
          (add-after 'install 'install-desktop
            (lambda* (#:key outputs #:allow-other-keys)
