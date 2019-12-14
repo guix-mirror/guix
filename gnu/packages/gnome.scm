@@ -8827,7 +8827,8 @@ advanced image management tool")
     (home-page "https://source.puri.sm/Librem5/libhandy")
     (synopsis "Library full of GTK+ widgets for mobile phones")
     (description "The aim of the handy library is to help with developing user
-intefaces for mobile devices using GTK+.")
+interfaces for mobile devices using GTK+.  It provides responsive GTK+ widgets
+for usage on small and big screens.")
     (license license:lgpl2.1+)))
 
 (define-public libgit2-glib
