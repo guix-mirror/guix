@@ -5076,6 +5076,32 @@ untrusted inputs in Rust.")
     (properties '((hidden? . #t)))
     (license license:isc)))
 
+(define-public rust-utf8-ranges-1.0
+  (package
+    (name "rust-utf8-ranges")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "utf8-ranges" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ppzjsxmv1p1xfid8wwn07ciikk84k30frl28bwsny6za1vall4x"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-development-inputs
+       (("rust-doc-comment" ,rust-doc-comment-0.3)
+        ("rust-quickcheck" ,rust-quickcheck-0.8))))
+    (home-page "https://github.com/BurntSushi/utf8-ranges")
+    (synopsis
+     "Convert ranges of Unicode codepoints to UTF-8 byte ranges")
+    (description
+     "Convert ranges of Unicode codepoints to UTF-8 byte ranges.")
+    (license (list license:expat license:unlicense))))
+
 (define-public rust-vcpkg-0.2
   (package
     (name "rust-vcpkg")
