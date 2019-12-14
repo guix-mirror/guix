@@ -203,6 +203,37 @@ and no more (caveat: black_box is still missing!).")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-bincode-1.1
+  (package
+    (name "rust-bincode")
+    (version "1.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bincode" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1xx6bp39irvsndk6prnmmq8m1l9p6q2qj21j6mfks2y81pjsa14z"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-autocfg" ,rust-autocfg-0.1)
+        ("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-serde-bytes" ,rust-serde-bytes-0.11)
+        ("rust-serde-derive" ,rust-serde-derive-1.0))))
+    (home-page "https://github.com/servo/bincode")
+    (synopsis
+     "Binary serialization/deserialization strategy")
+    (description
+     "This package provides a binary serialization/deserialization strategy
+that uses Serde for transforming structs into bytes and vice versa!")
+    (license license:expat)))
+
 (define-public rust-bitflags-1
   (package
     (name "rust-bitflags")
