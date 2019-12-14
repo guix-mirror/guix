@@ -18023,3 +18023,28 @@ counts are proprietary and difficult to implement if researchers use different
 accelerometer brands.  The code creates ActiLife counts from raw acceleration
 data for different accelerometer brands.")
     (license license:gpl3)))
+
+(define-public r-activityindex
+  (package
+    (name "r-activityindex")
+    (version "0.3.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ActivityIndex" version))
+       (sha256
+        (base32
+         "14k6d78s15j7kb7jhixf4msrdjdl28d0r264cbvy41p8dkq7ysvk"))))
+    (properties `((upstream-name . "ActivityIndex")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-r-utils" ,r-r-utils)))
+    (home-page "https://cran.r-project.org/web/packages/ActivityIndex/")
+    (synopsis "Activity Index calculation using raw accelerometry data")
+    (description
+     "This is a package to read raw accelerometry from GT3X+ accelerometry
+data and plain table data to calculate the Activity Index from Bai et
+al. (2016) @url{doi:10.1371/journal.pone.0160644}.")
+    (license license:gpl3)))
