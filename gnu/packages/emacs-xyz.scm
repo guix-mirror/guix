@@ -20083,8 +20083,8 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
 
 (define-public emacs-telega
   (let ((commit "6184e76990db395bea02f7b5d3169e746111e1ad")
-	(revision "2")
-	(version "0.5.2"))
+	(revision "1")
+	(version "0.5.3"))
     (package
       (name "emacs-telega")
       (version (git-version version revision commit))
