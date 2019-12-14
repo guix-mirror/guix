@@ -18510,3 +18510,32 @@ validation of bicluster solutions.")
 data as well as to identify atypical units.  The underlying methods are based
 on distances rather than on unit x variables.")
     (license license:gpl2+)))
+
+(define-public r-depth
+  (package
+    (name "r-depth")
+    (version "2.1-1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "depth" version))
+       (sha256
+        (base32
+         "0szy0027nh4ps1z919i740i50app5q7cfyg1fj7pdyl45nbl8k6m"))))
+    (properties `((upstream-name . "depth")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-abind" ,r-abind)
+       ("r-circular" ,r-circular)
+       ("r-rgl" ,r-rgl)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/depth/")
+    (synopsis "Nonparametric depth functions for multivariate analysis")
+    (description
+     "This package provides tools for depth functions methodology applied to
+multivariate analysis.  Besides allowing calculation of depth values and
+depth-based location estimators, the package includes functions or drawing
+contour plots and perspective plots of depth functions.  Euclidian and
+spherical depths are supported.")
+    (license license:gpl2)))
