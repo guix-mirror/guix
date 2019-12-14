@@ -11479,7 +11479,7 @@ network protocols, and core version control algorithms.")
 (define-public abcl
   (package
     (name "abcl")
-    (version "1.5.0")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
@@ -11487,7 +11487,7 @@ network protocols, and core version control algorithms.")
                            version "/abcl-src-" version ".tar.gz"))
        (sha256
         (base32
-         "1hhvcg050nfpjbdmskc1cv2j38qi6qfl77a61b5cxx576kbff3lj"))
+         "0hvbcsffr8n2xwdixc8wyw1bfl9fxn2gyy0c4nma7j9zbn0wwgw9"))
        (patches
         (search-patches
          "abcl-fix-build-xml.patch"))))
