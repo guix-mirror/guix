@@ -18426,3 +18426,32 @@ Visualizations are also available for most of these settings.")
      "This package provides an implementation of the Tukey, Mandel,
 Johnson-Graybill, LBI, Tusell and modified Tukey non-additivity tests.")
     (license license:gpl3)))
+
+(define-public r-flexclust
+  (package
+    (name "r-flexclust")
+    (version "1.4-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "flexclust" version))
+       (sha256
+        (base32
+         "0x7wxk8y46ndyz6fdacym0rd6p9wh3pcfr28chjcg5d7fm849zl2"))))
+    (properties `((upstream-name . "flexclust")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-class" ,r-class)
+       ("r-lattice" ,r-lattice)
+       ("r-modeltools" ,r-modeltools)))
+    (home-page "https://cran.r-project.org/web/packages/flexclust/")
+    (synopsis "Flexible cluster algorithms")
+    (description
+     "The main function @code{kcca} implements a general framework for
+k-centroids cluster analysis supporting arbitrary distance measures and
+centroid computation.  Further cluster methods include hard competitive
+learning, neural gas, and QT clustering.  There are numerous visualization
+methods for cluster results (neighborhood graphs, convex cluster hulls,
+barcharts of centroids, ...), and bootstrap methods for the analysis of
+cluster stability.")
+    (license license:gpl2)))
