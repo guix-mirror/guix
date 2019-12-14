@@ -3802,6 +3802,33 @@ useful types and distributions, and some randomness-related algorithms.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-rand-xorshift-0.2
+  (package
+    (name "rust-rand-xorshift")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rand_xorshift" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1a6wy76lc5fimm1n9n8fzhp4cfjwfwxh4hx63bg3vlh1d2w1dm3p"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-rand-core" ,rust-rand-core-0.5)
+        ("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-bincode" ,rust-bincode-1.1))))
+    (home-page "https://crates.io/crates/rand-xorshift")
+    (synopsis "Xorshift random number generator")
+    (description
+     "Xorshift random number generator.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rand-xoshiro-0.3
   (package
     (name "rust-rand-xoshiro")
