@@ -1831,6 +1831,21 @@ whether an expression matches a pattern.")
     (description "Safe interface to memchr.")
     (license (list license:expat license:unlicense))))
 
+(define-public rust-memchr-1.0
+  (package
+    (inherit rust-memchr-2.2)
+    (name "rust-memchr")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "memchr" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0yjyja34pzhipdl855q3m21w1lyih4lw79x2dp3czwdla4pap3ql"))))))
+
 (define-public rust-memmap-0.7
   (package
     (name "rust-memmap")
