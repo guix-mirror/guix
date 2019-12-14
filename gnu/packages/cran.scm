@@ -18563,3 +18563,32 @@ spherical depths are supported.")
 archetypal analysis supporting arbitrary problem solving mechanisms for the
 different conceptual parts of the algorithm.")
     (license license:gpl2+)))
+
+(define-public r-shapes
+  (package
+    (name "r-shapes")
+    (version "1.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "shapes" version))
+       (sha256
+        (base32
+         "0gfpdydfysp5mwg7qmkn73s67gvh2szb40mzqrx97h41ijgcgd8s"))))
+    (properties `((upstream-name . "shapes")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)
+       ("r-minpack-lm" ,r-minpack-lm)
+       ("r-rgl" ,r-rgl)
+       ("r-scatterplot3d" ,r-scatterplot3d)))
+    (home-page "http://www.maths.nottingham.ac.uk/~ild/shapes")
+    (synopsis "Statistical shape analysis")
+    (description
+     "This package provides routines for the statistical analysis of landmark
+shapes, including Procrustes analysis, graphical displays, principal
+components analysis, permutation and bootstrap tests, thin-plate spline
+transformation grids and comparing covariance matrices.  See Dryden, I.L.  and
+Mardia, K.V. (2016).  Statistical shape analysis, with Applications in R (2nd
+Edition), John Wiley and Sons.")
+    (license license:gpl2)))
