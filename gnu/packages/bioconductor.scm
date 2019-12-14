@@ -5340,6 +5340,37 @@ Cytometry data using non-parametric clustering and segmented-regression-based
 change point detection.")
     (license license:artistic2.0)))
 
+(define-public r-ncdfflow
+  (package
+    (name "r-ncdfflow")
+    (version "2.32.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ncdfFlow" version))
+       (sha256
+        (base32
+         "06lscx6h4rg80ifi90rj7z2497b8w1fjipm3l8s3230rkizhh02i"))))
+    (properties `((upstream-name . "ncdfFlow")))
+    (build-system r-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-flowcore" ,r-flowcore)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-rhdf5lib" ,r-rhdf5lib)
+       ("r-zlibbioc" ,r-zlibbioc)))
+    (home-page "https://bioconductor.org/packages/ncdfFlow/")
+    (synopsis "HDF5 based storage for flow cytometry data")
+    (description
+     "This package provides HDF5 storage based methods and functions for
+manipulation of flow cytometry data.")
+    (license license:artistic2.0)))
+
 (define-public r-flowsom
   (package
     (name "r-flowsom")
