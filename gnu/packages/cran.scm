@@ -18455,3 +18455,34 @@ methods for cluster results (neighborhood graphs, convex cluster hulls,
 barcharts of centroids, ...), and bootstrap methods for the analysis of
 cluster stability.")
     (license license:gpl2)))
+
+(define-public r-biclust
+  (package
+    (name "r-biclust")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "biclust" version))
+       (sha256
+        (base32
+         "1y5n6wfa1lx88ck3x09rcg0dh3pw89225h85hmq2la1s1fpa48i0"))))
+    (properties `((upstream-name . "biclust")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-additivitytests" ,r-additivitytests)
+       ("r-colorspace" ,r-colorspace)
+       ("r-flexclust" ,r-flexclust)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-lattice" ,r-lattice)
+       ("r-mass" ,r-mass)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "https://cran.r-project.org/web/packages/biclust/")
+    (synopsis "BiCluster algorithms")
+    (description
+     "The main function @code{biclust()} provides several algorithms to find
+biclusters in two-dimensional data, spectral, plaid model, xmotifs, and bimax.
+In addition, the package provides methods for data
+preprocessing (normalization and discretization), visualization, and
+validation of bicluster solutions.")
+    (license license:gpl3)))
