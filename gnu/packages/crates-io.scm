@@ -3074,6 +3074,35 @@ streaming API for miniz_oxide.")
         (base32
          "17f92krv9hhsyc38prpfyn99m2hqhr4fgszpsla66a6gcrnpbhxn"))))))
 
+(define-public rust-miniz-oxide-c-api-0.2
+  (package
+    (name "rust-miniz-oxide-c-api")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "miniz_oxide_c_api" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1514mvlj8vl723xqxnww5cfqr2mhnqqqf18fn3df17yx8racly2v"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-crc32fast" ,rust-crc32fast-1.2)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-miniz-oxide" ,rust-miniz-oxide-0.2))
+       #:cargo-development-inputs
+       (("rust-cc" ,rust-cc-1.0))))
+    (home-page "https://github.com/Frommi/miniz_oxide/")
+    (synopsis "DEFLATE compression and decompression API")
+    (description
+     "DEFLATE compression and decompression API designed to be Rust
+drop-in replacement for miniz.")
+    (license license:expat)))
+
 (define-public rust-miniz-sys-0.1
   (package
     (name "rust-miniz-sys")
