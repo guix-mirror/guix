@@ -5001,6 +5001,36 @@ in Rust.")
     (license (list license:asl2.0
                    license:expat))))
 
+;; Cyclic dependencies with tokio and tokio-current-thread
+(define-public rust-tokio-io-0.1
+  (package
+    (name "rust-tokio-io")
+    (version "0.1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-io" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "09jrz1hh4h1vj45qy09y7m7m8jsy1hl6g32clnky25mdim3dp42h"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.4)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-log" ,rust-log-0.4))
+       #:cargo-development-inputs
+       (("rust-tokio-current-thread" ,rust-tokio-current-thread-0.1))))
+    (home-page "https://tokio.rs")
+    (synopsis
+     "Core I/O primitives for asynchronous I/O in Rust")
+    (description
+     "Core I/O primitives for asynchronous I/O in Rust.")
+    (license license:expat)))
+
 (define-public rust-tokio-mock-task-0.1
   (package
     (name "rust-tokio-mock-task")
