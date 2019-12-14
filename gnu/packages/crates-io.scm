@@ -2084,6 +2084,42 @@ SystemTime}}.")
     (properties '((hidden? . #t)))
     (license license:expat)))
 
+(define-public rust-insta-0.8
+  (package
+    (name "rust-insta")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "insta" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17rvqw9xm61prncbqi3cplphr3l2dl85sljdpyr3fz2mqjgbdfwb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-chrono" ,rust-chrono-0.4)
+        ("rust-ci-info" ,rust-ci-info-0.3)
+        ("rust-console" ,rust-console-0.7)
+        ("rust-difference" ,rust-difference-2.0)
+        ("rust-failure" ,rust-failure-0.1)
+        ("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-pest" ,rust-pest-2.1)
+        ("rust-pest-derive" ,rust-pest-derive-2.1)
+        ("rust-ron" ,rust-ron-0.4)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0)
+        ("rust-serde-yaml" ,rust-serde-yaml-0.8)
+        ("rust-uuid" ,rust-uuid-0.7))))
+    (home-page "https://github.com/mitsuhiko/insta")
+    (synopsis "Snapshot testing library for Rust")
+    (description
+     "This package provides a snapshot testing library for Rust.")
+    (license license:asl2.0)))
+
 (define-public rust-iovec-0.1
   (package
     (name "rust-iovec")
