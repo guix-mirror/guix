@@ -18155,3 +18155,31 @@ function @code{G(a, x)} defined for negative values of its first argument.
 The package also gives easy access to the underlying C routines through an
 API; see the package vignette for details.")
     (license license:gpl2+)))
+
+(define-public r-actuar
+  (package
+    (name "r-actuar")
+    (version "2.3-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "actuar" version))
+       (sha256
+        (base32
+         "0aw3hlan5y22mdqk1wvnw9ksqhwp4yy5hi0dpv21p7s0hyxhphih"))))
+    (properties `((upstream-name . "actuar")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-expint" ,r-expint)))
+    (home-page "https://gitlab.com/vigou3/actuar")
+    (synopsis "Actuarial functions and heavy tailed distributions")
+    (description
+     "This package provides functions and data sets for actuarial science:
+modeling of loss distributions; risk theory and ruin theory; simulation of
+compound models, discrete mixtures and compound hierarchical models;
+credibility theory.  It boasts support for many additional probability
+distributions to model insurance loss amounts and loss frequency: 19
+continuous heavy tailed distributions; the Poisson-inverse Gaussian discrete
+distribution; zero-truncated and zero-modified extensions of the standard
+discrete distributions.  It also supports phase-type distributions commonly
+used to compute ruin probabilities.")
+    (license license:gpl2+)))
