@@ -3353,7 +3353,7 @@ and RDP protocols.")
 (define-public dconf
   (package
     (name "dconf")
-    (version "0.32.0")
+    (version "0.34.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3363,7 +3363,7 @@ and RDP protocols.")
               (patches (search-patches "dconf-meson-0.52.patch"))
               (sha256
                (base32
-                "1azz4hb9z76yxn34yrrsiib3iqz5z4vpwn5q7cncp55w365ygg38"))))
+                "0lnsl85cp2vpzgp8pkf6l6yd2i3lp02jdvga1icfa78j2smr8fll"))))
     (build-system meson-build-system)
     (propagated-inputs
      ;; In Requires of dconf.pc.
