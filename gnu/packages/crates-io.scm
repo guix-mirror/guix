@@ -875,6 +875,36 @@ It is inspired by the Linux kernel's @code{crypto_memneq}.")
     (description "Criterion's plotting library.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-crossbeam-0.7
+  (package
+    (name "rust-crossbeam")
+    (version "0.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crossbeam" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0g5jysq5x4gndc1v5sq9n3f1m97k7qihwdpigw6ar6knj14qm09d"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-crossbeam-channel" ,rust-crossbeam-channel-0.3)
+        ("rust-crossbeam-deque" ,rust-crossbeam-deque-0.7)
+        ("rust-crossbeam-epoch" ,rust-crossbeam-epoch-0.7)
+        ("rust-crossbeam-queue" ,rust-crossbeam-queue-0.1)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.4))))
+    (home-page "https://github.com/crossbeam-rs/crossbeam")
+    (synopsis "Tools for concurrent programming")
+    (description "Tools for concurrent programming.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-crossbeam-channel-0.3
   (package
     (name "rust-crossbeam-channel")
