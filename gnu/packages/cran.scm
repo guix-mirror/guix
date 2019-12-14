@@ -17775,3 +17775,26 @@ complexity are also provided: entropy and change complexity.")
      "This is a companion package for the book \"A Course in Statistics with
 R\" (ISBN 978-1-119-15272-9.)")
     (license license:gpl2)))
+
+(define-public r-alabama
+  (package
+    (name "r-alabama")
+    (version "2015.3-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "alabama" version))
+       (sha256
+        (base32
+         "0mlgk929gdismikwx4k2ndqq57nnqj7mlgvd3479b214hksgq036"))))
+    (properties `((upstream-name . "alabama")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-numderiv" ,r-numderiv)))
+    (home-page "https://cran.r-project.org/web/packages/alabama/")
+    (synopsis "Constrained nonlinear optimization")
+    (description
+     "Alabama stands for Augmented Lagrangian Adaptive Barrier Minimization
+Algorithm; it is used for optimizing smooth nonlinear objective functions with
+constraints.  Linear or nonlinear equality and inequality constraints are
+allowed.")
+    (license license:gpl2+)))
