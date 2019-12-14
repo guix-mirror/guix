@@ -18625,3 +18625,33 @@ solutions to some commons problems related to Ergonomics and Anthropometry.
 They are based on clustering, the statistical concept of data depth,
 statistical shape analysis and archetypal analysis.")
     (license license:gpl2+)))
+
+(define-public r-adamethods
+  (package
+    (name "r-adamethods")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "adamethods" version))
+       (sha256
+        (base32
+         "0mp73zh5x6h18gv29v981kb9n632kb58lvlcxwr6vcvrx393nrxh"))))
+    (properties `((upstream-name . "adamethods")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-anthropometry" ,r-anthropometry)
+       ("r-archetypes" ,r-archetypes)
+       ("r-fnn" ,r-fnn)
+       ("r-foreach" ,r-foreach)
+       ("r-nnls" ,r-nnls)
+       ("r-tolerance" ,r-tolerance)
+       ("r-univoutl" ,r-univoutl)))
+    (home-page "https://cran.r-project.org/web/packages/adamethods/")
+    (synopsis "Archetypoid algorithms and anomaly detection")
+    (description
+     "This package is a collection of several algorithms to obtain
+archetypoids with small and large databases and with both classical
+multivariate data and functional data (univariate and multivariate).  Some of
+these algorithms also allow to detect anomalies (outliers).")
+    (license license:gpl2+)))
