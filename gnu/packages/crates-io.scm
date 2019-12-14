@@ -2345,6 +2345,35 @@ deserialization, and interpreter in Rust.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-pcre2-0.2
+  (package
+    (name "rust-pcre2")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pcre2" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "103i66a998g1fjrqf9sdyvi8qi83hwglz3pjdcq9n2r207hsagb0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-pcre2-sys" ,rust-pcre2-sys-0.2)
+        ("rust-thread-local" ,rust-thread-local-0.3))))
+    (home-page
+     "https://github.com/BurntSushi/rust-pcre2")
+    (synopsis
+     "High level wrapper library for PCRE2")
+    (description
+     "High level wrapper library for PCRE2.")
+    (license (list license:expat license:unlicense))))
+
 (define-public rust-pcre2-sys-0.2
   (package
     (name "rust-pcre2-sys")
