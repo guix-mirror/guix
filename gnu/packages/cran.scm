@@ -18486,3 +18486,27 @@ In addition, the package provides methods for data
 preprocessing (normalization and discretization), visualization, and
 validation of bicluster solutions.")
     (license license:gpl3)))
+
+(define-public r-icge
+  (package
+    (name "r-icge")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ICGE" version))
+       (sha256
+        (base32
+         "0xin7zml1nbygyi08hhg3wwr2jr1zcsvrlgia89zp4xanxlzgaqa"))))
+    (properties `((upstream-name . "ICGE")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cluster" ,r-cluster)
+       ("r-mass" ,r-mass)))
+    (home-page "https://cran.r-project.org/web/packages/ICGE/")
+    (synopsis "Cluster estimation and identification of atypical units")
+    (description
+     "ICGE is a package that helps to estimate the number of real clusters in
+data as well as to identify atypical units.  The underlying methods are based
+on distances rather than on unit x variables.")
+    (license license:gpl2+)))
