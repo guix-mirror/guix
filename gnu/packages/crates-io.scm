@@ -1166,6 +1166,40 @@ shell style patterns.")
          (base32
           "1ysvi72slkw784fcsymgj4308c3y03gwjjzqxp80xdjnkbh8vqcb"))))))
 
+(define-public rust-globset-0.4
+  (package
+    (name "rust-globset")
+    (version "0.4.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "globset" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wnqxq91liknmr2w93wjq2spyxbrd1pmnhd4nbi3921dr35a4nlj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-aho-corasick" ,rust-aho-corasick-0.7)
+        ("rust-bstr" ,rust-bstr-0.2)
+        ("rust-fnv" ,rust-fnv-1.0)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-regex" ,rust-regex-1.1))
+       #:cargo-development-inputs
+       (("rust-glob" ,rust-glob-0.3))))
+    (home-page
+     "https://github.com/BurntSushi/ripgrep/tree/master/globset")
+    (synopsis
+     "Cross platform single glob and glob set matching")
+    (description
+     "Cross platform single glob and glob set matching.  Glob set matching is
+the process of matching one or more glob patterns against a single candidate
+path simultaneously, and returning all of the globs that matched.")
+    (license (list license:expat license:unlicense))))
+
 (define-public rust-heapsize-0.4
   (package
     (name "rust-heapsize")
