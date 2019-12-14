@@ -4080,14 +4080,14 @@ hierarchical clustering dendrograms.")
 (define-public r-preprocesscore
   (package
     (name "r-preprocesscore")
-    (version "1.46.0")
+    (version "1.48.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "preprocessCore" version))
        (sha256
         (base32
-         "0iiyn42hlvmc5vabg5x15mls11124i23sh4qijwk0narh438cqm0"))))
+         "0zrb9hx60vppkg0priczdb301nhq5f0dj8lkc8rcc4xrqqr915qm"))))
     (properties
      `((upstream-name . "preprocessCore")))
     (build-system r-build-system)
