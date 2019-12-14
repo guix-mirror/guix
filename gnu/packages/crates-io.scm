@@ -5069,6 +5069,33 @@ in Rust.")
      "Utilities for encoding and decoding frames.")
     (license license:expat)))
 
+(define-public rust-tokio-current-thread-0.1
+  (package
+    (name "rust-tokio-current-thread")
+    (version "0.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-current-thread" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hx4c8v88kk0ih8x5s564gsgwwf8n11kryvxm72l1f7isz51fqni"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-futures" ,rust-futures-0.1)
+        ("rust-tokio-executor" ,rust-tokio-executor-0.1))))
+    (home-page "https://github.com/tokio-rs/tokio")
+    (synopsis
+     "Manage many tasks concurrently on the current thread")
+    (description
+     "Single threaded executor which manage many tasks concurrently on
+the current thread.")
+    (license license:expat)))
+
 ;; Cyclic dependency with rust-tokio.
 (define-public rust-tokio-executor-0.1
   (package
