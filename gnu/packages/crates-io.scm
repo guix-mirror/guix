@@ -5895,6 +5895,35 @@ the current thread.")
     (properties '((hidden? . #t)))
     (license license:expat)))
 
+(define-public rust-tokio-sync-0.1
+  (package
+    (name "rust-tokio-sync")
+    (version "0.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-sync" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ryalh7dcmnz46xj1va8aaw3if6vd4mj87r67dqvrqhpyf7j8qi1"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-fnv" ,rust-fnv-1.0)
+        ("rust-futures" ,rust-futures-0.1))
+       #:cargo-development-inputs
+       (("rust-env-logger" ,rust-env-logger-0.6)
+        ("rust-loom" ,rust-loom-0.1)
+        ("rust-tokio" ,rust-tokio-0.1)
+        ("rust-tokio-mock-task" ,rust-tokio-mock-task-0.1))))
+    (home-page "https://tokio.rs")
+    (synopsis "Synchronization utilities")
+    (description "Synchronization utilities.")
+    (license license:expat)))
+
 (define-public rust-toml-0.5
   (package
     (name "rust-toml")
