@@ -3399,6 +3399,34 @@ with one of the implemented strategies.")
     (properties '((hidden? . #t)))
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-serde-test-1.0
+  (package
+    (name "rust-serde-test")
+    (version "1.0.101")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serde_test" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0070ycbh47yhxb5vxwa15vi2wpdkw3v1m14v4mjryz1568fqkbsa"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0))))
+    (home-page "https://serde.rs")
+    (synopsis
+     "Token De/Serializer for testing De/Serialize implementations")
+    (description
+     "Token De/Serializer for testing De/Serialize implementations.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-shlex-0.1
   (package
     (name "rust-shlex")
