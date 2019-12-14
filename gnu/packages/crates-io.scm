@@ -875,6 +875,30 @@ hexadecimal, base32, and base64.")
          (base32
           "17giv0n0n1r64z0dahfvkjy3ys517jxyhs8sd9lmgvcljpjyryxa"))))))
 
+(define-public rust-demo-hack-0.0
+  (package
+    (name "rust-demo-hack")
+    (version "0.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "demo-hack" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0m0114p1g0zzrdph5bg03i8m8p70vrwn3whs191jrbjcrmh5lmnp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-demo-hack-impl" ,rust-demo-hack-impl-0.0)
+        ("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5))))
+    (home-page "https://github.com/dtolnay/proc-macro-hack")
+    (synopsis "Demo of proc-macro-hack")
+    (description "Demo of proc-macro-hack.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-dirs-1.0
   (package
     (name "rust-dirs")
