@@ -18706,3 +18706,31 @@ finding peaks in spectra, converting humidity measures.")
      "This package allows you to create Q-Q and Manhattan plots for GWAS data
 from PLINK results.")
     (license license:gpl3)))
+
+(define-public r-ggplot-multistats
+  (package
+    (name "r-ggplot-multistats")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggplot.multistats" version))
+       (sha256
+        (base32
+         "1afzfa86vc484bcwpg7m1ky03jpax584rigzgai8w06pifkmz0il"))))
+    (properties
+     `((upstream-name . "ggplot.multistats")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-hexbin" ,r-hexbin)
+       ("r-rlang" ,r-rlang)
+       ("r-scales" ,r-scales)))
+    (home-page "https://github.com/flying-sheep/ggplot.multistats")
+    (synopsis "Multiple summary statistics for binned stats/geometries")
+    (description
+     "This package provides the ggplot binning layer @code{stat_summaries_hex()},
+which functions similar to its singular form, but allows the use of multiple
+statistics per bin.  Those statistics can be mapped to multiple bin
+aesthetics.")
+    (license license:gpl3)))
