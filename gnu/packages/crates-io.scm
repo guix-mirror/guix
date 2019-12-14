@@ -4915,6 +4915,33 @@ track of where each new file and line starts.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-speculate-0.1
+  (package
+    (name "rust-speculate")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "speculate" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ph01n3fqkmnfr1wd13dqsi4znv06xy6p4h3hqqdzk81r0r5vd1w"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-syn" ,rust-syn-0.15)
+        ("rust-unicode-xid" ,rust-unicode-xid-0.1))))
+    (home-page "https://github.com/utkarshkukreti/speculate.rs")
+    (synopsis "RSpec inspired testing framework for Rust")
+    (description
+     "An RSpec inspired minimal testing framework for Rust.")
+    (license license:expat)))
+
 (define-public rust-spin-0.5
   (package
     (name "rust-spin")
