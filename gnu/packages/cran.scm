@@ -18274,3 +18274,27 @@ morphology, transformations, etc.) as well as various functions for easily
 analyzing image data using R.  The package wraps @url{http://cimg.eu, CImg}, a
 simple, modern C++ library for image processing.")
     (license license:lgpl3)))
+
+(define-public r-acuityview
+  (package
+    (name "r-acuityview")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "AcuityView" version))
+       (sha256
+        (base32
+         "0f0iclmnwdc8ixiiai4svk4x1g3pjy7dhm3cm58fv6ckx12d3d2l"))))
+    (properties `((upstream-name . "AcuityView")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-fftwtools" ,r-fftwtools)
+       ("r-imager" ,r-imager)
+       ("r-plotrix" ,r-plotrix)))
+    (home-page "https://cran.r-project.org/web/packages/AcuityView/")
+    (synopsis "Display scenes as seen by an animal with less acute vision")
+    (description
+     "This package provides a simple method for representing a visual scene as
+it may be seen by an animal with less acute vision.")
+    (license license:gpl2+)))
