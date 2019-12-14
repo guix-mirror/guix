@@ -234,13 +234,14 @@ fe80::1%lo0 apps.facebook.com\n")
                  (define valid?
                    (lambda (interface)
                      (and (arp-network-interface? interface)
-                          (not (loopback-network-interface? interface)))))
+                          (not (loopback-network-interface? interface))
+                          ;; XXX: Make sure the interfaces are up so that
+                          ;; 'dhclient' can actually send/receive over them.
+                          ;; Ignore those that cannot be activated.
+                          (false-if-exception
+                           (set-network-interface-up interface)))))
                  (define ifaces
                    (filter valid? (all-network-interface-names)))
-
-                 ;; XXX: Make sure the interfaces are up so that 'dhclient' can
-                 ;; actually send/receive over them.
-                 (for-each set-network-interface-up ifaces)
 
                  (false-if-exception (delete-file #$pid-file))
                  (let ((pid (fork+exec-command
