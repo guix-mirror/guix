@@ -18298,3 +18298,31 @@ simple, modern C++ library for image processing.")
      "This package provides a simple method for representing a visual scene as
 it may be seen by an animal with less acute vision.")
     (license license:gpl2+)))
+
+(define-public r-adabag
+  (package
+    (name "r-adabag")
+    (version "4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "adabag" version))
+       (sha256
+        (base32
+         "109wrl1pwvmyv2l909hrvk7dg4aa9pv449mvdycp50zwrsw9w0a7"))))
+    (properties `((upstream-name . "adabag")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-caret" ,r-caret)
+       ("r-doparallel" ,r-doparallel)
+       ("r-foreach" ,r-foreach)
+       ("r-rpart" ,r-rpart)))
+    (home-page "https://cran.r-project.org/web/packages/adabag/")
+    (synopsis "Multiclass AdaBoost.M1, SAMME and Bagging")
+    (description
+     "This package implements Freund and Schapire's Adaboost.M1 algorithm and
+Breiman's Bagging algorithm using classification trees as individual
+classifiers.  Once these classifiers have been trained, they can be used to
+predict on new data.  Also, cross validation estimation of the error can be
+done.")
+    (license license:gpl2+)))
