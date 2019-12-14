@@ -18079,3 +18079,27 @@ trends.  This includes generating graphs that align physical activity
 behaviour with additional time based observations described by other data
 sets, such as sleep diaries and continuous glucose monitoring data.")
     (license license:gpl3)))
+
+(define-public r-activpalprocessing
+  (package
+    (name "r-activpalprocessing")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "activpalProcessing" version))
+       (sha256
+        (base32
+         "1y0bjx2qx53iy930y9iww4q1yzjj8y16cwgixk1mq3w4g1f116d1"))))
+    (properties
+     `((upstream-name . "activpalProcessing")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-chron" ,r-chron)))
+    (home-page "https://cran.r-project.org/web/packages/activpalProcessing/")
+    (synopsis "Process activPAL events files")
+    (description
+     "This package performs estimation of physical activity and sedentary
+behavior variables from activPAL events files.")
+    ;; Either version of the GPL.
+    (license (list license:gpl2 license:gpl3))))
