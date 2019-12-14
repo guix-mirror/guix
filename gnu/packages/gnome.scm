@@ -7608,7 +7608,7 @@ beautifying border effects.")
 (define-public dconf-editor
   (package
     (name "dconf-editor")
-    (version "3.32.0")
+    (version "3.34.2")
     (source
      (origin
        (method url-fetch)
@@ -7617,19 +7617,8 @@ beautifying border effects.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1fmsmlh16njjm948grz20mzrsvb4wjj7pl1fvkrkxqi7mhr177gi"))))
+         "0pwxjada2vaf69ihpjgp9nky54iykvxq63lp1vl8pxjanif2mk6f"))))
     (build-system meson-build-system)
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-before 'configure 'set-glib-minimum-version
-                    (lambda _
-                      ;; Change the minimum required GLib version so that
-                      ;; 'valac' is passed '--target-glib 2.60.0'; failing to
-                      ;; do that, it complains that "55" is not an even
-                      ;; number.  See <https://bugs.gnu.org/37503>.
-                      (substitute* "editor/meson.build"
-                        (("2\\.55\\.1") "2.60.0"))
-                      #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, gio-2.0.
        ("gtk+-bin" ,gtk+ "bin") ; for gtk-update-icon-cache
@@ -7640,7 +7629,7 @@ beautifying border effects.")
      `(("dconf" ,dconf)
        ("gtk+" ,gtk+)
        ("libxml2" ,libxml2)))
-    (home-page "https://git.gnome.org/browse/dconf-editor")
+    (home-page "https://gitlab.gnome.org/GNOME/dconf-editor")
     (synopsis "Graphical editor for GNOME's dconf configuration system")
     (description
      "Dconf-editor is a graphical tool for browsing and editing the dconf
