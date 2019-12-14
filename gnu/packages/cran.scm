@@ -18405,3 +18405,24 @@ settings (linear regression, nonlinear regression, nonparametric regression,
 and multivariate regression), and analysis of variance tolerance intervals.
 Visualizations are also available for most of these settings.")
     (license license:gpl2+)))
+
+(define-public r-additivitytests
+  (package
+    (name "r-additivitytests")
+    (version "1.1-4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "additivityTests" version))
+       (sha256
+        (base32
+         "048ds90wqjdjy1nyhna3m06asdklbh8sx1n556kss2j1r1pma1sw"))))
+    (properties
+     `((upstream-name . "additivityTests")))
+    (build-system r-build-system)
+    (home-page "https://github.com/simecek/additivityTests")
+    (synopsis "Additivity tests in the two way Anova with single sub-class numbers")
+    (description
+     "This package provides an implementation of the Tukey, Mandel,
+Johnson-Graybill, LBI, Tusell and modified Tukey non-additivity tests.")
+    (license license:gpl3)))
