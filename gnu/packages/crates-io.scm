@@ -1047,6 +1047,32 @@ from macros.")
     (properties '((hidden? . #t)))
     (license license:expat)))
 
+(define-public rust-docopt-1.1
+  (package
+    (name "rust-docopt")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "docopt" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0s9rcpmnnivs502q69lc1h1wrwapkq09ikgbfbgqf31idmc5llkz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-regex" ,rust-regex-1.1)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-strsim" ,rust-strsim-0.9))))
+    (home-page "https://github.com/docopt/docopt.rs")
+    (synopsis "Command line argument parsing")
+    (description "Command line argument parsing.")
+    (license (list license:expat license:unlicense))))
+
 (define-public rust-dtoa-0.4
   (package
     (name "rust-dtoa")
