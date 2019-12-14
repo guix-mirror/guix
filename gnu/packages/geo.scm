@@ -1081,7 +1081,7 @@ an independent project by the JOSM team.")
 (define-public josm
   (package
     (name "josm")
-    (version "15492")
+    (version "15553")
     (source (origin
               (method svn-fetch)
               (uri (svn-reference
@@ -1090,7 +1090,7 @@ an independent project by the JOSM team.")
                      (recursive? #f)))
               (sha256
                (base32
-                "12xkwcv77as30a61w1c8a0i2b0kiiks71d487gbdfv7azlj4vqia"))
+                "091pbcn4fnmk42fmxplhis3nw5dbljf6ws8acyhx5dflyn49xzmx"))
               (file-name (string-append name "-" version "-checkout"))
               (modules '((guix build utils)))
             (snippet
