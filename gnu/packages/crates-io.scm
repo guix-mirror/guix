@@ -5001,6 +5001,33 @@ in Rust.")
     (license (list license:asl2.0
                    license:expat))))
 
+;; Cyclic dependency with rust-tokio.
+(define-public rust-tokio-executor-0.1
+  (package
+    (name "rust-tokio-executor")
+    (version "0.1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-executor" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0pjmgpg58k3hf5q9w6xjljsv8xy66lf734qnfwsc0g3pq3349sl3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6)
+        ("rust-futures" ,rust-futures-0.1))
+       #:cargo-development-inputs
+       (("rust-tokio" ,rust-tokio-0.1))))
+    (home-page "https://github.com/tokio-rs/tokio")
+    (synopsis "Future execution primitives")
+    (description "Future execution primitives.")
+    (license license:expat)))
+
 ;; Cyclic dependencies with tokio and tokio-current-thread
 (define-public rust-tokio-io-0.1
   (package
