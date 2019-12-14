@@ -324,6 +324,35 @@ UTF-8.")
         (base32
          "0nzi9vqhl56ws8gq39f3aj4qjrr4l3g5lbkkcj8xq1x4cb74wq2r"))))))
 
+(define-public rust-byteorder-1.3
+  (package
+    (name "rust-byteorder")
+    (version "1.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "byteorder" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1xbwjlmq2ziqjmjvkqxdx1yh136xxhilxd40bky1w4d7hn4xvhx7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-development-inputs
+       (("rust-doc-comment" ,rust-doc-comment-0.3)
+        ("rust-quickcheck" ,rust-quickcheck-0.8)
+        ("rust-rand" ,rust-rand-0.4))))
+    (home-page
+     "https://github.com/BurntSushi/byteorder")
+    (synopsis
+     "Reading/writing numbers in big-endian and little-endian")
+    (description
+     "Library for reading/writing numbers in big-endian and
+little-endian.")
+    (license (list license:expat license:unlicense))))
+
 (define-public rust-cargon-0.0
   (package
     (name "rust-cargon")
