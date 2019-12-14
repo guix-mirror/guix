@@ -384,6 +384,36 @@ UTF-8.")
 little-endian.")
     (license (list license:expat license:unlicense))))
 
+(define-public rust-bytes-0.4
+  (package
+    (name "rust-bytes")
+    (version "0.4.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bytes" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0768a55q2fsqdjsvcv98ndg9dq7w2g44dvq1avhwpxrdzbydyvr0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-either" ,rust-either-1.5)
+        ("rust-iovec" ,rust-iovec-0.1)
+        ("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-serde-test" ,rust-serde-test-1.0))))
+    (home-page "https://github.com/tokio-rs/bytes")
+    (synopsis
+     "Types and traits for working with bytes")
+    (description
+     "Types and traits for working with bytes.")
+    (license license:expat)))
+
 (define-public rust-cargon-0.0
   (package
     (name "rust-cargon")
