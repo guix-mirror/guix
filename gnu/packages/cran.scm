@@ -18203,3 +18203,32 @@ used to compute ruin probabilities.")
      "This package provides pure R tools to read BMP format images.  It is
 currently limited to 8 bit greyscale images and 24, 32 bit (A)RGB images.")
     (license license:gpl2+)))
+
+(define-public r-readbitmap
+  (package
+    (name "r-readbitmap")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "readbitmap" version))
+       (sha256
+        (base32
+         "14825906l326w59g6apy00j55jg3h5kx2r6s031f4gdkbrc7szbk"))))
+    (properties `((upstream-name . "readbitmap")))
+    (build-system r-build-system)
+    (inputs
+     `(("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)))
+    (propagated-inputs
+     `(("r-bmp" ,r-bmp)
+       ("r-jpeg" ,r-jpeg)
+       ("r-png" ,r-png)
+       ("r-tiff" ,r-tiff)))
+    (home-page "https://github.com/jefferis/readbitmap")
+    (synopsis "Unified interface to read bitmap images (BMP, JPEG, PNG, TIFF)")
+    (description
+     "This package provides tools to identify and read BMP, JPEG, PNG, and
+TIFF format bitmap images.  Identification defaults to the use of the magic
+number embedded in the file rather than the file extension.")
+    (license license:gpl2+)))
