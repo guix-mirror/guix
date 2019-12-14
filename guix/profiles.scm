@@ -1106,6 +1106,8 @@ for both major versions of GTK+."
     ;; Don't run the hook when there's nothing to do.
     (let* ((pkg-gtk+ (module-ref        ; lazy reference
                       (resolve-interface '(gnu packages gtk)) 'gtk+))
+           (pkg-gtk+2 (module-ref        ; lazy reference
+                       (resolve-interface '(gnu packages gtk)) 'gtk+-2))
            (gexp #~(begin
                      #$(if gtk+
                            (build
@@ -1119,7 +1121,7 @@ for both major versions of GTK+."
                            (build
                             gtk+-2 "2.10.0"
                             #~(string-append
-                               #$gtk+-2 "/bin/gtk-query-immodules-2.0"))
+                               #$pkggtk+-2:bin "/bin/gtk-query-immodules-2.0"))
                            #t))))
       (if (or gtk+ gtk+-2)
           (gexp->derivation "gtk-im-modules" gexp

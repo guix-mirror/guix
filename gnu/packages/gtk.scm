@@ -672,7 +672,7 @@ is part of the GNOME accessibility project.")
                                      "gtk2-respect-GUIX_GTK2_IM_MODULE_FILE.patch"
                                      "gtk2-theme-paths.patch"))))
    (build-system gnu-build-system)
-   (outputs '("out" "doc"))
+   (outputs '("out" "bin" "doc"))
    (propagated-inputs
     `(("atk" ,atk)
       ("gdk-pixbuf" ,gdk-pixbuf+svg)
@@ -699,14 +699,19 @@ is part of the GNOME accessibility project.")
                            (assoc-ref %outputs "doc")
                            "/share/gtk-doc/html"))
       #:phases
-      (alist-cons-before
-       'configure 'disable-tests
-       (lambda _
-         ;; FIXME: re-enable tests requiring an X server
-         (substitute* "gtk/Makefile.in"
-           (("SUBDIRS = theme-bits . tests") "SUBDIRS = theme-bits ."))
-         #t)
-       %standard-phases)))
+      (modify-phases %standard-phases
+        (add-before 'configure 'disable-tests
+          (lambda _
+            ;; FIXME: re-enable tests requiring an X server
+            (substitute* "gtk/Makefile.in"
+              (("SUBDIRS = theme-bits . tests") "SUBDIRS = theme-bits ."))
+            #t))
+        (add-after 'install 'remove-cache
+          (lambda* (#:key outputs #:allow-other-keys)
+	    (for-each
+	      delete-file
+	      (find-files (assoc-ref outputs "out") "immodules.cache"))
+            #t)))))
    (native-search-paths
     (list (search-path-specification
            (variable "GUIX_GTK2_PATH")
@@ -734,7 +739,6 @@ application suites.")
               "10xyyhlfb0yk4hglngxh2zsv9xrxkqv343df8h01dvagc6jyp10k"))
             (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
                                      "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
-   (outputs '("out" "bin" "doc"))
    (propagated-inputs
     `(("at-spi2-atk" ,at-spi2-atk)
       ("atk" ,atk)
