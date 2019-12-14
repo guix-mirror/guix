@@ -128,6 +128,33 @@ array (it can be stored on the stack too).  Implements fixed capacity
 ArrayVec and ArrayString.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-ascii-0.9
+  (package
+    (name "rust-ascii")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ascii" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0dck6rsjnxlczyjnncn8hf16bxj42m1vi6s2n32c1jg2ijd9dz55"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-quickcheck" ,rust-quickcheck-0.8)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-test" ,rust-serde-test-1.0))))
+    (home-page "https://github.com/tomprogrammer/rust-ascii")
+    (synopsis
+     "ASCII-only equivalents to char, str and String")
+    (description
+     "ASCII-only equivalents to @code{char}, @code{str} and @code{String}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-atty-0.2
   (package
     (name "rust-atty")
