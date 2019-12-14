@@ -1220,6 +1220,35 @@ floating-point primitives to an @code{io::Write}.")
 @code{Right} is a general purpose sum type with two cases.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-encode-unicode-0.3
+  (package
+    (name "rust-encode-unicode")
+    (version "0.3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "encode_unicode" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1g8a8pixkxz6r927f4sc4r15qyc0szxdxb1732v8q7h0di4wkclh"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-ascii" ,rust-ascii-0.9)
+        ("rust-clippy" ,rust-clippy-0.0))
+       #:cargo-development-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1.3))))
+    (home-page "https://github.com/tormol/encode_unicode")
+    (synopsis
+     "UTF-8 and UTF-16 support for char, u8 and u16")
+    (description
+     "UTF-8 and UTF-16 character types, iterators and related methods for
+char, u8 and u16.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-env-logger-0.6
   (package
     (name "rust-env-logger")
