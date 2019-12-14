@@ -19783,38 +19783,47 @@ contrast and few colors.")
       (license license:gpl3+))))
 
 (define-public emacs-doom-themes
-  (package
-    (name "emacs-doom-themes")
-    (version "2.1.6")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/hlissner/emacs-doom-themes.git")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32 "042pzcdhxi2z07jcscgjbaki9nrrm0cbgbbrnymd1r4q8ckkn8l9"))))
-    (build-system emacs-build-system)
-    (native-inputs
-     `(("emacs-ert-runner" ,emacs-ert-runner)))
-    (arguments
-     `(#:tests? #t
-       #:test-command '("ert-runner")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'move-themes
-           (lambda _
-             ;; Move the source files to the top level, which is in the
-             ;; EMACSLOADPATH.
-             (for-each (lambda (f)
-                         (rename-file f (basename f)))
-                       (find-files "./themes" ".*\\.el$"))
-             #t)))))
-    (synopsis "Wide collection of color themes for Emacs")
-    (description "Emacs-doom-themes contains numerous popular color themes for
+  (let ((commit "088bfad9a6983c42016da33cd11b9ee855451dcb")
+        (revision "2")
+        (version "2.1.6"))
+    (package
+      (name "emacs-doom-themes")
+      (version (git-version version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/hlissner/emacs-doom-themes.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32 "1dmq0vja1k907id56y4012cm3f49vf106v3gglk9sf4kbi9cash2"))))
+      (build-system emacs-build-system)
+      (native-inputs
+       `(("emacs-ert-runner" ,emacs-ert-runner)))
+      (arguments
+       `(#:tests? #t
+         #:test-command '("ert-runner")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'move-themes
+             (lambda _
+               ;; Move the source files to the top level, which is in the
+               ;; EMACSLOADPATH.
+               (for-each (lambda (f)
+                           (rename-file f (basename f)))
+                         (find-files "./themes" ".*\\.el$"))
+               #t))
+           ;; XXX: There is a byte-code overflow issue in the latest
+           ;; checkout which affects byte-compilation for several theme
+           ;; files. The easiest way to work around this is to disable
+           ;; byte-compilation until the issue is resolved.
+           ;; <https://github.com/hlissner/emacs-doom-themes/issues/314>
+           (delete 'build))))
+      (synopsis "Wide collection of color themes for Emacs")
+      (description "Emacs-doom-themes contains numerous popular color themes for
 Emacs that integrate with major modes like Org-mode.")
-    (home-page "https://github.com/hlissner/emacs-doom-themes")
-    (license license:expat)))
+      (home-page "https://github.com/hlissner/emacs-doom-themes")
+      (license license:expat))))
 
 (define-public emacs-modus-themes
   (package
