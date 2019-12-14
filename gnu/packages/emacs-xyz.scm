@@ -19827,6 +19827,10 @@ contrast and few colors.")
       (arguments
        `(#:tests? #t
          #:test-command '("ert-runner")
+         #:modules ((guix build emacs-build-system)
+                    (guix build utils)
+                    (guix build emacs-utils)
+                    (srfi srfi-1))
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'move-themes
@@ -19837,12 +19841,21 @@ contrast and few colors.")
                            (rename-file f (basename f)))
                          (find-files "./themes" ".*\\.el$"))
                #t))
-           ;; XXX: There is a byte-code overflow issue in the latest
-           ;; checkout which affects byte-compilation for several theme
-           ;; files. The easiest way to work around this is to disable
-           ;; byte-compilation until the issue is resolved.
+           ;; There is a byte-code overflow issue in the latest checkout
+           ;; which affects byte-compilation for several (read `most') theme
+           ;; files. In order to cope with this issue, we disable
+           ;; byte-compilation until this issue is resolved.
            ;; <https://github.com/hlissner/emacs-doom-themes/issues/314>
-           (delete 'build))))
+           (add-after 'move-themes 'disable-breaking-compilation
+             (lambda _
+               (for-each (lambda (file)
+                           (chmod file #o600) ; needed to write changes.
+                           (emacs-batch-disable-compilation file))
+                         (cons "doom-themes-ext-neotree.el"
+                               (lset-difference string-contains
+                                                (find-files "." ".*-theme.el")
+                                                '("snazzy" "tomorrow-day"))))
+               #t)))))
       (synopsis "Wide collection of color themes for Emacs")
       (description "Emacs-doom-themes contains numerous popular color themes for
 Emacs that integrate with major modes like Org-mode.")
