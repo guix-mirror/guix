@@ -5001,6 +5001,34 @@ in Rust.")
     (license (list license:asl2.0
                    license:expat))))
 
+;; Cyclic dependency with tokio-io
+(define-public rust-tokio-codec-0.1
+  (package
+    (name "rust-tokio-codec")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-codec" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17y3hi3dd0bdfkrzshx9qhwcf49xv9iynszj7iwy3w4nmz71wl2w"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.4)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-tokio-io" ,rust-tokio-io-0.1))))
+    (home-page "https://tokio.rs")
+    (synopsis
+     "Utilities for encoding and decoding frames")
+    (description
+     "Utilities for encoding and decoding frames.")
+    (license license:expat)))
+
 ;; Cyclic dependency with rust-tokio.
 (define-public rust-tokio-executor-0.1
   (package
