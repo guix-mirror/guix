@@ -3617,6 +3617,37 @@ with one of the implemented strategies.")
     (properties '((hidden? . #t)))
     (license (list license:expat license:asl2.0))))
 
+;; Circular dev dependency on bincode.
+;; Probably not going away: https://github.com/rust-lang/cargo/issues/4242
+(define-public rust-serde-bytes-0.11
+  (package
+    (name "rust-serde-bytes")
+    (version "0.11.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serde_bytes" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1bl45kf3c71xclv7wzk5525nswm4bgsnjd3s1s15f4k2a8whfnij"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-bincode" ,rust-bincode-1.1)
+        ("rust-serde-derive" ,rust-serde-derive-1.0)
+        ("rust-serde-test" ,rust-serde-test-1.0))))
+    (home-page "https://github.com/serde-rs/bytes")
+    (synopsis
+     "Hanlde of integer arrays and vectors for Serde")
+    (description
+     "Optimized handling of @code{&[u8]} and @code{Vec<u8>} for Serde.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-serde-derive-1.0
   (package
     (name "rust-serde-derive")
