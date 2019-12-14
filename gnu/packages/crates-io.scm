@@ -4553,6 +4553,37 @@ with one of the implemented strategies.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-semver-0.9
+  (package
+    (name "rust-semver")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "semver" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "00q4lkcj0rrgbhviv9sd4p6qmdsipkwkbra7rh11jrhq5kpvjzhx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-semver-parser" ,rust-semver-parser-0.7)
+        ("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-crates-index" ,rust-crates-index-0.13)
+        ("rust-serde-derive" ,rust-serde-derive-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0)
+        ("rust-tempdir" ,rust-tempdir-0.3))))
+    (home-page "https://docs.rs/crate/semver")
+    (synopsis
+     "Semantic version parsing and comparison")
+    (description
+     "Semantic version parsing and comparison.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-semver-parser-0.9
   (package
     (name "rust-semver-parser")
