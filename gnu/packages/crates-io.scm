@@ -97,6 +97,37 @@ text or blue underlined text, on ANSI terminals.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-arrayvec-0.4
+  (package
+    (name "rust-arrayvec")
+    (version "0.4.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "arrayvec" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0wcch3ca9qvkixgdbd2afrv1xa27l83vpraf7frsh9l8pivgpiwj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-nodrop" ,rust-nodrop-0.1)
+        ("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-bencher" ,rust-bencher-0.1)
+        ("rust-matches" ,rust-matches-0.1)
+        ("rust-serde-test" ,rust-serde-test-1.0))))
+    (home-page "https://github.com/bluss/arrayvec")
+    (synopsis "Vector with fixed capacity")
+    (description
+     "This package provides a vector with fixed capacity, backed by an
+array (it can be stored on the stack too).  Implements fixed capacity
+ArrayVec and ArrayString.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-atty-0.2
   (package
     (name "rust-atty")
