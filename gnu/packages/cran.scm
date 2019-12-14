@@ -18326,3 +18326,26 @@ classifiers.  Once these classifiers have been trained, they can be used to
 predict on new data.  Also, cross validation estimation of the error can be
 done.")
     (license license:gpl2+)))
+
+(define-public r-adagio
+  (package
+    (name "r-adagio")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "adagio" version))
+       (sha256
+        (base32
+         "1h9l0ddrxq8y35iy9hdkxdvdwsqpnpkzzbkbwwhm4380lq1m7a3k"))))
+    (properties `((upstream-name . "adagio")))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/adagio/")
+    (synopsis "Discrete and global optimization routines")
+    (description
+     "This package provides methods and algorithms for discrete optimization,
+e.g. knapsack and subset sum procedures, derivative-free Nelder-Mead and
+Hooke-Jeeves minimization, and some (evolutionary) global optimization
+functions.")
+    (license license:gpl3+)))
