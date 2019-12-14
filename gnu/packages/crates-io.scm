@@ -1644,6 +1644,36 @@ SystemTime}}.")
      "Extra iterator adaptors, iterator methods, free functions, and macros.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-itertools-num-0.1
+  (package
+    (name "rust-itertools-num")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "itertools-num" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1rr7ig9nkpampcas23s91x7yac6qdnwssq3nap522xbgkqps4wm8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-num-traits" ,rust-num-traits-0.2))
+       #:cargo-development-inputs
+       (("rust-itertools" ,rust-itertools-0.8)
+        ("rust-quickcheck" ,rust-quickcheck-0.8))))
+    (home-page
+     "https://github.com/bluss/itertools-num")
+    (synopsis
+     "Numerical iterator tools")
+    (description
+     "Numerical iterator tools.  Extra iterators and iterator methods
+and functions.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-itoa-0.4
   (package
     (name "rust-itoa")
