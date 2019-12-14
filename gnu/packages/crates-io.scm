@@ -3268,6 +3268,28 @@ for x86.")
      "Procedural macros in expression position.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-proc-macro-nested-0.1
+  (package
+    (name "rust-proc-macro-nested")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "proc-macro-nested" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0bmlksm8vl44wkwihmwr7jsjznhbg0n7aibcw1cs2jgjcp86x6in"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/dtolnay/proc-macro-hack")
+    (synopsis
+     "Support for nested proc-macro-hack invocations")
+    (description
+     "Support for nested proc-macro-hack invocations.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-proc-macro2-1.0
   (package
     (name "rust-proc-macro2")
