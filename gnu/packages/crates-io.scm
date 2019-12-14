@@ -888,6 +888,31 @@ floating-point primitives to an @code{io::Write}.")
          (base32
           "0g96cap6si1g6wi62hsdk2fnj3sf5vd4i97zj6163j8hhnsl3n0d"))))))
 
+(define-public rust-either-1.5
+  (package
+    (name "rust-either")
+    (version "1.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "either" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0yyggfd5yq9hyyp0bd5jj0fgz3rwws42d19ri0znxwwqs3hcy9sm"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs (("rust-serde" ,rust-serde-1.0))))
+    (home-page "https://github.com/bluss/either")
+    (synopsis
+     "Enum @code{Either} with variants @code{Left} and @code{Right}")
+    (description
+     "The enum @code{Either} with variants @code{Left} and
+@code{Right} is a general purpose sum type with two cases.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-env-logger-0.6
   (package
     (name "rust-env-logger")
