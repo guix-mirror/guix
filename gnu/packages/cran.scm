@@ -17963,3 +17963,31 @@ examples.")
      "This package provides tools for functional linear modeling and analysis
 of actigraphy data.")
     (license license:asl2.0)))
+
+(define-public r-activedriver
+  (package
+    (name "r-activedriver")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ActiveDriver" version))
+       (sha256
+        (base32
+         "10c7ga48fwvpd5mc4dqiyw4kc2l0iz5qn4hg7xk15r1qmm5rsipa"))))
+    (properties `((upstream-name . "ActiveDriver")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)))
+    (home-page "https://cran.r-project.org/web/packages/ActiveDriver/")
+    (synopsis "Tools for finding cancer driver proteins")
+    (description
+     "This package provides a mutation analysis tool that discovers cancer
+driver genes with frequent mutations in protein signalling sites such as
+post-translational modifications (phosphorylation, ubiquitination, etc).  The
+Poisson generalized linear regression model identifies genes where cancer
+mutations in signalling sites are more frequent than expected from the
+sequence of the entire gene.  Integration of mutations with signalling
+information helps find new driver genes and propose candidate mechanisms to
+known drivers.")
+    (license license:gpl2+)))
