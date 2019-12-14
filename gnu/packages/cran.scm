@@ -17916,3 +17916,27 @@ poverty measures.  It provides both empirical and theoretical Lorenz curves.")
 metrics to quantify time accumulation strategies based on minute level
 actigraphy-measured activity counts data.")
     (license license:gpl3)))
+
+(define-public r-fda
+  (package
+    (name "r-fda")
+    (version "2.4.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fda" version))
+       (sha256
+        (base32
+         "0n39rzbhg1hipzn51rzmbchn2358qgapg08iv7lmiqj5y7i9qns2"))))
+    (properties `((upstream-name . "fda")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)))
+    (home-page "http://www.functionaldata.org")
+    (synopsis "Functional data analysis")
+    (description
+     "These functions were developed to support functional data analysis as
+described in Ramsay, J. O. and Silverman, B. W. (2005) Functional Data
+Analysis.  The package includes data sets and script files working many
+examples.")
+    (license license:gpl2+)))
