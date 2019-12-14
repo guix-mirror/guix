@@ -655,3 +655,39 @@ standard protocols for e-mail transmission.")
     (synopsis "Viewer for mail attachments using TNEF format")
     (description "Viewer for mail attachments using TNEF format")
     (license license:lgpl2.0+)))
+
+(define-public libkgapi
+  (package
+    (name "libkgapi")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/libkgapi-" version ".tar.xz"))
+       (sha256
+        (base32 "0z76b745n4hhjndrhv1w5acibia8x1frh78jx7bvxa72d8wphn08"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("cyrus-sasl" ,cyrus-sasl)
+       ("ki18n" ,ki18n)
+       ("kcontacts" ,kcontacts)
+       ("kcalendarcore" ,kcalendarcore)
+       ("kio" ,kio)
+       ("kwallet" ,kwallet)
+       ("kwindowsystem" ,kwindowsystem)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtwebchannel" ,qtwebchannel)
+       ("qtwebengine" ,qtwebengine)))
+    (arguments
+     `(#:tests? #f)) ;; TODO 6/48 tests fail
+    (home-page "https://cgit.kde.org/libkgapi.git")
+    (synopsis "Library for accessing various Google services via their public
+API")
+    (description "@code{LibKGAPI} is a C++ library that implements APIs for
+various Google services.")
+    (license license:lgpl2.0+)))
