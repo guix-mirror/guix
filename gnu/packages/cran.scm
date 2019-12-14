@@ -17724,3 +17724,32 @@ they reached a halting state or failed to end.  This package contains data on
 4, 5, 6, and 9 symbols.  The complexity of the string corresponds to the
 distribution of the halting states.")
     (license license:gpl2+)))
+
+(define-public r-acss
+  (package
+    (name "r-acss")
+    (version "0.2-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "acss" version))
+       (sha256
+        (base32
+         "0cqa60544f58l5qd7h6xmsir40b9hqnq6pqgd5hfx2j2l5n7qhmk"))))
+    (properties `((upstream-name . "acss")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-acss-data" ,r-acss-data)
+       ("r-zoo" ,r-zoo)))
+    (home-page "http://complexitycalculator.com/methodology.html")
+    (synopsis "Algorithmic complexity for short strings")
+    (description
+     "The main purpose of this package is to provide the algorithmic
+complexity for short strings, an approximation of the Kolmogorov Complexity of
+a short string using the coding theorem method.  While the database containing
+the complexity is provided in the data only package @code{acss.data}, this
+package provides functions accessing the data such as @code{prob_random}
+returning the posterior probability that a given string was produced by a
+random process.  In addition, two traditional (but problematic) measures of
+complexity are also provided: entropy and change complexity.")
+    (license license:gpl2+)))
