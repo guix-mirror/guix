@@ -698,6 +698,35 @@ It is inspired by the Linux kernel's @code{crypto_memneq}.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-criterion-plot-0.3
+  (package
+    (name "rust-criterion-plot")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "criterion-plot" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "13pv09z4ryp70qyzablkibwa2mh6c2852qq1sjr9wjigvwnj3ybn"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-cast" ,rust-cast-0.2)
+        ("rust-itertools" ,rust-itertools-0.8))
+       #:cargo-development-inputs
+       (("rust-itertools-num" ,rust-itertools-num-0.1)
+        ("rust-num-complex" ,rust-num-complex-0.2)
+        ("rust-rand" ,rust-rand-0.4))))
+    (home-page "https://github.com/bheisler/criterion.rs")
+    (synopsis "Criterion's plotting library")
+    (description "Criterion's plotting library.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-curl-sys-0.4
   (package
     (name "rust-curl-sys")
