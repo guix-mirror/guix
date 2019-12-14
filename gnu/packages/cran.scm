@@ -17697,3 +17697,30 @@ are converted to standard errors to be bundled with estimates in complex
 operations on @code{acs} objects and present/plot data in statistically
 appropriate ways.")
     (license license:gpl3)))
+
+(define-public r-acss-data
+  (package
+    (name "r-acss-data")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "acss.data" version))
+       (sha256
+        (base32
+         "09kl4179ipr8bq19g89xcdi1xxs397zcx5cvgp6viy8gn687ilgv"))))
+    (properties `((upstream-name . "acss.data")))
+    (build-system r-build-system)
+    (home-page "http://complexitycalculator.com/methodology.html")
+    (synopsis "Data for algorithmic complexity of short strings")
+    (description
+     "This is a data only package providing the algorithmic complexity of
+short strings, computed using the coding theorem method.  For a given set of
+symbols in a string, all possible or a large number of random samples of
+Turing machines with a given number of states (e.g., 5) and number of symbols
+corresponding to the number of symbols in the strings were simulated until
+they reached a halting state or failed to end.  This package contains data on
+4.5 million strings from length 1 to 12 simulated on Turing machines with 2,
+4, 5, 6, and 9 symbols.  The complexity of the string corresponds to the
+distribution of the halting states.")
+    (license license:gpl2+)))
