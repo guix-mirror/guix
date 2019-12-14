@@ -3057,6 +3057,21 @@ streaming API for miniz_oxide.")
     (properties '((hidden? . #t)))
     (license license:expat)))
 
+(define-public rust-miniz-oxide-0.2
+  (package
+    (inherit rust-miniz-oxide-0.3)
+    (name "rust-miniz-oxide")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "miniz_oxide" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17f92krv9hhsyc38prpfyn99m2hqhr4fgszpsla66a6gcrnpbhxn"))))))
+
 (define-public rust-miniz-sys-0.1
   (package
     (name "rust-miniz-sys")
