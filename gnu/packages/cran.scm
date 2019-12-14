@@ -18684,3 +18684,25 @@ vectors, which include NAs.  Other functions are especially useful in
 spectroscopy and analyses of environmental data: robust baseline fitting,
 finding peaks in spectra, converting humidity measures.")
     (license license:gpl3+)))
+
+(define-public r-qqman
+  (package
+    (name "r-qqman")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "qqman" version))
+       (sha256
+        (base32
+         "1v9s9ag1hfb47py87wb2nad4mbsfx35832hdmrh5kxrb2f11zl1s"))))
+    (properties `((upstream-name . "qqman")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-calibrate" ,r-calibrate)))
+    (home-page "https://cran.r-project.org/web/packages/qqman/")
+    (synopsis "Q-Q and Manhattan plots for GWAS data")
+    (description
+     "This package allows you to create Q-Q and Manhattan plots for GWAS data
+from PLINK results.")
+    (license license:gpl3)))
