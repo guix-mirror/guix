@@ -9,6 +9,7 @@
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 nee <nee@cock.li>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -676,6 +677,9 @@ it fits within common partitioning schemes.")
 
 (define-public u-boot-pine64-plus
   (make-u-boot-sunxi64-package "pine64_plus" "aarch64-linux-gnu"))
+
+(define-public u-boot-pine64-lts
+  (make-u-boot-sunxi64-package "pine64-lts" "aarch64-linux-gnu"))
 
 (define-public u-boot-pinebook
   (make-u-boot-sunxi64-package "pinebook" "aarch64-linux-gnu"))
