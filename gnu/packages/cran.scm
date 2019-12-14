@@ -17889,3 +17889,30 @@ label clusters so that examinees' attribute profiles can be obtained.")
 poverty measures.  It provides both empirical and theoretical Lorenz curves.")
     ;; Either of these two versions.
     (license (list license:gpl2 license:gpl3))))
+
+(define-public r-actfrag
+  (package
+    (name "r-actfrag")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ActFrag" version))
+       (sha256
+        (base32
+         "06l5a679j6289008ls57v420mnzpq9a4ln7svi5bh0vpvws7sr9d"))))
+    (properties `((upstream-name . "ActFrag")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-accelerometry" ,r-accelerometry)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ineq" ,r-ineq)
+       ("r-survival" ,r-survival)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "https://github.com/junruidi/ActFrag")
+    (synopsis "Activity fragmentation metrics extraction")
+    (description
+     "This package provides functions to extract commonly used fragmentation
+metrics to quantify time accumulation strategies based on minute level
+actigraphy-measured activity counts data.")
+    (license license:gpl3)))
