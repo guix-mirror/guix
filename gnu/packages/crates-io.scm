@@ -875,6 +875,33 @@ It is inspired by the Linux kernel's @code{crypto_memneq}.")
     (description "Criterion's plotting library.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-crossbeam-deque-0.7
+  (package
+    (name "rust-crossbeam-deque")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crossbeam-deque" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0was9x71cz5g1y3670cyy6jdmsdfg6k9mbf0ddz2k1mdd7hx535i"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-crossbeam-epoch" ,rust-crossbeam-epoch-0.7)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.4))))
+    (home-page
+     "https://github.com/crossbeam-rs/crossbeam/tree/master/crossbeam-deque")
+    (synopsis "Concurrent work-stealing deque")
+    (description "Concurrent work-stealing deque.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-crossbeam-epoch-0.7
   (package
     (name "rust-crossbeam-epoch")
