@@ -675,6 +675,32 @@ colorization.")
     (properties '((hidden? . #t)))
     (license license:expat)))
 
+(define-public rust-clippy-0.0
+  (package
+    (name "rust-clippy")
+    (version "0.0.302")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "clippy" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1562x3sq9mgmc8j39gd34wqm7ybrdvpmj7cc1n450gwsawayw4fr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-term" ,rust-term-0.5.1))))
+    (home-page "https://github.com/rust-lang/rust-clippy")
+    (synopsis
+     "Lints to avoid common pitfalls in Rust")
+    (description
+     "This package provides a bunch of helpful lints to avoid common
+pitfalls in Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-cloudabi-0.0
   (package
     (name "rust-cloudabi")
