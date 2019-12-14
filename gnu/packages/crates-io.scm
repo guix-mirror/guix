@@ -834,6 +834,37 @@ floating-point primitives to an @code{io::Write}.")
          (base32
           "0g96cap6si1g6wi62hsdk2fnj3sf5vd4i97zj6163j8hhnsl3n0d"))))))
 
+(define-public rust-env-logger-0.6
+  (package
+    (name "rust-env-logger")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "env_logger" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1lx2s5nk96xx4i3m4zc4ghqgi8kb07dsnyiv8jk2clhax42dxz5a"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-atty" ,rust-atty-0.2)
+        ("rust-humantime" ,rust-humantime-1.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-regex" ,rust-regex-1.1)
+        ("rust-termcolor" ,rust-termcolor-1.0))))
+    (home-page
+     "https://github.com/sebasmagri/env_logger/")
+    (synopsis
+     "Logging implementation for @code{log}")
+    (description
+     "This package provides a logging implementation for @code{log} which
+is configured via an environment variable.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-fallible-iterator-0.2
   (package
     (name "rust-fallible-iterator")
