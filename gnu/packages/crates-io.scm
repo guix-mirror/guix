@@ -2360,18 +2360,16 @@ deserialization, and interpreter in Rust.")
          "103i66a998g1fjrqf9sdyvi8qi83hwglz3pjdcq9n2r207hsagb0"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build #t
+     `(#:skip-build? #t
        #:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
         ("rust-log" ,rust-log-0.4)
         ("rust-pcre2-sys" ,rust-pcre2-sys-0.2)
         ("rust-thread-local" ,rust-thread-local-0.3))))
-    (home-page
-     "https://github.com/BurntSushi/rust-pcre2")
-    (synopsis
-     "High level wrapper library for PCRE2")
+    (home-page "https://github.com/BurntSushi/rust-pcre2")
+    (synopsis "High level wrapper library for PCRE2")
     (description
-     "High level wrapper library for PCRE2.")
+     "This package provides a high level wrapper library for PCRE2.")
     (license (list license:expat license:unlicense))))
 
 (define-public rust-pcre2-sys-0.2
@@ -3034,6 +3032,41 @@ system calls.")
      "This package provides a Rust library to access Redox termios functions.")
     (properties '((hidden? . #t)))
     (license license:expat)))
+
+(define-public rust-regex-1.1
+  (package
+    (name "rust-regex")
+    (version "1.1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "regex" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1pabajpp0wzb7dm2x32gy8w7k0mwykr6zsvzn0fgpr6pww40hbqb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build #t
+       #:cargo-inputs
+       (("rust-aho-corasick" ,rust-aho-corasick-0.7)
+        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-regex-syntax" ,rust-regex-syntax-0.6)
+        ("rust-thread-local" ,rust-thread-local-0.3)
+        ("rust-utf8-ranges" ,rust-utf8-ranges-1.0))
+       #:cargo-development-inputs
+       (("rust-doc-comment" ,rust-doc-comment-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-quickcheck" ,rust-quickcheck-0.8)
+        ("rust-rand" ,rust-rand-0.4))))
+    (home-page "https://github.com/rust-lang/regex")
+    (synopsis
+     "Regular expressions for Rust")
+    (description
+     "An implementation of regular expressions for Rust.  This implementation
+uses finite automata and guarantees linear time matching on all inputs.")
+    (license (list license:expat license:asl2.0))))
 
 (define-public rust-regex-syntax-0.6
   (package
