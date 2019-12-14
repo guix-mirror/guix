@@ -5371,6 +5371,40 @@ change point detection.")
 manipulation of flow cytometry data.")
     (license license:artistic2.0)))
 
+(define-public r-ggcyto
+  (package
+    (name "r-ggcyto")
+    (version "1.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ggcyto" version))
+       (sha256
+        (base32
+         "165qszvy5z176h1l3dnjb5dcm279b6bjl5n5gzz8wfn4xpn8anc8"))))
+    (properties `((upstream-name . "ggcyto")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)
+       ("r-flowcore" ,r-flowcore)
+       ("r-flowworkspace" ,r-flowworkspace)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-ncdfflow" ,r-ncdfflow)
+       ("r-plyr" ,r-plyr)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rlang" ,r-rlang)
+       ("r-scales" ,r-scales)))
+    (home-page "https://github.com/RGLab/ggcyto/issues")
+    (synopsis "Visualize Cytometry data with ggplot")
+    (description
+     "With the dedicated fortify method implemented for @code{flowSet},
+@code{ncdfFlowSet} and @code{GatingSet} classes, both raw and gated flow
+cytometry data can be plotted directly with ggplot.  The @code{ggcyto} wrapper
+and some custom layers also make it easy to add gates and population
+statistics to the plot.")
+    (license license:artistic2.0)))
+
 (define-public r-flowsom
   (package
     (name "r-flowsom")
