@@ -18232,3 +18232,45 @@ currently limited to 8 bit greyscale images and 24, 32 bit (A)RGB images.")
 TIFF format bitmap images.  Identification defaults to the use of the magic
 number embedded in the file rather than the file extension.")
     (license license:gpl2+)))
+
+(define-public r-imager
+  (package
+    (name "r-imager")
+    (version "0.41.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "imager" version))
+       (sha256
+        (base32
+         "19fqgjhg04garbipx20g72h9dd6k0jj4ac48nby6km4h665vrs4v"))))
+    (properties `((upstream-name . "imager")))
+    (build-system r-build-system)
+    (inputs
+     `(("fftw" ,fftw)
+       ("libtiff" ,libtiff)
+       ("libx11" ,libx11)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-cairo" ,r-cairo)
+       ("r-downloader" ,r-downloader)
+       ("r-igraph" ,r-igraph)
+       ("r-jpeg" ,r-jpeg)
+       ("r-magrittr" ,r-magrittr)
+       ("r-plyr" ,r-plyr)
+       ("r-png" ,r-png)
+       ("r-purrr" ,r-purrr)
+       ("r-rcpp" ,r-rcpp)
+       ("r-readbitmap" ,r-readbitmap)
+       ("r-stringr" ,r-stringr)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "http://dahtah.github.io/imager")
+    (synopsis "Image processing library")
+    (description
+     "This is a package for fast image processing for images in up to 4
+dimensions (two spatial dimensions, one time/depth dimension, one color
+dimension).  It provides most traditional image processing tools (filtering,
+morphology, transformations, etc.) as well as various functions for easily
+analyzing image data using R.  The package wraps @url{http://cimg.eu, CImg}, a
+simple, modern C++ library for image processing.")
+    (license license:lgpl3)))
