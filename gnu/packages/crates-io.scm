@@ -245,10 +245,10 @@ behave like a set of bitflags.")
     (license (list license:asl2.0
                    license:expat))))
 
-(define-public rust-bstr-0.1
+(define-public rust-bstr-0.2
   (package
     (name "rust-bstr")
-    (version "0.1.4")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
@@ -257,7 +257,7 @@ behave like a set of bitflags.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0nzi9vqhl56ws8gq39f3aj4qjrr4l3g5lbkkcj8xq1x4cb74wq2r"))))
+         "0prq6yk3da0k5bg2czcgg1i4ynsq1l59xc89ycsv6v7p08p5gh3c"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -277,6 +277,21 @@ behave like a set of bitflags.")
      "This package provides a string type that is not required to be valid
 UTF-8.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-bstr-0.1
+  (package
+    (inherit rust-bstr-0.2)
+    (name "rust-bstr")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bstr" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0nzi9vqhl56ws8gq39f3aj4qjrr4l3g5lbkkcj8xq1x4cb74wq2r"))))))
 
 (define-public rust-cargon-0.0
   (package
