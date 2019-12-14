@@ -54,6 +54,37 @@ the Rust programming language.")
     (license (list license:bsd-3
                    license:zlib))))
 
+(define-public rust-afl-0.4
+  (package
+    (name "rust-afl")
+    (version "0.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "afl" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0g2chc18ji7qxi0d03n2ai140qdcww958v5si6rcjnnhmri1vyfb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cc" ,rust-cc-1.0)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-rustc-version" ,rust-rustc-version-0.2)
+        ("rust-xdg" ,rust-xdg-2.2))
+       #:cargo-development-inputs
+       (("rust-rustc-version" ,rust-rustc-version-0.2)
+        ("rust-xdg" ,rust-xdg-2.2))))
+    (home-page "https://github.com/rust-fuzz/afl.rs")
+    (synopsis
+     "Fuzzing Rust code with american-fuzzy-lop")
+    (description
+     "Fuzz Rust code with american-fuzzy-lop.")
+    (license license:asl2.0)))
+
 (define-public rust-ansi-term-0.11
   (package
     (name "rust-ansi-term")
