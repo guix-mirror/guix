@@ -561,6 +561,46 @@ easier to do so.")
     (license ;; GPL for programs, LGPL for libraries, FDL for documentation
      (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
 
+(define-public ksmtp
+  (package
+    (name "ksmtp")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/ksmtp-" version ".tar.xz"))
+       (sha256
+        (base32 "1pd8mma3xbq83jkn76gqinn6xh9imaji0jrg3qzysf5rvjl8kcqn"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("cyrus-sasl" ,cyrus-sasl)
+       ("kcodecs" ,kcodecs)
+       ("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:tests? #f ;; TODO: does not find sasl mechs
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'Use-KDE_INSTALL_TARGETS_DEFAULT_ARGS-when-installing
+           (lambda _
+             (substitute* "src/CMakeLists.txt"
+               (("^(install\\(.* )\\$\\{KF5_INSTALL_TARGETS_DEFAULT_ARGS\\}\\)"
+                 _ prefix)
+                (string-append prefix "${KDE_INSTALL_TARGETS_DEFAULT_ARGS})")))
+             #t)))))
+    (home-page "https://cgit.kde.org/ksmtp.git")
+    (synopsis "Library for sending email through an SMTP server")
+    (description "This library provides an API for handling SMTP
+services.  SMTP (Simple Mail Transfer Protocol) is the most prevalent Internet
+standard protocols for e-mail transmission.")
+    (license license:lgpl2.0+)))
+
 (define-public ktnef
   (package
     (name "ktnef")
