@@ -3601,6 +3601,40 @@ system calls.")
 uses finite automata and guarantees linear time matching on all inputs.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-regex-automata-0.1
+  (package
+    (name "rust-regex-automata")
+    (version "0.1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "regex-automata" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "11hzn3rz02vdgvx3ykhrbzkvs5c5sm59fyi3xwljn9qc48br5l1y"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-regex-syntax" ,rust-regex-syntax-0.6)
+        ("rust-utf8-ranges" ,rust-utf8-ranges-1.0))
+       #:cargo-development-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-regex" ,rust-regex-1.1)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-bytes" ,rust-serde-bytes-0.11)
+        ("rust-serde-derive" ,rust-serde-derive-1.0)
+        ("rust-toml" ,rust-toml-0.5))))
+    (home-page "https://github.com/BurntSushi/regex-automata")
+    (synopsis
+     "Automata construction and matching using regular expressions")
+    (description
+     "Automata construction and matching using regular expressions.")
+    (license (list license:expat license:unlicense))))
+
 (define-public rust-regex-syntax-0.6
   (package
     (name "rust-regex-syntax")
