@@ -18103,3 +18103,32 @@ sets, such as sleep diaries and continuous glucose monitoring data.")
 behavior variables from activPAL events files.")
     ;; Either version of the GPL.
     (license (list license:gpl2 license:gpl3))))
+
+(define-public r-actogrammr
+  (package
+    (name "r-actogrammr")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "actogrammr" version))
+       (sha256
+        (base32
+         "1jzvarmd41yqlrkagzlc8m19n5mn0w0b36fy50lyvgrfsafjfbqa"))))
+    (properties `((upstream-name . "actogrammr")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-lubridate" ,r-lubridate)
+       ("r-readr" ,r-readr)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "https://cran.r-project.org/web/packages/actogrammr/")
+    (synopsis "Read in activity data and plot actograms")
+    (description
+     "Read in activity measurements from standard file formats used by
+circadian rhythm researchers, currently only ClockLab format, and process and
+plot the data.  The central type of plot is the actogram, as first described
+in \"Activity and distribution of certain wild mice in relation to biotic
+communities\" by MS Johnson (1926) @url{doi:10.2307/1373575}.")
+    (license license:gpl3)))
