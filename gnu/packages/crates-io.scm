@@ -3188,6 +3188,37 @@ for x86.")
     (license (list license:asl2.0
                    license:expat))))
 
+;; Cyclic dependencies with rust-demo-hack.
+(define-public rust-proc-macro-hack-0.5
+  (package
+    (name "rust-proc-macro-hack")
+    (version "0.5.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "proc-macro-hack" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1www5lrvsk7pq04clgfmjlnnrshikgs1h51l17vrc7qy58bx878c"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-syn" ,rust-syn-0.15))
+       #:cargo-development-inputs
+       (("rust-demo-hack" ,rust-demo-hack-0.0)
+        ("rust-demo-hack-impl" ,rust-demo-hack-impl-0.0))))
+    (home-page "https://github.com/dtolnay/proc-macro-hack")
+    (synopsis
+     "Procedural macros in expression position")
+    (description
+     "Procedural macros in expression position.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-proc-macro2-1.0
   (package
     (name "rust-proc-macro2")
