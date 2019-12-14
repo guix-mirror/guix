@@ -2139,6 +2139,48 @@ SystemTime}}.")
     (properties '((hidden? . #t)))
     (license license:expat)))
 
+(define-public rust-indexmap-1.0
+  (package
+    (name "rust-indexmap")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "indexmap" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "13f5k1kl2759y4xfy0vhays35fmrkmhqngbr2ny8smvrbz0ag0by"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-fnv" ,rust-fnv-1.0)
+        ("rust-itertools" ,rust-itertools-0.8)
+        ("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-quickcheck" ,rust-quickcheck-0.8)
+        ("rust-rand" ,rust-rand-0.4)
+        ("rust-serde-test" ,rust-serde-test-1.0))))
+    (home-page "https://github.com/bluss/indexmap")
+    (synopsis
+     "Hash table with consistent order and fast iteration")
+    (description
+     "This package provides a hash table with consistent order and fast iteration.
+
+The indexmap is a hash table where the iteration order of the
+key-value pairs is independent of the hash values of the keys.  It has
+the usual hash table functionality, it preserves insertion order
+except after removals, and it allows lookup of its elements by either
+hash table key or numerical index.  A corresponding hash set type is
+also provided.
+
+This crate was initially published under the name ordermap, but it was
+renamed to indexmap.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-insta-0.8
   (package
     (name "rust-insta")
