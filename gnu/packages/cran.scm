@@ -18132,3 +18132,26 @@ plot the data.  The central type of plot is the actogram, as first described
 in \"Activity and distribution of certain wild mice in relation to biotic
 communities\" by MS Johnson (1926) @url{doi:10.2307/1373575}.")
     (license license:gpl3)))
+
+(define-public r-expint
+  (package
+    (name "r-expint")
+    (version "0.1-6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "expint" version))
+       (sha256
+        (base32
+         "0iai25cglcdnf44d2d1fz1xpw4q600my4zq4493fk4cs5673mlf7"))))
+    (properties `((upstream-name . "expint")))
+    (build-system r-build-system)
+    (home-page "https://gitlab.com/vigou3/expint")
+    (synopsis "Exponential integral and incomplete Gamma function")
+    (description
+     "This package provides the exponential integrals @code{E_1(x)},
+@code{E_2(x)}, @code{E_n(x)} and @code{Ei(x)}, and the incomplete gamma
+function @code{G(a, x)} defined for negative values of its first argument.
+The package also gives easy access to the underlying C routines through an
+API; see the package vignette for details.")
+    (license license:gpl2+)))
