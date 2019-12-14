@@ -788,6 +788,34 @@ It is inspired by the Linux kernel's @code{crypto_memneq}.")
     (description "Criterion's plotting library.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-crossbeam-utils-0.6
+  (package
+    (name "rust-crossbeam-utils")
+    (version "0.6.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crossbeam-utils" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0p5aa8k3wpsn17md4rx038ac2azm9354knbxdfvn7dd7yk76yc7q"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-lazy-static" ,rust-lazy-static-1.3))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.4))))
+    (home-page
+     "https://github.com/crossbeam-rs/crossbeam/tree/master/crossbeam-utils")
+    (synopsis "Utilities for concurrent programming")
+    (description
+     "Utilities for concurrent programming.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-csv-core-0.1
   (package
     (name "rust-csv-core")
