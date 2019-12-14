@@ -5044,6 +5044,41 @@ conditions.  A Bayesian network is used to model the regulatory structure and
 Markov-Chain-Monte-Carlo is applied to sample the activity states.")
     (license license:gpl2+)))
 
+(define-public r-multidataset
+  (package
+    (name "r-multidataset")
+    (version "1.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "MultiDataSet" version))
+       (sha256
+        (base32
+         "0iw99ymrv3ls023mpmgyagmb5simgsgadpj0k4bnssfaqnklywlj"))))
+    (properties `((upstream-name . "MultiDataSet")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggrepel" ,r-ggrepel)
+       ("r-iranges" ,r-iranges)
+       ("r-limma" ,r-limma)
+       ("r-qqman" ,r-qqman)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (home-page "https://bioconductor.org/packages/MultiDataSet/")
+    (synopsis "Implementation of MultiDataSet and ResultSet")
+    (description
+     "This package provides an implementation of the BRGE's (Bioinformatic
+Research Group in Epidemiology from Center for Research in Environmental
+Epidemiology) MultiDataSet and ResultSet.  MultiDataSet is designed for
+integrating multi omics data sets and ResultSet is a container for omics
+results.  This package contains base classes for MEAL and rexposome
+packages.")
+    (license license:expat)))
+
 (define-public r-ropls
   (package
     (name "r-ropls")
