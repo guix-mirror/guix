@@ -18592,3 +18592,36 @@ transformation grids and comparing covariance matrices.  See Dryden, I.L.  and
 Mardia, K.V. (2016).  Statistical shape analysis, with Applications in R (2nd
 Edition), John Wiley and Sons.")
     (license license:gpl2)))
+
+(define-public r-anthropometry
+  (package
+    (name "r-anthropometry")
+    (version "1.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Anthropometry" version))
+       (sha256
+        (base32
+         "1f568ri1s6psaby8y737vrkarbjg64v89d4jyw23hy17apdmszr8"))))
+    (properties `((upstream-name . "Anthropometry")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-archetypes" ,r-archetypes)
+       ("r-biclust" ,r-biclust)
+       ("r-cluster" ,r-cluster)
+       ("r-depth" ,r-depth)
+       ("r-fnn" ,r-fnn)
+       ("r-icge" ,r-icge)
+       ("r-nnls" ,r-nnls)
+       ("r-rgl" ,r-rgl)
+       ("r-shapes" ,r-shapes)))
+    (home-page "https://cran.r-project.org/web/packages/Anthropometry/")
+    (synopsis "Statistical methods for anthropometric data")
+    (description
+     "This package provides statistical methods especially developed to
+analyze anthropometric data.  These methods are aimed at providing effective
+solutions to some commons problems related to Ergonomics and Anthropometry.
+They are based on clustering, the statistical concept of data depth,
+statistical shape analysis and archetypal analysis.")
+    (license license:gpl2+)))
