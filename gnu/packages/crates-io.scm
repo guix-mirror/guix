@@ -933,6 +933,34 @@ It is inspired by the Linux kernel's @code{crypto_memneq}.")
     (description "Epoch-based garbage collection.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-crossbeam-queue-0.1
+  (package
+    (name "rust-crossbeam-queue")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crossbeam-queue" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0jsa9dbxnwqcxfws09vaschf92d4imlbbikmcn4ka8z7rzb9r5vw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.4))))
+    (home-page
+     "https://github.com/crossbeam-rs/crossbeam/tree/master/crossbeam-utils")
+    (synopsis "Concurrent queues")
+    (description "Concurrent queues.")
+    (license (list license:expat
+                   license:asl2.0
+                   license:bsd-2))))
+
 (define-public rust-crossbeam-utils-0.6
   (package
     (name "rust-crossbeam-utils")
