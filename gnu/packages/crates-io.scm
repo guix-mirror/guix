@@ -846,6 +846,35 @@ It is inspired by the Linux kernel's @code{crypto_memneq}.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-crc32fast-1.2
+  (package
+    (name "rust-crc32fast")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crc32fast" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1c9dhkvf3brrzzplcijaywxi2w8wv5578i0ryhcm7x8dmzi5s4ms"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1))
+       #:cargo-development-inputs
+       (("rust-bencher" ,rust-bencher-0.1)
+        ("rust-quickcheck" ,rust-quickcheck-0.8)
+        ("rust-rand" ,rust-rand-0.4))))
+    (home-page "https://github.com/srijs/rust-crc32fast")
+    (synopsis
+     "Fast, SIMD-accelerated CRC32 (IEEE) checksum computation")
+    (description
+     "Fast, SIMD-accelerated CRC32 (IEEE) checksum computation.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-criterion-plot-0.3
   (package
     (name "rust-criterion-plot")
