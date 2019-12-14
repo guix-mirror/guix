@@ -1805,6 +1805,32 @@ whether an expression matches a pattern.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-memchr-2.2
+  (package
+    (name "rust-memchr")
+    (version "2.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "memchr" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0f8wdra7yaggsr4jzlrvpd8yknnqhd990iijdr6llgc8gk2ppz1f"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2))
+       #:cargo-development-inputs
+       (("rust-quickcheck" ,rust-quickcheck-0.8))))
+    (home-page
+     "https://github.com/BurntSushi/rust-memchr")
+    (synopsis "Safe interface to memchr")
+    (description "Safe interface to memchr.")
+    (license (list license:expat license:unlicense))))
+
 (define-public rust-memmap-0.7
   (package
     (name "rust-memmap")
@@ -3048,7 +3074,7 @@ system calls.")
          "1pabajpp0wzb7dm2x32gy8w7k0mwykr6zsvzn0fgpr6pww40hbqb"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build #t
+     `(#:skip-build? #t
        #:cargo-inputs
        (("rust-aho-corasick" ,rust-aho-corasick-0.7)
         ("rust-memchr" ,rust-memchr-2.2)
@@ -3061,8 +3087,7 @@ system calls.")
         ("rust-quickcheck" ,rust-quickcheck-0.8)
         ("rust-rand" ,rust-rand-0.4))))
     (home-page "https://github.com/rust-lang/regex")
-    (synopsis
-     "Regular expressions for Rust")
+    (synopsis "Regular expressions for Rust")
     (description
      "An implementation of regular expressions for Rust.  This implementation
 uses finite automata and guarantees linear time matching on all inputs.")
