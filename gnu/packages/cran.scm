@@ -17868,3 +17868,24 @@ latent classes based on their attribute patterns.  In addition to the
 algorithms used to classify data, three labeling approaches are proposed to
 label clusters so that examinees' attribute profiles can be obtained.")
     (license license:gpl2+)))
+
+(define-public r-ineq
+  (package
+    (name "r-ineq")
+    (version "0.2-13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ineq" version))
+       (sha256
+        (base32
+         "09fsxyrh0j7mwmb5hkhmrzgcy7kf85jxkh7zlwpgqgcsyl1n91z0"))))
+    (properties `((upstream-name . "ineq")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/ineq/")
+    (synopsis "Measuring inequality, concentration, and poverty")
+    (description
+     "This package provides tools for measuring inequality, concentration, and
+poverty measures.  It provides both empirical and theoretical Lorenz curves.")
+    ;; Either of these two versions.
+    (license (list license:gpl2 license:gpl3))))
