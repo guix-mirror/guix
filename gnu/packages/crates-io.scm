@@ -4,6 +4,7 @@
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -243,6 +244,39 @@ behave like a set of bitflags.")
     (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
+
+(define-public rust-bstr-0.1
+  (package
+    (name "rust-bstr")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bstr" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0nzi9vqhl56ws8gq39f3aj4qjrr4l3g5lbkkcj8xq1x4cb74wq2r"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-regex-automata" ,rust-regex-automata-0.1)
+        ("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-quickcheck" ,rust-quickcheck-0.8)
+        ("rust-ucd-parse" ,rust-ucd-parse-0.1)
+        ("rust-unicode-segmentation" ,rust-unicode-segmentation-1.3))))
+    (home-page "https://github.com/BurntSushi/bstr")
+    (synopsis
+     "String type that is not required to be valid UTF-8")
+    (description
+     "This package provides a string type that is not required to be valid
+UTF-8.")
+    (license (list license:expat license:asl2.0))))
 
 (define-public rust-cargon-0.0
   (package
