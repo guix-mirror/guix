@@ -1331,6 +1331,34 @@ path simultaneously, and returning all of the globs that matched.")
      "Utilities for search oriented command line applications.")
     (license license:expat)))
 
+(define-public rust-grep-matcher-0.1
+  (package
+    (name "rust-grep-matcher")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "grep-matcher" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "03j26zygfgwyam66bl5g922gimrvp4yyzl8qvaykyklnf247bl3r"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-memchr" ,rust-memchr-2.2))
+       #:cargo-development-inputs
+       (("rust-regex" ,rust-regex-1.1))))
+    (home-page "https://github.com/BurntSushi/ripgrep")
+    (synopsis "Trait for regular expressions")
+    (description
+     "This crate provides a low level interface for describing regular
+expression matchers.  The @code{grep} crate uses this interface in order to make
+the regex engine it uses pluggable.")
+    (license (list license:expat license:unlicense))))
+
 (define-public rust-grep-pcre2-0.1
   (package
     (name "rust-grep-pcre2")
