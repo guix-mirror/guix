@@ -7011,3 +7011,36 @@ endpoint that will be used to trigger the task.  Poussetaches makes HTTP
 requests with the registered payload until the right status code is
 returned.")
     (license license:isc)))
+
+(define-public htmlcxx
+  (package
+    (name "htmlcxx")
+    (version "0.87")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://sourceforge/htmlcxx/v"
+                       version "/htmlcxx-" version ".tar.gz"))
+       (sha256
+        (base32 "1j3mzjlczjrk4ahc43s6kzpvzypzjmqz4sillnca5yadrwwgjf2x"))))
+    (build-system gnu-build-system)
+    (home-page "http://htmlcxx.sourceforge.net/")
+    (synopsis "Simple non-validating CSS1 and HTML parser for C++")
+    (description "htmlcxx is a simple non-validating CSS1 and HTML parser for
+C++.  Although there are several other HTML parsers available, htmlcxx has some
+characteristics that make it unique:
+@itemize
+@item STL like navigation of DOM tree, using excelent's tree.hh library from
+Kasper Peeters
+@item It is possible to reproduce exactly, character by character, the original
+document from the parse tree
+@item Bundled CSS parser
+@item Optional parsing of attributes
+@item C++ code that looks like C++ (not so true anymore)
+@item Offsets of tags/elements in the original document are stored in the nodes
+of the DOM tree
+@end itemize")
+    (license (list license:lgpl2.0
+                   license:gpl2
+                   license:asl2.0))))
