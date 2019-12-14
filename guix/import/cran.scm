@@ -82,6 +82,7 @@
    ("LGPL-2.1" 'lgpl2.1)
    ("LGPL-3" 'lgpl3)
    ("LGPL (>= 2)" 'lgpl2.0+)
+   ("LGPL (>= 2.1)" 'lgpl2.1+)
    ("LGPL (>= 3)" 'lgpl3+)
    ("MIT" 'expat)
    ("MIT + file LICENSE" 'expat)
