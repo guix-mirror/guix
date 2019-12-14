@@ -17838,3 +17838,33 @@ or structured.  Q-matrix validation, item and model fit statistics, model
 comparison at test and item level and differential item functioning can also
 be conducted.  A graphical user interface is also provided.")
     (license license:gpl3)))
+
+(define-public r-actcd
+  (package
+    (name "r-actcd")
+    (version "1.2-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ACTCD" version))
+       (sha256
+        (base32
+         "0mzjxxr2zfdidw8ibh6w8mvpkw3q3nvngqi05g9ind26ckvk053p"))))
+    (properties `((upstream-name . "ACTCD")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-gdina" ,r-gdina)
+       ("r-r-methodss3" ,r-r-methodss3)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/ACTCD/")
+    (synopsis "Asymptotic classification theory for cognitive diagnosis")
+    (description
+     "This is a package supporting cluster analysis for cognitive diagnosis
+based on the Asymptotic Classification Theory (Chiu, Douglas & Li, 2009;
+@url{doi:10.1007/s11336-009-9125-0}).  Given the sample statistic of
+sum-scores, cluster analysis techniques can be used to classify examinees into
+latent classes based on their attribute patterns.  In addition to the
+algorithms used to classify data, three labeling approaches are proposed to
+label clusters so that examinees' attribute profiles can be obtained.")
+    (license license:gpl2+)))
