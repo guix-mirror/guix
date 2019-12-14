@@ -17991,3 +17991,35 @@ sequence of the entire gene.  Integration of mutations with signalling
 information helps find new driver genes and propose candidate mechanisms to
 known drivers.")
     (license license:gpl2+)))
+
+(define-public r-activitycounts
+  (package
+    (name "r-activitycounts")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "activityCounts" version))
+       (sha256
+        (base32
+         "0zgxr2sk3a8kmygfxx1p5hnrfwdkxx7php6jlrhm8wv6052ck8jz"))))
+    (properties
+     `((upstream-name . "activityCounts")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lubridate" ,r-lubridate)
+       ("r-magrittr" ,r-magrittr)
+       ("r-seewave" ,r-seewave)
+       ("r-signal" ,r-signal)
+       ("r-tibble" ,r-tibble)))
+    (home-page "https://github.com/walkabillylab/activityCounts")
+    (synopsis "Generate ActiLife counts")
+    (description
+     "ActiLife generates activity counts from data collected by Actigraph
+accelerometers.  Actigraph is one of the most common research-grade
+accelerometers.  There is considerable research validating and developing
+algorithms for human activity using ActiLife counts.  Unfortunately, ActiLife
+counts are proprietary and difficult to implement if researchers use different
+accelerometer brands.  The code creates ActiLife counts from raw acceleration
+data for different accelerometer brands.")
+    (license license:gpl3)))
