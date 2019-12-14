@@ -5264,6 +5264,26 @@ and to both short and long sequence reads.")
 cluster count and membership by stability evidence in unsupervised analysis.")
     (license license:gpl2)))
 
+(define-public r-cytolib
+  (package
+    (name "r-cytolib")
+    (version "1.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "cytolib" version))
+       (sha256
+        (base32
+         "1zk5i09k782lw6297gl3rh0g4fxswr2ang8dgqj7p0814l7h15k9"))))
+    (properties `((upstream-name . "cytolib")))
+    (build-system r-build-system)
+    (home-page "https://bioconductor.org/packages/cytolib/")
+    (synopsis "C++ infrastructure for working with gated cytometry")
+    (description
+     "This package provides the core data structure and API to represent and
+interact with gated cytometry data.")
+    (license license:artistic2.0)))
+
 (define-public r-flowcore
   (package
     (name "r-flowcore")
