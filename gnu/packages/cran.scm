@@ -17940,3 +17940,26 @@ described in Ramsay, J. O. and Silverman, B. W. (2005) Functional Data
 Analysis.  The package includes data sets and script files working many
 examples.")
     (license license:gpl2+)))
+
+(define-public r-actigraphy
+  (package
+    (name "r-actigraphy")
+    (version "1.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Actigraphy" version))
+       (sha256
+        (base32
+         "0y0ccmxhdfhdmi4k6pbfvnqknkqbgvfsf2qf7z7rc4xpfgym6574"))))
+    (properties `((upstream-name . "Actigraphy")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-fda" ,r-fda)
+       ("r-sdmtools" ,r-sdmtools)))
+    (home-page "https://cran.r-project.org/web/packages/Actigraphy/")
+    (synopsis "Actigraphy data analysis")
+    (description
+     "This package provides tools for functional linear modeling and analysis
+of actigraphy data.")
+    (license license:asl2.0)))
