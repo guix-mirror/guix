@@ -2469,6 +2469,36 @@ implementation (which is unstable / requires nightly).")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-num-complex-0.2
+  (package
+    (name "rust-num-complex")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "num-complex" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1z6zjdzx1g1hj4y132ddy83d3p3zvw06igbf59npxxrzzcqwzc7w"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-rand" ,rust-rand-0.4)
+        ("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-autocfg" ,rust-autocfg-0.1))))
+    (home-page
+     "https://github.com/rust-num/num-complex")
+    (synopsis
+     "Complex numbers implementation for Rust")
+    (description
+     "Complex numbers implementation for Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-num-cpus-1.10
   (package
     (name "rust-num-cpus")
