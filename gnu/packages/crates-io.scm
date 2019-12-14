@@ -4346,6 +4346,31 @@ rust-lang/rust integration.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-rustc-version-0.2
+  (package
+    (name "rust-rustc-version")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc_version" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "02h3x57lcr8l2pm0a645s9whdh33pn5cnrwvn5cb57vcrc53x3hk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs (("rust-semver" ,rust-semver-0.9))))
+    (home-page "https://github.com/Kimundi/rustc-version-rs")
+    (synopsis
+     "Library for querying the version of a installed rustc compiler")
+    (description
+     "This package provides a library for querying the version of a installed
+rustc compiler.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-ryu-1.0
   (package
     (name "rust-ryu")
