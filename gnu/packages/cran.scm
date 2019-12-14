@@ -18048,3 +18048,34 @@ data for different accelerometer brands.")
 data and plain table data to calculate the Activity Index from Bai et
 al. (2016) @url{doi:10.1371/journal.pone.0160644}.")
     (license license:gpl3)))
+
+(define-public r-activpal
+  (package
+    (name "r-activpal")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "activPAL" version))
+       (sha256
+        (base32
+         "1h6hp5z89ji73gdzxy1dgbfwjysiy5lvcqh90xagpb7sa7ahs3na"))))
+    (properties `((upstream-name . "activPAL")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-devtools" ,r-devtools)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-lubridate" ,r-lubridate)
+       ("r-magrittr" ,r-magrittr)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "https://cran.r-project.org/web/packages/activPAL")
+    (synopsis "Processing and chart generation from activPAL events files")
+    (description
+     "This package contains functions to generate pre-defined summary
+statistics from activPAL events files.  The package also contains functions to
+produce informative graphics that visualize physical activity behaviour and
+trends.  This includes generating graphs that align physical activity
+behaviour with additional time based observations described by other data
+sets, such as sleep diaries and continuous glucose monitoring data.")
+    (license license:gpl3)))
