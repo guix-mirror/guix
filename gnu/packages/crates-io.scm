@@ -5148,6 +5148,35 @@ and Jaro-Winkler.")
     (properties '((hidden? . #t)))
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-syn-0.15
+  (package
+    (inherit rust-syn-1.0)
+    (name "rust-syn")
+    (version "0.15.44")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "syn" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1id5g6x6zihv3j7hwrw3m1jp636bg8dpi671r7zy3jvpkavb794w"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-unicode-xid" ,rust-unicode-xid-0.2))
+       #:cargo-development-inputs
+       (("rust-insta" ,rust-insta-0.8)
+        ("rust-rayon" ,rust-rayon-1.1)
+        ("rust-ref-cast" ,rust-ref-cast-0.2)
+        ("rust-regex" ,rust-regex-1.1)
+        ("rust-termcolor" ,rust-termcolor-1.0)
+        ("rust-walkdir" ,rust-walkdir-2.2))))
+    (properties '())))
+
 (define-public rust-synstructure-test-traits-0.1
   (package
     (name "rust-synstructure-test-traits")
