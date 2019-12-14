@@ -374,6 +374,31 @@ used in argon2rs' bench suite.")
     (properties '((hidden? . #t)))
     (license license:wtfpl2)))
 
+(define-public rust-cast-0.2
+  (package
+    (name "rust-cast")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cast" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "09yl2700crxa4n860b080msij25klvs1kfzazhp2aihchvr16q4j"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-development-inputs
+       (("rust-quickcheck" ,rust-quickcheck-0.8))))
+    (home-page "https://github.com/japaric/cast.rs")
+    (synopsis
+     "Ergonomic, checked cast functions for primitive types")
+    (description
+     "Ergonomic, checked cast functions for primitive types.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-cblas-sys-0.1
   (package
     (name "rust-cblas-sys")
