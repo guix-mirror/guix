@@ -6187,6 +6187,34 @@ in Rust.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-tinytemplate-1.0
+  (package
+    (name "rust-tinytemplate")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tinytemplate" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "084w41m75i95sdid1wwlnav80jsl1ggyryl4nawxvb6amigvfx25"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.2)
+        ("rust-serde-derive" ,rust-serde-derive-1.0))))
+    (home-page "https://github.com/bheisler/TinyTemplate")
+    (synopsis "Simple, lightweight template engine")
+    (description
+     "Simple, lightweight template engine.")
+    (license (list license:asl2.0 license:expat))))
+
 ;; Cyclic dependency with tokio-io
 (define-public rust-tokio-codec-0.1
   (package
