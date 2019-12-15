@@ -2223,14 +2223,14 @@ penalized least squares regression method.")
 (define-public r-dnacopy
   (package
     (name "r-dnacopy")
-    (version "1.58.0")
+    (version "1.60.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DNAcopy" version))
        (sha256
         (base32
-         "1gybr3cbsrqjgz00n4l5kb2nrmh302xpvzk5zk957ijj5qbfwmxa"))))
+         "119z5lqhhw9ppg6s4dvbxk1kxf3wc55ibpm9b88c91s04yd7m9yw"))))
     (properties `((upstream-name . "DNAcopy")))
     (build-system r-build-system)
     (native-inputs `(("gfortran" ,gfortran)))
