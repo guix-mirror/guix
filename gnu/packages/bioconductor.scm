@@ -5955,16 +5955,18 @@ regulatory networks from expression data.")
 (define-public r-roc
   (package
     (name "r-roc")
-    (version "1.60.0")
+    (version "1.62.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ROC" version))
        (sha256
         (base32
-         "1sapnl8kyaldgvdc657wqcmyjb24nvrnaw7v94bbs8yf5pmfm71c"))))
+         "1aqpyc28czagg3nbybh55vf152nbar61jjw79w04326d97mc3j3y"))))
     (properties `((upstream-name . "ROC")))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://www.bioconductor.org/packages/ROC/")
     (synopsis "Utilities for ROC curves")
     (description
