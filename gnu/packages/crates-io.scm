@@ -1933,6 +1933,31 @@ is configured via an environment variable.")
      "Type-erased Serialize and Serializer traits.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-failure-0.1
+  (package
+    (name "rust-failure")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "failure" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1qppmgv4i5jj6vrss91qackqnl0a12h7lnby4l7j5fdy78yxhnvr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-backtrace" ,rust-backtrace-0.3)
+        ("rust-failure-derive" ,rust-failure-derive-0.1))))
+    (home-page "https://rust-lang-nursery.github.io/failure/")
+    (synopsis "Experimental error handling abstraction")
+    (description
+     "Experimental error handling abstraction.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-failure-derive-0.1
   (package
     (name "rust-failure-derive")
