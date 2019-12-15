@@ -20523,6 +20523,31 @@ data, including buffers, window configuration, variables, and more.")
       (home-page "https://github.com/thierryvolpiatto/psession")
       (license license:gpl3+))))
 
+(define-public emacs-parseedn
+  (package
+    (name "emacs-parseedn")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/clojure-emacs/parseedn.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "11wi3hwcgmy54p6ivpijqm7v0hj6j75a19qk5z779bqfrp79b4pc"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-a" ,emacs-a)
+       ("emacs-parseclj" ,emacs-parseclj)))
+    (home-page "https://cider.mx")
+    (synopsis "EDN parser for Emacs Lisp")
+    (description
+     "An Emacs Lisp library for parsing EDN (Clojure) data.
+It uses parseclj's shift-reduce parser internally.")
+    (license license:gpl3+)))
+
 (define-public emacs-parseclj
   (package
     (name "emacs-parseclj")
