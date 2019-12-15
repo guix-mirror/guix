@@ -3054,7 +3054,7 @@ their original location with another.")
 (define-public emacs-rich-minority
   (package
     (name "emacs-rich-minority")
-    (version "1.0.1")
+    (version "1.0.3")
     (source
      (origin
        (method git-fetch)
@@ -3063,7 +3063,8 @@ their original location with another.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "11hwf9y5ax207w6rwrsmi3pmn7pn7ap6iys0z8hni2f5zzxjrmx3"))))
+        (base32
+         "1kn7c9qr9ykj68iqffzzmjsr6aazwac8cxb7j960sjb282rq0yyj"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/Malabarba/rich-minority")
     (synopsis "Clean-up and beautify the list of minor modes")
