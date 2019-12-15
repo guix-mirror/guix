@@ -5084,16 +5084,18 @@ packages.")
 (define-public r-ropls
   (package
     (name "r-ropls")
-    (version "1.16.0")
+    (version "1.18.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ropls" version))
        (sha256
         (base32
-         "099nv9dgmw3avkxv7cd27r16yj56svjlp5q4i389yp1n0r5zhyl2"))))
+         "05w1zrq92w3jfwq5sdyj27m5qjg4zv7acywia8vd6y5fbgcnyzlp"))))
     (build-system r-build-system)
-    (propagated-inputs `(("r-biobase" ,r-biobase)))
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-multidataset" ,r-multidataset)))
     (native-inputs
      `(("r-knitr" ,r-knitr))) ; for vignettes
     (home-page "https://dx.doi.org/10.1021/acs.jproteome.5b00354")
