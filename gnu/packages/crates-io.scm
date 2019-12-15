@@ -700,6 +700,31 @@ depending on a large number of #[cfg] parameters.  Structured like an
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-ci-info-0.3
+  (package
+    (name "rust-ci-info")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ci-info" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "00pr17g6q6i752acrkycg0hkq3lm0p634anm41g3m6lqg8q83s75"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0))))
+    (home-page "https://github.com/sagiegurari/ci_info")
+    (synopsis "Provides current CI environment information")
+    (description
+     "This package provides current CI environment information.")
+    (license license:asl2.0)))
+
 (define-public rust-clang-sys-0.28
   (package
     (name "rust-clang-sys")
