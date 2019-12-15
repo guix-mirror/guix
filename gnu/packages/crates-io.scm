@@ -7103,6 +7103,33 @@ in Rust.")
     (properties '((hidden? . #t)))
     (license license:asl2.0)))
 
+(define-public rust-wasm-bindgen-0.2
+  (package
+    (name "rust-wasm-bindgen")
+    (version "0.2.48")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wasm-bindgen" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0m8vq3jkhz04fn3wjvb7ii7xql60w32nlvr10jcskcbbh2hpzsad"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0)
+        ("rust-wasm-bindgen-macro"
+         ,rust-wasm-bindgen-macro-0.2))))
+    (home-page "https://rustwasm.github.io/")
+    (synopsis "Easy support for interacting between JS and Rust")
+    (description
+     "Easy support for interacting between JS and Rust.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-wasm-bindgen-backend-0.2
   (package
     (name "rust-wasm-bindgen-backend")
