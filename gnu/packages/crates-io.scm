@@ -5257,6 +5257,34 @@ with one of the implemented strategies.")
      "Token De/Serializer for testing De/Serialize implementations.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-sha1-0.6
+  (package
+    (name "rust-sha1")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sha1" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "03gs2q4m67rn2p8xcdfxhip6mpgahdwm12bnb3vh90ahv9grhy95"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-openssl" ,rust-openssl-0.10)
+        ("rust-rand" ,rust-rand-0.4)
+        ("rust-serde-json" ,rust-serde-json-1.0))))
+    (home-page "https://github.com/mitsuhiko/rust-sha1")
+    (synopsis "Minimal implementation of SHA1 for Rust")
+    (description
+     "Minimal implementation of SHA1 for Rust.")
+    (license license:bsd-3)))
+
 (define-public rust-shlex-0.1
   (package
     (name "rust-shlex")
