@@ -2200,13 +2200,13 @@ sequencing data.")
 (define-public r-copynumber
   (package
     (name "r-copynumber")
-    (version "1.24.0")
+    (version "1.26.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "copynumber" version))
               (sha256
                (base32
-                "0gmxi7w776pjqv3v0pkdihb167zzrnr9hw64yfvzgjhkhrc6a4rp"))))
+                "0r6r1adj20x3ckm0dlipxlf1rzngr92xsxxpy81mqxf4jpmyr8gj"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-s4vectors" ,r-s4vectors)
