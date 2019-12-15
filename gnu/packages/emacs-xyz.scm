@@ -1241,6 +1241,30 @@ or unexpected behavior inside an elisp configuration file (typically
      "Emacs-wget is an emacs interface for the wget file downloader.")
     (license license:gpl2+)))
 
+(define-public emacs-eww-lnum
+  (package
+    (name "emacs-eww-lnum")
+    (version "1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/m00natic/eww-lnum.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0gs6bi3s2sszc6v2b26929azmn5513kvyin99n4d0ark1jdbjmv2"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/m00natic/eww-lnum")
+    (synopsis "Conkeror-like functionality for Eww")
+    (description "This is extension to the Emacs browser Eww that adds
+Conkeror-like functionality.  In short, currently visible links, forms,
+buttons are temporarily assigned numbers with which the former can be
+immediately activated.  Also filtering can be applied so selection can be
+incrementally confined in Isearch manner.")
+    (license license:gpl3+)))
+
+
 
 ;;;
 ;;; Multimedia.
