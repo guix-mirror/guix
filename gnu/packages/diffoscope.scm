@@ -90,6 +90,12 @@
                       (lambda _
                         (substitute* "setup.py"
                           (("'python-magic',") ""))))
+                    ;; Patch in support for known tools
+                    (add-after 'unpack 'add-known-tools
+                      (lambda _
+                        (substitute* "diffoscope/external_tools.py"
+                          (("'debian': 'zstd'")
+                           "'debian': 'zstd', 'guix': 'zstd'"))))
                     ;; This test is broken because our `file` package has a
                     ;; bug in berkeley-db file type detection.
                     (add-after 'unpack 'remove-berkeley-test
@@ -209,7 +215,8 @@
                        ("wabt" ,wabt)
                        ("xxd" ,xxd)
                        ("xz" ,xz)
-                       ("zip" ,zip)))
+                       ("zip" ,zip)
+                       ("zstd" ,zstd)))
       (home-page "https://diffoscope.org/")
       (synopsis "Compare files, archives, and directories in depth")
       (description
