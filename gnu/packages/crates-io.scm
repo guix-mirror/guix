@@ -498,6 +498,30 @@ behave like a set of bitflags.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-block-padding-0.1
+  (package
+    (name "rust-block-padding")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "block-padding" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "02fz9wx5dmgpc79ndrb9xfxqlrkk7lg5wki2blz2zqg27spw6kbd"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-byte-tools" ,rust-byte-tools-0.3))))
+    (home-page "https://github.com/RustCrypto/utils")
+    (synopsis "Padding and unpadding of messages divided into blocks")
+    (description
+     "Padding and unpadding of messages divided into blocks.")
+    (license (list license:asl1.1 license:expat))))
+
 (define-public rust-bumpalo-2.5
   (package
     (name "rust-bumpalo")
