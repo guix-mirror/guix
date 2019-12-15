@@ -7186,6 +7186,39 @@ in Rust.")
      "Backend code generation of the wasm-bindgen tool.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-wasm-bindgen-futures-0.3
+  (package
+    (name "rust-wasm-bindgen-futures")
+    (version "0.3.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wasm-bindgen-futures" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0bf9x6qfjczspc4zs605z1n4j15cdd8kk2z7rah0yggw8b6zl5nc"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-futures" ,rust-futures-0.1)
+        ("rust-futures-channel-preview"
+         ,rust-futures-channel-preview-0.3)
+        ("rust-futures-util-preview" ,rust-futures-util-preview-0.3)
+        ("rust-js-sys" ,rust-js-sys-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2))
+       #:cargo-development-inputs
+       (("rust-wasm-bindgen-test" ,rust-wasm-bindgen-test-0.2))))
+    (home-page "https://rustwasm.github.io/wasm-bindgen/")
+    (synopsis
+     "Bridging the gap between Rust Futures and JavaScript Promises")
+    (description
+     "Bridging the gap between Rust Futures and JavaScript Promises.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-wasm-bindgen-macro-support-0.2
   (package
     (name "rust-wasm-bindgen-macro-support")
