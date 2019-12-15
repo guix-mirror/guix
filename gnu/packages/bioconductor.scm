@@ -5549,6 +5549,42 @@ samples, compensation, and transformation are performed so that the output
 matches the flowJo analysis.")
     (license license:artistic2.0)))
 
+(define-public r-flowstats
+  (package
+    (name "r-flowstats")
+    (version "3.44.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "flowStats" version))
+       (sha256
+        (base32
+         "0pql0lpf90nra7w6z6nd8l9cgjlsg2pxysfravnbzfhl3pjvd96w"))))
+    (properties `((upstream-name . "flowStats")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-cluster" ,r-cluster)
+       ("r-fda" ,r-fda)
+       ("r-flowcore" ,r-flowcore)
+       ("r-flowviz" ,r-flowviz)
+       ("r-flowworkspace" ,r-flowworkspace)
+       ("r-kernsmooth" ,r-kernsmooth)
+       ("r-ks" ,r-ks)
+       ("r-lattice" ,r-lattice)
+       ("r-mass" ,r-mass)
+       ("r-ncdfflow" ,r-ncdfflow)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rrcov" ,r-rrcov)))
+    (home-page "http://www.github.com/RGLab/flowStats")
+    (synopsis "Statistical methods for the analysis of flow cytometry data")
+    (description
+     "This package provides methods and functionality to analyze flow data
+that is beyond the basic infrastructure provided by the @code{flowCore}
+package.")
+    (license license:artistic2.0)))
+
 (define-public r-flowsom
   (package
     (name "r-flowsom")
