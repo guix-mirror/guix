@@ -4365,7 +4365,7 @@ and popup menus.")
 (define-public emacs-jedi
   (package
     (name "emacs-jedi")
-    (version "0.2.7")
+    (version "0.2.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4374,7 +4374,7 @@ and popup menus.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0xbp9fcxgbf298w05hvf52z41kk7r52975ailgdn8sg60xc98fa7"))))
+                "1bckxppfzd5gwn0aw4h86igb7igal9axqncq7j8zmflg7zppncf1"))))
     (build-system emacs-build-system)
     (native-inputs
      `(("emacs-mocker" ,emacs-mocker)))
