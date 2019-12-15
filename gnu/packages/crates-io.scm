@@ -7414,6 +7414,41 @@ untrusted inputs in Rust.")
      "Convert ranges of Unicode codepoints to UTF-8 byte ranges.")
     (license (list license:expat license:unlicense))))
 
+(define-public rust-uuid-0.7
+  (package
+    (name "rust-uuid")
+    (version "0.7.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "uuid" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ank4xk20x3nrz926w8j9mz53bi3v8bykxmhlq2pffa8xc8wdnwh"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-md5" ,rust-md5-0.6)
+        ("rust-rand" ,rust-rand-0.6)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-sha1" ,rust-sha1-0.6)
+        ("rust-slog" ,rust-slog-2.4)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-bincode" ,rust-bincode-1.1)
+        ("rust-serde-derive" ,rust-serde-derive-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0)
+        ("rust-serde-test" ,rust-serde-test-1.0))))
+    (home-page "https://github.com/uuid-rs/uuid")
+    (synopsis "Generate and parse UUIDs")
+    (description
+     "This package provides a library to generate and parse UUIDs.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-vcpkg-0.2
   (package
     (name "rust-vcpkg")
