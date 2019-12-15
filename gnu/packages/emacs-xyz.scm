@@ -7169,7 +7169,7 @@ target will call @code{compile} on it.")
        ("emacs-parseedn" ,emacs-parseedn)
        ("emacs-pkg-info" ,emacs-pkg-info)
        ("emacs-queue" ,emacs-queue)))
-    (home-page "https://cider.readthedocs.io/")
+    (home-page "https://cider.mx/")
     (synopsis "Clojure development environment for Emacs")
     (description
      "CIDER (Clojure Interactive Development Environment that Rocks) aims to
