@@ -9024,6 +9024,37 @@ pool.")
     (description "Timer facilities for Tokio.")
     (license license:expat)))
 
+(define-public rust-tokio-udp-0.1
+  (package
+    (name "rust-tokio-udp")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-udp" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "14kfj35s465czcspayacnzlxrazfvxzhhggq1rqlljhgp1sqa9k6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.4)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mio" ,rust-mio-0.6)
+        ("rust-tokio-codec" ,rust-tokio-codec-0.1)
+        ("rust-tokio-io" ,rust-tokio-io-0.1)
+        ("rust-tokio-reactor" ,rust-tokio-reactor-0.1))
+       #:cargo-development-inputs
+       (("rust-env-logger" ,rust-env-logger-0.6))))
+    (home-page "https://tokio.rs")
+    (synopsis "UDP bindings for tokio")
+    (description "UDP bindings for tokio.")
+    (license license:expat)))
+
 (define-public rust-tokio-uds-0.2
   (package
     (name "rust-tokio-uds")
