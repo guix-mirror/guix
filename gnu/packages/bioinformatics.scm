@@ -10405,13 +10405,13 @@ visualizations for publication-quality multi-panel figures.")
 (define-public r-fithic
   (package
     (name "r-fithic")
-    (version "1.10.0")
+    (version "1.12.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "FitHiC" version))
               (sha256
                (base32
-                "1qrxy4v8vmykrk8y6g3bs5wh5xhbs6pxyydbxy3vnj2mjirnxr6d"))))
+                "1irwkwi4afdj395134k31mvx7c2vpdd0rv8zrblnldascdsb04kc"))))
     (properties `((upstream-name . "FitHiC")))
     (build-system r-build-system)
     (propagated-inputs
