@@ -23,6 +23,7 @@
 (define-module (gnu packages texinfo)
   #:use-module (guix licenses)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
