@@ -4512,19 +4512,20 @@ based on @dfn{Continuous Wavelet Transform} (CWT).")
 (define-public r-xcms
   (package
     (name "r-xcms")
-    (version "3.6.2")
+    (version "3.8.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "xcms" version))
        (sha256
         (base32
-         "0icww3f1kahyk96mc07yhsbyiranzm2614n509as09jf8bdhq23v"))))
+         "18iglvlvlxrdwn2apdvihj9jxmx0kwm5z37rml67xcj9sfdi3bjb"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
        ("r-biocgenerics" ,r-biocgenerics)
        ("r-biocparallel" ,r-biocparallel)
+       ("r-iranges" ,r-iranges)
        ("r-lattice" ,r-lattice)
        ("r-massspecwavelet" ,r-massspecwavelet)
        ("r-msnbase" ,r-msnbase)
