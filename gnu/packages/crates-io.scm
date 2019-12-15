@@ -881,6 +881,32 @@ need compiler-rt intrinsics.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-console-error-panic-hook-0.1
+  (package
+    (name "rust-console-error-panic-hook")
+    (version "0.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "console_error_panic_hook" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "04d2narcrzk9bnddz17rr2l819l82pr0h6d98s2w9q236n87dndq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2))))
+    (home-page "https://github.com/rustwasm/console_error_panic_hook")
+    (synopsis "Logs panics to console.error")
+    (description
+     "This package provides a panic hook for @code{wasm32-unknown-unknown}
+that logs panics to @code{console.error}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-constant-time-eq-0.1
   (package
     (name "rust-constant-time-eq")
