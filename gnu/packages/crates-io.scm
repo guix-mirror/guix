@@ -4558,6 +4558,38 @@ and @code{ptrdistance}.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-rayon-core-1.5
+  (package
+    (name "rust-rayon-core")
+    (version "1.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rayon-core" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ljva6blaf1wmzvg77h1i9pd0hsmsbbcmdk7sjbw7h2s8gw0vgpb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-crossbeam-deque" ,rust-crossbeam-deque-0.7)
+        ("rust-crossbeam-queue" ,rust-crossbeam-queue-0.1)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6)
+        ("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-num-cpus" ,rust-num-cpus-1.10))
+       #:cargo-development-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-rand" ,rust-rand-0.4)
+        ("rust-rand-xorshift" ,rust-rand-xorshift-0.2)
+        ("rust-scoped-tls" ,rust-scoped-tls-1.0))))
+    (home-page "https://github.com/rayon-rs/rayon")
+    (synopsis "Core APIs for Rayon")
+    (description "Core APIs for Rayon.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rdrand-0.4
   (package
     (name "rust-rdrand")
