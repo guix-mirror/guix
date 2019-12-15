@@ -9241,7 +9241,7 @@ hexadecimal or ASCII.  It is useful for editing binary files in general.")
 (define-public libdazzle
   (package
     (name "libdazzle")
-    (version "3.33.90")
+    (version "3.34.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libdazzle/"
@@ -9249,7 +9249,7 @@ hexadecimal or ASCII.  It is useful for editing binary files in general.")
                                   "libdazzle-" version ".tar.xz"))
               (sha256
                (base32
-                "189m7q88d1a7bq0yyal9f3yhm9kz46lb61379nn4wsnnhpa1d0qs"))))
+                "01cmcrd75b7ns7j2b4p6h7pv68vjhkcl9zbvzzx7pf4vknxir61x"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases
