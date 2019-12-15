@@ -435,6 +435,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/ruby.scm				\
   %D%/packages/rush.scm				\
   %D%/packages/rust.scm				\
+  %D%/packages/rust-apps.scm			\
   %D%/packages/rust-cbindgen.scm		\
   %D%/packages/samba.scm			\
   %D%/packages/sagemath.scm			\
