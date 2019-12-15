@@ -5160,6 +5160,31 @@ deserialization, and interpreter in Rust.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-paste-0.1
+  (package
+    (name "rust-paste")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "paste" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ygs077hlq8qlx5y46sfgrmhlqqgkmvvhn4x3y10arawalf4ljhz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-paste-impl" ,rust-paste-impl-0.1)
+        ("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5))))
+    (home-page "https://github.com/dtolnay/paste")
+    (synopsis "Macros for all your token pasting needs")
+    (description
+     "Macros for all your token pasting needs.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-paste-impl-0.1
   (package
     (name "rust-paste-impl")
