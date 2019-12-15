@@ -5471,6 +5471,36 @@ statistics to the plot.")
 model with Box-Cox transformation.")
     (license license:artistic2.0)))
 
+;; TODO: this package bundles an old version of protobuf.  It's not easy to
+;; make it use our protobuf package instead.
+(define-public r-rprotobuflib
+  (package
+    (name "r-rprotobuflib")
+    (version "1.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "RProtoBufLib" version))
+       (sha256
+        (base32
+         "0dlgki21a37bxqh3cf83vl5zqxm86472g8a9plvhrjzzsn3mwnrm"))))
+    (properties `((upstream-name . "RProtoBufLib")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-bundled-sources
+           (lambda _
+             (with-directory-excursion "src"
+               (invoke "tar" "xf" "protobuf-2.6.0.tgz"))
+             #t)))))
+    (home-page "https://bioconductor.org/packages/RProtoBufLib/")
+    (synopsis "C++ headers and static libraries of Protocol buffers")
+    (description
+     "This package provides the headers and static library of Protocol buffers
+for other R packages to compile and link against.")
+    (license license:bsd-3)))
+
 (define-public r-flowsom
   (package
     (name "r-flowsom")
