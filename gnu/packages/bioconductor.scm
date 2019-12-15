@@ -2039,19 +2039,19 @@ samples.")
 (define-public r-biocneighbors
   (package
     (name "r-biocneighbors")
-    (version "1.2.0")
+    (version "1.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "BiocNeighbors" version))
        (sha256
         (base32
-         "08ak72y6mafzkhzfkx6b7waljpa0f1nxcrvyspd88sgzxgxjnkmg"))))
+         "05vi1cij37s8wgj92k3l6a3f3dwldj8jvijdp4695zczka6kypdf"))))
     (properties `((upstream-name . "BiocNeighbors")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)
-       ("r-biocparallel" ,r-biocparallel)
+     `(("r-biocparallel" ,r-biocparallel)
+       ("r-matrix" ,r-matrix)
        ("r-rcpp" ,r-rcpp)
        ("r-rcppannoy" ,r-rcppannoy)
        ("r-rcpphnsw" ,r-rcpphnsw)
