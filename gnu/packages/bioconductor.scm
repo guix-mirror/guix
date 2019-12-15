@@ -4334,14 +4334,14 @@ generating high resolution journal figures.")
 (define-public r-yaqcaffy
   (package
     (name "r-yaqcaffy")
-    (version "1.44.0")
+    (version "1.46.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "yaqcaffy" version))
        (sha256
         (base32
-         "1v12mbai6gf7wpxbyz4clvr7w1mlbv3scjf4kydfin8wwrrzq670"))))
+         "0kzzqsf1lfbcmy95w2z0c9qrvp7mbwm50k2l9wvz3xa5wz6xa7gz"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-simpleaffy" ,r-simpleaffy)))
