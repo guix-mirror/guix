@@ -4292,6 +4292,37 @@ known as zlib).")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-linked-hash-map-0.5
+  (package
+    (name "rust-linked-hash-map")
+    (version "0.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "linked-hash-map" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10qgbvh00q36ql0jh00rxh2jlq6qvl11n6mig0cvkpf4xf5bd4df"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-clippy" ,rust-clippy-0.0)
+        ("rust-heapsize" ,rust-heapsize-0.4)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-test" ,rust-serde-test-1.0))))
+    (home-page
+     "https://github.com/contain-rs/linked-hash-map")
+    (synopsis
+     "HashMap wrapper that holds key-value pairs in insertion order")
+    (description
+     "This package provides a HashMap wrapper that holds key-value
+pairs in insertion order.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-nodrop-0.1
   (package
     (name "rust-nodrop")
