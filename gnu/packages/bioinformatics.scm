@@ -8169,14 +8169,14 @@ downloaded from Encode.")
 (define-public r-seqlogo
   (package
     (name "r-seqlogo")
-    (version "1.50.0")
+    (version "1.52.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "seqLogo" version))
        (sha256
         (base32
-         "1z63imr1a24nqijpvxaxlakykcsadfqyxl2b3vlllncxnjjvb52b"))))
+         "0s94aahp8ma1crmp83dz65ifjwrx6wqi3q6005lmbp8yk2x1rkj4"))))
     (properties `((upstream-name . "seqLogo")))
     (build-system r-build-system)
     (home-page "https://bioconductor.org/packages/seqLogo")
