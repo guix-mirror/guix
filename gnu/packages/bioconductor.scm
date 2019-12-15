@@ -1091,14 +1091,14 @@ microarrays.")
 (define-public r-hpar
   (package
     (name "r-hpar")
-    (version "1.26.0")
+    (version "1.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "hpar" version))
        (sha256
         (base32
-         "1mnld60nrn6qpb24sz2sy8vlw3wkhfc3z726gi67l8b5mdmkxgg5"))))
+         "1yhay1ryrgj9cqa1x136cw40ca93afyvg0sarm30jsbj8nc1rm5m"))))
     (build-system r-build-system)
     (home-page "https://bioconductor.org/packages/hpar/")
     (synopsis "Human Protein Atlas in R")
