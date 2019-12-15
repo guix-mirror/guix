@@ -5679,22 +5679,24 @@ standard to exchange gated cytometry data with other software platforms.")
 (define-public r-flowsom
   (package
     (name "r-flowsom")
-    (version "1.16.0")
+    (version "1.18.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "FlowSOM" version))
        (sha256
         (base32
-         "03wl3xk7g7vajc4kkrqa0gsbjfxlqr918qi849h5nir31963398l"))))
+         "0265sq4zvj6d6h5ghqj9xzm4b0z9v65kgyl88cgdcpdkzfnfcvd5"))))
     (properties `((upstream-name . "FlowSOM")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
        ("r-consensusclusterplus" ,r-consensusclusterplus)
+       ("r-cytoml" ,r-cytoml)
        ("r-flowcore" ,r-flowcore)
-       ("r-flowutils" ,r-flowutils)
+       ("r-flowworkspace" ,r-flowworkspace)
        ("r-igraph" ,r-igraph)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
        ("r-tsne" ,r-tsne)
        ("r-xml" ,r-xml)))
     (home-page "https://bioconductor.org/packages/FlowSOM/")
