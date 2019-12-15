@@ -4950,14 +4950,14 @@ quantification of genomic regions of interest.")
 (define-public r-rqc
   (package
     (name "r-rqc")
-    (version "1.18.0")
+    (version "1.20.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rqc" version))
        (sha256
         (base32
-         "09kyn5nc2fqfdm3q07h0x2jyh24vsq5sxxm63ir1lvv250lmal4g"))))
+         "1nxkrb9kx41g050yz935yrl9pjkakhr8v6whxcvr72gg4r9m2x3m"))))
     (properties `((upstream-name . "Rqc")))
     (build-system r-build-system)
     (propagated-inputs
