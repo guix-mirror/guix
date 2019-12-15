@@ -4306,14 +4306,14 @@ gene-specific bidning is expected.")
 (define-public r-simpleaffy
   (package
     (name "r-simpleaffy")
-    (version "2.60.0")
+    (version "2.62.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "simpleaffy" version))
        (sha256
         (base32
-         "0zjpbjkk27w56mrxsxynkqc298xxsarsnzbd7injg6zakhlmhy6a"))))
+         "18bz3pfgp0f7906flrljx97ann8s71pnb8gpw7nah46n8vqc0xcs"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-affy" ,r-affy)
