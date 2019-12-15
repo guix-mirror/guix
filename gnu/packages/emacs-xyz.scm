@@ -6482,7 +6482,7 @@ maximizes flexibility (at the expense of conciseness).")
 (define-public emacs-find-file-in-project
   (package
     (name "emacs-find-file-in-project")
-    (version "5.4.7")
+    (version "5.7.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -6491,19 +6491,13 @@ maximizes flexibility (at the expense of conciseness).")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1sdnyqv69mipbgs9yax88m9b6crsa59rjhwrih197pifl4089awr"))))
+                "1skjbh7m0cck2rwmgzrrds51gipqf1jqghyfx15drc1n6kwivx3h"))))
     (build-system emacs-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'set-shell
-           ;; Otherwise Emacs shell-file-name is set to "/bin/sh", which doesn't
-           ;; work.
-           (lambda _
-             (setenv "SHELL" (which "sh"))
-             #t)))
-       #:tests? #t
-       #:test-command '("./tests/test.sh")))
+     `(#:tests? #t
+       #:test-command '("ert-runner" "tests")))
+    (native-inputs
+     `(("ert-runner" ,emacs-ert-runner)))
     (home-page "https://github.com/technomancy/find-file-in-project")
     (synopsis "File/directory finder for Emacs")
     (description "@code{find-file-in-project} allows to find files or
