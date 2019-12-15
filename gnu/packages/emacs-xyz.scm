@@ -20522,3 +20522,27 @@ on removable volumes in Linux.")
 data, including buffers, window configuration, variables, and more.")
       (home-page "https://github.com/thierryvolpiatto/psession")
       (license license:gpl3+))))
+
+(define-public emacs-parseclj
+  (package
+    (name "emacs-parseclj")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/clojure-emacs/parseclj.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "03bm5dm4hmkqimv4wqxjjh5814pxysmm7z54bv2rf7zwv1x7dggr"))))
+    (build-system emacs-build-system)
+    (propagated-inputs `(("emacs-a" ,emacs-a)))
+    (home-page "https://cider.mx")
+    (synopsis "Clojure parser for Emacs Lisp")
+    (description
+     "An Emacs Lisp library for parsing Clojure code and EDN data.
+It supports several input and output formats, all powered by the
+same shift-reduce parser function.")
+    (license license:gpl3+)))
