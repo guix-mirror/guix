@@ -1528,12 +1528,12 @@ enrichedGO (addGeneIDs).")
 (define-public r-marray
   (package
     (name "r-marray")
-    (version "1.62.0")
+    (version "1.64.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "marray" version))
               (sha256
-               (base32 "000745d7gxka8cx4jwxf0p128jk90dw6wi3y8dkrkyz2arkl29yz"))))
+               (base32 "1mbs9rk279hnm9yz34za3xz3hb88ll1d0abw4m2pgjgbh4kkhdrl"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-limma" ,r-limma)))
