@@ -4676,6 +4676,31 @@ algorithm.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-pest-2.1
+  (package
+    (name "rust-pest")
+    (version "2.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pest" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "134686mwxm73asbiads53zfchqvvcrsrsyax2cghfcizmvg8ac4k"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0)
+        ("rust-ucd-trie" ,rust-ucd-trie-0.1))))
+    (home-page "https://pest.rs/")
+    (synopsis "The Elegant Parser")
+    (description "The Elegant Parser.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-petgraph-0.4
   (package
     (name "rust-petgraph")
