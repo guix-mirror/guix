@@ -1036,14 +1036,14 @@ to streamline the more common analyses that a Biostatistician might see.")
 (define-public r-affxparser
   (package
     (name "r-affxparser")
-    (version "1.56.0")
+    (version "1.58.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "affxparser" version))
        (sha256
         (base32
-         "1jv7k9pn4c7szi3ma2f2xsd58pkrkvjpk5wra73r6kc607qgrv33"))))
+         "03h4lxr48p84f6i7zb2rm10ma3k4d1nmvdw5yhxcmzqbmd12lk40"))))
     (properties `((upstream-name . "affxparser")))
     (build-system r-build-system)
     (home-page "https://github.com/HenrikBengtsson/affxparser")
