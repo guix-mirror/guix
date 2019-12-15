@@ -6716,14 +6716,14 @@ Group (Non-)Overlap considerations.")
 (define-public r-deriv
   (package
     (name "r-deriv")
-    (version "3.9.0")
+    (version "4.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Deriv" version))
        (sha256
         (base32
-         "0hlqm216bg3l79gq6m0am0xz6vd3l2hgjnjm6lym3mkmgkka4kxw"))))
+         "03mlfy8jzzzbh2l18gnmw0a71n9savx4cw72yhkxq93v2xj8fy3n"))))
     (properties `((upstream-name . "Deriv")))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/Deriv")
