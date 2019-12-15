@@ -1138,14 +1138,14 @@ region sets and other genomic features.")
 (define-public r-reportingtools
   (package
     (name "r-reportingtools")
-    (version "2.24.0")
+    (version "2.26.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ReportingTools" version))
        (sha256
         (base32
-         "16ska7mlacka0xi8x2icy8v42vaxccb3a1x73szmfvcrwr592qsc"))))
+         "0wmi2219wydyzc07rz3azsrksa7wiacfh9pr5x2fsmj9f0w3n15w"))))
     (properties
      `((upstream-name . "ReportingTools")))
     (build-system r-build-system)
