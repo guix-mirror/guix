@@ -9503,6 +9503,34 @@ attribute that is not in the shared backend crate.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-which-2.0
+  (package
+    (name "rust-which")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "which" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0r7i793sc0xqnd2fxnqbksj7j1kx65bwn81b8z49750v4c8cnymm"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-failure" ,rust-failure-0.1)
+        ("rust-libc" ,rust-libc-0.2))
+       #:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir-0.3))))
+    (home-page "https://github.com/harryfei/which-rs")
+    (synopsis "Rust equivalent of Unix command \"which\"")
+    (description
+     "This package provides a Rust equivalent of Unix command \"which\".
+Locate installed execuable in cross platforms.")
+    (license license:expat)))
+
 (define-public rust-widestring-0.4
   (package
     (name "rust-widestring")
