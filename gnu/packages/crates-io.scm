@@ -5992,6 +5992,37 @@ the current thread.")
     (description "Synchronization utilities.")
     (license license:expat)))
 
+(define-public rust-tokio-tcp-0.1
+  (package
+    (name "rust-tokio-tcp")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-tcp" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06a15vg8bcd33ng3h9ldzlq7wl4jsw0p9qpy7v22ls5yah3b250x"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.4)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-iovec" ,rust-iovec-0.1)
+        ("rust-mio" ,rust-mio-0.6)
+        ("rust-tokio-io" ,rust-tokio-io-0.1)
+        ("rust-tokio-reactor" ,rust-tokio-reactor-0.1))
+       #:cargo-development-inputs
+       (("rust-env-logger" ,rust-env-logger-0.6)
+        ("rust-tokio" ,rust-tokio-0.1))))
+    (home-page "https://tokio.rs")
+    (synopsis "TCP bindings for tokio")
+    (description "TCP bindings for tokio.")
+    (license license:expat)))
+
 (define-public rust-toml-0.5
   (package
     (name "rust-toml")
