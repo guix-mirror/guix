@@ -1973,6 +1973,30 @@ floating-point primitives to an @code{io::Write}.")
 char, u8 and u16.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-encoding-index-korean-1.20141219
+  (package
+    (name "rust-encoding-index-korean")
+    (version "1.20141219.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "encoding-index-korean" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10cxabp5ppygbq4y6y680856zl9zjvq7ahpiw8zj3fmwwsw3zhsd"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-encoding-index-tests" ,rust-encoding-index-tests-0.1))))
+    (home-page "https://github.com/lifthrasiir/rust-encoding")
+    (synopsis "Index tables for Korean character encodings")
+    (description
+     "Index tables for Korean character encodings.")
+    (license license:cc0)))
+
 (define-public rust-encoding-index-tests-0.1
   (package
     (name "rust-encoding-index-tests")
