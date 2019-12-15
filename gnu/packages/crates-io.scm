@@ -3881,6 +3881,41 @@ requires non-const function calls to be computed.")
      "This package provides a library providing a lazily filled Cell struct.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-lexical-core-0.4
+  (package
+    (name "rust-lexical-core")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "lexical-core" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1gr5y3ykghd3wjc00l3iizkj1dxylyhwi6fj6yn2qg06nzx771iz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-dtoa" ,rust-dtoa-0.4)
+        ("rust-ryu" ,rust-ryu-1.0)
+        ("rust-stackvector" ,rust-stackvector-1.0)
+        ("rust-static-assertions" ,rust-static-assertions-0.3))
+       #:cargo-development-inputs
+       (("rust-approx" ,rust-approx-0.3)
+        ("rust-proptest" ,rust-proptest-0.9)
+        ("rust-quickcheck" ,rust-quickcheck-0.8)
+        ("rust-rustc-version" ,rust-rustc-version-0.2))))
+    (home-page
+     "https://github.com/Alexhuszagh/rust-lexical/tree/master/lexical-core")
+    (synopsis
+     "Lexical, to- and from-string conversion routines")
+    (description
+     "Lexical, to- and from-string conversion routines.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-libc-0.2
   (package
     (name "rust-libc")
