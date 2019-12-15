@@ -1631,7 +1631,7 @@ on the GNOME Desktop with a single simple application.")
 (define-public gsettings-desktop-schemas
   (package
     (name "gsettings-desktop-schemas")
-    (version "3.32.0")
+    (version "3.34.0")
     (source
      (origin
       (method url-fetch)
@@ -1640,7 +1640,7 @@ on the GNOME Desktop with a single simple application.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "0d8a6479vappgplq5crdr3ah0ykqcr3fw533wkx9v1a8lnrv8n9d"))))
+        "1bayr76aylawf2fhyjhv9zgk4kpv7ivrrmd80khb0h3h1wk092r8"))))
     (build-system meson-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
