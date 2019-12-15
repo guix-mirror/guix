@@ -10458,14 +10458,14 @@ provided.")
 (define-public r-hdf5array
   (package
     (name "r-hdf5array")
-    (version "1.12.3")
+    (version "1.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "HDF5Array" version))
        (sha256
         (base32
-         "1037j6f0yyw4cf6p051810qamxi1sji5w4d0fgq5lyzyl5d36fm6"))))
+         "04hd02zd5jix5p2zg10asmwjg1fynqgmclbhbmk7fb6arx5hm11f"))))
     (properties `((upstream-name . "HDF5Array")))
     (build-system r-build-system)
     (inputs
@@ -10474,6 +10474,7 @@ provided.")
      `(("r-biocgenerics" ,r-biocgenerics)
        ("r-delayedarray" ,r-delayedarray)
        ("r-iranges" ,r-iranges)
+       ("r-matrix" ,r-matrix)
        ("r-rhdf5" ,r-rhdf5)
        ("r-rhdf5lib" ,r-rhdf5lib)
        ("r-s4vectors" ,r-s4vectors)))
