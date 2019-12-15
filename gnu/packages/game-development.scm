@@ -71,6 +71,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages m4)
+  #:use-module (gnu packages mono)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages music)
@@ -1903,3 +1904,55 @@ projects.")
 hardware from multiple vendors without requiring that applications have
 specific knowledge of the hardware they are targeting.")
     (license license:bsd-3)))
+
+(define-public fna
+  (package
+    (name "fna")
+    (version "19.12.01")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/FNA-XNA/FNA.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1vdyi9hac24fqcs8kpj6yk36bf5rrl4dvlvdd9fc701fawcf6lrr"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ; No tests.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'link-dep-src
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((sdl2 (assoc-ref inputs "sdl2-cs-src"))
+                   (mojoshader (assoc-ref inputs "mojoshader-src"))
+                   (faudio (assoc-ref inputs "faudio-src"))
+                   (theorafile (assoc-ref inputs "theorafile-src")))
+               (symlink (string-append sdl2 "/src") "lib/SDL2-CS/src")
+               (symlink (string-append mojoshader "/csharp") "lib/MojoShader/csharp")
+               (symlink (string-append faudio "/csharp") "lib/FAudio/csharp")
+               (symlink (string-append theorafile "/csharp") "lib/Theorafile/csharp"))))
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (invoke "make" "release")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "bin/Release/FNA.dll" (string-append out "/lib"))
+               #t))))))
+    (native-inputs
+     `(("mono" ,mono)))
+    (inputs `(("sdl2-cs-src" ,(package-source sdl2-cs))
+              ("mojoshader-src" ,(package-source mojoshader-cs))
+              ("faudio-src" ,(package-source faudio))
+              ("theorafile-src" ,(package-source theorafile))))
+    (home-page "https://fna-xna.github.io/")
+    (synopsis "Accuracy-focused XNA4 reimplementation")
+    (description "FNA is a Microsoft XNA Game Studio 4.0 reimplementation that
+focuses solely on developing a fully accurate XNA4 runtime for the desktop.")
+    (license (list license:ms-pl        ; FNA
+                   license:lgpl2.1      ; LzxDecoder.cs
+                   ;; Mono.Xna:
+                   license:expat))))
