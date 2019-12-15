@@ -9821,14 +9821,14 @@ provide added flexibility for data combination and manipulation.")
 (define-public r-complexheatmap
   (package
     (name "r-complexheatmap")
-    (version "2.0.0")
+    (version "2.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ComplexHeatmap" version))
        (sha256
         (base32
-         "1imnb72r10csl2h12sckic7hcsb8v2z0y3dyw1ax2fpykmsmq776"))))
+         "1pj6a6rmqckk033pkklk6hr4066rzavamy6w194rfdhind90rk0p"))))
     (properties
      `((upstream-name . "ComplexHeatmap")))
     (build-system r-build-system)
