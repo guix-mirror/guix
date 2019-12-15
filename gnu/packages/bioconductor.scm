@@ -1309,14 +1309,14 @@ problems in genomics, brain imaging, astrophysics, and data mining.")
 (define-public r-diffbind
   (package
     (name "r-diffbind")
-    (version "2.12.0")
+    (version "2.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DiffBind" version))
        (sha256
         (base32
-         "1ialb1j2xa21a8dzss76qky83rg8y6jwdwi0mhy8b088zvxavich"))))
+         "1729wyi2l4480yrkp5wg3ryirrmlk0j3njqs1qyckq3c8bjk12h2"))))
     (properties `((upstream-name . "DiffBind")))
     (build-system r-build-system)
     (inputs
