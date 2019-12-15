@@ -9643,14 +9643,14 @@ global-scaling and full-quantile normalization.")
 (define-public r-interactivedisplaybase
   (package
     (name "r-interactivedisplaybase")
-    (version "1.22.0")
+    (version "1.24.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "interactiveDisplayBase" version))
        (sha256
         (base32
-         "1kkyv7hkygacmksvld9gs3ycf6wlblqcwi11nny0hq3l0ha265v5"))))
+         "0zwf3ma6wf4zypl6bgjp0n72k2hmp0g16gzl4v3y4157rxcbpl0n"))))
     (properties
      `((upstream-name . "interactiveDisplayBase")))
     (build-system r-build-system)
