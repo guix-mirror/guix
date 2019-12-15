@@ -3880,6 +3880,42 @@ SystemTime}}.")
      "IDNA (Internationalizing Domain Names in Applications) and Punycode.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-ignore-0.4
+  (package
+    (name "rust-ignore")
+    (version "0.4.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ignore" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "00mhksl41dnlsjqmka8c5a0m4spwm70ilm1qd9rngwq552hpzicd"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-crossbeam-channel" ,rust-crossbeam-channel-0.3)
+        ("rust-globset" ,rust-globset-0.4)
+        ("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-regex" ,rust-regex-1.1)
+        ("rust-same-file" ,rust-same-file-1.0)
+        ("rust-thread-local" ,rust-thread-local-0.3)
+        ("rust-walkdir" ,rust-walkdir-2.2)
+        ("rust-winapi-util" ,rust-winapi-util-0.1))
+       #:cargo-development-inputs
+       (("rust-tempfile" ,rust-tempfile-3.0))))
+    (home-page "https://github.com/BurntSushi/ripgrep/tree/master/ignore")
+    (synopsis "Efficiently match ignore files such as .gitignore")
+    (description
+     "This package provides a fast library for efficiently matching
+ignore files such as .gitignore against file paths.")
+    (license (list license:unlicense license:expat))))
+
 (define-public rust-indexmap-1.0
   (package
     (name "rust-indexmap")
