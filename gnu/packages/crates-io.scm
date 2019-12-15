@@ -3768,6 +3768,33 @@ wasm-bindgen crate.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-jemallocator-0.3
+  (package
+    (name "rust-jemallocator")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "jemallocator" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0sabfa5118b7l4ars5n36s2fjyfn59w4d6mjs6rrmsa5zky67bj3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-jemalloc-sys" ,rust-jemalloc-sys-0.3)
+        ("rust-libc" ,rust-libc-0.2))
+       #:cargo-development-inputs
+       (("rust-paste" ,rust-paste-0.1))))
+    (home-page "https://github.com/gnzlbg/jemallocator")
+    (synopsis "Rust allocator backed by jemalloc")
+    (description
+     "This package provides a Rust allocator backed by jemalloc.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-json-0.11
   (package
     (name "rust-json")
