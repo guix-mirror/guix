@@ -8313,21 +8313,22 @@ secondary structure and comparative analysis in R.")
 (define-public r-rhtslib
   (package
     (name "r-rhtslib")
-    (version "1.16.3")
+    (version "1.18.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rhtslib" version))
        (sha256
         (base32
-         "1lmrfr32nrz36abn440kvzzck53y2320xjxqzs2jw7m2a9h3ryak"))))
+         "04inkq44lxwymqv51mxgaphasqjcdc9rl5p58imnrdm0kszs8prm"))))
     (properties `((upstream-name . "Rhtslib")))
     (build-system r-build-system)
     ;; Without this a temporary directory ends up in the Rhtslib.so binary,
     ;; which makes R abort the build.
     (arguments '(#:configure-flags '("--no-staged-install")))
     (propagated-inputs
-     `(("r-zlibbioc" ,r-zlibbioc)))
+     `(("curl" ,curl)
+       ("r-zlibbioc" ,r-zlibbioc)))
     (inputs
      `(("zlib" ,zlib)))
     (native-inputs
