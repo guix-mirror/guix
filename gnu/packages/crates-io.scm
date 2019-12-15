@@ -1906,6 +1906,34 @@ is configured via an environment variable.")
      "Type-erased Serialize and Serializer traits.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-failure-derive-0.1
+  (package
+    (name "rust-failure-derive")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "failure_derive" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1q97n7dp51j5hndzic9ng2fgn6f3z5ya1992w84l7vypby8n647a"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-syn" ,rust-syn-0.15)
+        ("rust-synstructure" ,rust-synstructure-0.10))
+       #:cargo-development-inputs
+       (("rust-failure" ,rust-failure-0.1))))
+    (home-page "https://rust-lang-nursery.github.io/failure/")
+    (synopsis "Derives for the failure crate")
+    (description "Derives for the failure crate.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-fallible-iterator-0.2
   (package
     (name "rust-fallible-iterator")
