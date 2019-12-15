@@ -3372,6 +3372,38 @@ path simultaneously, and returning all of the globs that matched.")
 loading crate.")
     (license license:expat)))
 
+(define-public rust-grep-0.2
+  (package
+    (name "rust-grep")
+    (version "0.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "grep" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1pkhjladybzzciwg0mjk3vjz5fyi76hk0d3hgyzv2jxlyp8v4fyc"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-grep-cli" ,rust-grep-cli-0.1)
+        ("rust-grep-matcher" ,rust-grep-matcher-0.1)
+        ("rust-grep-pcre2" ,rust-grep-pcre2-0.1)
+        ("rust-grep-printer" ,rust-grep-printer-0.1)
+        ("rust-grep-regex" ,rust-grep-regex-0.1)
+        ("rust-grep-searcher" ,rust-grep-searcher-0.1))
+       #:cargo-development-inputs
+       (("rust-termcolor" ,rust-termcolor-1.0)
+        ("rust-walkdir" ,rust-walkdir-2.2))))
+    (home-page "https://github.com/BurntSushi/ripgrep")
+    (synopsis "Line oriented regex searching as a library")
+    (description
+     "Fast line oriented regex searching as a library.")
+    (license (list license:unlicense license:expat))))
+
 (define-public rust-grep-cli-0.1
   (package
     (name "rust-grep-cli")
