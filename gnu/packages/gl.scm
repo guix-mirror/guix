@@ -42,6 +42,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages mono)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
@@ -888,4 +889,42 @@ the shaders at runtime.")
       (synopsis "Work with Direct3D shaders on alternate 3D APIs (with viewport flip)")
       (description "This is the last version of the mojoshader library with
 the glProgramViewportFlip before it was replaced with glProgramViewportInfo.")
+      (license license:zlib))))
+
+(define-public mojoshader-cs
+  (let ((commit "10d0dba21ff1cfe332eb7de328a2adce01286bd7"))
+    (package
+      (name "mojoshader-cs")
+      (version (git-version "20191205" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/FNA-XNA/MojoShader")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "11mdhf3fmb9rsn2iv753gmb596j4dh5j2iipgw078vg0lj23rml7"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:tests? #f  ; No tests.
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'build
+             (lambda _
+               (invoke "make" "-C" "csharp")))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (install-file "csharp/bin/MojoShader-CS.dll" (string-append out "/lib"))
+                 #t))))))
+      (native-inputs
+       `(("mono" ,mono)))
+      (home-page "https://github.com/FNA-XNA/MojoShader")
+      (synopsis "C# wrapper for MojoShader")
+      (description
+       "Mojoshader-CS provides C# bindings for the Mojoshader library.
+The C# wrapper was written to be used for FNA's platform support.  However, this
+is written in a way that can be used for any general C# application.")
       (license license:zlib))))
