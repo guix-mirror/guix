@@ -7537,6 +7537,36 @@ data type.")
     (properties '((hidden? . #t)))
     (license license:expat)))
 
+(define-public rust-sleef-sys-0.1
+  (package
+    (name "rust-sleef-sys")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sleef-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1881q2yc17j2m1yvh01447c93ws1mspnrj3k2nbvwbvcm8z81kkv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-libc" ,rust-libc-0.2))
+       #:cargo-development-inputs
+       (("rust-bindgen" ,rust-bindgen-0.50)
+        ("rust-cmake" ,rust-cmake-0.1)
+        ("rust-env-logger" ,rust-env-logger-0.6))))
+    (home-page "https://github.com/gnzlbg/sleef-sys")
+    (synopsis
+     "Rust FFI bindings to the SLEEF Vectorized Math Library")
+    (description
+     "Rust FFI bindings to the SLEEF Vectorized Math Library.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-slog-2.4
   (package
     (name "rust-slog")
