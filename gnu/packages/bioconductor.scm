@@ -6222,14 +6222,14 @@ procedures that induce nucleotide substitutions (e.g. BisSeq).")
 (define-public r-timeseriesexperiment
   (package
     (name "r-timeseriesexperiment")
-    (version "1.2.0")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "TimeSeriesExperiment" version))
        (sha256
         (base32
-         "1j11g7a2p0yk38fx6wd6152l1xynghj01pfxihalw601jwf1bl0y"))))
+         "0xqa6hzknnci20zx2f6mw5cpqx8pq0v6fzf053hh51p1l2ikvgqm"))))
     (properties
      `((upstream-name . "TimeSeriesExperiment")))
     (build-system r-build-system)
