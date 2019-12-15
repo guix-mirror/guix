@@ -2021,6 +2021,30 @@ char, u8 and u16.")
      "Index tables for Korean character encodings.")
     (license license:cc0)))
 
+(define-public rust-encoding-index-simpchinese-1.20141219
+  (package
+    (name "rust-encoding-index-simpchinese")
+    (version "1.20141219.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "encoding-index-simpchinese" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1xria2i7mc5dqdrpqxasdbxv1qx46jjbm53if3y1i4cvj2a72ynq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-encoding-index-tests" ,rust-encoding-index-tests-0.1))))
+    (home-page "https://github.com/lifthrasiir/rust-encoding")
+    (synopsis "Index tables for simplified Chinese character encodings")
+    (description
+     "Index tables for simplified Chinese character encodings.")
+    (license license:cc0)))
+
 (define-public rust-encoding-index-tests-0.1
   (package
     (name "rust-encoding-index-tests")
