@@ -8402,6 +8402,35 @@ with the Unicode character database.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-unicode-bidi-0.3
+  (package
+    (name "rust-unicode-bidi")
+    (version "0.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "unicode-bidi" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1malx8ljgm7v1gbaazkn7iicy5wj0bwcyadj3l727a38ch6bvwj9"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-flame" ,rust-flame-0.2)
+        ("rust-flamer" ,rust-flamer-0.3)
+        ("rust-matches" ,rust-matches-0.1)
+        ("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-serde-test" ,rust-serde-test-1.0))))
+    (home-page "https://github.com/servo/unicode-bidi")
+    (synopsis "Implementation of the Unicode Bidirectional Algorithm")
+    (description
+     "Implementation of the Unicode Bidirectional Algorithm.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-unicode-width-0.1
   (package
     (name "rust-unicode-width")
