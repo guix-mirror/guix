@@ -5389,6 +5389,37 @@ rust-lang/rust integration.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-rustc-test-0.3
+  (package
+    (name "rust-rustc-test")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc-test" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0a27mlcg0ck0hgsdvwk792x9z1k1qq1wj091f1l5yggbdbcsnx5w"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-getopts" ,rust-getopts-0.2)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
+        ("rust-term" ,rust-term-0.5)
+        ("rust-time" ,rust-time-0.1))
+       #:cargo-development-inputs
+       (("rust-rustc-version" ,rust-rustc-version-0.2))))
+    (home-page "https://github.com/servo/rustc-test")
+    (synopsis "Fork of Rust's test crate")
+    (description
+     "This package provides a fork of Rust's test crate that doesn't
+require unstable language features.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-rustc-version-0.2
   (package
     (name "rust-rustc-version")
