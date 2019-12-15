@@ -1663,6 +1663,32 @@ implementation that is more efficient for smaller hash keys.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-foreign-types-0.3
+  (package
+    (name "rust-foreign-types")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "foreign-types" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1cgk0vyd7r45cj769jym4a6s7vwshvd0z4bqrb92q1fwibmkkwzn"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-foreign-types-macros" ,rust-foreign-types-macros-0.1)
+        ("rust-foreign-types-shared" ,rust-foreign-types-shared-0.1))))
+    (home-page "https://github.com/sfackler/foreign-types")
+    (synopsis "Framework for Rust wrappers over C APIs")
+    (description
+     "This package provides a framework for Rust wrappers over C
+APIs.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-foreign-types-macros-0.1
   (package
     (name "rust-foreign-types-macros")
