@@ -2390,6 +2390,32 @@ cross platform API.")
     (description "A profiling and flamegraph library.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-flamer-0.3
+  (package
+    (name "rust-flamer")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "flamer" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1b2d7jx80f3p7hqpgdi7wksaiq18k9w23p0cs2sxf7jbx2jx3bgj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-flame" ,rust-flame-0.2)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-syn" ,rust-syn-0.15))))
+    (home-page "https://github.com/llogiq/flamer")
+    (synopsis "Macro to insert @code{flame::start_guard(_)}")
+    (description
+     "A procedural macro to insert @code{flame::start_guard(_)} calls.")
+    (license license:asl2.0)))
+
 (define-public rust-flate2-1.0
   (package
     (name "rust-flate2")
