@@ -5118,6 +5118,34 @@ and @code{ptrdistance}.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-rawslice-0.1
+  (package
+    (name "rust-rawslice")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rawslice" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "09bympww1rpsd422da3w444q5w1znjbjh7mjninhq9gaaygkpci2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-rawpointer" ,rust-rawpointer-0.1))
+       #:cargo-development-inputs
+       (("rust-quickcheck" ,rust-quickcheck-0.8))))
+    (home-page "https://github.com/bluss/rawslice/")
+    (synopsis "Reimplementation of the slice iterators, with extra features")
+    (description
+     "Reimplementation of the slice iterators, with extra features.
+For example creation from raw pointers and start, end pointer
+accessors.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-rayon-1.1
   (package
     (name "rust-rayon")
