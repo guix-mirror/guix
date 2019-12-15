@@ -3621,6 +3621,37 @@ implementation (which is unstable / requires nightly).")
     (properties '((hidden? . #t)))
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-openssl-0.10
+  (package
+    (name "rust-openssl")
+    (version "0.10.26")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "openssl" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "11d505lwlrh5a0jc2l6q36gvsaqic3vizq5q860hiqcqkmwwag1s"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-foreign-types" ,rust-foreign-types-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-openssl-sys" ,rust-openssl-sys-0.9))
+       #:cargo-development-inputs
+       (("rust-hex" ,rust-hex-0.3)
+        ("rust-tempdir" ,rust-tempdir-0.3))))
+    (home-page "https://github.com/sfackler/rust-openssl")
+    (synopsis "OpenSSL bindings")
+    (description "OpenSSL bindings.")
+    (license license:asl2.0)))
+
 (define-public rust-openssl-probe-0.1
   (package
     (name "rust-openssl-probe")
