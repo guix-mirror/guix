@@ -7047,6 +7047,36 @@ in Rust.")
     (properties '((hidden? . #t)))
     (license license:asl2.0)))
 
+(define-public rust-wasm-bindgen-backend-0.2
+  (package
+    (name "rust-wasm-bindgen-backend")
+    (version "0.2.48")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wasm-bindgen-backend" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1qxqkbjkjg4pphhcr91nk95c0gizx77dyq24mmijqnwzxxqc30jx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bumpalo" ,rust-bumpalo-2.5)
+        ("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-syn" ,rust-syn-0.15)
+        ("rust-wasm-bindgen-shared" ,rust-wasm-bindgen-shared-0.2))))
+    (home-page "https://rustwasm.github.io/wasm-bindgen/")
+    (synopsis "Backend code generation of the wasm-bindgen tool")
+    (description
+     "Backend code generation of the wasm-bindgen tool.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-wasm-bindgen-shared-0.2
   (package
     (name "rust-wasm-bindgen-shared")
