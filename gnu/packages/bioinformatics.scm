@@ -10218,14 +10218,14 @@ by Ernst and Kellis.")
 (define-public r-ldblock
   (package
     (name "r-ldblock")
-    (version "1.14.3")
+    (version "1.16.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ldblock" version))
        (sha256
         (base32
-         "154yvrvs8ik7ifcny1681cmqra0i163j00k4vbvkvl701p5gsp5q"))))
+         "0xpigfidmylfawy6vzshqnsw1lzjs4qms8q7zffij6bkvkv7920x"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
@@ -10233,8 +10233,6 @@ by Ernst and Kellis.")
        ("r-ensembldb" ,r-ensembldb)
        ("r-genomeinfodb" ,r-genomeinfodb)
        ("r-genomicfiles" ,r-genomicfiles)
-       ("r-go-db" ,r-go-db)
-       ("r-homo-sapiens" ,r-homo-sapiens)
        ("r-httr" ,r-httr)
        ("r-matrix" ,r-matrix)
        ("r-rsamtools" ,r-rsamtools)
