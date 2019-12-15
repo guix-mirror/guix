@@ -4095,14 +4095,14 @@ needed.")
 (define-public r-ebimage
   (package
     (name "r-ebimage")
-    (version "4.26.0")
+    (version "4.28.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "EBImage" version))
        (sha256
         (base32
-         "0c8rfi40959rbpbizpiizkq21az3lfwf2azlj55yz5m61qp7mgsq"))))
+         "0q54q2nw6p1s4nrj1l8qz78m67xcysj2x82zs43my8iv2g9iifgs"))))
     (properties `((upstream-name . "EBImage")))
     (build-system r-build-system)
     (propagated-inputs
