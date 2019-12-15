@@ -1121,7 +1121,7 @@ for both major versions of GTK+."
                            (build
                             gtk+-2 "2.10.0"
                             #~(string-append
-                               #$pkggtk+-2:bin "/bin/gtk-query-immodules-2.0"))
+                               #$pkg-gtk+2:bin "/bin/gtk-query-immodules-2.0"))
                            #t))))
       (if (or gtk+ gtk+-2)
           (gexp->derivation "gtk-im-modules" gexp
