@@ -4877,18 +4877,28 @@ interpretation.")
 (define-public r-rhisat2
   (package
     (name "r-rhisat2")
-    (version "1.0.3")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rhisat2" version))
        (sha256
         (base32
-         "02ig9qci18n93vmya7q6bijrqsbfh69fyg8iqysf89ym2vd3x3c5"))))
+         "02fn5cm8sj2s9x00505y3iyipn1r3lpvpwpjy2pdxdbpmhb5hy49"))))
     (properties `((upstream-name . "Rhisat2")))
     (build-system r-build-system)
-    (native-inputs
-     `(("which" ,which)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-reproducible
+           (lambda _
+             (substitute* "src/Makefile"
+               (("`hostname`") "guix")
+               (("`date`") "0")
+               ;; Avoid shelling out to "which".
+               (("^CC =.*") (which "gcc"))
+               (("^CPP =.*") (which "g++")))
+             #t)))))
     (propagated-inputs
      `(("r-genomicfeatures" ,r-genomicfeatures)
        ("r-genomicranges" ,r-genomicranges)
