@@ -2177,6 +2177,42 @@ floating-point primitives to an @code{io::Write}.")
 char, u8 and u16.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-encoding-0.2
+  (package
+    (name "rust-encoding")
+    (version "0.2.33")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "encoding" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1v1ndmkarh9z3n5hk53da4z56hgk9wa5kcsm7cnx345raqw983bb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-encoding-index-japanese"
+         ,rust-encoding-index-japanese-1.20141219)
+        ("rust-encoding-index-korean"
+         ,rust-encoding-index-korean-1.20141219)
+        ("rust-encoding-index-simpchinese"
+         ,rust-encoding-index-simpchinese-1.20141219)
+        ("rust-encoding-index-singlebyte"
+         ,rust-encoding-index-singlebyte-1.20141219)
+        ("rust-encoding-index-tradchinese"
+         ,rust-encoding-index-tradchinese-1.20141219))
+       #:cargo-development-inputs
+       (("rust-getopts" ,rust-getopts-0.2))))
+    (home-page
+     "https://github.com/lifthrasiir/rust-encoding")
+    (synopsis "Character encoding support for Rust")
+    (description
+     "Character encoding support for Rust.")
+    (license license:expat)))
+
 (define-public rust-encoding-index-japanese-1.20141219
   (package
     (name "rust-encoding-index-japanese")
