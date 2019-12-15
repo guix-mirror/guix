@@ -1973,6 +1973,29 @@ floating-point primitives to an @code{io::Write}.")
 char, u8 and u16.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-encoding-index-tests-0.1
+  (package
+    (name "rust-encoding-index-tests")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "encoding_index_tests" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0s85y091gl17ixass49bzaivng7w8p82p6nyvz2r3my9w4mxhim2"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/lifthrasiir/rust-encoding")
+    (synopsis
+     "Macros used to test index tables for character encodings")
+    (description
+     "Helper macros used to test index tables for character
+encodings.")
+    (license license:cc0)))
+
 (define-public rust-env-logger-0.6
   (package
     (name "rust-env-logger")
