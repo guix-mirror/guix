@@ -9182,14 +9182,14 @@ as allowing spectra with different resolutions.")
 (define-public r-protgenerics
   (package
     (name "r-protgenerics")
-    (version "1.16.0")
+    (version "1.18.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ProtGenerics" version))
        (sha256
         (base32
-         "12jjwmg58b4xbivxlw4pffq0qfi2c1c5hyrci0sfyphrc99fvx0i"))))
+         "1k1ggjgx2la8b21841a4ngkp6xfxwz0czv7x960r7i1jqif8y48z"))))
     (properties `((upstream-name . "ProtGenerics")))
     (build-system r-build-system)
     (home-page "https://github.com/lgatto/ProtGenerics")
