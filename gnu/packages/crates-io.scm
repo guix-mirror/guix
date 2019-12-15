@@ -2584,6 +2584,30 @@ the regex engine it uses pluggable.")
     (description "Use PCRE2 with the grep crate.")
     (license (list license:expat license:unlicense))))
 
+(define-public rust-half-1.3
+  (package
+    (name "rust-half")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "half" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0diqajg3mgar511hxswl4kgqqz9a026yvn3103x5h2smknlc4lwk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs (("rust-serde" ,rust-serde-1.0))))
+    (home-page "https://github.com/starkat99/half-rs")
+    (synopsis "Half-precision floating point f16 type")
+    (description
+     "Half-precision floating point f16 type for Rust implementing the
+IEEE 754-2008 binary16 type.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-heapsize-0.4
   (package
     (name "rust-heapsize")
