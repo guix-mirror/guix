@@ -8190,14 +8190,14 @@ Stephens (1990).")
 (define-public r-motifrg
   (package
     (name "r-motifrg")
-    (version "1.28.0")
+    (version "1.30.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "motifRG" version))
        (sha256
         (base32
-         "02c7fbjwdq7pk96bd2rn07l9r2hqy00s3hfpli5ybmwgvc9h9z4z"))))
+         "0s6wdr036lra9x93r9k8wvicbkgzypjh3jp46h92yacw8d829k0d"))))
     (properties `((upstream-name . "motifRG")))
     (build-system r-build-system)
     (propagated-inputs
