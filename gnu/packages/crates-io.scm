@@ -5541,6 +5541,37 @@ are met.")
      "Derive macros for the @code{stdweb} crate.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-stdweb-internal-macros-0.2
+  (package
+    (name "rust-stdweb-internal-macros")
+    (version "0.2.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "stdweb-internal-macros" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1yjrmkc6sb1035avic383pa3avk2s9k3n17yjcza8yb9nw47v3z6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-base-x" ,rust-base-x-0.2)
+        ("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0)
+        ("rust-sha1" ,rust-sha1-0.6)
+        ("rust-syn" ,rust-syn-0.15))))
+    (home-page "https://github.com/koute/stdweb")
+    (synopsis "Internal procedural macros for the stdweb crate")
+    (description
+     "Internal procedural macros for the stdweb crate.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-stdweb-internal-runtime-0.1
   (package
     (name "rust-stdweb-internal-runtime")
