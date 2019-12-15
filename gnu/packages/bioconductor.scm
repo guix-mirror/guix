@@ -997,14 +997,14 @@ problems in CEL-level data to help evaluate performance of quality metrics.")
 (define-public r-affycoretools
   (package
     (name "r-affycoretools")
-    (version "1.56.0")
+    (version "1.58.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "affycoretools" version))
        (sha256
         (base32
-         "17dxpzhwwdwnxkdpmyjwdnacg41hw60mlc71w4nzlvs28sfsy09s"))))
+         "0cgy9phwdk4x9lr11xh6zs7v8r5xq959fmsmzwrpnd50dr7hzkvd"))))
     (properties `((upstream-name . "affycoretools")))
     (build-system r-build-system)
     (propagated-inputs
