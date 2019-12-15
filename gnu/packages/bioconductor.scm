@@ -2746,14 +2746,14 @@ files, including IDAT.")
 (define-public r-siggenes
   (package
     (name "r-siggenes")
-    (version "1.58.0")
+    (version "1.60.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "siggenes" version))
        (sha256
         (base32
-         "178jmmdxsv3rd71a9w5yrvg5aplak40hb42vna15g1d55c2yv1ib"))))
+         "03lmq3hqprwps4miynl2vhqi3v4als5vqmz4lb19lk5a4zja72b4"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
