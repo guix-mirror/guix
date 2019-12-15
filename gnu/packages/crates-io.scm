@@ -3742,6 +3742,40 @@ compile time.")
      "Internal implementation of the hex-literal crate.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-http-0.1
+  (package
+    (name "rust-http")
+    (version "0.1.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "http" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06icxvrd26r6s7dzjavja7r47hgjb9851wblqh8frxnsy3q29lzf"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.4)
+        ("rust-fnv" ,rust-fnv-1.0)
+        ("rust-itoa" ,rust-itoa-0.4))
+       #:cargo-development-inputs
+       (("rust-indexmap" ,rust-indexmap-1.0)
+        ("rust-quickcheck" ,rust-quickcheck-0.8)
+        ("rust-rand" ,rust-rand-0.4)
+        ("rust-seahash" ,rust-seahash-3.0)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0))))
+    (home-page "https://github.com/hyperium/http")
+    (synopsis "Set of types for representing HTTP requests and responses")
+    (description
+     "This package provides a set of types for representing HTTP
+requests and responses.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-humantime-1.2
   (package
     (name "rust-humantime")
