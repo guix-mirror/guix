@@ -8776,6 +8776,38 @@ the current thread.")
     (description "Future execution primitives.")
     (license license:expat)))
 
+(define-public rust-tokio-fs-0.1
+  (package
+    (name "rust-tokio-fs")
+    (version "0.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-fs" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1bxp8585pi4j5g39ci2gkk99qnyilyhhila7cs8r6scdn0idrriz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-futures" ,rust-futures-0.1)
+        ("rust-tokio-io" ,rust-tokio-io-0.1)
+        ("rust-tokio-threadpool" ,rust-tokio-threadpool-0.1))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.4)
+        ("rust-tempdir" ,rust-tempdir-0.3)
+        ("rust-tempfile" ,rust-tempfile-3.0)
+        ("rust-tokio" ,rust-tokio-0.1)
+        ("rust-tokio-codec" ,rust-tokio-codec-0.1)
+        ("rust-tokio-io" ,rust-tokio-io-0.1))))
+    (home-page "https://tokio.rs")
+    (synopsis "Filesystem API for Tokio")
+    (description "Filesystem API for Tokio.")
+    (license license:expat)))
+
 ;; Cyclic dependencies with tokio and tokio-current-thread
 (define-public rust-tokio-io-0.1
   (package
