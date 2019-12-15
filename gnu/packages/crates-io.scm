@@ -6346,6 +6346,31 @@ return values to @code{std::io::Result} to indicate success or failure.")
     (properties '((hidden? . #t)))
     (license license:expat)))
 
+(define-public rust-test-assembler-0.1
+  (package
+    (name "rust-test-assembler")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "test-assembler" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1sdx9hk0dk3z9crm8834ysyxsi92chls8arpd0gs796kis6lik2w"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1.3))))
+    (home-page "https://github.com/luser/rust-test-assembler")
+    (synopsis "Build complex binary streams")
+    (description
+     "This package provides a set of types for building complex binary
+streams.")
+    (license license:expat)))
+
 (define-public rust-textwrap-0.11
   (package
     (name "rust-textwrap")
