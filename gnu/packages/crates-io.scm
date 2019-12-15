@@ -8994,6 +8994,36 @@ the current thread.")
 pool.")
     (license license:expat)))
 
+(define-public rust-tokio-timer-0.2
+  (package
+    (name "rust-tokio-timer")
+    (version "0.2.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-timer" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "03m68ainkdy3b5pf20rjyknhk2ppx35bjdc2yfj2bv80sl96h47j"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-slab" ,rust-slab-0.4)
+        ("rust-tokio-executor" ,rust-tokio-executor-0.1))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.4)
+        ("rust-tokio" ,rust-tokio-0.1)
+        ("rust-tokio-mock-task" ,rust-tokio-mock-task-0.1))))
+    (home-page "https://github.com/tokio-rs/tokio")
+    (synopsis "Timer facilities for Tokio")
+    (description "Timer facilities for Tokio.")
+    (license license:expat)))
+
 (define-public rust-toml-0.5
   (package
     (name "rust-toml")
