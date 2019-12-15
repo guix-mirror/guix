@@ -7146,7 +7146,7 @@ target will call @code{compile} on it.")
 (define-public emacs-cider
   (package
     (name "emacs-cider")
-    (version "0.21.0")
+    (version "0.23.0")
     (source
      (origin
        (method git-fetch)
@@ -7156,7 +7156,7 @@ target will call @code{compile} on it.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0lbrwj67fnvynkdkzvnzp3p8vqlz0ldrcs317vg60bqfhx7hvqkj"))))
+         "05yjkqc6d4grq9z5pxmv3anqh4zlhfg4v46jlccp6ynh030g7axs"))))
     (build-system emacs-build-system)
     (arguments
      '(#:exclude                        ; Don't exclude 'cider-test.el'.
@@ -7164,7 +7164,9 @@ target will call @code{compile} on it.")
     (propagated-inputs
      `(("emacs-clojure-mode" ,emacs-clojure-mode)
        ("emacs-sesman" ,emacs-sesman)
+       ("emacs-seq" ,emacs-seq)
        ("emacs-spinner" ,emacs-spinner)
+       ("emacs-parseedn" ,emacs-parseedn)
        ("emacs-pkg-info" ,emacs-pkg-info)
        ("emacs-queue" ,emacs-queue)))
     (home-page "https://cider.readthedocs.io/")
