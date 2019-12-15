@@ -4073,6 +4073,37 @@ implementation (which is unstable / requires nightly).")
     (properties '((hidden? . #t)))
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-object-0.12
+  (package
+    (name "rust-object")
+    (version "0.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "object" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1dch1ajjp05d16lig1dnvisfis0hrlrvw9lcwy1hwgdcym3z6jnz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-flate2" ,rust-flate2-1.0)
+        ("rust-goblin" ,rust-goblin-0.0)
+        ("rust-parity-wasm" ,rust-parity-wasm-0.40)
+        ("rust-scroll" ,rust-scroll-0.9)
+        ("rust-uuid" ,rust-uuid-0.7))
+       #:cargo-development-inputs
+       (("rust-memmap" ,rust-memmap-0.7))))
+    (home-page "https://github.com/gimli-rs/object")
+    (synopsis "Parse object file formats")
+    (description
+     "This package provides a unified interface for parsing object file
+formats.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-openssl-0.10
   (package
     (name "rust-openssl")
