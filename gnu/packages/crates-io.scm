@@ -3459,6 +3459,36 @@ the regex engine it uses pluggable.")
     (description "Use PCRE2 with the grep crate.")
     (license (list license:expat license:unlicense))))
 
+(define-public rust-grep-regex-0.1
+  (package
+    (name "rust-grep-regex")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "grep-regex" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1lbb8837gzy25n706mnidaps4jl63ym679zraj8nfy5g02zbz549"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-aho-corasick" ,rust-aho-corasick-0.7)
+        ("rust-grep-matcher" ,rust-grep-matcher-0.1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-regex" ,rust-regex-1.1)
+        ("rust-regex-syntax" ,rust-regex-syntax-0.6)
+        ("rust-thread-local" ,rust-thread-local-0.3)
+        ("rust-utf8-ranges" ,rust-utf8-ranges-1.0))))
+    (home-page "https://github.com/BurntSushi/ripgrep")
+    (synopsis "Use Rust's regex library with the grep crate")
+    (description
+     "Use Rust's regex library with the grep crate.")
+    (license (list license:unlicense license:expat))))
+
 (define-public rust-half-1.3
   (package
     (name "rust-half")
