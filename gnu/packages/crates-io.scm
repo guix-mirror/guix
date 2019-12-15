@@ -1768,6 +1768,31 @@ hexadecimal, base32, and base64.")
      "This package provides a Rust text diffing and assertion library.")
     (license license:expat)))
 
+(define-public rust-digest-0.8
+  (package
+    (name "rust-digest")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "digest" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1madjl27f3kj5ql7kwgvb9c8b7yb7bv7yfgx7rqzj4i3fp4cil7k"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-blobby" ,rust-blobby-0.1)
+        ("rust-generic-array" ,rust-generic-array-0.13))))
+    (home-page "https://github.com/RustCrypto/traits")
+    (synopsis "Traits for cryptographic hash functions")
+    (description
+     "Traits for cryptographic hash functions.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-dirs-1.0
   (package
     (name "rust-dirs")
