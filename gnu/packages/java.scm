@@ -1,3 +1,4 @@
+
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
@@ -11680,7 +11681,9 @@ IPTC, XMP, ICC and more formats.")
                 "1zv3kjdkf6iqf02x6ln76254y634j2ji448y706a65lsbfjmmicf"))
               (modules '((guix build utils)))
               (snippet
-                `(for-each delete-file (find-files "." ".*.jar")))
+               '(begin
+                  (for-each delete-file (find-files "." ".*.jar"))
+                  #t))
               (patches
                 (search-patches "java-svg-salamander-Fix-non-det.patch"))))
     (build-system ant-build-system)
