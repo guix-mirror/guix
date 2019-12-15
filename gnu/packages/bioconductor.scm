@@ -3578,14 +3578,14 @@ is used for preprocessing the arrays.")
 (define-public r-a4reporting
   (package
     (name "r-a4reporting")
-    (version "1.32.0")
+    (version "1.34.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "a4Reporting" version))
        (sha256
         (base32
-         "1lail2iw8jmvfdq9brv7i41k6vmbhx2kp21jxq2cj1zva5rcqssj"))))
+         "15nd4pa5hkdzkhinvqw5ijdqb7k5gk37v2hmk3jsg2d6m0jqphi5"))))
     (properties `((upstream-name . "a4Reporting")))
     (build-system r-build-system)
     (propagated-inputs
