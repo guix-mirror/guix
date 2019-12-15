@@ -1590,20 +1590,21 @@ the @code{arrayCGH} packages.")
 (define-public r-qdnaseq
   (package
     (name "r-qdnaseq")
-    (version "1.20.0")
+    (version "1.22.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "QDNAseq" version))
               (sha256
-               (base32 "02afy5bpj35981q1qm59jx399hksk6a9v1jfwy7x888rn86gfcfz"))))
+               (base32 "0xcqdpv9a47zpxx0q9sif5y4s1yzx3pig0kywy961kh5xgl5bcrq"))))
     (properties `((upstream-name . "QDNAseq")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
-       ("r-biocparallel" ,r-biocparallel)
        ("r-cghbase" ,r-cghbase)
        ("r-cghcall" ,r-cghcall)
        ("r-dnacopy" ,r-dnacopy)
+       ("r-future" ,r-future)
+       ("r-future-apply" ,r-future-apply)
        ("r-genomicranges" ,r-genomicranges)
        ("r-iranges" ,r-iranges)
        ("r-matrixstats" ,r-matrixstats)
