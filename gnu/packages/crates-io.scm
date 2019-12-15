@@ -3085,6 +3085,29 @@ requires non-const function calls to be computed.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-lazycell-1.2
+  (package
+    (name "rust-lazycell")
+    (version "1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "lazycell" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0gvqycmpv7parc98i6y64ai7rvxrn1947z2a6maa02g4kvxdd55j"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs (("rust-clippy" ,rust-clippy-0.0))))
+    (home-page "https://github.com/indiv0/lazycell")
+    (synopsis "Lazily filled Cell struct")
+    (description
+     "This package provides a library providing a lazily filled Cell struct.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-libc-0.2
   (package
     (name "rust-libc")
