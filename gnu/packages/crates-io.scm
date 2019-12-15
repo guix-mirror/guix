@@ -2045,6 +2045,30 @@ char, u8 and u16.")
      "Index tables for simplified Chinese character encodings.")
     (license license:cc0)))
 
+(define-public rust-encoding-index-singlebyte-1.20141219
+  (package
+    (name "rust-encoding-index-singlebyte")
+    (version "1.20141219.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "encoding-index-singlebyte" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0jp85bz2pprzvg9m95w4q0vibh67b6w3bx35lafay95jzyndal9k"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-encoding-index-tests" ,rust-encoding-index-tests-0.1))))
+    (home-page "https://github.com/lifthrasiir/rust-encoding")
+    (synopsis "Index tables for various single-byte character encodings")
+    (description
+     "Index tables for various single-byte character encodings.")
+    (license license:cc0)))
+
 (define-public rust-encoding-index-tests-0.1
   (package
     (name "rust-encoding-index-tests")
