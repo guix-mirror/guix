@@ -1720,7 +1720,7 @@ Emacs buffer.")
 (define-public emacs-direnv
   (package
     (name "emacs-direnv")
-    (version "1.5.0")
+    (version "2.0.0")
     (source
      (origin
        (method git-fetch)
@@ -1730,7 +1730,7 @@ Emacs buffer.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "02blhinkkfh3iai6j1k5swplf5mkwijy3p7wy38rnd1gnyj2z4la"))))
+         "005ibyzsx1fdyrl5iyhqpb1bg83mphzahq7zvw58x00syyqi2z49"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("dash" ,emacs-dash)
