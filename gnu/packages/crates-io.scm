@@ -1643,6 +1643,33 @@ hexadecimal, base32, and base64.")
      "An LCS based slice and string diffing implementation.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-difference-2.0
+  (package
+    (name "rust-difference")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "difference" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1621wx4k8h452p6xzmzzvm7mz87kxh4yqz0kzxfjj9xmjxlbyk2j"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-getopts" ,rust-getopts-0.2))
+       #:cargo-development-inputs
+       (("rust-quickcheck" ,rust-quickcheck-0.8)
+        ("rust-term" ,rust-term-0.5))))
+    (home-page "https://github.com/johannhof/difference.rs")
+    (synopsis "Rust text diffing and assertion library")
+    (description
+     "This package provides a Rust text diffing and assertion library.")
+    (license license:expat)))
+
 (define-public rust-dirs-1.0
   (package
     (name "rust-dirs")
