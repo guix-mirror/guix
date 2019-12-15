@@ -1028,7 +1028,7 @@ and in the current monad setting (system type, etc.)"
                                (or (pred x)
                                    (one-of rest ...))))))
       (one-of symbol? string? keyword? pair? null? array?
-              number? boolean?)))
+              number? boolean? char?)))
 
   (define* (reference->sexp ref #:optional native?)
     (with-monad %store-monad
