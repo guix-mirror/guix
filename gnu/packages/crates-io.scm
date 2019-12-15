@@ -5379,6 +5379,35 @@ with one of the implemented strategies.")
          (base32
           "09sy9wbqp409pkwmqni40qmwa99ldqpl48pp95m1xw8sc19qy9cl"))))))
 
+(define-public rust-scroll-derive-0.9
+  (package
+    (name "rust-scroll-derive")
+    (version "0.9.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "scroll_derive" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jqg5mm8nvii6avl1z1rc89agzh2kwkppgpsnwfakxg78mnaj6lg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-syn" ,rust-syn-0.15))
+       #:cargo-development-inputs
+       (("rust-scroll" ,rust-scroll-0.9))))
+    (home-page "https://github.com/m4b/scroll_derive")
+    (synopsis "Derive Pread and Pwrite traits from the scroll crate")
+    (description
+     "This package provides a macros 1.1 derive implementation for Pread and
+Pwrite traits from the scroll crate.")
+    (license license:expat)))
+
 (define-public rust-security-framework-sys-0.3
   (package
     (name "rust-security-framework-sys")
