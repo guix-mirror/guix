@@ -1623,14 +1623,14 @@ respectively.")
 (define-public r-bayseq
   (package
     (name "r-bayseq")
-    (version "2.18.0")
+    (version "2.20.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "baySeq" version))
        (sha256
         (base32
-         "13lm7n5zqw8yg5sqb92h6ppcnr0l32qdgmv7i16pn32fb6z41p0w"))))
+         "040s1d3756spyzblkyx2vcy7bn3vf87mhsp3is35yxkj55n3myjk"))))
     (properties `((upstream-name . "baySeq")))
     (build-system r-build-system)
     (propagated-inputs
