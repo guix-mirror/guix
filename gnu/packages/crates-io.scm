@@ -4947,6 +4947,30 @@ algorithm.")
     (description "The Elegant Parser.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-pest-derive-2.1
+  (package
+    (name "rust-pest-derive")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pest_derive" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1l5jfa6ril71cw5nsiw0r45br54dd8cj2r1nc2d1wq6wb3jilgc3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-pest" ,rust-pest-2.1)
+        ("rust-pest-generator" ,rust-pest-generator-2.1))))
+    (home-page "https://pest.rs/")
+    (synopsis "Pest's derive macro")
+    (description "Pest's derive macro.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-pest-generator-2.1
   (package
     (name "rust-pest-generator")
