@@ -10558,18 +10558,19 @@ packages.")
 (define-public r-beachmat
   (package
     (name "r-beachmat")
-    (version "2.0.0")
+    (version "2.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "beachmat" version))
        (sha256
         (base32
-         "14cz19fw97s8mhm9r2n5li44vckx069k8nqsyy64c3lkfm4vy4zx"))))
+         "1bpnlw2kdy9yc2vq948k980r0j25ipb80llhvn0j3kxjiwyfgs3i"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
-       ("r-delayedarray" ,r-delayedarray)))
+       ("r-delayedarray" ,r-delayedarray)
+       ("r-matrix" ,r-matrix)))
     (home-page "https://bioconductor.org/packages/beachmat")
     (synopsis "Compiling Bioconductor to handle each matrix type")
     (description "This package provides a consistent C++ class interface for a
