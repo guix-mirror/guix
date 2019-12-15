@@ -6522,6 +6522,30 @@ Pwrite traits from the scroll crate.")
      "Minimal implementation of SHA1 for Rust.")
     (license license:bsd-3)))
 
+(define-public rust-sha1-asm-0.4
+  (package
+    (name "rust-sha1-asm")
+    (version "0.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sha1-asm" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1i1i8viy6y30mv9v5hwhg9w6b722qkyh9c6n8bn4d27jpv14pg0s"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-development-inputs
+       (("rust-cc" ,rust-cc-1.0))))
+    (home-page "https://github.com/RustCrypto/asm-hashes")
+    (synopsis "Assembly implementation of SHA-1 compression function")
+    (description
+     "Assembly implementation of SHA-1 compression function.")
+    (license license:expat)))
+
 (define-public rust-shlex-0.1
   (package
     (name "rust-shlex")
