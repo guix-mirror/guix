@@ -3079,6 +3079,33 @@ hexadecimal representation.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-hex-literal-0.2
+  (package
+    (name "rust-hex-literal")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hex-literal" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ni2nv3di0jpih2xnmlnr6s96zypkdr8xrw2cvk4f8fx5wb6inn3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-hex-literal-impl" ,rust-hex-literal-impl-0.2)
+        ("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5))))
+    (home-page "https://github.com/RustCrypto/utils")
+    (synopsis
+     "Convert hexadecimal string to byte array at compile time")
+    (description
+     "Procedural macro for converting hexadecimal string to byte array at
+compile time.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-humantime-1.2
   (package
     (name "rust-humantime")
