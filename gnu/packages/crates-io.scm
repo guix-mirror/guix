@@ -571,6 +571,26 @@ UTF-8.")
         (base32
          "0nzi9vqhl56ws8gq39f3aj4qjrr4l3g5lbkkcj8xq1x4cb74wq2r"))))))
 
+(define-public rust-byte-tools-0.3
+  (package
+    (name "rust-byte-tools")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "byte-tools" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1mqi29wsm8njpl51pfwr31wmpzs5ahlcb40wsjyd92l90ixcmdg3"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/RustCrypto/utils")
+    (synopsis "Bytes related utility functions")
+    (description "Bytes related utility functions.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-byteorder-1.3
   (package
     (name "rust-byteorder")
