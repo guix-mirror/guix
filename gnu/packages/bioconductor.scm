@@ -2474,14 +2474,14 @@ single cell assay data.")
 (define-public r-monocle
   (package
     (name "r-monocle")
-    (version "2.12.0")
+    (version "2.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "monocle" version))
        (sha256
         (base32
-         "1rnr3k0wc61a806w9flapni91wz5xm0l66jabjzx0vbiwgczs32z"))))
+         "18b9y592q48mbcp5w095qs1kaklq64v6dcnlpqhv3rwxvywygsz2"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
