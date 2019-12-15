@@ -3470,16 +3470,16 @@ minibuffer to enable editing the minibuffer input in another buffer with
 (define-public emacs-ob-ipython
   (package
     (name "emacs-ob-ipython")
-    (version "20150704.8807064693")
+    (version "20180224")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (commit "880706469338ab59b5bb7dbe8460016f89755364")
+                    (commit "7147455230841744fb5b95dcbe03320313a77124")
                     (url "https://github.com/gregsexton/ob-ipython.git")))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1scf25snbds9ymagpny30ijbsg479r3nm0ih01dy4m9d0g7qryb7"))))
+                "1a10fc2jk37ni5sjjvf87s5nyaz2a6h2mlj5dxh4dhv5sd3bb85p"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-f" ,emacs-f)))
