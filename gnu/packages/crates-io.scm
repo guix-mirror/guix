@@ -2363,6 +2363,33 @@ cross platform API.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-flame-0.2
+  (package
+    (name "rust-flame")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "flame" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0c5bmhyimzxch3pmh0w3z9n57saasgix4bmbbksr9vp1c5j71hhz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0)
+        ("rust-thread-id" ,rust-thread-id-3.3))))
+    (home-page "https://github.com/llogiq/flame")
+    (synopsis "Profiling and flamegraph library")
+    (description "A profiling and flamegraph library.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-flate2-1.0
   (package
     (name "rust-flate2")
