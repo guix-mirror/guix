@@ -456,6 +456,32 @@ and no more (caveat: black_box is still missing!).")
 that uses Serde for transforming structs into bytes and vice versa!")
     (license license:expat)))
 
+(define-public rust-bit-set-0.5
+  (package
+    (name "rust-bit-set")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bit-set" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "100ac8867bvbx9kv634w4xjk98b71i8nq4wdcvpf3cf4ha4j6k78"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bit-vec" ,rust-bit-vec-0.5))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.4))))
+    (home-page "https://github.com/contain-rs/bit-set")
+    (synopsis "Set of bits")
+    (description
+     "This package provides a set of bits.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-bit-vec-0.5
   (package
     (name "rust-bit-vec")
