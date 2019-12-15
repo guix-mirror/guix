@@ -2441,19 +2441,18 @@ interactive exploration of results.")
 (define-public r-mast
   (package
     (name "r-mast")
-    (version "1.10.0")
+    (version "1.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MAST" version))
        (sha256
         (base32
-         "0f2qkp346095k9m45frpd3bivrvaps9wlm0m3n0z8j0aj7w1kqlx"))))
+         "1l78rrwkzyswpj6pgc9z8290fqrk4akba76invkkazpyh91r8gga"))))
     (properties `((upstream-name . "MAST")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-abind" ,r-abind)
-       ("r-blme" ,r-blme)
        ("r-biobase" ,r-biobase)
        ("r-biocgenerics" ,r-biocgenerics)
        ("r-data-table" ,r-data-table)
