@@ -4753,14 +4753,14 @@ Infinium HumanMethylation 450k assay.")
 (define-public r-biocfilecache
   (package
     (name "r-biocfilecache")
-    (version "1.8.0")
+    (version "1.10.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "BiocFileCache" version))
        (sha256
         (base32
-         "1mi8p8hvrdxim8lqsid2cb7284imyjf9rlzsrdlzdjac7dp9bpdb"))))
+         "0jivhn95y6zv5ryamqk6nyd4l8nlskq64j362l9ml9qw746v0ja6"))))
     (properties `((upstream-name . "BiocFileCache")))
     (build-system r-build-system)
     (propagated-inputs
