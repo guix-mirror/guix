@@ -498,6 +498,33 @@ behave like a set of bitflags.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-block-buffer-0.7
+  (package
+    (name "rust-block-buffer")
+    (version "0.7.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "block-buffer" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "12v8wizynqin0hqf140kmp9s38q223mp1b0hkqk8j5pk8720v560"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-block-padding" ,rust-block-padding-0.1)
+        ("rust-byte-tools" ,rust-byte-tools-0.3)
+        ("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-generic-array" ,rust-generic-array-0.12))))
+    (home-page "https://github.com/RustCrypto/utils")
+    (synopsis "Fixed size buffer for block processing of data")
+    (description
+     "Fixed size buffer for block processing of data.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-block-padding-0.1
   (package
     (name "rust-block-padding")
