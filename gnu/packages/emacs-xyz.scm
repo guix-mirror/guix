@@ -20574,3 +20574,24 @@ It uses parseclj's shift-reduce parser internally.")
 It supports several input and output formats, all powered by the
 same shift-reduce parser function.")
     (license license:gpl3+)))
+
+(define-public emacs-hide-mode-line
+  (package
+    (name "emacs-hide-mode-line")
+    (version "1.0.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/hlissner/emacs-hide-mode-line.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0dfzjgxfkcw4wisbyldsm1km18pfp9j8xgadn6qnsz11l55bpgyp"))))
+    (build-system emacs-build-system)
+    (synopsis "Emacs plugin that hides the mode-line")
+    (description "A minor mode that hides the mode-line in your current
+buffer.  It can be used to toggle an alternative mode-line, toggle its visibility,
+or simply disable the mode-line in buffers where it is not very useful.")
+    (home-page "https://github.com/hlissner/emacs-hide-mode-line")
+    (license license:expat)))
