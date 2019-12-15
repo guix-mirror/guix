@@ -4947,6 +4947,33 @@ algorithm.")
     (description "The Elegant Parser.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-pest-generator-2.1
+  (package
+    (name "rust-pest-generator")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pest_generator" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ipnv77lqhj4d4fpfxi8m168lcjp482kszaknlardmpgqiv0a4k3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-pest" ,rust-pest-2.1)
+        ("rust-pest-meta" ,rust-pest-meta-2.1)
+        ("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-syn" ,rust-syn-0.15))))
+    (home-page "https://pest.rs/")
+    (synopsis "Pest code generator")
+    (description "Pest code generator.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-pest-meta-2.1
   (package
     (name "rust-pest-meta")
