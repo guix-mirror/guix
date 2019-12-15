@@ -6853,6 +6853,37 @@ Pwrite traits from the scroll crate.")
      "Token De/Serializer for testing De/Serialize implementations.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-serde-yaml-0.8
+  (package
+    (name "rust-serde-yaml")
+    (version "0.8.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serde_yaml" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10mmjpnshgrwij01a13679nxy1hnh5yfr0343kh0y9p5j2d8mc1q"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-dtoa" ,rust-dtoa-0.4)
+        ("rust-linked-hash-map" ,rust-linked-hash-map-0.5)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-yaml-rust" ,rust-yaml-rust-0.4))
+       #:cargo-development-inputs
+       (("rust-serde-derive" ,rust-serde-derive-1.0)
+        ("rust-unindent" ,rust-unindent-0.1)
+        ("rust-version-sync" ,rust-version-sync-0.8))))
+    (home-page
+     "https://github.com/dtolnay/serde-yaml")
+    (synopsis "YAML support for Serde")
+    (description "YAML support for Serde.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-sha-1-0.8
   (package
     (name "rust-sha-1")
