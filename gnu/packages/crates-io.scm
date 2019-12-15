@@ -1768,6 +1768,34 @@ is configured via an environment variable.")
      "Environment variables utility functions.")
     (license license:asl2.0)))
 
+(define-public rust-erased-serde-0.3
+  (package
+    (name "rust-erased-serde")
+    (version "0.3.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "erased-serde" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0q7bnxs5zskfq5iillig55g7891dllcxh2p8y8k1p2j72syf9viv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-serde-cbor" ,rust-serde-cbor-0.10)
+        ("rust-serde-derive" ,rust-serde-derive-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0))))
+    (home-page "https://github.com/dtolnay/erased-serde")
+    (synopsis "Type-erased Serialize and Serializer traits")
+    (description
+     "Type-erased Serialize and Serializer traits.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-fallible-iterator-0.2
   (package
     (name "rust-fallible-iterator")
