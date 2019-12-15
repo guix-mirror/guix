@@ -2320,6 +2320,37 @@ encodings.")
      "Index tables for traditional Chinese character encodings.")
     (license license:cc0)))
 
+(define-public rust-encoding-rs-0.8
+  (package
+    (name "rust-encoding-rs")
+    (version "0.8.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "encoding_rs" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1v902qqnbd37vdq4rjvp6k05wmghrasfdcjy30gp1xpjg5f7hma1"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-packed-simd" ,rust-packed-simd-0.3)
+        ("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-bincode" ,rust-bincode-1.1)
+        ("rust-serde-derive" ,rust-serde-derive-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0))))
+    (home-page "https://docs.rs/encoding_rs/")
+    (synopsis "Gecko-oriented implementation of the Encoding Standard")
+    (description
+     "This package provides a Gecko-oriented implementation of the Encoding
+Standard.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-env-logger-0.6
   (package
     (name "rust-env-logger")
