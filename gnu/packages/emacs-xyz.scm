@@ -20082,6 +20082,9 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
       (license license:gpl3+))))
 
 (define-public emacs-telega
+  ;; This package has versions newer than indicated on MELPA.
+  ;; Get the current version from `telega-version` in telega.el.
+  ;; or by running M-x telega-version.
   (let ((commit "6184e76990db395bea02f7b5d3169e746111e1ad")
 	(revision "1")
 	(version "0.5.3"))
