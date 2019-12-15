@@ -4923,6 +4923,33 @@ algorithm.")
     (description "The Elegant Parser.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-pest-meta-2.1
+  (package
+    (name "rust-pest-meta")
+    (version "2.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pest_meta" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0kaprdz3jis9bjfwhri1zncbsvack5m3gx2g5flspdy7wxnyljgj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-maplit" ,rust-maplit-1.0)
+        ("rust-pest" ,rust-pest-2.1))
+       #:cargo-development-inputs
+       (("rust-sha-1" ,rust-sha-1-0.8))))
+    (home-page "https://pest.rs")
+    (synopsis "Pest meta language parser and validator")
+    (description
+     "Pest meta language parser and validator.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-petgraph-0.4
   (package
     (name "rust-petgraph")
