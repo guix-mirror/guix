@@ -5736,6 +5736,33 @@ Pwrite traits from the scroll crate.")
      "Optimized handling of @code{&[u8]} and @code{Vec<u8>} for Serde.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-serde-cbor-0.10
+  (package
+    (name "rust-serde-cbor")
+    (version "0.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serde_cbor" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0jcb4j637vdlqk2z38jixaqmp6f92h36r17kclv5brjay32911ii"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-half" ,rust-half-1.3)
+        ("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-serde-derive" ,rust-serde-derive-1.0))))
+    (home-page "https://github.com/pyfisch/cbor")
+    (synopsis "CBOR support for serde")
+    (description "CBOR support for serde.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-serde-derive-1.0
   (package
     (name "rust-serde-derive")
