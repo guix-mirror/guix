@@ -4166,14 +4166,14 @@ analysis.")
 (define-public r-gtrellis
   (package
     (name "r-gtrellis")
-    (version "1.16.1")
+    (version "1.18.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "gtrellis" version))
        (sha256
         (base32
-         "069hln9vflyxic24bxrlmdmz9h3jdd2qaqy898rgk5bn0gqwcjix"))))
+         "0mgspmv6p1a2k98jyy2dfl0wpa2vh7bhnjfm2xaqmcsxzmbjhh9z"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-circlize" ,r-circlize)
