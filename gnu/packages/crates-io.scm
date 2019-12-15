@@ -4425,6 +4425,27 @@ slices (@code{.find()}, @code{RevSlice}), strings and other things.
 Things in odds may move to more appropriate crates if we find them.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-opaque-debug-0.2
+  (package
+    (name "rust-opaque-debug")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "opaque-debug" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "02942l2gc7w5r4js7i9063x99szic5mzzk1055j83v4diqpbpxck"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/RustCrypto/utils")
+    (synopsis "Macro for opaque Debug trait implementation")
+    (description
+     "Macro for opaque Debug trait implementation.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-openssl-0.10
   (package
     (name "rust-openssl")
