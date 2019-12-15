@@ -498,6 +498,33 @@ behave like a set of bitflags.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-blobby-0.1
+  (package
+    (name "rust-blobby")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "blobby" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1xicpf3s2mi5xqnx8ps5mdych4ib5nh2nfsbrsg8ar8bjk1girbg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1.3))
+       #:cargo-development-inputs
+       (("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-hex" ,rust-hex-0.3))))
+    (home-page "https://github.com/RustCrypto/utils")
+    (synopsis "Iterator over simple binary blob storage")
+    (description
+     "Iterator over simple binary blob storage.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-block-buffer-0.7
   (package
     (name "rust-block-buffer")
