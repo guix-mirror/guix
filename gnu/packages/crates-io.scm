@@ -3489,6 +3489,39 @@ the regex engine it uses pluggable.")
      "Use Rust's regex library with the grep crate.")
     (license (list license:unlicense license:expat))))
 
+(define-public rust-grep-searcher-0.1
+  (package
+    (name "rust-grep-searcher")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "grep-searcher" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0pj85m7q6k6jpl3q57v1gwq5jxmqnza2xg7jjcxky3q325z8lcjy"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bstr" ,rust-bstr-0.2)
+        ("rust-bytecount" ,rust-bytecount-0.5)
+        ("rust-encoding-rs" ,rust-encoding-rs-0.8)
+        ("rust-encoding-rs-io" ,rust-encoding-rs-io-0.1)
+        ("rust-grep-matcher" ,rust-grep-matcher-0.1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-memmap" ,rust-memmap-0.7))
+       #:cargo-development-inputs
+       (("rust-grep-regex" ,rust-grep-regex-0.1)
+        ("rust-regex" ,rust-regex-1.1))))
+    (home-page "https://github.com/BurntSushi/ripgrep")
+    (synopsis "Line oriented regex searching as a library")
+    (description
+     "Fast line oriented regex searching as a library.")
+    (license (list license:unlicense license:expat))))
+
 (define-public rust-half-1.3
   (package
     (name "rust-half")
