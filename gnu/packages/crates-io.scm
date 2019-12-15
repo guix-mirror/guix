@@ -5387,6 +5387,34 @@ are met.")
     (properties '((hidden? . #t)))
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-stdweb-derive-0.5
+  (package
+    (name "rust-stdweb-derive")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "stdweb-derive" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0c1rxx6rqcc4iic5hx320ki3vshpi8k58m5600iqzq4x2zcyn88f"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0)
+        ("rust-syn" ,rust-syn-0.15))))
+    (home-page "https://github.com/koute/stdweb")
+    (synopsis "Derive macros for the stdweb crate")
+    (description
+     "Derive macros for the @code{stdweb} crate.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-stdweb-internal-runtime-0.1
   (package
     (name "rust-stdweb-internal-runtime")
