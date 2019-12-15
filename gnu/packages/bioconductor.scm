@@ -944,14 +944,14 @@ measures for Affymetrix Oligonucleotide Arrays.")
 (define-public r-affycompatible
   (package
     (name "r-affycompatible")
-    (version "1.44.0")
+    (version "1.46.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "AffyCompatible" version))
        (sha256
         (base32
-         "1zi96qa6vkgwvvy5cn6c3p1kbfsaz74zsw2kjxarz5qs744f0xvs"))))
+         "10ahrdlifp1i7rd58zb10w75y5bnigs7xp5gv4fhb5y7p7dvb0ks"))))
     (properties
      `((upstream-name . "AffyCompatible")))
     (build-system r-build-system)
