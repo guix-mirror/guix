@@ -8780,6 +8780,60 @@ in Rust.")
      "Simple, lightweight template engine.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-tokio-0.1
+  (package
+    (name "rust-tokio")
+    (version "0.1.21")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "11ra8jp3fj70a2zrqmd6as7wgpwiiyzjf50gz89i8r7wpksgqbzc"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.4)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-mio" ,rust-mio-0.6)
+        ("rust-miow" ,rust-miow-0.3)
+        ("rust-num-cpus" ,rust-num-cpus-1.10)
+        ("rust-tokio-codec" ,rust-tokio-codec-0.1)
+        ("rust-tokio-current-thread" ,rust-tokio-current-thread-0.1)
+        ("rust-tokio-executor" ,rust-tokio-executor-0.1)
+        ("rust-tokio-fs" ,rust-tokio-fs-0.1)
+        ("rust-tokio-io" ,rust-tokio-io-0.1)
+        ("rust-tokio-reactor" ,rust-tokio-reactor-0.1)
+        ("rust-tokio-sync" ,rust-tokio-sync-0.1)
+        ("rust-tokio-tcp" ,rust-tokio-tcp-0.1)
+        ("rust-tokio-threadpool" ,rust-tokio-threadpool-0.1)
+        ("rust-tokio-timer" ,rust-tokio-timer-0.2)
+        ("rust-tokio-trace-core" ,rust-tokio-trace-core-0.2)
+        ("rust-tokio-udp" ,rust-tokio-udp-0.1)
+        ("rust-tokio-uds" ,rust-tokio-uds-0.2))
+       #:cargo-development-inputs
+       (("rust-env-logger" ,rust-env-logger-0.6)
+        ("rust-flate2" ,rust-flate2-1.0)
+        ("rust-futures-cpupool" ,rust-futures-cpupool-0.1)
+        ("rust-http" ,rust-http-0.1)
+        ("rust-httparse" ,rust-httparse-1.3)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-num-cpus" ,rust-num-cpus-1.10)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0)
+        ("rust-time" ,rust-time-0.1))))
+    (home-page "https://tokio.rs")
+    (synopsis "Event-driven, non-blocking I/O platform")
+    (description
+     "An event-driven, non-blocking I/O platform for writing asynchronous I/O
+backed applications.")
+    (license license:expat)))
+
 ;; Cyclic dependency with tokio-io
 (define-public rust-tokio-codec-0.1
   (package
