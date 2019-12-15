@@ -4837,6 +4837,34 @@ drop-in replacement for miniz.")
     (description "Lightweight non-blocking IO.")
     (license license:expat)))
 
+(define-public rust-mio-uds-0.6
+  (package
+    (name "rust-mio-uds")
+    (version "0.6.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "mio-uds" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "09gimdbnj7b9yca99pk8lxh9jhl79msj795c8fxi2sqr9slmfqln"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-iovec" ,rust-iovec-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-mio" ,rust-mio-0.6))
+       #:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir-0.3))))
+    (home-page "https://github.com/alexcrichton/mio-uds")
+    (synopsis "Unix domain socket bindings for mio")
+    (description
+     "Unix domain socket bindings for mio.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-miow-0.3
   (package
     (name "rust-miow")
