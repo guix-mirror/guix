@@ -5120,18 +5120,19 @@ coefficients).")
 (define-public r-biosigner
   (package
     (name "r-biosigner")
-    (version "1.12.0")
+    (version "1.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "biosigner" version))
        (sha256
         (base32
-         "1643iya40v6whb7lw7y34w5sanbasvj4yhvcygbip667yhphyv5b"))))
+         "1kdfhw629qczrfms0jmphqz0ksjzi8js00xj92h1lnv092npfk0j"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
        ("r-e1071" ,r-e1071)
+       ("r-multidataset" ,r-multidataset)
        ("r-randomforest" ,r-randomforest)
        ("r-ropls" ,r-ropls)))
     (native-inputs
