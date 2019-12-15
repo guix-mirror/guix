@@ -3027,6 +3027,34 @@ futures-rs library.")
 library.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-fxhash-0.2
+  (package
+    (name "rust-fxhash")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "fxhash" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "037mb9ichariqi45xm6mz0b11pa92gj38ba0409z3iz239sns6y3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1.3))
+       #:cargo-development-inputs
+       (("rust-fnv" ,rust-fnv-1.0)
+        ("rust-seahash" ,rust-seahash-3.0))))
+    (home-page "https://github.com/cbreeden/fxhash")
+    (synopsis "Hashing algorithm from hasher used in FireFox and Rustc")
+    (description
+     "This package provides a fast, non-secure, hashing algorithm
+derived from an internal hasher used in FireFox and Rustc.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-gcc-0.3
   (package
     (inherit rust-cc-1.0)
