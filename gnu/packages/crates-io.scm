@@ -456,6 +456,51 @@ and no more (caveat: black_box is still missing!).")
 that uses Serde for transforming structs into bytes and vice versa!")
     (license license:expat)))
 
+(define-public rust-bindgen-0.50
+  (package
+    (name "rust-bindgen")
+    (version "0.50.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bindgen" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1k4n1d002vrfn1mlpww3ib7f275yn4rpxfwkqpr9bym27zg17ab5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-cexpr" ,rust-cexpr-0.3)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-clang-sys" ,rust-clang-sys-0.28)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-env-logger" ,rust-env-logger-0.6)
+        ("rust-fxhash" ,rust-fxhash-0.2)
+        ("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-peeking-take-while" ,rust-peeking-take-while-0.1)
+        ("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-regex" ,rust-regex-1.1)
+        ("rust-shlex" ,rust-shlex-0.1)
+        ("rust-which" ,rust-which-2.0))
+       #:cargo-development-inputs
+       (("rust-clap" ,rust-clap-2)
+        ("rust-diff" ,rust-diff-0.1)
+        ("rust-shlex" ,rust-shlex-0.1))))
+    (home-page
+     "https://rust-lang.github.io/rust-bindgen/")
+    (synopsis
+     "Automatically generates FFI bindings to C and C++libraries")
+    (description
+     "Automatically generates Rust FFI bindings to C and C++
+libraries.")
+    (license license:bsd-3)))
+
 (define-public rust-bit-set-0.5
   (package
     (name "rust-bit-set")
