@@ -1602,6 +1602,46 @@ cross platform API.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-flate2-1.0
+  (package
+    (name "rust-flate2")
+    (version "1.0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "flate2" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1n639gc7sbmrkir6pif608xqpwcv60kigmp5cn9x7m8892nk82am"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-crc32fast" ,rust-crc32fast-1.2)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-libz-sys" ,rust-libz-sys-1.0)
+        ("rust-miniz-sys" ,rust-miniz-sys-0.1)
+        ("rust-miniz-oxide-c-api" ,rust-miniz-oxide-c-api-0.2)
+        ("rust-tokio-io" ,rust-tokio-io-0.1))
+       #:cargo-development-inputs
+       (("rust-futures" ,rust-futures-0.1)
+        ("rust-quickcheck" ,rust-quickcheck-0.8)
+        ("rust-rand" ,rust-rand-0.4)
+        ("rust-tokio-io" ,rust-tokio-io-0.1)
+        ("rust-tokio-tcp" ,rust-tokio-tcp-0.1)
+        ("rust-tokio-threadpool" ,rust-tokio-threadpool-0.1))))
+    (home-page "https://github.com/alexcrichton/flate2-rs")
+    (synopsis
+     "Bindings to miniz.c for DEFLATE compression and decompression")
+    (description
+     "Bindings to miniz.c for DEFLATE compression and decompression exposed as
+Reader/Writer streams.  Contains bindings for zlib, deflate, and gzip-based
+streams.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-fnv-1.0
   (package
     (name "rust-fnv")
