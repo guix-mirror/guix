@@ -4060,21 +4060,23 @@ investigation using RNA-seq data.")
 (define-public r-aucell
   (package
     (name "r-aucell")
-    (version "1.6.1")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "AUCell" version))
        (sha256
         (base32
-         "1vd8w6dygn1b5bwlha09mm6fbwyj07pmawpv53agcg1y7jlxs31b"))))
+         "1g4mdq8z29fjxrfjng0fb3cvbph49mwds4ijsa2bn2k6f75dnzky"))))
     (properties `((upstream-name . "AUCell")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-data-table" ,r-data-table)
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-data-table" ,r-data-table)
        ("r-gseabase" ,r-gseabase)
        ("r-mixtools" ,r-mixtools)
        ("r-r-utils" ,r-r-utils)
+       ("r-s4vectors" ,r-s4vectors)
        ("r-shiny" ,r-shiny)
        ("r-summarizedexperiment" ,r-summarizedexperiment)))
     (home-page "https://bioconductor.org/packages/AUCell/")
