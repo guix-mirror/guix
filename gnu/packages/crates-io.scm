@@ -5160,6 +5160,33 @@ deserialization, and interpreter in Rust.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-paste-impl-0.1
+  (package
+    (name "rust-paste-impl")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "paste-impl" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1rkh8nixmb7r1y0mjnsz62p6r1bqah5ciri7bwhmgcmq4gk9drr6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5)
+        ("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-syn" ,rust-syn-0.15))))
+    (home-page "https://github.com/dtolnay/paste")
+    (synopsis "Implementation detail of the paste crate")
+    (description
+     "Implementation detail of the paste crate.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-pcre2-0.2
   (package
     (name "rust-pcre2")
