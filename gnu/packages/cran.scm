@@ -1424,13 +1424,13 @@ embedded @url{https://github.com/WizardMac/ReadStat,ReadStat} C library.")
 (define-public r-amap
   (package
     (name "r-amap")
-    (version "0.8-17")
+    (version "0.8-18")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "amap" version))
               (sha256
                (base32
-                "1il94bkhl8192vawq4gr2gwyhqhid27jr2312rhvr72ssg8p713b"))))
+                "0zpcb73w413na23f6giml9311jh0j0y766w2fh9i40d2h7bbvyvs"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
