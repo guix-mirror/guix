@@ -2347,14 +2347,14 @@ gene and isoform level using RNA-seq data")
 (define-public r-lpsymphony
   (package
     (name "r-lpsymphony")
-    (version "1.12.0")
+    (version "1.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "lpsymphony" version))
        (sha256
         (base32
-         "13wvq4ip8nkyxmpncs6fzcf3vphra1n0fd5vz9kspbch0k1z6bsv"))))
+         "0j5j9kggh3l61vp6hpnqf45d5kzifksaj0sqhvs1zahmx2c1gfdv"))))
     (build-system r-build-system)
     (inputs
      `(("gfortran" ,gfortran)
