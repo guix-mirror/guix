@@ -3776,6 +3776,30 @@ compile time.")
 requests and responses.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-httparse-1.3
+  (package
+    (name "rust-httparse")
+    (version "1.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "httparse" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10vsfx1b8drhif08fbi0ha9d3v1f3h80w42rxh0y3hrvzl64nwz8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-development-inputs
+       (("rust-pico-sys" ,rust-pico-sys-0.0))))
+    (home-page "https://github.com/seanmonstar/httparse")
+    (synopsis "Zero-copy HTTP/1.x parser")
+    (description
+     "This package provides a tiny, safe, speedy, zero-copy HTTP/1.x parser.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-humantime-1.2
   (package
     (name "rust-humantime")
