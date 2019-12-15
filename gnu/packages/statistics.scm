@@ -933,15 +933,15 @@ in which the whole-plots or split-plots or both can be freely exchangeable.")
 (define-public r-plyr
   (package
     (name "r-plyr")
-    (version "1.8.4")
+    (version "1.8.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "plyr" version))
        (sha256
-        (base32 "1igar5pcjqh0jyxv0z3jah8rz617vfa86vw0r5c7c031b7bj5db0"))))
+        (base32 "0x4mbb3rgv1ayxqidw0p9i10khbg51fz5r62vw4il8d7licqq07a"))))
     (build-system r-build-system)
-    (native-inputs `(("r-rcpp" ,r-rcpp)))
+    (propagated-inputs `(("r-rcpp" ,r-rcpp)))
     (home-page "http://had.co.nz/plyr")
     (synopsis "Tools for Splitting, Applying and Combining Data")
     (description
