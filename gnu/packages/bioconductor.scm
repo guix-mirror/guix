@@ -5501,6 +5501,54 @@ model with Box-Cox transformation.")
 for other R packages to compile and link against.")
     (license license:bsd-3)))
 
+(define-public r-flowworkspace
+  (package
+    (name "r-flowworkspace")
+    (version "3.34.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "flowWorkspace" version))
+       (sha256
+        (base32
+         "0hvbkxyylsygra31l1lxyvbsr5hc50lqy1y7gwrfgrfil4a2m762"))))
+    (properties `((upstream-name . "flowWorkspace")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-cytolib" ,r-cytolib)
+       ("r-data-table" ,r-data-table)
+       ("r-digest" ,r-digest)
+       ("r-dplyr" ,r-dplyr)
+       ("r-flowcore" ,r-flowcore)
+       ("r-flowviz" ,r-flowviz)
+       ("r-graph" ,r-graph)
+       ("r-gridextra" ,r-gridextra)
+       ("r-lattice" ,r-lattice)
+       ("r-latticeextra" ,r-latticeextra)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-ncdfflow" ,r-ncdfflow)
+       ("r-rbgl" ,r-rbgl)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppparallel" ,r-rcppparallel)
+       ("r-rgraphviz" ,r-rgraphviz)
+       ("r-rprotobuflib" ,r-rprotobuflib)
+       ("r-scales" ,r-scales)
+       ("r-stringr" ,r-stringr)))
+    (home-page "https://bioconductor.org/packages/flowWorkspace/")
+    (synopsis "Infrastructure for working with cytometry data")
+    (description
+     "This package is designed to facilitate comparison of automated gating
+methods against manual gating done in flowJo.  This package allows you to
+import basic flowJo workspaces into BioConductor and replicate the gating from
+flowJo using the @code{flowCore} functionality.  Gating hierarchies, groups of
+samples, compensation, and transformation are performed so that the output
+matches the flowJo analysis.")
+    (license license:artistic2.0)))
+
 (define-public r-flowsom
   (package
     (name "r-flowsom")
