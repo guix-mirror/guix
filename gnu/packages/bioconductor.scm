@@ -5405,6 +5405,35 @@ and some custom layers also make it easy to add gates and population
 statistics to the plot.")
     (license license:artistic2.0)))
 
+(define-public r-flowviz
+  (package
+    (name "r-flowviz")
+    (version "1.50.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "flowViz" version))
+       (sha256
+        (base32
+         "0ik16bxcfcg3q26ra3055718kskid64aaazcbqsxalca9ppdm4k7"))))
+    (properties `((upstream-name . "flowViz")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-flowcore" ,r-flowcore)
+       ("r-hexbin" ,r-hexbin)
+       ("r-idpmisc" ,r-idpmisc)
+       ("r-kernsmooth" ,r-kernsmooth)
+       ("r-lattice" ,r-lattice)
+       ("r-latticeextra" ,r-latticeextra)
+       ("r-mass" ,r-mass)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)))
+    (home-page "https://bioconductor.org/packages/flowViz/")
+    (synopsis "Visualization for flow cytometry")
+    (description
+     "This package provides visualization tools for flow cytometry data.")
+    (license license:artistic2.0)))
+
 (define-public r-flowsom
   (package
     (name "r-flowsom")
