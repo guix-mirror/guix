@@ -13,6 +13,7 @@
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
+;;; Copyright © 2019 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,6 +45,7 @@
   #:use-module (gnu packages file)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
@@ -77,7 +79,8 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system qt))
 
 (define-public commoncpp
   (package
@@ -379,54 +382,63 @@ address of one of the participants.")
 (define-public mumble
   (package
     (name "mumble")
-    (version "1.2.19")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://mumble.info/snapshot/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1s60vaici3v034jzzi20x23hsj6mkjlc0glipjq4hffrg9qgnizh"))
-              (patches (search-patches "mumble-1.2.19-abs.patch"))
+                "03dqg5yf6d7ilc1wydpshnv1ndssppcbadqcq20jm5j4fdaf53cs"))
               (modules '((guix build utils)))
               (snippet
                `(begin
-                  ;; Remove bundled software.
-                  (for-each delete-file-recursively '("3rdparty"
-                                                      "speex"
-                                                      "speexbuild"
-                                                      "opus-build"
-                                                      "opus-src"
-                                                      "sbcelt-helper-build"
-                                                      "sbcelt-lib-build"
-                                                      "sbcelt-src"))
-                  ;; TODO: Celt is still bundled. It has been merged into Opus
-                  ;; and will be removed after 1.3.0.
-                  ;; https://github.com/mumble-voip/mumble/issues/1999
+                  ;; Remove bundled software.  Keep arc4random, celt-0.7.0,
+                  ;; celt-0.11.0, qqbonjour, rnnoise, smallft.
+                  (for-each
+                    delete-file-recursively
+                    '("3rdparty/GL" ; in mesa
+                      "3rdparty/mach-override-build" ; for macx
+                      "3rdparty/mach-override-src"
+                      "3rdparty/minhook-build" ; for win32
+                      "3rdparty/minhook-src"
+                      "3rdparty/opus-build" ; in opus
+                      "3rdparty/opus-src"
+                      "3rdparty/sbcelt-helper-build" ; not enabled
+                      "3rdparty/sbcelt-lib-build"
+                      "3rdparty/sbcelt-src"
+                      "3rdparty/speex-build" ; in speex
+                      "3rdparty/speex-src"
+                      "3rdparty/speexdsp-src" ; in speexdsp
+                      "3rdparty/xinputcheck-build" ; for win32
+                      "3rdparty/xinputcheck-src"))
                   #t))))
-    (build-system gnu-build-system)
+    (build-system qt-build-system)
     (arguments
      `(#:tests? #f  ; no "check" target
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "qmake" "main.pro" "-recursive"
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (invoke "qmake" "main.pro" "QMAKE_LRELEASE=lrelease"
+                     (string-append "MUMBLE_PYTHON="
+                                    (string-append (assoc-ref inputs "python")
+                                                   "/bin/python3"))
                      (string-append "CONFIG+="
                                     (string-join
-                                     (list "no-update"
-                                           "no-ice"
+                                     ;; Options used are listed in the same order
+                                     ;; as in the "INSTALL" file
+                                     ;; (plus the final "packaged" and "release").
+                                     (list "no-bundled-speex" ; in speex
+                                           "no-bundled-opus" ; in opus
+                                           "no-g15" ; not packaged
+                                           "no-jackaudio" ; use pulse
+                                           "no-oss" ; use pulse
+                                           "no-alsa" ; use pulse
+                                           "no-update"
                                            "no-embed-qt-translations"
-                                           "no-bundled-speex"
-                                           "pch"
-                                           "no-bundled-opus"
-                                           "no-celt"
-                                           "no-alsa"
-                                           "no-oss"
-                                           "no-portaudio"
-                                           "speechd"
-                                           "no-g15"
-                                           "no-bonjour"
+                                           "no-ice" ; not packaged
+                                           "packaged"
                                            "release")))
                      (string-append "DEFINES+="
                                     "PLUGIN_PATH="
@@ -435,7 +447,13 @@ address of one of the participants.")
          (add-before 'configure 'fix-libspeechd-include
            (lambda _
              (substitute* "src/mumble/TextToSpeech_unix.cpp"
-               (("libspeechd.h") "speech-dispatcher/libspeechd.h"))))
+               (("libspeechd.h") "speech-dispatcher/libspeechd.h"))
+             #t))
+         (add-before 'install 'disable-murmur-ice
+           (lambda _
+             (substitute* "scripts/murmur.ini.system"
+               (("^ice=") ";ice="))
+             #t))
          (replace 'install ; install phase does not exist
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -466,21 +484,23 @@ address of one of the participants.")
                          (find-files "release/plugins" "\\.so$"))))))))
     (inputs
      `(("avahi" ,avahi)
-       ("protobuf" ,protobuf-3.5)
-       ("openssl" ,openssl)
-       ("libsndfile" ,libsndfile)
        ("boost" ,boost)
-       ("opus" ,opus)
-       ("speex" ,speex)
-       ("speexdsp" ,speexdsp)
-       ("speech-dispatcher" ,speech-dispatcher)
-       ("libx11" ,libx11)
+       ("libsndfile" ,libsndfile)
        ("libxi" ,libxi)
-       ("qt-4" ,qt-4)
-       ("alsa-lib" ,alsa-lib)
-       ("pulseaudio" ,pulseaudio)))
+       ("mesa" ,mesa) ; avoid bundled
+       ("openssl" ,openssl)
+       ("opus" ,opus) ; avoid bundled
+       ("protobuf" ,protobuf)
+       ("pulseaudio" ,pulseaudio)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("speech-dispatcher" ,speech-dispatcher)
+       ("speex" ,speex) ; avoid bundled
+       ("speexdsp" ,speexdsp))) ; avoid bundled
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python)
+       ("qttools" ,qttools)))
     (synopsis "Low-latency, high quality voice chat software")
     (description
      "Mumble is an low-latency, high quality voice chat
@@ -488,9 +508,9 @@ software primarily intended for use while gaming.
 Mumble consists of two applications for separate usage:
 @code{mumble} for the client, and @code{murmur} for the server.")
     (home-page "https://wiki.mumble.info/wiki/Main_Page")
-    (license (list license:bsd-3
-                   ;; The bundled celt is bsd-2. Remove after 1.3.0.
-                   license:bsd-2))))
+    (license (list license:bsd-3 ; mumble celt-0.7.0 qqbonjour rnnoise smallft
+                   license:bsd-2 ; celt-0.11.0
+                   license:isc)))) ; arc4random
 
 (define-public twinkle
   (package
