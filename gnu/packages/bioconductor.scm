@@ -2274,14 +2274,14 @@ clusters).")
 (define-public r-deds
   (package
     (name "r-deds")
-    (version "1.58.0")
+    (version "1.60.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DEDS" version))
        (sha256
         (base32
-         "029g7wgxc7yp1cdyalbi8gipkskrgp7nyl1s2whhjy5dqpfcpigs"))))
+         "0vzsmah2lhxf8k6n4d0i4j609sbvygmb6ii2ridg9z3nskwkrhp8"))))
     (properties `((upstream-name . "DEDS")))
     (build-system r-build-system)
     (home-page "https://bioconductor.org/packages/DEDS/")
