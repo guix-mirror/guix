@@ -1841,14 +1841,14 @@ trees and clusters to other programs.")
 (define-public r-goseq
   (package
     (name "r-goseq")
-    (version "1.36.0")
+    (version "1.38.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "goseq" version))
        (sha256
         (base32
-         "0h8kd3d7yfdq8padfb0k92crwxi5h9gvgv4l3pa8k8wn4kczvciw"))))
+         "11ypa41qv1nx3cncxlwlbhdxqlwq95rb9byv2z3crrf9nfp24byv"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
