@@ -3754,14 +3754,14 @@ genomic sequence data.")
 (define-public r-motiv
   (package
     (name "r-motiv")
-    (version "1.40.0")
+    (version "1.42.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MotIV" version))
        (sha256
         (base32
-         "088z3vyx5h2c4ll4sway01cd4h0x2ayhbv55f6l2kss71v6k6byf"))))
+         "07k4rw4nhcn4sg43psv1h7qr064gws22m2yyr7x8sy3f1i1c954k"))))
     (properties `((upstream-name . "MotIV")))
     (build-system r-build-system)
     (inputs
@@ -3769,6 +3769,7 @@ genomic sequence data.")
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
        ("r-biostrings" ,r-biostrings)
+       ("r-genomicranges" ,r-genomicranges)
        ("r-iranges" ,r-iranges)
        ("r-lattice" ,r-lattice)
        ("r-rgadem" ,r-rgadem)
