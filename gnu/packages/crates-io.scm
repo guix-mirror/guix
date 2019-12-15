@@ -8982,6 +8982,30 @@ If that fails, no determination is made, and calls return None.")
     (properties '((hidden? . #t)))
     (license license:expat)))
 
+(define-public rust-wait-timeout-0.2
+  (package
+    (name "rust-wait-timeout")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wait-timeout" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1xpkk0j5l9pfmjfh1pi0i89invlavfrd9av5xp0zhxgb29dhy84z"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs (("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/alexcrichton/wait-timeout")
+    (synopsis "Wait on a child process with a timeout")
+    (description
+     "This package provides a crate to wait on a child process with a timeout
+specified across Unix and Windows platforms.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-walkdir-2.2
   (package
     (name "rust-walkdir")
