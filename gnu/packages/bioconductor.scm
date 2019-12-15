@@ -5585,6 +5585,48 @@ that is beyond the basic infrastructure provided by the @code{flowCore}
 package.")
     (license license:artistic2.0)))
 
+(define-public r-opencyto
+  (package
+    (name "r-opencyto")
+    (version "1.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "openCyto" version))
+       (sha256
+        (base32
+         "0h25nhvq1zq624wsgb55wjcgri9rcd2fnqkb31h9jdakr01dw2sb"))))
+    (properties `((upstream-name . "openCyto")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-clue" ,r-clue)
+       ("r-data-table" ,r-data-table)
+       ("r-flowclust" ,r-flowclust)
+       ("r-flowcore" ,r-flowcore)
+       ("r-flowstats" ,r-flowstats)
+       ("r-flowviz" ,r-flowviz)
+       ("r-flowworkspace" ,r-flowworkspace)
+       ("r-graph" ,r-graph)
+       ("r-gtools" ,r-gtools)
+       ("r-ks" ,r-ks)
+       ("r-lattice" ,r-lattice)
+       ("r-mass" ,r-mass)
+       ("r-ncdfflow" ,r-ncdfflow)
+       ("r-plyr" ,r-plyr)
+       ("r-r-utils" ,r-r-utils)
+       ("r-rbgl" ,r-rbgl)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rrcov" ,r-rrcov)))
+    (home-page "https://bioconductor.org/packages/openCyto")
+    (synopsis "Hierarchical gating pipeline for flow cytometry data")
+    (description
+     "This package is designed to facilitate the automated gating methods in a
+sequential way to mimic the manual gating strategy.")
+    (license license:artistic2.0)))
+
 (define-public r-flowsom
   (package
     (name "r-flowsom")
