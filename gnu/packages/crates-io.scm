@@ -123,6 +123,29 @@ Rust, using gimli.")
      "Fuzz Rust code with american-fuzzy-lop.")
     (license license:asl2.0)))
 
+(define-public rust-aho-corasick-0.7
+  (package
+    (name "rust-aho-corasick")
+    (version "0.7.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "aho-corasick" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0k1nqabiz37mnfnlrn084qi9yf8pj6a38qgbb3lc5zlr1jp89x76"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs (("rust-memchr" ,rust-memchr-2.2))))
+    (home-page "https://github.com/BurntSushi/aho-corasick")
+    (synopsis "Fast multiple substring searching")
+    (description
+     "Fast multiple substring searching.")
+    (license (list license:unlicense license:expat))))
+
 (define-public rust-ansi-term-0.11
   (package
     (name "rust-ansi-term")
