@@ -5434,6 +5434,43 @@ statistics to the plot.")
      "This package provides visualization tools for flow cytometry data.")
     (license license:artistic2.0)))
 
+(define-public r-flowclust
+  (package
+    (name "r-flowclust")
+    (version "3.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "flowClust" version))
+       (sha256
+        (base32
+         "0k4bgc4mf512njfdfg5ld9l7slgfxyfh766jab87j96zrrgcnj8s"))))
+    (properties `((upstream-name . "flowClust")))
+    (build-system r-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--configure-args=--enable-bundled-gsl=no")))
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-clue" ,r-clue)
+       ("r-corpcor" ,r-corpcor)
+       ("r-ellipse" ,r-ellipse)
+       ("r-flowcore" ,r-flowcore)
+       ("r-flowviz" ,r-flowviz)
+       ("r-graph" ,r-graph)
+       ("r-mnormt" ,r-mnormt)))
+    (inputs
+     `(("gsl" ,gsl)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://bioconductor.org/packages/flowClust")
+    (synopsis "Clustering for flow cytometry")
+    (description
+     "This package provides robust model-based clustering using a t-mixture
+model with Box-Cox transformation.")
+    (license license:artistic2.0)))
+
 (define-public r-flowsom
   (package
     (name "r-flowsom")
