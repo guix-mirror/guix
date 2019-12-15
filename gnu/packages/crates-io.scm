@@ -5924,6 +5924,45 @@ the current thread.")
     (properties '((hidden? . #t)))
     (license license:expat)))
 
+(define-public rust-tokio-reactor-0.1
+  (package
+    (name "rust-tokio-reactor")
+    (version "0.1.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-reactor" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1khip64cn63xvayq1db68kxcnhgw3cb449a4n2lbw4p1qzx6pwba"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mio" ,rust-mio-0.6)
+        ("rust-num-cpus" ,rust-num-cpus-1.10)
+        ("rust-parking-lot" ,rust-parking-lot-0.7)
+        ("rust-slab" ,rust-slab-0.4)
+        ("rust-tokio-executor" ,rust-tokio-executor-0.1)
+        ("rust-tokio-io" ,rust-tokio-io-0.1)
+        ("rust-tokio-sync" ,rust-tokio-sync-0.1))
+       #:cargo-development-inputs
+       (("rust-num-cpus" ,rust-num-cpus-1.10)
+        ("rust-tokio" ,rust-tokio-0.1)
+        ("rust-tokio-io-pool" ,rust-tokio-io-pool-0.1))))
+    (home-page "https://tokio.rs")
+    (synopsis
+     "Event loop that drives Tokio I/O resources")
+    (description
+     "Event loop that drives Tokio I/O resources.")
+    (license license:expat)))
+
 (define-public rust-tokio-sync-0.1
   (package
     (name "rust-tokio-sync")
