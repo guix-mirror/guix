@@ -10487,14 +10487,14 @@ block processing.")
 (define-public r-rhdf5lib
   (package
     (name "r-rhdf5lib")
-    (version "1.6.3")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rhdf5lib" version))
        (sha256
         (base32
-         "0q68n5jm7w99paibj8vkxbdksbyrxilzwc9dkp3zf8zrdc5qfxzy"))
+         "17lhwnm9rqsvbqkvwp0m07vjrk63a4389p2y39zffv8fgznxqzd7"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -10511,10 +10511,14 @@ block processing.")
              (for-each delete-file '("configure" "configure.ac"))
              ;; Do not make other packages link with the proprietary libsz.
              (substitute* "R/zzz.R"
-               (("'%s/libhdf5_cpp.a %s/libhdf5.a %s/libsz.a -lz'")
-                "'%s/libhdf5_cpp.a %s/libhdf5.a %s/libhdf5.a -lz'")
-               (("'%s/libhdf5.a %s/libsz.a -lz'")
-                "'%s/libhdf5.a %s/libhdf5.a -lz'"))
+               (("'\"%s/libhdf5.a\" \"%s/libsz.a\" -lz'")
+                "'\"%s/libhdf5.a\" \"%s/libhdf5.a\" -lz'")
+               (("'\"%s/libhdf5_cpp.a\" \"%s/libhdf5.a\" \"%s/libsz.a\" -lz'")
+                "'\"%s/libhdf5_cpp.a\" \"%s/libhdf5.a\" \"%s/libhdf5.a\" -lz'")
+               (("'%s/libhdf5_hl.a %s/libhdf5.a %s/libsz.a -lz'")
+                "'%s/libhdf5_hl.a %s/libhdf5.a %s/libhdf5.a -lz'")
+               (("'%s/libhdf5_hl_cpp.a %s/libhdf5_hl.a %s/libhdf5_cpp.a %s/libhdf5.a %s/libsz.a -lz'")
+                "'%s/libhdf5_hl_cpp.a %s/libhdf5_hl.a %s/libhdf5_cpp.a %s/libhdf5.a %s/libhdf5.a -lz'"))
              (with-directory-excursion "src"
                (invoke "tar" "xvf" (assoc-ref inputs "hdf5-source"))
                (rename-file (string-append "hdf5-" ,(package-version hdf5-1.10))
@@ -10539,6 +10543,14 @@ block processing.")
                                  (assoc-ref inputs "hdf5") "/lib/libhdf5.a\n"))
                  (("HDF5_CXX_INCLUDE=.*") "HDF5_CXX_INCLUDE=./hdf5/c++/src\n")
                  (("HDF5_INCLUDE=.*") "HDF5_INCLUDE=./hdf5/src\n")
+                 (("HDF5_HL_INCLUDE=.*") "HDF5_HL_INCLUDE=./hdf5/hl/src\n")
+                 (("HDF5_HL_CXX_INCLUDE=.*") "HDF5_HL_CXX_INCLUDE=./hdf5/hl/c++/src\n")
+                 (("HDF5_HL_LIB=.*")
+                  (string-append "HDF5_HL_LIB="
+                                 (assoc-ref inputs "hdf5") "/lib/libhdf5_hl.a\n"))
+                 (("HDF5_HL_CXX_LIB=.*")
+                  (string-append "HDF5_HL_CXX_LIB="
+                                 (assoc-ref inputs "hdf5") "/lib/libhdf5_hl_cpp.a\n"))
                  ;; szip is non-free software
                  (("cp \"\\$\\{SZIP_LIB\\}.*") "")
                  (("PKG_LIBS =.*") "PKG_LIBS = -lz -lhdf5\n")))
