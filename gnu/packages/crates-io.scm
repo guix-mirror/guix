@@ -5765,8 +5765,35 @@ useful types and distributions, and some randomness-related algorithms.")
          (base32
           "0v679h38pjjqj5h4md7v2slsvj6686qgcn7p9fbw3h43iwnk1b34"))))))
 
+(define-public rust-rand-chacha-0.2
+  (package
+    (name "rust-rand-chacha")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rand_chacha" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "178d36jfkc4v95s25scc2vibj2hd2hlk64cs6id4hvzg89whd4z1"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-c2-chacha" ,rust-c2-chacha-0.2)
+        ("rust-rand-core" ,rust-rand-core-0.5))
+       #:cargo-development-inputs
+       (("rust-autocfg" ,rust-autocfg-0.1))))
+    (home-page "https://crates.io/crates/rand-chacha")
+    (synopsis "ChaCha random number generator")
+    (description "ChaCha random number generator.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-rand-chacha-0.1
   (package
+    (inherit rust-rand-chacha-0.2)
     (name "rust-rand-chacha")
     (version "0.1.1")
     (source
@@ -5777,13 +5804,8 @@ useful types and distributions, and some randomness-related algorithms.")
         (sha256
          (base32
           "1vxwyzs4fy1ffjc8l00fsyygpiss135irjf7nyxgq2v0lqf3lvam"))))
-    (build-system cargo-build-system)
-    (home-page "https://crates.io/crates/rand_chacha")
-    (synopsis "ChaCha random number generator")
-    (description "ChaCha random number generator")
-    (properties '((hidden? . #t)))
-    (license (list license:asl2.0
-                   license:expat))))
+    (arguments `())
+    (properties '((hidden? . #t)))))
 
 (define-public rust-rand-core-0.5
   (package
