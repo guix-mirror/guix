@@ -6095,14 +6095,14 @@ with multiple R processes supported by the package @code{parallel}.")
 (define-public r-bigmelon
   (package
     (name "r-bigmelon")
-    (version "1.10.0")
+    (version "1.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "bigmelon" version))
        (sha256
         (base32
-         "0269kf3d34dbng3swk7pclpk02vy4k3askygmzi5my3fqyfzdkj9"))))
+         "0sw7rp4p03m1s72b4j06jfb7as3v1n2w2z4ppk8s4f80fb05bcls"))))
     (properties `((upstream-name . "bigmelon")))
     (build-system r-build-system)
     (propagated-inputs
