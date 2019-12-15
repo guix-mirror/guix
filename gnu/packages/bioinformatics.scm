@@ -8373,13 +8373,13 @@ paired-end data.")
 (define-public r-rcas
   (package
     (name "r-rcas")
-    (version "1.10.1")
+    (version "1.12.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "RCAS" version))
               (sha256
                (base32
-                "06z5zmdi34jblw37z6ff8hb6lvvi0chwr37acwqfn8d27ax9lakz"))))
+                "1s3gvvxi1029d1vfwnjh21nnw3mlx08kcwz63891hml9y850cvsn"))))
     (properties `((upstream-name . "RCAS")))
     (build-system r-build-system)
     (propagated-inputs
