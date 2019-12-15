@@ -901,6 +901,53 @@ It is inspired by the Linux kernel's @code{crypto_memneq}.")
      "Fast, SIMD-accelerated CRC32 (IEEE) checksum computation.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-criterion-0.2
+  (package
+    (name "rust-criterion")
+    (version "0.2.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "criterion" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1543wlpc4p1kz7sqqa7ylr8bkdr8l4f34hy4bxj7krpkahwhaqq3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-atty" ,rust-atty-0.2)
+        ("rust-cast" ,rust-cast-0.2)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-criterion-plot" ,rust-criterion-plot-0.3)
+        ("rust-csv" ,rust-csv-1.1)
+        ("rust-itertools" ,rust-itertools-0.8)
+        ("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-rand-core" ,rust-rand-core-0.5)
+        ("rust-rand-os" ,rust-rand-os-0.2)
+        ("rust-rand-xoshiro" ,rust-rand-xoshiro-0.3)
+        ("rust-rayon" ,rust-rayon-1.1)
+        ("rust-rayon-core" ,rust-rayon-core-1.5)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0)
+        ("rust-tinytemplate" ,rust-tinytemplate-1.0)
+        ("rust-walkdir" ,rust-walkdir-2.2))
+       #:cargo-development-inputs
+       (("rust-approx" ,rust-approx-0.3)
+        ("rust-quickcheck" ,rust-quickcheck-0.8)
+        ("rust-rand" ,rust-rand-0.4)
+        ("rust-tempdir" ,rust-tempdir-0.3))))
+    (home-page "https://bheisler.github.io/criterion.rs/book/index.html")
+    (synopsis "Statistics-driven micro-benchmarking library")
+    (description
+     "Statistics-driven micro-benchmarking library.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-criterion-plot-0.3
   (package
     (name "rust-criterion-plot")
