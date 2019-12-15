@@ -9604,14 +9604,14 @@ distribution.")
 (define-public r-edaseq
   (package
     (name "r-edaseq")
-    (version "2.18.0")
+    (version "2.20.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "EDASeq" version))
        (sha256
         (base32
-         "0mmc9bij17w4mfwcc566zbj5fvqgl8gfqs0qvj6ri4mbcql9jxb3"))))
+         "19mgzbv8yxgvw86wpq401l27q55ygawlngl775yavwccz1zbhjnj"))))
     (properties `((upstream-name . "EDASeq")))
     (build-system r-build-system)
     (propagated-inputs
