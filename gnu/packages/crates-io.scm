@@ -258,6 +258,45 @@ support.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-backtrace-0.3
+  (package
+    (name "rust-backtrace")
+    (version "0.3.32")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "backtrace" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1rgsaha3b6wxh564s4jqn5hl5pkmg214blyjjs1svafib190zd8q"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-addr2line" ,rust-addr2line-0.9)
+        ("rust-backtrace-sys" ,rust-backtrace-sys-0.1)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
+        ("rust-cpp-demangle" ,rust-cpp-demangle-0.2)
+        ("rust-findshlibs" ,rust-findshlibs-0.5)
+        ("rust-goblin" ,rust-goblin-0.0)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-memmap" ,rust-memmap-0.7)
+        ("rust-rustc-demangle" ,rust-rustc-demangle-0.1)
+        ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
+        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1.0)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/rust-lang/backtrace-rs")
+    (synopsis
+     "Acquire a stack trace (backtrace) at runtime in a Rust program")
+    (description
+     "This package provides a library to acquire a stack
+trace (backtrace) at runtime in a Rust program.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-backtrace-sys-0.1
   (package
     (name "rust-backtrace-sys")
