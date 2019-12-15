@@ -2777,14 +2777,14 @@ dimensioned arrays.")
 (define-public r-rmysql
   (package
     (name "r-rmysql")
-    (version "0.10.17")
+    (version "0.10.18")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RMySQL" version))
        (sha256
         (base32
-         "1xamf99ih44dvaxg5x4ivj0hkqssmabgqd7gh8b8q1srw7yg8kbm"))))
+         "0r4626sk78fhlgivr0c7mwg9mj29ayr0iz5x90rdl4d5nc2r6kq4"))))
     (properties `((upstream-name . "RMySQL")))
     (build-system r-build-system)
     (inputs
