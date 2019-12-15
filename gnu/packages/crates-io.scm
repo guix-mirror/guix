@@ -8431,6 +8431,33 @@ with the Unicode character database.")
      "Implementation of the Unicode Bidirectional Algorithm.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-unicode-normalization-0.1
+  (package
+    (name "rust-unicode-normalization")
+    (version "0.1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "unicode-normalization" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "09i49va90rvia1agvgni4gicnqv50y5zy1naw8mr8bcqifh3j4ql"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-smallvec" ,rust-smallvec-0.6))))
+    (home-page "https://github.com/unicode-rs/unicode-normalization")
+    (synopsis
+     "This crate provides functions for normalization of Unicode strings")
+    (description
+     "This crate provides functions for normalization of Unicode strings,
+including Canonical and Compatible Decomposition and Recomposition, as
+described in Unicode Standard Annex #15.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-unicode-width-0.1
   (package
     (name "rust-unicode-width")
