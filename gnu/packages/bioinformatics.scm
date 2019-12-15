@@ -6733,14 +6733,14 @@ distribution.")
 (define-public r-dexseq
   (package
     (name "r-dexseq")
-    (version "1.30.0")
+    (version "1.32.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DEXSeq" version))
        (sha256
         (base32
-         "1b2s0vwm97g0wgm4ms0f4pqkqiqmxscnhg700aybl5vx0m2fa8xm"))))
+         "0sqqb65ckliif2nmvlvc7w49id59z0nvqcdz5gry8l2mn6azrf6a"))))
     (properties `((upstream-name . "DEXSeq")))
     (build-system r-build-system)
     (propagated-inputs
