@@ -6669,14 +6669,14 @@ information as possible.")
 (define-public r-genefilter
   (package
     (name "r-genefilter")
-    (version "1.66.0")
+    (version "1.68.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "genefilter" version))
        (sha256
         (base32
-         "1jq7lam4dnbvz55lx93kcl9afl8xfjd6xs374d35m21bkay418kj"))))
+         "1xjr02qhldspjwd6y374wgik18fgywb6408wsz471i8b4ik98ckc"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
@@ -6684,7 +6684,7 @@ information as possible.")
      `(("r-annotate" ,r-annotate)
        ("r-annotationdbi" ,r-annotationdbi)
        ("r-biobase" ,r-biobase)
-       ("r-s4vectors" ,r-s4vectors)
+       ("r-biocgenerics" ,r-biocgenerics)
        ("r-survival" ,r-survival)))
     (home-page "https://bioconductor.org/packages/genefilter")
     (synopsis "Filter genes from high-throughput experiments")
