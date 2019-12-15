@@ -2591,14 +2591,14 @@ qPCR data, but could be used with other types as well.")
 (define-public r-noiseq
   (package
     (name "r-noiseq")
-    (version "2.28.0")
+    (version "2.30.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "NOISeq" version))
        (sha256
         (base32
-         "1k7k0xqa0lxj6mfsvbmd6x6glv9wynbwl87w5d3bilbq4dpc139j"))))
+         "1a8p66hhnwmay0rjabwq7356wr93yn33nqgr9rr7whpp9nls1hg4"))))
     (properties `((upstream-name . "NOISeq")))
     (build-system r-build-system)
     (propagated-inputs
