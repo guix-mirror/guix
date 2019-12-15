@@ -3459,6 +3459,40 @@ the regex engine it uses pluggable.")
     (description "Use PCRE2 with the grep crate.")
     (license (list license:expat license:unlicense))))
 
+(define-public rust-grep-printer-0.1
+  (package
+    (name "rust-grep-printer")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "grep-printer" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0mxc1yx5sx89f00imlm5d3hxwdgglv9rzwdki8ba50gvq8a2nr8m"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-base64" ,rust-base64-0.10)
+        ("rust-bstr" ,rust-bstr-0.2)
+        ("rust-grep-matcher" ,rust-grep-matcher-0.1)
+        ("rust-grep-searcher" ,rust-grep-searcher-0.1)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0)
+        ("rust-termcolor" ,rust-termcolor-1.0))
+       #:cargo-development-inputs
+       (("rust-grep-regex" ,rust-grep-regex-0.1))))
+    (home-page "https://github.com/BurntSushi/ripgrep")
+    (synopsis "Standard printing of search results")
+    (description
+     "An implementation of the grep crate's Sink trait that provides
+standard printing of search results, similar to grep itself.")
+    (license (list license:unlicense license:expat))))
+
 (define-public rust-grep-regex-0.1
   (package
     (name "rust-grep-regex")
