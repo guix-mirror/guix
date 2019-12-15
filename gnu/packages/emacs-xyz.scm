@@ -2682,16 +2682,16 @@ keep pressing the key until it selects what you want.  There's also
 (define-public emacs-fill-column-indicator
   (package
     (name "emacs-fill-column-indicator")
-    (version "1.89")
+    (version "1.90")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/alpaker/Fill-Column-Indicator.git")
-             (commit (string-append "v" version))))
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "010kf8jsly74y7m6mmkn1h6y205kz23zphs50zgy2nag2p88rz9y"))))
+        (base32 "0snjznxdwwfdgccdcvrnk467416r244r2r5qcm2sga8l0ha9gw9z"))))
     (build-system emacs-build-system)
     (home-page "https://www.emacswiki.org/emacs/FillColumnIndicator")
     (synopsis "Graphically indicate the fill column")
