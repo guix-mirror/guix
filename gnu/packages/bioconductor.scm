@@ -5748,29 +5748,21 @@ delete entire rows with missing data.")
 (define-public r-depecher
   (package
     (name "r-depecher")
-    (version "1.0.3")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DepecheR" version))
        (sha256
         (base32
-         "0qj2h2a50fncppvi2phh0mbivxkn1mv702mqpi9mvvkf3bzq8m0h"))))
+         "1f6zbc0fq7xjflh3mkjx1n83mpppw663dj22rlpxzwp1kpmf6wm5"))))
     (properties `((upstream-name . "DepecheR")))
     (build-system r-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-syntax-error
-           (lambda _
-             (substitute* "src/Makevars"
-               ((" & ") " && "))
-             #t)))))
     (propagated-inputs
      `(("r-beanplot" ,r-beanplot)
-       ("r-biocparallel" ,r-biocparallel)
        ("r-dosnow" ,r-dosnow)
        ("r-dplyr" ,r-dplyr)
+       ("r-fnn" ,r-fnn)
        ("r-foreach" ,r-foreach)
        ("r-ggplot2" ,r-ggplot2)
        ("r-gplots" ,r-gplots)
@@ -5781,6 +5773,7 @@ delete entire rows with missing data.")
        ("r-rcpp" ,r-rcpp)
        ("r-rcppeigen" ,r-rcppeigen)
        ("r-reshape2" ,r-reshape2)
+       ("r-robustbase" ,r-robustbase)
        ("r-viridis" ,r-viridis)))
     (home-page "https://bioconductor.org/packages/DepecheR/")
     (synopsis "Identify traits of clusters in high-dimensional entities")
