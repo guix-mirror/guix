@@ -7254,6 +7254,32 @@ deeply recursive algorithms that may accidentally blow the stack.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-stackvector-1.0
+  (package
+    (name "rust-stackvector")
+    (version "1.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "stackvector" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1bv820fhdad16islwli1g3iksk39ivf0zaqz4j1m08vq15jjaiqw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-unreachable" ,rust-unreachable-1.0))
+       #:cargo-development-inputs
+       (("rust-rustc-version" ,rust-rustc-version-0.2))))
+    (home-page "https://github.com/Alexhuszagh/rust-stackvector")
+    (synopsis "Vector-like facade for stack-allocated arrays")
+    (description
+     "StackVec: vector-like facade for stack-allocated arrays.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-static-assertions-0.3
   (package
     (name "rust-static-assertions")
