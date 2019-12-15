@@ -7023,6 +7023,30 @@ endian-aware Read/Write traits for byte buffers.")
 Pwrite traits from the scroll crate.")
     (license license:expat)))
 
+(define-public rust-seahash-3.0
+  (package
+    (name "rust-seahash")
+    (version "3.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "seahash" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1pr8ijnxnp68ki4m4740yc5mr01zijf86yx07wbsqzwiyhghdmhq"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page
+     "https://gitlab.redox-os.org/redox-os/seahash")
+    (synopsis
+     "Hash function with proven statistical guarantees")
+    (description
+     "This package provides a blazingly fast, portable hash function with
+proven statistical guarantees.")
+    (license license:expat)))
+
 (define-public rust-security-framework-sys-0.3
   (package
     (name "rust-security-framework-sys")
