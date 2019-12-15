@@ -4671,7 +4671,7 @@ overview of tasks in a subtree.")
 (define-public emacs-org-trello
   (package
     (name "emacs-org-trello")
-    (version "0.8.0")
+    (version "0.8.1")
     (source
      (origin
        (method git-fetch)
@@ -4680,7 +4680,8 @@ overview of tasks in a subtree.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0m5hyhb6211hdmyp1bq6f3fklfgw3957knd96bfdafj727vdnlzm"))))
+        (base32
+         "02gx3kv4mkij69ln8x8wf9n28x17pbb4kv85v78d3lxph7ykqimc"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
