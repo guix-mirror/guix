@@ -899,6 +899,32 @@ archive to be linked into Rustcode.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-cexpr-0.3
+  (package
+    (name "rust-cexpr")
+    (version "0.3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cexpr" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1by64ini3f058pwad3immx5cc12wr0m0kwgaxa8apzym03mj9ym7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-nom" ,rust-nom-4.2))
+       #:cargo-development-inputs
+       (("rust-clang-sys" ,rust-clang-sys-0.28))))
+    (home-page "https://github.com/jethrogb/rust-cexpr")
+    (synopsis "C expression parser and evaluator")
+    (description
+     "This package provides a C expression parser and evaluator.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-chrono-0.4
   (package
     (name "rust-chrono")
