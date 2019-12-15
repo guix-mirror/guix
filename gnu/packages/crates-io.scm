@@ -7269,6 +7269,36 @@ attribute that is not in the shared backend crate.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-wasm-bindgen-test-0.2
+  (package
+    (name "rust-wasm-bindgen-test")
+    (version "0.2.48")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wasm-bindgen-test" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0gwslc2sfkghzzb3r0gvd8i5rig2nlqgpl1rn43y2w4mr1ci494k"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-console-error-panic-hook" ,rust-console-error-panic-hook-0.1)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-js-sys" ,rust-js-sys-0.3)
+        ("rust-scoped-tls" ,rust-scoped-tls-1.0)
+        ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
+        ("rust-wasm-bindgen-futures" ,rust-wasm-bindgen-futures-0.3)
+        ("rust-wasm-bindgen-test-macro" ,rust-wasm-bindgen-test-macro-0.2))))
+    (home-page "https://github.com/rustwasm/wasm-bindgen")
+    (synopsis "Internal testing crate for wasm-bindgen")
+    (description
+     "Internal testing crate for wasm-bindgen.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-wasm-bindgen-test-macro-0.2
   (package
     (name "rust-wasm-bindgen-test-macro")
