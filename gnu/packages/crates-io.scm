@@ -7133,6 +7133,35 @@ in Rust.")
      "Backend code generation of the wasm-bindgen tool.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-wasm-bindgen-macro-support-0.2
+  (package
+    (name "rust-wasm-bindgen-macro-support")
+    (version "0.2.48")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wasm-bindgen-macro-support" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1mxi6rj11k67sks88pfqiqylnijxmb1s0gcgpj8mzfj5gvkqzkwm"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-syn" ,rust-syn-0.15)
+        ("rust-wasm-bindgen-backend" ,rust-wasm-bindgen-backend-0.2)
+        ("rust-wasm-bindgen-shared" ,rust-wasm-bindgen-shared-0.2))))
+    (home-page "https://rustwasm.github.io/wasm-bindgen/")
+    (synopsis "The @code{#[wasm_bindgen]} macro")
+    (description
+     "The part of the implementation of the @code{#[wasm_bindgen]}
+attribute that is not in the shared backend crate.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-wasm-bindgen-shared-0.2
   (package
     (name "rust-wasm-bindgen-shared")
