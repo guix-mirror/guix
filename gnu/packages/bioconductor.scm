@@ -40,6 +40,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages xml)
   #:use-module (srfi srfi-1))
 
 
@@ -5625,6 +5626,53 @@ package.")
     (description
      "This package is designed to facilitate the automated gating methods in a
 sequential way to mimic the manual gating strategy.")
+    (license license:artistic2.0)))
+
+(define-public r-cytoml
+  (package
+    (name "r-cytoml")
+    (version "1.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "CytoML" version))
+       (sha256
+        (base32
+         "0m8x18wkvis85cawv7j07pk59w76wnzy93ia99gd24j82z4h97p1"))))
+    (properties `((upstream-name . "CytoML")))
+    (build-system r-build-system)
+    (inputs
+     `(("libxml2" ,libxml2)))
+    (propagated-inputs
+     `(("r-base64enc" ,r-base64enc)
+       ("r-bh" ,r-bh)
+       ("r-biobase" ,r-biobase)
+       ("r-corpcor" ,r-corpcor)
+       ("r-cytolib" ,r-cytolib)
+       ("r-data-table" ,r-data-table)
+       ("r-dplyr" ,r-dplyr)
+       ("r-flowcore" ,r-flowcore)
+       ("r-flowworkspace" ,r-flowworkspace)
+       ("r-ggcyto" ,r-ggcyto)
+       ("r-graph" ,r-graph)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-lattice" ,r-lattice)
+       ("r-ncdfflow" ,r-ncdfflow)
+       ("r-opencyto" ,r-opencyto)
+       ("r-plyr" ,r-plyr)
+       ("r-rbgl" ,r-rbgl)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppparallel" ,r-rcppparallel)
+       ("r-rgraphviz" ,r-rgraphviz)
+       ("r-rprotobuflib" ,r-rprotobuflib)
+       ("r-runit" ,r-runit)
+       ("r-xml" ,r-xml)
+       ("r-yaml" ,r-yaml)))
+    (home-page "https://github.com/RGLab/CytoML")
+    (synopsis "GatingML interface for cross platform cytometry data sharing")
+    (description
+     "This package provides an interface to implementations of the GatingML2.0
+standard to exchange gated cytometry data with other software platforms.")
     (license license:artistic2.0)))
 
 (define-public r-flowsom
