@@ -4340,6 +4340,42 @@ normally prevent moving a type that has been borrowed from.")
     (properties '((hidden? . #t)))
     (license license:expat)))
 
+(define-public rust-parking-lot-core-0.5
+  (package
+    (name "rust-parking-lot-core")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "parking_lot_core" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1317j5a1yd03baza2kqqrxb4kr1vxa7rckw4frksl2vrncfcp26b"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-backtrace" ,rust-backtrace-0.3)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-cloudabi" ,rust-cloudabi-0.0)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-petgraph" ,rust-petgraph-0.4)
+        ("rust-rand" ,rust-rand-0.4)
+        ("rust-redox-syscall" ,rust-redox-syscall-0.1)
+        ("rust-smallvec" ,rust-smallvec-0.6)
+        ("rust-thread-id" ,rust-thread-id-3.3)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-rustc-version" ,rust-rustc-version-0.2))))
+    (home-page "https://github.com/Amanieu/parking_lot")
+    (synopsis
+     "Advanced API for creating custom synchronization primitives")
+    (description
+     "An advanced API for creating custom synchronization primitives.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-parity-wasm-0.40
   (package
     (name "rust-parity-wasm")
