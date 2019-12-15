@@ -6538,6 +6538,34 @@ require unstable language features.")
 rustc compiler.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-rusty-fork-0.2
+  (package
+    (name "rust-rusty-fork")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rusty-fork" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1bjg8adk0i921088j52rn0hmvsry34q19g96x41pamqcw5j35n9x"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-fnv" ,rust-fnv-1.0)
+        ("rust-quick-error" ,rust-quick-error-1.2)
+        ("rust-tempfile" ,rust-tempfile-3.0)
+        ("rust-wait-timeout" ,rust-wait-timeout-0.2))))
+    (home-page "https://github.com/altsysrq/rusty-fork")
+    (synopsis "Library for running Rust tests in sub-processes")
+    (description
+     "Cross-platform library for running Rust tests in sub-processes
+using a fork-like interface.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-ryu-1.0
   (package
     (name "rust-ryu")
