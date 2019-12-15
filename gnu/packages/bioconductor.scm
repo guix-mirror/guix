@@ -1211,14 +1211,14 @@ browser.")
 (define-public r-oligoclasses
   (package
     (name "r-oligoclasses")
-    (version "1.46.0")
+    (version "1.48.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "oligoClasses" version))
        (sha256
         (base32
-         "0z86zrmn80kcy6fgb9i9zs82vhim73n8hlkqy7y8sbb2jwksdr72"))))
+         "02m1m3dkiyywalphw3i5n6y3bs8zp24xh59v9cz6jgjpah811skf"))))
     (properties `((upstream-name . "oligoClasses")))
     (build-system r-build-system)
     (propagated-inputs
