@@ -1894,14 +1894,14 @@ information.")
 (define-public r-rots
   (package
     (name "r-rots")
-    (version "1.12.0")
+    (version "1.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ROTS" version))
        (sha256
         (base32
-         "1j29pfyv2pn0wp544m5a568b3yd31kzavwwiwqylcjwvq5lfzy77"))))
+         "08mwlb0lpprys2b7vif8aj5bnprmn09mm79zz158gbhrv9j9d1qm"))))
     (properties `((upstream-name . "ROTS")))
     (build-system r-build-system)
     (propagated-inputs
