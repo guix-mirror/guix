@@ -6336,14 +6336,14 @@ same genome coordinate system.")
 (define-public r-wavetiling
   (package
     (name "r-wavetiling")
-    (version "1.26.0")
+    (version "1.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "waveTiling" version))
        (sha256
         (base32
-         "0l0saa0myabpq2rl9dq70zff8jpxr3mkanxlj65hc41f0m5xllir"))))
+         "0d7l559zlmly8mncmh1zhkqmsml0bwwfpm7ccp8l26y852vwf7hf"))))
     (properties `((upstream-name . "waveTiling")))
     (build-system r-build-system)
     (propagated-inputs
