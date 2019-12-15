@@ -131,6 +131,32 @@ text or blue underlined text, on ANSI terminals.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-approx-0.3
+  (package
+    (name "rust-approx")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "approx" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1hx580xjdxl3766js9b49rnbnmr8gw8c060809l43k9f0xshprph"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-num-complex" ,rust-num-complex-0.2)
+        ("rust-num-traits" ,rust-num-traits-0.2))))
+    (home-page "https://github.com/brendanzab/approx")
+    (synopsis
+     "Approximate floating point equality comparisons and assertions")
+    (description
+     "Approximate floating point equality comparisons and assertions.")
+    (license license:asl2.0)))
+
 (define-public rust-arrayvec-0.4
   (package
     (name "rust-arrayvec")
