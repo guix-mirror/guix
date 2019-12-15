@@ -2351,6 +2351,30 @@ encodings.")
 Standard.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-encoding-rs-io-0.1
+  (package
+    (name "rust-encoding-rs-io")
+    (version "0.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "encoding_rs_io" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0b7k9p7inkrcanh7h6q4m278y05gmcwi8p5r43h7grzl5dxfw6cn"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-encoding-rs" ,rust-encoding-rs-0.8))))
+    (home-page "https://github.com/BurntSushi/encoding_rs_io")
+    (synopsis "Streaming transcoding for encoding_rs")
+    (description
+     "Streaming transcoding for encoding_rs.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-env-logger-0.6
   (package
     (name "rust-env-logger")
