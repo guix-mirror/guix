@@ -6308,14 +6308,14 @@ populations, splice site strength, conservation, etc.")
 (define-public r-genomegraphs
   (package
     (name "r-genomegraphs")
-    (version "1.44.0")
+    (version "1.46.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "GenomeGraphs" version))
        (sha256
         (base32
-         "026skcn2cqchlzaqsnk11gb8d8aq1rz7lrnx4mmsba234mh4j7kd"))))
+         "05vavhz936v7cknig2f2mn3fd9fiy54r3swlvifpawramblp1ags"))))
     (properties `((upstream-name . "GenomeGraphs")))
     (build-system r-build-system)
     (propagated-inputs
