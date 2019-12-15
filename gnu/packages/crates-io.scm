@@ -1080,6 +1080,36 @@ It is inspired by the Linux kernel's @code{crypto_memneq}.")
      "Utilities for concurrent programming.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-csv-1.1
+  (package
+    (name "rust-csv")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "csv" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0qxvzq030hi915dszazv6a7f0apzzi7gn193ni0g2lzkawjxck55"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bstr" ,rust-bstr-0.2)
+        ("rust-csv-core" ,rust-csv-core-0.1)
+        ("rust-itoa" ,rust-itoa-0.4)
+        ("rust-ryu" ,rust-ryu-1.0)
+        ("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-serde" ,rust-serde-1.0))))
+    (home-page "https://github.com/BurntSushi/rust-csv")
+    (synopsis "Fast CSV parsing with support for serde")
+    (description
+     "Fast CSV parsing with support for serde.")
+    (license (list license:unlicense license:expat))))
+
 (define-public rust-csv-core-0.1
   (package
     (name "rust-csv-core")
