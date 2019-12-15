@@ -6640,6 +6640,35 @@ serializing Rust structures.")
     (properties '((hidden? . #t)))
     (license license:expat)))
 
+(define-public rust-trybuild-1.0
+  (package
+    (name "rust-trybuild")
+    (version "1.0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "trybuild" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0df6ipayif05xn61iavdb0dcshm9y6wmcd140pp7dl91mirygs7j"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-glob" ,rust-glob-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0)
+        ("rust-termcolor" ,rust-termcolor-1.0)
+        ("rust-toml" ,rust-toml-0.5))))
+    (home-page "https://github.com/dtolnay/trybuild")
+    (synopsis "Test harness for ui tests of compiler diagnostics")
+    (description
+     "Test harness for ui tests of compiler diagnostics.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-typeable-0.1
   (package
     (name "rust-typeable")
