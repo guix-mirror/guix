@@ -2068,6 +2068,30 @@ char, u8 and u16.")
 encodings.")
     (license license:cc0)))
 
+(define-public rust-encoding-index-tradchinese-1.20141219
+  (package
+    (name "rust-encoding-index-tradchinese")
+    (version "1.20141219.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "encoding-index-tradchinese" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "060ci4iz6xfvzk38syfbjvs7pix5hch3mvxkksswmqwcd3aj03px"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-encoding-index-tests" ,rust-encoding-index-tests-0.1))))
+    (home-page "https://github.com/lifthrasiir/rust-encoding")
+    (synopsis "Index tables for traditional Chinese character encodings")
+    (description
+     "Index tables for traditional Chinese character encodings.")
+    (license license:cc0)))
+
 (define-public rust-env-logger-0.6
   (package
     (name "rust-env-logger")
