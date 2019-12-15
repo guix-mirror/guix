@@ -5020,14 +5020,14 @@ routines to analyse the resulting networks and their natural projections.")
 (define-public r-birta
   (package
     (name "r-birta")
-    (version "1.28.0")
+    (version "1.30.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "birta" version))
        (sha256
         (base32
-         "12xjyvgmh4h0b7hi4qg50kcpb9003gnh2xyfgncb8l9mzvsbkxc2"))))
+         "1zhlwapdgkz0fpv5bqfxh9aw6ymnmxnnm1r0n0kfzn5izyjavslg"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
