@@ -5231,6 +5231,36 @@ normally prevent moving a type that has been borrowed from.")
     (properties '((hidden? . #t)))
     (license license:expat)))
 
+(define-public rust-packed-simd-0.3
+  (package
+    (name "rust-packed-simd")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "packed_simd" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0822wqf6kzw4ig9ykndg348w2bxkhs3x64brzsvdxh2a1pyajpm8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-core-arch" ,rust-core-arch-0.1)
+        ("rust-sleef-sys" ,rust-sleef-sys-0.1))
+       #:cargo-development-inputs
+       (("rust-arrayvec" ,rust-arrayvec-0.4)
+        ("rust-paste" ,rust-paste-0.1)
+        ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
+        ("rust-wasm-bindgen-test" ,rust-wasm-bindgen-test-0.2))))
+    (home-page "https://github.com/rust-lang/packed_simd")
+    (synopsis "Portable Packed SIMD vectors")
+    (description "Portable Packed SIMD vectors.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-parking-lot-0.8
   (package
     (name "rust-parking-lot")
