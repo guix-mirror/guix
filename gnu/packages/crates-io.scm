@@ -929,6 +929,32 @@ It is inspired by the Linux kernel's @code{crypto_memneq}.")
     (properties '((hidden? . #t)))
     (license license:cc0)))
 
+(define-public rust-core-arch-0.1
+  (package
+    (name "rust-core-arch")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "core_arch" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "04vdvr9vj0f1cv2p54nsszmrrk9w1js4c0z4i0bdlajl1lydslim"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-development-inputs
+       (("rust-wasm-bindgen-test" ,rust-wasm-bindgen-test-0.2))))
+    (home-page "https://github.com/rust-lang/stdarch")
+    (synopsis
+     "Rust's core library architecture-specific intrinsics")
+    (description
+     "@code{core::arch} - Rust's core library architecture-specific
+intrinsics.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-core-foundation-sys-0.6
   (package
     (name "rust-core-foundation-sys")
