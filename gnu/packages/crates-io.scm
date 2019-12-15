@@ -2056,6 +2056,27 @@ is configured via an environment variable.")
      "Type-erased Serialize and Serializer traits.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-fake-simd-0.1
+  (package
+    (name "rust-fake-simd")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "fake-simd" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vfylvk4va2ivqx85603lyqqp0zk52cgbs4n5nfbbbqx577qm2p8"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/RustCrypto/utils")
+    (synopsis "Crate for mimicking simd crate on stable Rust")
+    (description
+     "Crate for mimicking simd crate on stable Rust.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-failure-0.1
   (package
     (name "rust-failure")
