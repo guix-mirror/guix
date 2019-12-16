@@ -462,19 +462,14 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
        ("python-dateutil", python-dateutil)
        ("python-dnspython", python-dnspython)))
     (arguments
-     `(#:tests? #f ;; package doesn't have any tests
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'use-libsecp256k1-input
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "lib/secp256k1.py"
-               (("library_paths = .* 'libsecp256k1.so.0'.")
-                (string-append "library_paths = ('" (assoc-ref inputs "libsecp256k1") "/lib/libsecp256k1.so.0'")))))
-         (add-before 'build 'patch-home
-           (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "setup.py"
-               (("~/.local/share")
-                (string-append (assoc-ref outputs "out") "/local/share"))))))))
+     (substitute-keyword-arguments (package-arguments electrum)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'use-libsecp256k1-input
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "lib/secp256k1.py"
+                 (("library_paths = .* 'libsecp256k1.so.0'.")
+                  (string-append "library_paths = ('" (assoc-ref inputs "libsecp256k1") "/lib/libsecp256k1.so.0'")))))))))
     (home-page "https://electroncash.org/")
     (synopsis "Bitcoin Cash wallet")
     (description
