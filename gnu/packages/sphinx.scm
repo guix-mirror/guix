@@ -11,6 +11,7 @@
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -565,3 +566,26 @@ and several other projects.")
     (description "This package is an extension to reStructuredText and Sphinx
 to be able to read and render the Doxygen xml output.")
     (license license:bsd-3)))
+
+(define-public python-sphinx-intl
+  (package
+    (name "python-sphinx-intl")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sphinx-intl" version))
+       (sha256
+        (base32
+         "0zbf1bh23b3kza8bnjykmv2k21xmmr4gamhi3lnicnr6ypnrphr5"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-sphinx" ,python-sphinx)
+       ("python-click" ,python-click)))
+    (home-page "https://github.com/sphinx-doc/sphinx-intl")
+    (synopsis
+     "Sphinx utility that makes it easy to translate and to apply translation")
+    (description
+     "A utility tool that provides several features that make it easy to
+translate and to apply translation to Sphinx generated document.")
+    (license license:bsd-2)))
