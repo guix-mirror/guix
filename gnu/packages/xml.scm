@@ -228,7 +228,8 @@ project (but it is usable outside of the Gnome platform).")
     (inputs `(("libgcrypt" ,libgcrypt)
               ("libxml2" ,libxml2)
               ("python" ,python-minimal-wrapper)
-              ("zlib" ,zlib)))
+              ("zlib" ,zlib)
+              ("xz" ,xz)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (description
