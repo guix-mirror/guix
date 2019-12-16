@@ -1078,6 +1078,13 @@ at login.  Local and dynamic reconfiguration are its key features.")
       (sha256
        (base32 "16i7qzjmm6g0lzha8yzpfrlcxnvkgh95hkq9gdjd4zmzb8d0wxa1"))))
     (build-system gnu-build-system)
+    (arguments
+     `(,@(if (%current-target-system)
+             '(#:configure-flags
+               (list
+                "ac_cv_func_malloc_0_nonnull=yes"
+                "ac_cv_func_realloc_0_nonnull=yes"))
+             '())))
     (inputs `(("ncurses" ,ncurses)))
     (home-page "https://gitlab.com/psmisc/psmisc")
     (synopsis "Small utilities that use the proc file system")
