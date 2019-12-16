@@ -313,7 +313,7 @@ tools (containers, algorithms) used by other QuantStack packages.")
        (list (string-append "-DCMAKE_CXX_FLAGS='-isystem "
                             (assoc-ref %build-inputs "gcc")
                             "/include/c++'"))))
-     (inputs
+    (inputs
      `(("clang" ,clang)
        ("ncurses" ,ncurses)))
     (native-inputs
