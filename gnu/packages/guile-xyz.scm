@@ -2002,59 +2002,67 @@ The picture values can directly be displayed in Geiser.")
       (license license:lgpl3+))))
 
 (define-public guile-studio
-  (let ((commit "98fbbbd08de396cd8a0e45f2a4badf1c733a5772")
-        (revision "3"))
-    (package
-      (name "guile-studio")
-      (version (git-version "0.0.1" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://git.elephly.net/software/guile-studio.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0rxl5gv2mavycwkl33lcwyb3z71j2f4zyzk60k7vl3hzszpr08iq"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:tests? #f                      ; there are none
-         #:make-flags
-         (list (string-append "ICONS_DIR="
-                              (assoc-ref %build-inputs "adwaita-icon-theme")
-                              "/share/icons/Adwaita/")
-               (string-append "PICT_DIR="
-                              (assoc-ref %build-inputs "guile-picture-language"))
-               (string-append "EMACS_DIR="
-                              (assoc-ref %build-inputs "emacs"))
-               (string-append "GUILE_DIR="
-                              (assoc-ref %build-inputs "guile"))
-               (string-join (cons "INPUTS=" (map cdr %build-inputs)))
-               (string-append "PREFIX=" (assoc-ref %outputs "out")))
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (delete 'install))))
-      (inputs
-       `(("guile" ,guile-2.2)
-         ("guile-picture-language" ,guile-picture-language)
-         ("emacs" ,emacs)
-         ("emacs-geiser" ,emacs-geiser)
-         ("emacs-company" ,emacs-company)
-         ("emacs-flycheck" ,emacs-flycheck)
-         ("emacs-smart-mode-line" ,emacs-smart-mode-line)
-         ("emacs-paren-face" ,emacs-paren-face)
-         ("adwaita-icon-theme" ,adwaita-icon-theme)))
-      (native-inputs
-       `(("texinfo" ,texinfo)))
-      (home-page "https://gnu.org/software/guile")
-      (synopsis "IDE for Guile")
-      (description
-       "This is Emacs with a few settings that make working with Guile easier
+  (package
+    (name "guile-studio")
+    (version "0.0.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.elephly.net/software/guile-studio.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "10ls4ra148hd9ra7sin4kh9vv0am5pwk48p7dsjhrlg2l1hsh4hi"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules
+       ((ice-9 match)
+        (srfi srfi-1)
+        ,@%gnu-build-system-modules)
+       #:tests? #f                    ; there are none
+       #:make-flags
+       (list (string-append "ICONS_DIR="
+                            (assoc-ref %build-inputs "adwaita-icon-theme")
+                            "/share/icons/Adwaita/")
+             (string-append "PICT_DIR="
+                            (assoc-ref %build-inputs "guile-picture-language"))
+             (string-append "EMACS_DIR="
+                            (assoc-ref %build-inputs "emacs"))
+             (string-append "GUILE_DIR="
+                            (assoc-ref %build-inputs "guile"))
+             (string-join (cons "INPUTS="
+                                (filter-map
+                                 (lambda (input)
+                                   (match input
+                                     ((label . pkg)
+                                      (and (string-prefix? "emacs" label) pkg))))
+                                 %build-inputs)))
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'install))))
+    (inputs
+     `(("guile" ,guile-2.2)
+       ("guile-picture-language" ,guile-picture-language)
+       ("emacs" ,emacs)
+       ("emacs-geiser" ,emacs-geiser)
+       ("emacs-company" ,emacs-company)
+       ("emacs-flycheck" ,emacs-flycheck)
+       ("emacs-smart-mode-line" ,emacs-smart-mode-line)
+       ("emacs-paren-face" ,emacs-paren-face)
+       ("adwaita-icon-theme" ,adwaita-icon-theme)))
+    (native-inputs
+     `(("texinfo" ,texinfo)))
+    (home-page "https://gnu.org/software/guile")
+    (synopsis "IDE for Guile")
+    (description
+     "This is Emacs with a few settings that make working with Guile easier
 for people new to Emacs.  Features include: CUA mode, Geiser, tool bar icons
 to evaluate Guile buffers, support for Guile's very own picture language, code
 completion, a simple mode line, etc.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public guile-stis-parser
   (let ((commit "6e85d37ffc333b722f4413a6c648263701eb75bd")
