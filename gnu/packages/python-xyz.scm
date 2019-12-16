@@ -15965,9 +15965,6 @@ larger-than-memory or distributed environments.  These parallel collections
 run on top of the dynamic task schedulers. ")
     (license license:bsd-3)))
 
-(define-public python2-dask
-  (package-with-python2 python-dask))
-
 (define-public python-ilinkedlist
   (package
     (name "python-ilinkedlist")
