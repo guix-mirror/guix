@@ -15890,6 +15890,28 @@ append on old values.  Partd excels at shuffling operations.")
 (define-public python2-partd
   (package-with-python2 python-partd))
 
+(define-public python-fsspec
+  (package
+    (name "python-fsspec")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "fsspec" version))
+       (sha256
+        (base32
+         "1g9ba8v04s1nrh7pvzfm2md7ivl2mrz3hcq3y9d1a44gd62h17zj"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f))          ; there are none
+    (home-page "https://github.com/intake/filesystem_spec")
+    (synopsis "File-system specification")
+    (description "The purpose of this package is to produce a template or
+specification for a file-system interface, that specific implementations
+should follow, so that applications making use of them can rely on a common
+behavior and not have to worry about the specific internal implementation
+decisions with any given backend.")
+    (license license:bsd-3)))
+
 (define-public python-dask
   (package
     (name "python-dask")
