@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages pkg-config)
@@ -42,12 +44,26 @@
                 "1wwkpglvvr1sdj2gxz9khq507y02c4px48njy25divzdhv4jwifv"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              ;; There's no 'configure' script, just a raw makefile.
              (substitute* "Makefile"
+               ,@(if (%current-target-system)
+                     `((("^CROSS_COMPILE=.*$")
+                        (string-append "CROSS_COMPILE="
+                                       ,(%current-target-system) "-"
+                                       "\n"))
+                       (("^HOST=.*$")
+                        (string-append "HOST="
+                                       ,(gnu-triplet->nix-system
+                                         (%current-target-system)) "\n"))
+                       ;; Disable 'install' strip option, that would fail when
+                       ;; we are cross-compiling.
+                       (("^STRIP=.*$")
+                        "STRIP=\n"))
+                     '())
                (("^PREFIX=.*$")
                 (string-append "PREFIX := " (assoc-ref outputs "out")
                                "\n"))
