@@ -225,7 +225,7 @@
   (package
     (inherit gash-core-utils)
     (name "gash-core-utils-boot")
-    (version "0.0.213-3f6eb")
+    (version "0.0.214-fc1b")
     (source (bootstrap-origin
              (origin
                (method url-fetch)
@@ -243,7 +243,7 @@
                    #t))
                (sha256
                 (base32
-                 "0601c9hqbjrjjsllr2m3zmkglkd53d97in7a5c22ikd8islddp76")))))
+                 "090d8m0b165jf9381nhqpljc5zk22jd6bw03xnyf0na5snk9xp6v")))))
     (build-system guile-build-system)
     (native-inputs `(("bash" ,(bootstrap-executable "bash" (%current-system)))
                      ("tar" ,(bootstrap-executable "tar" (%current-system)))
