@@ -20081,29 +20081,27 @@ Google guidelines.")
       (license license:gpl3+))))
 
 (define-public emacs-helm-fish-completion
-  (let ((commit "ef764dd123040fe67ef8b62a1c13842e940b0963")
-        (revision "1"))
-    (package
-      (name "emacs-helm-fish-completion")
-      (version (git-version "0.1" revision commit))
-      (home-page "https://github.com/emacs-helm/helm-fish-completion")
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url home-page)
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0k80kpapwfq2rv1lb0r994d0w6czl92xrmnkmrg0a05f4b3q0lb4"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("helm" ,emacs-helm)
-         ("fish-completion" ,emacs-fish-completion)))
-      (synopsis "Helm interface for Emacs fish-completion")
-      (description "Helm Fish Completion is a Helm interface for Emacs
+  (package
+    (name "emacs-helm-fish-completion")
+    (version "0.2")
+    (home-page "https://github.com/emacs-helm/helm-fish-completion")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "089gp2k22xwn33z8brpyb7r18vpyralq2cwxj1xsc8b2sj9s4896"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("helm" ,emacs-helm)
+       ("fish-completion" ,emacs-fish-completion)))
+    (synopsis "Helm interface for Emacs fish-completion")
+    (description "Helm Fish Completion is a Helm interface for Emacs
 fish-completion.  It can be used in both Eshell and M-x shell.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-telega
   ;; This package has versions newer than indicated on MELPA.
