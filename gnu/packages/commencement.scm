@@ -728,7 +728,7 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
          ;; no gzip yet
          (delete 'compress-documentation))))))
 
-(define make-mesboot0
+(define gnu-make-mesboot0
   ;; The initial make
   (package
     (inherit gnu-make)
@@ -784,7 +784,7 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
                (install-file "make" bin)))))))))
 
 (define (%boot-tcc0-inputs)
-  `(("make" ,make-mesboot0)
+  `(("make" ,gnu-make-mesboot0)
     ("tcc" ,tcc-boot0)
     ,@(%boot-gash-inputs)))
 
