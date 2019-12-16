@@ -2071,8 +2071,18 @@ configuration and monitoring interfaces.")
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("libnl" ,libnl)))
     (arguments
-     `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-                          "CC=gcc")
+     `(#:make-flags
+       (let* ((target ,(%current-target-system))
+              (gcc (if target (string-append target "-gcc") "gcc"))
+              (pkg-config (if target
+                              (string-append target "-pkg-config")
+                              "pkg-config")))
+         (list
+          (string-append "CC=" gcc)
+          (string-append "PKG_CONFIG="
+                         (assoc-ref %build-inputs "pkg-config")
+                         "/bin/" pkg-config)
+          (string-append "PREFIX=" (assoc-ref %outputs "out"))))
        #:phases (modify-phases %standard-phases (delete 'configure))))
     (home-page "https://wireless.wiki.kernel.org/")
     (synopsis "Tool for configuring wireless devices")
