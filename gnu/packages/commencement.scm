@@ -1787,7 +1787,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
          "ac_cv_func_gethostbyname=no"
          "gl_cv_func_rename_dest_works=yes")))))
 
-(define make-mesboot
+(define gnu-make-mesboot
   (package
     (inherit gnu-make)
     (name "make-mesboot")
@@ -1964,7 +1964,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
     ("coreutils" ,coreutils-mesboot0)
     ("gawk" ,gawk-mesboot)
     ("grep" ,grep-mesboot)
-    ("make" ,make-mesboot)
+    ("make" ,gnu-make-mesboot)
     ("sed" ,sed-mesboot)
     ("tar" ,tar-mesboot)
     ,@(fold alist-delete (%boot-mesboot0-inputs)
