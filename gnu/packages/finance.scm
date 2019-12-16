@@ -445,28 +445,36 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
   (package
     (inherit electrum)
     (name "electron-cash")
-    (version "4.0.10")
+    (version "4.0.12")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://electroncash.org/downloads/"
-                           version
-                           "/win-linux/Electron-Cash-"
-                           version
-                           ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Electron-Cash/Electron-Cash.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1rcywlma6hk52ymisx536jvkdwa73rhn1jxhsbs4wbvajl90w9s8"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; Delete the bundled dependencies.
-           (delete-file-recursively "packages")
-           #t))))
+         "0gidrx8499v7rig7ljhd70wssshs1qm0gp1553g70i323hcbf62x"))))
     (inputs
      `(,@(package-inputs electrum)
+       ("libsecp256k1", libsecp256k1)
        ("python-dateutil", python-dateutil)
        ("python-dnspython", python-dnspython)))
+    (arguments
+     `(#:tests? #f ;; package doesn't have any tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-libsecp256k1-input
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "lib/secp256k1.py"
+               (("library_paths = .* 'libsecp256k1.so.0'.")
+                (string-append "library_paths = ('" (assoc-ref inputs "libsecp256k1") "/lib/libsecp256k1.so.0'")))))
+         (add-before 'build 'patch-home
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "setup.py"
+               (("~/.local/share")
+                (string-append (assoc-ref outputs "out") "/local/share"))))))))
     (home-page "https://electroncash.org/")
     (synopsis "Bitcoin Cash wallet")
     (description
