@@ -15384,3 +15384,54 @@ methylation metrics from them.  MethylDackel requires an indexed fasta file
 containing the reference genome as well.")
     ;; See https://github.com/dpryan79/MethylDackel/issues/85
     (license license:expat)))
+
+(define-public python-gffutils
+  ;; The latest release is older more than a year than the latest commit
+  (let ((commit "4034c54600813b1402945e12faa91b3a53162cf1")
+        (revision "1"))
+    (package
+      (name "python-gffutils")
+      (version (git-version "0.9" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/daler/gffutils.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1rwafjdnbir5wnk0ap06ww4lra3p5frhy7mfs03rlldgfnwxymsn"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda _
+               ;; Tests need to access the HOME directory
+               (setenv "HOME" "/tmp")
+               (invoke "nosetests" "-a" "!slow")))
+           (add-after 'unpack 'make-gz-files-writable
+             (lambda _
+               (for-each make-file-writable
+                         (find-files "." "\\.gz"))
+               #t)))))
+      (propagated-inputs
+       `(("python-argcomplete" ,python-argcomplete)
+         ("python-argh" ,python-argh)
+         ("python-biopython" ,python-biopython)
+         ("python-pybedtools" ,python-pybedtools)
+         ("python-pyfaidx" ,python-pyfaidx)
+         ("python-simplejson" ,python-simplejson)
+         ("python-six" ,python-six)))
+      (native-inputs
+       `(("python-nose" , python-nose)))
+      (home-page "https://github.com/daler/gffutils")
+      (synopsis "Tool for manipulation of GFF and GTF files")
+      (description
+       "python-gffutils is a Python package for working with and manipulating the
+GFF and GTF format files typically used for genomic annotations.  The files are
+loaded into a sqlite3 database, allowing much more complex manipulation of
+hierarchical features (e.g., genes, transcripts, and exons) than is possible
+with plain-text methods alone.")
+      (license license:expat)))) ;; MIT license
