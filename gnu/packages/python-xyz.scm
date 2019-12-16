@@ -67,6 +67,7 @@
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2019 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -16786,3 +16787,42 @@ services to what you expect in your tests.")
 
 (define-public python2-ujson
   (package-with-python2 python-ujson))
+
+(define-public python-iocapture
+  ;; The latest release is more than a year older than this commit.
+  (let ((commit "fdc021c431d0840303908dfc3ca8769db383595c")
+        (revision "1"))
+    (package
+      (name "python-iocapture")
+      (version "0.1.2")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/oinume/iocapture.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1mkbhqibxvgwg0p7slr8dfraa3g2s6bsayladhax2jccwj4kcndz"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (delete 'check)
+           (add-after 'install 'check
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (add-installed-pythonpath inputs outputs)
+               (invoke "py.test" "-v" "tests")
+               #t)))))
+      (propagated-inputs
+       `(("python-flexmock" ,python-flexmock)
+         ("python-pytest" ,python-pytest)
+         ("python-pytest-cov" ,python-pytest-cov)
+         ("python-six" ,python-six)))
+      (home-page "https://github.com/oinume/iocapture")
+      (synopsis "Python capturing tool for stdout and stderr")
+      (description
+       "This package helps you to capture the standard out (stdout) and the
+standard error channel (stderr) in your program.")
+      (license license:expat))))
