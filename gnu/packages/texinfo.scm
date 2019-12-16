@@ -3,7 +3,6 @@
 ;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -115,32 +114,32 @@ is on expressing the content semantically, avoiding physical markup commands.")
     (inherit texinfo)
     (name "info-reader")
     (arguments
-     `(,@(substitute-keyword-arguments (package-arguments texinfo)
-           ((#:phases phases)
-            `(modify-phases ,phases
-               (add-after 'install 'keep-only-info-reader
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; Remove everything but 'bin/info' and associated
-                   ;; files.
-                   (define (files)
-                     (scandir "." (lambda (file)
-                                    (not (member file '("." ".."))))))
-
-                   (let ((out (assoc-ref outputs "out")))
-                     (with-directory-excursion out
-                       (for-each delete-file-recursively
-                                 (fold delete (files) '("bin" "share"))))
-                     (with-directory-excursion (string-append out "/bin")
-                       (for-each delete-file (delete "info" (files))))
-                     (with-directory-excursion (string-append out "/share")
-                       (for-each delete-file-recursively
-                                 (fold delete (files)
-                                       '("info" "locale"))))
-                     #t))))))
-       #:disallowed-references ,(assoc-ref (package-inputs texinfo)
+     `(#:disallowed-references ,(assoc-ref (package-inputs texinfo)
                                            "perl")
+
        #:modules ((ice-9 ftw) (srfi srfi-1)
-                  ,@%gnu-build-system-modules)))
+                  ,@%gnu-build-system-modules)
+
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'keep-only-info-reader
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Remove everything but 'bin/info' and associated
+                      ;; files.
+                      (define (files)
+                        (scandir "." (lambda (file)
+                                       (not (member file '("." ".."))))))
+
+                      (let ((out (assoc-ref outputs "out")))
+                        (with-directory-excursion out
+                          (for-each delete-file-recursively
+                                    (fold delete (files) '("bin" "share"))))
+                        (with-directory-excursion (string-append out "/bin")
+                          (for-each delete-file (delete "info" (files))))
+                        (with-directory-excursion (string-append out "/share")
+                          (for-each delete-file-recursively
+                                    (fold delete (files)
+                                          '("info" "locale"))))
+                        #t))))))
     (synopsis "Standalone Info documentation reader")))
 
 (define-public texi2html
