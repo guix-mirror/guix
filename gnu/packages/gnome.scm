@@ -9037,3 +9037,58 @@ tile-matching game Mahjong.  It features multiple board layouts, tile themes,
 and a high score table.")
     (home-page "https://wiki.gnome.org/Apps/Mahjongg")
     (license license:gpl2+)))
+
+(define-public polari
+  (package
+    (name "polari")
+    (version "3.32.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/polari/"
+                                  (version-major+minor version)
+                                  "/polari-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0h0w9j3y067l911gpj446b3a2w1i2vzr1w2a7cz7i5rhn6qkf2sp"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           (lambda _
+             (substitute* "meson/meson-postinstall.sh"
+               (("gtk-update-icon-cache") (which "true")))
+             #t))
+         (add-after 'glib-or-gtk-wrap 'wrap-typelib
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((prog (string-append (assoc-ref outputs "out")
+                                        "/bin/polari")))
+               (wrap-program prog
+                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
+               #t))))))
+    (inputs
+     `(("glib" ,glib)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gspell" ,gspell)
+       ("gtk+" ,gtk+)
+       ("gjs" ,gjs)
+       ("libsecret" ,libsecret)
+       ("libsoup" ,libsoup)
+       ("telepathy-glib" ,telepathy-glib)
+       ("telepathy-logger" ,telepathy-logger)))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("yelp-tools" ,yelp-tools)))
+    (propagated-inputs
+     `(("telepathy-idle" ,telepathy-idle)
+       ("telepathy-mission-control" ,telepathy-mission-control)))
+    (synopsis "Simple IRC Client")
+    (description
+     "Polari is a simple Internet Relay Chat (IRC) client that is designed to
+integrate seamlessly with the GNOME desktop.")
+    (home-page "https://wiki.gnome.org/Apps/Polari")
+    (license license:gpl2+)))
