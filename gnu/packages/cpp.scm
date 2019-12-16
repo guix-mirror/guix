@@ -6,6 +6,7 @@
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
+;;; Copyright © 2019 Brett Gilio <brettg@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,7 +36,9 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages code)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tls)
@@ -305,12 +308,17 @@ tools (containers, algorithms) used by other QuantStack packages.")
        (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f)) ; no check target.
-    (inputs
-     `(("rapidjson" ,rapidjson)))
-    (native-inputs
+     `(#:tests? #f ; no check target.
+       #:configure-flags
+       (list (string-append "-DCMAKE_CXX_FLAGS='-isystem "
+                            (assoc-ref %build-inputs "gcc")
+                            "/include/c++'"))))
+     (inputs
      `(("clang" ,clang)
-       ("llvm" ,llvm)))
+       ("ncurses" ,ncurses)))
+    (native-inputs
+     `(("rapidjson" ,rapidjson)
+       ("gcc" ,gcc)))
     (home-page "https://github.com/MaskRay/ccls")
     (synopsis "C/C++/Objective-C language server")
     (description
