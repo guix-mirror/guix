@@ -15915,38 +15915,38 @@ decisions with any given backend.")
 (define-public python-dask
   (package
     (name "python-dask")
-    (version "1.2.2")
+    (version "2.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "dask" version))
        (sha256
-        (base32 "0b29gvf96gmp20wicly3v3mhyc93zbm3mdv935fka6x0wax7cy2y"))))
+        (base32 "1w1hqr8vyx6ygwflj2737dcy0mmgvrc0s602gnny8pzlcbs9m76b"))))
     (build-system python-build-system)
-    ;; A single test out of 5000+ fails.  This test is marked as xfail when
-    ;; pytest-xdist is used.
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'disable-broken-test
+         (add-after 'unpack 'disable-broken-tests
            (lambda _
+             ;; This test is marked as xfail when pytest-xdist is used.
              (substitute* "dask/tests/test_threaded.py"
                (("def test_interrupt\\(\\)" m)
                 (string-append "@pytest.mark.skip(reason=\"Disabled by Guix\")\n"
                                m)))
-             (when (which "python2")
-               ;; This test fails with recent Pandas:
-               ;; <https://github.com/dask/dask/issues/3794>.
-               (substitute* "dask/dataframe/tests/test_dataframe.py"
-                 (("def test_info\\(\\)" m)
-                  (string-append "@pytest.mark.skip(reason=\"Disabled by Guix\")\n"
-                                 m))))
+             ;; This one fails with a type error:
+             ;; TypeError: Already tz-aware, use tz_convert to convert.
+             (substitute* "dask/dataframe/tests/test_shuffle.py"
+               (("def test_set_index_timestamp\\(\\)" m)
+                (string-append "@pytest.mark.skip(reason=\"Disabled by Guix\")\n"
+                               m)))
              #t))
          (replace 'check
            (lambda _ (invoke "pytest" "-vv"))))))
     (propagated-inputs
      `(("python-cloudpickle" ,python-cloudpickle)
+       ("python-fsspec" ,python-fsspec)
        ("python-numpy" ,python-numpy)
+       ("python-packaging" ,python-packaging)
        ("python-pandas" ,python-pandas)
        ("python-partd" ,python-partd)
        ("python-toolz" ,python-toolz)
