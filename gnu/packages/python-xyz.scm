@@ -16826,3 +16826,39 @@ services to what you expect in your tests.")
        "This package helps you to capture the standard out (stdout) and the
 standard error channel (stderr) in your program.")
       (license license:expat))))
+
+(define-public python-argh
+  ;; There are 21 commits since the latest release containing important
+  ;; improvements.
+  (let ((commit "dcd3253f2994400a6a58a700c118c53765bc50a4")
+        (revision "1"))
+    (package
+      (name "python-argh")
+      (version (git-version "0.26.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/neithere/argh.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1p5h3dnpbsjmqrvil96s71asc6i3gpinmbrabqmwnrsxprz7r3ns"))))
+      (build-system python-build-system)
+      (propagated-inputs
+       `(("python-iocapture" ,python-iocapture)
+         ("python-mock" ,python-mock)
+         ("python-pytest" ,python-pytest)
+         ("python-pytest-cov" ,python-pytest-cov)
+         ("python-pytest-xdist" ,python-pytest-xdist)
+         ("python-tox" ,python-tox)))
+      (home-page "https://github.com/neithere/argh/")
+      (synopsis "Argparse wrapper with natural syntax")
+      (description
+       "python-argh is a small library that provides several layers of
+abstraction on top of @code{python-argparse}.  The layers can be mixed.  It is
+always possible to declare a command with the highest possible (and least
+flexible) layer and then tune the behaviour with any of the lower layers
+including the native API of @code{python-argparse}.")
+      (license license:lgpl3+))))
