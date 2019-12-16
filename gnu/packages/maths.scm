@@ -6355,3 +6355,50 @@ correct-by-construction OCaml programs through an automated extraction
 mechanism.  WhyML is also used as an intermediate language for the verification
 of C, Java, or Ada programs.")
     (license license:lgpl2.1)))
+
+(define-public frama-c
+  (package
+    (name "frama-c")
+    (version "22.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://frama-c.com/download/frama-c-"
+                                  version "-Titanium.tar.gz"))
+              (sha256
+               (base32
+                "1mq1fijka95ydrla486yr4w6wdl9l7vmp512s1q00b0p6lmfwmkh"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:tests? #f; no test target in Makefile
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'export-shell
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CONFIG_SHELL" (string-append (assoc-ref inputs "bash")
+                                                   "/bin/sh"))
+             #t)))))
+    (inputs
+     `(("gmp" ,gmp)))
+    (propagated-inputs
+     `(("ocaml-biniou" ,ocaml-biniou)
+       ("ocaml-easy-format" ,ocaml-easy-format)
+       ("ocaml-graph" ,ocaml-graph)
+       ("ocaml-yojson" ,ocaml-yojson)
+       ("ocaml-zarith" ,ocaml-zarith)
+       ("why3" ,why3)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "FRAMAC_SHARE")
+            (files '("share/frama-c"))
+            (separator #f))
+           (search-path-specification
+            (variable "FRAMAC_LIB")
+            (files '("lib/frama-c"))
+            (separator #f))))
+    (home-page "http://frama-c.com")
+    (synopsis "C source code analysis platform")
+    (description "Frama-C is an extensible and collaborative platform dedicated
+to source-code analysis of C software.  The Frama-C analyzers assist you in
+various source-code-related activities, from the navigation through unfamiliar
+projects up to the certification of critical software.")
+    (license license:lgpl2.1+)))
