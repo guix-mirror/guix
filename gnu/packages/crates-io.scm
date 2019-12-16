@@ -10139,6 +10139,36 @@ in Rust.")
      "Bridging the gap between Rust Futures and JavaScript Promises.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-wasm-bindgen-macro-0.2
+  (package
+    (name "rust-wasm-bindgen-macro")
+    (version "0.2.48")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wasm-bindgen-macro" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "07fqzzlbncccmnxbbkg9v4n53qc1lps5g0bb9wq3i9zp9gvm0zgh"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-quote" ,rust-quote-1.0)
+        ("rust-wasm-bindgen-macro-support"
+         ,rust-wasm-bindgen-macro-support-0.2))
+       #:cargo-development-inputs
+       (("rust-trybuild" ,rust-trybuild-1.0)
+        ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2))))
+    (home-page "https://rustwasm.github.io/wasm-bindgen/")
+    (synopsis "Definition of the @code{#[wasm_bindgen]} attribute")
+    (description
+     "Definition of the @code{#[wasm_bindgen]} attribute, an internal
+dependency.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-wasm-bindgen-macro-support-0.2
   (package
     (name "rust-wasm-bindgen-macro-support")
