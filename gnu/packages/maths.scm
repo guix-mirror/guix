@@ -28,7 +28,7 @@
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
 ;;; Copyright © 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Eric Brown <brown@fastmail.com>
-;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2018, 2021 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Amin Bandali <bandali@gnu.org>
 ;;; Copyright © 2019, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Steve Sprang <scs@stevesprang.com>
@@ -75,6 +75,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system ocaml)
   #:use-module (guix build-system python)
   #:use-module (guix build-system ruby)
   #:use-module (gnu packages algebra)
@@ -86,11 +87,13 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages coq)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages emacs)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fltk)
@@ -120,6 +123,7 @@
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages netpbm)
+  #:use-module (gnu packages ocaml)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages popt)
@@ -6290,3 +6294,64 @@ interval arithmetic, plotting.")
      "Numdiff compares files line by line and field by field, ignoring small
 numeric differences and differences in numeric formats.")
     (license license:gpl3+)))
+
+(define-public why3
+  (package
+    (name "why3")
+    (version "1.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://gforge.inria.fr/frs/download.php/file"
+                                  "/38291/why3-" version ".tar.gz"))
+              (sha256
+               (base32
+                "16zcrc60zz2j3gd3ww93z2z9x2jkxb3kr57y8i5rcgmacy7mw3bv"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("coq" ,coq)
+       ("ocaml" ,ocaml)
+       ("which" ,which)))
+    (propagated-inputs
+     `(("camlzip" ,camlzip)
+       ("ocaml-graph" ,ocaml-graph)
+       ("ocaml-menhir" ,ocaml-menhir)
+       ("ocaml-num" ,ocaml-num)
+       ("ocaml-zarith" ,ocaml-zarith)))
+    (inputs
+     `(("coq-flocq" ,coq-flocq)
+       ("emacs-minimal" ,emacs-minimal)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-configure
+           (lambda _
+             (setenv "CONFIG_SHELL" (which "sh"))
+             (substitute* "configure"
+               ;; find ocaml-num in the correct directory
+               (("\\$DIR/nums.cma") "$DIR/../nums.cma")
+               (("\\$DIR/num.cmi") "$DIR/../num.cmi"))
+             #t))
+         (add-after 'configure 'fix-makefile
+           (lambda _
+             (substitute* "Makefile"
+               ;; find ocaml-num in the correct directory
+               (("site-lib/num") "site-lib"))
+             #t))
+        (add-after 'install 'install-lib
+          (lambda _
+            (invoke "make" "byte")
+            (invoke "make" "install-lib")
+            #t)))))
+    (home-page "http://why3.lri.fr")
+    (synopsis "Deductive program verification")
+    (description "Why3 provides a language for specification and programming,
+called WhyML, and relies on external theorem provers, both automated and
+interactive, to discharge verification conditions.  Why3 comes with a standard
+library of logical theories (integer and real arithmetic, Boolean operations,
+sets and maps, etc.) and basic programming data structures (arrays, queues,
+hash tables, etc.).  A user can write WhyML programs directly and get
+correct-by-construction OCaml programs through an automated extraction
+mechanism.  WhyML is also used as an intermediate language for the verification
+of C, Java, or Ada programs.")
+    (license license:lgpl2.1)))
