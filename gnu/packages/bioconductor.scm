@@ -6678,3 +6678,31 @@ tests the null hypothesis that the target regions have the same probability of
 having footprints for the TF k as the background regions while correcting for
 the read count and GC content bias.")
     (license license:gpl3)))
+
+(define-public r-rsbml
+  (package
+    (name "r-rsbml")
+    (version "2.44.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "rsbml" version))
+       (sha256
+        (base32
+         "1dbp0aaijxn3na26b68ws0v9qzvml61ifb9z4i8pz7q6h48n7lxa"))))
+    (properties `((upstream-name . "rsbml")))
+    (build-system r-build-system)
+    (inputs
+     `(("libsbml" ,libsbml)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-graph" ,r-graph)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.sbml.org")
+    (synopsis "R support for SBML")
+    (description
+     "This package provides an R interface to libsbml for SBML parsing,
+validating output, provides an S4 SBML DOM, converts SBML to R graph objects.")
+    (license license:artistic2.0)))
