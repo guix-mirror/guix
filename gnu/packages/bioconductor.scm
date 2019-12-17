@@ -6553,3 +6553,25 @@ uses a statistical data fusion approach, rationalizes contributing evidence
 and highlights associated genes, improving systems-level understanding of
 cellular organization in health and disease.")
     (license license:gpl3)))
+
+(define-public r-bgmix
+  (package
+    (name "r-bgmix")
+    (version "1.46.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "BGmix" version))
+       (sha256
+        (base32
+         "1bwqqhkh4m3hhpd71grwjrg7n07lzvys4y7aghmw2gw5ibnk5683"))))
+    (properties `((upstream-name . "BGmix")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-kernsmooth" ,r-kernsmooth)))
+    (home-page "https://bioconductor.org/packages/BGmix/")
+    (synopsis "Bayesian models for differential gene expression")
+    (description
+     "This package provides fully Bayesian mixture models for differential
+gene expression.")
+    (license license:gpl2)))
