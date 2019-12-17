@@ -4192,7 +4192,7 @@ services for numerous locations.")
 (define-public gnome-settings-daemon
   (package
     (name "gnome-settings-daemon")
-    (version "3.32.1")
+    (version "3.34.1")
     (source
      (origin
        (method url-fetch)
@@ -4201,7 +4201,7 @@ services for numerous locations.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "02d0s0g2mmqfib44r3sf0499r08p61s8l2ndsjssbam1bi7x2dks"))))
+         "07y1gbicz0pbxmdgwrdzyc4byy30wfwpbqgvnx27gnpqmc5s50cr"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -4209,6 +4209,7 @@ services for numerous locations.")
        (list (string-append "-Dudev_dir="
                             (assoc-ref %outputs "out")
                             "/lib/udev/rules.d/")
+             "-Dsystemd=false"
              ;; Otherwise, the RUNPATH will lack the final path component.
              (string-append "-Dc_link_args=-Wl,-rpath="
                             (assoc-ref %outputs "out")
@@ -4246,7 +4247,9 @@ services for numerous locations.")
        ("librsvg" ,librsvg)
        ("xf86-input-wacom" ,xf86-input-wacom)
        ("wayland" ,wayland)
-       ("network-manager" ,network-manager)))
+       ("network-manager" ,network-manager)
+       ("gcr" ,gcr)
+       ("modem-manager" ,modem-manager)))
     (home-page "https://www.gnome.org")
     (synopsis "GNOME settings daemon")
     (description
