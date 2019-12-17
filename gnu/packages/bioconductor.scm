@@ -32,6 +32,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages graph)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages image)
   #:use-module (gnu packages maths)
@@ -6728,3 +6729,27 @@ validating output, provides an S4 SBML DOM, converts SBML to R graph objects.")
      "This package implements some simple capabilities for representing and
 manipulating hypergraphs.")
     (license license:artistic2.0)))
+
+(define-public r-hyperdraw
+  (package
+    (name "r-hyperdraw")
+    (version "1.38.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "hyperdraw" version))
+       (sha256
+        (base32
+         "0a8h3pb7196qi49ady8ni92m5wqb1hvxw6khk9j63mwj3h7jinbj"))))
+    (properties `((upstream-name . "hyperdraw")))
+    (build-system r-build-system)
+    (inputs `(("graphviz" ,graphviz)))
+    (propagated-inputs
+     `(("r-graph" ,r-graph)
+       ("r-hypergraph" ,r-hypergraph)
+       ("r-rgraphviz" ,r-rgraphviz)))
+    (home-page "https://bioconductor.org/packages/hyperdraw")
+    (synopsis "Visualizing hypergraphs")
+    (description
+     "This package provides functions for visualizing hypergraphs.")
+    (license license:gpl2+)))
