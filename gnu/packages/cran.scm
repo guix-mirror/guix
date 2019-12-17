@@ -18910,3 +18910,31 @@ the css-loaders created by Luke Hass
 @url{https://github.com/lukehaas/css-loaders}.  Wrapping a Shiny output will
 automatically show a loader when the output is (re)calculating.")
     (license license:gpl3)))
+
+(define-public r-rsvg
+  (package
+    (name "r-rsvg")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rsvg" version))
+       (sha256
+        (base32
+         "11mccgf6hfskg45wqc114sx3qy2r494y6axdf73z6xwhs1wpm97g"))))
+    (properties `((upstream-name . "rsvg")))
+    (build-system r-build-system)
+    (inputs
+     `(("librsvg" ,librsvg)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/jeroen/rsvg#readme")
+    (synopsis "Render SVG images into PDF, PNG, PostScript, or Bitmap arrays")
+    (description
+     "This package allows you to render vector-based SVG images into
+high-quality custom-size bitmap arrays using the librsvg2 library.  The
+resulting bitmap can be written to e.g. PNG, JPEG or WEBP format.  In
+addition, the package can convert images directly to various formats such as
+PDF or PostScript.")
+    (license license:expat)))
