@@ -8330,7 +8330,7 @@ the Moka icon theme.")
 (define-public folks
   (package
     (name "folks")
-    (version "0.11.4")
+    (version "0.13.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -8339,17 +8339,28 @@ the Moka icon theme.")
                     "folks-" version ".tar.xz"))
               (sha256
                (base32
-                "16hqh2gxlbx0b0hgq216hndr1m72vj54jvryzii9zqkk0g9kxc57"))))
-    (build-system glib-or-gtk-build-system)
+                "0pda8sx4ap3lyri5fdrnakl29la1zkhwlc9bmnp13qigp1iwdw9x"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t)))))
     (inputs
      `(("bdb" ,bdb)
        ("dbus-glib" ,dbus-glib)
        ("evolution-data-server" ,evolution-data-server)
        ("glib" ,glib)
        ("libgee" ,libgee)
+       ("readline" ,readline)
        ("telepathy-glib" ,telepathy-glib)))
     (native-inputs
-     `(("gobject-introspection" ,gobject-introspection)
+     `(("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)))
