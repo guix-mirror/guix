@@ -6893,3 +6893,36 @@ libraries with a wide spectrum of algorithms.  In addition, it offers
 visualization functions for compound clustering results and chemical
 structures.")
     (license license:artistic2.0)))
+
+(define-public r-bioassayr
+  (package
+    (name "r-bioassayr")
+    (version "1.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "bioassayR" version))
+       (sha256
+        (base32
+         "08vxkvxhqnryfbj4dwk3ifb9pn544www9zk2pj9fjbh5xfpwi7zw"))))
+    (properties `((upstream-name . "bioassayR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-chemminer" ,r-chemminer)
+       ("r-dbi" ,r-dbi)
+       ("r-matrix" ,r-matrix)
+       ("r-rjson" ,r-rjson)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-xml" ,r-xml)))
+    (home-page "https://github.com/TylerBackman/bioassayR")
+    (synopsis "Cross-target analysis of small molecule bioactivity")
+    (description
+     "bioassayR is a computational tool that enables simultaneous analysis of
+thousands of bioassay experiments performed over a diverse set of compounds
+and biological targets.  Unique features include support for large-scale
+cross-target analyses of both public and custom bioassays, generation of
+@dfn{high throughput screening fingerprints} (HTSFPs), and an optional
+preloaded database that provides access to a substantial portion of publicly
+available bioactivity data.")
+    (license license:artistic2.0)))
