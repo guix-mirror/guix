@@ -1497,8 +1497,13 @@ ac_cv_c_float_format='IEEE (little-endian)'
     (native-inputs `(("boot-patch" ,(search-patch "glibc-boot-2.2.5.patch"))
                      ("system-patch" ,(search-patch "glibc-bootstrap-system-2.2.5.patch"))
                      ("headers" ,mesboot-headers)
-                     ,@(%boot-mesboot-core-inputs)
-                     ("gash" ,gash-boot)))
+                     ;; XXX: make-syscalls.sh does not run correctly with
+                     ;; bash-mesboot0, producing a wrong sysd-syscalls.
+                     ;; This leads to posix/uname.c getting compiled where it
+                     ;; shouldn't:
+                     ;; ../sysdeps/generic/uname.c:25: config-name.h: error 02
+                     ("bash" ,gash-boot)
+                     ,@(%boot-mesboot-core-inputs)))
     (outputs '("out"))
     (arguments
      `(#:implicit-inputs? #f
@@ -1556,33 +1561,19 @@ ac_cv_c_float_format='IEEE (little-endian)'
              (format (current-error-port)
                      "running ./configure ~a\n" (string-join configure-flags))
              (apply invoke "./configure" configure-flags)))
-         (add-after 'configure 'fixup-configure
-           (lambda _
-             (let* ((out (assoc-ref %outputs "out"))
-                    (bash (assoc-ref %build-inputs "bash"))
-                    (shell (string-append bash "/bin/bash"))
-                    (gash (assoc-ref %build-inputs "gash"))
-                    (gash (string-append gash "/bin/gash")))
-               (substitute* "config.make"
-                 (("INSTALL = scripts/") "INSTALL = $(..)./scripts/"))
-               (substitute* "config.make"
-                 (("INSTALL = scripts/") "INSTALL = $(..)./scripts/")
-                 (("BASH = ") (string-append
-                               "SHELL = " shell "
-BASH = ")))
-               ;; XXX: make-syscalls.sh does not run correctly with
-               ;; bash-mesboot0, producing a wrong sysd-syscalls.
-
-               ;; This leads to posix/uname.c getting compiled where it
-               ;; shouldn't:
-
-               ;; ../sysdeps/generic/uname.c:25: config-name.h: error 02
-               (substitute* "sysdeps/unix/make-syscalls.sh"
-                 (("#!/gnu/store.*/bin/bash") (string-append "#! " gash)))
-
-               (substitute* "sysdeps/unix/Makefile"
-                 (("	  [{] [$][(]SHELL[)]") (string-append "	  { " gash))))
-             #t)))))))
+                  (add-after 'configure 'fixup-configure
+                    (lambda _
+                      (let* ((out (assoc-ref %outputs "out"))
+                             (bash (assoc-ref %build-inputs "bash"))
+                             (shell (string-append bash "/bin/bash")))
+                        (substitute* "config.make"
+                          (("INSTALL = scripts/") "INSTALL = $(..)./scripts/"))
+                        (substitute* "config.make"
+                          (("INSTALL = scripts/") "INSTALL = $(..)./scripts/")
+                          (("BASH = ") (string-append
+                                        "SHELL = " shell "
+         BASH = ")))
+                        #t))))))))
 
 (define gcc-mesboot0
   (package
