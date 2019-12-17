@@ -328,13 +328,13 @@ either on a local, or remote machine via a number of methods.")
   (let ((commit "fbc306168edab63db80b904956117cbbdc514ee4"))
     (package
       (name "dia")
-      (version (string-append "0.97.2-" (string-take commit 7)))
+      (version (git-version "0.97.3" "1" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://git.gnome.org/browse/dia")
+                      (url "https://gitlab.gnome.org/GNOME/dia.git/")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "1b4bba0k8ph4cwgw8xjglss0p6n111bpd5app67lrq79mp0ad06l"))))
