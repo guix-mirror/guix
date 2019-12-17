@@ -7872,6 +7872,37 @@ analysis.")
      "This package provides a solver for generalized estimation equations.")
     (license license:gpl2)))
 
+(define-public r-tab
+  (package
+    (name "r-tab")
+    (version "4.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tab" version))
+       (sha256
+        (base32
+         "0ds8n6gncidb66in7hlqkcmil5yfsf7ihqvmls789hrm2iz9xlfm"))))
+    (properties `((upstream-name . "tab")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-gee" ,r-gee)
+       ("r-knitr" ,r-knitr)
+       ("r-mass" ,r-mass)
+       ("r-survey" ,r-survey)
+       ("r-survival" ,r-survival)
+       ("r-xtable" ,r-xtable)))
+    (home-page "https://cran.r-project.org/web/packages/tab/")
+    (synopsis "Create summary tables for statistical reports")
+    (description
+     "This package contains functions for creating various types of summary
+tables, e.g. comparing characteristics across levels of a categorical variable
+and summarizing fitted generalized linear models, generalized estimating
+equations, and Cox proportional hazards models.  Functions are available to
+handle data from simple random samples as well as complex surveys.")
+    (license license:gpl3+)))
+
 (define-public r-dvmisc
   (package
     (name "r-dvmisc")
