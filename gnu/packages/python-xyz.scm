@@ -16909,3 +16909,28 @@ always possible to declare a command with the highest possible (and least
 flexible) layer and then tune the behaviour with any of the lower layers
 including the native API of @code{python-argparse}.")
       (license license:lgpl3+))))
+
+(define-public python-ppft
+  (package
+    (name "python-ppft")
+    (version "1.6.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ppft" version))
+       (sha256
+        (base32
+         "1z1invkhszc5d2mvgr221v7cszzifcc77mz0pv3wjp6x5q2768cy"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f))          ; there are none
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (home-page "https://pypi.org/project/ppft/")
+    (synopsis "Fork of Parallel Python")
+    (description
+     "This package is a fork of Parallel Python.  The Parallel Python
+module (@code{pp}) provides an easy and efficient way to create
+parallel-enabled applications for @dfn{symmetric multiprocessing} (SMP)
+computers and clusters.  It features cross-platform portability and dynamic
+load balancing.")
+    (license license:bsd-3)))
