@@ -16987,6 +16987,34 @@ discovery of what has been installed on an operating system, and where the
 essential tools are located.")
     (license license:bsd-3)))
 
+(define-public python-pathos
+  (package
+    (name "python-pathos")
+    (version "0.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pathos" version))
+       (sha256
+        (base32
+         "0in8hxdz7k081ijn6q94gr39ycy7363sx4zysmbwyvd7snqjrbi1"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-dill" ,python-dill)
+       ("python-multiprocess" ,python-multiprocess)
+       ("python-pox" ,python-pox)
+       ("python-ppft" ,python-ppft)))
+    (home-page "https://pypi.org/project/pathos/")
+    (synopsis
+     "Parallel graph management and execution in heterogeneous computing")
+    (description
+     "Python-pathos is a framework for heterogenous computing.  It provides a
+consistent high-level interface for configuring and launching parallel
+computations across heterogenous resources.  Python-pathos provides configurable
+launchers for parallel and distributed computing, where each launcher contains
+the syntactic logic to configure and launch jobs in an execution environment.")
+    (license license:bsd-3)))
+
 (define-public python-flit
   (package
     (name "python-flit")
