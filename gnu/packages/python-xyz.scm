@@ -16934,3 +16934,41 @@ parallel-enabled applications for @dfn{symmetric multiprocessing} (SMP)
 computers and clusters.  It features cross-platform portability and dynamic
 load balancing.")
     (license license:bsd-3)))
+
+(define-public python-pox
+  (package
+    (name "python-pox")
+    (version "0.2.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pox" version))
+       (sha256
+        (base32
+         "0y17ckc2p6i6709s279sjdj4q459mpcc38ymg9zv9y6vl6jf3bq6"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (mkdir-p "/tmp/guix")
+             (setenv "SHELL" "bash")
+             (setenv "USERNAME" "guix")
+             (setenv "HOME" "/tmp/guix") ; must end on USERNAME...
+             (invoke "py.test" "-vv")
+             #t)))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("which" ,which)))
+    (home-page "https://pypi.org/project/pox/")
+    (synopsis "Python utilities for filesystem exploration and automated builds")
+    (description
+     "Pox provides a collection of utilities for navigating and manipulating
+filesystems.  This module is designed to facilitate some of the low level
+operating system interactions that are useful when exploring a filesystem on a
+remote host.  Pox provides Python equivalents of several shell commands such
+as @command{which} and @command{find}.  These commands allow automated
+discovery of what has been installed on an operating system, and where the
+essential tools are located.")
+    (license license:bsd-3)))
