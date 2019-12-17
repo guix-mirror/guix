@@ -1779,10 +1779,9 @@ library.")
     (version "0.8.14")
     (source (origin
               (method url-fetch)
-              (uri (let ((upstream-name "libIDL"))
-		     (string-append "mirror://gnome/sources/" upstream-name "/"
-                                    (version-major+minor version) "/"
-                                    upstream-name "-" version ".tar.bz2")))
+              (uri (string-append "mirror://gnome/sources/libIDL/"
+                                  (version-major+minor version) "/"
+                                  "libIDL-" version ".tar.bz2"))
               (sha256
                (base32
                 "08129my8s9fbrk0vqvnmx6ph4nid744g5vbwphzkaik51664vln5"))))
