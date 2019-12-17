@@ -15651,17 +15651,25 @@ object-oriented library such as @code{scikit-learn}.")
 (define-public python-dill
   (package
     (name "python-dill")
-    (version "0.2.9")
+    (version "0.3.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "dill" version))
        (sha256
-        (base32 "0vwqyi6hyz2r29zydc78dqymkbc5y7gia16xcdh215cikxph9mpn"))))
+        (base32 "1704g8z70d210ksgbccs2v545v9w0wc6lx15m296alb7jf0yzn22"))))
     (build-system python-build-system)
-    ;; FIXME: The check phase fails with "don't know how to make test from: …".
-    (arguments '(#:tests? #f))
-    (home-page "https://pypi.org/project/dill")
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (with-directory-excursion "/tmp"
+               (invoke "nosetests" "-v"))
+             #t)))))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://pypi.org/project/dill/")
     (synopsis "Serialize all of Python")
     (description "Dill extends Python's @code{pickle} module for serializing
 and de-serializing Python objects to the majority of the built-in Python
