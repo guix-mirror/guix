@@ -236,7 +236,7 @@
        ("libsm" ,libsm)
        ("libxml2" ,libxml2)
        ("totem-pl-parser" ,totem-pl-parser)))
-    (home-page "https://projects.gnome.org/brasero/")
+    (home-page "https://wiki.gnome.org/Apps/Brasero")
     (synopsis "CD/DVD burning tool for Gnome")
     (description "Brasero is an application to burn CD/DVD for the Gnome
 Desktop.  It is designed to be as simple as possible and has some unique
