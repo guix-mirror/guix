@@ -6854,3 +6854,42 @@ datasets using static and interactive scatterplot matrices, parallel
 coordinate plots, volcano plots, and litre plots.  It includes examples for
 visualizing RNA-sequencing datasets and differentially expressed genes.")
     (license license:gpl3)))
+
+(define-public r-chemminer
+  (package
+    (name "r-chemminer")
+    (version "3.38.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ChemmineR" version))
+       (sha256
+        (base32
+         "1j6vmkhc03dmmkm5wgbcv62pw5dclp49f906xkx1pwg27bdldbga"))))
+    (properties `((upstream-name . "ChemmineR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-base64enc" ,r-base64enc)
+       ("r-bh" ,r-bh)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-dbi" ,r-dbi)
+       ("r-digest" ,r-digest)
+       ("r-dt" ,r-dt)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-png" ,r-png)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcurl" ,r-rcurl)
+       ("r-rjson" ,r-rjson)
+       ("r-rsvg" ,r-rsvg)))
+    (home-page "https://github.com/girke-lab/ChemmineR")
+    (synopsis "Cheminformatics toolkit for R")
+    (description
+     "ChemmineR is a cheminformatics package for analyzing drug-like small
+molecule data in R.  It contains functions for efficient processing of large
+numbers of molecules, physicochemical/structural property predictions,
+structural similarity searching, classification and clustering of compound
+libraries with a wide spectrum of algorithms.  In addition, it offers
+visualization functions for compound clustering results and chemical
+structures.")
+    (license license:artistic2.0)))
