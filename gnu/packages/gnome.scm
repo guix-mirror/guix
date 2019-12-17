@@ -7281,7 +7281,7 @@ as SASL, TLS and VeNCrypt.  Additionally it supports encoding extensions.")
 (define-public gnome-autoar
   (package
     (name "gnome-autoar")
-    (version "0.2.3")
+    (version "0.2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -7289,14 +7289,13 @@ as SASL, TLS and VeNCrypt.  Additionally it supports encoding extensions.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "02i4zgqqqj56h7bcys6dz7n78m4nj2x4dv1ggjmnrk98n06xpsax"))))
+                "0yk56ch46n3wfy633mq31kif9n7v06rlij4vqbsbn6l4z1vw6d0a"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("gnome-common" ,gnome-common)
-       ("gobject-introspection" ,gobject-introspection)
+     `(("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
-     `(("libarchive" ,libarchive)))  ; XXX document why
+     `(("libarchive" ,libarchive)))  ; Required by gnome-autoar-0.pc
     (inputs
      `(("gtk+" ,gtk+)))
     (synopsis "Archives integration support for GNOME")
