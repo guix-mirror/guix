@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -197,6 +197,7 @@ Texi2HTML.")
               (uri (git-reference
                     (url "https://github.com/baszoetekouw/pinfo.git")
                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "173d2p22irwiabvr4z6qvr6zpr6ysfkhmadjlyhyiwd7z62larvy"))))
