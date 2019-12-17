@@ -15685,18 +15685,38 @@ the saved state of the original interpreter session.")
 (define-public python-multiprocess
   (package
     (name "python-multiprocess")
-    (version "0.70.6.1")
+    (version "0.70.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "multiprocess" version))
        (sha256
         (base32
-         "1ip5caz67b3q0553mr8gm8xwsb8x500jn8ml0gihgyfy52m2ypcq"))))
+         "1r882nvd44xqwbrclwqx5rhs80l6809rcvpc7pkpgnij06cvvmcz"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-broken-tests
+           (lambda _
+             ;; This test is broken as there is no keyboard interrupt.
+             (substitute* "py3.7/multiprocess/tests/__init__.py"
+               (("^(.*)def test_wait_result"
+                 line indent)
+                (string-append indent
+                               "@unittest.skip(\"Disabled by Guix\")\n"
+                               line)))
+             #t))
+         ;; Tests must be run after installation.
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "python" "-m" "multiprocess.tests")
+             #t)))))
     (propagated-inputs
      `(("python-dill" ,python-dill)))
-    (home-page "https://pypi.org/project/multiprocess")
+    (home-page "https://pypi.org/project/multiprocess/")
     (synopsis "Multiprocessing and multithreading in Python")
     (description
      "This package is a fork of the multiprocessing Python package, a package
