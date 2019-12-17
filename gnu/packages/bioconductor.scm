@@ -6650,3 +6650,31 @@ algorithm which is more efficient for larger data sets.")
      "This is a package for biclustering analysis and exploration of
 results.")
     (license license:gpl2)))
+
+(define-public r-bifet
+  (package
+    (name "r-bifet")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "BiFET" version))
+       (sha256
+        (base32
+         "0ck1d6hxd4f40hfz8p2z5xmjbz79yhrf6fisjka2xzk5v9fm4p4k"))))
+    (properties `((upstream-name . "BiFET")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-genomicranges" ,r-genomicranges)
+       ("r-poibin" ,r-poibin)))
+    (home-page "https://bioconductor.org/packages/BiFET")
+    (synopsis "Bias-free footprint enrichment test")
+    (description
+     "BiFET identifies @dfn{transcription factors} (TFs) whose footprints are
+over-represented in target regions compared to background regions after
+correcting for the bias arising from the imbalance in read counts and GC
+contents between the target and background regions.  For a given TF k, BiFET
+tests the null hypothesis that the target regions have the same probability of
+having footprints for the TF k as the background regions while correcting for
+the read count and GC content bias.")
+    (license license:gpl3)))
