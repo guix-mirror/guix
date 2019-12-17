@@ -1799,6 +1799,7 @@ Definition Language (idl) files, which is a specification for defining
 portable interfaces. libidl was initially written for orbit (the orb from the
 GNOME project, and the primary means of libidl distribution).  However, the
 functionality was designed to be as reusable and portable as possible.")
+    (properties `((upstream-name . "libIDL")))
     (license license:lgpl2.0+)))
 
 
