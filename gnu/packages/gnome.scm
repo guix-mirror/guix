@@ -1161,7 +1161,7 @@ commonly used macros.")
 (define-public gnome-contacts
   (package
     (name "gnome-contacts")
-    (version "3.32.1")
+    (version "3.34")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gnome-contacts/"
@@ -1169,10 +1169,11 @@ commonly used macros.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "17g1gh8yj58cfpdx69h2szivlbjgvv982kmhnkkh0i5bwj0zs2yy"))))
+                "04igc9xvyc4kb5xf5g2missnvyvj9zv5cqxf5k4z7hb0sv42wq4r"))))
     (build-system meson-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags '("-Dcheese=false")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'generate-vapis
            (lambda* (#:key inputs #:allow-other-keys)
@@ -1183,14 +1184,18 @@ commonly used macros.")
              (invoke "vapigen" "--directory=vapi" "--pkg=gio-2.0"
                      "--library=goa-1.0"
                      (string-append goa "/share/gir-1.0/Goa-1.0.gir"))
+             #t))
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "build-aux/meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
              #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin")
-       ("gtk+:bin" ,gtk+ "bin")
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("cheese" ,cheese)
-       ("docbook-xml" ,docbook-xml)
+     `(("docbook-xml" ,docbook-xml)
        ("dockbook-xsl" ,docbook-xsl)
        ("evolution-data-server" ,evolution-data-server)
        ("gettext" ,gettext-minimal)
