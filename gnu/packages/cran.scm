@@ -7906,13 +7906,13 @@ handle data from simple random samples as well as complex surveys.")
 (define-public r-dvmisc
   (package
     (name "r-dvmisc")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "dvmisc" version))
        (sha256
-        (base32 "0x391pxg5mqgp5xxc8qwhwxky8ds7d9gr9iwmsb12c92kxfk00bv"))))
+        (base32 "01v6sixx0f3nrn6ymfifb3pvd2msfrwm21kmdv38laxq29vc4rsi"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cubature" ,r-cubature)
@@ -7922,10 +7922,10 @@ handle data from simple random samples as well as complex surveys.")
        ("r-mass" ,r-mass)
        ("r-mvtnorm" ,r-mvtnorm)
        ("r-pracma" ,r-pracma)
-       ("r-purrr" ,r-purrr)
        ("r-rbenchmark" ,r-rbenchmark)
        ("r-rcpp" ,r-rcpp)
-       ("r-survey" ,r-survey)))
+       ("r-survey" ,r-survey)
+       ("r-tab" ,r-tab)))
     (home-page "https://cran.r-project.org/web/packages/dvmisc/")
     (synopsis "Faster computation of common statistics and miscellaneous functions")
     (description
