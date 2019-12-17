@@ -9274,7 +9274,7 @@ generic enough to work for everyone.")
 (define-public evolution
   (package
     (name "evolution")
-    (version "3.32.4")
+    (version "3.34.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/evolution/"
@@ -9282,7 +9282,7 @@ generic enough to work for everyone.")
                                   "evolution-" version ".tar.xz"))
               (sha256
                (base32
-                "00hmmg4hfns8rq9rcilmy0gi1xkksld27lfbd9zmw2xw37wjmbqh"))))
+                "164vy8h432pjglafn8y2ms4gsvk3kbgc63h5qp0mk5dv4smsp29c"))))
     (build-system cmake-build-system)
     (arguments
      `(#:imported-modules (,@%cmake-build-system-modules
@@ -9322,10 +9322,9 @@ generic enough to work for everyone.")
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gnome-autoar" ,gnome-autoar)
        ("gnome-desktop" ,gnome-desktop)
-       ("gtkspell3" ,gtkspell3)
+       ("gspell" ,gspell)
        ("highlight" ,highlight)
        ("libcanberra" ,libcanberra)
-       ("libedataserverui" ,evolution-data-server)
        ("libgweather" ,libgweather)
        ("libnotify" ,libnotify)
        ("libsoup" ,libsoup)
