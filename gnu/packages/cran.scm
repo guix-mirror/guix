@@ -18883,3 +18883,30 @@ Francesca Mazzia (2012).")
      "This package provides functions that read and solve linear inverse
 problems (food web problems, linear programming problems).")
     (license license:gpl2+)))
+
+(define-public r-shinycssloaders
+  (package
+    (name "r-shinycssloaders")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "shinycssloaders" version))
+       (sha256
+        (base32
+         "1bpzsm7m7c366sjl1qndp4m5dg2vlm68rjgdy9n1ija9xbp0r2g4"))))
+    (properties
+     `((upstream-name . "shinycssloaders")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-digest" ,r-digest)
+       ("r-glue" ,r-glue)
+       ("r-shiny" ,r-shiny)))
+    (home-page "https://github.com/andrewsali/shinycssloaders")
+    (synopsis "Add CSS loading animations to Shiny outputs")
+    (description
+     "This package provides tools to create a lightweight Shiny wrapper for
+the css-loaders created by Luke Hass
+@url{https://github.com/lukehaas/css-loaders}.  Wrapping a Shiny output will
+automatically show a loader when the output is (re)calculating.")
+    (license license:gpl3)))
