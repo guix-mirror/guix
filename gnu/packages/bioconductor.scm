@@ -6815,3 +6815,42 @@ related to attaching to, and indexing into, file-backed matrices with
 dimnames.  Additionally, the package provides a @code{BigMatrixFactor} class,
 a file-backed matrix with factor properties.")
     (license license:artistic2.0)))
+
+(define-public r-bigpint
+  (package
+    (name "r-bigpint")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "bigPint" version))
+       (sha256
+        (base32
+         "10vs0lzfyxp6sm4r9pxfwipjvzmmaqnvwn1hc5q37s5qz44fg0hk"))))
+    (properties `((upstream-name . "bigPint")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-ggally" ,r-ggally)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-hexbin" ,r-hexbin)
+       ("r-hmisc" ,r-hmisc)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-plotly" ,r-plotly)
+       ("r-plyr" ,r-plyr)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-reshape" ,r-reshape)
+       ("r-shiny" ,r-shiny)
+       ("r-shinycssloaders" ,r-shinycssloaders)
+       ("r-shinydashboard" ,r-shinydashboard)
+       ("r-stringr" ,r-stringr)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "https://github.com/lindsayrutter/bigPint")
+    (synopsis "Big multivariate data plotted interactively")
+    (description
+     "This package provides methods for visualizing large multivariate
+datasets using static and interactive scatterplot matrices, parallel
+coordinate plots, volcano plots, and litre plots.  It includes examples for
+visualizing RNA-sequencing datasets and differentially expressed genes.")
+    (license license:gpl3)))
