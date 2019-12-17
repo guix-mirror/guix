@@ -18810,3 +18810,26 @@ nearest neighbors (kNN) of a data matrix.  The implementation is based on
 cover trees introduced by Alina Beygelzimer, Sham Kakade, and John
 Langford (2006) @url{doi:10.1145/1143844.1143857}.")
     (license license:agpl3+)))
+
+(define-public r-poibin
+  (package
+    (name "r-poibin")
+    (version "1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "poibin" version))
+       (sha256
+        (base32
+         "1rllgmk7yanb5amysl33kmi11lx86q5kqblyb8qqb3ckj2w4jhm2"))))
+    (properties `((upstream-name . "poibin")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/poibin/")
+    (synopsis "Poisson binomial distribution")
+    (description
+     "This package provides an implementation of both the exact and
+approximation methods for computing the @dfn{cumulative distribution
+function} (CDF) of the Poisson binomial distribution.  It also provides the
+@dfn{probability mass function} (PMF), quantile function, and random number
+generation for the Poisson binomial distribution.")
+    (license license:gpl2)))
