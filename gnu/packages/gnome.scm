@@ -358,9 +358,10 @@ either on a local, or remote machine via a number of methods.")
       (arguments
        `(#:phases
          (modify-phases %standard-phases
-           (add-after 'unpack 'run-autogen
+           (add-before 'bootstrap 'dont-configure-during-bootstrap
              (lambda _
-               (system* "sh" "autogen.sh"))))))
+               (setenv "NOCONFIGURE" "true")
+               #t)))))
       (home-page "https://wiki.gnome.org/Apps/Dia")
       (synopsis "Diagram creation for GNOME")
       (description "Dia can be used to draw different types of diagrams, and
