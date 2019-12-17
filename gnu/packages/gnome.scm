@@ -193,9 +193,9 @@
     (version "3.12.2")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://gnome/sources/" name "/"
+             (uri (string-append "mirror://gnome/sources/brasero/"
                                  (version-major+minor version) "/"
-                                 name "-" version ".tar.xz"))
+                                 "brasero-" version ".tar.xz"))
              (sha256
               (base32
                "0h90y674j26rvjahb8cc0w79zx477rb6zaqcj26wzvq8kmpic8k8"))))
