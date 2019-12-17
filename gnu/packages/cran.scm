@@ -18860,3 +18860,26 @@ platform\" by Karline Soetaert and Peter M.J. Herman (2009) and the book
 \"Solving Differential Equations in R\" by Karline Soetaert, Jeff Cash and
 Francesca Mazzia (2012).")
     (license license:gpl2+)))
+
+(define-public r-lim
+  (package
+    (name "r-lim")
+    (version "1.4.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "LIM" version))
+       (sha256
+        (base32
+         "03x1gnm06bw1wrzc01110bjzd2mvjdzbc2mbrazh22jrmb32w5d8"))))
+    (properties `((upstream-name . "LIM")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-diagram" ,r-diagram)
+       ("r-limsolve" ,r-limsolve)))
+    (home-page "https://cran.r-project.org/web/packages/LIM/")
+    (synopsis "Linear inverse model examples and solution methods")
+    (description
+     "This package provides functions that read and solve linear inverse
+problems (food web problems, linear programming problems).")
+    (license license:gpl2+)))
