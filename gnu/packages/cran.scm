@@ -7851,6 +7851,27 @@ analysis.")
     ;; Either version of the GPL.
     (license (list license:gpl2 license:gpl3))))
 
+(define-public r-gee
+  (package
+    (name "r-gee")
+    (version "4.13-20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gee" version))
+       (sha256
+        (base32
+         "167pzgnmj4cjc41ykps1mfwi6s7y32zxyycn5z17vn4v0pp4q0ak"))))
+    (properties `((upstream-name . "gee")))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/gee/")
+    (synopsis "Generalized estimation equation solver")
+    (description
+     "This package provides a solver for generalized estimation equations.")
+    (license license:gpl2)))
+
 (define-public r-dvmisc
   (package
     (name "r-dvmisc")
