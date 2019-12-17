@@ -6575,3 +6575,28 @@ cellular organization in health and disease.")
      "This package provides fully Bayesian mixture models for differential
 gene expression.")
     (license license:gpl2)))
+
+(define-public r-bgx
+  (package
+    (name "r-bgx")
+    (version "1.52.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "bgx" version))
+       (sha256
+        (base32
+         "0fiqqv6pin0zhxaw67hzfjccq2qkl9qfqjf10nx2zmpxm2licavm"))))
+    (properties `((upstream-name . "bgx")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-affy" ,r-affy)
+       ("r-biobase" ,r-biobase)
+       ("r-gcrma" ,r-gcrma)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://bioconductor.org/packages/bgx/")
+    (synopsis "Bayesian gene expression")
+    (description
+     "This package provides tools for Bayesian integrated analysis of
+Affymetrix GeneChips.")
+    (license license:gpl2)))
