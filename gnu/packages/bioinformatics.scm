@@ -9487,13 +9487,13 @@ and irregular enzymatic cleavages, mass measurement accuracy, etc.")
 (define-public r-seurat
   (package
     (name "r-seurat")
-    (version "3.1.1")
+    (version "3.1.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "Seurat" version))
               (sha256
                (base32
-                "084lr2fjdksshsmv1ww82bgn3a9mml7kswsidjrs89snabgvn360"))))
+                "0m1qi39snbmkkv1p07bzg1r7snc9x6a1y0dghvpk1nzgcfpmnsj4"))))
     (properties `((upstream-name . "Seurat")))
     (build-system r-build-system)
     (propagated-inputs
