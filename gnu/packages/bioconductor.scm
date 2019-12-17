@@ -6706,3 +6706,25 @@ the read count and GC content bias.")
      "This package provides an R interface to libsbml for SBML parsing,
 validating output, provides an S4 SBML DOM, converts SBML to R graph objects.")
     (license license:artistic2.0)))
+
+(define-public r-hypergraph
+  (package
+    (name "r-hypergraph")
+    (version "1.58.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "hypergraph" version))
+       (sha256
+        (base32
+         "1bixmslxy7r987zw1vf4dg72hfi04lf4vj03n7ygym2g8nfhbh7m"))))
+    (properties `((upstream-name . "hypergraph")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-graph" ,r-graph)))
+    (home-page "https://bioconductor.org/packages/hypergraph")
+    (synopsis "Hypergraph data structures")
+    (description
+     "This package implements some simple capabilities for representing and
+manipulating hypergraphs.")
+    (license license:artistic2.0)))
