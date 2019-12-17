@@ -6600,3 +6600,29 @@ gene expression.")
      "This package provides tools for Bayesian integrated analysis of
 Affymetrix GeneChips.")
     (license license:gpl2)))
+
+(define-public r-bhc
+  (package
+    (name "r-bhc")
+    (version "1.38.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "BHC" version))
+       (sha256
+        (base32
+         "1bxx3jak8mgvay3j1xd59bb9j86pzl6hh5abxww9x1b7rswmy1jh"))))
+    (properties `((upstream-name . "BHC")))
+    (build-system r-build-system)
+    (home-page "https://bioconductor.org/packages/BHC/")
+    (synopsis "Bayesian hierarchical clustering")
+    (description
+     "The method implemented in this package performs bottom-up hierarchical
+clustering, using a Dirichlet Process (infinite mixture) to model uncertainty
+in the data and Bayesian model selection to decide at each step which clusters
+to merge.  This avoids several limitations of traditional methods, for example
+how many clusters there should be and how to choose a principled distance
+metric.  This implementation accepts multinomial (i.e. discrete, with 2+
+categories) or time-series data.  This version also includes a randomised
+algorithm which is more efficient for larger data sets.")
+    (license license:gpl3)))
