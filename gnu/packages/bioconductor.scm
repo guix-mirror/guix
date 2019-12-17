@@ -6783,3 +6783,35 @@ reconstruction databases.  The package facilitates @dfn{flux balance
 analysis} (FBA) and the sampling of feasible flux distributions.  Metabolic
 networks and estimated fluxes can be visualized with hypergraphs.")
     (license license:gpl3+)))
+
+(define-public r-bigmemoryextras
+  (package
+    (name "r-bigmemoryextras")
+    (version "1.34.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "bigmemoryExtras" version))
+       (sha256
+        (base32
+         "17dk7c44ikphcrpi8hnxyvlmj30qmj098kc0ihfi69bp9rw1cibq"))))
+    (properties
+     `((upstream-name . "bigmemoryExtras")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bigmemory" ,r-bigmemory)))
+    (home-page "https://github.com/phaverty/bigmemoryExtras")
+    (synopsis "Extension of the bigmemory package")
+    (description
+     "This package defines a @code{BigMatrix} @code{ReferenceClass} which adds
+safety and convenience features to the @code{filebacked.big.matrix} class from
+the @code{bigmemory} package.  @code{BigMatrix} protects against segfaults by
+monitoring and gracefully restoring the connection to on-disk data and it also
+protects against accidental data modification with a filesystem-based
+permissions system.  Utilities are provided for using @code{BigMatrix}-derived
+classes as @code{assayData} matrices within the @code{Biobase} package's
+@code{eSet} family of classes.  @code{BigMatrix} provides some optimizations
+related to attaching to, and indexing into, file-backed matrices with
+dimnames.  Additionally, the package provides a @code{BigMatrixFactor} class,
+a file-backed matrix with factor properties.")
+    (license license:artistic2.0)))
