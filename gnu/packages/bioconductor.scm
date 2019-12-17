@@ -6626,3 +6626,27 @@ metric.  This implementation accepts multinomial (i.e. discrete, with 2+
 categories) or time-series data.  This version also includes a randomised
 algorithm which is more efficient for larger data sets.")
     (license license:gpl3)))
+
+(define-public r-bicare
+  (package
+    (name "r-bicare")
+    (version "1.44.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "BicARE" version))
+       (sha256
+        (base32
+         "1gia5vzmvbk4k1vx3bh9nld1ws9s3c0y11qfbzqhfnfjbd7n8qcs"))))
+    (properties `((upstream-name . "BicARE")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-gseabase" ,r-gseabase)
+       ("r-multtest" ,r-multtest)))
+    (home-page "http://bioinfo.curie.fr")
+    (synopsis "Biclustering analysis and results exploration")
+    (description
+     "This is a package for biclustering analysis and exploration of
+results.")
+    (license license:gpl2)))
