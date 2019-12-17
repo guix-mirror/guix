@@ -18833,3 +18833,30 @@ function} (CDF) of the Poisson binomial distribution.  It also provides the
 @dfn{probability mass function} (PMF), quantile function, and random number
 generation for the Poisson binomial distribution.")
     (license license:gpl2)))
+
+(define-public r-diagram
+  (package
+    (name "r-diagram")
+    (version "1.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "diagram" version))
+       (sha256
+        (base32
+         "0f6ffprn5k0ir1s7m9s7izc64aa17r3gnygagz5bihrlsvawaavw"))))
+    (properties `((upstream-name . "diagram")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-shape" ,r-shape)))
+    (home-page "https://cran.r-project.org/web/packages/diagram/")
+    (synopsis "Visualize simple graphs (networks) and plot flow diagrams")
+    (description
+     "This package provides tools to visualize simple graphs (networks) based
+on a transition matrix, utilities to plot flow diagrams, visualizing webs,
+electrical networks, etc.  It also includes supporting material for the book
+\"A practical guide to ecological modelling - using R as a simulation
+platform\" by Karline Soetaert and Peter M.J. Herman (2009) and the book
+\"Solving Differential Equations in R\" by Karline Soetaert, Jeff Cash and
+Francesca Mazzia (2012).")
+    (license license:gpl2+)))
