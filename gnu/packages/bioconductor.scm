@@ -6926,3 +6926,33 @@ cross-target analyses of both public and custom bioassays, generation of
 preloaded database that provides access to a substantial portion of publicly
 available bioactivity data.")
     (license license:artistic2.0)))
+
+(define-public r-biobroom
+  (package
+    (name "r-biobroom")
+    (version "1.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "biobroom" version))
+       (sha256
+        (base32
+         "1480ycdsh9xdhbpr47vdw5g6m8arqsnp8hc19wwhzm8npxh4qqlb"))))
+    (properties `((upstream-name . "biobroom")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-broom" ,r-broom)
+       ("r-dplyr" ,r-dplyr)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "https://github.com/StoreyLab/biobroom")
+    (synopsis "Turn Bioconductor objects into tidy data frames")
+    (description
+     "This package contains methods for converting standard objects
+constructed by bioinformatics packages, especially those in Bioconductor, and
+converting them to @code{tidy} data.  It thus serves as a complement to the
+@code{broom} package, and follows the same tidy, augment, glance division of
+tidying methods.  Tidying data makes it easy to recombine, reshape and
+visualize bioinformatics analyses.")
+    ;; Any version of the LGPL.
+    (license license:lgpl3+)))
