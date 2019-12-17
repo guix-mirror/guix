@@ -6753,3 +6753,33 @@ manipulating hypergraphs.")
     (description
      "This package provides functions for visualizing hypergraphs.")
     (license license:gpl2+)))
+
+(define-public r-biggr
+  (package
+    (name "r-biggr")
+    (version "1.22.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "BiGGR" version))
+       (sha256
+        (base32
+         "1n2ypc84abmhn6br0yi87k7lvjc11k7abzhgvzdabc2ai1qgcqif"))))
+    (properties `((upstream-name . "BiGGR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-hyperdraw" ,r-hyperdraw)
+       ("r-hypergraph" ,r-hypergraph)
+       ("r-lim" ,r-lim)
+       ("r-limsolve" ,r-limsolve)
+       ("r-rsbml" ,r-rsbml)
+       ("r-stringr" ,r-stringr)))
+    (home-page "https://bioconductor.org/packages/BiGGR/")
+    (synopsis "Constraint based modeling using metabolic reconstruction databases")
+    (description
+     "This package provides an interface to simulate metabolic reconstruction
+from the @url{http://bigg.ucsd.edu/, BiGG database} and other metabolic
+reconstruction databases.  The package facilitates @dfn{flux balance
+analysis} (FBA) and the sampling of feasible flux distributions.  Metabolic
+networks and estimated fluxes can be visualized with hypergraphs.")
+    (license license:gpl3+)))
