@@ -12482,14 +12482,14 @@ compatible with @code{rzmq} are also provided.")
 (define-public r-repr
   (package
     (name "r-repr")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "repr" version))
        (sha256
         (base32
-         "0jy43g34r38fqprcdys0p9pliahrj5l64a9bbkzy206qgz0j5ppc"))))
+         "0wn9fdddqjgn0bdfl75x89rcxahbgqs324bhg0pfq6va5q2mlbbw"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-base64enc" ,r-base64enc)
