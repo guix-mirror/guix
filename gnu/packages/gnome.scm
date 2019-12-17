@@ -5093,32 +5093,38 @@ metadata in photo and video files of various formats.")
                 "1m9i8r4gyd2hzlxjjwfyck4kz7gdg2vz2k6l6d0ga9hdfq2l4p9l"))))
     (build-system meson-build-system)
     (arguments
-     '(#:glib-or-gtk? #t))
+     '(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           (lambda _
+             (substitute* "build-aux/meson/postinstall.py"
+               (("gtk-update-icon-cache") (which "true"))
+               (("update-desktop-database") (which "true")))
+             #t)))))
     (propagated-inputs
      `(("dconf" ,dconf)))
     (native-inputs
-     `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
-       ("gettext" ,gettext-minimal)
-       ("gtk+" ,gtk+ "bin") ; gtk-update-icon-cache
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)))
     (inputs
-     `(("glib:bin" ,glib "bin")
-       ("gstreamer" ,gstreamer)
+     `(("gcr" ,gcr)
+       ("gexiv2" ,gexiv2)
        ("gst-plugins-base" ,gst-plugins-base)
+       ("gstreamer" ,gstreamer)
+       ("json-glib" ,json-glib)
        ("libgdata" ,libgdata)
        ("libgee" ,libgee)
-       ("gexiv2" ,gexiv2)
+       ("libgphoto2" ,libgphoto2)
+       ("libgudev" ,libgudev)
        ("libraw" ,libraw)
-       ("json-glib" ,json-glib)
-       ("webkitgtk" ,webkitgtk)
-       ("sqlite" ,sqlite)
        ("libsoup" ,libsoup)
        ("libxml2" ,libxml2)
-       ("libgudev" ,libgudev)
-       ("libgphoto2" ,libgphoto2)
-       ("gcr" ,gcr)))
+       ("sqlite" ,sqlite)
+       ("webkitgtk" ,webkitgtk)))
     (home-page "https://wiki.gnome.org/Apps/Shotwell")
     (synopsis "Photo manager for GNOME 3")
     (description
