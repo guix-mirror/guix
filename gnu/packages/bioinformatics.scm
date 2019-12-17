@@ -15435,3 +15435,41 @@ files are loaded into a SQLite database, allowing much more complex
 manipulation of hierarchical features (e.g., genes, transcripts, and exons)
 than is possible with plain-text methods alone.")
       (license license:expat))))
+
+(define-public libsbml
+  (package
+    (name "libsbml")
+    (version "5.18.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/sbml/libsbml/"
+                                  version "/stable/libSBML-"
+                                  version "-core-src.tar.gz"))
+              (sha256
+               (base32
+                "0slkagrk3nfi2qsksv6b1brj6zhx4bj4bkib2sdycvrcd10ql2lh"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:configure-flags
+       (list "-DWITH_CHECK=ON"
+             (string-append "-DLIBXML_LIBRARY="
+                            (assoc-ref %build-inputs "libxml2")
+                            "/lib/libxml2.so")
+             (string-append "-DLIBXML_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "libxml2")
+                            "/include/libxml2"))))
+    (propagated-inputs
+     `(("libxml2" ,libxml2)))
+    (native-inputs
+     `(("check" ,check)
+       ("swig" ,swig)))
+    (home-page "http://sbml.org/Software/libSBML")
+    (synopsis "Process SBML files and data streams")
+    (description "LibSBML is a library to help you read, write, manipulate,
+translate, and validate SBML files and data streams.  The @dfn{Systems Biology
+Markup Language} (SBML) is an interchange format for computer models of
+biological processes.  SBML is useful for models of metabolism, cell
+signaling, and more.  It continues to be evolved and expanded by an
+international community.")
+    (license license:lgpl2.1+)))
