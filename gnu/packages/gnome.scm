@@ -219,6 +219,7 @@
      `(("hicolor-icon-theme" ,hicolor-icon-theme)))
     (native-inputs
      `(("intltool" ,intltool)
+       ("itstool" ,itstool)
        ("glib" ,glib "bin")                       ; glib-compile-schemas, etc.
        ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)))
@@ -229,7 +230,6 @@
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
        ("gtk+" ,gtk+)
-       ("itstool" ,itstool)
        ("libcanberra" ,libcanberra)
        ("libice" ,libice)
        ("libnotify" ,libnotify)
