@@ -900,6 +900,39 @@ examples' of Affymetrix data, unlike the artificial examples included in the
 package @code{affy}.")
     (license license:gpl2+)))
 
+(define-public r-curatedtcgadata
+  (package
+    (name "r-curatedtcgadata")
+    (version "1.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "curatedTCGAData" version 'experiment))
+       (sha256
+        (base32
+         "02y6cgihmsl9b4a9mmcdjjgjp06lpz04biyvxd3n5lk5gnqd9r3y"))))
+    (properties
+     `((upstream-name . "curatedTCGAData")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationhub" ,r-annotationhub)
+       ("r-experimenthub" ,r-experimenthub)
+       ("r-hdf5array" ,r-hdf5array)
+       ("r-multiassayexperiment" ,r-multiassayexperiment)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (home-page "https://bioconductor.org/packages/curatedTCGAData/")
+    (synopsis "Curated data from The Cancer Genome Atlas")
+    (description
+     "This package provides publicly available data from The Cancer Genome
+Atlas (TCGA) as @code{MultiAssayExperiment} objects.
+@code{MultiAssayExperiment} integrates multiple assays (e.g., RNA-seq, copy
+number, mutation, microRNA, protein, and others) with clinical / pathological
+data.  It also links assay barcodes with patient identifiers, enabling
+harmonized subsetting of rows (features) and columns (patients / samples)
+across the entire multi-'omics experiment.")
+    (license license:artistic2.0)))
+
 
 ;;; Packages
 
