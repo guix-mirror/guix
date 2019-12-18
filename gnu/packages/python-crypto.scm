@@ -240,10 +240,16 @@ Python interface around SSH networking concepts.")
        (sha256
         (base32 "13nx5cbfxc0gnax5zwdmp9xc40qd1llk62mv85jyrvqkbw017ik4"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (invoke "pytest"))))))
     (propagated-inputs
      `(("python-six" ,python-six)))
     (native-inputs
-     `(("openssl" ,openssl)))
+     `(("openssl" ,openssl)
+       ("python-pytest" ,python-pytest)))
     (home-page "https://github.com/warner/python-ecdsa")
     (synopsis "ECDSA cryptographic signature library (pure python)")
     (description
