@@ -498,14 +498,14 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
   (package
     (inherit mes)
     (name "mes-boot")
-    (version "0.21-33-g6d493b90d")
+    (version "0.22")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://lilypond.org/janneke/mes/"
+              (uri (string-append "mirror://gnu/mes/"
                                   "mes-" version ".tar.gz"))
               (sha256
                (base32
-                "0nr74zyam5n82svjwfbcz2mycj88vvsqab12x0mxv1lm6yqxqmmj"))))
+                "0p1jsrrmcbc0zrvbvnjbb6iyxr0in71km293q8qj6gnar6bw09av"))))
     (inputs '())
     (propagated-inputs '())
     (native-inputs
