@@ -7068,3 +7068,27 @@ symbols).")
 REACTOME pathway database.  It implements enrichment analysis, gene set
 enrichment analysis and several functions for visualization.")
     (license license:gpl2)))
+
+(define-public r-ebarrays
+  (package
+    (name "r-ebarrays")
+    (version "2.50.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "EBarrays" version))
+       (sha256
+        (base32
+         "063rhsdp8x0f881kslq06zxfp6b2qabrz4vmfrn8a4v3pd3n7s13"))))
+    (properties `((upstream-name . "EBarrays")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-cluster" ,r-cluster)
+       ("r-lattice" ,r-lattice)))
+    (home-page "https://bioconductor.org/packages/EBarrays/")
+    (synopsis "Gene clustering and differential expression identification")
+    (description
+     "EBarrays provides tools for the analysis of replicated/unreplicated
+microarray data.")
+    (license license:gpl2+)))
