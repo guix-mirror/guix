@@ -7204,3 +7204,46 @@ Bioconductor user experience by extending concepts from
 classes for individual assays, and allowing subsetting by genomic ranges or
 rownames.")
     (license license:artistic2.0)))
+
+(define-public r-bioconcotk
+  (package
+    (name "r-bioconcotk")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "BiocOncoTK" version))
+       (sha256
+        (base32
+         "0rnah6c01a33yb9663jim9iclan61rpcwprb56mykgn1pf5hywbj"))))
+    (properties `((upstream-name . "BiocOncoTK")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bigrquery" ,r-bigrquery)
+       ("r-car" ,r-car)
+       ("r-complexheatmap" ,r-complexheatmap)
+       ("r-curatedtcgadata" ,r-curatedtcgadata)
+       ("r-dbi" ,r-dbi)
+       ("r-dplyr" ,r-dplyr)
+       ("r-dt" ,r-dt)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggpubr" ,r-ggpubr)
+       ("r-graph" ,r-graph)
+       ("r-httr" ,r-httr)
+       ("r-iranges" ,r-iranges)
+       ("r-magrittr" ,r-magrittr)
+       ("r-plyr" ,r-plyr)
+       ("r-rgraphviz" ,r-rgraphviz)
+       ("r-rjson" ,r-rjson)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-scales" ,r-scales)
+       ("r-shiny" ,r-shiny)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (home-page "https://bioconductor.org/packages/BiocOncoTK")
+    (synopsis "Bioconductor components for general cancer genomics")
+    (description
+     "The purpose of this package is to provide a central interface to various
+tools for genome-scale analysis of cancer studies.")
+    (license license:artistic2.0)))
