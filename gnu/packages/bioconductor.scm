@@ -7171,3 +7171,36 @@ has associated metadata, tags and date of modification.  The client creates
 and manages a local cache of files retrieved enabling quick and reproducible
 access.")
     (license license:artistic2.0)))
+
+(define-public r-multiassayexperiment
+  (package
+    (name "r-multiassayexperiment")
+    (version "1.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "MultiAssayExperiment" version))
+       (sha256
+        (base32
+         "0hqg0b0hd5msnb4jcn1nbfyy1n1llfkipy2ivwncivkmbdn8psp4"))))
+    (properties
+     `((upstream-name . "MultiAssayExperiment")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "http://waldronlab.io/MultiAssayExperiment/")
+    (synopsis "Integration of multi-omics experiments in Bioconductor")
+    (description
+     "MultiAssayExperiment harmonizes data management of multiple assays
+performed on an overlapping set of specimens.  It provides a familiar
+Bioconductor user experience by extending concepts from
+@code{SummarizedExperiment}, supporting an open-ended mix of standard data
+classes for individual assays, and allowing subsetting by genomic ranges or
+rownames.")
+    (license license:artistic2.0)))
