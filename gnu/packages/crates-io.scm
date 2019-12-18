@@ -5540,14 +5540,14 @@ system for OpenSSL.")
 (define-public rust-openssl-sys-0.9
   (package
     (name "rust-openssl-sys")
-    (version "0.9.50")
+    (version "0.9.53")
     (source
       (origin
         (method url-fetch)
         (uri (crate-uri "openssl-sys" version))
         (file-name (string-append name "-" version ".crate"))
         (sha256
-         (base32 "1dn3capgiz77s6rpmc2sf8gadwkmhwgfd6mw4rcnnm9jp36dqhic"))))
+         (base32 "0vvk8vzrc73y8n5rf4yj3x8ygyxjaz7wxrbxiwqi7qy0gyp1cpa6"))))
     (build-system cargo-build-system)
     ;(arguments
     ; `(#:phases
