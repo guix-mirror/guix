@@ -7318,3 +7318,36 @@ that metadata from R.  The goal is to expose metadata for data mining and
 value-added functionality such as package searching, text mining, and
 analytics on packages.")
     (license license:expat)))
+
+(define-public r-biocset
+  (package
+    (name "r-biocset")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "BiocSet" version))
+       (sha256
+        (base32
+         "1xcksnvjflrdarn8xqmgf0n6wbsjkq9jazqwp35i52vqcq4ic1j9"))))
+    (properties `((upstream-name . "BiocSet")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-dplyr" ,r-dplyr)
+       ("r-keggrest" ,r-keggrest)
+       ("r-plyr" ,r-plyr)
+       ("r-rlang" ,r-rlang)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-tibble" ,r-tibble)))
+    (home-page
+     "https://bioconductor.org/packages/BiocSet")
+    (synopsis
+     "Representing Different Biological Sets")
+    (description
+     "BiocSet displays different biological sets in a triple tibble format.
+These three tibbles are @code{element}, @code{set}, and @code{elementset}.
+The user has the abilty to activate one of these three tibbles to perform
+common functions from the @code{dplyr} package.  Mapping functionality and
+accessing web references for elements/sets are also available in BiocSet.")
+    (license license:artistic2.0)))
