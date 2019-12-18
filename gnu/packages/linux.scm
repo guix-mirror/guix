@@ -188,31 +188,31 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
 
 (define deblob-scripts-5.3
   (linux-libre-deblob-scripts
-   "5.3.11"
+   "5.3.17"
    (base32 "15n09zq38d69y1wl28s3nasf3377qp2yil5b887zpqrm00dif7i4")
    (base32 "1xk3gzgnl9m29avka32zkggl36sdxyvps40hr12hjy42l1ysfshm")))
 
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
-   "4.19.84"
+   "4.19.90"
    (base32 "02zs405awaxydbapka4nz8h6lmnc0dahgczqsrs5s2bmzjyyqkcy")
-   (base32 "1s89hmy4ihd65by2p1xxkxj476f6c9s5g9r9yvqncb50xlhilk50")))
+   (base32 "0xpcl6pd1280gm81bivz45dfhy6v16j0hghxhjynmcbasgnx8vpd")))
 
 (define deblob-scripts-4.14
   (linux-libre-deblob-scripts
-   "4.14.154"
+   "4.14.159"
    (base32 "091jk9jkn9jf39bxpc7395bhcb7p96nkg3a8047380ki06lnfxh6")
-   (base32 "1pcsfzpcv3bs30iyhwpk1x64r0gyv7wi22spnq6avzj1ayva10kw")))
+   (base32 "0yd0c3qxk5rm686j4kd5v4zppjj3k9ivqnv46z4p3xh1gqmhv7cz")))
 
 (define deblob-scripts-4.9
   (linux-libre-deblob-scripts
-   "4.9.201"
+   "4.9.206"
    (base32 "1wvldzlv7q2xdbadas87dh593nxr4a8p5n0f8zpm72lja6w18hmg")
    (base32 "0is8gn4qdd7h5l6lacvhqdch26lmrbgxfm8ab7fx8n85ha7y358w")))
 
 (define deblob-scripts-4.4
   (linux-libre-deblob-scripts
-   "4.4.201"
+   "4.4.206"
    (base32 "0x2j1i88am54ih2mk7gyl79g25l9zz4r08xhl482l3fvjj2irwbw")
    (base32 "12ac4g3ky8yma8sylmxvvysqvd4hnaqjiwmxrxb6wlxggfd7zkbx")))
 
