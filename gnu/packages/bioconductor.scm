@@ -7274,3 +7274,47 @@ similarities can be calculated for pathways or gene sets, genes, or clusters
 and combined with other similarities.  They can be used to improve networks,
 gene selection, testing relationships, and so on.")
     (license license:expat)))
+
+(define-public r-biocpkgtools
+  (package
+    (name "r-biocpkgtools")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "BiocPkgTools" version))
+       (sha256
+        (base32
+         "0gyhb3071pxmvaxla7cxy9k97s3z3ynl62jnqz9jnkd53c7jnd53"))))
+    (properties `((upstream-name . "BiocPkgTools")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocmanager" ,r-biocmanager)
+       ("r-biocviews" ,r-biocviews)
+       ("r-dplyr" ,r-dplyr)
+       ("r-dt" ,r-dt)
+       ("r-gh" ,r-gh)
+       ("r-graph" ,r-graph)
+       ("r-htmltools" ,r-htmltools)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-httr" ,r-httr)
+       ("r-igraph" ,r-igraph)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-magrittr" ,r-magrittr)
+       ("r-rbgl" ,r-rbgl)
+       ("r-readr" ,r-readr)
+       ("r-rex" ,r-rex)
+       ("r-rvest" ,r-rvest)
+       ("r-stringr" ,r-stringr)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)
+       ("r-xml2" ,r-xml2)))
+    (home-page "https://github.com/seandavi/BiocPkgTools")
+    (synopsis "Collection of tools for learning about Bioconductor packages")
+    (description
+     "Bioconductor has a rich ecosystem of metadata around packages, usage,
+and build status.  This package is a simple collection of functions to access
+that metadata from R.  The goal is to expose metadata for data mining and
+value-added functionality such as package searching, text mining, and
+analytics on packages.")
+    (license license:expat)))
