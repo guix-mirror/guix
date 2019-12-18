@@ -47,6 +47,28 @@
 
 ;;; Annotations
 
+(define-public r-reactome-db
+  (package
+    (name "r-reactome-db")
+    (version "1.70.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "reactome.db" version 'annotation))
+       (sha256
+        (base32
+         "05wc4fp0faq6h3kq5rwafnips043as31yq11mrjngfxvf5i10srg"))))
+    (properties `((upstream-name . "reactome.db")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)))
+    (home-page "https://bioconductor.org/packages/reactome.db/")
+    (synopsis "Annotation maps for reactome")
+    (description
+     "This package provides a set of annotation maps for the REACTOME
+database, assembled using data from REACTOME.")
+    (license license:cc-by4.0)))
+
 (define-public r-bsgenome-celegans-ucsc-ce6
   (package
     (name "r-bsgenome-celegans-ucsc-ce6")
