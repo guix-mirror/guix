@@ -7351,3 +7351,34 @@ The user has the abilty to activate one of these three tibbles to perform
 common functions from the @code{dplyr} package.  Mapping functionality and
 accessing web references for elements/sets are also available in BiocSet.")
     (license license:artistic2.0)))
+
+(define-public r-biocworkflowtools
+  (package
+    (name "r-biocworkflowtools")
+    (version "1.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "BiocWorkflowTools" version))
+       (sha256
+        (base32
+         "1v4bhnpdkmllm7aghms9b7369hkrgz7mn69wbrqg1x42pgkf30ad"))))
+    (properties
+     `((upstream-name . "BiocWorkflowTools")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocstyle" ,r-biocstyle)
+       ("r-bookdown" ,r-bookdown)
+       ("r-git2r" ,r-git2r)
+       ("r-httr" ,r-httr)
+       ("r-knitr" ,r-knitr)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("r-rstudioapi" ,r-rstudioapi)
+       ("r-stringr" ,r-stringr)
+       ("r-usethis" ,r-usethis)))
+    (home-page "https://bioconductor.org/packages/BiocWorkflowTools/")
+    (synopsis "Tools to aid the development of Bioconductor Workflow packages")
+    (description
+     "This package provides functions to ease the transition between
+Rmarkdown and LaTeX documents when authoring a Bioconductor Workflow.")
+    (license license:expat)))
