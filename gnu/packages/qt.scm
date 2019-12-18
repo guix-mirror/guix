@@ -2161,8 +2161,7 @@ color-related widgets.")
        `(("libcxx" ,libcxx-6)
          ("libxml2" ,libxml2)
          ("libxslt" ,libxslt)
-         ("llvm-6" ,llvm-6)
-         ("clang-6" ,clang-6)
+         ("clang-toolchain" ,clang-toolchain-6)
          ("qtbase" ,qtbase)
          ("qtdatavis3d" ,qtdatavis3d)
          ("qtlocation" ,qtlocation)
@@ -2188,13 +2187,12 @@ color-related widgets.")
          ;; FIXME: Building tests fail.
          #:configure-flags '("-DBUILD_TESTS=FALSE")
          #:phases
-         (modify-phases
-             %standard-phases
+         (modify-phases %standard-phases
            (add-after 'unpack 'go-to-source-dir
              (lambda _ (chdir "sources/pyside2") #t))
            (add-before 'configure 'set-clang-dir
              (lambda* (#:key inputs #:allow-other-keys)
-               (let ((clang (assoc-ref inputs "clang-6"))
+               (let ((clang (assoc-ref inputs "clang-toolchain"))
                      (libcxx (assoc-ref inputs "libcxx")))
                  (setenv "CLANG_INSTALL_DIR" clang)
                  (substitute* "cmake/Macros/PySideModules.cmake"
