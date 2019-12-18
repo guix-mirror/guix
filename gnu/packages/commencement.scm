@@ -1497,12 +1497,6 @@ ac_cv_c_float_format='IEEE (little-endian)'
     (native-inputs `(("boot-patch" ,(search-patch "glibc-boot-2.2.5.patch"))
                      ("system-patch" ,(search-patch "glibc-bootstrap-system-2.2.5.patch"))
                      ("headers" ,mesboot-headers)
-                     ;; XXX: make-syscalls.sh does not run correctly with
-                     ;; bash-mesboot0, producing a wrong sysd-syscalls.
-                     ;; This leads to posix/uname.c getting compiled where it
-                     ;; shouldn't:
-                     ;; ../sysdeps/generic/uname.c:25: config-name.h: error 02
-                     ("bash" ,gash-boot)
                      ,@(%boot-mesboot-core-inputs)))
     (outputs '("out"))
     (arguments
