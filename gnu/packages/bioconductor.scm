@@ -7092,3 +7092,25 @@ enrichment analysis and several functions for visualization.")
      "EBarrays provides tools for the analysis of replicated/unreplicated
 microarray data.")
     (license license:gpl2+)))
+
+(define-public r-bioccasestudies
+  (package
+    (name "r-bioccasestudies")
+    (version "1.48.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "BiocCaseStudies" version))
+       (sha256
+        (base32
+         "1sg9vxs24zfz3dg9y0qlrdsq43y0pbahbvcfxzlxjzjw80xzxpbd"))))
+    (properties
+     `((upstream-name . "BiocCaseStudies")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-biobase" ,r-biobase)))
+    (home-page "https://bioconductor.org/packages/BiocCaseStudies")
+    (synopsis "Support for the case studies monograph")
+    (description
+     "This package provides software and data to support the case studies
+monograph.")
+    (license license:artistic2.0)))
