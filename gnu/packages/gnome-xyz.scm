@@ -213,3 +213,37 @@ It uses ES6 syntax and claims to be more actively maintained than others.")
 dark elements.  It supports GNOME, Unity, Xfce, and Openbox.")
     (home-page "https://numixproject.github.io")
     (license license:gpl3+)))
+
+(define-public papirus-icon-theme
+  (let ((version "0.0.0") ;; The package does not use semver
+        (revision "0")
+        (tag "20191201"))
+    (package
+      (name "papirus-icon-theme")
+      (version (git-version version revision tag))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/PapirusDevelopmentTeam/papirus-icon-theme.git")
+               (commit tag)))
+         (sha256
+          (base32
+           "0lnz1kmz28xh1f4slbsx7ycji5hgszyiyprbf5w5fbjhvi5gzw1h"))
+         (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'bootstrap)
+         (delete 'configure)
+         (delete 'build))))
+      (native-inputs
+       `(("gtk+:bin" ,gtk+ "bin")))
+      (home-page "https://git.io/papirus-icon-theme")
+      (synopsis "Fork of Paper icon theme with a lot of new icons and a few extras")
+      (description "Papirus is a fork of the icon theme Paper with a lot of new icons
+and a few extra features.")
+      (license license:gpl3))))

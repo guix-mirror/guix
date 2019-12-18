@@ -361,7 +361,7 @@ photographic equipment.")
 (define-public darktable
   (package
     (name "darktable")
-    (version "2.6.2")
+    (version "2.6.3")
     (source
      (origin
        (method url-fetch)
@@ -369,27 +369,25 @@ photographic equipment.")
              "https://github.com/darktable-org/darktable/releases/"
              "download/release-" version "/darktable-" version ".tar.xz"))
        (sha256
-        (base32 "0igvgyd042j7hm4y8fcm6dc1qqjs4d1r7y6f0pzpa0x416xyzfcw"))))
+        (base32 "1w3q3dhcxa0bs590zbsj61ap8z84wmn04xs5q3gjwisqhjf9j655"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
        #:configure-flags '("-DBINARY_PACKAGE_BUILD=On")
-       #:make-flags
-       (list
-        (string-append "CPATH=" (assoc-ref %build-inputs "ilmbase")
-                       "/include/OpenEXR:" (or (getenv "CPATH") "")))
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'set-ldflags
-           (lambda* (#:key outputs #:allow-other-keys)
+         (add-before 'configure 'set-LDFLAGS-and-CPATH
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              (setenv "LDFLAGS"
                      (string-append
                       "-Wl,-rpath="
                       (assoc-ref outputs "out") "/lib/darktable"))
+
+             ;; Ensure the OpenEXR headers are found.
+             (setenv "CPATH"
+                     (string-append (assoc-ref inputs "ilmbase")
+                                    "/include/OpenEXR:" (or (getenv "CPATH") "")))
              #t)))))
-    (native-inputs
-     `(("llvm" ,llvm-3.9.1)
-       ("clang" ,clang-3.9.1)))
     (inputs
      `(("libxslt" ,libxslt)
        ("libxml2" ,libxml2)

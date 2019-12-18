@@ -67,6 +67,7 @@
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2019 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -15889,41 +15890,63 @@ append on old values.  Partd excels at shuffling operations.")
 (define-public python2-partd
   (package-with-python2 python-partd))
 
+(define-public python-fsspec
+  (package
+    (name "python-fsspec")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "fsspec" version))
+       (sha256
+        (base32
+         "1g9ba8v04s1nrh7pvzfm2md7ivl2mrz3hcq3y9d1a44gd62h17zj"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f))          ; there are none
+    (home-page "https://github.com/intake/filesystem_spec")
+    (synopsis "File-system specification")
+    (description "The purpose of this package is to produce a template or
+specification for a file-system interface, that specific implementations
+should follow, so that applications making use of them can rely on a common
+behavior and not have to worry about the specific internal implementation
+decisions with any given backend.")
+    (license license:bsd-3)))
+
 (define-public python-dask
   (package
     (name "python-dask")
-    (version "1.2.2")
+    (version "2.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "dask" version))
        (sha256
-        (base32 "0b29gvf96gmp20wicly3v3mhyc93zbm3mdv935fka6x0wax7cy2y"))))
+        (base32 "1w1hqr8vyx6ygwflj2737dcy0mmgvrc0s602gnny8pzlcbs9m76b"))))
     (build-system python-build-system)
-    ;; A single test out of 5000+ fails.  This test is marked as xfail when
-    ;; pytest-xdist is used.
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'disable-broken-test
+         (add-after 'unpack 'disable-broken-tests
            (lambda _
+             ;; This test is marked as xfail when pytest-xdist is used.
              (substitute* "dask/tests/test_threaded.py"
                (("def test_interrupt\\(\\)" m)
                 (string-append "@pytest.mark.skip(reason=\"Disabled by Guix\")\n"
                                m)))
-             (when (which "python2")
-               ;; This test fails with recent Pandas:
-               ;; <https://github.com/dask/dask/issues/3794>.
-               (substitute* "dask/dataframe/tests/test_dataframe.py"
-                 (("def test_info\\(\\)" m)
-                  (string-append "@pytest.mark.skip(reason=\"Disabled by Guix\")\n"
-                                 m))))
+             ;; This one fails with a type error:
+             ;; TypeError: Already tz-aware, use tz_convert to convert.
+             (substitute* "dask/dataframe/tests/test_shuffle.py"
+               (("def test_set_index_timestamp\\(\\)" m)
+                (string-append "@pytest.mark.skip(reason=\"Disabled by Guix\")\n"
+                               m)))
              #t))
          (replace 'check
            (lambda _ (invoke "pytest" "-vv"))))))
     (propagated-inputs
      `(("python-cloudpickle" ,python-cloudpickle)
+       ("python-fsspec" ,python-fsspec)
        ("python-numpy" ,python-numpy)
+       ("python-packaging" ,python-packaging)
        ("python-pandas" ,python-pandas)
        ("python-partd" ,python-partd)
        ("python-toolz" ,python-toolz)
@@ -15941,9 +15964,6 @@ extend common interfaces like NumPy, Pandas, or Python iterators to
 larger-than-memory or distributed environments.  These parallel collections
 run on top of the dynamic task schedulers. ")
     (license license:bsd-3)))
-
-(define-public python2-dask
-  (package-with-python2 python-dask))
 
 (define-public python-ilinkedlist
   (package
@@ -16786,3 +16806,78 @@ services to what you expect in your tests.")
 
 (define-public python2-ujson
   (package-with-python2 python-ujson))
+
+(define-public python-iocapture
+  ;; The latest release is more than a year older than this commit.
+  (let ((commit "fdc021c431d0840303908dfc3ca8769db383595c")
+        (revision "1"))
+    (package
+      (name "python-iocapture")
+      (version "0.1.2")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/oinume/iocapture.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1mkbhqibxvgwg0p7slr8dfraa3g2s6bsayladhax2jccwj4kcndz"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (delete 'check)
+           (add-after 'install 'check
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (add-installed-pythonpath inputs outputs)
+               (invoke "py.test" "-v" "tests")
+               #t)))))
+      (propagated-inputs
+       `(("python-flexmock" ,python-flexmock)
+         ("python-pytest" ,python-pytest)
+         ("python-pytest-cov" ,python-pytest-cov)
+         ("python-six" ,python-six)))
+      (home-page "https://github.com/oinume/iocapture")
+      (synopsis "Python capturing tool for stdout and stderr")
+      (description
+       "This package helps you to capture the standard out (stdout) and the
+standard error channel (stderr) in your program.")
+      (license license:expat))))
+
+(define-public python-argh
+  ;; There are 21 commits since the latest release containing important
+  ;; improvements.
+  (let ((commit "dcd3253f2994400a6a58a700c118c53765bc50a4")
+        (revision "1"))
+    (package
+      (name "python-argh")
+      (version (git-version "0.26.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/neithere/argh.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1p5h3dnpbsjmqrvil96s71asc6i3gpinmbrabqmwnrsxprz7r3ns"))))
+      (build-system python-build-system)
+      (propagated-inputs
+       `(("python-iocapture" ,python-iocapture)
+         ("python-mock" ,python-mock)
+         ("python-pytest" ,python-pytest)
+         ("python-pytest-cov" ,python-pytest-cov)
+         ("python-pytest-xdist" ,python-pytest-xdist)
+         ("python-tox" ,python-tox)))
+      (home-page "https://github.com/neithere/argh/")
+      (synopsis "Argparse wrapper with natural syntax")
+      (description
+       "python-argh is a small library that provides several layers of
+abstraction on top of @code{python-argparse}.  The layers can be mixed.  It is
+always possible to declare a command with the highest possible (and least
+flexible) layer and then tune the behaviour with any of the lower layers
+including the native API of @code{python-argparse}.")
+      (license license:lgpl3+))))

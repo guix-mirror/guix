@@ -2,7 +2,8 @@
 ;;; Copyright © 2012, 2013, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,12 +23,17 @@
 (define-module (gnu packages texinfo)
   #:use-module (guix licenses)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages perl))
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages readline))
 
 (define-public texinfo
   (package
@@ -180,4 +186,53 @@ GNU Texinfo.  The Texi2HTML maintainers (one of whom is the principal author
 of the GNU Texinfo implementation) do not intend to make further releases of
 Texi2HTML.")
     ;; Files in /lib under lgpl2.1+ and x11
+    (license gpl2+)))
+
+(define-public pinfo
+  (package
+    (name "pinfo")
+    (version "0.6.13")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/baszoetekouw/pinfo.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "173d2p22irwiabvr4z6qvr6zpr6ysfkhmadjlyhyiwd7z62larvy"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-Werror
+           (lambda _
+             (substitute* "configure.ac"
+               (("-Werror") ""))
+             #t))
+         (add-after 'unpack 'embed-reference-to-clear
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* '("src/manual.c"
+                            "src/mainfunction.c"
+                            "src/utils.c")
+               (("\"clear\"")
+                (string-append "\"" (which "clear") "\"")))
+             #t)))))
+    (inputs
+     `(("ncurses" ,ncurses)
+       ("readline" ,readline)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gnu-gettext)
+       ("libtool" ,libtool)
+       ("texinfo" ,texinfo)))
+    (home-page "https://github.com/baszoetekouw/pinfo")
+    (synopsis "Lynx-style Info file and man page reader")
+    (description
+     "Pinfo is an Info file viewer.  Pinfo is similar in use to the Lynx web
+browser.  You just move across info nodes, and select links, follow them, etc.
+It supports many colors.  Pinfo also supports viewing of manual pages -- they
+are colorized like in the midnight commander's viewer, and additionaly they
+are hypertextualized.")
     (license gpl2+)))

@@ -188,31 +188,31 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
 
 (define deblob-scripts-5.3
   (linux-libre-deblob-scripts
-   "5.3.11"
+   "5.3.17"
    (base32 "15n09zq38d69y1wl28s3nasf3377qp2yil5b887zpqrm00dif7i4")
    (base32 "1xk3gzgnl9m29avka32zkggl36sdxyvps40hr12hjy42l1ysfshm")))
 
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
-   "4.19.84"
+   "4.19.90"
    (base32 "02zs405awaxydbapka4nz8h6lmnc0dahgczqsrs5s2bmzjyyqkcy")
-   (base32 "1s89hmy4ihd65by2p1xxkxj476f6c9s5g9r9yvqncb50xlhilk50")))
+   (base32 "0xpcl6pd1280gm81bivz45dfhy6v16j0hghxhjynmcbasgnx8vpd")))
 
 (define deblob-scripts-4.14
   (linux-libre-deblob-scripts
-   "4.14.154"
+   "4.14.159"
    (base32 "091jk9jkn9jf39bxpc7395bhcb7p96nkg3a8047380ki06lnfxh6")
-   (base32 "1pcsfzpcv3bs30iyhwpk1x64r0gyv7wi22spnq6avzj1ayva10kw")))
+   (base32 "0yd0c3qxk5rm686j4kd5v4zppjj3k9ivqnv46z4p3xh1gqmhv7cz")))
 
 (define deblob-scripts-4.9
   (linux-libre-deblob-scripts
-   "4.9.201"
+   "4.9.206"
    (base32 "1wvldzlv7q2xdbadas87dh593nxr4a8p5n0f8zpm72lja6w18hmg")
    (base32 "0is8gn4qdd7h5l6lacvhqdch26lmrbgxfm8ab7fx8n85ha7y358w")))
 
 (define deblob-scripts-4.4
   (linux-libre-deblob-scripts
-   "4.4.201"
+   "4.4.206"
    (base32 "0x2j1i88am54ih2mk7gyl79g25l9zz4r08xhl482l3fvjj2irwbw")
    (base32 "12ac4g3ky8yma8sylmxvvysqvd4hnaqjiwmxrxb6wlxggfd7zkbx")))
 
@@ -356,26 +356,26 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-(define-public linux-libre-5.3-version "5.3.15")
+(define-public linux-libre-5.3-version "5.3.18")
 (define-public linux-libre-5.3-pristine-source
   (let ((version linux-libre-5.3-version)
-        (hash (base32 "15qidl06lyfylx1b43b4wz2zfkr4000bkr7ialslmb7yi7mamj6f")))
+        (hash (base32 "133342nv9ddjad2rizmcbilg9rhg339sfqr9l77j4cgkqhblkw90")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.3)))
 
-(define-public linux-libre-4.19-version "4.19.88")
+(define-public linux-libre-4.19-version "4.19.90")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "1gizkdmq46ykw7ya3hibd6lalww2kvsia346pq3xvrk6s5mkp4n1")))
+        (hash (base32 "1zgpbim9019aymvgh0fr5g2r9j2xspw14amlnk09w5mgdl56rn19")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.158")
+(define-public linux-libre-4.14-version "4.14.159")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "1cqvr8pgqx005a9qyphqykakzwc54adq8mmdc9sgrxkkw9rfqj8d")))
+        (hash (base32 "1wi6m3w40z0v9krb12g9q09s9y471r51rhcv3qa81lc53cx2vm78")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
@@ -1078,6 +1078,13 @@ at login.  Local and dynamic reconfiguration are its key features.")
       (sha256
        (base32 "16i7qzjmm6g0lzha8yzpfrlcxnvkgh95hkq9gdjd4zmzb8d0wxa1"))))
     (build-system gnu-build-system)
+    (arguments
+     `(,@(if (%current-target-system)
+             '(#:configure-flags
+               (list
+                "ac_cv_func_malloc_0_nonnull=yes"
+                "ac_cv_func_realloc_0_nonnull=yes"))
+             '())))
     (inputs `(("ncurses" ,ncurses)))
     (home-page "https://gitlab.com/psmisc/psmisc")
     (synopsis "Small utilities that use the proc file system")
@@ -2075,8 +2082,18 @@ configuration and monitoring interfaces.")
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("libnl" ,libnl)))
     (arguments
-     `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-                          "CC=gcc")
+     `(#:make-flags
+       (let* ((target ,(%current-target-system))
+              (gcc (if target (string-append target "-gcc") "gcc"))
+              (pkg-config (if target
+                              (string-append target "-pkg-config")
+                              "pkg-config")))
+         (list
+          (string-append "CC=" gcc)
+          (string-append "PKG_CONFIG="
+                         (assoc-ref %build-inputs "pkg-config")
+                         "/bin/" pkg-config)
+          (string-append "PREFIX=" (assoc-ref %outputs "out"))))
        #:phases (modify-phases %standard-phases (delete 'configure))))
     (home-page "https://wireless.wiki.kernel.org/")
     (synopsis "Tool for configuring wireless devices")

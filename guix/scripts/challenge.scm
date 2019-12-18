@@ -321,8 +321,9 @@ specified in COMPARISON-REPORT."
         (define narinfo1
           (if local-hash
               (find (lambda (narinfo)
-                      (not (string=? (narinfo-hash narinfo)
-                                     local-hash)))
+                      (not (bytevector=? (narinfo-hash->sha256
+                                          (narinfo-hash narinfo))
+                                         local-hash)))
                     narinfos)
               (first (comparison-report-narinfos comparison-report))))
 

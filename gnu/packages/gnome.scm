@@ -193,9 +193,9 @@
     (version "3.12.2")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://gnome/sources/" name "/"
+             (uri (string-append "mirror://gnome/sources/brasero/"
                                  (version-major+minor version) "/"
-                                 name "-" version ".tar.xz"))
+                                 "brasero-" version ".tar.xz"))
              (sha256
               (base32
                "0h90y674j26rvjahb8cc0w79zx477rb6zaqcj26wzvq8kmpic8k8"))))
@@ -219,6 +219,7 @@
      `(("hicolor-icon-theme" ,hicolor-icon-theme)))
     (native-inputs
      `(("intltool" ,intltool)
+       ("itstool" ,itstool)
        ("glib" ,glib "bin")                       ; glib-compile-schemas, etc.
        ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)))
@@ -229,14 +230,13 @@
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
        ("gtk+" ,gtk+)
-       ("itstool" ,itstool)
        ("libcanberra" ,libcanberra)
        ("libice" ,libice)
        ("libnotify" ,libnotify)
        ("libsm" ,libsm)
        ("libxml2" ,libxml2)
        ("totem-pl-parser" ,totem-pl-parser)))
-    (home-page "https://projects.gnome.org/brasero/")
+    (home-page "https://wiki.gnome.org/Apps/Brasero")
     (synopsis "CD/DVD burning tool for Gnome")
     (description "Brasero is an application to burn CD/DVD for the Gnome
 Desktop.  It is designed to be as simple as possible and has some unique
@@ -328,39 +328,40 @@ either on a local, or remote machine via a number of methods.")
   (let ((commit "fbc306168edab63db80b904956117cbbdc514ee4"))
     (package
       (name "dia")
-      (version (string-append "0.97.2-" (string-take commit 7)))
+      (version (git-version "0.97.3" "1" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://git.gnome.org/browse/dia")
+                      (url "https://gitlab.gnome.org/GNOME/dia.git/")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "1b4bba0k8ph4cwgw8xjglss0p6n111bpd5app67lrq79mp0ad06l"))))
       (build-system gnu-build-system)
       (inputs
-       `(("glib" ,glib "bin")
-         ("pango" ,pango)
+       `(("freetype" ,freetype)
          ("gdk-pixbuf" ,gdk-pixbuf)
          ("gtk+" ,gtk+-2)
+         ("libart-lgpl" ,libart-lgpl)
          ("libxml2" ,libxml2)
-         ("freetype" ,freetype)
-         ("libart-lgpl" ,libart-lgpl)))
+         ("pango" ,pango)))
       (native-inputs
-       `(("intltool" ,intltool)
-         ("pkg-config" ,pkg-config)
+       `(("autoconf" ,autoconf)
          ("automake" ,automake)
-         ("autoconf" ,autoconf)
+         ("intltool" ,intltool)
+         ("glib" ,glib "bin")
          ("libtool" ,libtool)
          ("perl" ,perl)
+         ("pkg-config" ,pkg-config)
          ("python-wrapper" ,python-wrapper)))
       (arguments
        `(#:phases
          (modify-phases %standard-phases
-           (add-after 'unpack 'run-autogen
+           (add-before 'bootstrap 'dont-configure-during-bootstrap
              (lambda _
-               (system* "sh" "autogen.sh"))))))
+               (setenv "NOCONFIGURE" "true")
+               #t)))))
       (home-page "https://wiki.gnome.org/Apps/Dia")
       (synopsis "Diagram creation for GNOME")
       (description "Dia can be used to draw different types of diagrams, and
@@ -1779,10 +1780,9 @@ library.")
     (version "0.8.14")
     (source (origin
               (method url-fetch)
-              (uri (let ((upstream-name "libIDL"))
-		     (string-append "mirror://gnome/sources/" upstream-name "/"
-                                    (version-major+minor version) "/"
-                                    upstream-name "-" version ".tar.bz2")))
+              (uri (string-append "mirror://gnome/sources/libIDL/"
+                                  (version-major+minor version) "/"
+                                  "libIDL-" version ".tar.bz2"))
               (sha256
                (base32
                 "08129my8s9fbrk0vqvnmx6ph4nid744g5vbwphzkaik51664vln5"))))
@@ -1799,6 +1799,7 @@ Definition Language (idl) files, which is a specification for defining
 portable interfaces. libidl was initially written for orbit (the orb from the
 GNOME project, and the primary means of libidl distribution).  However, the
 functionality was designed to be as reusable and portable as possible.")
+    (properties `((upstream-name . "libIDL")))
     (license license:lgpl2.0+)))
 
 
@@ -5092,32 +5093,38 @@ metadata in photo and video files of various formats.")
                 "1m9i8r4gyd2hzlxjjwfyck4kz7gdg2vz2k6l6d0ga9hdfq2l4p9l"))))
     (build-system meson-build-system)
     (arguments
-     '(#:glib-or-gtk? #t))
+     '(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           (lambda _
+             (substitute* "build-aux/meson/postinstall.py"
+               (("gtk-update-icon-cache") (which "true"))
+               (("update-desktop-database") (which "true")))
+             #t)))))
     (propagated-inputs
      `(("dconf" ,dconf)))
     (native-inputs
-     `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
-       ("gettext" ,gettext-minimal)
-       ("gtk+" ,gtk+ "bin") ; gtk-update-icon-cache
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)))
     (inputs
-     `(("glib:bin" ,glib "bin")
-       ("gstreamer" ,gstreamer)
+     `(("gcr" ,gcr)
+       ("gexiv2" ,gexiv2)
        ("gst-plugins-base" ,gst-plugins-base)
+       ("gstreamer" ,gstreamer)
+       ("json-glib" ,json-glib)
        ("libgdata" ,libgdata)
        ("libgee" ,libgee)
-       ("gexiv2" ,gexiv2)
+       ("libgphoto2" ,libgphoto2)
+       ("libgudev" ,libgudev)
        ("libraw" ,libraw)
-       ("json-glib" ,json-glib)
-       ("webkitgtk" ,webkitgtk)
-       ("sqlite" ,sqlite)
        ("libsoup" ,libsoup)
        ("libxml2" ,libxml2)
-       ("libgudev" ,libgudev)
-       ("libgphoto2" ,libgphoto2)
-       ("gcr" ,gcr)))
+       ("sqlite" ,sqlite)
+       ("webkitgtk" ,webkitgtk)))
     (home-page "https://wiki.gnome.org/Apps/Shotwell")
     (synopsis "Photo manager for GNOME 3")
     (description

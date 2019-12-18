@@ -67,7 +67,7 @@
   #:use-module (ice-9 match))
 
 (define-public diffoscope
-  (let ((version "131"))
+  (let ((version "133"))
     (package
       (name "diffoscope")
       (version version)
@@ -79,7 +79,7 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0jai3kycjlrc64f4vg8yklri6ds1451qy6r6sw2646bhjr0gs233"))))
+                  "0mvg5iyd3zjxsm66vax3qb89214j3wxcklvbhfrr8jlbzaw9pznh"))))
       (build-system python-build-system)
       (arguments
        `(#:phases (modify-phases %standard-phases
@@ -90,6 +90,12 @@
                       (lambda _
                         (substitute* "setup.py"
                           (("'python-magic',") ""))))
+                    ;; Patch in support for known tools
+                    (add-after 'unpack 'add-known-tools
+                      (lambda _
+                        (substitute* "diffoscope/external_tools.py"
+                          (("'debian': 'zstd'")
+                           "'debian': 'zstd', 'guix': 'zstd'"))))
                     ;; This test is broken because our `file` package has a
                     ;; bug in berkeley-db file type detection.
                     (add-after 'unpack 'remove-berkeley-test
@@ -209,7 +215,8 @@
                        ("wabt" ,wabt)
                        ("xxd" ,xxd)
                        ("xz" ,xz)
-                       ("zip" ,zip)))
+                       ("zip" ,zip)
+                       ("zstd" ,zstd)))
       (home-page "https://diffoscope.org/")
       (synopsis "Compare files, archives, and directories in depth")
       (description

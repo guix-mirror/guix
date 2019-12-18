@@ -98,7 +98,7 @@
                                                 (or (pred x)
                                                     (one-of rest ...))))))
                        (one-of symbol? string? keyword? pair? null? array?
-                               number? boolean?)))
+                               number? boolean? char?)))
 
                    (match (primitive-fork)
                      (0

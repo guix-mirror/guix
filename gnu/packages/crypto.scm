@@ -884,10 +884,10 @@ trivial to build for local use.  Portability is emphasized over performance.")
     (license license:unlicense)))
 
 (define-public libsecp256k1
-  (let ((commit "e34ceb333b1c0e6f4115ecbb80c632ac1042fa49"))
+  (let ((commit "d644dda5c9dbdecee52d1aa259235510fdc2d4ee"))
     (package
       (name "libsecp256k1")
-      (version (git-version "20181126" "1" commit))
+      (version (git-version "20191213" "1" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -895,7 +895,7 @@ trivial to build for local use.  Portability is emphasized over performance.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0as78s179hcr3ysk3fw98k5wzabgnwri7vkkc17wg31lyz6ids6c"))
+                  "0zmx32746khsm2cx0p3pdy3j2vkwmafvf7axiixijhgcg0xjv93i"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (native-inputs

@@ -73,6 +73,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages statistics)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xorg))
@@ -729,10 +730,34 @@ objects in HTML format.")
 and vice-versa.")
     (license license:gpl2+)))
 
+(define-public r-fastmap
+  (package
+    (name "r-fastmap")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fastmap" version))
+       (sha256
+        (base32
+         "1v7sp56xiha0bh78g3w92k52p9vkp7ryzpw0z66nyddxzrfv0y27"))))
+    (properties `((upstream-name . "fastmap")))
+    (build-system r-build-system)
+    (home-page "https://r-lib.github.io/fastmap/")
+    (synopsis "Fast implementation of a key-value store")
+    (description
+     "This package provides a fast implementation of a key-value store.
+Environments are commonly used as key-value stores, but every time a new key
+is used, it is added to R's global symbol table, causing a small amount of
+memory leakage.  This can be problematic in cases where many different keys
+are used.  Fastmap avoids this memory leak issue by implementing the map using
+data structures in C++.")
+    (license license:expat)))
+
 (define-public r-shiny
   (package
     (name "r-shiny")
-    (version "1.2.0")
+    (version "1.4.0")
     (source
      (origin
        (method git-fetch)
@@ -742,7 +767,7 @@ and vice-versa.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1kl3dh68h4cnrm3rqn9pddk5n6bsmr5x0626bkfv0qqi0q92zin4"))))
+         "17ac48g414h9dhi0k4wrah4gyik0q5r0xw3kc01c02qfjwimqsx7"))))
     (build-system r-build-system)
     (arguments
      `(#:modules ((guix build r-build-system)
@@ -771,7 +796,7 @@ and vice-versa.")
                                               "/share/javascript/html5shiv.min.js"))
                  (replace-file "json2-min.js"
                                (string-append (assoc-ref inputs "js-json2")
-                                              "/share/javascript/json2.min.js"))
+                                              "/share/javascript/json2-min.js"))
                  (replace-file "strftime/strftime-min.js"
                                (string-append (assoc-ref inputs "js-strftime")
                                               "/share/javascript/strftime.min.js"))
@@ -802,10 +827,15 @@ and vice-versa.")
                              ("shiny.js" .
                               "shiny.min.js")
                              ("jquery.js" .
-                              "jquery.min.js")))))
+                              "jquery.min.js")
+                             ("legacy/jquery.js" .
+                              "legacy/jquery.min.js")
+                             ("showdown/src/showdown.js" .
+                              "showdown/compressed/showdown.js")))))
              #t)))))
     (propagated-inputs
      `(("r-crayon" ,r-crayon)
+       ("r-fastmap" ,r-fastmap)
        ("r-httpuv" ,r-httpuv)
        ("r-mime" ,r-mime)
        ("r-jsonlite" ,r-jsonlite)
@@ -1262,14 +1292,14 @@ coordinates.")
 (define-public r-rgooglemaps
   (package
     (name "r-rgooglemaps")
-    (version "1.4.4")
+    (version "1.4.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RgoogleMaps" version))
        (sha256
         (base32
-         "0sbklacc4jl5524ixhc11mh6smrzdz4l9pji6cn402i6zdn9z05x"))))
+         "1acf0qc9597apcidjzrpvwhg9ihypr38jigc10jvqn33qbn1i9s7"))))
     (properties `((upstream-name . "RgoogleMaps")))
     (build-system r-build-system)
     (propagated-inputs `(("r-png" ,r-png)))
@@ -1394,13 +1424,13 @@ embedded @url{https://github.com/WizardMac/ReadStat,ReadStat} C library.")
 (define-public r-amap
   (package
     (name "r-amap")
-    (version "0.8-17")
+    (version "0.8-18")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "amap" version))
               (sha256
                (base32
-                "1il94bkhl8192vawq4gr2gwyhqhid27jr2312rhvr72ssg8p713b"))))
+                "0zpcb73w413na23f6giml9311jh0j0y766w2fh9i40d2h7bbvyvs"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
@@ -2747,14 +2777,14 @@ dimensioned arrays.")
 (define-public r-rmysql
   (package
     (name "r-rmysql")
-    (version "0.10.17")
+    (version "0.10.18")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RMySQL" version))
        (sha256
         (base32
-         "1xamf99ih44dvaxg5x4ivj0hkqssmabgqd7gh8b8q1srw7yg8kbm"))))
+         "0r4626sk78fhlgivr0c7mwg9mj29ayr0iz5x90rdl4d5nc2r6kq4"))))
     (properties `((upstream-name . "RMySQL")))
     (build-system r-build-system)
     (inputs
@@ -3015,14 +3045,14 @@ by base R methods related to model fitting.")
 (define-public r-broom
   (package
     (name "r-broom")
-    (version "0.5.2")
+    (version "0.5.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "broom" version))
        (sha256
         (base32
-         "0qmclih5dm5sqzy4hplcfy677kr12pm9pnpv3r319g14dd27pbqn"))))
+         "177m249dxbf9pf249610qrl58v025ws41ipfihy66751pwsv2n8d"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-backports" ,r-backports)
@@ -3206,14 +3236,14 @@ with the package @code{optim}.")
 (define-public r-ordinal
   (package
     (name "r-ordinal")
-    (version "2019.4-25")
+    (version "2019.12-10")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ordinal" version))
        (sha256
         (base32
-         "1pvrkly4x12w32n7w1qljdwzqnlkv7rfa7rx0nz5vbiw29xas4i8"))))
+         "09bpmjmbf4x82kgf6bm4bkncq2apdv9mk20zj4zgma2jx2vyfhbs"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mass" ,r-mass)
@@ -3306,14 +3336,14 @@ analysis of multiply imputed data sets.")
 (define-public r-mice
   (package
     (name "r-mice")
-    (version "3.6.0")
+    (version "3.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "mice" version))
        (sha256
         (base32
-         "0pgcxdmp77604h6f4x8hhs6j4xdjgf5b9zvnixyzdj8vcgdjpivv"))))
+         "1wx1s1gc07iz63w4m8z0i1n5mc273f89grp5d3hfla7ypicjkasf"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-broom" ,r-broom)
@@ -3769,14 +3799,14 @@ rules, boxes, trees, and Unicode symbols with ASCII alternatives.")
 (define-public r-argparser
   (package
     (name "r-argparser")
-    (version "0.4")
+    (version "0.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "argparser" version))
        (sha256
         (base32
-         "0s1wxshx4jk69wfxhycx973q6y8cmqrfymyjklhq1i8xrj0kmmx9"))))
+         "1pxiz9jlhlnpzqn1lz349r07i7glw708w202x6dlnxp112fg7k4x"))))
     (build-system r-build-system)
     (home-page "https://bitbucket.org/djhshih/argparser")
     (synopsis "Command-line argument parser")
@@ -4102,14 +4132,14 @@ terminals.")
 (define-public r-tinytex
   (package
     (name "r-tinytex")
-    (version "0.17")
+    (version "0.18")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tinytex" version))
        (sha256
         (base32
-         "0mgxrbj4gam2gvxfk26nq820vsfjggj81m2l7j9m8vp361k15r0w"))))
+         "04mpbhadixbxmnazj0q6cj973cajchscvyh1k6a5b3qk26dp5krr"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-xfun" ,r-xfun)))
@@ -4195,14 +4225,14 @@ detect possible inconsistencies.")
 (define-public r-sna
   (package
     (name "r-sna")
-    (version "2.4")
+    (version "2.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sna" version))
        (sha256
         (base32
-         "1ks8819qvpdfansfqj9p32s1rhvl26frvbi78m4rx1wd1qcv74i2"))))
+         "1j3i6300m686qqfmyvadim377cd3mplzgj6mandygw8brg50id8k"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-network" ,r-network)
@@ -4248,14 +4278,14 @@ of these tests are also included.")
 (define-public r-ttr
   (package
     (name "r-ttr")
-    (version "0.23-5")
+    (version "0.23-6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "TTR" version))
        (sha256
         (base32
-         "0fxipnyxaz55n4camrk9cs71x9w4dsmjrihysv8i1s6khf825rg6"))))
+         "0rg22ma3x07s9djlxscfw5jcq1gbir05cwhgvwfi53x1sf4hmhdg"))))
     (properties `((upstream-name . "TTR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5598,14 +5628,14 @@ Python's @url{https://github.com/ActiveState/appdirs,Appdirs} to R.")
 (define-public r-renv
   (package
     (name "r-renv")
-    (version "0.9.1")
+    (version "0.9.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "renv" version))
        (sha256
         (base32
-         "0mwqpcay6v1hnvhggsrn1chvdlhi9hwvsswas8ysygfy5wxxz1sm"))))
+         "1jwnabryn77s29ybwdfzlnd7c8m05xmi69kp5qbvdxy2gjwjzcdr"))))
     (properties `((upstream-name . "renv")))
     (build-system r-build-system)
     (home-page "https://rstudio.github.io/renv")
@@ -6118,14 +6148,14 @@ hierarchical models using Markov Chain Monte Carlo (MCMC) simulation.")
 (define-public r-rdpack
   (package
     (name "r-rdpack")
-    (version "0.11-0")
+    (version "0.11-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rdpack" version))
        (sha256
         (base32
-         "11cd27s6zp5cxnwxcvz6rjf00y0r7aq8ywhzwpf1r4xy1z44kd4g"))))
+         "080y15p2hl4jsq91ak2f1y2kx1iqq5c5wzyx3zyhjwp01cahy0jq"))))
     (properties `((upstream-name . "Rdpack")))
     (build-system r-build-system)
     (propagated-inputs
@@ -6686,14 +6716,14 @@ Group (Non-)Overlap considerations.")
 (define-public r-deriv
   (package
     (name "r-deriv")
-    (version "3.9.0")
+    (version "4.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Deriv" version))
        (sha256
         (base32
-         "0hlqm216bg3l79gq6m0am0xz6vd3l2hgjnjm6lym3mkmgkka4kxw"))))
+         "03mlfy8jzzzbh2l18gnmw0a71n9savx4cw72yhkxq93v2xj8fy3n"))))
     (properties `((upstream-name . "Deriv")))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/Deriv")
@@ -7821,16 +7851,68 @@ analysis.")
     ;; Either version of the GPL.
     (license (list license:gpl2 license:gpl3))))
 
+(define-public r-gee
+  (package
+    (name "r-gee")
+    (version "4.13-20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gee" version))
+       (sha256
+        (base32
+         "167pzgnmj4cjc41ykps1mfwi6s7y32zxyycn5z17vn4v0pp4q0ak"))))
+    (properties `((upstream-name . "gee")))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/gee/")
+    (synopsis "Generalized estimation equation solver")
+    (description
+     "This package provides a solver for generalized estimation equations.")
+    (license license:gpl2)))
+
+(define-public r-tab
+  (package
+    (name "r-tab")
+    (version "4.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tab" version))
+       (sha256
+        (base32
+         "0ds8n6gncidb66in7hlqkcmil5yfsf7ihqvmls789hrm2iz9xlfm"))))
+    (properties `((upstream-name . "tab")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-gee" ,r-gee)
+       ("r-knitr" ,r-knitr)
+       ("r-mass" ,r-mass)
+       ("r-survey" ,r-survey)
+       ("r-survival" ,r-survival)
+       ("r-xtable" ,r-xtable)))
+    (home-page "https://cran.r-project.org/web/packages/tab/")
+    (synopsis "Create summary tables for statistical reports")
+    (description
+     "This package contains functions for creating various types of summary
+tables, e.g. comparing characteristics across levels of a categorical variable
+and summarizing fitted generalized linear models, generalized estimating
+equations, and Cox proportional hazards models.  Functions are available to
+handle data from simple random samples as well as complex surveys.")
+    (license license:gpl3+)))
+
 (define-public r-dvmisc
   (package
     (name "r-dvmisc")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "dvmisc" version))
        (sha256
-        (base32 "0x391pxg5mqgp5xxc8qwhwxky8ds7d9gr9iwmsb12c92kxfk00bv"))))
+        (base32 "01v6sixx0f3nrn6ymfifb3pvd2msfrwm21kmdv38laxq29vc4rsi"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cubature" ,r-cubature)
@@ -7840,10 +7922,10 @@ analysis.")
        ("r-mass" ,r-mass)
        ("r-mvtnorm" ,r-mvtnorm)
        ("r-pracma" ,r-pracma)
-       ("r-purrr" ,r-purrr)
        ("r-rbenchmark" ,r-rbenchmark)
        ("r-rcpp" ,r-rcpp)
-       ("r-survey" ,r-survey)))
+       ("r-survey" ,r-survey)
+       ("r-tab" ,r-tab)))
     (home-page "https://cran.r-project.org/web/packages/dvmisc/")
     (synopsis "Faster computation of common statistics and miscellaneous functions")
     (description
@@ -8118,14 +8200,14 @@ packages maintained by Torsten Hothorn.")
 (define-public r-multcomp
   (package
     (name "r-multcomp")
-    (version "1.4-10")
+    (version "1.4-11")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "multcomp" version))
        (sha256
         (base32
-         "1kzmdn9jmz5bmhf3wsfr12ljbasmwsgcsfdia52k0bi6q0swdg19"))))
+         "0jw9661hs4396wz9vflk3rak0ryzj1cg2pnndsn1gb4fjyf2vlhb"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-codetools" ,r-codetools)
@@ -8403,14 +8485,14 @@ ROPE percentage and pd).")
 (define-public r-performance
   (package
     (name "r-performance")
-    (version "0.4.0")
+    (version "0.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "performance" version))
        (sha256
         (base32
-         "0lxpmp9smn5r3xvfik36nr608wcpmmximjh0v2sckyvjf7hnb4s0"))))
+         "1pcjmqqm178dvdcpzkv5p4sj7glsppcny7znljb2nqkxh539a59p"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bayestestr" ,r-bayestestr)
@@ -8430,22 +8512,20 @@ effects models and Bayesian models.")
 (define-public r-ggeffects
   (package
     (name "r-ggeffects")
-    (version "0.13.0")
+    (version "0.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggeffects" version))
        (sha256
         (base32
-         "0ryfbaav0k874kbwmhbiv7fan93dmkpaimm1iw5kryjhhs3917lb"))))
+         "1djz82xww86h8f33m2vm40lliicppgyhm6hyn3h6rzrqjrlrsmdw"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-dplyr" ,r-dplyr)
-       ("r-insight" ,r-insight)
+     `(("r-insight" ,r-insight)
        ("r-magrittr" ,r-magrittr)
        ("r-mass" ,r-mass)
        ("r-purrr" ,r-purrr)
-       ("r-rlang" ,r-rlang)
        ("r-sjlabelled" ,r-sjlabelled)
        ("r-sjmisc" ,r-sjmisc)))
     (home-page "https://github.com/strengejacke/ggeffects")
@@ -9011,14 +9091,14 @@ experiments using ANOVA or mixed models.")
 (define-public r-lmertest
   (package
     (name "r-lmertest")
-    (version "3.1-0")
+    (version "3.1-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lmerTest" version))
        (sha256
         (base32
-         "1nkz8cmxa5yb8q4i65bmhnn5pd4bhwcyjplyscynb24z3f64xp9b"))))
+         "0r2vvs3nl6p8xla3gd943khb4ixp0alvspqpnz2y6n3wk8zgh3jj"))))
     (properties `((upstream-name . "lmerTest")))
     (build-system r-build-system)
     (propagated-inputs
@@ -9456,14 +9536,14 @@ for evolution along a phylogenetic tree.")
 (define-public r-fmsb
   (package
     (name "r-fmsb")
-    (version "0.6.3")
+    (version "0.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fmsb" version))
        (sha256
         (base32
-         "1n29bnyp20pvpk2lsa9fblsj5w7amp14snc74pk5w3yr5y6rj0s5"))))
+         "0x1wkzfdvv4s5xmr0whcwjz4aac71gacwymj2c3mzj2bbswwlw45"))))
     (build-system r-build-system)
     (home-page "http://minato.sip21c.org/msb/")
     (synopsis "Functions for medical statistics book with demographic data")
@@ -9637,14 +9717,14 @@ Processing.")
 (define-public r-tm
   (package
     (name "r-tm")
-    (version "0.7-6")
+    (version "0.7-7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tm" version))
        (sha256
         (base32
-         "0spv43kjbpxq3rdxx8ysgrncjyc35ydiwk7gp8n4sig45iqyz59r"))))
+         "0pyics8j7a4wkh5gzin46l0qars5vgbb1886xqpdqjs1z0gy9nyh"))))
     (properties `((upstream-name . "tm")))
     (build-system r-build-system)
     (propagated-inputs
@@ -9733,13 +9813,13 @@ maps.")
 (define-public r-tidytree
   (package
     (name "r-tidytree")
-    (version "0.3.0")
+    (version "0.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidytree" version))
        (sha256
-        (base32 "1sbfwcxf9v1lhpa0392b49b6qfjrq7nlqz2djqzk5aknj9j64zvy"))))
+        (base32 "1bnzs62z2l8ck2h9gabmxvayizv4nfn8dmyzry83fv0cspjbyiv7"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ape" ,r-ape)
@@ -11053,13 +11133,13 @@ This makes it a convenient and fast interface to C/C++ and Fortran code.")
 (define-public r-spam
   (package
     (name "r-spam")
-    (version "2.5-0")
+    (version "2.5-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "spam" version))
        (sha256
-        (base32 "1wfv45jq8zy8kyjr308zicc1461y1777qll1cy6lw4071f9rvba2"))))
+        (base32 "0ry0a76cljlmilrzcriiizcidxyhq1i7i9bqhvl1qda81ld8hifi"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dotcall64" ,r-dotcall64)))
@@ -12402,14 +12482,14 @@ compatible with @code{rzmq} are also provided.")
 (define-public r-repr
   (package
     (name "r-repr")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "repr" version))
        (sha256
         (base32
-         "0jy43g34r38fqprcdys0p9pliahrj5l64a9bbkzy206qgz0j5ppc"))))
+         "0wn9fdddqjgn0bdfl75x89rcxahbgqs324bhg0pfq6va5q2mlbbw"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-base64enc" ,r-base64enc)
@@ -15940,27 +16020,28 @@ programming problems.")
      `(("gfortran" ,gfortran)))
     (home-page "https://desolve.r-forge.r-project.org/")
     (synopsis "Solvers for initial value problems of differential equations")
-    (description "This package provides functions that solve initial
-value problems of a system of first-order ordinary differential equations (ODE),
-of partial differential equations (PDE), of differential algebraic equations
-(DAE), and of delay differential equations.  The functions provide an interface
-to the FORTRAN functions lsoda, lsodar, lsode, lsodes of the ODEPACK collection,
-to the FORTRAN functions dvode and daspk and a C-implementation of solvers of
-the Runge-Kutta family with fixed or variable time steps.  The package contains
-routines designed for solving ODEs resulting from 1-D, 2-D and 3-D partial
-differential equations (PDE) that have been converted to ODEs by numerical
-differencing.")
+    (description "This package provides functions that solve initial value
+problems of a system of first-order @dfn{ordinary differential
+equations} (ODE), of @dfn{partial differential equations} (PDE), of
+@dfn{differential algebraic equations} (DAE), and of delay differential
+equations.  The functions provide an interface to the FORTRAN functions
+@code{lsoda}, @code{lsodar}, @code{lsode}, @code{lsodes} of the ODEPACK
+collection, to the FORTRAN functions @code{dvode} and @code{daspk} and a
+C-implementation of solvers of the Runge-Kutta family with fixed or variable
+time steps.  The package contains routines designed for solving ODEs resulting
+from 1-D, 2-D and 3-D partial differential equations that have been converted
+to ODEs by numerical differencing.")
     (license license:gpl2+)))
 
 (define-public r-pracma
   (package
     (name "r-pracma")
-    (version "2.2.5")
+    (version "2.2.9")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "pracma" version))
               (sha256
-               (base32 "0isd3s0i4mzmva8lkh0j76hwjy1w50q7d1n9lhxsnnkgalx3xs1g"))))
+               (base32 "07mzhzz73wsjjw1q05l024gcd13hwnzsxf873q9dyhw6x3shzshc"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/pracma/")
     (synopsis "Practical numerical math functions")
@@ -16012,3 +16093,2876 @@ graphics directly in the terminal window.  This package provides a basic
 plotting function (and equivalents of curve, density, acf and barplot) as well
 as a boxplot function.")
     (license license:lgpl3+)))
+
+(define-public r-bio3d
+  (package
+    (name "r-bio3d")
+    (version "2.4-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "bio3d" version))
+       (sha256
+        (base32
+         "0ikpk1ppdp50m9kd289z616i382j9i7ji1zchyd4xqfyk8lnxf4s"))))
+    (properties `((upstream-name . "bio3d")))
+    (build-system r-build-system)
+    (inputs `(("zlib" ,zlib)))
+    (propagated-inputs `(("r-rcpp" ,r-rcpp)))
+    (home-page "http://thegrantlab.org/bio3d/")
+    (synopsis "Biological structure analysis")
+    (description
+     "This package provides utilities to process, organize and explore protein
+structure, sequence and dynamics data.  Features include the ability to read
+and write structure, sequence and dynamic trajectory data, perform sequence
+and structure database searches, data summaries, atom selection, alignment,
+superposition, rigid core identification, clustering, torsion analysis,
+distance matrix analysis, structure and sequence conservation analysis, normal
+mode analysis, principal component analysis of heterogeneous structure data,
+and correlation network analysis from normal mode and molecular dynamics data.
+In addition, various utility functions are provided to enable the statistical
+and graphical power of the R environment to work with biological sequence and
+structural data.")
+    (license license:gpl2+)))
+
+(define-public r-bios2cor
+  (package
+    (name "r-bios2cor")
+    (version "2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Bios2cor" version))
+       (sha256
+        (base32
+         "1rrz0vs6wbkwys3l5jv1rdnlhyb4r1q9pv7jlnmsx6c1b4f4vz5n"))))
+    (properties `((upstream-name . "Bios2cor")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bigmemory" ,r-bigmemory)
+       ("r-bio3d" ,r-bio3d)
+       ("r-circular" ,r-circular)
+       ("r-igraph" ,r-igraph)))
+    (home-page "https://cran.r-project.org/web/packages/Bios2cor/")
+    (synopsis "From biological sequences and simulations to correlation analysis")
+    (description
+     "This package provides utilities for computation and analysis of
+correlation/covariation in multiple sequence alignments and in side chain
+motions during molecular dynamics simulations.  Features include the
+computation of correlation/covariation scores using a variety of scoring
+functions between either sequence positions in alignments or side chain
+dihedral angles in molecular dynamics simulations and utilities to analyze the
+correlation/covariation matrix through a variety of tools including network
+representation and principal components analysis.  In addition, several
+utility functions are based on the R graphical environment to provide friendly
+tools for help in data interpretation.")
+    (license license:gpl2+)))
+
+;; This package includes minified JavaScript files.  When upgrading please
+;; check that there are no new minified JavaScript files.
+(define-public r-networkd3
+  (package
+    (name "r-networkd3")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "networkD3" version))
+       (sha256
+        (base32
+         "02wxki67drppgfka1is1ykg1f2rxf0x0657c0crj7ipfy62jbf1k"))
+       (snippet
+        '(begin
+           (delete-file "inst/htmlwidgets/lib/d3-4.5.0/d3.min.js")
+           #t))))
+    (properties `((upstream-name . "networkD3")))
+    (build-system r-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build r-build-system)
+                  (srfi srfi-1)
+                  (ice-9 popen))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'process-javascript
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "inst/htmlwidgets/lib/"
+               (call-with-values
+                   (lambda ()
+                     (unzip2
+                      `((,(assoc-ref inputs "d3.v4.js")
+                         "d3-4.5.0/d3.min.js"))))
+                 (lambda (sources targets)
+                   (for-each (lambda (source target)
+                               (format #t "Processing ~a --> ~a~%"
+                                       source target)
+                               (let ((minified (open-pipe* OPEN_READ "uglify-js" source)))
+                                 (call-with-output-file target
+                                   (lambda (port)
+                                     (dump-port minified port)))))
+                             sources targets))))
+             #t)))))
+    (native-inputs
+     `(("uglify-js" ,uglify-js)
+       ;; NOTE: Make sure that this version of d3 is still valid when
+       ;; upgrading the package.
+       ("d3.v4.js"
+        ,(origin
+           (method url-fetch)
+           (uri "https://d3js.org/d3.v4.js")
+           (sha256
+            (base32
+             "0y7byf6kcinfz9ac59jxc4v6kppdazmnyqfav0dm4h550fzfqqlg"))))))
+    (propagated-inputs
+     `(("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-igraph" ,r-igraph)
+       ("r-magrittr" ,r-magrittr)))
+    (home-page "https://cran.r-project.org/package=networkD3")
+    (synopsis "D3 JavaScript network graphs from R")
+    (description
+     "This package creates D3 JavaScript network, tree, dendrogram, and Sankey
+graphs from R.")
+    (license license:gpl3+)))
+
+(define-public r-aasea
+  (package
+    (name "r-aasea")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "aaSEA" version))
+       (sha256
+        (base32
+         "0him4r8qyp0xssgrmdxjs45yn4d28h5anv4jyxxbbs9phb0m6j3h"))))
+    (properties `((upstream-name . "aaSEA")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bios2cor" ,r-bios2cor)
+       ("r-dt" ,r-dt)
+       ("r-hmisc" ,r-hmisc)
+       ("r-magrittr" ,r-magrittr)
+       ("r-networkd3" ,r-networkd3)
+       ("r-plotly" ,r-plotly)
+       ("r-seqinr" ,r-seqinr)
+       ("r-shiny" ,r-shiny)
+       ("r-shinydashboard" ,r-shinydashboard)))
+    (home-page "https://cran.r-project.org/web/packages/aaSEA/")
+    (synopsis "Amino acid substitution effect analyzer")
+    (description
+     "Given a protein multiple sequence alignment, it is a daunting task to
+assess the effects of substitutions along sequence length.  The aaSEA package
+is intended to help researchers to rapidly analyze property changes caused by
+single, multiple and correlated amino acid substitutions in proteins.")
+    (license license:gpl3)))
+
+(define-public r-abacus
+  (package
+    (name "r-abacus")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ABACUS" version))
+       (sha256
+        (base32
+         "0m1dnkwjr1522l9ddbzzx7ayxvli17sbmk6s28adpmzzjwh2kd1i"))))
+    (properties `((upstream-name . "ABACUS")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-shiny" ,r-shiny)))
+    (home-page "https://shiny.abdn.ac.uk/Stats/apps/")
+    (synopsis "Apps-based activities for communicating and understanding statistics")
+    (description
+     "This package provides a set of Shiny apps for effective communication
+and understanding in statistics.  The current version includes properties of
+normal distribution, properties of sampling distribution, one-sample z and t
+tests, two samples independent (unpaired) t test and analysis of variance.")
+    (license license:gpl3)))
+
+(define-public r-abc-rap
+  (package
+    (name "r-abc-rap")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ABC.RAP" version))
+       (sha256
+        (base32
+         "1kdspln17v0krvahcd55vib4dv5azp60b3r1zf489x10qqbp1mxk"))))
+    (properties `((upstream-name . "ABC.RAP")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/ABC.RAP/")
+    (synopsis "Array-based CpG region analysis pipeline")
+    (description
+     "This package aims to identify candidate genes that are differentially
+methylated between cases and controls.  It applies Student's t-test and delta
+beta analysis to identify candidate genes containing multiple CpG sites.")
+    (license license:gpl3)))
+
+(define-public r-abcadm
+  (package
+    (name "r-abcadm")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abcADM" version))
+       (sha256
+        (base32
+         "0vcabnnnwc0psv9v3rda5aap9s8cq1pjh02zva3ki64hlavf2a10"))))
+    (properties `((upstream-name . "abcADM")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://cran.r-project.org/web/packages/abcADM/")
+    (synopsis "Fit accumulated damage models and estimate reliability using ABC")
+    (description
+     "This package provides tools to estimate parameters of accumulated
+damage (load duration) models based on failure time data under a Bayesian
+framework, using @dfn{Approximate Bayesian Computation} (ABC), and to assess
+long-term reliability under stochastic load profiles.")
+    (license license:gpl3)))
+
+(define-public r-rglpk
+  (package
+    (name "r-rglpk")
+    (version "0.6-4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Rglpk" version))
+       (sha256
+        (base32
+         "19mzpyimzq9zqnbi05j79b2di3nzaln8swggs9p8sqdr60qvr3d2"))))
+    (properties `((upstream-name . "Rglpk")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-slam" ,r-slam)))
+    (inputs
+     `(("glpk" ,glpk)))
+    (home-page "http://R-Forge.R-project.org/projects/rglp/")
+    (synopsis "R interface to the GNU Linear Programming Kit")
+    (description
+     "This package provides an R interface to the GNU Linear Programming Kit,
+software for solving large-scale @dfn{linear programming} (LP), @dfn{mixed
+integer linear programming} (MILP) and other related problems.")
+    ;; Either license
+    (license (list license:gpl2 license:gpl3))))
+
+(define-public r-abcdefba
+  (package
+    (name "r-abcdefba")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abcdeFBA" version))
+       (sha256
+        (base32
+         "1rxjripy8v6bxi25vdfjnbk24zkmf752qbl73cin6nvnqflwxkx4"))))
+    (properties `((upstream-name . "abcdeFBA")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-corrplot" ,r-corrplot)
+       ("r-lattice" ,r-lattice)
+       ("r-rgl" ,r-rgl)
+       ("r-rglpk" ,r-rglpk)))
+    (home-page "https://cran.r-project.org/web/packages/abcdeFBA/")
+    (synopsis "A-Biologist-Can-Do-Everything of Flux Balance Analysis with this package")
+    (description
+     "This package provides functions for Constraint Based Simulation using
+Flux Balance Analysis and informative analysis of the data generated during
+simulation.")
+    (license license:gpl2)))
+
+(define-public r-abcrlda
+  (package
+    (name "r-abcrlda")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abcrlda" version))
+       (sha256
+        (base32
+         "0j29ifsvmxfx2g6v4bpbb4s6miwfpf4vlkpbgj6f2q078s4clc85"))))
+    (properties `((upstream-name . "abcrlda")))
+    (build-system r-build-system)
+    (home-page "https://ieeexplore.ieee.org/document/8720003/")
+    (synopsis "Asymptotically bias-corrected regularized linear discriminant analysis")
+    (description
+     "This package offers methods to perform @dfn{asymptotically
+bias-corrected regularized linear discriminant analysis} (ABC_RLDA) for
+cost-sensitive binary classification.  The bias-correction is an estimate of
+the bias term added to regularized discriminant analysis that minimizes the
+overall risk.")
+    (license license:gpl3)))
+
+(define-public r-abemus
+  (package
+    (name "r-abemus")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abemus" version))
+       (sha256
+        (base32
+         "1dhllb184byp1yl15rg2w02zgw3iajag7cxshirg47mnmm7n70bb"))))
+    (properties `((upstream-name . "abemus")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)))
+    (home-page "https://cran.r-project.org/web/packages/abemus/")
+    (synopsis "Adaptive base error model in ultra-deep sequencing data")
+    (description
+     "This package provides an implementation of @dfn{Adaptive Base Error
+Model in Ultra-deep Sequencing data} (ABEMUS), which combines
+platform-specific genetic knowledge and empirical signal to readily detect and
+quantify somatic @dfn{single nucleotide variants} (SNVs) in @dfn{circulating
+cell free DNA} (cfDNA).")
+    (license license:gpl3)))
+
+;; This package includes minified JavaScript files.  When upgrading please
+;; check that there are no new minified JavaScript files.
+(define-public r-rintrojs
+  (package
+    (name "r-rintrojs")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rintrojs" version))
+       (sha256
+        (base32
+         "0vyqb3pyrh12saddar71ac9csn2vkd2j8ln6ygpqys8ky1lc3427"))))
+    (properties `((upstream-name . "rintrojs")))
+    (build-system r-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build r-build-system)
+                  (srfi srfi-1)
+                  (ice-9 popen))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'process-javascript
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "inst/javascript/introjs/"
+               (call-with-values
+                   (lambda ()
+                     (unzip2
+                      `((,(assoc-ref inputs "intro.js")
+                         "intro.min.js"))))
+                 (lambda (sources targets)
+                   (for-each (lambda (source target)
+                               (format #t "Processing ~a --> ~a~%"
+                                       source target)
+                               (let ((minified (open-pipe* OPEN_READ "uglify-js" source)))
+                                 (call-with-output-file target
+                                   (lambda (port)
+                                     (dump-port minified port)))))
+                             sources targets))))
+             #t)))))
+    (native-inputs
+     `(("uglify-js" ,uglify-js)
+       ("intro.js"
+        ,(origin
+           (method url-fetch)
+           (uri "https://raw.githubusercontent.com/usablica/intro.js/v2.9.3/intro.js")
+           (sha256
+            (base32
+             "1qf8n1sfy9qkiqqnfgg0xbhmfgh0g3mqsjas8qhz230h3zzlzxj8"))))))
+    (propagated-inputs
+     `(("r-jsonlite" ,r-jsonlite)
+       ("r-shiny" ,r-shiny)))
+    (home-page "https://github.com/carlganz/rintrojs")
+    (synopsis "Wrapper for the Intro.js library")
+    (description
+     "This package provides a wrapper for the @url{http://www.introjs.com,
+Intro.js} library.  This package makes it easy to include step-by-step
+introductions, and clickable hints in a Shiny application.  It supports both
+static introductions in the UI, and programmatic introductions from the
+server-side.")
+    (license license:agpl3+)))
+
+(define-public r-sysfonts
+  (package
+    (name "r-sysfonts")
+    (version "0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sysfonts" version))
+       (sha256
+        (base32
+         "0wng902plryf2d8fc7k7m3jx11acz51kb2d91cqbyhq7xpk06z43"))))
+    (properties `((upstream-name . "sysfonts")))
+    (build-system r-build-system)
+    (inputs
+     `(("freetype" ,freetype)
+       ("libpng" ,libpng)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/yixuan/sysfonts")
+    (synopsis "Loading fonts into R")
+    (description
+     "This is a package to simplify loading of system fonts and Google Fonts
+into R, in order to support other packages.")
+    (license license:gpl2)))
+
+(define-public r-showtextdb
+  (package
+    (name "r-showtextdb")
+    (version "2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "showtextdb" version))
+       (sha256
+        (base32
+         "1qwwj9x2jvadvwn60h75k99c9xi7yhqjsgaakahz5paxgj583bsh"))))
+    (properties `((upstream-name . "showtextdb")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-sysfonts" ,r-sysfonts)))
+    (home-page "https://cran.r-project.org/web/packages/showtextdb/")
+    (synopsis "Font files for the 'showtext' package")
+    (description
+     "This package provides font files that can be used by the @code{showtext}
+package.")
+    (license license:asl2.0)))
+
+(define-public r-showtext
+  (package
+    (name "r-showtext")
+    (version "0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "showtext" version))
+       (sha256
+        (base32
+         "1ihgqzfia36b0n9aa41p1w98wxxvs1lxh1zz0570hbfqmph1sk73"))))
+    (properties `((upstream-name . "showtext")))
+    (build-system r-build-system)
+    (inputs
+     `(("freetype" ,freetype)
+       ("libpng" ,libpng)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-showtextdb" ,r-showtextdb)
+       ("r-sysfonts" ,r-sysfonts)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/yixuan/showtext")
+    (synopsis "Using fonts more easily in R graphs")
+    (description
+     "This package aims to make it easy to use various types of
+fonts (TrueType, OpenType, Type 1, web fonts, etc.) in R graphs, and supports
+most output formats of R graphics including PNG, PDF and SVG.  Text glyphs
+will be converted into polygons or raster images, hence after the plot has
+been created, it no longer relies on the font files.  No external software
+such as Ghostscript is needed to use this package.")
+    (license license:asl2.0)))
+
+(define-public r-emojifont
+  (package
+    (name "r-emojifont")
+    (version "0.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "emojifont" version))
+       (sha256
+        (base32
+         "1cdrrl3hvrs8rskyy6zgr7q2mmg8yb9k8sld1m64zsp7y009g19k"))))
+    (properties `((upstream-name . "emojifont")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-proto" ,r-proto)
+       ("r-showtext" ,r-showtext)
+       ("r-sysfonts" ,r-sysfonts)))
+    (home-page "https://guangchuangyu.github.io/emojifont")
+    (synopsis "Emoji and Font Awesome in R graphics")
+    (description
+     "This package enables the use of emoji and the Font Awesome glyphs in
+both base and ggplot2 graphics.")
+    (license license:artistic2.0)))
+
+(define-public r-abstractr
+  (package
+    (name "r-abstractr")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abstractr" version))
+       (sha256
+        (base32
+         "1ymwp7syrynwd4i8aj2x5n8jdi9d96fjzl6jb09n0bnr5fgl7vig"))))
+    (properties `((upstream-name . "abstractr")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-colourpicker" ,r-colourpicker)
+       ("r-emojifont" ,r-emojifont)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-rintrojs" ,r-rintrojs)
+       ("r-shiny" ,r-shiny)
+       ("r-shinythemes" ,r-shinythemes)))
+    (home-page "https://matt-kumar.shinyapps.io/portfolio")
+    (synopsis "R-Shiny application for creating visual abstracts")
+    (description
+     "This package provides an R Shiny application to create visual abstracts
+for original research.  A variety of user defined options and formatting are
+included.")
+    (license license:gpl3)))
+
+(define-public r-abtest
+  (package
+    (name "r-abtest")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abtest" version))
+       (sha256
+        (base32
+         "1ky3cf827kj24bhcpk00v5zl5jdkii1gca0x81ay1cjkzfispgws"))))
+    (properties `((upstream-name . "abtest")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-plotrix" ,r-plotrix)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rcpp" ,r-rcpp)
+       ("r-sn" ,r-sn)
+       ("r-truncnorm" ,r-truncnorm)
+       ("r-vgam" ,r-vgam)))
+    (home-page "https://cran.r-project.org/web/packages/abtest/")
+    (synopsis "Bayesian A/B testing")
+    (description
+     "This package provides functions for Bayesian A/B testing including prior
+elicitation options based on Kass and Vaidyanathan (1992)
+@url{doi:10.1111/j.2517-6161.1992.tb01868.x}.")
+    (license license:gpl2+)))
+
+(define-public r-accept
+  (package
+    (name "r-accept")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "accept" version))
+       (sha256
+        (base32
+         "1r4mhy9g4wjcjgdd0gwdarmr09292il3vdkmx0hz7vh9mffyr9kx"))))
+    (properties `((upstream-name . "accept")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-extrafont" ,r-extrafont)
+       ("r-mass" ,r-mass)
+       ("r-plotly" ,r-plotly)
+       ("r-stringr" ,r-stringr)
+       ("r-viridis" ,r-viridis)))
+    (home-page "https://cran.r-project.org/web/packages/accept/")
+    (synopsis "Acute COPD Exacerbation Prediction Tool (ACCEPT)")
+    (description
+     "This package allows clinicians to predict the rate and severity of
+future acute exacerbation in @dfn{Chronic Obstructive Pulmonary
+Disease} (COPD) patients, based on the clinical prediction model published in
+Adibi et al. (2019) @url{doi:10.1101/651901}.")
+    (license license:gpl3)))
+
+(define-public r-smpracticals
+  (package
+    (name "r-smpracticals")
+    (version "1.4-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "SMPracticals" version))
+       (sha256
+        (base32
+         "0zxq84f9i3b86xx6msb25b61gyj9k09iab2b7wg4d93yas9qzayf"))))
+    (properties `((upstream-name . "SMPracticals")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ellipse" ,r-ellipse)
+       ("r-mass" ,r-mass)
+       ("r-nlme" ,r-nlme)
+       ("r-survival" ,r-survival)))
+    (home-page "http://statwww.epfl.ch/davison/SM/")
+    (synopsis "Practicals for use with Davison (2003) Statistical Models")
+    (description
+     "This package contains the datasets and a few functions for use with the
+practicals outlined in Appendix A of the book Statistical Models (Davison,
+2003, Cambridge University Press).  The practicals themselves can be found at
+@url{http://statwww.epfl.ch/davison/SM/}.")
+    (license license:gpl2+)))
+
+(define-public r-fgui
+  (package
+    (name "r-fgui")
+    (version "1.0-8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fgui" version))
+       (sha256
+        (base32
+         "024fzd1c7iwqprn26hwjb9l2qlvvyzl449d7iixy0x69djwsrysv"))))
+    (properties `((upstream-name . "fgui")))
+    (build-system r-build-system)
+    (home-page
+     "https://sites.google.com/site/thomashoffmannproject/software/fgui")
+    (synopsis "Create GUI for R functions")
+    (description
+     "Rapidly create a GUI for a function you created by automatically
+creating widgets for arguments of the function.  This package automatically
+parses help routines for context-sensitive help to these arguments.  The
+interface is essentially a wrapper to some Tcl/Tk routines to both simplify
+and facilitate GUI creation.  More advanced Tcl/Tk routines/GUI objects can be
+incorporated into the interface for greater customization for the more
+experienced.")
+    ;; Any version of the GPL.
+    (license (list license:gpl2+ license:gpl3+))))
+
+(define-public r-tcltk2
+  (package
+    (name "r-tcltk2")
+    (version "1.2-11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tcltk2" version))
+       (sha256
+        (base32
+         "1ibxld379600xx7kiqq3fck083s8psry12859980218rnzikl65d"))))
+    (properties `((upstream-name . "tcltk2")))
+    (build-system r-build-system)
+    (inputs
+     `(("tcl" ,tcl)
+       ("tk" ,tk)))
+    (home-page "http://www.sciviews.org/SciViews-R")
+    (synopsis "Tcl/Tk additions")
+    (description
+     "This package provides a series of additional Tcl commands and Tk widgets
+with style and various functions to supplement the tcltk package")
+    (license license:lgpl3)))
+
+(define-public r-accrual
+  (package
+    (name "r-accrual")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "accrual" version))
+       (sha256
+        (base32
+         "11clm9s5c5518nmp6hd6pjnp0s28y92b2i2x0xgj4j5g816p4j3z"))))
+    (properties `((upstream-name . "accrual")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-fgui" ,r-fgui)
+       ("r-smpracticals" ,r-smpracticals)
+       ("r-tcltk2" ,r-tcltk2)))
+    (home-page "https://cran.r-project.org/web/packages/accrual/")
+    (synopsis "Bayesian accrual prediction")
+    (description
+     "Subject recruitment for medical research is challenging.  Slow patient
+accrual leads to delay in research.  Accrual monitoring during the process of
+recruitment is critical.  Researchers need reliable tools to manage the
+accrual rate.  This package provides an implementation of a Bayesian method
+that integrates researcher's experience on previous trials and data from the
+current study, providing reliable prediction on accrual rate for clinical
+studies.  It provides functions for Bayesian accrual prediction which can be
+easily used by statisticians and clinical researchers.")
+    (license license:gpl2)))
+
+(define-public r-accrued
+  (package
+    (name "r-accrued")
+    (version "1.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "accrued" version))
+       (sha256
+        (base32
+         "05g1jb5914z18rcai1ahn7nihn27vr2rnadwv94gc1j7ivvikvs5"))))
+    (properties `((upstream-name . "accrued")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/accrued/")
+    (synopsis "Data quality visualization tools for partially accruing data")
+    (description
+     "This is a package for visualizing data quality of partially accruing
+data.")
+    (license license:gpl3)))
+
+(define-public r-mda
+  (package
+    (name "r-mda")
+    (version "0.4-10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mda" version))
+       (sha256
+        (base32
+         "19g6kn6g0shidrjfffklbmzc5w7mcimrxhagx4nmpslg59ibqdkh"))))
+    (properties `((upstream-name . "mda")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-class" ,r-class)))
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/mda/")
+    (synopsis "Mixture and flexible discriminant analysis")
+    (description
+     "This is a package for mixture and flexible discriminant analysis,
+@dfn{multivariate adaptive regression splines} (MARS), BRUTO, and so on.")
+    (license license:gpl2)))
+
+(define-public r-elasticnet
+  (package
+    (name "r-elasticnet")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "elasticnet" version))
+       (sha256
+        (base32
+         "0p9dplnsp28z4s2fl6afbwrgd0aj339fak8mmndicmrh7bb7rpmb"))))
+    (properties `((upstream-name . "elasticnet")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lars" ,r-lars)))
+    (home-page "http://www.stat.umn.edu/~hzou")
+    (synopsis "Elastic-Net for sparse estimation and sparse PCA")
+    (description
+     "This package provides functions for fitting the entire solution path of
+the Elastic-Net and also provides functions for estimating sparse Principal
+Components.  The Lasso solution paths can be computed by the same function.")
+    (license license:gpl2+)))
+
+(define-public r-sparselda
+  (package
+    (name "r-sparselda")
+    (version "0.1-9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sparseLDA" version))
+       (sha256
+        (base32
+         "1k3sw9kc40yxnfss4vrsx34qxmv8ssddyhbfjhxrdldvblhbwchb"))))
+    (properties `((upstream-name . "sparseLDA")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-elasticnet" ,r-elasticnet)
+       ("r-mass" ,r-mass)
+       ("r-mda" ,r-mda)))
+    (home-page "http://www.imm.dtu.dk/~lhc")
+    (synopsis "Sparse discriminant analysis")
+    (description
+     "This package performs sparse linear discriminant analysis for Gaussians
+and mixture of Gaussian models.")
+    (license license:gpl2+)))
+
+(define-public r-accsda
+  (package
+    (name "r-accsda")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "accSDA" version))
+       (sha256
+        (base32
+         "0sgxy5y8kkc1n35657kifwfjsba7y5m1vbr7rkk5lmbpkzahqm61"))))
+    (properties `((upstream-name . "accSDA")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-ggthemes" ,r-ggthemes)
+       ("r-gridextra" ,r-gridextra)
+       ("r-mass" ,r-mass)
+       ("r-rarpack" ,r-rarpack)
+       ("r-sparselda" ,r-sparselda)))
+    (home-page "https://github.com/gumeo/accSDA/wiki")
+    (synopsis "Accelerated sparse discriminant analysis")
+    (description
+     "This package provides an implementation of sparse linear discriminant
+analysis, which is a supervised classification method for multiple classes.
+Various novel optimization approaches to this problem are implemented
+including @dfn{alternating direction method of multipliers} (ADMM),
+@dfn{proximal gradient} (PG) and @dfn{accelerated proximal gradient} (APG).
+Functions for performing cross validation are also supplied along with basic
+prediction and plotting functions.  @dfn{Sparse zero variance
+discriminant} (SZVD) analysis is also included in the package.")
+    (license license:gpl2+)))
+
+(define-public r-ace2fastq
+  (package
+    (name "r-ace2fastq")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ace2fastq" version))
+       (sha256
+        (base32
+         "09kk3yyqnr2xp820g0p3aai9a21figigjr9lxkr3zjq2d8gzwfic"))))
+    (properties `((upstream-name . "ace2fastq")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-stringr" ,r-stringr)))
+    (home-page "https://github.com/c5sire/ace2fastq")
+    (synopsis "ACE file to FASTQ converter")
+    (description
+     "The ACE file format is used in genomics to store contigs from sequencing
+machines.  This tools converts it into FASTQ format.  Both formats contain the
+sequence characters and their corresponding quality information.  Unlike the
+FASTQ file, the ACE file stores the quality values numerically.  The
+conversion algorithm uses the standard Sanger formula.  The package
+facilitates insertion into pipelines, and content inspection.")
+    (license license:gpl3)))
+
+(define-public r-rngwell
+  (package
+    (name "r-rngwell")
+    (version "0.10-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rngWELL" version))
+       (sha256
+        (base32
+         "0b4ys525gksgqwqx9id4bdgyi9mwj6n3r87xdzf4fc9hp3cc16jb"))))
+    (properties `((upstream-name . "rngWELL")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/rngWELL/")
+    (synopsis "Toolbox for WELL random number generators")
+    (description
+     "This is a dedicated package to WELL pseudo random generators, which were
+introduced in Panneton et al. (2006), ``Improved Long-Period Generators Based
+on Linear Recurrences Modulo 2'', ACM Transactions on Mathematical Software.")
+    (license license:bsd-3)))
+
+(define-public r-randtoolbox
+  (package
+    (name "r-randtoolbox")
+    (version "1.30.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "randtoolbox" version))
+       (sha256
+        (base32
+         "141p13ajgzmb2s89rlac7zrra92mi1izvpfrngb4kqzlf3igdsqd"))))
+    (properties `((upstream-name . "randtoolbox")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rngwell" ,r-rngwell)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/randtoolbox/")
+    (synopsis "Toolbox for pseudo and quasi random number generation")
+    (description
+     "This package provides
+
+@enumerate
+@item pseudo random generators, such as general linear
+congruential generators, multiple recursive generators and generalized
+feedback shift register (SF-Mersenne Twister algorithm and WELL
+generators)
+
+@item quasi random generators, such as the Torus algorithm, the Sobol
+sequence, the Halton sequence (including the Van der Corput sequence), and
+
+@item some generator tests: the gap test, the serial test, the poker test.
+@end enumerate
+
+See e.g. Gentle (2003) @url{doi:10.1007/b97336}.")
+    (license license:bsd-3)))
+
+(define-public r-lhs
+  (package
+    (name "r-lhs")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "lhs" version))
+       (sha256
+        (base32
+         "0lzaqr7xi3ckln5nglv5xf5njm359slpz1jc6s02hpsqdw6armd4"))))
+    (properties `((upstream-name . "lhs")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/bertcarnell/lhs")
+    (synopsis "Latin Hypercube Samples")
+    (description
+     "This package provides a number of methods for creating and augmenting
+Latin Hypercube Samples.")
+    (license license:gpl3)))
+
+(define-public r-acebayes
+  (package
+    (name "r-acebayes")
+    (version "1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "acebayes" version))
+       (sha256
+        (base32
+         "1xm6bw0qm2vlcrk274x0bawzb2lnacb1wsmzba5mg3i75a55pqln"))))
+    (properties `((upstream-name . "acebayes")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-compare" ,r-compare)
+       ("r-lhs" ,r-lhs)
+       ("r-randtoolbox" ,r-randtoolbox)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)))
+    (home-page "https://cran.r-project.org/web/packages/acebayes/")
+    (synopsis "Optimal Bayesian experimental design using the ACE algorithm")
+    (description
+     "Finding an optimal Bayesian experimental design involves maximizing an
+objective function given by the expectation of some appropriately chosen
+utility function with respect to the joint distribution of unknown
+quantities (including responses).  This objective function is usually not
+available in closed form and the design space can be continuous and of high
+dimensionality.  This package uses @dfn{Approximate Coordinate Exchange} (ACE)
+to maximise an approximation to the expectation of the utility function.")
+    (license license:gpl2)))
+
+(define-public r-acet
+  (package
+    (name "r-acet")
+    (version "1.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ACEt" version))
+       (sha256
+        (base32
+         "0626d6kg485xjya164wagrr5z223jvi93ywbwpdns7fkm03c0dlq"))))
+    (properties `((upstream-name . "ACEt")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-mass" ,r-mass)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)))
+    (home-page "https://cran.r-project.org/web/packages/ACEt/")
+    (synopsis "Estimating dynamic heritability and twin model comparison")
+    (description
+     "This package supports twin models that are able to estimate the dynamic
+behaviour of the variance components in the classical twin models with respect
+to age using B-splines and P-splines.")
+    (license license:gpl2+)))
+
+(define-public r-acfmperiod
+  (package
+    (name "r-acfmperiod")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "acfMPeriod" version))
+       (sha256
+        (base32
+         "1yww8isfrbs2v9s94hx7p2imyszcgadwafdgpj438n2ik0q6p9d5"))))
+    (properties `((upstream-name . "acfMPeriod")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)))
+    (home-page "https://cran.r-project.org/web/packages/acfMPeriod/")
+    (synopsis "Estimation of the ACF from the M-periodogram")
+    (description
+     "This package support non-robust and robust computations of the sample
+autocovariance (ACOVF) and sample autocorrelation functions (ACF) of
+univariate and multivariate processes.  The methodology consists in reversing
+the diagonalization procedure involving the periodogram or the
+cross-periodogram and the Fourier transform vectors, and, thus, obtaining the
+ACOVF or the ACF as discussed in Fuller (1995)
+@url{doi:10.1002/9780470316917}.  The robust version is obtained by fitting
+robust M-regressors to obtain the M-periodogram or M-cross-periodogram as
+discussed in Reisen et al. (2017) @url{doi:10.1016/j.jspi.2017.02.008}.")
+    (license license:gpl2+)))
+
+(define-public r-gamlss-data
+  (package
+    (name "r-gamlss-data")
+    (version "5.1-4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gamlss.data" version))
+       (sha256
+        (base32
+         "1dgfspbmps6ipzcmw681wjdp320nm50dwsxafgrcwxndqgc7fdqd"))))
+    (properties `((upstream-name . "gamlss.data")))
+    (build-system r-build-system)
+    (home-page "http://www.gamlss.org/")
+    (synopsis "GAMLSS data")
+    (description
+     "This package provides data used as examples to demonstrate GAMLSS
+models.")
+    ;; Either version of the license
+    (license (list license:gpl2 license:gpl3))))
+
+(define-public r-gamlss
+  (package
+    (name "r-gamlss")
+    (version "5.1-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gamlss" version))
+       (sha256
+        (base32
+         "0gcngfck0dk2rhjg0z1fnc61dqs0s049jy2rkywaf57531s2k8bc"))))
+    (properties `((upstream-name . "gamlss")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-gamlss-data" ,r-gamlss-data)
+       ("r-gamlss-dist" ,r-gamlss-dist)
+       ("r-mass" ,r-mass)
+       ("r-nlme" ,r-nlme)
+       ("r-survival" ,r-survival)))
+    (home-page "http://www.gamlss.org/")
+    (synopsis "Generalized additive models for location scale and shape")
+    (description
+     "This package provides functions for fitting the generalized additive
+models for location scale and shape introduced by Rigby and
+Stasinopoulos (2005), @url{doi:10.1111/j.1467-9876.2005.00510.x}.  The models
+use a distributional regression approach where all the parameters of the
+conditional distribution of the response variable are modelled using
+explanatory variables.")
+    ;; Either version of the license
+    (license (list license:gpl2 license:gpl3))))
+
+(define-public r-acid
+  (package
+    (name "r-acid")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "acid" version))
+       (sha256
+        (base32
+         "030i0y8s283ivbsmjccpbv9v7mgbcg2jk9df7vgcbbns74swf9hd"))))
+    (properties `((upstream-name . "acid")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-gamlss" ,r-gamlss)
+       ("r-gamlss-dist" ,r-gamlss-dist)
+       ("r-hmisc" ,r-hmisc)))
+    (home-page "https://cran.r-project.org/web/packages/acid/")
+    (synopsis "Analysing conditional income distributions")
+    (description
+     "This package provides functions for the analysis of income distributions
+for subgroups of the population as defined by a set of variables like age,
+gender, region, etc.  This entails a Kolmogorov-Smirnov test for a mixture
+distribution as well as functions for moments, inequality measures, entropy
+measures and polarisation measures of income distributions.  This package thus
+aides the analysis of income inequality by offering tools for the exploratory
+analysis of income distributions at the disaggregated level.")
+    (license license:gpl3)))
+
+(define-public r-acm4r
+  (package
+    (name "r-acm4r")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "acm4r" version))
+       (sha256
+        (base32
+         "1wqzc35i1rshx0zlmas8y4qkkvy6h9r4i4apscjjv1xg2wjflzxa"))))
+    (properties `((upstream-name . "acm4r")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-mass" ,r-mass)))
+    (home-page "https://cran.r-project.org/web/packages/acm4r/")
+    (synopsis "Align-and-count method comparisons of RFLP data")
+    (description
+     "This is a package to compare sequence fragment lengths or molecular
+weights from pairs of lanes.  The number of matching bands in the
+@dfn{Restriction Fragment Length Polymorphism} (RFLP) data is calculated using
+the align-and-count method.")
+    ;; Any version of the GPL
+    (license (list license:gpl2+ license:gpl3+))))
+
+(define-public r-filematrix
+  (package
+    (name "r-filematrix")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "filematrix" version))
+       (sha256
+        (base32
+         "1v3aj1ng742msb0sfdnjsbqb508mqjf8jlq2v33vxldhradw5w0b"))))
+    (properties `((upstream-name . "filematrix")))
+    (build-system r-build-system)
+    ;; These inputs are needed for vignettes
+    (native-inputs
+     `(("r-knitr" ,r-knitr)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("pandoc-citeproc" ,ghc-pandoc-citeproc)))
+    (home-page "https://github.com/andreyshabalin/filematrix")
+    (synopsis "File-backed matrix class with convenient read and write access")
+    (description
+     "This package provides an interface for working with large matrices
+stored in files, not in computer memory.  It supports multiple non-character
+data types (double, integer, logical and raw) of various sizes (e.g.  8 and 4
+byte real values).  Access to parts of the matrix is done by indexing, exactly
+as with usual R matrices.  It supports very large matrices; the package has
+been tested on multi-terabyte matrices.  It allows for more than 2^32 rows or
+columns, ad allows for quick addition of extra columns to a filematrix.")
+    (license license:lgpl3)))
+
+(define-public r-acmeeqtl
+  (package
+    (name "r-acmeeqtl")
+    (version "1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ACMEeqtl" version))
+       (sha256
+        (base32
+         "049xjv2ym35bbn43zwi68cq27fwdh404vp0r2ca5gxgmmx8kj1cz"))))
+    (properties `((upstream-name . "ACMEeqtl")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-filematrix" ,r-filematrix)))
+    (home-page "https://github.com/andreyshabalin/ACMEeqtl")
+    (synopsis "Estimation of interpretable eQTL effect sizes")
+    (description
+     "This package provides a non-linear model, termed ACME, that reflects a
+parsimonious biological model for allelic contributions of cis-acting eQTLs.
+With non-linear least-squares algorithm the maximum likelihood parameters can
+be estimated.  The ACME model provides interpretable effect size estimates and
+p-values with well controlled Type-I error.")
+    (license license:lgpl3)))
+
+(define-public r-acmer
+  (package
+    (name "r-acmer")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "acmeR" version))
+       (sha256
+        (base32
+         "000b2hqlhj93958nddw0fqb15ahigs08najv2miivym046x04mf7"))))
+    (properties `((upstream-name . "acmeR")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-foreign" ,r-foreign)))
+    (home-page "https://cran.r-project.org/web/packages/acmeR/")
+    (synopsis "ACME estimator of bird and bat mortality by wind turbines")
+    (description
+     "This package provides an implementation of the ACME estimator, described
+in Wolpert (2015), ACME: A Partially Periodic Estimator of Avian & Chiropteran
+Mortality at Wind Turbines.  Unlike most other models, this estimator supports
+decreasing-hazard Weibull model for persistence; decreasing search proficiency
+as carcasses age; variable bleed-through at successive searches; and interval
+mortality estimates.  The package provides, based on search data, functions
+for estimating the mortality inflation factor in Frequentist and Bayesian
+settings.")
+    (license license:expat)))
+
+(define-public r-r-huge
+  (package
+    (name "r-r-huge")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "R.huge" version))
+       (sha256
+        (base32
+         "13p558qalv60pgr24nsm6mi92ryj65rsbqa6pgdwy0snjqx12bgi"))))
+    (properties `((upstream-name . "R.huge")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-r-methodss3" ,r-r-methodss3)
+       ("r-r-oo" ,r-r-oo)
+       ("r-r-utils" ,r-r-utils)))
+    (home-page "https://github.com/HenrikBengtsson/R.huge")
+    (synopsis "Methods for accessing huge amounts of data")
+    (description
+     "This is a deprecated package for accessing huge amounts of data.
+  Cross-platform alternatives are the following packages: bigmemory (CRAN),
+ff (CRAN), or BufferedMatrix (Bioconductor).  The main usage of it was inside
+the @code{aroma.affymetrix} package.")
+    (license license:lgpl2.1+)))
+
+(define-public r-r-filesets
+  (package
+    (name "r-r-filesets")
+    (version "2.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "R.filesets" version))
+       (sha256
+        (base32
+         "124rygq0bl9n4akxcm868nl30cyk3rz0iprb98zlpk62gci9f5fg"))))
+    (properties `((upstream-name . "R.filesets")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-digest" ,r-digest)
+       ("r-r-cache" ,r-r-cache)
+       ("r-r-methodss3" ,r-r-methodss3)
+       ("r-r-oo" ,r-r-oo)
+       ("r-r-utils" ,r-r-utils)))
+    (home-page "https://github.com/HenrikBengtsson/R.filesets")
+    (synopsis "Easy handling of and access to files")
+    (description
+     "This package provides classes and methods to locate, setup, subset,
+navigate and iterate file sets, i.e. sets of files located in one or more
+directories on the file system.  The API is designed such that these classes
+can be extended via inheritance to provide a richer API for special file
+formats.  Moreover, a specific name format is defined such that filenames and
+directories can be considered to have full names which consists of a name
+followed by comma-separated tags.  This adds additional flexibility to
+identify file sets and individual files.")
+    (license license:lgpl2.1+)))
+
+(define-public r-r-devices
+  (package
+    (name "r-r-devices")
+    (version "2.16.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "R.devices" version))
+       (sha256
+        (base32
+         "15zlnq3g27whq26fbcy5zfl5hiddm256h4rga4frblg6wqlbkvdd"))))
+    (properties `((upstream-name . "R.devices")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-base64enc" ,r-base64enc)
+       ("r-r-methodss3" ,r-r-methodss3)
+       ("r-r-oo" ,r-r-oo)
+       ("r-r-utils" ,r-r-utils)))
+    (home-page "https://github.com/HenrikBengtsson/R.devices")
+    (synopsis "Unified handling of graphics devices")
+    (description
+     "This package provides functions for creating plots and image files in a
+unified way regardless of output format (EPS, PDF, PNG, SVG, TIFF, WMF, etc.).
+Default device options as well as scales and aspect ratios are controlled in a
+uniform way across all device types.  Switching output format requires minimal
+changes in code.  This package is ideal for large-scale batch processing,
+because it will never leave open graphics devices or incomplete image files
+behind, even on errors or user interrupts.")
+    (license license:lgpl2.1+)))
+
+(define-public r-acnr
+  (package
+    (name "r-acnr")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "acnr" version))
+       (sha256
+        (base32
+         "087hq4i7jp67ba2finzsqjfnqbiprl33na6ryjv9zqzsdawj9cym"))))
+    (properties `((upstream-name . "acnr")))
+    (build-system r-build-system)
+    (home-page "https://github.com/mpierrejean/acnr")
+    (synopsis "Annotated copy-number regions")
+    (description
+     "This package provides SNP array data from different types of copy-number
+regions.  These regions were identified manually by the authors of the package
+and may be used to generate realistic data sets with known truth.")
+    (license license:lgpl2.1+)))
+
+(define-public r-acopula
+  (package
+    (name "r-acopula")
+    (version "0.9.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "acopula" version))
+       (sha256
+        (base32
+         "0vvbbw8pfs9jwfz5c57lw48pr0qj661r0ys007q6zf9jmlrhx1ln"))))
+    (properties `((upstream-name . "acopula")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/acopula/")
+    (synopsis "Modelling dependence with multivariate Archimax copulas")
+    (description
+     "Archimax copulas are a mixture of Archimedean and EV copulas.  This
+package provides definitions of several parametric families of generator and
+dependence function, computes CDF and PDF, estimates parameters, tests for
+goodness of fit, generates random sample and checks copula properties for
+custom constructs.  In the 2-dimensional case explicit formulas for density
+are used, contrary to higher dimensions when all derivatives are linearly
+approximated.  Several non-archimax families (normal, FGM, Plackett) are
+provided as well.")
+    (license license:gpl2)))
+
+(define-public r-tuner
+  (package
+    (name "r-tuner")
+    (version "1.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tuneR" version))
+       (sha256
+        (base32
+         "0av978m4h2iqazyfq6n2cgkh4wpllihh7s29lah2nb8ngc0w5hxx"))))
+    (properties `((upstream-name . "tuneR")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-signal" ,r-signal)))
+    (home-page "https://cran.r-project.org/web/packages/tuneR/")
+    (synopsis "Analysis of music and speech")
+    (description
+     "This is a package for the analysis of music and speech.  Analyze music
+and speech, extract features like MFCCs, handle wave files and their
+representation in various ways, read MP3, read MIDI, perform steps of a
+transcription, ...")
+    ;; Either of these versions.
+    (license (list license:gpl2 license:gpl3))))
+
+(define-public r-seewave
+  (package
+    (name "r-seewave")
+    (version "2.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "seewave" version))
+       (sha256
+        (base32
+         "1qg8f5gik9pw6f9mcxqmrc9x3003s8vdm6g01pjjpyc9qaqiz2vi"))))
+    (properties `((upstream-name . "seewave")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-tuner" ,r-tuner)))
+    (home-page "http://rug.mnhn.fr/seewave")
+    (synopsis "Sound analysis and synthesis")
+    (description
+     "This package provides functions for analysing, manipulating, displaying,
+editing and synthesizing time waves (particularly sound).  This package
+processes time analysis (oscillograms and envelopes), spectral content,
+resonance quality factor, entropy, cross correlation and autocorrelation,
+zero-crossing, dominant frequency, analytic signal, frequency coherence, 2D
+and 3D spectrograms and many other analyses.")
+    (license license:gpl2+)))
+
+(define-public r-acousticndlcoder
+  (package
+    (name "r-acousticndlcoder")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "AcousticNDLCodeR" version))
+       (sha256
+        (base32
+         "1fgzgwanpv2pzy74xdk3hamc44p8qch467wh163dxby8jr9ik0sb"))))
+    (properties
+     `((upstream-name . "AcousticNDLCodeR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-seewave" ,r-seewave)
+       ("r-tuner" ,r-tuner)
+       ("r-zoo" ,r-zoo)))
+    (home-page "https://cran.r-project.org/web/packages/AcousticNDLCodeR/")
+    (synopsis "Coding sound files for use with NDL")
+    (description
+     "Make acoustic cues to use with the R package @code{ndl}.
+The package implements functions used in the PLoS ONE paper \"Words from
+spontaneous conversational speech can be recognized with human-like accuracy
+by an error-driven learning algorithm that discriminates between meanings
+straight from smart acoustic features, bypassing the phoneme as recognition
+unit.\" @url{doi:10.1371/journal.pone.0174623}")
+    (license license:gpl2+)))
+
+(define-public r-acp
+  (package
+    (name "r-acp")
+    (version "2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "acp" version))
+       (sha256
+        (base32
+         "0lcwbjcyyr32m6qjmjqh25qjwrbyqj1n092xhgbhxzd8fslppnmn"))))
+    (properties `((upstream-name . "acp")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-quantmod" ,r-quantmod)
+       ("r-tseries" ,r-tseries)))
+    (home-page "https://cran.r-project.org/web/packages/acp/")
+    (synopsis "Autoregressive conditional Poisson")
+    (description
+     "This package supports the analysis of count data exhibiting
+autoregressive properties, using the @dfn{Autoregressive Conditional Poisson}
+model (ACP(p,q)) proposed by Heinen (2003).")
+    (license license:gpl2)))
+
+(define-public r-ada
+  (package
+    (name "r-ada")
+    (version "2.0-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ada" version))
+       (sha256
+        (base32
+         "1h3a07czp0w3hrhjcg1fz721y8vsfclzqi3rq8qfzgpfb4h1f06r"))))
+    (properties `((upstream-name . "ada")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-rpart" ,r-rpart)))
+    (home-page "https://cran.r-project.org/web/packages/ada/")
+    (synopsis "Stochastic boosting")
+    (description
+     "This package provides a straightforward, well-documented, and broad
+boosting routine for classification, ideally suited for small to
+moderate-sized data sets.  It performs discrete, real, and gentle boost under
+both exponential and logistic loss on a given data set.")
+    ;; Any version of the GPL.
+    (license (list license:gpl2+ license:gpl3+))))
+
+(define-public r-genalg
+  (package
+    (name "r-genalg")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "genalg" version))
+       (sha256
+        (base32
+         "1wzfamq8k5yhwbdx0wy1w5bks93brj0p890xxc4yqrja4w38ja3s"))))
+    (properties `((upstream-name . "genalg")))
+    (build-system r-build-system)
+    (home-page "https://github.com/egonw/genalg")
+    (synopsis "R based genetic algorithm")
+    (description
+     "This package provides an R based genetic algorithm for binary and
+floating point chromosomes.")
+    (license license:gpl2)))
+
+(define-public r-kernelfactory
+  (package
+    (name "r-kernelfactory")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "kernelFactory" version))
+       (sha256
+        (base32
+         "001kw9k3ivd4drd4mwqapkkk3f4jgljiaprhg2630hmll064s89j"))))
+    (properties `((upstream-name . "kernelFactory")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-auc" ,r-auc)
+       ("r-genalg" ,r-genalg)
+       ("r-kernlab" ,r-kernlab)
+       ("r-randomforest" ,r-randomforest)))
+    (home-page "https://cran.r-project.org/web/packages/kernelFactory/")
+    (synopsis "Ensemble of kernel machines")
+    (description
+     "Kernel factory is an ensemble method where each base classifier (random
+forest) is fit on the kernel matrix of a subset of the training data.")
+    (license license:gpl2+)))
+
+(define-public r-dummies
+  (package
+    (name "r-dummies")
+    (version "1.5.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "dummies" version))
+       (sha256
+        (base32
+         "01f84crqx17xd6xy55qxlvsj3knm8lhw7jl26p2rh2w3y0nvqlbm"))))
+    (properties `((upstream-name . "dummies")))
+    (build-system r-build-system)
+    (home-page "http://www.decisionpatterns.com")
+    (synopsis "Create dummy/indicator variables flexibly and efficiently")
+    (description
+     "This package lets you expand factors, characters and other eligible
+classes into dummy/indicator variables.")
+    (license license:gpl2+)))
+
+(define-public r-acrm
+  (package
+    (name "r-acrm")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "aCRM" version))
+       (sha256
+        (base32
+         "0kzp568hd9c9a9qgniia5s5gv0q5f89xfvvwpzb197gqhs3x092v"))))
+    (properties `((upstream-name . "aCRM")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ada" ,r-ada)
+       ("r-dummies" ,r-dummies)
+       ("r-kernelfactory" ,r-kernelfactory)
+       ("r-randomforest" ,r-randomforest)))
+    (home-page "https://cran.r-project.org/web/packages/aCRM/")
+    (synopsis "Convenience functions for analytical customer relationship management")
+    (description
+     "This package provides convenience functions for data preparation and
+modeling often used in @dfn{analytical customer relationship
+management} (aCRM).")
+    (license license:gpl2+)))
+
+(define-public r-treeclust
+  (package
+    (name "r-treeclust")
+    (version "1.1-7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "treeClust" version))
+       (sha256
+        (base32
+         "1s7kh6q0bkixsygrip95zf1bi10ihddsa5lq9dfxd68yh8rsby6z"))))
+    (properties `((upstream-name . "treeClust")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cluster" ,r-cluster)
+       ("r-rpart" ,r-rpart)))
+    (home-page "https://cran.r-project.org/web/packages/treeClust/")
+    (synopsis "Cluster distances through trees")
+    (description
+     "This package provides tools to create a measure of inter-point
+dissimilarity useful for clustering mixed data, and, optionally, perform the
+clustering.")
+    (license license:gpl2+)))
+
+(define-public r-acrosstic
+  (package
+    (name "r-acrosstic")
+    (version "1.0-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "AcrossTic" version))
+       (sha256
+        (base32
+         "03180h79jhjd66ibrnsfp3yyp2jlfysp7cymw46phzj2palghsc0"))))
+    (properties `((upstream-name . "AcrossTic")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lpsolve" ,r-lpsolve)
+       ("r-treeclust" ,r-treeclust)))
+    (home-page "https://cran.r-project.org/web/packages/AcrossTic/")
+    (synopsis "Cost-minimal regular spanning subgraph with TreeClust")
+    (description
+     "This is a package for constructing minimum-cost regular spanning
+subgraph as part of a non-parametric two-sample test for equality of
+distribution.")
+    (license license:gpl2+)))
+
+(define-public r-acrt
+  (package
+    (name "r-acrt")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "acrt" version))
+       (sha256
+        (base32
+         "0y9ndcq8ffpfrv7w9rikm4zn68jpsj6baqisq9kp2433xrwzdb6s"))))
+    (properties `((upstream-name . "acrt")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-rcppeigen" ,r-rcppeigen)
+       ("r-sandwich" ,r-sandwich)))
+    (home-page "https://cran.r-project.org/web/packages/acrt/")
+    (synopsis "Autocorrelation robust testing")
+    (description
+     "This package provides functions for testing affine hypotheses on the
+regression coefficient vector in regression models with autocorrelated
+errors.")
+    (license license:gpl2)))
+
+(define-public r-acs
+  (package
+    (name "r-acs")
+    (version "2.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "acs" version))
+       (sha256
+        (base32
+         "0ajw9rf8l8akcvgqvbxjvryc6wjx74521xyxswz2b0bky3m6kah5"))))
+    (properties `((upstream-name . "acs")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-httr" ,r-httr)
+       ("r-plyr" ,r-plyr)
+       ("r-rcpp" ,r-rcpp)
+       ("r-stringr" ,r-stringr)
+       ("r-xml" ,r-xml)))
+    (home-page "http://dusp.mit.edu/faculty/ezra-glenn")
+    (synopsis "Work with data from the US Census")
+    (description
+     "This package provides a general toolkit for downloading, managing,
+analyzing, and presenting data from the
+@url{https://www.census.gov/data/developers/data-sets.html, U.S.  Census},
+including SF1 (Decennial short-form), SF3 (Decennial long-form), and the
+American Community Survey (ACS).  Confidence intervals provided with ACS data
+are converted to standard errors to be bundled with estimates in complex
+@code{acs} objects.  The package provides new methods to conduct standard
+operations on @code{acs} objects and present/plot data in statistically
+appropriate ways.")
+    (license license:gpl3)))
+
+(define-public r-acss-data
+  (package
+    (name "r-acss-data")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "acss.data" version))
+       (sha256
+        (base32
+         "09kl4179ipr8bq19g89xcdi1xxs397zcx5cvgp6viy8gn687ilgv"))))
+    (properties `((upstream-name . "acss.data")))
+    (build-system r-build-system)
+    (home-page "http://complexitycalculator.com/methodology.html")
+    (synopsis "Data for algorithmic complexity of short strings")
+    (description
+     "This is a data only package providing the algorithmic complexity of
+short strings, computed using the coding theorem method.  For a given set of
+symbols in a string, all possible or a large number of random samples of
+Turing machines with a given number of states (e.g., 5) and number of symbols
+corresponding to the number of symbols in the strings were simulated until
+they reached a halting state or failed to end.  This package contains data on
+4.5 million strings from length 1 to 12 simulated on Turing machines with 2,
+4, 5, 6, and 9 symbols.  The complexity of the string corresponds to the
+distribution of the halting states.")
+    (license license:gpl2+)))
+
+(define-public r-acss
+  (package
+    (name "r-acss")
+    (version "0.2-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "acss" version))
+       (sha256
+        (base32
+         "0cqa60544f58l5qd7h6xmsir40b9hqnq6pqgd5hfx2j2l5n7qhmk"))))
+    (properties `((upstream-name . "acss")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-acss-data" ,r-acss-data)
+       ("r-zoo" ,r-zoo)))
+    (home-page "http://complexitycalculator.com/methodology.html")
+    (synopsis "Algorithmic complexity for short strings")
+    (description
+     "The main purpose of this package is to provide the algorithmic
+complexity for short strings, an approximation of the Kolmogorov Complexity of
+a short string using the coding theorem method.  While the database containing
+the complexity is provided in the data only package @code{acss.data}, this
+package provides functions accessing the data such as @code{prob_random}
+returning the posterior probability that a given string was produced by a
+random process.  In addition, two traditional (but problematic) measures of
+complexity are also provided: entropy and change complexity.")
+    (license license:gpl2+)))
+
+(define-public r-acswr
+  (package
+    (name "r-acswr")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ACSWR" version))
+       (sha256
+        (base32
+         "195vjrkang5cl7gwsna0aq4p0h4jym9xg9yh94bnf8vq6wf8j83n"))))
+    (properties `((upstream-name . "ACSWR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)))
+    (home-page "https://cran.r-project.org/web/packages/ACSWR/")
+    (synopsis "Companion package for the book \"A Course in Statistics with R\"")
+    (description
+     "This is a companion package for the book \"A Course in Statistics with
+R\" (ISBN 978-1-119-15272-9.)")
+    (license license:gpl2)))
+
+(define-public r-alabama
+  (package
+    (name "r-alabama")
+    (version "2015.3-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "alabama" version))
+       (sha256
+        (base32
+         "0mlgk929gdismikwx4k2ndqq57nnqj7mlgvd3479b214hksgq036"))))
+    (properties `((upstream-name . "alabama")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-numderiv" ,r-numderiv)))
+    (home-page "https://cran.r-project.org/web/packages/alabama/")
+    (synopsis "Constrained nonlinear optimization")
+    (description
+     "Alabama stands for Augmented Lagrangian Adaptive Barrier Minimization
+Algorithm; it is used for optimizing smooth nonlinear objective functions with
+constraints.  Linear or nonlinear equality and inequality constraints are
+allowed.")
+    (license license:gpl2+)))
+
+(define-public r-gdina
+  (package
+    (name "r-gdina")
+    (version "2.7.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "GDINA" version))
+       (sha256
+        (base32
+         "0875xfbm36gqzr0116xzlbm8rlff85rybr4s4hjzfflfvjdhgvfx"))))
+    (properties `((upstream-name . "GDINA")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-alabama" ,r-alabama)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-mass" ,r-mass)
+       ("r-nloptr" ,r-nloptr)
+       ("r-numderiv" ,r-numderiv)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-rsolnp" ,r-rsolnp)
+       ("r-shiny" ,r-shiny)
+       ("r-shinydashboard" ,r-shinydashboard)))
+    (home-page "https://github.com/Wenchao-Ma/GDINA")
+    (synopsis "Generalized DINA model framework")
+    (description
+     "This package provides a set of psychometric tools for cognitive
+diagnosis modeling based on the generalized deterministic inputs, noisy and
+gate (G-DINA) model by de la Torre (2011) @url{doi:10.1007/s11336-011-9207-7}
+and its extensions, including the sequential G-DINA model by Ma and de la
+Torre (2016) @url{doi:10.1111/bmsp.12070} for polytomous responses, and the
+polytomous G-DINA model by Chen and de la Torre
+@url{doi:10.1177/0146621613479818} for polytomous attributes.  Joint attribute
+distribution can be independent, saturated, higher-order, loglinear smoothed
+or structured.  Q-matrix validation, item and model fit statistics, model
+comparison at test and item level and differential item functioning can also
+be conducted.  A graphical user interface is also provided.")
+    (license license:gpl3)))
+
+(define-public r-actcd
+  (package
+    (name "r-actcd")
+    (version "1.2-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ACTCD" version))
+       (sha256
+        (base32
+         "0mzjxxr2zfdidw8ibh6w8mvpkw3q3nvngqi05g9ind26ckvk053p"))))
+    (properties `((upstream-name . "ACTCD")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-gdina" ,r-gdina)
+       ("r-r-methodss3" ,r-r-methodss3)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/ACTCD/")
+    (synopsis "Asymptotic classification theory for cognitive diagnosis")
+    (description
+     "This is a package supporting cluster analysis for cognitive diagnosis
+based on the Asymptotic Classification Theory (Chiu, Douglas & Li, 2009;
+@url{doi:10.1007/s11336-009-9125-0}).  Given the sample statistic of
+sum-scores, cluster analysis techniques can be used to classify examinees into
+latent classes based on their attribute patterns.  In addition to the
+algorithms used to classify data, three labeling approaches are proposed to
+label clusters so that examinees' attribute profiles can be obtained.")
+    (license license:gpl2+)))
+
+(define-public r-ineq
+  (package
+    (name "r-ineq")
+    (version "0.2-13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ineq" version))
+       (sha256
+        (base32
+         "09fsxyrh0j7mwmb5hkhmrzgcy7kf85jxkh7zlwpgqgcsyl1n91z0"))))
+    (properties `((upstream-name . "ineq")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/ineq/")
+    (synopsis "Measuring inequality, concentration, and poverty")
+    (description
+     "This package provides tools for measuring inequality, concentration, and
+poverty measures.  It provides both empirical and theoretical Lorenz curves.")
+    ;; Either of these two versions.
+    (license (list license:gpl2 license:gpl3))))
+
+(define-public r-actfrag
+  (package
+    (name "r-actfrag")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ActFrag" version))
+       (sha256
+        (base32
+         "06l5a679j6289008ls57v420mnzpq9a4ln7svi5bh0vpvws7sr9d"))))
+    (properties `((upstream-name . "ActFrag")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-accelerometry" ,r-accelerometry)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ineq" ,r-ineq)
+       ("r-survival" ,r-survival)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "https://github.com/junruidi/ActFrag")
+    (synopsis "Activity fragmentation metrics extraction")
+    (description
+     "This package provides functions to extract commonly used fragmentation
+metrics to quantify time accumulation strategies based on minute level
+actigraphy-measured activity counts data.")
+    (license license:gpl3)))
+
+(define-public r-fda
+  (package
+    (name "r-fda")
+    (version "2.4.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fda" version))
+       (sha256
+        (base32
+         "0n39rzbhg1hipzn51rzmbchn2358qgapg08iv7lmiqj5y7i9qns2"))))
+    (properties `((upstream-name . "fda")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)))
+    (home-page "http://www.functionaldata.org")
+    (synopsis "Functional data analysis")
+    (description
+     "These functions were developed to support functional data analysis as
+described in Ramsay, J. O. and Silverman, B. W. (2005) Functional Data
+Analysis.  The package includes data sets and script files working many
+examples.")
+    (license license:gpl2+)))
+
+(define-public r-actigraphy
+  (package
+    (name "r-actigraphy")
+    (version "1.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Actigraphy" version))
+       (sha256
+        (base32
+         "0y0ccmxhdfhdmi4k6pbfvnqknkqbgvfsf2qf7z7rc4xpfgym6574"))))
+    (properties `((upstream-name . "Actigraphy")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-fda" ,r-fda)
+       ("r-sdmtools" ,r-sdmtools)))
+    (home-page "https://cran.r-project.org/web/packages/Actigraphy/")
+    (synopsis "Actigraphy data analysis")
+    (description
+     "This package provides tools for functional linear modeling and analysis
+of actigraphy data.")
+    (license license:asl2.0)))
+
+(define-public r-activedriver
+  (package
+    (name "r-activedriver")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ActiveDriver" version))
+       (sha256
+        (base32
+         "10c7ga48fwvpd5mc4dqiyw4kc2l0iz5qn4hg7xk15r1qmm5rsipa"))))
+    (properties `((upstream-name . "ActiveDriver")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)))
+    (home-page "https://cran.r-project.org/web/packages/ActiveDriver/")
+    (synopsis "Tools for finding cancer driver proteins")
+    (description
+     "This package provides a mutation analysis tool that discovers cancer
+driver genes with frequent mutations in protein signalling sites such as
+post-translational modifications (phosphorylation, ubiquitination, etc).  The
+Poisson generalized linear regression model identifies genes where cancer
+mutations in signalling sites are more frequent than expected from the
+sequence of the entire gene.  Integration of mutations with signalling
+information helps find new driver genes and propose candidate mechanisms to
+known drivers.")
+    (license license:gpl2+)))
+
+(define-public r-activitycounts
+  (package
+    (name "r-activitycounts")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "activityCounts" version))
+       (sha256
+        (base32
+         "0zgxr2sk3a8kmygfxx1p5hnrfwdkxx7php6jlrhm8wv6052ck8jz"))))
+    (properties
+     `((upstream-name . "activityCounts")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lubridate" ,r-lubridate)
+       ("r-magrittr" ,r-magrittr)
+       ("r-seewave" ,r-seewave)
+       ("r-signal" ,r-signal)
+       ("r-tibble" ,r-tibble)))
+    (home-page "https://github.com/walkabillylab/activityCounts")
+    (synopsis "Generate ActiLife counts")
+    (description
+     "ActiLife generates activity counts from data collected by Actigraph
+accelerometers.  Actigraph is one of the most common research-grade
+accelerometers.  There is considerable research validating and developing
+algorithms for human activity using ActiLife counts.  Unfortunately, ActiLife
+counts are proprietary and difficult to implement if researchers use different
+accelerometer brands.  The code creates ActiLife counts from raw acceleration
+data for different accelerometer brands.")
+    (license license:gpl3)))
+
+(define-public r-activityindex
+  (package
+    (name "r-activityindex")
+    (version "0.3.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ActivityIndex" version))
+       (sha256
+        (base32
+         "14k6d78s15j7kb7jhixf4msrdjdl28d0r264cbvy41p8dkq7ysvk"))))
+    (properties `((upstream-name . "ActivityIndex")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-r-utils" ,r-r-utils)))
+    (home-page "https://cran.r-project.org/web/packages/ActivityIndex/")
+    (synopsis "Activity Index calculation using raw accelerometry data")
+    (description
+     "This is a package to read raw accelerometry from GT3X+ accelerometry
+data and plain table data to calculate the Activity Index from Bai et
+al. (2016) @url{doi:10.1371/journal.pone.0160644}.")
+    (license license:gpl3)))
+
+(define-public r-activpal
+  (package
+    (name "r-activpal")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "activPAL" version))
+       (sha256
+        (base32
+         "1h6hp5z89ji73gdzxy1dgbfwjysiy5lvcqh90xagpb7sa7ahs3na"))))
+    (properties `((upstream-name . "activPAL")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-devtools" ,r-devtools)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-lubridate" ,r-lubridate)
+       ("r-magrittr" ,r-magrittr)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "https://cran.r-project.org/web/packages/activPAL")
+    (synopsis "Processing and chart generation from activPAL events files")
+    (description
+     "This package contains functions to generate pre-defined summary
+statistics from activPAL events files.  The package also contains functions to
+produce informative graphics that visualize physical activity behaviour and
+trends.  This includes generating graphs that align physical activity
+behaviour with additional time based observations described by other data
+sets, such as sleep diaries and continuous glucose monitoring data.")
+    (license license:gpl3)))
+
+(define-public r-activpalprocessing
+  (package
+    (name "r-activpalprocessing")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "activpalProcessing" version))
+       (sha256
+        (base32
+         "1y0bjx2qx53iy930y9iww4q1yzjj8y16cwgixk1mq3w4g1f116d1"))))
+    (properties
+     `((upstream-name . "activpalProcessing")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-chron" ,r-chron)))
+    (home-page "https://cran.r-project.org/web/packages/activpalProcessing/")
+    (synopsis "Process activPAL events files")
+    (description
+     "This package performs estimation of physical activity and sedentary
+behavior variables from activPAL events files.")
+    ;; Either version of the GPL.
+    (license (list license:gpl2 license:gpl3))))
+
+(define-public r-actogrammr
+  (package
+    (name "r-actogrammr")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "actogrammr" version))
+       (sha256
+        (base32
+         "1jzvarmd41yqlrkagzlc8m19n5mn0w0b36fy50lyvgrfsafjfbqa"))))
+    (properties `((upstream-name . "actogrammr")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-lubridate" ,r-lubridate)
+       ("r-readr" ,r-readr)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "https://cran.r-project.org/web/packages/actogrammr/")
+    (synopsis "Read in activity data and plot actograms")
+    (description
+     "Read in activity measurements from standard file formats used by
+circadian rhythm researchers, currently only ClockLab format, and process and
+plot the data.  The central type of plot is the actogram, as first described
+in \"Activity and distribution of certain wild mice in relation to biotic
+communities\" by MS Johnson (1926) @url{doi:10.2307/1373575}.")
+    (license license:gpl3)))
+
+(define-public r-expint
+  (package
+    (name "r-expint")
+    (version "0.1-6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "expint" version))
+       (sha256
+        (base32
+         "0iai25cglcdnf44d2d1fz1xpw4q600my4zq4493fk4cs5673mlf7"))))
+    (properties `((upstream-name . "expint")))
+    (build-system r-build-system)
+    (home-page "https://gitlab.com/vigou3/expint")
+    (synopsis "Exponential integral and incomplete Gamma function")
+    (description
+     "This package provides the exponential integrals @code{E_1(x)},
+@code{E_2(x)}, @code{E_n(x)} and @code{Ei(x)}, and the incomplete gamma
+function @code{G(a, x)} defined for negative values of its first argument.
+The package also gives easy access to the underlying C routines through an
+API; see the package vignette for details.")
+    (license license:gpl2+)))
+
+(define-public r-actuar
+  (package
+    (name "r-actuar")
+    (version "2.3-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "actuar" version))
+       (sha256
+        (base32
+         "0aw3hlan5y22mdqk1wvnw9ksqhwp4yy5hi0dpv21p7s0hyxhphih"))))
+    (properties `((upstream-name . "actuar")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-expint" ,r-expint)))
+    (home-page "https://gitlab.com/vigou3/actuar")
+    (synopsis "Actuarial functions and heavy tailed distributions")
+    (description
+     "This package provides functions and data sets for actuarial science:
+modeling of loss distributions; risk theory and ruin theory; simulation of
+compound models, discrete mixtures and compound hierarchical models;
+credibility theory.  It boasts support for many additional probability
+distributions to model insurance loss amounts and loss frequency: 19
+continuous heavy tailed distributions; the Poisson-inverse Gaussian discrete
+distribution; zero-truncated and zero-modified extensions of the standard
+discrete distributions.  It also supports phase-type distributions commonly
+used to compute ruin probabilities.")
+    (license license:gpl2+)))
+
+(define-public r-bmp
+  (package
+    (name "r-bmp")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "bmp" version))
+       (sha256
+        (base32
+         "0jd67r11bn98hjwgyr6gas423787xy7ji2hq7ay80blkkcj91xxx"))))
+    (properties `((upstream-name . "bmp")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/bmp/")
+    (synopsis "Read Bitmap (BMP) images")
+    (description
+     "This package provides pure R tools to read BMP format images.  It is
+currently limited to 8 bit greyscale images and 24, 32 bit (A)RGB images.")
+    (license license:gpl2+)))
+
+(define-public r-readbitmap
+  (package
+    (name "r-readbitmap")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "readbitmap" version))
+       (sha256
+        (base32
+         "14825906l326w59g6apy00j55jg3h5kx2r6s031f4gdkbrc7szbk"))))
+    (properties `((upstream-name . "readbitmap")))
+    (build-system r-build-system)
+    (inputs
+     `(("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)))
+    (propagated-inputs
+     `(("r-bmp" ,r-bmp)
+       ("r-jpeg" ,r-jpeg)
+       ("r-png" ,r-png)
+       ("r-tiff" ,r-tiff)))
+    (home-page "https://github.com/jefferis/readbitmap")
+    (synopsis "Unified interface to read bitmap images (BMP, JPEG, PNG, TIFF)")
+    (description
+     "This package provides tools to identify and read BMP, JPEG, PNG, and
+TIFF format bitmap images.  Identification defaults to the use of the magic
+number embedded in the file rather than the file extension.")
+    (license license:gpl2+)))
+
+(define-public r-imager
+  (package
+    (name "r-imager")
+    (version "0.41.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "imager" version))
+       (sha256
+        (base32
+         "19fqgjhg04garbipx20g72h9dd6k0jj4ac48nby6km4h665vrs4v"))))
+    (properties `((upstream-name . "imager")))
+    (build-system r-build-system)
+    (inputs
+     `(("fftw" ,fftw)
+       ("libtiff" ,libtiff)
+       ("libx11" ,libx11)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-cairo" ,r-cairo)
+       ("r-downloader" ,r-downloader)
+       ("r-igraph" ,r-igraph)
+       ("r-jpeg" ,r-jpeg)
+       ("r-magrittr" ,r-magrittr)
+       ("r-plyr" ,r-plyr)
+       ("r-png" ,r-png)
+       ("r-purrr" ,r-purrr)
+       ("r-rcpp" ,r-rcpp)
+       ("r-readbitmap" ,r-readbitmap)
+       ("r-stringr" ,r-stringr)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "http://dahtah.github.io/imager")
+    (synopsis "Image processing library")
+    (description
+     "This is a package for fast image processing for images in up to 4
+dimensions (two spatial dimensions, one time/depth dimension, one color
+dimension).  It provides most traditional image processing tools (filtering,
+morphology, transformations, etc.) as well as various functions for easily
+analyzing image data using R.  The package wraps @url{http://cimg.eu, CImg}, a
+simple, modern C++ library for image processing.")
+    (license license:lgpl3)))
+
+(define-public r-acuityview
+  (package
+    (name "r-acuityview")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "AcuityView" version))
+       (sha256
+        (base32
+         "0f0iclmnwdc8ixiiai4svk4x1g3pjy7dhm3cm58fv6ckx12d3d2l"))))
+    (properties `((upstream-name . "AcuityView")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-fftwtools" ,r-fftwtools)
+       ("r-imager" ,r-imager)
+       ("r-plotrix" ,r-plotrix)))
+    (home-page "https://cran.r-project.org/web/packages/AcuityView/")
+    (synopsis "Display scenes as seen by an animal with less acute vision")
+    (description
+     "This package provides a simple method for representing a visual scene as
+it may be seen by an animal with less acute vision.")
+    (license license:gpl2+)))
+
+(define-public r-adabag
+  (package
+    (name "r-adabag")
+    (version "4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "adabag" version))
+       (sha256
+        (base32
+         "109wrl1pwvmyv2l909hrvk7dg4aa9pv449mvdycp50zwrsw9w0a7"))))
+    (properties `((upstream-name . "adabag")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-caret" ,r-caret)
+       ("r-doparallel" ,r-doparallel)
+       ("r-foreach" ,r-foreach)
+       ("r-rpart" ,r-rpart)))
+    (home-page "https://cran.r-project.org/web/packages/adabag/")
+    (synopsis "Multiclass AdaBoost.M1, SAMME and Bagging")
+    (description
+     "This package implements Freund and Schapire's Adaboost.M1 algorithm and
+Breiman's Bagging algorithm using classification trees as individual
+classifiers.  Once these classifiers have been trained, they can be used to
+predict on new data.  Also, cross validation estimation of the error can be
+done.")
+    (license license:gpl2+)))
+
+(define-public r-adagio
+  (package
+    (name "r-adagio")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "adagio" version))
+       (sha256
+        (base32
+         "1h9l0ddrxq8y35iy9hdkxdvdwsqpnpkzzbkbwwhm4380lq1m7a3k"))))
+    (properties `((upstream-name . "adagio")))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/adagio/")
+    (synopsis "Discrete and global optimization routines")
+    (description
+     "This package provides methods and algorithms for discrete optimization,
+e.g. knapsack and subset sum procedures, derivative-free Nelder-Mead and
+Hooke-Jeeves minimization, and some (evolutionary) global optimization
+functions.")
+    (license license:gpl3+)))
+
+(define-public r-univoutl
+  (package
+    (name "r-univoutl")
+    (version "0.1-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "univOutl" version))
+       (sha256
+        (base32
+         "193wrpkvgmlrx43nag8w3ivrlqm37nm6g86wcvd3bgw3hchs70gi"))))
+    (properties `((upstream-name . "univOutl")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-hmisc" ,r-hmisc)
+       ("r-robustbase" ,r-robustbase)))
+    (home-page "https://github.com/marcellodo/univOutl")
+    (synopsis "Detection of univariate outliers")
+    (description
+     "This package provides well-known outlier detection techniques in the
+univariate case.  Methods to deal with skewed distribution are included too.
+The Hidiroglou-Berthelot (1986) method to search for outliers in ratios of
+historical data is implemented as well.  When available, survey weights can be
+used in outliers detection.")
+    (license license:gpl2+)))
+
+(define-public r-tolerance
+  (package
+    (name "r-tolerance")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tolerance" version))
+       (sha256
+        (base32
+         "17qh4ad1f3fbcpwlxxqh8qr9bnwjcl4yxk0l3fkbr6b2l4rc5p86"))))
+    (properties `((upstream-name . "tolerance")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rgl" ,r-rgl)))
+    (home-page "https://cran.r-project.org/web/packages/tolerance/")
+    (synopsis "Statistical tolerance intervals and regions")
+    (description
+     "This package provides functions for estimating tolerance
+limits (intervals) for various univariate distributions (binomial, Cauchy,
+discrete Pareto, exponential, two-parameter exponential, extreme value,
+hypergeometric, Laplace, logistic, negative binomial, negative hypergeometric,
+normal, Pareto, Poisson-Lindley, Poisson, uniform, and Zipf-Mandelbrot),
+Bayesian normal tolerance limits, multivariate normal tolerance regions,
+nonparametric tolerance intervals, tolerance bands for regression
+settings (linear regression, nonlinear regression, nonparametric regression,
+and multivariate regression), and analysis of variance tolerance intervals.
+Visualizations are also available for most of these settings.")
+    (license license:gpl2+)))
+
+(define-public r-additivitytests
+  (package
+    (name "r-additivitytests")
+    (version "1.1-4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "additivityTests" version))
+       (sha256
+        (base32
+         "048ds90wqjdjy1nyhna3m06asdklbh8sx1n556kss2j1r1pma1sw"))))
+    (properties
+     `((upstream-name . "additivityTests")))
+    (build-system r-build-system)
+    (home-page "https://github.com/simecek/additivityTests")
+    (synopsis "Additivity tests in the two way Anova with single sub-class numbers")
+    (description
+     "This package provides an implementation of the Tukey, Mandel,
+Johnson-Graybill, LBI, Tusell and modified Tukey non-additivity tests.")
+    (license license:gpl3)))
+
+(define-public r-flexclust
+  (package
+    (name "r-flexclust")
+    (version "1.4-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "flexclust" version))
+       (sha256
+        (base32
+         "0x7wxk8y46ndyz6fdacym0rd6p9wh3pcfr28chjcg5d7fm849zl2"))))
+    (properties `((upstream-name . "flexclust")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-class" ,r-class)
+       ("r-lattice" ,r-lattice)
+       ("r-modeltools" ,r-modeltools)))
+    (home-page "https://cran.r-project.org/web/packages/flexclust/")
+    (synopsis "Flexible cluster algorithms")
+    (description
+     "The main function @code{kcca} implements a general framework for
+k-centroids cluster analysis supporting arbitrary distance measures and
+centroid computation.  Further cluster methods include hard competitive
+learning, neural gas, and QT clustering.  There are numerous visualization
+methods for cluster results (neighborhood graphs, convex cluster hulls,
+barcharts of centroids, ...), and bootstrap methods for the analysis of
+cluster stability.")
+    (license license:gpl2)))
+
+(define-public r-biclust
+  (package
+    (name "r-biclust")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "biclust" version))
+       (sha256
+        (base32
+         "1y5n6wfa1lx88ck3x09rcg0dh3pw89225h85hmq2la1s1fpa48i0"))))
+    (properties `((upstream-name . "biclust")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-additivitytests" ,r-additivitytests)
+       ("r-colorspace" ,r-colorspace)
+       ("r-flexclust" ,r-flexclust)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-lattice" ,r-lattice)
+       ("r-mass" ,r-mass)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "https://cran.r-project.org/web/packages/biclust/")
+    (synopsis "BiCluster algorithms")
+    (description
+     "The main function @code{biclust()} provides several algorithms to find
+biclusters in two-dimensional data, spectral, plaid model, xmotifs, and bimax.
+In addition, the package provides methods for data
+preprocessing (normalization and discretization), visualization, and
+validation of bicluster solutions.")
+    (license license:gpl3)))
+
+(define-public r-icge
+  (package
+    (name "r-icge")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ICGE" version))
+       (sha256
+        (base32
+         "0xin7zml1nbygyi08hhg3wwr2jr1zcsvrlgia89zp4xanxlzgaqa"))))
+    (properties `((upstream-name . "ICGE")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cluster" ,r-cluster)
+       ("r-mass" ,r-mass)))
+    (home-page "https://cran.r-project.org/web/packages/ICGE/")
+    (synopsis "Cluster estimation and identification of atypical units")
+    (description
+     "ICGE is a package that helps to estimate the number of real clusters in
+data as well as to identify atypical units.  The underlying methods are based
+on distances rather than on unit x variables.")
+    (license license:gpl2+)))
+
+(define-public r-depth
+  (package
+    (name "r-depth")
+    (version "2.1-1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "depth" version))
+       (sha256
+        (base32
+         "0szy0027nh4ps1z919i740i50app5q7cfyg1fj7pdyl45nbl8k6m"))))
+    (properties `((upstream-name . "depth")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-abind" ,r-abind)
+       ("r-circular" ,r-circular)
+       ("r-rgl" ,r-rgl)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/depth/")
+    (synopsis "Nonparametric depth functions for multivariate analysis")
+    (description
+     "This package provides tools for depth functions methodology applied to
+multivariate analysis.  Besides allowing calculation of depth values and
+depth-based location estimators, the package includes functions or drawing
+contour plots and perspective plots of depth functions.  Euclidian and
+spherical depths are supported.")
+    (license license:gpl2)))
+
+(define-public r-archetypes
+  (package
+    (name "r-archetypes")
+    (version "2.2-0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "archetypes" version))
+       (sha256
+        (base32
+         "0ibxsr173ib77gjhid91m85s8gjii4mi2w3d52q5301igv20p7r0"))))
+    (properties `((upstream-name . "archetypes")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-modeltools" ,r-modeltools)
+       ("r-nnls" ,r-nnls)))
+    (home-page "https://cran.r-project.org/web/packages/archetypes")
+    (synopsis "Archetypal analysis")
+    (description
+     "The main function @code{archetypes} implements a framework for
+archetypal analysis supporting arbitrary problem solving mechanisms for the
+different conceptual parts of the algorithm.")
+    (license license:gpl2+)))
+
+(define-public r-shapes
+  (package
+    (name "r-shapes")
+    (version "1.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "shapes" version))
+       (sha256
+        (base32
+         "0gfpdydfysp5mwg7qmkn73s67gvh2szb40mzqrx97h41ijgcgd8s"))))
+    (properties `((upstream-name . "shapes")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)
+       ("r-minpack-lm" ,r-minpack-lm)
+       ("r-rgl" ,r-rgl)
+       ("r-scatterplot3d" ,r-scatterplot3d)))
+    (home-page "http://www.maths.nottingham.ac.uk/~ild/shapes")
+    (synopsis "Statistical shape analysis")
+    (description
+     "This package provides routines for the statistical analysis of landmark
+shapes, including Procrustes analysis, graphical displays, principal
+components analysis, permutation and bootstrap tests, thin-plate spline
+transformation grids and comparing covariance matrices.  See Dryden, I.L.  and
+Mardia, K.V. (2016).  Statistical shape analysis, with Applications in R (2nd
+Edition), John Wiley and Sons.")
+    (license license:gpl2)))
+
+(define-public r-anthropometry
+  (package
+    (name "r-anthropometry")
+    (version "1.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Anthropometry" version))
+       (sha256
+        (base32
+         "1f568ri1s6psaby8y737vrkarbjg64v89d4jyw23hy17apdmszr8"))))
+    (properties `((upstream-name . "Anthropometry")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-archetypes" ,r-archetypes)
+       ("r-biclust" ,r-biclust)
+       ("r-cluster" ,r-cluster)
+       ("r-depth" ,r-depth)
+       ("r-fnn" ,r-fnn)
+       ("r-icge" ,r-icge)
+       ("r-nnls" ,r-nnls)
+       ("r-rgl" ,r-rgl)
+       ("r-shapes" ,r-shapes)))
+    (home-page "https://cran.r-project.org/web/packages/Anthropometry/")
+    (synopsis "Statistical methods for anthropometric data")
+    (description
+     "This package provides statistical methods especially developed to
+analyze anthropometric data.  These methods are aimed at providing effective
+solutions to some commons problems related to Ergonomics and Anthropometry.
+They are based on clustering, the statistical concept of data depth,
+statistical shape analysis and archetypal analysis.")
+    (license license:gpl2+)))
+
+(define-public r-adamethods
+  (package
+    (name "r-adamethods")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "adamethods" version))
+       (sha256
+        (base32
+         "0mp73zh5x6h18gv29v981kb9n632kb58lvlcxwr6vcvrx393nrxh"))))
+    (properties `((upstream-name . "adamethods")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-anthropometry" ,r-anthropometry)
+       ("r-archetypes" ,r-archetypes)
+       ("r-fnn" ,r-fnn)
+       ("r-foreach" ,r-foreach)
+       ("r-nnls" ,r-nnls)
+       ("r-tolerance" ,r-tolerance)
+       ("r-univoutl" ,r-univoutl)))
+    (home-page "https://cran.r-project.org/web/packages/adamethods/")
+    (synopsis "Archetypoid algorithms and anomaly detection")
+    (description
+     "This package is a collection of several algorithms to obtain
+archetypoids with small and large databases and with both classical
+multivariate data and functional data (univariate and multivariate).  Some of
+these algorithms also allow to detect anomalies (outliers).")
+    (license license:gpl2+)))
+
+(define-public r-idpmisc
+  (package
+    (name "r-idpmisc")
+    (version "1.1.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "IDPmisc" version))
+       (sha256
+        (base32
+         "13qcvfm703frs367paddz1wq9k3p17f9p5347m56bhky5hjkaphd"))))
+    (properties `((upstream-name . "IDPmisc")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)))
+    (home-page "https://cran.r-project.org/web/packages/IDPmisc/")
+    (synopsis "Functions for data analyses and visualization")
+    (description
+     "This package provides different high-level graphics functions for
+displaying large datasets, displaying circular data in a very flexible way,
+finding local maxima, brewing color ramps, drawing nice arrows, zooming
+2D-plots, creating figures with differently colored margin and plot region.
+In addition, the package contains auxiliary functions for data manipulation
+like omitting observations with irregular values or selecting data by logical
+vectors, which include NAs.  Other functions are especially useful in
+spectroscopy and analyses of environmental data: robust baseline fitting,
+finding peaks in spectra, converting humidity measures.")
+    (license license:gpl3+)))
+
+(define-public r-qqman
+  (package
+    (name "r-qqman")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "qqman" version))
+       (sha256
+        (base32
+         "1v9s9ag1hfb47py87wb2nad4mbsfx35832hdmrh5kxrb2f11zl1s"))))
+    (properties `((upstream-name . "qqman")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-calibrate" ,r-calibrate)))
+    (home-page "https://cran.r-project.org/web/packages/qqman/")
+    (synopsis "Q-Q and Manhattan plots for GWAS data")
+    (description
+     "This package allows you to create Q-Q and Manhattan plots for GWAS data
+from PLINK results.")
+    (license license:gpl3)))
+
+(define-public r-ggplot-multistats
+  (package
+    (name "r-ggplot-multistats")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggplot.multistats" version))
+       (sha256
+        (base32
+         "1afzfa86vc484bcwpg7m1ky03jpax584rigzgai8w06pifkmz0il"))))
+    (properties
+     `((upstream-name . "ggplot.multistats")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-hexbin" ,r-hexbin)
+       ("r-rlang" ,r-rlang)
+       ("r-scales" ,r-scales)))
+    (home-page "https://github.com/flying-sheep/ggplot.multistats")
+    (synopsis "Multiple summary statistics for binned stats/geometries")
+    (description
+     "This package provides the ggplot binning layer @code{stat_summaries_hex()},
+which functions similar to its singular form, but allows the use of multiple
+statistics per bin.  Those statistics can be mapped to multiple bin
+aesthetics.")
+    (license license:gpl3)))
+
+(define-public r-knn-covertree
+  (package
+    (name "r-knn-covertree")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "knn.covertree" version))
+       (sha256
+        (base32
+         "0msfcmwydws7q7m5jdb0dxab0nkbl7mq5llg6v3r4qrnlvrdggvz"))))
+    (properties `((upstream-name . "knn.covertree")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppeigen" ,r-rcppeigen)))
+    (home-page "https://github.com/flying-sheep/knn.covertree")
+    (synopsis "Accurate kNN Implementation with multiple distance measures")
+    (description
+     "Similarly to the FNN package, this package allows calculation of the k
+nearest neighbors (kNN) of a data matrix.  The implementation is based on
+cover trees introduced by Alina Beygelzimer, Sham Kakade, and John
+Langford (2006) @url{doi:10.1145/1143844.1143857}.")
+    (license license:agpl3+)))
+
+(define-public r-poibin
+  (package
+    (name "r-poibin")
+    (version "1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "poibin" version))
+       (sha256
+        (base32
+         "1rllgmk7yanb5amysl33kmi11lx86q5kqblyb8qqb3ckj2w4jhm2"))))
+    (properties `((upstream-name . "poibin")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/poibin/")
+    (synopsis "Poisson binomial distribution")
+    (description
+     "This package provides an implementation of both the exact and
+approximation methods for computing the @dfn{cumulative distribution
+function} (CDF) of the Poisson binomial distribution.  It also provides the
+@dfn{probability mass function} (PMF), quantile function, and random number
+generation for the Poisson binomial distribution.")
+    (license license:gpl2)))
+
+(define-public r-diagram
+  (package
+    (name "r-diagram")
+    (version "1.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "diagram" version))
+       (sha256
+        (base32
+         "0f6ffprn5k0ir1s7m9s7izc64aa17r3gnygagz5bihrlsvawaavw"))))
+    (properties `((upstream-name . "diagram")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-shape" ,r-shape)))
+    (home-page "https://cran.r-project.org/web/packages/diagram/")
+    (synopsis "Visualize simple graphs (networks) and plot flow diagrams")
+    (description
+     "This package provides tools to visualize simple graphs (networks) based
+on a transition matrix, utilities to plot flow diagrams, visualizing webs,
+electrical networks, etc.  It also includes supporting material for the book
+\"A practical guide to ecological modelling - using R as a simulation
+platform\" by Karline Soetaert and Peter M.J. Herman (2009) and the book
+\"Solving Differential Equations in R\" by Karline Soetaert, Jeff Cash and
+Francesca Mazzia (2012).")
+    (license license:gpl2+)))
+
+(define-public r-lim
+  (package
+    (name "r-lim")
+    (version "1.4.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "LIM" version))
+       (sha256
+        (base32
+         "03x1gnm06bw1wrzc01110bjzd2mvjdzbc2mbrazh22jrmb32w5d8"))))
+    (properties `((upstream-name . "LIM")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-diagram" ,r-diagram)
+       ("r-limsolve" ,r-limsolve)))
+    (home-page "https://cran.r-project.org/web/packages/LIM/")
+    (synopsis "Linear inverse model examples and solution methods")
+    (description
+     "This package provides functions that read and solve linear inverse
+problems (food web problems, linear programming problems).")
+    (license license:gpl2+)))
+
+(define-public r-shinycssloaders
+  (package
+    (name "r-shinycssloaders")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "shinycssloaders" version))
+       (sha256
+        (base32
+         "1bpzsm7m7c366sjl1qndp4m5dg2vlm68rjgdy9n1ija9xbp0r2g4"))))
+    (properties
+     `((upstream-name . "shinycssloaders")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-digest" ,r-digest)
+       ("r-glue" ,r-glue)
+       ("r-shiny" ,r-shiny)))
+    (home-page "https://github.com/andrewsali/shinycssloaders")
+    (synopsis "Add CSS loading animations to Shiny outputs")
+    (description
+     "This package provides tools to create a lightweight Shiny wrapper for
+the css-loaders created by Luke Hass
+@url{https://github.com/lukehaas/css-loaders}.  Wrapping a Shiny output will
+automatically show a loader when the output is (re)calculating.")
+    (license license:gpl3)))
+
+(define-public r-rsvg
+  (package
+    (name "r-rsvg")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rsvg" version))
+       (sha256
+        (base32
+         "11mccgf6hfskg45wqc114sx3qy2r494y6axdf73z6xwhs1wpm97g"))))
+    (properties `((upstream-name . "rsvg")))
+    (build-system r-build-system)
+    (inputs
+     `(("librsvg" ,librsvg)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/jeroen/rsvg#readme")
+    (synopsis "Render SVG images into PDF, PNG, PostScript, or Bitmap arrays")
+    (description
+     "This package allows you to render vector-based SVG images into
+high-quality custom-size bitmap arrays using the librsvg2 library.  The
+resulting bitmap can be written to e.g. PNG, JPEG or WEBP format.  In
+addition, the package can convert images directly to various formats such as
+PDF or PostScript.")
+    (license license:expat)))
+
+(define-public r-influencer
+  (package
+    (name "r-influencer")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "influenceR" version))
+       (sha256
+        (base32
+         "12p9362hkndlnz1rd8j2rykg57kbm6l7ks60by3rd25xg50k5jag"))))
+    (properties `((upstream-name . "influenceR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-igraph" ,r-igraph)
+       ("r-matrix" ,r-matrix)))
+    (home-page "https://github.com/rcc-uchicago/influenceR")
+    (synopsis "Tools to quantify structural importance of nodes in a network")
+    (description
+     "This package provides functionality to compute various node centrality
+measures on networks.  Included are functions to compute betweenness
+centrality (by utilizing Madduri and Bader's SNAP library), implementations of
+Burt's constraint and @dfn{effective network size} (ENS) metrics, Borgatti's
+algorithm to identify key players, and Valente's bridging metric.  The
+betweenness, Key Players, and bridging implementations are parallelized with
+OpenMP.")
+    (license license:gpl2)))

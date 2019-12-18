@@ -24,7 +24,7 @@
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -3677,3 +3677,42 @@ user interface features a builtin video player and is designed with attention
 to convenience of translating and batch processing of multiple documents.")
     (home-page "https://otsaloma.io/gaupol/")
     (license license:gpl3+)))
+
+(define-public theorafile
+  (let ((commit "404b14d7602b5918d117eaa64e8aa6601ede8593"))
+    (package
+      (name "theorafile")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/FNA-XNA/Theorafile.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "128c3pjzqbgrj020glm5jd6ss18vl19471lj615w2brjwb7c1f0z"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:make-flags '("CC=gcc")
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'check
+             (lambda _
+               (setenv "CC" "gcc")
+               (invoke "make" "test")))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (install-file "libtheorafile.so" (string-append out "/lib"))
+                 (install-file "theorafile.h" (string-append out "/include")))
+               #t)))))
+      (native-inputs
+       ;; For tests.
+       `(("sdl2" ,sdl2)))
+      (home-page "https://github.com/FNA-XNA/Theorafile")
+      (synopsis "Ogg Theora Video Decoder Library")
+      (description "Theorafile is a library for quickly and easily decoding Ogg
+Theora videos.  Theorafile was written to be used for FNA's VideoPlayer.")
+      (license license:zlib))))

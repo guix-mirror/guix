@@ -3331,7 +3331,7 @@ mixers.")
 (define-public bluez-alsa
   (package
     (name "bluez-alsa")
-    (version "1.2.0")
+    (version "2.0.0")
     (source (origin
               ;; The tarballs are mere snapshots and don't contain a
               ;; bootstrapped build system.
@@ -3339,11 +3339,19 @@ mixers.")
               (uri (git-reference
                     (url "https://github.com/Arkq/bluez-alsa.git")
                     (commit (string-append "v" version))))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1qinf41wl2ihx54zmmhanycihwjkn7dn1cicq6pp4rqbiv79b95x"))))
+                "08mppgnjf1j2733bk9yf0cny6rfxxwiys0s62lz2zd2lpdl6d9lz"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-alsaplugindir="
+                            (assoc-ref %outputs "out")
+                            "/lib/alsa-lib")
+             (string-append "--with-dbusconfdir="
+                            (assoc-ref %outputs "out")
+                            "/etc/dbus-1"))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -3352,6 +3360,7 @@ mixers.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("bluez" ,bluez)
+       ("dbus" ,dbus)
        ("glib" ,glib)
        ("libbsd" ,libbsd)
        ("ncurses" ,ncurses)

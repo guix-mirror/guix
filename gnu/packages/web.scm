@@ -4194,8 +4194,8 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
   (package-with-python2 python-feedparser))
 
 (define-public guix-data-service
-  (let ((commit "156b7eea7e7d538e332d8cfcf482c5ebec0a25c0")
-        (revision "7"))
+  (let ((commit "a019a5ed821cf1b7b2c2b0e1bd2dc25a51bbcb84")
+        (revision "8"))
     (package
       (name "guix-data-service")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -4207,7 +4207,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1cg7jzk7pabfp3mgnkpycasv7fs522xp3nqdvna1y76aif3pd3zh"))))
+                  "1kckfdgh8v9mmxxrsz6n2ibs78jr821qpbqh4mz8fyavm28c7h3f"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
@@ -7011,3 +7011,36 @@ endpoint that will be used to trigger the task.  Poussetaches makes HTTP
 requests with the registered payload until the right status code is
 returned.")
     (license license:isc)))
+
+(define-public htmlcxx
+  (package
+    (name "htmlcxx")
+    (version "0.87")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://sourceforge/htmlcxx/v"
+                       version "/htmlcxx-" version ".tar.gz"))
+       (sha256
+        (base32 "1j3mzjlczjrk4ahc43s6kzpvzypzjmqz4sillnca5yadrwwgjf2x"))))
+    (build-system gnu-build-system)
+    (home-page "http://htmlcxx.sourceforge.net/")
+    (synopsis "Simple non-validating CSS1 and HTML parser for C++")
+    (description "htmlcxx is a simple non-validating CSS1 and HTML parser for
+C++.  Although there are several other HTML parsers available, htmlcxx has some
+characteristics that make it unique:
+@itemize
+@item STL like navigation of DOM tree, using excelent's tree.hh library from
+Kasper Peeters
+@item It is possible to reproduce exactly, character by character, the original
+document from the parse tree
+@item Bundled CSS parser
+@item Optional parsing of attributes
+@item C++ code that looks like C++ (not so true anymore)
+@item Offsets of tags/elements in the original document are stored in the nodes
+of the DOM tree
+@end itemize")
+    (license (list license:lgpl2.0
+                   license:gpl2
+                   license:asl2.0))))

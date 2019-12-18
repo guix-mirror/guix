@@ -456,7 +456,7 @@ gpgpme starting with version 1.7.")
 (define-public guile-gcrypt
   (package
     (name "guile-gcrypt")
-    (version "0.2.0")
+    (version "0.2.1")
     (home-page "https://notabug.org/cwebber/guile-gcrypt")
     (source (origin
               (method git-fetch)
@@ -465,7 +465,7 @@ gpgpme starting with version 1.7.")
                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "1mhc5m4xygkfj7x18f8apiqpfdn9mrql0am5sk13cf5xn8x1r63z"))
+                "0n232iyayc46f7hywmjw0jr7pbmmz5h4b04jskhkzz9gxz0ci99c"))
               (file-name (string-append name "-" version "-checkout"))))
     (build-system gnu-build-system)
     (native-inputs

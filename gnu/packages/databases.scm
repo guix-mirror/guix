@@ -17,7 +17,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
-;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
@@ -125,6 +125,7 @@
   #:use-module (guix build-system ruby)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system scons)
+  #:use-module (guix build-system trivial)
   #:use-module ((guix build utils) #:hide (which))
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
@@ -912,6 +913,33 @@ Language.")
      "MariaDB is a multi-user and multi-threaded SQL database server, designed
 as a drop-in replacement of MySQL.")
     (license license:gpl2)))
+
+;; TODO: mysql_install_db is broken in MariaDB.  This package is here as
+;; a workaround for packages that need it.  Merge with 'mariadb' in the next
+;; rebuild cycle.
+(define-public mariadb/fixed-install-db
+  (hidden-package
+   (package/inherit
+    mariadb
+    (name "mariadb-fixed")
+    (native-inputs '())
+    (inputs
+     `(("mariadb" ,mariadb)
+       ("mariadb:lib" ,mariadb "lib")))
+    (outputs '("out"))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules ((guix build utils)))
+         (let ((out (assoc-ref %outputs "out")))
+           (copy-recursively (assoc-ref %build-inputs "mariadb") out)
+           (substitute*  (string-append out "/bin/mysql_install_db")
+             (("\\$basedir/share/mysql")
+              (string-append (assoc-ref %build-inputs "mariadb:lib")
+                             "/share/mysql")))
+           #t)))))))
 
 ;; Don't forget to update the other postgresql packages when upgrading this one.
 (define-public postgresql
@@ -3247,25 +3275,29 @@ simultaneous database connections by using this framework.")
                 "0m680h8cc4428xin4p733azysamzgzcmv4psjvraykrsaz6ymlj3"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("inetutils" ,inetutils)
-       ("glibc-locales" ,glibc-locales)))
+     `(;; For tests.
+       ("inetutils" ,inetutils)
+       ("glibc-locales" ,glibc-locales)
+       ("mariadb" ,mariadb/fixed-install-db)))
     (inputs
      `(("libdbi" ,libdbi)
-       ("mysql" ,mariadb)
+       ("mariadb:dev" ,mariadb "dev")
+       ("mariadb:lib" ,mariadb "lib")
        ("postgresql" ,postgresql)
        ("sqlite" ,sqlite)))
     (arguments
      `(#:configure-flags
        (let ((libdbi (assoc-ref %build-inputs "libdbi"))
-             (mysql (assoc-ref %build-inputs "mysql"))
+             (mysql:inc (assoc-ref %build-inputs "mariadb:dev"))
+             (mysql:lib (assoc-ref %build-inputs "mariadb:lib"))
              (postgresql (assoc-ref %build-inputs "postgresql"))
              (sqlite (assoc-ref %build-inputs "sqlite")))
          (list "--disable-docs"
                (string-append "--with-dbi-incdir=" libdbi "/include")
                (string-append "--with-dbi-libdir=" libdbi "/lib")
                "--with-mysql"
-               (string-append "--with-mysql-incdir=" mysql "/include/mysql")
-               (string-append "--with-mysql-libdir=" mysql "/lib")
+               (string-append "--with-mysql-incdir=" mysql:inc "/include/mysql")
+               (string-append "--with-mysql-libdir=" mysql:lib "/lib")
                "--with-pgsql"
                (string-append "--with-pgsql-incdir=" postgresql "/include")
                (string-append "--with-pgsql-libdir=" postgresql "/lib")
@@ -3279,7 +3311,7 @@ simultaneous database connections by using this framework.")
              (substitute* "tests/test_mysql.sh"
                (("^MYMYSQLD=.*")
                 (string-append "MYMYSQLD="
-                               (assoc-ref inputs "mysql")
+                               (assoc-ref inputs "mariadb")
                                "/bin/mysqld")))
              #t))
          (add-after 'install 'remove-empty-directories

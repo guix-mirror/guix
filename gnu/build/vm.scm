@@ -131,14 +131,7 @@ the #:references-graphs parameter of 'derivation'."
                       ;; The serial port name differs between emulated
                       ;; architectures/machines.
                       " console="
-                      (if target-arm? "ttyAMA0" "ttyS0"))
-
-      ;; NIC is not supported on ARM "virt" machine, so use a user mode
-      ;; network stack instead.
-      ,@(if target-arm?
-            '("-device" "virtio-net-pci,netdev=mynet"
-              "-netdev" "user,id=mynet")
-            '("-net" "nic,model=virtio"))))
+                      (if target-arm? "ttyAMA0" "ttyS0"))))
 
   (when make-disk-image?
     (format #t "creating ~a image of ~,2f MiB...~%"
@@ -163,6 +156,7 @@ the #:references-graphs parameter of 'derivation'."
          ;; CPU with the maximum possible feature set otherwise.
          "-cpu" "max"
          "-m" (number->string memory-size)
+         "-nic" "user,model=virtio-net-pci"
          "-object" "rng-random,filename=/dev/urandom,id=guixsd-vm-rng"
          "-device" "virtio-rng-pci,rng=guixsd-vm-rng"
          "-virtfs"
