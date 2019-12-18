@@ -186,11 +186,11 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
                               "deblob-check"))
           (sha256 deblob-check-hash))))
 
-(define deblob-scripts-5.3
+(define deblob-scripts-5.4
   (linux-libre-deblob-scripts
-   "5.3.17"
-   (base32 "15n09zq38d69y1wl28s3nasf3377qp2yil5b887zpqrm00dif7i4")
-   (base32 "1xk3gzgnl9m29avka32zkggl36sdxyvps40hr12hjy42l1ysfshm")))
+   "5.4.4"
+   (base32 "0ckxn7k5zgcqk30dq943bnamr6a6zjbw2aqjl3x30f4kvh5f6k25")
+   (base32 "09hy3jqb8lny861pxjbjvzg90imi8p7z10j14xp0rclxmyb81rk3")))
 
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
@@ -356,13 +356,13 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-(define-public linux-libre-5.3-version "5.3.18")
-(define-public linux-libre-5.3-pristine-source
-  (let ((version linux-libre-5.3-version)
-        (hash (base32 "133342nv9ddjad2rizmcbilg9rhg339sfqr9l77j4cgkqhblkw90")))
+(define-public linux-libre-5.4-version "5.4.5")
+(define-public linux-libre-5.4-pristine-source
+  (let ((version linux-libre-5.4-version)
+        (hash (base32 "1h1ynb51gd4kiakqlkcc7vny45j2snbg4j985qf171mszckrz3jn")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
-                            deblob-scripts-5.3)))
+                            deblob-scripts-5.4)))
 
 (define-public linux-libre-4.19-version "4.19.90")
 (define-public linux-libre-4.19-pristine-source
@@ -424,10 +424,9 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (patches (append (origin-patches source)
                      patches))))
 
-(define-public linux-libre-5.3-source
-  (source-with-patches linux-libre-5.3-pristine-source
-                       (list (search-patch "linux-libre-active-entropy.patch")
-                             %boot-logo-patch
+(define-public linux-libre-5.4-source
+  (source-with-patches linux-libre-5.4-pristine-source
+                       (list %boot-logo-patch
                              %linux-libre-arm-export-__sync_icache_dcache-patch)))
 
 (define-public linux-libre-4.19-source
@@ -520,9 +519,9 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (description "Headers of the Linux-Libre kernel.")
     (license license:gpl2)))
 
-(define-public linux-libre-headers-5.3
-  (make-linux-libre-headers* linux-libre-5.3-version
-                             linux-libre-5.3-source))
+(define-public linux-libre-headers-5.4
+  (make-linux-libre-headers* linux-libre-5.4-version
+                             linux-libre-5.4-source))
 
 (define-public linux-libre-headers-4.19
   (make-linux-libre-headers* linux-libre-4.19-version
@@ -777,16 +776,16 @@ It has been modified to remove all non-free binary blobs.")
 ;;; Generic kernel packages.
 ;;;
 
-(define-public linux-libre-5.3
-  (make-linux-libre* linux-libre-5.3-version
-                     linux-libre-5.3-source
+(define-public linux-libre-5.4
+  (make-linux-libre* linux-libre-5.4-version
+                     linux-libre-5.4-source
                      '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
                      #:configuration-file kernel-config))
 
-(define-public linux-libre-version         linux-libre-5.3-version)
-(define-public linux-libre-pristine-source linux-libre-5.3-pristine-source)
-(define-public linux-libre-source          linux-libre-5.3-source)
-(define-public linux-libre                 linux-libre-5.3)
+(define-public linux-libre-version         linux-libre-5.4-version)
+(define-public linux-libre-pristine-source linux-libre-5.4-pristine-source)
+(define-public linux-libre-source          linux-libre-5.4-source)
+(define-public linux-libre                 linux-libre-5.4)
 
 (define-public linux-libre-4.19
   (make-linux-libre* linux-libre-4.19-version
