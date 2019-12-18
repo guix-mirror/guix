@@ -7139,3 +7139,35 @@ monograph.")
      "This package provides examples and code that make use of the
 different graph related packages produced by Bioconductor.")
     (license license:artistic2.0)))
+
+(define-public r-experimenthub
+  (package
+    (name "r-experimenthub")
+    (version "1.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ExperimentHub" version))
+       (sha256
+        (base32
+         "054w2lkyirbmhgia0rp4nk9zzw3zphz6jxg6fc9zlarp90g64z24"))))
+    (properties `((upstream-name . "ExperimentHub")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationhub" ,r-annotationhub)
+       ("r-biocfilecache" ,r-biocfilecache)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocmanager" ,r-biocmanager)
+       ("r-curl" ,r-curl)
+       ("r-rappdirs" ,r-rappdirs)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://bioconductor.org/packages/ExperimentHub/")
+    (synopsis "Client to access ExperimentHub resources")
+    (description
+     "This package provides a client for the Bioconductor ExperimentHub web
+resource.  ExperimentHub provides a central location where curated data from
+experiments, publications or training courses can be accessed.  Each resource
+has associated metadata, tags and date of modification.  The client creates
+and manages a local cache of files retrieved enabling quick and reproducible
+access.")
+    (license license:artistic2.0)))
