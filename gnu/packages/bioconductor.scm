@@ -7038,3 +7038,33 @@ visualize bioinformatics analyses.")
 and automates the conversion of node identifiers (e.g. from Entrez IDs to gene
 symbols).")
     (license license:agpl3+)))
+
+(define-public r-reactomepa
+  (package
+    (name "r-reactomepa")
+    (version "1.30.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ReactomePA" version))
+       (sha256
+        (base32
+         "1vwc9kj1l4yi7c4f4lnq0i3wl2nrmmhcxyakz8qak122fi92z3j1"))))
+    (properties `((upstream-name . "ReactomePA")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-dose" ,r-dose)
+       ("r-enrichplot" ,r-enrichplot)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggraph" ,r-ggraph)
+       ("r-graphite" ,r-graphite)
+       ("r-igraph" ,r-igraph)
+       ("r-reactome-db" ,r-reactome-db)))
+    (home-page "https://guangchuangyu.github.io/software/ReactomePA")
+    (synopsis "Reactome pathway analysis")
+    (description
+     "This package provides functions for pathway analysis based on the
+REACTOME pathway database.  It implements enrichment analysis, gene set
+enrichment analysis and several functions for visualization.")
+    (license license:gpl2)))
