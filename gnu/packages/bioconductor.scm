@@ -7247,3 +7247,30 @@ rownames.")
      "The purpose of this package is to provide a central interface to various
 tools for genome-scale analysis of cancer studies.")
     (license license:artistic2.0)))
+
+(define-public r-biocor
+  (package
+    (name "r-biocor")
+    (version "1.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "BioCor" version))
+       (sha256
+        (base32
+         "1bjw02rwmz2d715sgpfp08njb15200ch7cmipsf9hd5835ppg1jl"))))
+    (properties `((upstream-name . "BioCor")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocparallel" ,r-biocparallel)
+       ("r-gseabase" ,r-gseabase)
+       ("r-matrix" ,r-matrix)))
+    (home-page "https://llrs.github.io/BioCor/")
+    (synopsis "Functional similarities")
+    (description
+     "This package provides tools to calculate functional similarities based
+on the pathways described on KEGG and REACTOME or in gene sets.  These
+similarities can be calculated for pathways or gene sets, genes, or clusters
+and combined with other similarities.  They can be used to improve networks,
+gene selection, testing relationships, and so on.")
+    (license license:expat)))
