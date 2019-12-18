@@ -18938,3 +18938,31 @@ resulting bitmap can be written to e.g. PNG, JPEG or WEBP format.  In
 addition, the package can convert images directly to various formats such as
 PDF or PostScript.")
     (license license:expat)))
+
+(define-public r-influencer
+  (package
+    (name "r-influencer")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "influenceR" version))
+       (sha256
+        (base32
+         "12p9362hkndlnz1rd8j2rykg57kbm6l7ks60by3rd25xg50k5jag"))))
+    (properties `((upstream-name . "influenceR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-igraph" ,r-igraph)
+       ("r-matrix" ,r-matrix)))
+    (home-page "https://github.com/rcc-uchicago/influenceR")
+    (synopsis "Tools to quantify structural importance of nodes in a network")
+    (description
+     "This package provides functionality to compute various node centrality
+measures on networks.  Included are functions to compute betweenness
+centrality (by utilizing Madduri and Bader's SNAP library), implementations of
+Burt's constraint and @dfn{effective network size} (ENS) metrics, Borgatti's
+algorithm to identify key players, and Valente's bridging metric.  The
+betweenness, Key Players, and bridging implementations are parallelized with
+OpenMP.")
+    (license license:gpl2)))
