@@ -7011,3 +7011,30 @@ tidying methods.  Tidying data makes it easy to recombine, reshape and
 visualize bioinformatics analyses.")
     ;; Any version of the LGPL.
     (license license:lgpl3+)))
+
+(define-public r-graphite
+  (package
+    (name "r-graphite")
+    (version "1.32.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "graphite" version))
+       (sha256
+        (base32
+         "1r9fk0cpdwm7012pa85dkjcpkml2j89zcznpf4hfdz66anfyyycd"))))
+    (properties `((upstream-name . "graphite")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-checkmate" ,r-checkmate)
+       ("r-graph" ,r-graph)
+       ("r-httr" ,r-httr)
+       ("r-rappdirs" ,r-rappdirs)))
+    (home-page "https://bioconductor.org/packages/graphite/")
+    (synopsis "Networks from pathway databases")
+    (description
+     "Graphite provides networks derived from eight public pathway databases,
+and automates the conversion of node identifiers (e.g. from Entrez IDs to gene
+symbols).")
+    (license license:agpl3+)))
