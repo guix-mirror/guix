@@ -7114,3 +7114,28 @@ microarray data.")
      "This package provides software and data to support the case studies
 monograph.")
     (license license:artistic2.0)))
+
+(define-public r-biocgraph
+  (package
+    (name "r-biocgraph")
+    (version "1.48.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "biocGraph" version))
+       (sha256
+        (base32
+         "1rv2lwiqwg7h7za23n896fs4dpla3xhw6kzwghb6iw5nlm2m61yw"))))
+    (properties `((upstream-name . "biocGraph")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-geneplotter" ,r-geneplotter)
+       ("r-graph" ,r-graph)
+       ("r-rgraphviz" ,r-rgraphviz)))
+    (home-page "https://bioconductor.org/packages/biocGraph/")
+    (synopsis "Graph examples and use cases in Bioinformatics")
+    (description
+     "This package provides examples and code that make use of the
+different graph related packages produced by Bioconductor.")
+    (license license:artistic2.0)))
