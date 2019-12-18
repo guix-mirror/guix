@@ -17902,6 +17902,29 @@ processes for Emacs")
 and code peeking.")
     (license license:gpl3+)))
 
+(define-public emacs-lsp-lua-emmy
+  (let ((commit "ab53fb2a8b8942804eb75bab5624fd19f1d360bf"))
+    (package
+      (name "emacs-lsp-lua-emmy")
+      (version (git-version "0.1.0" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/phenix3443/lsp-lua-emmy.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0rbizis73n1w5ig07fj1han74chbc1zpbp5bn37rj0gz608aqka8"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-lsp-mode" ,emacs-lsp-mode)))
+      (home-page "https://github.com/phenix3443/lsp-lua-emmy/")
+      (synopsis "Lua support in @code{lsp-mode} client for Emacs")
+      (description "This package provides a Lua language support in
+@code{lsp-mode} client for Emacs.")
+      (license license:gpl3+))))
+
 (define-public emacs-lsp-ivy
   (let ((commit "caf1e1d7e22ed0b5fe18dd508d1a6f83dd163288")
         (revision "2"))
