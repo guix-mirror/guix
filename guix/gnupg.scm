@@ -65,6 +65,11 @@
 KEYRING as assumed to be \"trusted\", whether or not they expired or were
 revoked.  Return a status s-exp if GnuPG failed."
 
+  (define (maybe-fingerprint str)
+    (match (string-trim-both str)
+      ((or "-" "") #f)
+      (fpr         fpr)))
+
   (define (status-line->sexp line)
     ;; See file `doc/DETAILS' in GnuPG.
     (define sigid-rx
@@ -78,8 +83,10 @@ revoked.  Return a status s-exp if GnuPG failed."
     (define expkeysig-rx                    ; good signature, but expired key
       (make-regexp "^\\[GNUPG:\\] EXPKEYSIG ([[:xdigit:]]+) (.*)$"))
     (define errsig-rx
+      ;; Note: The fingeprint part (the last element of the line) appeared in
+      ;; GnuPG 2.2.7 according to 'doc/DETAILS', and it may be missing.
       (make-regexp
-       "^\\[GNUPG:\\] ERRSIG ([[:xdigit:]]+) ([^ ]+) ([^ ]+) ([^ ]+) ([[:digit:]]+) ([[:digit:]]+)"))
+       "^\\[GNUPG:\\] ERRSIG ([[:xdigit:]]+) ([^ ]+) ([^ ]+) ([^ ]+) ([[:digit:]]+) ([[:digit:]]+)(.*)"))
 
     (cond ((regexp-exec sigid-rx line)
            =>
@@ -108,7 +115,7 @@ revoked.  Return a status s-exp if GnuPG failed."
           ((regexp-exec errsig-rx line)
            =>
            (lambda (match)
-             `(signature-error ,(match:substring match 1) ; key id or fingerprint
+             `(signature-error ,(match:substring match 1) ; key id
                                ,(match:substring match 2) ; pubkey algo
                                ,(match:substring match 3) ; hash algo
                                ,(match:substring match 4) ; sig class
@@ -120,7 +127,9 @@ revoked.  Return a status s-exp if GnuPG failed."
                                   (case rc
                                     ((9) 'missing-key)
                                     ((4) 'unknown-algorithm)
-                                    (else rc))))))
+                                    (else rc)))
+                               ,(maybe-fingerprint ; fingerprint or #f
+                                 (match:substring match 7)))))
           (else
            `(unparsed-line ,line))))
 
@@ -153,16 +162,16 @@ a fingerprint/user pair; return #f otherwise."
      #f)))
 
 (define (gnupg-status-missing-key? status)
-  "If STATUS denotes a missing-key error, then return the key-id of the
-missing key."
+  "If STATUS denotes a missing-key error, then return the fingerprint of the
+missing key or its key id if the fingerprint is unavailable."
   (any (lambda (sexp)
          (match sexp
-           (('signature-error key-id _ ...)
-            key-id)
+           (('signature-error key-id _ ... 'missing-key fingerprint)
+            (or fingerprint key-id))
            (_ #f)))
        status))
 
-(define* (gnupg-receive-keys key-id server
+(define* (gnupg-receive-keys fingerprint/key-id server
                              #:optional (keyring (current-keyring)))
   (unless (file-exists? keyring)
     (mkdir-p (dirname keyring))
@@ -170,7 +179,7 @@ missing key."
 
   (system* (%gpg-command) "--keyserver" server
            "--no-default-keyring" "--keyring" keyring
-           "--recv-keys" key-id))
+           "--recv-keys" fingerprint/key-id))
 
 (define* (gnupg-verify* sig file
                         #:key
