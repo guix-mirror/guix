@@ -232,15 +232,17 @@ Python interface around SSH networking concepts.")
 (define-public python-ecdsa
   (package
     (name "python-ecdsa")
-    (version "0.13.3")
+    (version "0.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ecdsa" version))
        (sha256
-        (base32 "0k9xxklf865g6x43gkfarwb25ffrkmpvkzkh71rylqx7cjq80g0n"))))
+        (base32 "13nx5cbfxc0gnax5zwdmp9xc40qd1llk62mv85jyrvqkbw017ik4"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (native-inputs
      `(("openssl" ,openssl)))
     (home-page "https://github.com/warner/python-ecdsa")
     (synopsis "ECDSA cryptographic signature library (pure python)")
