@@ -1491,7 +1491,7 @@ GNOME Desktop.")
 (define-public gnome-keyring
   (package
     (name "gnome-keyring")
-    (version "3.28.2")
+    (version "3.34.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1499,7 +1499,7 @@ GNOME Desktop.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0sk4las4ji8wv9nx8mldzqccmpmkvvr9pdwv9imj26r10xyin5w1"))))
+               "0hqrsh5g9q9lm190f0m85q4nki8k4ng7wphl6qbccdry59aakkg9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;48 of 603 tests fail because /var/lib/dbus/machine-id does
