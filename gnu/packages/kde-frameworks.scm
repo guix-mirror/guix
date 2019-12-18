@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016-2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -3257,7 +3257,8 @@ library.")
      `(("ki18n" ,ki18n)
        ("sonnet" ,sonnet)))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)))
     (inputs
      `(("kauth" ,kauth)
        ("kcodecs" ,kcodecs)
@@ -3270,8 +3271,7 @@ library.")
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kwindowsystem" ,kwindowsystem)
        ("qtbase" ,qtbase)
-       ("qtspeech" ,qtspeech)
-       ("qttools" ,qttools)))
+       ("qtspeech" ,qtspeech)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
