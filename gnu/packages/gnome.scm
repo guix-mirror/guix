@@ -1321,7 +1321,7 @@ and keep up to date translations of documentation.")
 (define-public gnome-disk-utility
   (package
     (name "gnome-disk-utility")
-    (version "3.32.1")
+    (version "3.34.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1329,10 +1329,11 @@ and keep up to date translations of documentation.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "08vwbji9m1nhjjdiyhhaqi8cncys7i89b4bpy095f8475v8y05bg"))))
+                "1mb7q90lnlp97dhxhnadhjagcfd12dfqzp0vj9h6b1r61pzhy97y"))))
     (build-system meson-build-system)
     (arguments
-     '(#:phases
+     '(#:configure-flags '("-Dlogind=libelogind")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'skip-gtk-update-icon-cache
            ;; Don't create 'icon-theme.cache'.
@@ -1349,7 +1350,8 @@ and keep up to date translations of documentation.")
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)))
     (inputs
-     `(("glib" ,glib)
+     `(("elogind" ,elogind)
+       ("glib" ,glib)
        ("appstream-glib" ,appstream-glib)
        ("gnome-settings-daemon" ,gnome-settings-daemon)
        ("gtk+" ,gtk+)
