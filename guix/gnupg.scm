@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2013, 2014, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2013, 2014, 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -142,13 +142,15 @@ revoked.  Return a status s-exp if GnuPG failed."
 
 (define (gnupg-status-good-signature? status)
   "If STATUS, as returned by `gnupg-verify', denotes a good signature, return
-a key-id/user pair; return #f otherwise."
-  (any (lambda (sexp)
-         (match sexp
-           (((or 'good-signature 'expired-key-signature) key-id user)
-            (cons key-id user))
-           (_ #f)))
-       status))
+a fingerprint/user pair; return #f otherwise."
+  (match (assq 'valid-signature status)
+    (('valid-signature fingerprint date timestamp)
+     (match (or (assq 'good-signature status)
+                (assq 'expired-key-signature status))
+       ((_ key-id user) (cons fingerprint user))
+       (_ #f)))
+    (_
+     #f)))
 
 (define (gnupg-status-missing-key? status)
   "If STATUS denotes a missing-key error, then return the key-id of the
@@ -178,7 +180,8 @@ missing key."
   "Like `gnupg-verify', but try downloading the public key if it's missing.
 Return #t if the signature was good, #f otherwise.  KEY-DOWNLOAD specifies a
 download policy for missing OpenPGP keys; allowed values: 'always', 'never',
-and 'interactive' (default)."
+and 'interactive' (default).  Return a fingerprint/user name pair on success
+and #f otherwise."
   (let ((status (gnupg-verify sig file)))
     (or (gnupg-status-good-signature? status)
         (let ((missing (gnupg-status-missing-key? status)))
