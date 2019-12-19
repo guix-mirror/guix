@@ -1,0 +1,57 @@
+;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
+;;;
+;;; This file is part of GNU Guix.
+;;;
+;;; GNU Guix is free software; you can redistribute it and/or modify it
+;;; under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation; either version 3 of the License, or (at
+;;; your option) any later version.
+;;;
+;;; GNU Guix is distributed in the hope that it will be useful, but
+;;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
+
+(define-module (gnu packages java-graphics)
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix packages)
+  #:use-module (guix git-download)
+  #:use-module (guix utils)
+  #:use-module (guix build-system ant)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages java)
+  #:use-module (gnu packages xorg))
+
+(define-public java-piccolo2d-core
+  (package
+    (name "java-piccolo2d-core")
+    (version "3.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/piccolo2d/piccolo2d.java")
+                    (commit (string-append "piccolo2d-complete-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1k6gw643k83516lcw04mgac2yi75phdrng44pz9xk6hz066ip21s"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "piccolo2d-core.jar"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "core") #t)))))
+    (inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "http://piccolo2d.org")
+    (synopsis "Structured 2D graphics framework")
+    (description "Piccolo2D is a framework (in the Jazz ZUI tradition) to
+create robust, full-featured graphical applications in Java, with features
+such as zooming and multiple representation.  This package provides the core
+libraries.")
+    (license license:bsd-3)))

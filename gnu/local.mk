@@ -271,6 +271,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/iso-codes.scm			\
   %D%/packages/java.scm				\
   %D%/packages/java-compression.scm		\
+  %D%/packages/java-graphics.scm		\
   %D%/packages/java-maths.scm			\
   %D%/packages/javascript.scm			\
   %D%/packages/jemalloc.scm			\
