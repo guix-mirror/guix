@@ -8813,6 +8813,34 @@ and Jaro-Winkler.")
     (properties '((hidden? . #t)))
     (license license:expat)))
 
+(define-public rust-sysctl-0.4
+  (package
+    (name "rust-sysctl")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sysctl" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0p6bfjsw3v12nb2qsgm6r9klwb5qyh4w55zzmccv8r5aqb8g0085"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-failure" ,rust-failure-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-walkdir" ,rust-walkdir-2.2))))
+    (home-page "https://github.com/johalun/sysctl-rs")
+    (synopsis "Simplified interface to libc::sysctl")
+    (description
+     "Simplified interface to libc::sysctl.")
+    (license license:expat)))
+
 (define-public rust-tar-0.4
   (package
     (name "rust-tar")
