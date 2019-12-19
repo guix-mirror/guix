@@ -4665,6 +4665,27 @@ implementation of LZMA and xz stream encoding/decoding.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-mac-0.1
+  (package
+    (name "rust-mac")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "mac" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "194vc7vrshqff72rl56f9xgb0cazyl4jda7qsv31m5l6xx7hq7n4"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/reem/rust-mac")
+    (synopsis "Collection of great and ubiqutitous macros")
+    (description
+     "This package provides a collection of great and ubiqutitous macros.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-maplit-1.0
   (package
     (name "rust-maplit")
