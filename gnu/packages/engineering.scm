@@ -713,8 +713,8 @@ fonts to gEDA.")
       (license license:gpl2+))))
 
 (define-public libfive
-  (let ((commit "9d857d1923abecb0e5935b9287d22661f6efaac5")
-        (revision "2"))
+  (let ((commit "6e39254e57c179459bb929df49ae96a6017a0ed6")
+        (revision "3"))
     (package
       (name "libfive")
       (version (git-version "0" revision commit))
@@ -725,7 +725,7 @@ fonts to gEDA.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1r40kyx30wz31cwwlfvfh7fgqkxq3n8dxhswpi9qpf4r5h3l8wsn"))
+                  "0ryv2hcbrwqc087w7rrs4a2irkcpmqync00g4dh8n7jn10w2jkim"))
                 (file-name (git-file-name name version))
                 (snippet
                  ;; Remove bundled catch since we provide our own.
@@ -740,12 +740,18 @@ fonts to gEDA.")
            (add-after 'unpack 'remove-native-compilation
              (lambda _
                (substitute* "CMakeLists.txt" (("-march=native") ""))
+               #t))
+           (add-after 'unpack 'find-catch
+             (lambda* (#:key inputs #:allow-other-keys)
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-append (assoc-ref inputs "catch")
+                                      "/include/catch"))
                #t)))))
       (native-inputs
        `(("pkg-config" ,pkg-config)))
       (inputs
        `(("boost" ,boost)
-         ("catch" ,catch-framework)
+         ("catch" ,catch-framework2)
          ("libpng" ,libpng)
          ("qtbase" ,qtbase)
          ("eigen" ,eigen)
@@ -758,7 +764,7 @@ libfive, solid models are defined as Scheme scripts, and there are no opaque
 function calls into the geometry kernel: everything is visible to the user.
 Even fundamental, primitive shapes are represented as code in the user-level
 language.")
-      (license (list license:lgpl2.1+             ;library
+      (license (list license:mpl2.0               ;library
                      license:gpl2+)))))           ;Guile bindings and GUI
 
 (define-public ao
