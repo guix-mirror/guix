@@ -9290,6 +9290,36 @@ directories.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-tendril-0.4
+  (package
+    (name "rust-tendril")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tendril" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fsx7blrrzgca8aa2yqy8zxyi8s7amskhgkk1ml5sbaqyalyszvh"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-encoding" ,rust-encoding-0.2)
+        ("rust-encoding-rs" ,rust-encoding-rs-0.8)
+        ("rust-futf" ,rust-futf-0.1)
+        ("rust-mac" ,rust-mac-0.1)
+        ("rust-utf-8" ,rust-utf-8-0.7))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.4))))
+    (home-page "https://github.com/servo/tendril")
+    (synopsis "Compact buffer/string type for zero-copy parsing")
+    (description
+     "Compact buffer/string type for zero-copy parsing.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-term-0.4
   (package
     (name "rust-term")
