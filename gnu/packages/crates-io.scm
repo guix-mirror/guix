@@ -2458,6 +2458,31 @@ is configured via an environment variable.")
      "Type-erased Serialize and Serializer traits.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-errno-dragonfly-0.1
+  (package
+    (name "rust-errno-dragonfly")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "errno-dragonfly" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0rshlc00nv45f14v2l1w0ma2nf1jg5j7q9pvw7hh018r6r73bjhl"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-gcc" ,rust-gcc-0.3))))
+    (home-page "https://github.com/mneumann/errno-dragonfly-rs")
+    (synopsis "Exposes errno functionality to stable Rust on DragonFlyBSD")
+    (description
+     "Exposes errno functionality to stable Rust on DragonFlyBSD.")
+    (license license:expat)))
+
 (define-public rust-fake-simd-0.1
   (package
     (name "rust-fake-simd")
