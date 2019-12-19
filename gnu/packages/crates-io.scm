@@ -1312,6 +1312,44 @@ need compiler-rt intrinsics.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-compiletest-rs-0.3
+  (package
+    (name "rust-compiletest-rs")
+    (version "0.3.22")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "compiletest-rs" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1di7kl2zv7jcwqq343aafqhn31gfa600zh4mi6cp10mn6a9wq3pl"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-diff" ,rust-diff-0.1)
+        ("rust-filetime" ,rust-filetime-0.2)
+        ("rust-getopts" ,rust-getopts-0.2)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-miow" ,rust-miow-0.3)
+        ("rust-regex" ,rust-regex-1.1)
+        ("rust-rustfix" ,rust-rustfix-0.4)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0)
+        ("rust-tempfile" ,rust-tempfile-3.0)
+        ("rust-tester" ,rust-tester-0.5)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/laumann/compiletest-rs")
+    (synopsis "Compiletest utility from the Rust compiler")
+    (description
+     "The compiletest utility from the Rust compiler as a standalone testing
+harness.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-console-0.7
   (package
     (name "rust-console")
