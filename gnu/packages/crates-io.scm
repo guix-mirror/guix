@@ -8225,6 +8225,31 @@ proven statistical guarantees.")
      "Assembly implementation of SHA-1 compression function.")
     (license license:expat)))
 
+(define-public rust-shared-child-0.3
+  (package
+    (name "rust-shared-child")
+    (version "0.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "shared-child" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1lmjmr7931dr9cpalw2n7ss4i9mnl7285j2dygxflk9y80xczswc"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/oconnor663/shared_child.rs")
+    (synopsis "Use child processes from multiple threads")
+    (description
+     "A library for using child processes from multiple threads.")
+    (license license:expat)))
+
 (define-public rust-shlex-0.1
   (package
     (name "rust-shlex")
