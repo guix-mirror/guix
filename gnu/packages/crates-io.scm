@@ -5324,6 +5324,41 @@ pairs in insertion order.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-nix-0.15
+  (package
+    (name "rust-nix")
+    (version "0.15.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nix" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0aa2l7wg9pzx24ks4p97gdy09a4hhs1sr9drxnm75v906d7hnbiv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-void" ,rust-void-1.0))
+       #:cargo-development-inputs
+       (("rust-bytes" ,rust-bytes-0.4)
+        ("rust-caps" ,rust-caps-0.3)
+        ("rust-cc" ,rust-cc-1.0)
+        ("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-rand" ,rust-rand-0.4)
+        ("rust-sysctl" ,rust-sysctl-0.4)
+        ("rust-tempfile" ,rust-tempfile-3.0))))
+    (home-page "https://github.com/nix-rust/nix")
+    (synopsis "Rust friendly bindings to *nix APIs")
+    (description
+     "Rust friendly bindings to *nix APIs.")
+    (license license:expat)))
+
 (define-public rust-nodrop-0.1
   (package
     (name "rust-nodrop")
