@@ -17,6 +17,7 @@
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2019 Yoshinori Arai <kumagusu08@gmail.com>
+;;; Copyright © 2019 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,6 +48,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages java)
   #:use-module (gnu packages ncurses)
@@ -232,6 +234,7 @@ nested include statements).")
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
+       ("gcc" ,gcc-5) ;; doesn't build with later versions
        ("libtool" ,libtool)))
     (home-page "https://github.com/agordon/libgtextutils")
     (synopsis "Gordon's text utils library")
