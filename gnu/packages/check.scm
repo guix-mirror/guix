@@ -196,7 +196,7 @@ supervised tests.")
 multi-paradigm automated test framework for C++ and Objective-C.")
     (license license:boost1.0)))
 
-(define-public catch-framework2
+(define-public catch-framework2-1
   (package
     (name "catch2")
     (version "1.12.2")
@@ -211,6 +211,28 @@ multi-paradigm automated test framework for C++ and Objective-C.")
                (base32
                 "1gdp5wm8khn02g2miz381llw3191k7309qj8s3jd6sasj01rhf23"))))
     (build-system cmake-build-system)
+    (synopsis "Automated test framework for C++ and Objective-C")
+    (description "Catch2 stands for C++ Automated Test Cases in Headers and is
+a multi-paradigm automated test framework for C++ and Objective-C.")
+    (license license:boost1.0)))
+
+(define-public catch-framework2
+  (package
+    (name "catch2")
+    (version "2.1.2")
+    (home-page "https://github.com/catchorg/Catch2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/catchorg/Catch2")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "14vcckqmbydjsg40ngi6iv999zimysh2l7fmrqj1d7xl990qz233"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("python" ,python-wrapper)))
     (synopsis "Automated test framework for C++ and Objective-C")
     (description "Catch2 stands for C++ Automated Test Cases in Headers and is
 a multi-paradigm automated test framework for C++ and Objective-C.")
