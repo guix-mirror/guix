@@ -906,6 +906,33 @@ little-endian.")
      "The ChaCha family of stream ciphers.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-caps-0.3
+  (package
+    (name "rust-caps")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "caps" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vplgzx8nifzr3f0l8ca77jqnz3fdymdg0ickacgdvawc44a3n90"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-errno" ,rust-errno-0.2)
+        ("rust-error-chain" ,rust-error-chain-0.12)
+        ("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/lucab/caps-rs")
+    (synopsis "Pure-Rust library to work with Linux capabilities")
+    (description
+     "This package provides a pure-Rust library to work with Linux
+capabilities")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-cargon-0.0
   (package
     (name "rust-cargon")
