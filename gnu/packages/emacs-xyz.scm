@@ -41,7 +41,7 @@
 ;;; Copyright © 2018 Alex Branham <alex.branham@gmail.com>
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2018, 2019 Brett Gilio <brettg@posteo.net>
+;;; Copyright © 2018, 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019 Dimakakos Dimos <bendersteed@teknik.io>
 ;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
 ;;; Copyright © 2019 mikadoZero <mikadozero@yandex.com>

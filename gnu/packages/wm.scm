@@ -28,7 +28,7 @@
 ;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2019 Evan Straw <evan.straw99@gmail.com>
-;;; Copyright © 2019 Brett Gilio <brettg@posteo.net>
+;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019 Noodles! <nnoodle@chiru.no>
 ;;;
 ;;; This file is part of GNU Guix.

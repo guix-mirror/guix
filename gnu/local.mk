@@ -24,7 +24,7 @@
 # Copyright © 2019 John Soo <jsoo1@asu.edu>
 # Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 # Copyright © 2019 Evan Straw <evan.straw99@gmail.com>
-# Copyright © 2019 Brett Gilio <brettg@posteo.de>
+# Copyright © 2019 Brett Gilio <brettg@gnu.org>
 #
 # This file is part of GNU Guix.
 #

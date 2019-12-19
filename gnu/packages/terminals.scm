@@ -16,7 +16,7 @@
 ;;; Copyright © 2018, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2019 Brett Gilio <brettg@posteo.net>
+;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
