@@ -8976,6 +8976,40 @@ crate.")
     (license (list license:unlicense
                    license:expat))))
 
+(define-public rust-string-cache-0.7
+  (package
+    (name "rust-string-cache")
+    (version "0.7.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "string_cache" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "08sly9s92l0g0ai1iyj9pawl05xbwm4m8kl3zqkv2wkijw4h3mr5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-new-debug-unreachable"
+         ,rust-new-debug-unreachable-1.0)
+        ("rust-phf-shared" ,rust-phf-shared-0.7)
+        ("rust-precomputed-hash" ,rust-precomputed-hash-0.1)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-string-cache-codegen" ,rust-string-cache-codegen-0.4)
+        ("rust-string-cache-shared" ,rust-string-cache-shared-0.3))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.4))))
+    (home-page "https://github.com/servo/string-cache")
+    (synopsis "String interning library for Rust")
+    (description
+     "This package provides a string interning library for Rust,
+developed as part of the Servo project.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-string-cache-shared-0.3
   (package
     (name "rust-string-cache-shared")
