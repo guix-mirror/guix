@@ -2150,6 +2150,37 @@ floating-point primitives to an @code{io::Write}.")
          (base32
           "0g96cap6si1g6wi62hsdk2fnj3sf5vd4i97zj6163j8hhnsl3n0d"))))))
 
+(define-public rust-duct-0.13
+  (package
+    (name "rust-duct")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "duct" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ir3884i1yznkfdccqqbcb9v5sdpcgxlv41hgzncrqaljv18r0wj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-once-cell" ,rust-once-cell-1.2)
+        ("rust-os-pipe" ,rust-os-pipe-0.8)
+        ("rust-shared-child" ,rust-shared-child-0.3))
+       #:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir-0.3))))
+    (home-page
+     "https://github.com/oconnor663/duct.rs")
+    (synopsis
+     "Library for running child processes")
+    (description
+     "A library for running child processes.")
+    (license license:expat)))
+
 (define-public rust-either-1.5
   (package
     (name "rust-either")
