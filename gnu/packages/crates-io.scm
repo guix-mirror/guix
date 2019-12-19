@@ -8952,6 +8952,27 @@ crate.")
     (license (list license:unlicense
                    license:expat))))
 
+(define-public rust-string-cache-shared-0.3
+  (package
+    (name "rust-string-cache-shared")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "string-cache-shared" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1z7dpdix1m42x6ddshdcpjf91ml9mhvnskmiv5kd8hcpq0dlv25i"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/servo/string-cache")
+    (synopsis "Code share between string_cache and string_cache_codegen")
+    (description
+     "Code share between string_cache and string_cache_codegen.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-strsim-0.9
   (package
     (name "rust-strsim")
