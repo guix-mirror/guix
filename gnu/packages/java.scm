@@ -1430,7 +1430,14 @@ bootstrapping purposes.")
                                                   ("armhf-linux"
                                                    "/lib/arm")
                                                   ("aarch64-linux"
-                                                   "/lib/aarch64")))))
+                                                   "/lib/aarch64")
+                                                  ;; We need a catch-all, dropping
+                                                  ;; '-linux' works in most cases.
+                                                  (_
+                                                    (string-append
+                                                      "/lib/"
+                                                      (string-drop-right
+                                                        (%current-system) 6)))))))
                  (symlink (string-append lib-path "/server/libjvm.so")
                           (string-append lib-path "/libjvm.so")))
                #t))
