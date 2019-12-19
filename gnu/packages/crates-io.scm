@@ -6508,6 +6508,31 @@ algorithms.")
      "Runtime support for perfect hash function data structures.")
     (license license:expat)))
 
+(define-public rust-phf-codegen-0.7
+  (package
+    (name "rust-phf-codegen")
+    (version "0.7.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "phf-codegen" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0zjiblicfm0nrmr2xxrs6pnf6zz2394wgch6dcbd8jijkq98agmh"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-phf-generator" ,rust-phf-generator-0.7)
+        ("rust-phf-shared" ,rust-phf-shared-0.7))))
+    (home-page
+     "https://github.com/sfackler/rust-phf")
+    (synopsis "Codegen library for PHF types")
+    (description "Codegen library for PHF types.")
+    (license license:expat)))
+
 (define-public rust-phf-generator-0.7
   (package
     (name "rust-phf-generator")
