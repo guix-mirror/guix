@@ -9521,6 +9521,32 @@ implementation is incomplete.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-ucd-parse-0.1
+  (package
+    (name "rust-ucd-parse")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ucd-parse" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "13mq6c85r6ak10gjlq74mzdhsi0g0vps2y73by420513gfnipm97"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-regex" ,rust-regex-1.1))))
+    (home-page "https://github.com/BurntSushi/ucd-generate")
+    (synopsis "Parse data files in the Unicode character database")
+    (description
+     "This package provides a library for parsing data files in the
+Unicode character database.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-ucd-trie-0.1
   (package
     (name "rust-ucd-trie")
