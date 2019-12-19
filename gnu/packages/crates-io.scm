@@ -2773,6 +2773,40 @@ cross platform API.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-rustfix-0.4
+  (package
+    (name "rust-rustfix")
+    (version "0.4.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustfix" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "01zn0ysnass3mmrhxk90584y713vjfq1x97mi4saac99g9vsql3i"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-failure" ,rust-failure-0.1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0))
+       #:cargo-development-inputs
+       (("rust-difference" ,rust-difference-2.0)
+        ("rust-duct" ,rust-duct-0.13)
+        ("rust-env-logger" ,rust-env-logger-0.6)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-proptest" ,rust-proptest-0.9)
+        ("rust-tempdir" ,rust-tempdir-0.3))))
+    (home-page "https://github.com/rust-lang/rustfix")
+    (synopsis "Automatically apply the suggestions made by rustc")
+    (description
+     "Automatically apply the suggestions made by rustc.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-fixedbitset-0.1
   (package
     (name "rust-fixedbitset")
