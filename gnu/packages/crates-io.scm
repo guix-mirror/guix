@@ -7970,6 +7970,27 @@ words, like Python's shlex.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-siphasher-0.2
+  (package
+    (name "rust-siphasher")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "siphasher" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1b53m53l24lyhr505lwqzrpjyq5qfnic71mynrcfvm43rybf938b"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://docs.rs/siphasher")
+    (synopsis "SipHash functions from rust-core < 1.13")
+    (description
+     "SipHash functions from rust-core < 1.13.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-slab-0.4
   (package
     (name "rust-slab")
