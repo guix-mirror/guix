@@ -3216,6 +3216,21 @@ archive to be linked into Rustcode.")
      "Generic types implementing functionality of arrays.")
     (license license:expat)))
 
+(define-public rust-generic-array-0.12
+  (package
+    (inherit rust-generic-array-0.13)
+    (name "rust-generic-array")
+    (version "0.12.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "generic-array" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1v5jg7djicq34nbiv1dwaki71gkny002wyy9qfn3y0hfmrs053y6"))))))
+
 (define-public rust-getopts-0.2
   (package
     (name "rust-getopts")
