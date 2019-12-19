@@ -6625,8 +6625,34 @@ useful types and distributions, and some randomness-related algorithms.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-rand-os-0.2
+  (package
+    (name "rust-rand-os")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rand_os" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06is69f8rfzs620g5b54k6cgy5yaycrsyqg55flyfrsf8g88733f"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-getrandom" ,rust-getrandom-0.1)
+        ("rust-rand-core" ,rust-rand-core-0.5))))
+    (home-page "https://crates.io/crates/rand-os")
+    (synopsis "OS backed Random Number Generator")
+    (description "OS backed Random Number Generator")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-rand-os-0.1
   (package
+    (inherit rust-rand-os-0.2)
     (name "rust-rand-os")
     (version "0.1.3")
     (source
@@ -6637,13 +6663,8 @@ useful types and distributions, and some randomness-related algorithms.")
         (sha256
          (base32
           "0wahppm0s64gkr2vmhcgwc0lij37in1lgfxg5rbgqlz0l5vgcxbv"))))
-    (build-system cargo-build-system)
-    (home-page "https://crates.io/crates/rand_os")
-    (synopsis "OS backed Random Number Generator")
-    (description "OS backed Random Number Generator")
-    (properties '((hidden? . #t)))
-    (license (list license:asl2.0
-                   license:expat))))
+    (arguments `())
+    (properties '((hidden? . #t)))))
 
 (define-public rust-rand-pcg-0.1
   (package
