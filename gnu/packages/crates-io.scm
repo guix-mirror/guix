@@ -5634,10 +5634,10 @@ normally prevent moving a type that has been borrowed from.")
     (description "Portable Packed SIMD vectors.")
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-parking-lot-0.8
+(define-public rust-parking-lot-0.9
   (package
     (name "rust-parking-lot")
-    (version "0.8.0")
+    (version "0.9.0")
     (source
      (origin
        (method url-fetch)
@@ -5646,13 +5646,13 @@ normally prevent moving a type that has been borrowed from.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1rrcdalr8l5zx3bw28l376321l6dnd6rqnsqsl0ygk01fy0nfxzs"))))
+         "0lk2vq3hp88ygpgsrypdr3ss71fidnqbykva0csgxhmn5scb2hpq"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-lock-api" ,rust-lock-api-0.2)
-        ("rust-parking-lot-core" ,rust-parking-lot-core-0.5))
+       (("rust-lock-api" ,rust-lock-api-0.3)
+        ("rust-parking-lot-core" ,rust-parking-lot-core-0.6))
        #:cargo-development-inputs
        (("rust-bincode" ,rust-bincode-1.1)
         ("rust-lazy-static" ,rust-lazy-static-1.3)
@@ -5664,6 +5664,31 @@ normally prevent moving a type that has been borrowed from.")
      "More compact and efficient implementations of the standard
 synchronization primitives.")
     (license (list license:asl2.0 license:expat))))
+
+(define-public rust-parking-lot-0.8
+  (package
+    (inherit rust-parking-lot-0.9)
+    (name "rust-parking-lot")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "parking_lot" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1rrcdalr8l5zx3bw28l376321l6dnd6rqnsqsl0ygk01fy0nfxzs"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-lock-api" ,rust-lock-api-0.2)
+        ("rust-parking-lot-core" ,rust-parking-lot-core-0.5))
+       #:cargo-development-inputs
+       (("rust-bincode" ,rust-bincode-1.1)
+        ("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-rand" ,rust-rand-0.4)
+        ("rust-rustc-version" ,rust-rustc-version-0.2))))))
 
 (define-public rust-parking-lot-core-0.5
   (package
