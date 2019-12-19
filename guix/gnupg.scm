@@ -59,6 +59,25 @@
   ;; unreliable.
   (make-parameter "pool.sks-keyservers.net"))
 
+;; Regexps for status lines.  See file `doc/DETAILS' in GnuPG.
+
+(define sigid-rx
+  (make-regexp
+   "^\\[GNUPG:\\] SIG_ID ([A-Za-z0-9+/]+) ([[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}) ([[:digit:]]+)"))
+(define goodsig-rx
+  (make-regexp "^\\[GNUPG:\\] GOODSIG ([[:xdigit:]]+) (.+)$"))
+(define validsig-rx
+  (make-regexp
+   "^\\[GNUPG:\\] VALIDSIG ([[:xdigit:]]+) ([[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}) ([[:digit:]]+) .*$"))
+(define expkeysig-rx                    ; good signature, but expired key
+  (make-regexp "^\\[GNUPG:\\] EXPKEYSIG ([[:xdigit:]]+) (.*)$"))
+(define errsig-rx
+  ;; Note: The fingeprint part (the last element of the line) appeared in
+  ;; GnuPG 2.2.7 according to 'doc/DETAILS', and it may be missing.
+  (make-regexp
+   "^\\[GNUPG:\\] ERRSIG ([[:xdigit:]]+) ([^ ]+) ([^ ]+) ([^ ]+) ([[:digit:]]+) ([[:digit:]]+)(.*)"))
+
+
 (define* (gnupg-verify sig file
                        #:optional (keyring (current-keyring)))
   "Verify signature SIG for FILE against the keys in KEYRING.  All the keys in
@@ -71,23 +90,6 @@ revoked.  Return a status s-exp if GnuPG failed."
       (fpr         fpr)))
 
   (define (status-line->sexp line)
-    ;; See file `doc/DETAILS' in GnuPG.
-    (define sigid-rx
-      (make-regexp
-       "^\\[GNUPG:\\] SIG_ID ([A-Za-z0-9+/]+) ([[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}) ([[:digit:]]+)"))
-    (define goodsig-rx
-      (make-regexp "^\\[GNUPG:\\] GOODSIG ([[:xdigit:]]+) (.+)$"))
-    (define validsig-rx
-      (make-regexp
-       "^\\[GNUPG:\\] VALIDSIG ([[:xdigit:]]+) ([[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}) ([[:digit:]]+) .*$"))
-    (define expkeysig-rx                    ; good signature, but expired key
-      (make-regexp "^\\[GNUPG:\\] EXPKEYSIG ([[:xdigit:]]+) (.*)$"))
-    (define errsig-rx
-      ;; Note: The fingeprint part (the last element of the line) appeared in
-      ;; GnuPG 2.2.7 according to 'doc/DETAILS', and it may be missing.
-      (make-regexp
-       "^\\[GNUPG:\\] ERRSIG ([[:xdigit:]]+) ([^ ]+) ([^ ]+) ([^ ]+) ([[:digit:]]+) ([[:digit:]]+)(.*)"))
-
     (cond ((regexp-exec sigid-rx line)
            =>
            (lambda (match)
