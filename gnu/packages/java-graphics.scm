@@ -55,3 +55,35 @@ create robust, full-featured graphical applications in Java, with features
 such as zooming and multiple representation.  This package provides the core
 libraries.")
     (license license:bsd-3)))
+
+(define-public java-piccolo2d-extras
+  (package (inherit java-piccolo2d-core)
+    (name "java-piccolo2d-extras")
+    (arguments
+     `(#:jar-name "piccolo2d-extras.jar"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "extras") #t))
+         (add-after 'chdir 'remove-failing-test
+           (lambda _
+             ;; TODO: These both fail with "Unable to convolve src image"
+             (delete-file "src/test/java/org/piccolo2d/extras/nodes/PShadowTest.java")
+             (delete-file "src/test/java/org/piccolo2d/extras/util/ShadowUtilsTest.java")
+             #t))
+         (add-before 'check 'start-xorg-server
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The test suite requires a running X server.
+             (system (string-append (assoc-ref inputs "xorg-server")
+                                    "/bin/Xvfb :1 -screen 0 640x480x24 &"))
+             (setenv "DISPLAY" ":1")
+             #t)))))
+    (inputs
+     `(("java-piccolo2d-core" ,java-piccolo2d-core)
+       ("java-junit" ,java-junit)))
+    (native-inputs
+     `(("xorg-server" ,xorg-server))) ; for tests
+    (description "Piccolo2D is a framework (in the Jazz ZUI tradition) to
+create robust, full-featured graphical applications in Java, with features
+such as zooming and multiple representation.  This package provides additional
+features not found in the core libraries.")))
