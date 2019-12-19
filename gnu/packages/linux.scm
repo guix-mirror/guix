@@ -2831,8 +2831,20 @@ mapper.  Kernel components are part of Linux-libre.")
              (string-append "INSTALL_MAN=" %output "/share/man")
              (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib")
              "BUILD_STATIC=")
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key target #:allow-other-keys)
+             (when ,(%current-target-system)
+               ;; Cross-compilation: use the cross tools.
+               (substitute* (find-files "." "Makefile")
+                 (("CC = .*$")
+                  (string-append "CC = " target "-gcc\n"))
+                 (("AR = .*$")
+                  (string-append "AR = " target "-ar\n"))
+                 (("RANLIB = .*$")
+                  (string-append "RANLIB = " target "-ranlib\n"))))
+             #t)))
        #:tests? #f))
     (synopsis "Tools for manipulating Linux Wireless Extensions")
     (description "Wireless Tools are used to manipulate the now-deprecated
