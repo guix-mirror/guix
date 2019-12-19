@@ -5806,6 +5806,33 @@ system for OpenSSL.")
     (properties '((hidden? . #t)))
     (license license:expat)))
 
+(define-public rust-os-pipe-0.8
+  (package
+    (name "rust-os-pipe")
+    (version "0.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "os-pipe" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "049ax8shxik7mm68r2nf7xnrcq3z3p7hz54sbrcxwywxqsjdzs41"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-nix" ,rust-nix-0.15)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page
+     "https://github.com/oconnor663/os_pipe.rs")
+    (synopsis
+     "Cross-platform library for opening OS pipes")
+    (description
+     "A cross-platform library for opening OS pipes.")
+    (license license:expat)))
+
 (define-public rust-owning-ref-0.4
   (package
     (name "rust-owning-ref")
