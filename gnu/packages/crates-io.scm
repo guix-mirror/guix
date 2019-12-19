@@ -6046,6 +6046,31 @@ algorithm.")
 algorithms.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-phf-shared-0.7
+  (package
+    (name "rust-phf-shared")
+    (version "0.7.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "phf-shared" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18371fla0vsj7d6d5rlfb747xbr2in11ar9vgv5qna72bnhp2kr3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-siphasher" ,rust-siphasher-0.2)
+        ("rust-unicase" ,rust-unicase-2.4))))
+    (home-page "https://github.com/sfackler/rust-phf")
+    (synopsis "Support code shared by PHF libraries")
+    (description
+     "Support code shared by PHF libraries.")
+    (license license:expat)))
+
 (define-public rust-pico-sys-0.0
   (package
     (name "rust-pico-sys")
