@@ -2494,6 +2494,32 @@ is configured via an environment variable.")
      "Type-erased Serialize and Serializer traits.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-errno-0.2
+  (package
+    (name "rust-errno")
+    (version "0.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "errno" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0kn8mlygxxr02cm97401nppd2dbkwsalpcbai67rh6yh3rh73862"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-errno-dragonfly" ,rust-errno-dragonfly-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/lambda-fairy/rust-errno")
+    (synopsis "Cross-platform interface to the @code{errno} variable")
+    (description
+     "Cross-platform interface to the @code{errno} variable.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-errno-dragonfly-0.1
   (package
     (name "rust-errno-dragonfly")
