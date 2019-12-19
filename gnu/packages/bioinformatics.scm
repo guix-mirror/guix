@@ -2995,7 +2995,8 @@ reasonable amount of time and memory.  For large alignments, FastTree is
     (inputs
      `(("libgtextutils" ,libgtextutils)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("gcc" ,gcc-6) ;; doesn't build with later versions
+       ("pkg-config" ,pkg-config)))
     (home-page "http://hannonlab.cshl.edu/fastx_toolkit/")
     (synopsis "Tools for FASTA/FASTQ file preprocessing")
     (description
