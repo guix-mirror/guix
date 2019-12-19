@@ -5427,6 +5427,30 @@ pairs in insertion order.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-new-debug-unreachable-1.0
+  (package
+    (name "rust-new-debug-unreachable")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "new_debug_unreachable" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0c1br326qa0rrzxrn2rd5ah7xaprig2i9r4rwsx06vnvc1f003zl"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page
+     "https://github.com/mbrubeck/rust-debug-unreachable")
+    (synopsis
+     "Panic in debug, @code{intrinsics::unreachable()} in release")
+    (description
+     "Panic in debug, @code{intrinsics::unreachable() }in
+release (fork of debug_unreachable)")
+    (license license:expat)))
+
 (define-public rust-nix-0.15
   (package
     (name "rust-nix")
