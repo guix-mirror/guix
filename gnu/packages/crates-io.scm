@@ -6701,6 +6701,30 @@ for x86.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-precomputed-hash-0.1
+  (package
+    (name "rust-precomputed-hash")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "precomputed-hash" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "075k9bfy39jhs53cb2fpb9klfakx2glxnf28zdw08ws6lgpq6lwj"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page
+     "https://github.com/emilio/precomputed-hash")
+    (synopsis
+     "Base dependency to expose a precomputed hash")
+    (description
+     "This package provides a library intending to be a base
+dependency to expose a precomputed hash.")
+    (license license:expat)))
+
 ;; Cyclic dependencies with rust-demo-hack.
 (define-public rust-proc-macro-hack-0.5
   (package
