@@ -2545,6 +2545,32 @@ is configured via an environment variable.")
      "Exposes errno functionality to stable Rust on DragonFlyBSD.")
     (license license:expat)))
 
+(define-public rust-error-chain-0.12
+  (package
+    (name "rust-error-chain")
+    (version "0.12.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "error-chain" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ndpw1ny2kxqpw6k1shq8k56z4vfpk4xz9zr8ay988k0rffrxd1s"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-backtrace" ,rust-backtrace-0.3))
+       #:cargo-development-inputs
+       (("rust-version-check" ,rust-version-check-0.9))))
+    (home-page "https://github.com/rust-lang-nursery/error-chain")
+    (synopsis "Yet another error boilerplate library")
+    (description
+     "Yet another error boilerplate library.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-fake-simd-0.1
   (package
     (name "rust-fake-simd")
