@@ -6425,6 +6425,31 @@ algorithm.")
 algorithms.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-phf-0.7
+  (package
+    (name "rust-phf")
+    (version "0.7.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "phf" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "066xwv4dr6056a9adlkarwp4n94kbpwngbmd47ngm3cfbyw49nmk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-phf-macros" ,rust-phf-macros-0.7)
+        ("rust-phf-shared" ,rust-phf-shared-0.7))))
+    (home-page "https://github.com/sfackler/rust-phf")
+    (synopsis "Runtime support for perfect hash function data structures")
+    (description
+     "Runtime support for perfect hash function data structures.")
+    (license license:expat)))
+
 (define-public rust-phf-generator-0.7
   (package
     (name "rust-phf-generator")
