@@ -11,7 +11,7 @@
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
-;;; Copyright © 2018 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
+;;; Copyright © 2018, 2019 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
 ;;;
@@ -1615,7 +1615,7 @@ genome (2.9 GB for paired-end).")
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     '(#:parallel-build? #f ; not supported
+     '(#:parallel-build? #f             ; not supported
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'use-system-samtools
@@ -1639,16 +1639,18 @@ genome (2.9 GB for paired-end).")
                (("#include <bam.h>") "#include <samtools/bam.h>")
                (("#include <sam.h>") "#include <samtools/sam.h>"))
              #t)))))
+    (native-inputs
+     `(("gcc" ,gcc-5))) ;; doesn't build with later versions
     (inputs
      `(("boost" ,boost)
        ("bowtie" ,bowtie)
-       ("samtools" ,samtools-0.1)
        ("ncurses" ,ncurses)
-       ("python" ,python-2)
        ("perl" ,perl)
-       ("zlib" ,zlib)
-       ("seqan" ,seqan-1)))
-    (home-page "http://ccb.jhu.edu/software/tophat/index.shtml")
+       ("python" ,python-2)
+       ("samtools" ,samtools-0.1)
+       ("seqan" ,seqan-1)
+       ("zlib" ,zlib)))
+    (home-page "https://ccb.jhu.edu/software/tophat/index.shtml")
     (synopsis "Spliced read mapper for RNA-Seq data")
     (description
      "TopHat is a fast splice junction mapper for nucleotide sequence
