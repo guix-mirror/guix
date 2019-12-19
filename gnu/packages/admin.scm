@@ -29,6 +29,7 @@
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -776,6 +777,7 @@ connection alive.")
       (build-system gnu-build-system)
       (arguments
        `(#:parallel-build? #f
+         #:configure-flags '("--with-randomdev=/dev/random")
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'replace-bundled-bind
@@ -806,6 +808,12 @@ connection alive.")
                   (format #f "RELEASETYPE=~a\n" ,bind-release-type))
                  (("^RELEASEVER=.*")
                   (format #f "RELEASEVER=~a\n" ,bind-release-version)))
+               #t))
+           (add-before 'configure 'fix-bind-cross-compilation
+             (lambda _
+               (substitute* "configure"
+                 (("--host=\\$host")
+                  "--host=$host_alias"))
                #t))
            (add-after 'configure 'post-configure
              (lambda* (#:key outputs #:allow-other-keys)
