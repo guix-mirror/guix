@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016, 2017, 2019 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -20,6 +20,7 @@
 (define-module (gnu packages lego)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
@@ -73,15 +74,16 @@ restrictions that stem from limitations of the standard RCX firmware.")
 (define-public leocad
   (package
     (name "leocad")
-    (version "18.02")
+    (version "19.07.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/leozide/leocad/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/leozide/leocad.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "189wj221fn08bnsfwy8050bxkjgjwinkn19qdcvb6c2ry2lnfra9"))))
+                "02kv1m18g6s4dady9jv4sjivfkrp192bmdw2a3d9lzlp60zks0p2"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("qttools" ,qttools)))           ; for lrelease
