@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,7 +51,8 @@
                                   version "/tcl" version "-src.tar.gz"))
               (sha256
                (base32
-                "1vc7imilx6kcb5319r7hnrp4jn5pqb41an3vr3azhgcfcgvdp5ji"))))
+                "1vc7imilx6kcb5319r7hnrp4jn5pqb41an3vr3azhgcfcgvdp5ji"))
+              (patches (search-patches "tcl-fix-cross-compilation.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
