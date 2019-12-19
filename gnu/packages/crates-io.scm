@@ -9189,6 +9189,35 @@ return values to @code{std::io::Result} to indicate success or failure.")
 streams.")
     (license license:expat)))
 
+(define-public rust-tester-0.5
+  (package
+    (name "rust-tester")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tester" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1xkgapz2i4j977f6kh1zp6sa5llbhy5vbnr6kfj8czsrdjr2r0ay"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-getopts" ,rust-getopts-0.2)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-term" ,rust-term-0.4))))
+    (home-page
+     "https://github.com/messense/rustc-test")
+    (synopsis
+     "Fork of Rust's test crate")
+    (description
+     "This package provides a fork of Rust's test crate that doesn't require
+unstable language features.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-textwrap-0.11
   (package
     (name "rust-textwrap")
