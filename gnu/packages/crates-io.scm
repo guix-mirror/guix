@@ -3593,6 +3593,45 @@ retrieving random data from system source.")
 DWARF debugging format.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-git2-0.9
+  (package
+    (name "rust-git2")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "git2" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0cayf5w7wkvclvs8brbi7lyfxbdklwls9s49mpf2brl655yjwjwj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-libgit2-sys" ,rust-libgit2-sys-0.8)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-openssl-probe" ,rust-openssl-probe-0.1)
+        ("rust-openssl-sys" ,rust-openssl-sys-0.9)
+        ("rust-url" ,rust-url-1.7))
+       #:cargo-development-inputs
+       (("rust-docopt" ,rust-docopt-1.1)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0)
+        ("rust-tempdir" ,rust-tempdir-0.3)
+        ("rust-thread-id" ,rust-thread-id-3.3)
+        ("rust-time" ,rust-time-0.1))))
+    (home-page "https://github.com/rust-lang/git2-rs")
+    (synopsis "Rust bindings to libgit2")
+    (description
+     "Bindings to libgit2 for interoperating with git repositories.
+This library is both threadsafe and memory safe and allows both
+reading and writing git repositories.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-glob-0.3
   (package
     (name "rust-glob")
