@@ -11178,6 +11178,28 @@ untrusted inputs in Rust.")
      "URL library for Rust, based on the WHATWG URL Standard.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-utf-8-0.7
+  (package
+    (name "rust-utf-8")
+    (version "0.7.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "utf-8" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1iw5rp4i3mfi9k51picbr5bgjqhjcmnxx7001clh5ydq31y2zr05"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/SimonSapin/rust-utf8")
+    (synopsis
+     "Incremental, zero-copy UTF-8 decoding with error handling")
+    (description
+     "Incremental, zero-copy UTF-8 decoding with error handling.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-utf8-ranges-1.0
   (package
     (name "rust-utf8-ranges")
