@@ -1752,7 +1752,7 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
 (define-public tig
   (package
     (name "tig")
-    (version "2.4.1")
+    (version "2.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1760,7 +1760,7 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
                     version "/tig-" version ".tar.gz"))
               (sha256
                (base32
-                "1f2qhpzbl7f35lsjcnx8lxzskha24m4frczsw78284jp7qcamdmn"))))
+                "1x5famvvs93ih7sr11x7m33dksb1k7zs1s3c4zkyf0cjmxkpqlzz"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)
