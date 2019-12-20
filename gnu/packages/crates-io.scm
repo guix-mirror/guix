@@ -6457,6 +6457,21 @@ synchronization primitives.")
         (base32
          "1317j5a1yd03baza2kqqrxb4kr1vxa7rckw4frksl2vrncfcp26b"))))))
 
+(define-public rust-parking-lot-core-0.4
+  (package
+    (inherit rust-parking-lot-core-0.6)
+    (name "rust-parking-lot-core")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "parking_lot_core" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jcq8aq4wv9y5fip7jg12jdwjd5g5r3x857xdma8vcin769cgj4l"))))))
+
 (define-public rust-parity-wasm-0.40
   (package
     (name "rust-parity-wasm")
