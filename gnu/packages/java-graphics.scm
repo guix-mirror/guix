@@ -24,7 +24,8 @@
   #:use-module (guix build-system ant)
   #:use-module (gnu packages)
   #:use-module (gnu packages java)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (ice-9 match))
 
 (define-public java-piccolo2d-core
   (package
@@ -87,3 +88,36 @@ libraries.")
 create robust, full-featured graphical applications in Java, with features
 such as zooming and multiple representation.  This package provides additional
 features not found in the core libraries.")))
+
+(define-public java-marlin-renderer
+  (package
+    (name "java-marlin-renderer")
+    (version "0.9.4.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/bourgesl/marlin-renderer.git")
+                    (commit (string-append "v" (string-map (match-lambda
+                                                             (#\. #\_)
+                                                             (c c))
+                                                           version)))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "12vb8fmxf1smnyv6w8i1khahy76v6r29j1qwabbykxff8i9ndxqv"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "marlin.jar"
+       #:test-include (list "src/test/java/RunJUnitTest.java")))
+    (inputs
+     `(("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-junit" ,java-junit)))
+    (home-page "https://github.com/bourgesl/marlin-renderer/")
+    (synopsis "Rendering engine")
+    (description "Marlin is a Java2D @code{RenderingEngine} optimized for
+performance (improved memory usage and footprint, better multi-threading) and
+better visual quality based on OpenJDK's @code{pisces} implementation.  It
+handles shape rendering (@code{Graphics2D} @code{draw(Shape)} /
+@code{fill(Shape)} with stroke and dash attributes.")
+    ;; With Classpath Exception
+    (license license:gpl2)))
