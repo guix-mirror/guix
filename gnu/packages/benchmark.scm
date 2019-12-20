@@ -5,6 +5,7 @@
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -118,18 +119,22 @@ is to write a job file matching the I/O load one wants to simulate.")
                    license:public-domain))))
 
 ;; Parameterized in anticipation of m(va)pich support
-(define (imb mpi)
+(define (intel-mpi-benchmarks mpi)
   (package
-    (name (string-append "imb-" (package-name mpi)))
-    (version "2019.1")
-    (source
-     (origin
-      (method git-fetch)
-      (uri (git-reference
-            (url "https://github.com/intel/mpi-benchmarks.git")
-            (commit (string-append "v" version))))
-      (file-name (git-file-name name version))
-      (sha256 (base32 "18hfdyvl5i172gadiq9si1qxif5rvic0lifxpbrr7s59ylg8f9c4"))))
+    (name (string-append "intel-mpi-benchmarks"
+                         (if (string=? (package-name mpi) "openmpi")
+                             ""
+                             (string-append "-" (package-name mpi)))))
+    (version "2019.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/intel/mpi-benchmarks.git")
+                    (commit (string-append "IMB-v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0si5xi6ilhd3w0gbsg124589pvp094hvf366rvjjb9pi7pdk5p4i"))))
     (build-system gnu-build-system)
     (inputs
      `(("mpi" ,mpi)))
@@ -138,25 +143,25 @@ is to write a job file matching the I/O load one wants to simulate.")
        (modify-phases %standard-phases
          (delete 'configure)
          (delete 'check)
-         (replace 'build
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((mpi-home (assoc-ref inputs "mpi")))
-               ;; Override default parallelism
-               (substitute* "Makefile"
-                 (("make -j[[:digit:]]+")
-                  (format #f "make -j~d" (parallel-job-count))))
-               (invoke "make" "SHELL=sh" "CC=mpicc" "CXX=mpic++"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
+             (define (benchmark? file stat)
+               (and (string-prefix? "IMB-" (basename file))
+                    (executable-file? file)))
+
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin")))
-               (for-each
-                (lambda (file)
-                  (install-file file bin))
-                '("IMB-IO" "IMB-EXT" "IMB-MPI1" "IMB-NBC" "IMB-RMA" "IMB-MT")))
-             #t)))))
+               (for-each (lambda (file)
+                           (install-file file bin))
+                         (find-files "." benchmark?))
+               #t))))
+
+       ;; The makefile doesn't express all the dependencies, it seems.
+       #:parallel-build? #t
+
+       #:make-flags '("CC=mpicc" "CXX=mpicxx")))
     (home-page "https://software.intel.com/en-us/articles/intel-mpi-benchmarks")
-    (synopsis "Intel MPI Benchmarks")
+    (synopsis "Benchmarks for the Message Passing Interface (MPI)")
     (description
      "This package provides benchmarks for implementations of the @dfn{Message
 Passing Interface} (MPI).  It contains MPI performance measurements for
@@ -172,7 +177,11 @@ Efficiency of the MPI implementation.
 @end itemize")
     (license license:cpl1.0)))
 
-(define-public imb-openmpi (imb openmpi))
+(define-public intel-mpi-benchmarks/openmpi
+  (intel-mpi-benchmarks openmpi))
+
+(define-public imb-openmpi
+  (deprecated-package "imb-openmpi" intel-mpi-benchmarks/openmpi))
 
 (define-public multitime
   (package
