@@ -4070,14 +4070,14 @@ to variables on the left-hand side of the assignment.")
 (define-public r-vctrs
   (package
     (name "r-vctrs")
-    (version "0.2.0")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "vctrs" version))
        (sha256
         (base32
-         "05h0y8qzwc899qj84gkhg4jwzscd065as00d4d8smv42h4i8zkjv"))))
+         "0rlwjfvvhv3s5mj4lqhwlqwddpizyp46i1qbcvw0mzb5q8b0nkz0"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-backports" ,r-backports)
