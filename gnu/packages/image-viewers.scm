@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -307,7 +307,7 @@ your images.  Among its features are:
 (define-public catimg
   (package
     (name "catimg")
-    (version "2.5.0")
+    (version "2.6.0")
     (source
      (origin
        (method git-fetch)
@@ -316,7 +316,7 @@ your images.  Among its features are:
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0n74iczzgxrcq3zpa7ndycb9rinm829yvf81c747q4ngv5q6pzcm"))))
+        (base32 "0g9ywbgy162wiam9hc3yqpq5q4gyxa8fj4jskr3fdz8z8jjaabzz"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
