@@ -2384,18 +2384,21 @@ matrices, a special case of sparse matrices.")
 (define-public r-bbmle
   (package
     (name "r-bbmle")
-    (version "1.0.20")
+    (version "1.0.22")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "bbmle" version))
        (sha256
         (base32
-         "1xzij7swrrzl5ly8l3lw6awh486zcm00251dwqws1y23fbgyh3vc"))))
+         "1idn55w5f3iw4r0ydyww8xyinninw07sxlwfqb565vmdrs87dwl4"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-lattice" ,r-lattice)
+     `(("r-bdsmatrix" ,r-bdsmatrix)
+       ("r-lattice" ,r-lattice)
        ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
+       ("r-mvtnorm" ,r-mvtnorm)
        ("r-numderiv" ,r-numderiv)))
     (home-page "https://cran.r-project.org/web/packages/bbmle")
     (synopsis "Tools for General Maximum Likelihood Estimation")
