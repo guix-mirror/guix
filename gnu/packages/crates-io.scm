@@ -8662,6 +8662,37 @@ words, like Python's shlex.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-signal-hook-0.1
+  (package
+    (name "rust-signal-hook")
+    (version "0.1.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "signal-hook" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0nlw1gwi58ppds5klyy8vp2ickx3majvdp1pcdz8adm4zpqmiavj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-futures" ,rust-futures-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-mio" ,rust-mio-0.6)
+        ("rust-mio-uds" ,rust-mio-uds-0.6)
+        ("rust-signal-hook-registry" ,rust-signal-hook-registry-1.0)
+        ("rust-tokio-reactor" ,rust-tokio-reactor-0.1))
+       #:cargo-development-inputs
+       (("rust-tokio" ,rust-tokio-0.1)
+        ("rust-version-sync" ,rust-version-sync-0.8))))
+    (home-page "https://github.com/vorner/signal-hook")
+    (synopsis "Unix signal handling")
+    (description "Unix signal handling.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-signal-hook-registry-1.0
   (package
     (name "rust-signal-hook-registry")
