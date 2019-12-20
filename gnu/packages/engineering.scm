@@ -248,14 +248,14 @@ utilities.")
   (package
     (inherit geda-gaf)
     (name "lepton-eda")
-    (version "1.9.5-20180820")
+    (version "1.9.9-20191003")
     (home-page "https://github.com/lepton-eda/lepton-eda")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url home-page) (commit version)))
               (sha256
                (base32
-                "1ayaccvw18zh4g7a4x5jf6yxkphi5xafb0hpc732g59qkgwfcmlr"))
+                "08cc3zfk84qq9mrkc9pp4r9jlavvm01wwy0yd9frql68w2zw6mip"))
               (file-name (git-file-name name version))))
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -266,7 +266,14 @@ utilities.")
        ("groff" ,groff)
        ("which" ,which)
        ,@(package-native-inputs geda-gaf)))
-    ;; For now it's Guile 2.0, not 2.2.
+    (inputs
+     `(("glib" ,glib)
+       ("gtk" ,gtk+-2)
+       ("guile" ,guile-2.2)
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("shared-mime-info" ,shared-mime-info)
+       ("m4" ,m4)
+       ("pcb" ,pcb)))
     (arguments
      (substitute-keyword-arguments (package-arguments geda-gaf)
        ((#:configure-flags flags ''())
@@ -300,6 +307,17 @@ utilities.")
                            ,(string-take version
                                          (string-index version #\-)))
                    (format port "#define PACKAGE_GIT_COMMIT \"cabbag3\"~%")))
+               #t))
+           (add-after 'install 'compile-scheme-files
+             (lambda* (#:key outputs #:allow-other-keys)
+               (invoke "make" "precompile")
+               (for-each (lambda (program)
+                           (wrap-program program
+                             `("GUILE_LOAD_COMPILED_PATH" ":" prefix
+                               (,(string-append (assoc-ref outputs "out")
+                                                "/share/lepton-eda/ccache/")))))
+                         (find-files (string-append (assoc-ref outputs "out") "/bin")
+                                     ".*"))
                #t))))))
     (description
      "Lepton EDA ia an @dfn{electronic design automation} (EDA) tool set
