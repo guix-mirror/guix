@@ -5098,6 +5098,35 @@ functions and static variables these libraries contain.")
          (base32
           "0nsn28syc49vvjhxcfc8261rd1frhjc0r4bn9v3mqvps3ra7f3w8"))))))
 
+(define-public rust-loom-0.1
+  (package
+    (name "rust-loom")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "loom" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jmp5mffwwyqgp914cwz92ij2s6vk1hsnkvgndvzw74xrcfraibj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-generator" ,rust-generator-0.6)
+        ("rust-scoped-tls" ,rust-scoped-tls-1.0)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0))))
+    (home-page "https://github.com/tokio-rs/loom")
+    (synopsis "Model checker for concurrent code")
+    (description "Model checker for concurrent code.")
+    (license license:expat)))
+
 (define-public rust-lzma-sys-0.1
   (package
     (name "rust-lzma-sys")
