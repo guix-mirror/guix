@@ -2361,6 +2361,26 @@ and S4 methods with inlined C, C++ or Fortran code supporting @code{.C} and
     ;; Any version of the LGPL.
     (license license:lgpl3+)))
 
+(define-public r-bdsmatrix
+  (package
+    (name "r-bdsmatrix")
+    (version "1.3-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "bdsmatrix" version))
+       (sha256
+        (base32
+         "17ddvz4gnih7rx0lr1gzk280xyh6x796cf2x794dvplpiiq83skh"))))
+    (properties `((upstream-name . "bdsmatrix")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/bdsmatrix/")
+    (synopsis "Routines for block diagonal symmetric matrices")
+    (description
+     "This package provides procedures to work with block diagonal symmetric
+matrices, a special case of sparse matrices.")
+    (license license:lgpl2.0)))
+
 (define-public r-bbmle
   (package
     (name "r-bbmle")
