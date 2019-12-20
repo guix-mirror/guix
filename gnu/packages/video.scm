@@ -1436,6 +1436,49 @@ projects while introducing many more.")
 (define-public gnome-mpv
   (deprecated-package "gnome-mpv" celluloid))
 
+(define-public mpv-mpris
+  (package
+    (name "mpv-mpris")
+    (version "0.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/hoyon/mpv-mpris")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "06hq3j1jjlaaz9ss5l7illxz8vm5bng86jl24kawglwkqayhdnjx"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no tests
+       #:make-flags '("CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; no configure script
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "mpris.so" (string-append out "/lib")))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("mpv" ,mpv)))
+    (home-page "https://github.com/hoyon/mpv-mpris")
+    (synopsis "MPRIS plugin for mpv")
+    (description "This package provides an @dfn{MPRIS} (Media Player Remote
+Interfacing Specification) plugin for the @code{mpv} media player.  It implements
+@code{org.mpris.MediaPlayer2} and @code{org.mpris.MediaPlayer2.Player} D-Bus
+interfaces.
+
+To load this plugin, specify the following option when starting mpv:
+@code{--script $GUIX_PROFILE/lib/mpris.so} or link it into
+@file{$HOME/.config/mpv/scripts}.")
+    (license license:expat)))
+
 (define-public libvpx
   (package
     (name "libvpx")
