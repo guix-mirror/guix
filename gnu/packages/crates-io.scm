@@ -5342,6 +5342,32 @@ IOCP and Async I/O abstractions.")
          (base32
           "06g9b8sqlh5gxakwqq4rrib07afwanfnxgxajrldwcgk3hxjy7wc"))))))
 
+(define-public rust-model-0.1
+  (package
+    (name "rust-model")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "model" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0kx6hy5i1fn2qs4x6hpng9jixpm68g83vm24z8bqqscr317yinb6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-permutohedron" ,rust-permutohedron-0.2)
+        ("rust-proptest" ,rust-proptest-0.9))))
+    (home-page "https://github.com/spacejam/model")
+    (synopsis "Model-based testing for data structures")
+    (description
+     "Model-based testing for data structures, with linearizability
+checking.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-modifier-0.1
   (package
     (name "rust-modifier")
