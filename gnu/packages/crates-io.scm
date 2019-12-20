@@ -3225,6 +3225,30 @@ pseudorandom number generator")
     (properties '((hidden? . #t)))
     (license license:bsd-3)))
 
+(define-public rust-futf-0.1
+  (package
+    (name "rust-futf")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "futf" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fxc18bnabird5jl941nsd6d25vq8cn8barmz4d30dlkzbiir73w"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-mac" ,rust-mac-0.1)
+        ("rust-new-debug-unreachable" ,rust-new-debug-unreachable-1.0))))
+    (home-page "https://github.com/servo/futf")
+    (synopsis "Handling fragments of UTF-8")
+    (description "Handling fragments of UTF-8.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-futures-0.1
   (package
     (name "rust-futures")
