@@ -19876,6 +19876,30 @@ is cast on a light backdrop (Modus Operandi) and another where light text is
 displayed against a dark background (Modus Vivendi).")
     (license license:gpl3+)))
 
+(define-public emacs-punpun-theme
+  (let ((commit "2f78125609277b2478abdebd8f9d5ee10a823b65")
+        (revision "0"))
+    (package
+      (name "emacs-punpun-theme")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/wasamasa/punpun-theme.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1sgxrj3igzq86h3whfymxf4qzv9kpvcrlhbvjmnp7fwrplys0n7d"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/wasamasa/punpun-theme")
+      (synopsis "Bleak Emacs theme")
+      (description
+       "A bleak theme.  Uses shades of gray and the occasional splash of
+color.  Designed for 256-color terminals.  Comes in light and dark!")
+      (license license:gpl3+))))
+
 (define-public emacs-elixir-mode
   (package
     (name "emacs-elixir-mode")
