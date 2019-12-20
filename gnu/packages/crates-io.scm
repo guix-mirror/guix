@@ -6058,6 +6058,39 @@ system for OpenSSL.")
     (properties '((hidden? . #t)))
     (license license:expat)))
 
+(define-public rust-ordermap-0.3
+  (package
+    (name "rust-ordermap")
+    (version "0.3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ordermap" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0qr0a50l0qakbjcck93qdayd0xl8gzpp42x0n7b75cs4ybsx6vm8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-fnv" ,rust-fnv-1.0)
+        ("rust-itertools" ,rust-itertools-0.8)
+        ("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-quickcheck" ,rust-quickcheck-0.8)
+        ("rust-rand" ,rust-rand-0.4)
+        ("rust-serde-test" ,rust-serde-test-1.0))))
+    (home-page "https://github.com/bluss/indexmap")
+    (synopsis "Hash table with consistent order and fast iteration")
+    (description
+     "This package provides a hash table with consistent order and fast
+iteration.  NOTE: This crate was renamed to @code{indexmap}.  Please use it
+under its new name.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-os-pipe-0.8
   (package
     (name "rust-os-pipe")
