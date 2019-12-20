@@ -1509,6 +1509,39 @@ intrinsics.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-crates-index-0.13
+  (package
+    (name "rust-crates-index")
+    (version "0.13.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crates-index" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1n7pp6mk59hw3nqlh8irxc9pp0g5ziw7bprqsw2lxvg13cvdp76s"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-error-chain" ,rust-error-chain-0.12)
+        ("rust-git2" ,rust-git2-0.9)
+        ("rust-glob" ,rust-glob-0.3)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0))
+       #:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir-0.3))))
+    (home-page
+     "https://github.com/frewsxcv/rust-crates-index")
+    (synopsis
+     "Retrieving and interacting with the crates.io index")
+    (description
+     "Library for retrieving and interacting with the crates.io index.")
+    (license license:asl2.0)))
+
 (define-public rust-crc32fast-1.2
   (package
     (name "rust-crc32fast")
