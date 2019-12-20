@@ -10345,6 +10345,36 @@ the current thread.")
      "Core I/O primitives for asynchronous I/O in Rust.")
     (license license:expat)))
 
+(define-public rust-tokio-io-pool-0.1
+  (package
+    (name "rust-tokio-io-pool")
+    (version "0.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-io-pool" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17lrjj7lcw13wchpbvr8cynmypd29h40clf9qxabh6fxva40kwm5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-futures" ,rust-futures-0.1)
+        ("rust-num-cpus" ,rust-num-cpus-1.10)
+        ("rust-tokio" ,rust-tokio-0.1)
+        ("rust-tokio-executor" ,rust-tokio-executor-0.1))
+       #:cargo-development-inputs
+       (("rust-tokio-current-thread" ,rust-tokio-current-thread-0.1))))
+    (home-page "https://github.com/jonhoo/tokio-io-pool")
+    (synopsis "Execute short, I/O-heavy futures efficiently")
+    (description
+     "Alternative tokio thread pool for executing short, I/O-heavy
+futures efficiently")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-tokio-mock-task-0.1
   (package
     (name "rust-tokio-mock-task")
