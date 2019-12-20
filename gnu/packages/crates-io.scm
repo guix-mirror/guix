@@ -9551,6 +9551,21 @@ directories.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-term-0.5
+  (package
+    (inherit rust-term-0.4)
+    (name "rust-term")
+    (version "0.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "term" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hkgjrfisj6zjwz525639pmsvzhlc48a0h65nw87qrdp6jihdlgd"))))))
+
 (define-public rust-term-0.5.1
   (package
     (inherit rust-term-0.4)
