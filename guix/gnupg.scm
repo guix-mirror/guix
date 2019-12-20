@@ -175,13 +175,15 @@ missing key or its key id if the fingerprint is unavailable."
 
 (define* (gnupg-receive-keys fingerprint/key-id server
                              #:optional (keyring (current-keyring)))
+  "Download FINGERPRINT/KEY-ID from SERVER, a key server, and add it to
+KEYRING."
   (unless (file-exists? keyring)
     (mkdir-p (dirname keyring))
     (call-with-output-file keyring (const #t)))   ;create an empty keybox
 
-  (system* (%gpg-command) "--keyserver" server
-           "--no-default-keyring" "--keyring" keyring
-           "--recv-keys" fingerprint/key-id))
+  (zero? (system* (%gpg-command) "--keyserver" server
+                  "--no-default-keyring" "--keyring" keyring
+                  "--recv-keys" fingerprint/key-id)))
 
 (define* (gnupg-verify* sig file
                         #:key
@@ -189,36 +191,48 @@ missing key or its key id if the fingerprint is unavailable."
                         (server (%openpgp-key-server))
                         (keyring (current-keyring)))
   "Like `gnupg-verify', but try downloading the public key if it's missing.
-Return #t if the signature was good, #f otherwise.  KEY-DOWNLOAD specifies a
-download policy for missing OpenPGP keys; allowed values: 'always', 'never',
-and 'interactive' (default).  Return a fingerprint/user name pair on success
-and #f otherwise."
+Return two values: 'valid-signature and a fingerprint/name pair upon success,
+'missing-key and a fingerprint if the key could not be found, and
+'invalid-signature with a fingerprint if the signature is invalid.
+
+KEY-DOWNLOAD specifies a download policy for missing OpenPGP keys; allowed
+values: 'always', 'never', and 'interactive' (default).  Return a
+fingerprint/user name pair on success and #f otherwise."
   (let ((status (gnupg-verify sig file)))
-    (or (gnupg-status-good-signature? status)
-        (let ((missing (gnupg-status-missing-key? status)))
-          (define (download-and-try-again)
-            ;; Download the missing key and try again.
-            (begin
-              (gnupg-receive-keys missing server keyring)
-              (gnupg-status-good-signature? (gnupg-verify sig file
-                                                          keyring))))
+    (match (gnupg-status-good-signature? status)
+      ((fingerprint . user)
+       (values 'valid-signature (cons fingerprint user)))
+      (#f
+       (let ((missing (gnupg-status-missing-key? status)))
+         (define (download-and-try-again)
+           ;; Download the missing key and try again.
+           (if (gnupg-receive-keys missing server keyring)
+               (match (gnupg-status-good-signature?
+                       (gnupg-verify sig file keyring))
+                 (#f
+                  (values 'invalid-signature missing))
+                 ((fingerprint . user)
+                  (values 'valid-signature
+                          (cons fingerprint user))))
+               (values 'missing-key missing)))
 
-          (define (receive?)
-            (let ((answer
-                   (begin
-                     (format #t (G_ "Would you like to add this key \
+         (define (receive?)
+           (let ((answer
+                  (begin
+                    (format #t (G_ "Would you like to add this key \
 to keyring '~a'?~%")
-                             keyring)
-                     (read-line))))
-              (string-match (locale-yes-regexp) answer)))
+                            keyring)
+                    (read-line))))
+             (string-match (locale-yes-regexp) answer)))
 
-          (and missing
-               (case key-download
-                 ((never) #f)
-                 ((always)
-                  (download-and-try-again))
-                 (else
-                  (and (receive?)
-                       (download-and-try-again)))))))))
+         (case key-download
+           ((never)
+            (values 'missing-key missing))
+           ((always)
+            (download-and-try-again))
+           (else
+            (if (receive?)
+                (download-and-try-again)
+                (values 'missing-key missing)))))))))
 
 ;;; gnupg.scm ends here

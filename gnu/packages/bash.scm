@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
@@ -80,7 +80,7 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
                    (sig    (download-to-store store
                                               (string-append (patch-url number)
                                                              ".sig"))))
-              (unless (gnupg-verify* sig patch)
+              (unless (eq? 'valid-signature (gnupg-verify* sig patch))
                 (error "failed to verify signature" patch))
 
               (list number
