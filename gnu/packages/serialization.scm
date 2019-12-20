@@ -123,7 +123,7 @@ such as compact binary encodings, XML, or JSON.")
         (base32 "1ljqmgscdb0f8w8kx2lnswnisyxchcmijbjbmswkv0g187bvqg23"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("googletest" ,googletest)
+     `(("googletest" ,googletest-1.8)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("zlib" ,zlib))) ;; Msgpack installs two headers (zbuffer.h,

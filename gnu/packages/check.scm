@@ -25,7 +25,7 @@
 ;;; Copyright © 2017, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
@@ -505,7 +505,7 @@ test coverage and has a web user interface that will refresh automatically.")
 (define-public googletest
   (package
     (name "googletest")
-    (version "1.8.1")
+    (version "1.10.0")
     (source
      (origin
        (method git-fetch)
@@ -514,7 +514,7 @@ test coverage and has a web user interface that will refresh automatically.")
              (commit (string-append "release-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0270msj6n7mggh4xqqjp54kswbl7mkcc8px1p5dqdpmw5ngh9fzk"))))
+        (base32 "1zbmab9295scgg4z2vclgfgjchfjailjnvzc6f5x9jvlsdi3dpwz"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
@@ -526,6 +526,20 @@ test coverage and has a web user interface that will refresh automatically.")
 discovery, death tests, assertions, parameterized tests and XML test report
 generation.")
     (license license:bsd-3)))
+
+(define-public googletest-1.8
+  (package/inherit
+   googletest
+   (version "1.8.1")
+   (source (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/google/googletest.git")
+                   (commit (string-append "release-" version))))
+             (file-name (git-file-name "googletest" version))
+             (sha256
+              (base32
+               "0270msj6n7mggh4xqqjp54kswbl7mkcc8px1p5dqdpmw5ngh9fzk"))))))
 
 (define-public cpputest
   (package

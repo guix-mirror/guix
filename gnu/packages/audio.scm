@@ -3592,7 +3592,8 @@ the following features:
      `(("which" ,which)))
     (inputs
      `(("fftw" ,fftw)
-       ("googletest" ,googletest)
+       ;; TODO: Try using the latest googletest for versions > 1.6.
+       ("googletest" ,googletest-1.8)
        ("ncurses" ,ncurses)
        ("pulseaudio" ,pulseaudio)))
     (arguments
