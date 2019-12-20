@@ -3525,6 +3525,35 @@ archive to be linked into Rustcode.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-getrandom-0.1
+  (package
+    (name "rust-getrandom")
+    (version "0.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "getrandom" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0macrjfkgsjn6ikr94agapp4fkxmr8w7y2g7qis4icc4a17cwp76"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-stdweb" ,rust-stdweb-0.4)
+        ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2))))
+    (home-page "https://github.com/rust-random/getrandom")
+    (synopsis "Retrieve random data from system source")
+    (description
+     "This package provides a small cross-platform library for
+retrieving random data from system source.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-gimli-0.18
   (package
     (name "rust-gimli")
