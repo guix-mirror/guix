@@ -366,8 +366,11 @@ aliasing facilities to work just as they would on normal mail.")
     (version "1.13.2")
     (source (origin
              (method url-fetch)
-             (uri (string-append "https://bitbucket.org/mutt/mutt/downloads/"
-                                 "mutt-" version ".tar.gz"))
+             (uri (list
+                    (string-append "ftp://ftp.mutt.org/pub/mutt/mutt-"
+                                   version ".tar.gz")
+                    (string-append "https://bitbucket.org/mutt/mutt/downloads/"
+                                   "mutt-" version ".tar.gz")))
              (sha256
               (base32
                "0x4yfvk8415p80h9an242n6q3b43mw6mnnczh95zd3j0zwdr6wrg"))
