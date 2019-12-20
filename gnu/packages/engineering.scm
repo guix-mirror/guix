@@ -186,16 +186,16 @@ plans and designs.")
 (define-public geda-gaf
   (package
     (name "geda-gaf")
-    (version "1.9.2")
+    (version "1.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://ftp.geda-project.org/geda-gaf/unstable/v"
+                    "http://ftp.geda-project.org/geda-gaf/stable/v"
                     (version-major+minor version) "/"
                     version "/geda-gaf-" version ".tar.gz"))
               (sha256
                (base32
-                "14mk45pfz11v54q66gafw2l68n1p5ssvvjmdm8ffgc8x1w5ajfrz"))))
+                "06ivgarvwbzjz2wigxzzkm8iszldi2p6x3a6jnlczjyrz4csddsy"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -205,12 +205,14 @@ plans and designs.")
            (lambda _
              (setenv "HOME" (getenv "TMPDIR"))
              #t))
-         ;; FIXME: These two tests fail for unknown reasons.  They return "2"
-         ;; when they should return "1".
          (add-after 'unpack 'disable-failing-tests
            (lambda _
-             (substitute* "utils/tests/gxyrs/tests.list"
-               (("^do_nothing.*") ""))
+             (substitute* "xorn/tests/Makefile.in"
+               (("-Werror") ""))
+             ;; This test returns its correct result in an unexpected order.
+             (substitute* "libgeda/scheme/unit-tests/t0402-config.scm"
+               (("\\(begin-config-test 'config-keys" m)
+                (string-append "#;" m)))
              #t)))
        #:configure-flags
        (let ((pcb (assoc-ref %build-inputs "pcb")))
@@ -219,13 +221,15 @@ plans and designs.")
                               pcb "/share/pcb/pcblib-newlib:"
                               pcb "/share/pcb/newlib")))))
     (inputs
-     `(("glib" ,glib)
+     `(("gamin" ,gamin)
+       ("glib" ,glib)
        ("gtk" ,gtk+-2)
        ("guile" ,guile-2.0)
        ("desktop-file-utils" ,desktop-file-utils)
        ("shared-mime-info" ,shared-mime-info)
        ("m4" ,m4)
-       ("pcb" ,pcb)))
+       ("pcb" ,pcb)
+       ("python" ,python-2))) ; for xorn
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("perl" ,perl))) ; for tests
