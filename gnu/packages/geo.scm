@@ -608,6 +608,7 @@ development.")
            (with "--with-libtiff" "libtiff")
            (with "--with-geotiff" "libgeotiff")
            (with "--with-libz" "zlib")
+           (with "--with-expat" "expat")
            "--with-pcre"))
        #:phases
        (modify-phases %standard-phases
@@ -616,7 +617,8 @@ development.")
              (substitute* "frmts/mrf/mrf_band.cpp"
                (("\"../zlib/zlib.h\"") "<zlib.h>")))))))
     (inputs
-     `(("freexl" ,freexl)
+     `(("expat" ,expat)
+       ("freexl" ,freexl)
        ("geos" ,geos)
        ("giflib" ,giflib)
        ("json-c" ,json-c)
