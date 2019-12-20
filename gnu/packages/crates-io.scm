@@ -6357,10 +6357,10 @@ synchronization primitives.")
         ("rust-rand" ,rust-rand-0.4)
         ("rust-rustc-version" ,rust-rustc-version-0.2))))))
 
-(define-public rust-parking-lot-core-0.5
+(define-public rust-parking-lot-core-0.6
   (package
     (name "rust-parking-lot-core")
-    (version "0.5.0")
+    (version "0.6.2")
     (source
      (origin
        (method url-fetch)
@@ -6369,7 +6369,7 @@ synchronization primitives.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1317j5a1yd03baza2kqqrxb4kr1vxa7rckw4frksl2vrncfcp26b"))))
+         "0ay67dpnrn68ryyvp720m9i8hzp189fd4d6slrs1lvmcwywv2xmq"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -6392,6 +6392,21 @@ synchronization primitives.")
     (description
      "An advanced API for creating custom synchronization primitives.")
     (license (list license:asl2.0 license:expat))))
+
+(define-public rust-parking-lot-core-0.5
+  (package
+    (inherit rust-parking-lot-core-0.6)
+    (name "rust-parking-lot-core")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "parking_lot_core" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1317j5a1yd03baza2kqqrxb4kr1vxa7rckw4frksl2vrncfcp26b"))))))
 
 (define-public rust-parity-wasm-0.40
   (package
