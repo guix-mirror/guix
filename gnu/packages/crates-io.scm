@@ -4954,10 +4954,10 @@ functions and static variables these libraries contain.")
     (license (list license:asl2.0
                    license:expat))))
 
-(define-public rust-lock-api-0.2
+(define-public rust-lock-api-0.3
   (package
     (name "rust-lock-api")
-    (version "0.2.0")
+    (version "0.3.1")
     (source
      (origin
        (method url-fetch)
@@ -4966,7 +4966,7 @@ functions and static variables these libraries contain.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1zx7pksmgyggpczgw4qrr4vj2nkdk5lipgiysvr20slm552nv57d"))))
+         "1p04271jikw69ja0ap0plrfwm9incf1iny48g0b3ma9k4mw2x4gq"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -4981,6 +4981,21 @@ functions and static variables these libraries contain.")
      "This package provides wrappers to create fully-featured @code{Mutex} and
 @code{RwLock} types.  It is compatible with @code{no_std}.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-lock-api-0.2
+  (package
+    (inherit rust-lock-api-0.3)
+    (name "rust-lock-api")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "lock_api" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1zx7pksmgyggpczgw4qrr4vj2nkdk5lipgiysvr20slm552nv57d"))))))
 
 (define-public rust-lock-api-0.1
   (package
