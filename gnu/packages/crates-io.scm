@@ -510,6 +510,34 @@ and no more (caveat: black_box is still missing!).")
 that uses Serde for transforming structs into bytes and vice versa!")
     (license license:expat)))
 
+(define-public rust-generator-0.6
+  (package
+    (name "rust-generator")
+    (version "0.6.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "generator" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0p4iq1n53dy72dhma02wfjrazf2hq2745f9si9yi7jxviks7c8l7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-cc" ,rust-cc-1.0)
+        ("rust-rustc-version" ,rust-rustc-version-0.2))))
+    (home-page "https://github.com/Xudong-Huang/generator-rs")
+    (synopsis "Stackfull Generator Library in Rust")
+    (description "Stackfull Generator Library in Rust.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-bindgen-0.50
   (package
     (name "rust-bindgen")
