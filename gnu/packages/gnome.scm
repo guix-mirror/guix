@@ -8930,6 +8930,43 @@ repository and commit your work.")
     (home-page "https://wiki.gnome.org/Apps/Gitg")
     (license license:gpl2+)))
 
+(define-public gamin
+  (package
+    (name "gamin")
+    (version "0.1.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "02n1zr9y8q9lyczhcz0nxar1vmf8p2mmbw8kq0v43wg21jr4i6d5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-deprecated-macro
+           (lambda _
+             (substitute* '("server/gam_node.c"
+                            "server/gam_subscription.h"
+                            "server/gam_node.h"
+                            "server/gam_subscription.c")
+               (("G_CONST_RETURN") "const"))
+             #t)))))
+    (inputs
+     `(("glib" ,glib)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://people.gnome.org/~veillard/gamin/")
+    (synopsis "File alteration monitor")
+    (description
+     "Gamin is a file and directory monitoring system defined to be a subset
+of the FAM (File Alteration Monitor) system.  This is a service provided by a
+library which allows to detect when a file or a directory has been modified.")
+    (license license:gpl2+)))
+
 (define-public gnome-mahjongg
   (package
     (name "gnome-mahjongg")
