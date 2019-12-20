@@ -15927,19 +15927,18 @@ PROJ.4 library.")
 (define-public r-insol
   (package
     (name "r-insol")
-    (version "1.2")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "insol" version))
        (sha256
         (base32
-         "14ikz05375pjn9hby7kwkhcnykjilbnkdy5i8lsl7c5qdbhmqcm5"))))
+         "1d2vqmbp94ff80mfkmq4a8y12r6ryym8hh1568ip9qbn7snc64v1"))))
     (properties `((upstream-name . "insol")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-raster" ,r-raster)
-       ("r-rgdal" ,r-rgdal)))
+     `(("r-raster" ,r-raster)))
     (native-inputs
      `(("gfortran" ,gfortran)))
     (home-page "https://meteoexploration.com/R/insol/index.html")
