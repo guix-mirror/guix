@@ -20412,6 +20412,19 @@ The port on which to connect to the database.
 @end table
 @end deftp
 
+@subsubheading Mumi
+
+@cindex Mumi, Debbugs Web interface
+@cindex Debbugs, Mumi Web interface
+@uref{https://git.elephly.net/gitweb.cgi?p=software/mumi.git, Mumi} is a
+Web interface to the Debbugs bug tracker, by default for
+@uref{https://bugs.gnu.org, the GNU instance}.  Mumi is a Web server,
+but it also fetches and indexes mail retrieved from Debbugs.
+
+@defvr {Scheme Variable} mumi-service-type
+This is the service type for Mumi.
+@end defvr
+
 @subsubheading FastCGI
 @cindex fastcgi
 @cindex fcgiwrap

@@ -43,6 +43,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages logging)
+  #:use-module (gnu packages mail)
   #:use-module (guix packages)
   #:use-module (guix records)
   #:use-module (guix modules)
@@ -256,7 +257,9 @@
             patchwork-configuration-domain
 
             patchwork-virtualhost
-            patchwork-service-type))
+            patchwork-service-type
+
+            mumi-service-type))
 
 ;;; Commentary:
 ;;;
@@ -1652,3 +1655,55 @@ WSGIPassAuthorization On
                              patchwork-getmail-configs)))
    (description
     "Patchwork patch tracking system.")))
+
+
+;;;
+;;; Mumi.
+;;;
+
+(define %mumi-activation
+  (with-imported-modules '((guix build utils))
+    #~(begin
+        (use-modules (guix build utils))
+
+        (mkdir-p "/var/mumi/mails")
+        (let* ((pw  (getpwnam "mumi"))
+               (uid (passwd:uid pw))
+               (gid (passwd:gid pw)))
+          (chown "/var/mumi" uid gid)
+          (chown "/var/mumi/mails" uid gid)))))
+
+(define %mumi-accounts
+  (list (user-group (name "mumi") (system? #t))
+        (user-account
+         (name "mumi")
+         (group "mumi")
+         (system? #t)
+         (comment "Mumi web server")
+         (home-directory "/var/empty")
+         (shell (file-append shadow "/sbin/nologin")))))
+
+(define (mumi-shepherd-services mumi)
+  (list (shepherd-service
+         (provision '(mumi))
+         (documentation "Mumi bug-tracking web interface.")
+         (requirement '(networking))
+         (start #~(make-forkexec-constructor
+                   '(#$(file-append mumi "/bin/mumi"))
+                   #:user "mumi" #:group "mumi"
+                   #:log-file "/var/log/mumi.log"))
+         (stop #~(make-kill-destructor)))))
+
+(define mumi-service-type
+  (service-type
+   (name 'mumi)
+   (extensions
+    (list (service-extension activation-service-type
+                             (const %mumi-activation))
+          (service-extension account-service-type
+                             (const %mumi-accounts))
+          (service-extension shepherd-root-service-type
+                             mumi-shepherd-services)))
+   (description
+    "Run Mumi, a Web interface to the Debbugs bug-tracking server.")
+   (default-value mumi)))
