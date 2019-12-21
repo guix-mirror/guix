@@ -1189,6 +1189,11 @@ resulting from command-line parsing."
 (define (process-command command args opts)
   "Process COMMAND, one of the 'guix system' sub-commands.  ARGS is its
 argument list and OPTS is the option alist."
+  (define-syntax-rule (with-store* store exp ...)
+    (with-store store
+      (set-build-options-from-command-line store opts)
+      exp ...))
+
   (case command
     ;; The following commands do not need to use the store, and they do not need
     ;; an operating system configuration file.
@@ -1213,22 +1218,20 @@ argument list and OPTS is the option alist."
                       (() #f)
                       ((pattern) pattern)
                       (x (leave (G_ "wrong number of arguments~%"))))))
-       (with-store store
+       (with-store* store
          (delete-matching-generations store %system-profile pattern)
          (reinstall-bootloader store (generation-number %system-profile)))))
     ((switch-generation)
      (let ((pattern (match args
                       ((pattern) pattern)
                       (x (leave (G_ "wrong number of arguments~%"))))))
-       (with-store store
-         (set-build-options-from-command-line store opts)
+       (with-store* store
          (switch-to-system-generation store pattern))))
     ((roll-back)
      (let ((pattern (match args
                       (() "")
                       (x (leave (G_ "wrong number of arguments~%"))))))
-       (with-store store
-         (set-build-options-from-command-line store opts)
+       (with-store* store
          (roll-back-system store))))
     ;; The following commands need to use the store, and they also
     ;; need an operating system configuration file.
@@ -1297,6 +1300,7 @@ argument list and OPTS is the option alist."
 
 ;;; Local Variables:
 ;;; eval: (put 'call-with-service-upgrade-info 'scheme-indent-function 1)
+;;; eval: (put 'with-store* 'scheme-indent-function 1)
 ;;; End:
 
 ;;; system.scm ends here
