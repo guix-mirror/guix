@@ -6721,7 +6721,7 @@ libxml2.")
 (define-public gdm
   (package
     (name "gdm")
-    (version "3.32.0")
+    (version "3.34.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -6729,7 +6729,7 @@ libxml2.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "12ypdz9i24hwbl1d1wnnxb8zlvfa4f49n9ac5cl9d6h8qp4b0gb4"))
+                "1lyqvcwxhwxklbxn4xjswjzr6fhjix6h28mi9ypn34wdm9bzcpg8"))
               (patches (search-patches "gdm-default-session.patch"))))
     (build-system glib-or-gtk-build-system)
     (arguments
@@ -6771,6 +6771,7 @@ libxml2.")
               (("#include <systemd/sd-daemon\\.h>") ""))
             ;; Use elogind for sd-login.
             (substitute* '("common/gdm-common.c"
+                           "daemon/gdm-local-display-factory.c"
                            "daemon/gdm-manager.c"
                            "libgdm/gdm-user-switching.c")
               (("#include <systemd/sd-login\\.h>")
@@ -6818,7 +6819,8 @@ libxml2.")
             (substitute* '("daemon/gdm-server.c")
               (("\\(X_SERVER X_SERVER_ARG_FORMAT")
                "(\"%s\" X_SERVER_ARG_FORMAT, g_getenv (\"GDM_X_SERVER\")"))
-            (substitute* '("daemon/gdm-x-session.c")
+            (substitute* '("daemon/gdm-wayland-session.c"
+                           "daemon/gdm-x-session.c")
               (("\"dbus-daemon\"")
                "g_getenv (\"GDM_DBUS_DAEMON\")")
               (("X_SERVER")
