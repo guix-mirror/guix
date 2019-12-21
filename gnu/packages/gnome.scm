@@ -5994,7 +5994,7 @@ to display dialog boxes from the commandline and shell scripts.")
 (define-public mutter
   (package
     (name "mutter")
-    (version "3.32.2")
+    (version "3.34.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -6002,7 +6002,7 @@ to display dialog boxes from the commandline and shell scripts.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1h577i2ap7dpfy1jg101jvc6nzccc0csgvd55ahydlr8f94frcva"))))
+                "0b8bz5kvs7rlwvqsg87cf6jhrrj95vgd1l235mjx8rip35ipfvrd"))))
     ;; NOTE: Since version 3.21.x, mutter now bundles and exports forked
     ;; versions of cogl and clutter.  As a result, many of the inputs,
     ;; propagated-inputs, and configure flags used in cogl and clutter are
@@ -6014,10 +6014,12 @@ to display dialog boxes from the commandline and shell scripts.")
        #:tests? #f
        #:glib-or-gtk? #t
        #:configure-flags
-       ;; Otherwise, the RUNPATH will lack the final path component.
-       (list (string-append "-Dc_link_args=-Wl,-rpath="
+       ;; TODO: Enable profiler when Sysprof is packaged.
+       (list "-Dprofiler=false"
+             ;; Otherwise, the RUNPATH will lack the final path component.
+             (string-append "-Dc_link_args=-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib:"
-                            (assoc-ref %outputs "out") "/lib/mutter-4")
+                            (assoc-ref %outputs "out") "/lib/mutter-5")
 
              ;; The following flags are needed for the bundled clutter
              (string-append "-Dxwayland_path="
@@ -6027,27 +6029,10 @@ to display dialog boxes from the commandline and shell scripts.")
              ;; the remaining flags are needed for the bundled cogl
              (string-append "-Dopengl_libname="
                             (assoc-ref %build-inputs "mesa")
-                            "/lib/libGL.so"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'disable-werror
-           (lambda _
-             ;; XXX: build fails with [-Werror]:
-             ;;    backends/meta-cursor-renderer.c:112:5: error:
-             ;;      implicit declaration of function ?roundf?
-             (substitute* "meson.build"
-               (("'-Werror=.*',") ""))
-             #t))
-         ;; Replace references to systemd libraries to elogind references.
-         (add-before 'configure 'use-elogind
-           (lambda _
-             (substitute* (list "meson.build"
-                                "src/backends/native/meta-launcher.c"
-                                "src/core/main.c")
-               (("systemd") "elogind"))
-             #t)))))
+                            "/lib/libGL.so"))))
     (native-inputs
-     `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
+     `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
+       ("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
