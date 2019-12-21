@@ -768,6 +768,61 @@ messages you need; in addition, it allows you to view messages, extract
 attachments, create new maildirs, and so on.")
     (license gpl3+)))
 
+(define mumimu
+  ;; This is a fork of mu for use in Mumi that stores message bug IDs in its
+  ;; database.  It also renames the library to "mumimu" to avoid confusion.
+  (let ((commit "ad30b5e9c85f0465aeeeac461d8c32d95775d450")
+        (revision "1"))
+    (package
+      (inherit mu)
+      (name "mumimu")
+      (version (git-version (package-version guile-email) revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.elephly.net/software/mumimu.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1y8r8csvkyxncgpi469dir4n4sga4z9xdzc18qh5s8bk29qj689n"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments mu)
+         ((#:tests? anything '())
+          #f)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (replace 'patch-configure
+               (lambda _
+                 (delete-file "autogen.sh")
+                 (substitute* "configure.ac"
+                   ;; Use latest Guile
+                   (("guile-2.0") "guile-2.2"))
+                 (substitute* '("guile/Makefile.am"
+                                "guile/mu/Makefile.am")
+                   (("share/guile/site/2.0/") "share/guile/site/2.2/"))
+                 #t))
+             (replace 'fix-ffi
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (substitute* "guile/mumimu.scm"
+                   (("\"libguile-mu\"")
+                    (format #f "\"~a/lib/libguile-mumimu\""
+                            (assoc-ref outputs "out"))))
+                 #t))
+             (delete 'install-emacs-autoloads)))
+         ((#:configure-flags flags)
+          '("--disable-gtk"
+            "--disable-webkit"
+            "--disable-mu4e"))))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ("glib" ,glib "bin")
+         ("tzdata" ,tzdata-for-tests)
+         ("texinfo" ,texinfo))))))
+
 (define-public alot
   (package
     (name "alot")
@@ -2991,7 +3046,8 @@ $(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n"))
          ("guile-fibers" ,guile-fibers)
          ("guile-json" ,guile-json-1)
          ("guile-syntax-highlight" ,guile-syntax-highlight)
-         ("guile" ,guile-2.2)))
+         ("guile" ,guile-2.2)
+         ("mumimu" ,mumimu)))   ;'mumimu' executable recorded in (mumi config)
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)
