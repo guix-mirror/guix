@@ -3024,6 +3024,8 @@ $(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n"))
          #:imported-modules ((guix build guile-build-system)
                              ,@%gnu-build-system-modules)
 
+         #:configure-flags '("--localstatedir=/var")
+
          #:phases
          (modify-phases %standard-phases
            (add-after 'install 'wrap-executable
