@@ -2952,14 +2952,23 @@ replacement for the @code{urlview} program.")
                   "1575gn5p086sjxz5hvg6iyskq6cxf6vf50s9nsc4xgrbcqa3pv2c"))))
       (build-system gnu-build-system)
       (arguments
-       `(#:phases
+       `(#:modules ((guix build gnu-build-system)
+                    ((guix build guile-build-system)
+                     #:select (target-guile-effective-version))
+                    (guix build utils))
+         #:imported-modules ((guix build guile-build-system)
+                             ,@%gnu-build-system-modules)
+
+         #:phases
          (modify-phases %standard-phases
            (add-after 'install 'wrap-executable
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (bin (string-append out "/bin"))
-                      (scm (string-append out "/share/guile/site/2.2"))
-                      (go  (string-append out "/lib/guile/2.2/site-ccache")))
+                      (version (target-guile-effective-version))
+                      (scm (string-append out "/share/guile/site/" version))
+                      (go  (string-append out "/lib/guile/" version
+                                          "/site-ccache")))
                  (wrap-program (string-append bin "/mumi")
                    `("GUILE_LOAD_PATH" ":" prefix
                      (,scm ,(getenv "GUILE_LOAD_PATH")))
