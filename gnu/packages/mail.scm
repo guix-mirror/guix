@@ -2949,7 +2949,17 @@ replacement for the @code{urlview} program.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1575gn5p086sjxz5hvg6iyskq6cxf6vf50s9nsc4xgrbcqa3pv2c"))))
+                  "1575gn5p086sjxz5hvg6iyskq6cxf6vf50s9nsc4xgrbcqa3pv2c"))
+                (modules '((guix build utils)))
+                (snippet
+                 '(begin
+                    ;; Install .go files to $prefix/lib instead of
+                    ;; $prefix/share.
+                    (substitute* "Makefile.am"
+                      (("^godir[[:space:]]*=.*")
+                       "godir = \
+$(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n"))
+                    #t))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build gnu-build-system)
