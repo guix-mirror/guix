@@ -912,7 +912,7 @@ tracker's SOAP service, such as @url{https://bugs.gnu.org}.")
 (define-public guile-email
   (package
     (name "guile-email")
-    (version "0.2.1")
+    (version "0.2.2")
     (source
      (origin
        (method url-fetch)
@@ -921,7 +921,7 @@ tracker's SOAP service, such as @url{https://bugs.gnu.org}.")
              version ".tar.lz"))
        (sha256
         (base32
-         "1ph3pb69hr3d8mj05fmbpf5rc67dlm8qnb35cc7cxz8ingvl7kv3"))))
+         "1rc8r0fgvflnyq5ckl7ii8sghpsgpkzxa8vskjr1ak2kyar6m35k"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
