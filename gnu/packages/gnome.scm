@@ -455,6 +455,38 @@ documents.  This package also contains binaries that can convert XPS documents
 to other formats.")
     (license license:lgpl2.1+)))
 
+(define-public gnome-characters
+  (package
+    (name "gnome-characters")
+    (version "3.30.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/"
+                           "gnome-characters/" (version-major+minor version)
+                           "/gnome-characters-" version ".tar.xz"))
+       (sha256
+        (base32
+         "08cwz39iwgsyyb2wqhb8vfbmh1cwfkgfiy7adp08w7rwqi99x3dp"))))
+    (build-system meson-build-system)
+    (arguments '(#:glib-or-gtk? #t))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gtk+:bin" ,gtk+ "bin")
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-minimal)))
+    (inputs
+     `(("gjs" ,gjs)
+       ("gtk+" ,gtk+)
+       ("libunistring" ,libunistring)))
+    (home-page "https://wiki.gnome.org/Apps/CharacterMap")
+    (synopsis "Find and insert unusual characters")
+    (description "Characters is a simple utility application to find
+and insert unusual characters.  It allows you to quickly find the
+character you are looking for by searching for keywords.")
+    (license license:bsd-3)))
+
 (define-public gnome-common
   (package
     (name "gnome-common")
