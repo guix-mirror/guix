@@ -3060,6 +3060,7 @@ assetsjs_DATA  = $(wildcard assets/js/*)\n"))
          ("guile-fibers" ,guile-fibers)
          ("guile-json" ,guile-json-1)
          ("guile-syntax-highlight" ,guile-syntax-highlight)
+         ("gnutls" ,gnutls)         ;needed to talk to https://debbugs.gnu.org
          ("guile" ,guile-2.2)
          ("mumimu" ,mumimu)))   ;'mumimu' executable recorded in (mumi config)
       (native-inputs
