@@ -3008,12 +3008,24 @@ replacement for the @code{urlview} program.")
                 (modules '((guix build utils)))
                 (snippet
                  '(begin
-                    ;; Install .go files to $prefix/lib instead of
-                    ;; $prefix/share.
                     (substitute* "Makefile.am"
+                      ;; Install .go files to $prefix/lib instead of
+                      ;; $prefix/share.
                       (("^godir[[:space:]]*=.*")
                        "godir = \
-$(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n"))
+$(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n")
+
+                      ;; Install assets.
+                      (("^assetsdir.*" _)
+                       "\
+assetsdir    = $(pkgdatadir)/assets
+assetscssdir = $(assetsdir)/css
+assetsimgdir = $(assetsdir)/img
+assetsjsdir  = $(assetsdir)/js
+
+assetscss_DATA = $(wildcard assets/css/*)
+assetsimg_DATA = $(wildcard assets/img/*)
+assetsjs_DATA  = $(wildcard assets/js/*)\n"))
                     #t))))
       (build-system gnu-build-system)
       (arguments
