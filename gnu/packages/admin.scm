@@ -2804,14 +2804,15 @@ buffers.")
   (package
     (name "igt-gpu-tools")
     (version "1.23")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://cgit.freedesktop.org/xorg/app/"
-                                  "intel-gpu-tools/snapshot/"
-                                  "igt-gpu-tools-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0vzv2i4jfv2pkbqby5k3ap9pzidkmajwqmg3s7wnv8i1h33775iq"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.freedesktop.org/drm/igt-gpu-tools.git")
+             (commit (string-append "igt-gpu-tools-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ra0l7917434z02gfzlh61gx5asw051m1q7h1i1gzhh25wba1hz1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f              ; many of the tests try to load kernel modules
