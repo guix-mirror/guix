@@ -6673,7 +6673,7 @@ threads.")
       (description
        "CL-STORE is a portable serialization package which should give you the
 ability to store all Common Lisp data types into streams.")
-      (home-page "http://www.common-lisp.net/project/cl-store/")
+      (home-page "https://www.common-lisp.net/project/cl-store/")
       (license license:expat))))
 
 (define-public cl-store
