@@ -6651,8 +6651,8 @@ threads.")
          ((#:tests? _ #f) #f))))))
 
 (define-public sbcl-cl-store
-  (let ((commit "cd01f2610d3360dc01ab972bd9317407aaea7745")
-        (revision "0"))
+  (let ((commit "c787337a16ea8cf8a06227f35933a4ec774746b3")
+        (revision "1"))
     (package
       (name "sbcl-cl-store")
       (version (git-version "0.8.11" revision commit))
@@ -6665,7 +6665,7 @@ threads.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "05b7kh5af2ax7vlmphpac4vbqr84j5ivppj96qzb64fxpjpqglm4"))))
+           "194srkg8nrym19c6i7zbnkzshc1qhqa82m53qnkirz9fw928bqxr"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("rt" ,sbcl-rt)))
