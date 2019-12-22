@@ -126,14 +126,14 @@
                       (qt-wrap-excluded-outputs ''())
                       (system (%current-system))
                       (imported-modules %qt-build-system-modules)
-                      (modules '((guix build cmake-build-system)
+                      (modules '((guix build qt-build-system)
                                  (guix build utils))))
   "Build SOURCE using CMAKE, and with INPUTS. This assumes that SOURCE
 provides a 'CMakeLists.txt' file as its build system."
   (define builder
     `(begin
        (use-modules ,@modules)
-       (cmake-build #:source ,(match (assoc-ref inputs "source")
+       (qt-build #:source ,(match (assoc-ref inputs "source")
                                 (((? derivation? source))
                                  (derivation->output-path source))
                                 ((source)
@@ -208,7 +208,7 @@ provides a 'CMakeLists.txt' file as its build system."
                             (system (%current-system))
                             (build (nix-system->gnu-triplet system))
                             (imported-modules %qt-build-system-modules)
-                            (modules '((guix build cmake-build-system)
+                            (modules '((guix build qt-build-system)
                                        (guix build utils))))
   "Cross-build NAME using CMAKE for TARGET, where TARGET is a GNU triplet and
 with INPUTS.  This assumes that SOURCE provides a 'CMakeLists.txt' file as its
@@ -237,7 +237,7 @@ build system."
                      `(,name . ,path)))
                   target-drvs))
 
-         (cmake-build #:source ,(match (assoc-ref native-drvs "source")
+         (qt-build #:source ,(match (assoc-ref native-drvs "source")
                                   (((? derivation? source))
                                    (derivation->output-path source))
                                   ((source)
