@@ -825,7 +825,18 @@ up the Gnome environment, and are used in many unrelated projects.")
        ;;
        ;;   EOFError: EOF read where object expected
        ;;   make[2]: *** [Makefile:1906: _gen/register-dbus-glib-marshallers-body.h] Error 1
-       #:parallel-build? #f))
+       #:parallel-build? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             ;; None of the tests below are able to find the org.gtk.vfs.Daemon
+             ;; service file provided by gvfs.
+             (substitute* "tests/dbus/Makefile.in"
+               (("test-contacts\\$\\(EXEEXT\\)") "")
+               (("test-file-transfer-channel\\$\\(EXEEXT\\)") "")
+               (("test-stream-tube\\$\\(EXEEXT\\)") ""))
+             #t)))))
     (native-inputs
      `(("glib" ,glib "bin") ; uses glib-mkenums
        ("gobject-introspection" ,gobject-introspection)
