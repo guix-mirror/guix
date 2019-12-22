@@ -139,11 +139,11 @@ the Obsidian icon theme.")
          (delete 'bootstrap)
          (delete 'configure))))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("glib:bin" ,glib "bin")
+       ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
-     `(("glib" ,glib)
-       ("glib" ,glib "bin")))
+     `(("glib" ,glib)))
     (synopsis "Transforms GNOME's dash into a dock")
     (description "This extension moves the dash out of the
 overview, transforming it into a dock for easier application launching and
