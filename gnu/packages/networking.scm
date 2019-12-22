@@ -2703,15 +2703,14 @@ maximum extent possible.")
 (define-public batctl
   (package
    (name "batctl")
-   (version "2019.3")
+   (version "2019.5")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "https://downloads.open-mesh.org/batman/releases/batman-adv-"
                          version "/batctl-" version ".tar.gz"))
      (sha256
-      (base32
-       "0307a01n72kg7vcm60mi8jna6bydiin2cr3ylrixra1596hkzn9b"))))
+      (base32 "1b9w4636dq8m38nzr8j0v0j3b0vdsw84c58c2isc33h66dx8brgz"))))
    (inputs
     `(("libnl" ,libnl)))
    (native-inputs
