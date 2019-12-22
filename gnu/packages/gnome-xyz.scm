@@ -158,15 +158,16 @@ faster window switching.")
       (name "gnome-shell-extension-hide-app-icon")
       (version (git-version "2.7" revision commit))
       (source
-        (origin
-          (method git-fetch)
-          (uri (git-reference
-                 (url "https://github.com/michael-rapp/gnome-shell-extension-hide-app-icon.git")
-                 (commit commit)))
-          (sha256
-           (base32
-            "1i28n4bz6wrhn07vpxkr6l1ljyn7g8frp5xrr11z3z32h2hxxcd6"))
-          (file-name (git-file-name name version))))
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url (string-append "https://github.com/michael-rapp"
+                                   "/gnome-shell-extension-hide-app-icon.git"))
+               (commit commit)))
+         (sha256
+          (base32
+           "1i28n4bz6wrhn07vpxkr6l1ljyn7g8frp5xrr11z3z32h2hxxcd6"))
+         (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
        '(#:tests? #f                ; no test target
@@ -178,10 +179,11 @@ faster window switching.")
            (delete 'configure)      ; no configure script
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
-                 (copy-recursively "hide-app-icon@mrapp.sourceforge.com/"
-                                   (string-append out "/share/gnome-shell/extensions"))
-               #t))))))
+               (let ((out (assoc-ref outputs "out"))
+                     (pre "/share/gnome-shell/extensions/")
+                     (dir "hide-app-icon@mrapp.sourceforge.com"))
+                 (copy-recursively dir (string-append out pre dir))
+                 #t))))))
       (native-inputs
        `(("glib" ,glib "bin")
          ("intltool" ,intltool)))
@@ -190,10 +192,11 @@ faster window switching.")
       (synopsis "Hide app icon from GNOME's panel")
       (description "This extension allows to hide the icon and/or title of the
 currently focused application in the top panel of the GNOME shell.")
-      (home-page "https://github.com/michael-rapp/gnome-shell-extension-hide-app-icon/")
+      (home-page
+       "https://github.com/michael-rapp/gnome-shell-extension-hide-app-icon/")
       (license
-       ;; README.md and LICENSE.txt disagree -- the former claims v3, the
-       ;; latter v2.  No mention of "or later" in either place or in the code.
+        ;; README.md and LICENSE.txt disagree -- the former claims v3, the
+        ;; latter v2.  No mention of "or later" in either place or in the code.
         (list license:gpl2
               license:gpl3)))))
 
