@@ -44,6 +44,7 @@
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;; Copyright © 2019 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
+;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8199,6 +8200,7 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
        ("iso-codes" ,iso-codes)))
     (native-inputs
      `(("glib" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)
        ("xmllint" ,libxml2)
 
