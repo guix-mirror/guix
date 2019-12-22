@@ -2934,7 +2934,7 @@ you are running, what theme or icon set you are using, etc.")
 (define-public screenfetch
   (package
     (name "screenfetch")
-    (version "3.9.0")
+    (version "3.9.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2943,7 +2943,7 @@ you are running, what theme or icon set you are using, etc.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "13i7dczbqwhws08zzrdraki1zkqv0qkbgx9c1r8vmg5qr9f7hfzg"))))
+                "04l8aqr474pb115nagn9f6y48jw92n1qfszgw7dbhgl4mpn95lcr"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
