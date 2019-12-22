@@ -2803,7 +2803,7 @@ buffers.")
 (define-public igt-gpu-tools
   (package
     (name "igt-gpu-tools")
-    (version "1.23")
+    (version "1.24")
     (source
      (origin
        (method git-fetch)
@@ -2812,7 +2812,7 @@ buffers.")
              (commit (string-append "igt-gpu-tools-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ra0l7917434z02gfzlh61gx5asw051m1q7h1i1gzhh25wba1hz1"))))
+        (base32 "1gpdjs5aj6vsnzwcjvw5bb120lgffvvshi4202phr0bzw3b92ky8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f              ; many of the tests try to load kernel modules
@@ -2825,6 +2825,7 @@ buffers.")
              (invoke "sh" "autogen.sh"))))))
     (inputs
      `(("cairo" ,cairo)
+       ("elfutils" ,elfutils)           ; libdw
        ("eudev" ,eudev)
        ("glib" ,glib)
        ("kmod" ,kmod)
