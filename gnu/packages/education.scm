@@ -555,7 +555,7 @@ language and very flexible regarding to new or unknown keyboard layouts.")
 (define-public ktouch
   (package
     (name "ktouch")
-    (version "19.08.2")
+    (version "19.08.3")
     (source
       (origin
         (method url-fetch)
@@ -563,7 +563,7 @@ language and very flexible regarding to new or unknown keyboard layouts.")
                             version "/src/ktouch-" version ".tar.xz"))
         (sha256
          (base32
-          "0dm6xcwai0bx2h16rny1xa9n1509mfxvy39kfxx5qih53p15jrnk"))))
+          "0dqxb3xsjc2rwc9779l5fnr4crhq51bc8ln4azbgnnkzldvq6a4a"))))
     (build-system qt-build-system)
     (arguments
      `(#:phases
