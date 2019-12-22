@@ -5815,7 +5815,7 @@ configuration program to choose applications starting on login.")
 (define-public gjs
   (package
     (name "gjs")
-    (version "1.56.2")
+    (version "1.58.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5823,7 +5823,7 @@ configuration program to choose applications starting on login.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1b5321krn89p3f7s2ik6gpfnc61apzljhlnbqky8c88f7n6832ac"))))
+                "1bkksx362007zs8c31ydygb29spwa5g5kch1ad2grc2sp53wv7ya"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -5853,6 +5853,7 @@ configuration program to choose applications starting on login.")
        ("xmllint" ,libxml2)
        ;; For testing
        ("dbus-launch" ,dbus)
+       ("dconf" ,dconf) ; required to properly store settings
        ("uuidgen" ,util-linux)
        ("xvfb" ,xorg-server-for-tests)))
     (propagated-inputs
