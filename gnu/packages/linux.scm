@@ -4519,6 +4519,7 @@ from that to the system kernel's @file{/dev/random} machinery.")
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list (string-append "DESTDIR=" out)
                             (string-append "LDFLAGS=-Wl,-rpath=" out "/lib")
+                            "libdir=/lib"
                             "docdir=/share/doc/cpupower"
                             "confdir=$(docdir)/examples"
                             ;; The Makefile recommends the following changes
