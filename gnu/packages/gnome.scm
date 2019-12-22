@@ -7570,11 +7570,11 @@ GNOME Shell appearance and extension, etc.")
     (arguments
      '(#:configure-flags '("-Dextension_set=all")))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("glib:bin" ,glib "bin")
+       ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
-     `(("glib" ,glib)
-       ("glib" ,glib "bin")))
+     `(("glib" ,glib)))
     (synopsis "Extensions for GNOME Shell")
     (description "GNOME Shell extensions modify and extend GNOME Shell
 functionality and behavior.")
