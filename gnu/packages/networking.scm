@@ -1976,14 +1976,14 @@ displays the results in real time.")
 (define-public strongswan
   (package
     (name "strongswan")
-    (version "5.8.1")
+    (version "5.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.strongswan.org/strongswan-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "034rd6kr1bmnvj8rg2kcxdjb0cgj3dn9310mmm94j1awxan71byr"))))
+        (base32 "03j3fx357bh89n44a5v9wdc92azdx2d37j7jmlyr4z1kwzdhv446"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
