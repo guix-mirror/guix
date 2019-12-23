@@ -8011,7 +8011,7 @@ desktop.  It supports world clock, stop watch, alarms, and count down timer.")
 (define-public gnome-calendar
   (package
     (name "gnome-calendar")
-    (version "3.32.2")
+    (version "3.34.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -8019,17 +8019,24 @@ desktop.  It supports world clock, stop watch, alarms, and count down timer.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "07p73cvzj8idr80npja5yiv9pjfyi6qqfhaz5jwcgqspqbnhnl7k"))))
+                "1bnmd191044zn2kr6f5vg7sm5q59qf7z652awll1f7s6ahijr8rw"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
        ;; gnome-calendar has to be installed before the tests can be run
        ;; https://bugzilla.gnome.org/show_bug.cgi?id=788224
-       #:tests? #f))
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "build-aux/meson/meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t)))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib-bin" ,glib "bin")         ; For glib-compile-schemas
-       ("gtk+-bin" ,gtk+ "bin")         ; For gtk-update-icon-cache
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("evolution-data-server" ,evolution-data-server)
