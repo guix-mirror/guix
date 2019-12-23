@@ -488,7 +488,7 @@ different notification systems.")
      `(#:configure-flags '("-DBUILD_TESTING=ON")
        #:tests? #f ; tests fail hard in our build environment
        #:phases
-       (modify-phases (@ (guix build qt-build-system) %standard-phases)
+       (modify-phases %standard-phases
          (add-before 'check 'check-setup
            (lambda _
              (setenv "QT_QPA_PLATFORM" "offscreen")
