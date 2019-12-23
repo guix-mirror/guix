@@ -76,7 +76,7 @@
 (define-public wine
   (package
     (name "wine")
-    (version "4.0.2")
+    (version "4.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dl.winehq.org/wine/source/"
@@ -84,7 +84,7 @@
                                   "/wine-" version ".tar.xz"))
               (sha256
                (base32
-                "0x5x9pvhryzhq1m7i8gx5wwwj341zz05zymadlhfw5w45xlm0h4r"))))
+                "1nhgw1wm613ln9dhjm0d03zs5adcmnqr2b50p21jbmm5k2gns0i5"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gettext-minimal)
@@ -155,7 +155,7 @@
 
        #:phases
        (modify-phases %standard-phases
-         ;; Explicitely set the 32-bit version of vulkan-loader when installing
+         ;; Explicitly set the 32-bit version of vulkan-loader when installing
          ;; to i686-linux or x86_64-linux.
          ;; TODO: Add more JSON files as they become available in Mesa.
          ,@(match (%current-system)
@@ -217,7 +217,7 @@ integrate Windows applications into your desktop.")
              (string-append "libdir=" %output "/lib/wine64"))
        #:phases
        (modify-phases %standard-phases
-         ;; Explicitely set both the 64-bit and 32-bit versions of vulkan-loader
+         ;; Explicitly set both the 64-bit and 32-bit versions of vulkan-loader
          ;; when installing to x86_64-linux so both are available.
          ;; TODO: Add more JSON files as they become available in Mesa.
          ,@(match (%current-system)
@@ -391,7 +391,7 @@ integrate Windows applications into your desktop.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         ;; Explicitely set the 32-bit version of vulkan-loader when installing
+         ;; Explicitly set the 32-bit version of vulkan-loader when installing
          ;; to i686-linux or x86_64-linux.
          ;; TODO: Add more JSON files as they become available in Mesa.
          ,@(match (%current-system)
@@ -464,7 +464,7 @@ integrated into the main branch.")
              (string-append "libdir=" %output "/lib/wine64"))
        #:phases
        (modify-phases %standard-phases
-         ;; Explicitely set both the 64-bit and 32-bit versions of vulkan-loader
+         ;; Explicitly set both the 64-bit and 32-bit versions of vulkan-loader
          ;; when installing to x86_64-linux so both are available.
          ;; TODO: Add more JSON files as they become available in Mesa.
          ,@(match (%current-system)
