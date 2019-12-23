@@ -352,9 +352,9 @@ documents.")
      `(("python-sphinx" ,python-sphinx)))
     (home-page "https://github.com/missinglinkelectronics/sphinxcontrib-svg2pdfconverter")
     (synopsis "Sphinx SVG to PDF converter extension")
-    (description "A Sphinx extension to convert SVG images to PDF in case the builder does not support
-SVG images natively (e.g. LaTeX).")
     (license license:bsd-3)))
+    (description "A Sphinx extension to convert SVG images to PDF in case the
+builder does not support SVG images natively (e.g. LaTeX).")
 
 (define-public python-sphinxcontrib-websupport
   (package
