@@ -169,15 +169,22 @@ Apple help books.")
 (define-public python-sphinx-copybutton
   (package
     (name "python-sphinx-copybutton")
-    (version "0.2.5")
+    (version "0.2.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "sphinx-copybutton" version))
        (sha256
         (base32
-         "1bk006nv5s9ym6v67cxd4d2wvd8wm6czqi21mqcs33risygksncl"))))
+         "0ny9jpygj93z8jyjpi4v6jjz90pmns74s389wq16igzzq2mpgfjm"))))
     (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; XXX: Check requires network access.
+    (propagated-inputs
+     `(("python-flit" ,python-flit)
+       ("python-setuptools" ,python-setuptools)
+       ("python-sphinx" ,python-sphinx)
+       ("python-wheel" ,python-wheel)))
     (home-page "https://github.com/choldgraf/sphinx-copybutton")
     (synopsis "Sphinx extension to add \"copy\" buttons to code blocks")
     (description
