@@ -1066,7 +1066,7 @@ standard.")
     (arguments
      ;; TODO: Requires unpackaged 'enum-compat'.
      '(#:tests? #f))
-    (home-page "http://eventlet.net")
+    (home-page "https://eventlet.net")
     (synopsis "Concurrent networking library for Python")
     (description
      "Eventlet is a concurrent networking library for Python that
