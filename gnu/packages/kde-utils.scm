@@ -41,7 +41,6 @@
                            "/src/kate-" version ".tar.xz"))
        (sha256
         (base32 "0wgcw10c4grkmsyp79ashwgpy59lgrinwdib4mjclpw2grp0g7xb"))))
-    (properties `((tags . ("Desktop" "KDE" "Utilities"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -109,7 +108,6 @@ Kate's features include:
                           "/src/kmag-" version ".tar.xz"))
       (sha256
        (base32 "0l69mgnh2mmkxawwibqdx9n7myl6qqnr2fd3mpsg2bzpcfvmsvi1"))))
-    (properties `((tags . ("Desktop" "KDE" "Utilities"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -141,7 +139,6 @@ artists to web-designers to people with low vision.")
                            "/src/kmousetool-" version ".tar.xz"))
        (sha256
         (base32 "169kk20mkm29nycg2vs1k5cs22gzchqs9hbfd661cy2l7n4d8d04"))))
-    (properties `((tags . ("Desktop" "KDE" "Utilities"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -181,7 +178,6 @@ whom pressing buttons hurts.")
                            "/src/kmouth-" version ".tar.xz"))
        (sha256
         (base32 "1agjxf1jfi967hj1iz788n6cna6fr7qg80zsx6s119hg7b0xwqmr"))))
-    (properties `((tags . ("Desktop" "KDE" "Utilities"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -222,7 +218,6 @@ sentences to be re-spoken.")
                            "/src/kronometer-" version ".tar.xz"))
        (sha256
         (base32 "05hs8729a3aqjpwmn2xdf2sriacrll4sj4ax3lm4s1ravj09n9bm"))))
-    (properties `((tags . ("Desktop" "KDE" "Utilities"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -265,7 +260,6 @@ to save the times and resume them later.")
                            "/krusader-" version ".tar.xz"))
        (sha256
         (base32 "02b1jz5a7cjr13v6c7fczrhs1xmg1krnva5fxk8x2bf4nd1rm8s1"))))
-    (properties `((tags . ("Desktop" "KDE" "Utilities"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -322,7 +316,6 @@ great on your desktop.")
                            "/src/okteta-" version ".tar.xz"))
        (sha256
         (base32 "03wsv83l1cay2dpcsksad124wzan7kh8zxdw1h0yicn398kdbck4"))))
-    (properties `((tags . ("Desktop" "KDE" "Utilities"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -385,7 +378,6 @@ redone.")
                            "rsibreak-" version ".tar.xz"))
        (sha256
         (base32 "09axg6gbmpnxsk88mdjbxxvfaj5af7xaf1gmnr17b0506zcfgwhv"))))
-    (properties `((tags . ("Desktop" "KDE" "Utilities"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -435,7 +427,6 @@ remind you to take a break now and then.")
                            version "/smb4k-" version ".tar.xz/download"))
        (sha256
         (base32 "1daajaj8qhxkzz8dsaracwi49z4i57466h6qnqnh2ir2l54q00ir"))))
-    (properties `((tags . ("Desktop" "KDE" "Utilities"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -508,7 +499,6 @@ Features:
                            "/src/sweeper-" version ".tar.xz"))
        (sha256
         (base32 "1gn87yxmhi7rs82jq7y89bvlx33xbl9wq8kr96pcz423khqvjl84"))))
-    (properties `((tags . ("Desktop" "KDE" "Utilities"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
