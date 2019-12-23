@@ -17006,3 +17006,22 @@ packages a single importable module or package at a time, using the import
 name as the name on PyPI.  All subpackages and data files within a package
 are included automatically.")
     (license license:bsd-3)))
+
+(define-public python-pathtools
+  (package
+    (name "python-pathtools")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pathtools" version))
+       (sha256
+        (base32
+         "1h7iam33vwxk8bvslfj4qlsdprdnwf8bvzhqh3jq5frr391cadbw"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/gorakhargosh/pathtools")
+    (synopsis "Path utilities for Python")
+    (description "Pattern matching and various utilities for file systems
+paths.")
+    (license license:expat)))
