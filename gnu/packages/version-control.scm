@@ -1524,9 +1524,9 @@ standards-compliant ChangeLog entries based on the changes that it detects.")
               (uri
                (list
                  (string-append "ftp://invisible-island.net/diffstat/"
-                                name "-" version ".tgz")
+                                "diffstat-" version ".tgz")
                  (string-append "http://invisible-mirror.net/archives/diffstat/"
-                                name "-" version ".tgz")))
+                                "diffstat-" version ".tgz")))
               (sha256
                (base32
                 "0vyw200s5dv1257pmrh6c6fdkmw3slyz5szpqfx916xr04sdbpby"))))
