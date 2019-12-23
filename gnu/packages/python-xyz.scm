@@ -1052,14 +1052,14 @@ standard.")
 (define-public python-eventlet
   (package
     (name "python-eventlet")
-    (version "0.20.1")
+    (version "0.25.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "eventlet" version))
        (sha256
         (base32
-         "0f3q55mq4n021wb7qa53pz3ix6i2py64sap66vsaqm2scjw83m9s"))))
+         "1hgz8jq19wlz8vwqj900ry8cjv578nz4scc91mlc8944yid6573c"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-greenlet" ,python-greenlet)))
