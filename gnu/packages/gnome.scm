@@ -9034,7 +9034,7 @@ photo-booth-like software, such as Cheese.")
 (define-public cheese
   (package
     (name "cheese")
-    (version "3.32.1")
+    (version "3.34.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -9042,16 +9042,17 @@ photo-booth-like software, such as Cheese.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1xlmsm4zsx05ahvpd4mgy1hfhxbag0r5i6p63bksjxdligdd36kv"))))
+                "0wvyc9wb0avrprvm529m42y5fkv3lirdphqydc9jw0c8mh05d1ni"))))
     (arguments
-     ;; Tests require GDK.
-     `(#:tests? #f
+     `(#:glib-or-gtk? #t
+       ;; Tests require GDK.
+       #:tests? #f
        #:phases
        (modify-phases %standard-phases
-         (add-before 'install 'skip-gtk-update-icon-cache
+         (add-after 'unpack 'skip-gtk-update-icon-cache
            (lambda _
              ;; Don't create 'icon-theme.cache'
-             (substitute* "Makefile"
+             (substitute* "meson_post_install.py"
                (("gtk-update-icon-cache") (which "true")))
              #t))
          (add-after 'install 'wrap-cheese
@@ -9061,12 +9062,15 @@ photo-booth-like software, such as Cheese.")
                (wrap-program (string-append out "/bin/cheese")
                  `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))))
              #t)))))
-    (build-system glib-or-gtk-build-system)
+    (build-system meson-build-system)
     (native-inputs
-     `(("glib:bin" ,glib "bin")
+     `(("docbook-xsl" ,docbook-xsl)
+       ("glib:bin" ,glib "bin")
+       ("gtk-doc" ,gtk-doc)
        ("intltool" ,intltool)
        ("itstool" ,itstool)
        ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)))
     (propagated-inputs
