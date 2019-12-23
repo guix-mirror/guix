@@ -671,18 +671,18 @@ synthesis, and on-the-fly re-configuration.")
 (define-public knot-resolver
   (package
     (name "knot-resolver")
-    (version "4.2.2")
+    (version "4.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://secure.nic.cz/files/knot-resolver/"
                                   "knot-resolver-" version ".tar.xz"))
               (sha256
                (base32
-                "0n0llpclhparq9wbcrymxkl5d03c4y4p3shcbdxfv6j22vzqvdh3"))))
+                "09ffmqx79lv5psr433x4n946njgsn071b9b7161pcb9bmrqz380c"))))
     (build-system meson-build-system)
     (arguments
      '(#:configure-flags
-       '("-Dmanaged_ta=disabled"    ; We'll manage the DNS root data ourself.
+       '("-Dmanaged_ta=disabled"      ; we'll manage the DNS root data ourself
          "-Ddoc=enabled")
        #:phases
        (modify-phases %standard-phases
