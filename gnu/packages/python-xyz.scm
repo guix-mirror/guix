@@ -16982,3 +16982,27 @@ as @command{which} and @command{find}.  These commands allow automated
 discovery of what has been installed on an operating system, and where the
 essential tools are located.")
     (license license:bsd-3)))
+
+(define-public python-flit
+  (package
+    (name "python-flit")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "flit" version))
+       (sha256
+        (base32
+         "0h5vvmqinqzn97mr3ix7zx53af9ad4fimjjwqpx88yp8qhz4r5bc"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; XXX: Check requires network access.
+    (home-page "https://flit.readthedocs.io/")
+    (synopsis
+     "Simple packaging tool for simple packages")
+    (description
+     "Flit is a simple way to put Python packages and modules on PyPI.  Flit
+packages a single importable module or package at a time, using the import
+name as the name on PyPI.  All subpackages and data files within a package
+are included automatically.")
+    (license license:bsd-3)))
