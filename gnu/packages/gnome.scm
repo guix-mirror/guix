@@ -3789,7 +3789,7 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
 (define-public gnome-mines
   (package
     (name "gnome-mines")
-    (version "3.32.2")
+    (version "3.34.0")
     (source
      (origin
        (method url-fetch)
@@ -3798,7 +3798,7 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1nv966wkp2rqxzcdb76bwlbzpjqadcaqzrnkxpzwnvjjr167yx8g"))))
+         "1spxa6qr1y8s5rrsvpciywpvhk812ngn95s1apaxaigwy2g1iw54"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
