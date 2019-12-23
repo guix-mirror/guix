@@ -3104,7 +3104,7 @@ engineering.")
 (define-public seahorse
   (package
     (name "seahorse")
-    (version "3.32.2")
+    (version "3.34")
     (source
      (origin
        (method url-fetch)
@@ -3113,9 +3113,7 @@ engineering.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "0d8zdzmlz7fjv9xl20zl4ckidf465mvdjnbpxy3k08y9iw423q4x"))
-       (patches (search-patches
-                 "seahorse-gkr-use-0-on-empty-flags.patch"))))
+         "16sfnqrdlr5xx6kixx2ln1mva7nngjlw1k3f5n454vyaigffjh2v"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
