@@ -275,13 +275,13 @@ Blog, News or Announcements section to a Sphinx website.")
 (define-public python-sphinxcontrib-programoutput
   (package
     (name "python-sphinxcontrib-programoutput")
-    (version "0.10")
+    (version "0.15")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "sphinxcontrib-programoutput" version))
               (sha256
                (base32
-                "153hhnlbx4688zj9wd64819ps5znc2jlyp5crkgzvn5hxgy99vpx"))))
+                "155bz0z2cz544pphkd3nk7ph83mz7nn0ql135kzi62kqmd75ppc0"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: Many tests are failing and the upstream is gone.
