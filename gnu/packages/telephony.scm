@@ -417,7 +417,7 @@ address of one of the participants.")
     (arguments
      `(#:tests? #f  ; no "check" target
        #:phases
-       (modify-phases (@ (guix build qt-build-system) %standard-phases)
+       (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (invoke "qmake" "main.pro" "QMAKE_LRELEASE=lrelease"
