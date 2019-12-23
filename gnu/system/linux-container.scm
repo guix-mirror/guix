@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -194,11 +195,13 @@ that will be shared with the host system."
             (define (explain pid)
               ;; XXX: We can't quite call 'bindtextdomain' so there's actually
               ;; no i18n.
+              ;; XXX: Should we really give both options? 'guix container exec'
+              ;; is a more verbose command.  Hard to fail to enter the container
+              ;; when we list two options.
               (info (G_ "system container is running as PID ~a~%") pid)
-              ;; XXX: Should we recommend 'guix container exec'?  It's more
-              ;; verbose and doesn't bring much.
-              (info (G_ "Run 'sudo nsenter -a -t ~a' to get a shell into it.~%")
+              (info (G_ "Run 'sudo guix container exec ~a /run/current-system/profile/bin/bash --login'\n")
                     pid)
+              (info (G_ "or run 'sudo nsenter -a -t ~a' to get a shell into it.~%") pid)
               (newline (guix-warning-port)))
 
             (call-with-container file-systems
