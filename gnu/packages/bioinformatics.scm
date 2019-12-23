@@ -14,6 +14,7 @@
 ;;; Copyright © 2018, 2019 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
+;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -13289,21 +13290,23 @@ million cells.")
 (define-public python-bbknn
   (package
     (name "python-bbknn")
-    (version "1.3.1")
+    (version "1.3.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "bbknn" version))
        (sha256
         (base32
-         "1qgdganvj3lyxj84v7alm23b9vqhwpn8z0115qndpnpy90qxynwz"))))
+         "1jbsh01f57zj4bhvjr3jh4532zznqd6nccmgrl3qi9gnhkf7c4y0"))))
     (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; TODO: Enable after migration to scikit-learn.
     (propagated-inputs
      `(("python-annoy" ,python-annoy)
        ("python-cython" ,python-cython)
-       ("python-faiss" ,python-faiss)
        ("python-numpy" ,python-numpy)
-       ("python-scanpy" ,python-scanpy)))
+       ("python-scipy" ,python-scipy)
+       ("python-umap-learn" ,python-umap-learn)))
     (home-page "https://github.com/Teichlab/bbknn")
     (synopsis "Batch balanced KNN")
     (description "BBKNN is a batch effect removal tool that can be directly
