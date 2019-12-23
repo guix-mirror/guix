@@ -350,7 +350,7 @@ documents.")
     (build-system python-build-system)
     (propagated-inputs
      `(("python-sphinx" ,python-sphinx)))
-    (home-page "https://github.com/missinglinkelectronics/sphinxcontrib-svg2pdfconverter/releases")
+    (home-page "https://github.com/missinglinkelectronics/sphinxcontrib-svg2pdfconverter")
     (synopsis "Sphinx SVG to PDF converter extension")
     (description "A Sphinx extension to convert SVG images to PDF in case the builder does not support
 SVG images natively (e.g. LaTeX).")
