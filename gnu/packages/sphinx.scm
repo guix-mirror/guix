@@ -284,14 +284,14 @@ Blog, News or Announcements section to a Sphinx website.")
                 "155bz0z2cz544pphkd3nk7ph83mz7nn0ql135kzi62kqmd75ppc0"))))
     (build-system python-build-system)
     (arguments
-     ;; FIXME: Many tests are failing and the upstream is gone.
+     ;; FIXME: Many tests are failing.
      '(#:tests? #f))
     (propagated-inputs
      `(("python-sphinx" ,python-sphinx)))
     (synopsis "Sphinx extension to include program output")
     (description "A Sphinx extension to literally insert the output of arbitrary
 commands into documents, helping you to keep your command examples up to date.")
-    (home-page "https://github.com/lunaryorn/sphinxcontrib-programoutput")
+    (home-page "https://github.com/NextThought/sphinxcontrib-programoutput")
     (license license:bsd-2)))
 
 (define-public python2-sphinxcontrib-programoutput
