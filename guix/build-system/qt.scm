@@ -106,60 +106,60 @@
 
 
 (define* (qt-build store name inputs
-                      #:key (guile #f)
-                      (outputs '("out")) (configure-flags ''())
-                      (search-paths '())
-                      (make-flags ''())
-                      (out-of-source? #t)
-                      (build-type "RelWithDebInfo")
-                      (tests? #t)
-                      (test-target "test")
-                      (parallel-build? #t) (parallel-tests? #f)
-                      (validate-runpath? #t)
-                      (patch-shebangs? #t)
-                      (strip-binaries? #t)
-                      (strip-flags ''("--strip-debug"))
-                      (strip-directories ''("lib" "lib64" "libexec"
-                                            "bin" "sbin"))
-                      (phases '(@ (guix build qt-build-system)
-                                  %standard-phases))
-                      (qt-wrap-excluded-outputs ''())
-                      (system (%current-system))
-                      (imported-modules %qt-build-system-modules)
-                      (modules '((guix build qt-build-system)
-                                 (guix build utils))))
+                   #:key (guile #f)
+                   (outputs '("out")) (configure-flags ''())
+                   (search-paths '())
+                   (make-flags ''())
+                   (out-of-source? #t)
+                   (build-type "RelWithDebInfo")
+                   (tests? #t)
+                   (test-target "test")
+                   (parallel-build? #t) (parallel-tests? #f)
+                   (validate-runpath? #t)
+                   (patch-shebangs? #t)
+                   (strip-binaries? #t)
+                   (strip-flags ''("--strip-debug"))
+                   (strip-directories ''("lib" "lib64" "libexec"
+                                         "bin" "sbin"))
+                   (phases '(@ (guix build qt-build-system)
+                               %standard-phases))
+                   (qt-wrap-excluded-outputs ''())
+                   (system (%current-system))
+                   (imported-modules %qt-build-system-modules)
+                   (modules '((guix build qt-build-system)
+                              (guix build utils))))
   "Build SOURCE using CMAKE, and with INPUTS. This assumes that SOURCE
 provides a 'CMakeLists.txt' file as its build system."
   (define builder
     `(begin
        (use-modules ,@modules)
        (qt-build #:source ,(match (assoc-ref inputs "source")
-                                (((? derivation? source))
-                                 (derivation->output-path source))
-                                ((source)
-                                 source)
-                                (source
-                                 source))
-                    #:system ,system
-                    #:outputs %outputs
-                    #:inputs %build-inputs
-                    #:search-paths ',(map search-path-specification->sexp
-                                          search-paths)
-                    #:phases ,phases
-                    #:qt-wrap-excluded-outputs ,qt-wrap-excluded-outputs
-                    #:configure-flags ,configure-flags
-                    #:make-flags ,make-flags
-                    #:out-of-source? ,out-of-source?
-                    #:build-type ,build-type
-                    #:tests? ,tests?
-                    #:test-target ,test-target
-                    #:parallel-build? ,parallel-build?
-                    #:parallel-tests? ,parallel-tests?
-                    #:validate-runpath? ,validate-runpath?
-                    #:patch-shebangs? ,patch-shebangs?
-                    #:strip-binaries? ,strip-binaries?
-                    #:strip-flags ,strip-flags
-                    #:strip-directories ,strip-directories)))
+                                  (((? derivation? source))
+                                   (derivation->output-path source))
+                                  ((source)
+                                   source)
+                                  (source
+                                   source))
+                 #:system ,system
+                 #:outputs %outputs
+                 #:inputs %build-inputs
+                 #:search-paths ',(map search-path-specification->sexp
+                                       search-paths)
+                 #:phases ,phases
+                 #:qt-wrap-excluded-outputs ,qt-wrap-excluded-outputs
+                 #:configure-flags ,configure-flags
+                 #:make-flags ,make-flags
+                 #:out-of-source? ,out-of-source?
+                 #:build-type ,build-type
+                 #:tests? ,tests?
+                 #:test-target ,test-target
+                 #:parallel-build? ,parallel-build?
+                 #:parallel-tests? ,parallel-tests?
+                 #:validate-runpath? ,validate-runpath?
+                 #:patch-shebangs? ,patch-shebangs?
+                 #:strip-binaries? ,strip-binaries?
+                 #:strip-flags ,strip-flags
+                 #:strip-directories ,strip-directories)))
 
   (define guile-for-build
     (match guile
@@ -183,33 +183,33 @@ provides a 'CMakeLists.txt' file as its build system."
 ;;;
 
 (define* (qt-cross-build store name
-                            #:key
-                            target native-drvs target-drvs
-                            (guile #f)
-                            (outputs '("out"))
-                            (configure-flags ''())
-                            (search-paths '())
-                            (native-search-paths '())
-                            (make-flags ''())
-                            (out-of-source? #t)
-                            (build-type "RelWithDebInfo")
-                            (tests? #f) ; nothing can be done
-                            (test-target "test")
-                            (parallel-build? #t) (parallel-tests? #f)
-                            (validate-runpath? #t)
-                            (patch-shebangs? #t)
-                            (strip-binaries? #t)
-                            (strip-flags ''("--strip-debug"
-                                            "--enable-deterministic-archives"))
-                            (strip-directories ''("lib" "lib64" "libexec"
-                                                  "bin" "sbin"))
-                            (phases '(@ (guix build qt-build-system)
+                         #:key
+                         target native-drvs target-drvs
+                         (guile #f)
+                         (outputs '("out"))
+                         (configure-flags ''())
+                         (search-paths '())
+                         (native-search-paths '())
+                         (make-flags ''())
+                         (out-of-source? #t)
+                         (build-type "RelWithDebInfo")
+                         (tests? #f) ; nothing can be done
+                         (test-target "test")
+                         (parallel-build? #t) (parallel-tests? #f)
+                         (validate-runpath? #t)
+                         (patch-shebangs? #t)
+                         (strip-binaries? #t)
+                         (strip-flags ''("--strip-debug"
+                                         "--enable-deterministic-archives"))
+                         (strip-directories ''("lib" "lib64" "libexec"
+                                               "bin" "sbin"))
+                         (phases '(@ (guix build qt-build-system)
                                      %standard-phases))
-                            (system (%current-system))
-                            (build (nix-system->gnu-triplet system))
-                            (imported-modules %qt-build-system-modules)
-                            (modules '((guix build qt-build-system)
-                                       (guix build utils))))
+                         (system (%current-system))
+                         (build (nix-system->gnu-triplet system))
+                         (imported-modules %qt-build-system-modules)
+                         (modules '((guix build qt-build-system)
+                                    (guix build utils))))
   "Cross-build NAME using CMAKE for TARGET, where TARGET is a GNU triplet and
 with INPUTS.  This assumes that SOURCE provides a 'CMakeLists.txt' file as its
 build system."
@@ -238,37 +238,37 @@ build system."
                   target-drvs))
 
          (qt-build #:source ,(match (assoc-ref native-drvs "source")
-                                  (((? derivation? source))
-                                   (derivation->output-path source))
-                                  ((source)
-                                   source)
-                                  (source
-                                   source))
-                      #:system ,system
-                      #:build ,build
-                      #:target ,target
-                      #:outputs %outputs
-                      #:inputs %build-target-inputs
-                      #:native-inputs %build-host-inputs
-                      #:search-paths ',(map search-path-specification->sexp
-                                            search-paths)
-                      #:native-search-paths ',(map
-                                               search-path-specification->sexp
-                                               native-search-paths)
-                      #:phases ,phases
-                      #:configure-flags ,configure-flags
-                      #:make-flags ,make-flags
-                      #:out-of-source? ,out-of-source?
-                      #:build-type ,build-type
-                      #:tests? ,tests?
-                      #:test-target ,test-target
-                      #:parallel-build? ,parallel-build?
-                      #:parallel-tests? ,parallel-tests?
-                      #:validate-runpath? ,validate-runpath?
-                      #:patch-shebangs? ,patch-shebangs?
-                      #:strip-binaries? ,strip-binaries?
-                      #:strip-flags ,strip-flags
-                      #:strip-directories ,strip-directories))))
+                                    (((? derivation? source))
+                                     (derivation->output-path source))
+                                    ((source)
+                                     source)
+                                    (source
+                                     source))
+                   #:system ,system
+                   #:build ,build
+                   #:target ,target
+                   #:outputs %outputs
+                   #:inputs %build-target-inputs
+                   #:native-inputs %build-host-inputs
+                   #:search-paths ',(map search-path-specification->sexp
+                                         search-paths)
+                   #:native-search-paths ',(map
+                                            search-path-specification->sexp
+                                            native-search-paths)
+                   #:phases ,phases
+                   #:configure-flags ,configure-flags
+                   #:make-flags ,make-flags
+                   #:out-of-source? ,out-of-source?
+                   #:build-type ,build-type
+                   #:tests? ,tests?
+                   #:test-target ,test-target
+                   #:parallel-build? ,parallel-build?
+                   #:parallel-tests? ,parallel-tests?
+                   #:validate-runpath? ,validate-runpath?
+                   #:patch-shebangs? ,patch-shebangs?
+                   #:strip-binaries? ,strip-binaries?
+                   #:strip-flags ,strip-flags
+                   #:strip-directories ,strip-directories))))
 
   (define guile-for-build
     (match guile
