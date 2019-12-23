@@ -8148,7 +8148,7 @@ existing databases over the internet.")
 (define-public gnome-tweaks
   (package
     (name "gnome-tweaks")
-    (version "3.32.0")
+    (version "3.34.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gnome-tweaks/"
@@ -8158,7 +8158,7 @@ existing databases over the internet.")
                (list (search-patch "gnome-tweaks-search-paths.patch")))
               (sha256
                (base32
-                "037r35cw34ifcs676fq9n2v4mh1nkqx0qk474bznf18mr6r62h55"))))
+                "0l2j42ba7v866iknygamnkiq7igh0fjvq92r93cslvvfnkx2ccq0"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -8168,6 +8168,12 @@ existing databases over the internet.")
                            ,@%meson-build-system-modules)
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson-postinstall.py"
+               (("gtk-update-icon-cache") "true"))
+             #t))
          (add-after 'install 'wrap
            (@@ (guix build python-build-system) wrap))
          (add-after 'wrap 'wrap-gi-typelib
@@ -8178,14 +8184,14 @@ existing databases over the internet.")
                  `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
              #t)))))
     (native-inputs
-     `(("gtk+:bin" ,gtk+ "bin")         ; For gtk-update-icon-cache
-       ("intltool" ,intltool)
+     `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("gnome-desktop" ,gnome-desktop)
        ("gtk+" ,gtk+)
        ("gobject-introspection" ,gobject-introspection)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("libhandy" ,libhandy)
        ("libnotify" ,libnotify)
        ("libsoup" ,libsoup)
        ("nautilus" ,nautilus)
