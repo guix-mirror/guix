@@ -567,7 +567,7 @@ language and very flexible regarding to new or unknown keyboard layouts.")
     (build-system qt-build-system)
     (arguments
      `(#:phases
-       (modify-phases (@ (guix build qt-build-system) %standard-phases)
+       (modify-phases %standard-phases
          (add-after 'configure 'patch-makefiles
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((qtdec (assoc-ref inputs "qtdeclarative")))
