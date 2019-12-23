@@ -1583,7 +1583,7 @@ reverb effects.")
 (define-public setbfree
   (package
     (name "setbfree")
-    (version "0.8.9")
+    (version "0.8.11")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1592,7 +1592,7 @@ reverb effects.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1lpsa64xvwa9xbbp8zcwxy5w0daffc7fziny2pizabqh7m9xqjl2"))))
+                "1s3ps3cjwlm63ml4izb7mizy8ci5pl9a19lvz62xf0br089h3afc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no "check" target
