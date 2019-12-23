@@ -961,7 +961,7 @@ Open Container Initiative specification.")
 (define-public umoci
   (package
     (name "umoci")
-    (version "0.4.4")
+    (version "0.4.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -970,7 +970,7 @@ Open Container Initiative specification.")
               (file-name (string-append "umoci-" version ".tar.xz"))
               (sha256
                (base32
-                "1wchmha5k2f370jfijmx9fqp0cp99zfa9ajmfbq3j24qc8p5k8lk"))))
+                "0x1yyvpllz6fyy9xip6f7b6c94v984n3faf8p50fr9y4ygkgi15a"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/openSUSE/umoci"
