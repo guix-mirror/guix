@@ -12,6 +12,7 @@
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2088,3 +2089,31 @@ number of collective algorithms useful for machine learning applications.
 These include a barrier, broadcast, and allreduce.")
       (home-page "https://github.com/facebookincubator/gloo")
       (license license:bsd-3))))
+
+(define-public python-umap-learn
+  (package
+    (name "python-umap-learn")
+    (version "0.3.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "umap-learn" version))
+       (sha256
+        (base32
+         "02ada2yy6km6zgk2836kg1c97yrcpalvan34p8c57446finnpki1"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-numba" ,python-numba)
+       ("python-numpy" ,python-numpy)
+       ("python-scikit-learn" ,python-scikit-learn)
+       ("python-scipy" ,python-scipy)))
+    (home-page "https://github.com/lmcinnes/umap")
+    (synopsis
+     "Uniform Manifold Approximation and Projection")
+    (description
+     "Uniform Manifold Approximation and Projection is a dimension reduction
+technique that can be used for visualisation similarly to t-SNE, but also for
+general non-linear dimension reduction.")
+    (license license:bsd-3)))
