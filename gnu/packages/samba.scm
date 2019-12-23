@@ -88,10 +88,10 @@
              (invoke "autoreconf" "-vfi")
              #t))
          (add-before 'configure 'set-root-sbin
-           (lambda _
+           (lambda* (#:key outputs #:allow-other-keys)
              ;; Don't try to install into "/sbin".
              (setenv "ROOTSBINDIR"
-                     (string-append (assoc-ref %outputs "out") "/sbin"))
+                     (string-append (assoc-ref outputs "out") "/sbin"))
              #t))
          (add-before 'install 'create-man8dir
            ;; Create a directory that isn't created since version 6.10.
