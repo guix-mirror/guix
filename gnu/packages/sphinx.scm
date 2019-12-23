@@ -98,7 +98,7 @@
     (description "Sphinx is a tool that makes it easy to create documentation
 for Python projects or other documents consisting of multiple reStructuredText
 sources.")
-    (license license:bsd-3)
+    (license license:bsd-2)
     (properties `((python2-variant . ,(delay python2-sphinx))))))
 
 ;; Sphinx 2 does not support Python 2, so we stick with this older version here.
