@@ -733,7 +733,7 @@ shell services and remote host selection.")
 (define-public clustershell
   (package
     (name "clustershell")
-    (version "1.8.2")
+    (version "1.8.3")
     (source
      (origin
        (method url-fetch)
@@ -741,7 +741,7 @@ shell services and remote host selection.")
                            "/download/v" version
                            "/ClusterShell-" version ".tar.gz"))
        (sha256
-        (base32 "1gz2g85wpk35n1fp31q753w01y3p8abm7dnbas28q4yjyvikqw75"))))
+        (base32 "1qdcgh733szwj9r1gambrgfkizvbjci0bnnkds9a8mnyb3sasnan"))))
     (build-system python-build-system)
     (inputs `(("openssh" ,openssh)))
     (propagated-inputs `(("python-pyyaml" ,python-pyyaml)))
