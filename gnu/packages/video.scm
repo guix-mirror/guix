@@ -34,6 +34,7 @@
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Timo Eisenmann <eisenmann@fn.de>
 ;;; Copyright © 2019 Arne Babenhauserheide <arne_bab@web.de>
+;;; Copyright © 2019 Riku Viitanen <riku.viitanen@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3759,3 +3760,27 @@ to convenience of translating and batch processing of multiple documents.")
       (description "Theorafile is a library for quickly and easily decoding Ogg
 Theora videos.  Theorafile was written to be used for FNA's VideoPlayer.")
       (license license:zlib))))
+
+(define-public dvdbackup
+  (package
+    (name "dvdbackup")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/dvdbackup/dvdbackup/"
+                           "dvdbackup-" version "/"
+                           "dvdbackup-" version ".tar.xz"))
+       (sha256
+        (base32 "1rl3h7waqja8blmbpmwy01q9fgr5r0c32b8dy3pbf59bp3xmd37g"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libdvdcss" ,libdvdcss)
+       ("libdvdread" ,libdvdread)))
+    (home-page "http://dvdbackup.sourceforge.net")
+    (synopsis "DVD video ripper")
+    (description
+     "A simple command line tool to backup video from a DVD.  Decrypts the
+DVD using @command{libdvdcss}, but does @strong{not} demux, remux,
+transcode or reformat the videos in any way, producing perfect backups.")
+    (license license:gpl3+)))
