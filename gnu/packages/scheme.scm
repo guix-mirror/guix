@@ -305,7 +305,7 @@ features an integrated Emacs-like editor and a large runtime library.")
        `(("pkg-config" ,pkg-config)))
       (propagated-inputs
        `(("gmp" ,gmp)))                            ; bigloo.h refers to gmp.h
-      (home-page "http://www-sop.inria.fr/indes/fp/Bigloo/")
+      (home-page "https://www-sop.inria.fr/indes/fp/Bigloo/")
       (synopsis "Efficient Scheme compiler")
       (description
        "Bigloo is a Scheme implementation devoted to one goal: enabling Scheme
