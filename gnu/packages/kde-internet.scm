@@ -24,13 +24,25 @@
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages kde)
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages kde-pim)
+  #:use-module (gnu packages libidn)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages messaging)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)
-  #:use-module (gnu packages web))
+  #:use-module (gnu packages serialization)
+  #:use-module (gnu packages telephony)
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages video)
+  #:use-module (gnu packages web)
+  #:use-module (gnu packages xiph)
+  #:use-module (gnu packages xml))
 
 (define-public choqok
   (package
@@ -227,3 +239,81 @@ Features are:
 @end itemize")
     (license ;; GPL for programs, FDL for documentation
      (list license:gpl2+ license:fdl1.2+))))
+
+(define-public kopete
+  (package
+    (name "kopete")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/kopete-" version ".tar.xz"))
+       (sha256
+        (base32 "088jya4v04l7r38pph1hxkr6ln4023s3ji3y8ipzdkalcx8hgr6l"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("boost" ,boost)
+       ("expat" ,expat)
+       ("glib" ,glib)
+       ("gpgme" ,gpgme)
+       ("jsoncpp" ,jsoncpp)
+       ("kcmutils" ,kcmutils)
+       ("kconfig" ,kconfig)
+       ("kcontacts" ,kcontacts)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdelibs4support" ,kdelibs4support)
+       ("kdnssd" ,kdnssd)
+       ("kemoticons" ,kemoticons)
+       ("khtml" ,khtml)
+       ("ki18n" ,ki18n)
+       ("kidentitymanagement" ,kidentitymanagement)
+       ("kjs" ,kjs)
+       ;; TODO? kleopatra (additionally to libkleo)
+       ("knotifyconfig" ,knotifyconfig)
+       ("kparts" ,kparts)
+       ("kpimtextedit" ,kpimtextedit)
+       ("ktexteditor" ,ktexteditor)
+       ("kwallet" ,kwallet)
+       ;; TODO: Libgadu
+       ("libidn" ,libidn)
+       ("libkleo" ,libkleo)
+       ;; TODO: LibMeanwhile
+       ("libotr" ,libotr)
+       ("libsrtp" ,libsrtp)
+       ("libxml2" ,libxml2)
+       ("libxstl" ,libxslt)
+       ;; TODO: Mediastreamer
+       ("openssl", openssl)
+       ("ortp" ,ortp)
+       ("phonon" ,phonon)
+       ("qca" ,qca)
+       ("qgpgme" ,qgpgme)
+       ("qtbase" ,qtbase)
+       ("speex" ,speex)
+       ("v4l-utils" ,v4l-utils)
+       ;; TODO: Xmms
+       ("zlib" ,zlib)))
+    ;; TODO: enable video support
+    (home-page "https://kde.org/applications/internet/org.kde.kopete")
+    (synopsis "Instant messaging and chat application")
+    (description "Kopete is an instant messenger supporting Jabber/XMPP ,AIM,
+ICQ, Gadu-Gadu, Novell GroupWise Messenger, and more.  It is designed to be a
+flexible and extensible multi-protocol system suitable for personal and
+enterprise use.
+
+The goal of Kopete is to provide users with a single easy-to-use way to access
+all of their instant messaging systems.  The interface puts people first, and
+is integrated with the system address book to let you access your contacts
+from other KDE applications.
+
+This package is part of the KDE networking module.")
+    (license ;; GPL for programs, LGPL for libraries, FDL for documentation
+     (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
