@@ -58,14 +58,14 @@
 (define-public cifs-utils
   (package
     (name "cifs-utils")
-    (version "6.9")
+    (version "6.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.samba.org/pub/linux-cifs/"
                            "cifs-utils/cifs-utils-" version ".tar.bz2"))
        (sha256 (base32
-                "175cp509wn1zv8p8mv37hkf6sxiskrsxdnq22mhlsg61jazz3n0q"))))
+                "19q4b5bzlxhn1hpi843xrp6f50d33w7m0rs26krkg5h3x742kz4j"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -81,12 +81,24 @@
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (replace 'bootstrap
+           ;; Force a bootstrap to fix a ‘cannot find install-sh, install.sh,
+           ;; or shtool’ error since version 6.10.
+           (lambda _
+             (invoke "autoreconf" "-vfi")
+             #t))
          (add-before 'configure 'set-root-sbin
            (lambda _
              ;; Don't try to install into "/sbin".
              (setenv "ROOTSBINDIR"
                      (string-append (assoc-ref %outputs "out") "/sbin"))
-             #t)))))
+             #t))
+         (add-before 'install 'create-man8dir
+           ;; Create a directory that isn't created since version 6.10.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/share/man/man8"))
+               #t))))))
     (synopsis "User-space utilities for Linux CIFS (Samba) mounts")
     (description "@code{cifs-utils} is a set of user-space utilities for
 mounting and managing @dfn{Common Internet File System} (CIFS) shares using
