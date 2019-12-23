@@ -69,16 +69,16 @@
                 "@pytest.mark.skip()"))
              (invoke "make" "test"))))))
     (propagated-inputs
-     `(("python-imagesize" ,python-imagesize)
-       ("python-sphinx-alabaster-theme"
-        ,python-sphinx-alabaster-theme)
-       ("python-babel" ,python-babel)
-       ("python-snowballstemmer" ,python-snowballstemmer)
+     `(("python-babel" ,python-babel)
        ("python-docutils" ,python-docutils)
        ("python-jinja2" ,python-jinja2)
+       ("python-imagesize" ,python-imagesize)
        ("python-packaging" ,python-packaging)
        ("python-pygments" ,python-pygments)
        ("python-requests" ,python-requests)
+       ("python-snowballstemmer" ,python-snowballstemmer)
+       ("python-sphinx-alabaster-theme"
+        ,python-sphinx-alabaster-theme)
        ("python-sphinxcontrib-applehelp" ,python-sphinxcontrib-applehelp)
        ("python-sphinxcontrib-devhelp" ,python-sphinxcontrib-devhelp)
        ("python-sphinxcontrib-htmlhelp" ,python-sphinxcontrib-htmlhelp)
