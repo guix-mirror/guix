@@ -7966,7 +7966,7 @@ Microsoft SkyDrive and Hotmail, using their REST protocols.")
 (define-public gnome-clocks
   (package
     (name "gnome-clocks")
-    (version "3.32.0")
+    (version "3.34.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -7974,15 +7974,22 @@ Microsoft SkyDrive and Hotmail, using their REST protocols.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1w6lgjdak3x76c9gyhd1lqrdmjfh8q77sjnrkcimylsg0jq913bc"))))
+                "0g7hjk55smhkd09hwa9kag3h5a12l494wj89w9smpdk3ghsmy6b1"))))
     (build-system meson-build-system)
     (arguments
-     '(#:glib-or-gtk? #t))
+     '(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "build-aux/post-install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t)))))
     (native-inputs
      `(("vala" ,vala)
        ("pkg-config" ,pkg-config)
        ("glib" ,glib "bin")             ; for glib-compile-resources
-       ("gtk+-bin" ,gtk+ "bin")         ; for gtk-update-icon-cache
        ("desktop-file-utils" ,desktop-file-utils)
        ("gettext" ,gettext-minimal)
        ("itstool" ,itstool)))
