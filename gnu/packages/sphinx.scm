@@ -340,13 +340,13 @@ documents.")
 (define-public python-sphinxcontrib-svg2pdfconverter
   (package
     (name "python-sphinxcontrib-svg2pdfconverter")
-    (version "0.1.0")
+    (version "1.0.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "sphinxcontrib-svg2pdfconverter" version))
               (sha256
                (base32
-                "1abvbgkkii13q8nsb10r0gc5lm0p9iq1iwhfhakn5ifn6asa0183"))))
+                "1hhaxmqc7wh8gnyw5jaqckliknvk0p21y12wk3bdmncgkaf9ar8f"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-sphinx" ,python-sphinx)))
