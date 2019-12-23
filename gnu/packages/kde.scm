@@ -222,7 +222,7 @@ projects.")
     (arguments
      `(#:tests? #f  ;; there are some issues with the test suite
        #:phases
-       (modify-phases (@ (guix build qt-build-system) %standard-phases)
+       (modify-phases %standard-phases
          (add-before 'configure 'add-include-path
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "cmake/modules/FindClang.cmake"
