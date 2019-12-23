@@ -250,7 +250,7 @@ HTML help files.")
     (description
      "@code{sphinxcontrib-jsmath} is a Sphinx extension which renders display
 math in HTML via JavaScript.")
-    (license license:bsd-3)))
+    (license license:bsd-2)))
 
 (define-public python-sphinxcontrib-newsfeed
   (package
