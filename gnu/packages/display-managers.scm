@@ -107,7 +107,7 @@
         (string-append "-DCMAKE_INSTALL_SYSCONFDIR="
                        (assoc-ref %outputs "out") "/etc"))
        #:phases
-       (modify-phases (@ (guix build qt-build-system) %standard-phases)
+       (modify-phases %standard-phases
          (add-after 'unpack 'embed-loginctl-reference
            (lambda _
              (substitute* "CMakeLists.txt"
