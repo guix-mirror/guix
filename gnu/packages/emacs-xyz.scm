@@ -1699,7 +1699,7 @@ a set of simplified face specifications and a user-supplied color palette")
     (arguments
      `(#:configure-flags
        (list (string-append "--with-howmdir=" %output
-                            "/share/emacs/site-lisp/guix.d/howm-" ,version))
+                            "/share/emacs/site-lisp/"))
        #:modules ((guix build gnu-build-system)
                   ((guix build emacs-build-system) #:prefix emacs:)
                   (guix build utils))
