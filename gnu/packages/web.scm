@@ -4194,8 +4194,8 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
   (package-with-python2 python-feedparser))
 
 (define-public guix-data-service
-  (let ((commit "31110acc91badc8f080b166c90966669c854a319")
-        (revision "9"))
+  (let ((commit "5c643e09e504094cfd8a43ba36e3537f0df97ae2")
+        (revision "10"))
     (package
       (name "guix-data-service")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -4207,7 +4207,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0cp0p2ghakckf3gn6qnid0ws16qsdjrzl9a08vkq6z8yf5mg4mwn"))))
+                  "08y04v2g4n9cqha7ilkjx4wk98cv44f2q676gdixnrw7z2wa1lkg"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
