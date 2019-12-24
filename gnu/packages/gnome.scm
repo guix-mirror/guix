@@ -711,6 +711,42 @@ and keep up to date translations of documentation.")
     (description "Disk management utility for GNOME.")
     (license license:gpl2+)))
 
+(define-public gnome-font-viewer
+  (package
+    (name "gnome-font-viewer")
+    (version "3.30.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/gnome-font-viewer/"
+                                  (version-major+minor version)
+                                  "/gnome-font-viewer-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1wwnx2zrlbd2d6np7m9s78alx6j6ranrnh1g2z6zrv9qcj8rpzz5"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-post-install-script
+           (lambda _
+             (substitute* "meson-postinstall.sh"
+               (("update-desktop-database") (which "true")))
+             #t)))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("gnome-desktop" ,gnome-desktop)
+       ("gtk+" ,gtk+)))
+    (home-page "https://gitlab.gnome.org/GNOME/gnome-font-viewer")
+    (synopsis "GNOME Fonts")
+    (description "Application to show you the fonts installed on your computer
+for your use as thumbnails.  Selecting any thumbnails shows the full view of how
+the font would look under various sizes.")
+    (license license:gpl2+)))
+
 (define-public gcr
   (package
     (name "gcr")
