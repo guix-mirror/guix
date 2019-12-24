@@ -5370,16 +5370,17 @@ used to start services with both privileged and non-privileged port numbers.")
     (version "5.6.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/htacg/tidy-html5/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/htacg/tidy-html5")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0n29wcgw32rhnraj9j21ibhwi0xagmmcskhbaz8ihxly7nx3p9h8"))))
+         "0w175c5d1babq0w1zzdzw9gl6iqbgyq58v8587s7srp05y3hwy9k"))))
     (build-system cmake-build-system)
     (outputs '("out"
-               "static"))               ; 1.0MiB of .a files
+               "static"))               ; 1.3MiB of .a files
     (arguments
      `(#:tests? #f                      ; no tests available
        #:build-type "Release"
