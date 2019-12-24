@@ -5416,7 +5416,7 @@ functions of Tidy.")
 (define-public hiawatha
   (package
     (name "hiawatha")
-    (version "10.9")
+    (version "10.10")
     (source
      (origin
        (method url-fetch)
@@ -5429,7 +5429,7 @@ functions of Tidy.")
                              (list "extra/nghttp2.tgz" "mbedtls"))
                    #t))
        (sha256
-        (base32 "1f2j2x1ziawz8ijg3s3izqpyzpiwfyhlsvbv0szxvhvj4a0l7pbl"))))
+        (base32 "1nd46cx1qp5lh2kwnn2mlwk9zm8jm7pgf90xs9vpwr7saxbnzr5m"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; no tests included
