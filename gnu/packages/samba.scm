@@ -326,14 +326,14 @@ destructors.  It is the core memory allocator used in Samba.")
 (define-public tevent
   (package
     (name "tevent")
-    (version "0.10.1")
+    (version "0.10.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/tevent/tevent-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1dhhd7fz6wyvlwrk1a6gj5m2mcjsc3ilx0mcv1qsr1lbndldm93r"))))
+                "15k6i8ad5lpxfjsjyq9h64zlyws8d3cm0vwdnaw8z1xjwli7hhpq"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
