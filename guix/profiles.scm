@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 Huang Ying <huang.ying.caritas@gmail.com>
 ;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1463,6 +1464,9 @@ are cross-built for TARGET."
   (mlet* %store-monad ((system (if system
                                    (return system)
                                    (current-system)))
+                       (target (if target
+                                   (return target)
+                                   (current-target-system)))
                        (ok?    (if allow-collisions?
                                    (return #t)
                                    (check-for-collisions manifest system
