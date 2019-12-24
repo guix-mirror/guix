@@ -37,6 +37,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages glib)
@@ -268,22 +269,19 @@ applications and libraries.  It is used by AqBanking.")
 (define-public aqbanking
   (package
     (name "aqbanking")
-    (version "5.8.1")
+    (version "5.99.44beta")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.aquamaniac.de/rdm/attachments/"
-                           "download/105/aqbanking-" version ".tar.gz"))
+                           "download/224/aqbanking-" version ".tar.gz"))
        (sha256
-        (base32 "0m44n2hyxprxzq7ijkrd7rmhhl0r033s1k21ix9y67a0p9skl1mg"))))
+        (base32 "1cgj8g3wy53galp9pk50a85w0kmwfx3dwl93cbvq6sqb9izxmwdb"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Parallel building fails because aqhbci is required before it's
        ;; built.
-       #:parallel-build? #f
-       #:configure-flags
-       (list (string-append "--with-gwen-dir="
-                            (assoc-ref %build-inputs "gwenhywfar")))))
+       #:parallel-build? #f))
     (propagated-inputs
      `(("gwenhywfar" ,gwenhywfar)))
     (inputs
@@ -292,6 +290,7 @@ applications and libraries.  It is used by AqBanking.")
        ("gnutls" ,gnutls)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("gettext-minimal", gettext-minimal)
        ("libltdl" ,libltdl)))
     (home-page "https://www.aquamaniac.de/sites/aqbanking/index.php")
     (synopsis "Interface for online banking tasks")
