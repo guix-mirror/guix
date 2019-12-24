@@ -280,7 +280,7 @@ access.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/The-Compiler/"
+       (uri (string-append "https://github.com/qutebrowser/"
                            "qutebrowser/releases/download/v" version "/"
                            "qutebrowser-" version ".tar.gz"))
        (sha256
