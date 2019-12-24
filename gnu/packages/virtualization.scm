@@ -1149,15 +1149,14 @@ by default and can be made read-only.")
 (define-public bochs
   (package
     (name "bochs")
-    (version "2.6.9")
+    (version "2.6.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://sourceforge.net/projects/bochs/files/bochs/"
                            version "/bochs-" version ".tar.gz"))
        (sha256
-        (base32
-         "1379cq4cnfprhw8mgh60i0q9j8fz8d7n3d5fnn2g9fdiv5znfnzf"))))
+        (base32 "1c3mw4b8wrjf8z44fvhycs95j1wd1c0b4khcv63giiia5j5q0gvj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f)) ; No tests exist
