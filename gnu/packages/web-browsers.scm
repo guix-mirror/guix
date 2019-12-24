@@ -301,7 +301,12 @@ access.")
        ("python-pyqt" ,python-pyqt)
        ("qtwebkit" ,qtwebkit)))
     (arguments
-     `(#:tests? #f                      ;no tests
+     `(;; FIXME: Tests have been added to Qutebrowser. But they currently fail on
+       ;; trying to locate QtWebEngine, and run it on a specific display.
+       ;; There does not seem to be a trivial way to suppress this test.
+       ;; Either fix this, or wait for a liberated QtWebEngine to make into GNU Guix.
+       ;; Change this according to <https://bugs.gnu.org/35866>.
+       #:tests? #f
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'install-more
@@ -312,7 +317,6 @@ access.")
                (invoke "a2x" "-f" "manpage" "doc/qutebrowser.1.asciidoc")
                (install-file "doc/qutebrowser.1"
                              (string-append out "/share/man/man1"))
-
                (for-each
                 (lambda (i)
                   (let ((src  (format #f "icons/qutebrowser-~dx~d.png" i i))
