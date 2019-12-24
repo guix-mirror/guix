@@ -2494,13 +2494,13 @@ a new command using the matched rule, and runs it.")
 (define-public di
   (package
     (name "di")
-    (version "4.47.2")
+    (version "4.47.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gentoo.com/di/di-" version ".tar.gz"))
        (sha256
-        (base32 "1g97pp2hznskqlkhl6ppyzgdmv878bcqiwh633kdnm70d1pvh192"))))
+        (base32 "0m4npba50sf5s61g5z3xd2r7937zwja941f2h3f081xi24c2hfck"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; obscure test failures
