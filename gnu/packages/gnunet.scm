@@ -8,6 +8,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -311,7 +312,7 @@ global, distributed network that provides security and privacy.  GNUnet in
 that sense aims to replace the current internet protocol stack.  Along with
 an application for secure publication of files, it has grown to include all
 kinds of basic applications for the foundation of a GNU internet.")
-   (license license:gpl3+)
+   (license license:agpl3+)
    (home-page "https://gnunet.org/")))
 
 (define-public guile-gnunet                       ;GSoC 2015!
