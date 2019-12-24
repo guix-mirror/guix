@@ -317,6 +317,14 @@ usable on embedded products.")
          ("xgcc" ,gcc-arm-none-eabi-7-2018-q2-update)
          ("texinfo" ,texinfo))))))
 
+(define-public newlib-nano-arm-none-eabi-7-2018-q2-update
+  (package (inherit newlib-arm-none-eabi-7-2018-q2-update)
+    (name "newlib-nano")
+    (arguments
+     (package-arguments newlib-nano-arm-none-eabi))
+    (synopsis "Newlib variant for small systems with limited memory")))
+
+
 (define (make-libstdc++-arm-none-eabi xgcc newlib)
   (let ((libstdc++ (make-libstdc++ xgcc)))
     (package (inherit libstdc++)
