@@ -285,6 +285,38 @@ usable on embedded products.")
               (variable "CROSS_LIBRARY_PATH")
               (files '("arm-none-eabi/lib"))))))))
 
+(define-public newlib-arm-none-eabi-7-2018-q2-update
+  ;; This is the same commit as used for the 7-2018-q2-update release
+  ;; according to the release.txt.
+  (let ((commit "3ccfb407af410ba7e54ea0da11ae1e40b554a6f4")
+        (revision "0"))
+    (package
+      (inherit newlib-arm-none-eabi)
+      (version (git-version "3.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "http://sourceware.org/git/newlib-cygwin.git")
+               (commit commit)))
+         (file-name (git-file-name "newlib" commit))
+         (sha256
+          (base32
+           "1dq23fqrk75g1a4v7569fvnnw5q440zawbxi3w0g05n8jlqsmvcy"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments newlib-arm-none-eabi)
+         ;; The configure flags are identical to the flags used by the "GCC ARM
+         ;; embedded" project.
+         ((#:configure-flags flags)
+          `(cons* "--enable-newlib-io-c99-formats"
+                  "--enable-newlib-retargetable-locking"
+                  "--with-headers=yes"
+                  ,flags))))
+      (native-inputs
+       `(("xbinutils" ,(cross-binutils "arm-none-eabi"))
+         ("xgcc" ,gcc-arm-none-eabi-7-2018-q2-update)
+         ("texinfo" ,texinfo))))))
+
 (define (make-libstdc++-arm-none-eabi xgcc newlib)
   (let ((libstdc++ (make-libstdc++ xgcc)))
     (package (inherit libstdc++)
