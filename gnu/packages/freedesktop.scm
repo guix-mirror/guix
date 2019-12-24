@@ -5,7 +5,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
@@ -209,13 +209,14 @@ other applications that need to directly deal with input devices.")
     (name "libxdg-basedir")
     (version "1.2.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/devnev/libxdg-basedir/archive/"
-                    name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/devnev/libxdg-basedir")
+                     (commit (string-append name "-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0s28c7sfwqimsmb3kn91mx7wi55fs3flhbmynl9k60rrllr00aqw"))))
+                "12yz53ny5bi2dii3zwcr6b9ay0yy1g1xv13jg097k7gjligcq11m"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
