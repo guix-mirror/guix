@@ -690,14 +690,14 @@ tiled on several screens.")
 (define-public xmobar
   (package
     (name "xmobar")
-    (version "0.31")
+    (version "0.32")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://hackage/package/xmobar/"
                                   "xmobar-" version ".tar.gz"))
               (sha256
                (base32
-                "1sbxva4zaj060bigmxivpn4zlz0q1qbq2np8gljdqkjvysjzpbka"))))
+                "0x2ki3v0pmhl4bva3qi1xx21axayc4sx1nkzhmk2ap4l0cj52jrd"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-hspec" ,ghc-hspec)
