@@ -4285,13 +4285,14 @@ PostgreSQL database.")
     (name "gumbo-parser")
     (version "0.10.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/google/"
-                                  "gumbo-parser/archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/google/gumbo-parser")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1bgg2kbj311pqdzw2v33za7k66g1rv44kkvvnz2gnpaasi9k0ii8"))))
+                "0xslckwdh2i0g2qjsb6rnm8mjmbagvziz0hjlf7d1lbljfms1iw1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))         ;tests require bundling googletest sources
