@@ -30,6 +30,7 @@
 ;;; Copyright © 2019 Evan Straw <evan.straw99@gmail.com>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019 Noodles! <nnoodle@chiru.no>
+;;; Copyright © 2019 Alexandru-Sergiu Marton <brown121407@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -330,6 +331,36 @@ resized.
 i3 uses a plain-text configuration file, and can be extended and controlled from
 many programming languages.")
     (license license:bsd-3)))
+
+(define-public i3-gaps
+  (package (inherit i3-wm)
+           (name "i3-gaps")
+           (version "4.17.1")
+           (source (origin
+                     (method url-fetch)
+                     (uri (string-append
+                           "https://github.com/Airblader/i3/releases/download/"
+                           version "/i3-" version ".tar.bz2"))
+                     (sha256
+                      (base32
+                       "0iazv2i2rgmakzh95pgj6iapyzn7bdpcbcd35a79mhlml4ry33qy"))))
+           (build-system gnu-build-system)
+           (home-page "https://github.com/Airblader/i3")
+           (synopsis "Tiling window manager with gaps")
+           (description "i3-gaps is a fork of i3wm, a tiling window manager
+for X11.  It is kept up to date with upstream, adding a few additional
+features such as gaps between windows.
+
+i3 is a tiling X11 window manager that dynamically manages tiled, stacked,
+and tabbed window layouts.
+
+i3 primarily targets advanced users.  Windows are managed manually and
+organised inside containers, which can be split vertically or horizontally,
+and optionally resized.
+
+i3 uses a plain-text configuration file, and can be extended and controlled
+from many programming languages.")
+           (license license:bsd-3)))
 
 (define-public i3lock
   (package
