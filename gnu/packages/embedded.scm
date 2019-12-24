@@ -405,6 +405,10 @@ languages are C and C++.")
   (arm-none-eabi-toolchain gcc-arm-none-eabi-6
                            newlib-nano-arm-none-eabi))
 
+(define-public arm-none-eabi-toolchain-7-2018-q2-update
+  (arm-none-eabi-toolchain gcc-arm-none-eabi-7-2018-q2-update
+                           newlib-arm-none-eabi-7-2018-q2-update))
+
 (define-public gdb-arm-none-eabi
   (package
     (inherit gdb)
