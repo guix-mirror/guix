@@ -1492,18 +1492,19 @@ masters from remote CVS hosts.")
 (define-public vc-dwim
   (package
     (name "vc-dwim")
-    (version "1.8")
+    (version "1.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/vc-dwim/vc-dwim-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0d5sqafc40l878m8wjr35jxmalj4kam1m6ph60v08ng4ml5g7931"))))
+               "0mf1dd7wdqxsm4fcfinfd7iadzarmzvg747pbsbi32qpavpk8gdf"))))
     (build-system gnu-build-system)
-    (inputs `(("perl" ,perl)
-              ("inetutils" ,inetutils))) ; for `hostname', used in the tests
-    (native-inputs `(("emacs" ,emacs-minimal))) ; for `ctags'
+    (inputs `(("perl" ,perl)))
+    (native-inputs
+     `(("emacs" ,emacs-minimal)     ; for `ctags'
+       ("inetutils" ,inetutils)))   ; for `hostname', used in the tests
     (home-page "https://www.gnu.org/software/vc-dwim/")
     (synopsis "Version-control-agnostic ChangeLog diff and commit tool")
     (description
