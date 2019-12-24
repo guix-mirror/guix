@@ -6542,12 +6542,14 @@ container.")))
     (name "java-jsoup")
     (version "1.10.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/jhy/jsoup/archive/jsoup-"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/jhy/jsoup")
+                     (commit (string-append "jsoup-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0xbzw7rjv7s4nz1xk9b2cnin6zkpaldmc3svk71waa7hhjgp0a20"))))
+                "1hdpdx0x140r5x3yc251v7dj1h4j5a7nh9k885aw9q5vvz49lkf4"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "jsoup.jar"
