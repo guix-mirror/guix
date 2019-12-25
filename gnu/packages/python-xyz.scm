@@ -17047,3 +17047,33 @@ paths.")
 slowly because it imports pkg_resources.  This package allows such setup
 scripts to load entry points more quickly.")
     (license license:bsd-3)))
+
+(define-public python-funcparserlib
+  (package
+    (name "python-funcparserlib")
+    (version "0.3.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "funcparserlib" version))
+       (sha256
+        (base32
+         "07f9cgjr3h4j2m67fhwapn8fja87vazl58zsj4yppf9y3an2x6dp"))))
+    (native-inputs
+     `(("python-tox" ,python-tox)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "tox"))))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/vlasovskikh/funcparserlib")
+    (synopsis
+     "Recursive descent parsing library based on functional combinators")
+    (description
+     "This package is a recurisve descent parsing library for Python based on
+functional combinators.  Parser combinators are just higher-order functions
+that take parsers as their arguments and return them as result values.")
+    (license license:expat)))
