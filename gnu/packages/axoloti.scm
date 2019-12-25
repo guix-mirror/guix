@@ -65,7 +65,7 @@
 (define-public axoloti-runtime
   (package
     (name "axoloti-runtime")
-    (version "1.0.12")
+    (version "1.0.12-2")
     (source
      (origin
        (method git-fetch)
@@ -74,7 +74,7 @@
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "05hyr9qx9dplp0gkx4v34i17972b3f512qndnarzy4wzfpnp0s3b"))
+        (base32 "1qffis277wshldr3i939b0r2x3a2mlr53samxqmr2nk1sfm2b4w9"))
        (modules '((guix build utils)))
        (snippet
         '(begin
