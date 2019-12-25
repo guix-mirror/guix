@@ -1055,7 +1055,7 @@ audio/video codec library.")
 (define-public ffmpegthumbnailer
   (package
     (name "ffmpegthumbnailer")
-    (version "2.2.0")
+    (version "2.2.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1064,7 +1064,7 @@ audio/video codec library.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0kl8aa547icy9b05njps02a8sw4yn4f8fzs228kig247sn09s4cp"))))
+                "1bakbr714j7yxdal1f5iq0gcl4cxggbbgj227ihdh5kvygqlwich"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
