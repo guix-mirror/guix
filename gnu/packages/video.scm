@@ -2137,7 +2137,7 @@ format changes.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://downloads.xvid.org/downloads/xvidcore-"
+                    "http://downloads.xvid.com/downloads/xvidcore-"
                     version ".tar.bz2"))
               (sha256
                (base32
