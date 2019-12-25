@@ -8513,13 +8513,13 @@ with a new public API, and RPython support.")
 (define-public python-hy
   (package
     (name "python-hy")
-    (version "0.13.0")
+    (version "0.17.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "hy" version))
               (sha256
                (base32
-                "19sfymaksx9jhksfnb15ahid46mzrhdfzz6yy2craz2qnzvpmky8"))))
+                "1gdbqsirsdxj320wnp7my5awzs1kfs6m4fqmkzbd1zd47qzj0zfi"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -8538,7 +8538,11 @@ with a new public API, and RPython support.")
     (propagated-inputs
      `(("python-astor" ,python-astor)
        ("python-clint" ,python-clint)
-       ("python-rply" ,python-rply)))
+       ("python-rply" ,python-rply)
+       ("python-fastentrypoints"
+        ,python-fastentrypoints)
+       ("python-funcparserlib"
+        ,python-funcparserlib)))
     (home-page "http://hylang.org/")
     (synopsis "Lisp frontend to Python")
     (description
