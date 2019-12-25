@@ -6818,7 +6818,7 @@ add functionality and customization to your projects with their own plugins.")
      `(("unzip" ,unzip)
        ("python-pytest" ,python-pytest)
        ("python-pytest-runner" ,python-pytest-runner)))
-    (home-page "https://github.com/behdad/fonttools")
+    (home-page "https://github.com/fonttools/fonttools")
     (synopsis "Tools to manipulate font files")
     (description
      "FontTools/TTX is a library to manipulate font files from Python.  It
