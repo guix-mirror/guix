@@ -288,6 +288,12 @@ in ability, and easy to use.")
          #:tests? #f ; there are none
          #:phases
          (modify-phases %standard-phases
+           (add-after 'unpack 'patch-site-dir
+             (lambda _
+               (substitute* "CMakeLists.txt"
+                 (("DESTINATION share/emacs/site-lisp/ledger-mode")
+                  "DESTINATION share/emacs/site-lisp"))
+               #t))
            (add-before 'build 'patch-path
              (lambda* (#:key inputs #:allow-other-keys)
                (let ((ledger (assoc-ref inputs "ledger")))
@@ -303,17 +309,12 @@ in ability, and easy to use.")
                  (invoke "makeinfo" "-o" target
                          "../source/doc/ledger-mode.texi"))
                #t))
-           (add-after 'install 'relocate-elisp
+           (add-after 'install 'generate-autoload
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((site-dir (string-append (assoc-ref outputs "out")
-                                               "/share/emacs/site-lisp"))
-                      (guix-dir (string-append site-dir "/guix.d"))
-                      (orig-dir (string-append site-dir "/ledger-mode"))
-                      (dest-dir (string-append guix-dir "/ledger-mode")))
-                 (mkdir-p guix-dir)
-                 (rename-file orig-dir dest-dir)
-                 (emacs-generate-autoloads ,name dest-dir)
-                 #t))))))
+                                               "/share/emacs/site-lisp")))
+                 (emacs-generate-autoloads ,name site-dir))
+               #t)))))
       (inputs
        `(("ledger" ,ledger)))
       (native-inputs
