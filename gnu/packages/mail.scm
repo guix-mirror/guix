@@ -1686,14 +1686,14 @@ header.")
 (define-public perl-email-sender
   (package
     (name "perl-email-sender")
-    (version "1.300033")
+    (version "1.300034")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
                            "Email-Sender-" version ".tar.gz"))
        (sha256
-        (base32 "1flbnzyng4g0h1aksbsip1qa6sawgfihvblspqc0xsis8g9vcza7"))))
+        (base32 "14aj9kqa9dr2bdhzn2qvjj2mffj8wjb5397z8qw7qg057fk3ib05"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-capture-tiny" ,perl-capture-tiny)))
