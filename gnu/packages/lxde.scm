@@ -148,7 +148,7 @@ or external monitor.")
               (uri (string-append "mirror://sourceforge/lxde/LXTask"
                                   "%20%28task%20manager%29/LXTask%20"
                                   (version-major+minor version) ".x/"
-                                  name "-" version ".tar.xz"))
+                                  "lxtask-" version ".tar.xz"))
               (sha256
                (base32
                 "0cv4hx5dg01hbyi5p10pl78n0a40xajpq4wx9c7886pkmpq8isj1"))))
