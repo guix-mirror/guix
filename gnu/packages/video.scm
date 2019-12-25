@@ -207,14 +207,14 @@ old-fashioned output methods with powerful ascii-art renderer.")
 (define-public celluloid
   (package
     (name "celluloid")
-    (version "0.17")
+    (version "0.18")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/celluloid-player/celluloid/releases"
                            "/download/v" version "/celluloid-" version ".tar.xz"))
        (sha256
-        (base32 "0a3bhvs38gxjplygb0q9cx5djl5y0bmnxgaq0sd65j610a60f5h0"))))
+        (base32 "0gmscx9zb8ppfjlnmgbcmhknhawa05sdhxi7dv5wjapjq0glq481"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("intltool" ,intltool)
