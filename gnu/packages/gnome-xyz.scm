@@ -2,7 +2,6 @@
 ;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
-;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -118,7 +117,7 @@ the Obsidian icon theme.")
 (define-public gnome-shell-extension-dash-to-dock
   (package
     (name "gnome-shell-extension-dash-to-dock")
-    (version "67")
+    (version "66")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -127,7 +126,7 @@ the Obsidian icon theme.")
                                            version))))
               (sha256
                (base32
-                "1746xm0iyvyzj6m3pvjx11smh9w1s7naz426ki0dlr5l7jh3mpy5"))
+                "04krl6rxlp1qc97psraf2kwin7h0mx4c7pnfpi7vhplmvasrwkfh"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
