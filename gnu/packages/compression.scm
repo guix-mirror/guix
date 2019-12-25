@@ -779,7 +779,7 @@ time for compression ratio.")
 (define-public squashfs-tools
   (package
     (name "squashfs-tools")
-    (version "4.3")
+    (version "4.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/squashfs/squashfs/"
@@ -787,10 +787,10 @@ time for compression ratio.")
                                   "squashfs" version ".tar.gz"))
               (sha256
                (base32
-                "1xpklm0y43nd9i6jw43y2xh5zvlmj9ar2rvknh0bh7kv8c95aq0d"))))
+                "0zmhvczscqz0mzh4b9m8m42asq14db0a6lc8clp5ljq5ybrv70d9"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; no check target
+     '(#:tests? #f                      ; no check target
        #:make-flags
        (list "CC=gcc"
              "XZ_SUPPORT=1"
@@ -802,13 +802,6 @@ time for compression ratio.")
          (replace 'configure
            (lambda _
              (chdir "squashfs-tools")
-             #t))
-         (add-after 'unpack 'fix-glibc-compatability
-           (lambda _
-             (substitute* '("squashfs-tools/mksquashfs.c"
-                            "squashfs-tools/unsquashfs.c")
-               (("<sys/sysinfo.h>")
-                "<sys/sysinfo.h>\n#include <sys/sysmacros.h>"))
              #t)))))
     (inputs
      `(("lz4" ,lz4)
