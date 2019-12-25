@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +32,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages netpbm)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages compression)
@@ -62,7 +64,7 @@
 (define-public chez-scheme
   (package
     (name "chez-scheme")
-    (version "9.5")
+    (version "9.5.2")
     (source
      (origin
        (method git-fetch)
@@ -70,7 +72,7 @@
              (url "https://github.com/cisco/ChezScheme.git")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "132fal5hwiq0bqzvfhjsqr4d11cfdh1670f6286ks29xxj1c04zq"))
+        (base32 "1hagrqdp649n2g0wq2a9gfnz7mjcjakkw7ziplbj3db412bb7kx5"))
        (file-name (git-file-name name version))
        (modules '((guix build utils)))
        (snippet
@@ -92,7 +94,8 @@
      `(("texlive" ,(texlive-union (list texlive-latex-oberdiek
                                         texlive-generic-epsf)))
        ("ghostscript" ,ghostscript)
-       ("netpbm" ,netpbm)))
+       ("netpbm" ,netpbm)
+       ("util-linux" ,util-linux)))
     (native-search-paths
      (list (search-path-specification
             (variable "CHEZSCHEMELIBDIRS")
@@ -116,15 +119,6 @@
            (lambda _ (substitute* "configure"
                        (("uname -a") "uname -m"))
                    #t))
-         (add-after 'unpack 'patch-broken-documentation
-           (lambda _
-             ;; Work around an oversight in the 9.5 release tarball that causes
-             ;; building the documentation to fail. This should be fixed in the
-             ;; next one; see <https://github.com/cisco/ChezScheme/issues/209>.
-             (substitute* "csug/copyright.stex"
-               (("\\\\INSERTREVISIONMONTHSPACEYEAR" )
-                "October 2017"))       ; tarball release date
-             #t))
          ;; Adapt the custom 'configure' script.
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -145,10 +139,11 @@
                        (invoke "mv" orig-name new-name)))
                     `((,nanopass "source" "nanopass")
                       (,stex "source" "stex")))
-               ;; The Makefile wants to download and compile "zlib".  We patch
-               ;; it to use the one from our 'zlib' package.
+               ;; The configure step wants to CURL all submodules as it
+               ;; detects a checkout without submodules. Disable curling,
+               ;; and manually patch the needed modules for compilation.
                (substitute* "configure"
-                 (("rmdir zlib .*$") "echo \"using system zlib\"\n"))
+                 (("! -f '") "-d '")) ; working around CURL.
                (substitute* (find-files "./c" "Mf-[a-zA-Z0-9.]+")
                  (("\\$\\{Kernel\\}: \\$\\{kernelobj\\} \\.\\./zlib/libz\\.a")
                   "${Kernel}: ${kernelobj}")
