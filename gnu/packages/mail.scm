@@ -2860,15 +2860,14 @@ killed threads.")
 (define-public pan
   (package
     (name "pan")
-    (version "0.145")
+    (version "0.146")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://pan.rebelbase.com/download/releases/"
                            version "/source/" name "-" version ".tar.bz2"))
        (sha256
-        (base32
-         "1b4wamv33hprghcjk903bpvnd233yxyrm18qnh13alc8h1553nk8"))))
+        (base32 "17agd27sn4a7nahvkpg0w39kv74njgdrrygs74bbvpaj8rk2hb55"))))
     (arguments
      `(#:configure-flags '("--with-gtk3" "--with-gtkspell" "--with-gnutls"
                            "--enable-libnotify" "--enable-manual"
