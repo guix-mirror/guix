@@ -220,7 +220,7 @@
     ;; Cross-compiling for the Raspberry Pi is supported, but not native ARM.
     (supported-systems (fold delete %supported-systems
                              '("mips64el-linux" "armhf-linux")))
-    (home-page "http://www.scheme.com")
+    (home-page "https://cisco.github.io/ChezScheme/")
     (synopsis "R6RS Scheme compiler and run-time")
     (description
      "Chez Scheme is a compiler and run-time system for the language of the
