@@ -244,7 +244,7 @@ FALSE-IF-404? is true, return #f upon 404 responses."
        docstring
        (call (swh-url components ...) json->value)))))
 
-;; <https://archive.softwareheritage.org/api/1/origin/ttps://github.com/guix-mirror/guix/get>
+;; <https://archive.softwareheritage.org/api/1/origin/https://github.com/guix-mirror/guix/get>
 (define-json-mapping <origin> make-origin origin?
   json->origin
   (id origin-id)
