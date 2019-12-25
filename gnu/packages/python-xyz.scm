@@ -17025,3 +17025,25 @@ are included automatically.")
     (description "Pattern matching and various utilities for file systems
 paths.")
     (license license:expat)))
+
+(define-public python-fastentrypoints
+  (package
+    (name "python-fastentrypoints")
+    (version "0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "fastentrypoints" version))
+       (sha256
+        (base32
+         "02s1j8i2dzbpbwgq2a3fiqwm3cnmhii2qzc0k42l0rdxd4a4ya7z"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/ninjaaron/fast-entry_points")
+    (synopsis
+     "Makes entry_points specified in setup.py load more quickly")
+    (description
+     "Using entry_points in your setup.py makes scripts that start really
+slowly because it imports pkg_resources.  This package allows such setup
+scripts to load entry points more quickly.")
+    (license license:bsd-3)))
