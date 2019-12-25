@@ -2133,7 +2133,7 @@ format changes.")
 (define-public xvid
   (package
     (name "xvid")
-    (version "1.3.5")
+    (version "1.3.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2141,7 +2141,7 @@ format changes.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "1d0hy1w9sn6491a3vhyf3vmhq4xkn6yd4ralx1191s6qz5wz483w"))))
+                "0zppakvcgq5a42mhqqsbliclpg2jrhbmbfgrzalyfzr47jqmhssy"))))
     (build-system gnu-build-system)
     (native-inputs `(("yasm" ,yasm)))
     (arguments
