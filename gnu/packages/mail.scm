@@ -776,7 +776,9 @@ attachments, create new maildirs, and so on.")
     (package
       (inherit mu)
       (name "mumimu")
-      (version (git-version (package-version guile-email) revision commit))
+      ;; TODO The version here used to be (package-version guile-email), but
+      ;; that code caused problems
+      (version (git-version "0.2.2" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
