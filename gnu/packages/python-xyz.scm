@@ -17115,7 +17115,7 @@ scripts to load entry points more quickly.")
     (synopsis
      "Recursive descent parsing library based on functional combinators")
     (description
-     "This package is a recurisve descent parsing library for Python based on
+     "This package is a recursive descent parsing library for Python based on
 functional combinators.  Parser combinators are just higher-order functions
 that take parsers as their arguments and return them as result values.")
     (license license:expat)))
