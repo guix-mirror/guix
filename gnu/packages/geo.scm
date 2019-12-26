@@ -634,7 +634,7 @@ development.")
        ("proj" ,proj)
        ("sqlite" ,sqlite)
        ("zlib" ,zlib)))
-    (home-page "http://www.gdal.org/")
+    (home-page "https://gdal.org/")
     (synopsis "Raster and vector geospatial data format library")
     (description "GDAL is a translator library for raster and vector geospatial
 data formats.  As a library, it presents a single raster abstract data model
