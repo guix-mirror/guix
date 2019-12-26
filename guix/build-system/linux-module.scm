@@ -126,6 +126,7 @@
                              (outputs '("out"))
                              (system (%current-system))
                              (guile #f)
+                             (substitutable? #t)
                              (imported-modules
                               %linux-module-build-system-modules)
                              (modules '((guix build linux-module-build-system)
@@ -164,7 +165,8 @@
                                 #:inputs inputs
                                 #:modules imported-modules
                                 #:outputs outputs
-                                #:guile-for-build guile-for-build))
+                                #:guile-for-build guile-for-build
+                                #:substitutable? substitutable?))
 
 (define linux-module-build-system
   (build-system
