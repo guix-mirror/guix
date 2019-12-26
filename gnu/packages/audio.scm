@@ -3351,7 +3351,7 @@ mixers.")
                             "/lib/alsa-lib")
              (string-append "--with-dbusconfdir="
                             (assoc-ref %outputs "out")
-                            "/etc/dbus-1"))))
+                            "/etc/dbus-1/system.d"))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
