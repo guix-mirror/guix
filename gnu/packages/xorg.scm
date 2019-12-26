@@ -5411,10 +5411,15 @@ draggable titlebars and borders.")
     (outputs '("out"
                "doc"))                            ;2 MiB of man pages + XML
     (arguments
-     '(#:configure-flags (list (string-append "--mandir="
-                                              (assoc-ref %outputs "doc")
-                                              "/share/man")
-                               "--disable-static")))
+     `(#:configure-flags
+       (list (string-append "--mandir="
+                            (assoc-ref %outputs "doc")
+                            "/share/man")
+             "--disable-static"
+             ;; Disable zero malloc check that fails when cross-compiling.
+             ,@(if (%current-target-system)
+                   '("--disable-malloc0returnsnull")
+                   '()))))
     (propagated-inputs
       `(("libx11" ,libx11)
         ("libice" ,libice)
