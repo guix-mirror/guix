@@ -408,9 +408,6 @@ patcher application.")))
              (invoke "7z" "x" (assoc-ref inputs "chibios"))
              (with-directory-excursion "ChibiOS_19.1.3/ext"
                (invoke "7z" "x" "fatfs-0.13_patched.7z"))
-             #;
-             (substitute* "firmware/Makefile"
-               (("USE_COPT =") "USE_COPT = -std=gnu99"))
 
              ;; Hardcode full path to compiler tools
              (substitute*
