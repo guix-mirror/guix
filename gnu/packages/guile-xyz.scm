@@ -2492,7 +2492,7 @@ perform geometrical transforms on JPEG images.")
 (define-public nomad
   (package
     (name "nomad")
-    (version "0.1.1-alpha")
+    (version "0.1.2-alpha")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2501,7 +2501,7 @@ perform geometrical transforms on JPEG images.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0abz07hl5dh802ciy71xzkvkhyryypq1i94wna40a2wndbd73f7z"))))
+                "1dnkr1hmvfkwgxd75dcf93pg39yfgawvdpzdhv991yhghv0qxc9h"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -2510,7 +2510,9 @@ perform geometrical transforms on JPEG images.")
        ("pkg-config" ,pkg-config)
        ("libtool" ,libtool)
        ("guile" ,guile-2.2)
-       ("glib:bin" ,glib "bin")))
+       ("glib:bin" ,glib "bin")
+       ("texinfo" ,texinfo)
+       ("perl" ,perl)))
     (inputs
      `(("guile" ,guile-2.2)
        ("guile-lib" ,guile-lib)
