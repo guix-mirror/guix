@@ -12,6 +12,7 @@
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2018 Manuel Graf <graf@init.at>
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -165,7 +166,15 @@ a server that supports the SSH-2 protocol.")
                           "--with-libedit"
 
                           ;; Enable PAM support in sshd.
-                          "--with-pam")
+                          "--with-pam"
+
+                          ;; "make install" runs "install -s" by default,
+                          ;; which doesn't work for cross-compiled binaries
+                          ;; because it invokes 'strip' instead of
+                          ;; 'TRIPLET-strip'.  Work around this.
+                          ,,@(if (%current-target-system)
+                                 '("--disable-strip")
+                                 '()))
 
       #:phases
       (modify-phases %standard-phases
