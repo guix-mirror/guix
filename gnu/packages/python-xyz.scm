@@ -3146,42 +3146,30 @@ interested parties to subscribe to events, or \"signals\".")
 (define-public pelican
   (package
     (name "pelican")
-    (version "4.0.1")
+    (version "4.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pelican" version))
        (sha256
         (base32
-         "05yda7n6r0ll18fpdjzkzyr0ls8hbb86fnjyb33k9jvv5avah2lr"))))
+         "0mp7hjyhs38ag1hyfcy882g400z0babqi72pnli46dqijfhajzmy"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-feedgenerator" ,python-feedgenerator)
-       ("python-jinja2" ,python-jinja2)
-       ("python-pygments" ,python-pygments)
-       ("python-docutils" ,python-docutils)
-       ("python-pytz" ,python-pytz)
-       ("python-blinker" ,python-blinker)
-       ("python-unidecode" ,python-unidecode)
-       ("python-six" ,python-six)
+     `(("python-blinker" ,python-blinker)
        ("python-dateutil" ,python-dateutil)
-       ("python-markdown" ,python-markdown)))
+       ("python-docutils" ,python-docutils)
+       ("python-feedgenerator" ,python-feedgenerator)
+       ("python-jinja2" ,python-jinja2)
+       ("python-markdown" ,python-markdown)
+       ("python-pygments" ,python-pygments)
+       ("python-pytz" ,python-pytz)
+       ("python-six" ,python-six)
+       ("python-unidecode" ,python-unidecode)))
     (home-page "https://getpelican.com/")
     (arguments
      `(;; XXX Requires a lot more packages to do unit tests :P
-       #:tests? #f
-       #:phases (modify-phases %standard-phases
-                  (add-before
-                   'install 'adjust-requires
-                   ;; Since feedgenerator is installed from git, it doesn't
-                   ;; conform to the version requirements.
-                   ;;
-                   ;; We *do have* "feedgenerator >= 1.6", but strip off the
-                   ;; version requirement so setuptools doesn't get confused.
-                   (lambda _
-                     (substitute* "setup.py"
-                       (("['\"]feedgenerator.*?['\"]")
-                        "'feedgenerator'")))))))
+       #:tests? #f))
     (synopsis "Python-based static site publishing system")
     (description
      "Pelican is a tool to generate a static blog from reStructuredText,
