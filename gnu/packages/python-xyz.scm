@@ -16999,11 +16999,21 @@ essential tools are located.")
         (base32
          "0in8hxdz7k081ijn6q94gr39ycy7363sx4zysmbwyvd7snqjrbi1"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (setenv "PYTHONPATH"
+                     (string-append (getcwd) ":" (getenv "PYTHONPATH")))
+             (invoke "python" "./tests/__main__.py"))))))
     (propagated-inputs
      `(("python-dill" ,python-dill)
        ("python-multiprocess" ,python-multiprocess)
        ("python-pox" ,python-pox)
        ("python-ppft" ,python-ppft)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://pypi.org/project/pathos/")
     (synopsis
      "Parallel graph management and execution in heterogeneous computing")
