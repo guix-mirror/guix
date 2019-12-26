@@ -22,6 +22,7 @@
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2019 Stephen J. Scheck <sscheck@cpan.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6696,6 +6697,31 @@ declared or imported symbols at the end of the current package's compile
 cycle.  Functions called in the package itself will still be bound by their
 name, but they won't show up as methods on your class or instances.")
     (license (package-license perl))))
+
+(define-public perl-net-bgp
+  (package
+    (name "perl-net-bgp")
+    (version "0.17")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://cpan/authors/id/S/SS/SSCHECK/Net-BGP-" version ".tar.gz"))
+        (sha256 (base32 "0za8x9cn5n2hasb14p7dr537lggvrcsl23pgldxf5y03wmk6h35y"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Net-BGP")
+    (synopsis "Object-oriented API to the BGP protocol")
+    (description
+      "This module is an implementation of the BGP-4 inter-domain routing protocol.
+It encapsulates all of the functionality needed to establish and maintain a
+BGP peering session and exchange routing update information with the peer.
+It aims to provide a simple API to the BGP protocol for the purposes of
+automation, logging, monitoring, testing, and similar tasks using the
+power and flexibility of perl.  The module does not implement the
+functionality of a RIB (Routing Information Base) nor does it modify the
+kernel routing table of the host system.  However, such operations could be
+implemented using the API provided by the module.")
+  (license perl-license)))
 
 (define-public perl-net-dns-native
   (package
