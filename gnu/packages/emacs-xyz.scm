@@ -20131,9 +20131,9 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
   ;; This package has versions newer than indicated on MELPA.
   ;; Get the current version from `telega-version` in telega.el.
   ;; or by running M-x telega-version.
-  (let ((commit "6184e76990db395bea02f7b5d3169e746111e1ad")
+  (let ((commit "9bfb637b2e71f5f293debd35abd627a064faf8ef")
 	(revision "1")
-	(version "0.5.3"))
+	(version "0.5.4"))
     (package
       (name "emacs-telega")
       (version (git-version version revision commit))
@@ -20145,7 +20145,7 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
                (commit commit)))
          (sha256
           (base32
-           "1kfmmfc9dv3r2wxm1njflgas51qm0j8sj7yr7vfvwaz5sz7p121b"))
+           "06v8i3862n5kf2lnxii8vp9g8cq5ql51kr8yxh7l1wccsidri67a"))
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
@@ -20195,18 +20195,6 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
                     (locate-dominating-file telega--lib-directory
                                             \"telega-data\")"))
                #t))
-           ;; The telega test suite checks for a version of Emacs
-           ;; compiled with imagemagick and svg support. Since we
-           ;; are using `emacs-minimal`, this step will fail.
-           ;; Grok the failing test, and remove problematic assertions.
-           (add-after 'unpack 'ert-suite-patch
-             (lambda _
-               (substitute* "telega-core.el"
-                 (("\\(image-type-available-p 'imagemagick\\) nil")
-                  "t")
-                 (("\\(image-type-available-p 'svg\\) nil")
-                  "t"))
-               #t))
            ;; The server test suite has a hardcoded path.
            ;; Reset this behavior to use the proper path.
            (add-after 'unpack 'server-suite-patch
@@ -20246,7 +20234,7 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
          ("libwebp" ,libwebp))) ; sticker support.
       (native-inputs
        `(("tdlib" ,tdlib)
-         ("emacs" ,emacs-minimal)
+         ("emacs" ,emacs)
          ("python" ,python)))
       (synopsis "GNU Emacs client for the Telegram messenger")
       (description
