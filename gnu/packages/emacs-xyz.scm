@@ -640,17 +640,23 @@ for editing Racket's Scribble documentation syntax in Emacs.")
 (define-public emacs-shroud
   (package
     (name "emacs-shroud")
-    (version "1.83.4")
+    (version "1.105")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/o-nly/emacs-shroud.git")
+             (url "https://git.savannah.gnu.org/git/emacs-shroud.git")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1yvdjx0kp4y8w5yz2cbqq9n6xl5splvmsyyx8ld1xv0q1c9872nf"))))
-    (build-system emacs-build-system)
+        (base32 "0q2pb3w8s833fjhkzicciw2php4lsnismad1dnwgp2lcway757ra"))))
+    (build-system gnu-build-system)
+    (native-inputs
+    `(("autoconf" ,autoconf)
+      ("automake" ,automake)
+      ("texinfo" ,texinfo)
+      ("perl" ,perl)
+      ("emacs-minimal" ,emacs-minimal)))
     (propagated-inputs
      `(("emacs-bui" ,emacs-bui)
        ("emacs-dash" ,emacs-dash)
@@ -658,7 +664,7 @@ for editing Racket's Scribble documentation syntax in Emacs.")
        ("emacs-s" ,emacs-s)
        ("gnupg" ,gnupg)
        ("shroud" ,shroud)))
-    (home-page "https://github.com/o-nly/emacs-shroud")
+    (home-page "https://www.nongnu.org/emacs-shroud")
     (synopsis "Emacs interface to the Shroud password manager")
     (description
      "This package provides an Emacs interface to the Shroud password manager,
