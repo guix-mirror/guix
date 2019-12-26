@@ -68,6 +68,7 @@
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2019 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
+;;; Copyright © 2020 Riku Viitanen <riku.viitanen@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6800,13 +6801,13 @@ add functionality and customization to your projects with their own plugins.")
 (define-public python-fonttools
   (package
     (name "python-fonttools")
-    (version "4.2.0")
+    (version "4.2.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "fonttools" version ".zip"))
               (sha256
                (base32
-                "0psy6z52jn49wp93s3k7kj0jzji1cad3wnwgm6c26vphv5appk4v"))))
+                "012qqspnwdl4vy8qgzzpfglkk5dgzxiw0fak2jq74ngygvz3vfv6"))))
     (build-system python-build-system)
     (native-inputs
      `(("unzip" ,unzip)
