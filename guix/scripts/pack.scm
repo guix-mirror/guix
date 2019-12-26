@@ -319,7 +319,7 @@ to the search paths of PROFILE."
                          entry-point
                          localstatedir?
                          (symlinks '())
-                         (archiver squashfs-tools-next))
+                         (archiver squashfs-tools))
   "Return a squashfs image containing a store initialized with the closure of
 PROFILE, a derivation.  The image contains a subset of /gnu/store, empty mount
 points for virtual file systems (like procfs), and optional symlinks.
@@ -1045,7 +1045,7 @@ Create a bundle of PACKAGE.\n"))
                                   bootstrap-xz
                                   (assoc-ref opts 'compressor)))
                  (archiver    (if (equal? pack-format 'squashfs)
-                                  squashfs-tools-next
+                                  squashfs-tools
                                   (if bootstrap?
                                       %bootstrap-coreutils&co
                                       tar)))

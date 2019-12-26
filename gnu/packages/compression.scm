@@ -819,23 +819,6 @@ systems where low overhead is needed.  This package allows you to create and
 extract such file systems.")
     (license license:gpl2+)))
 
-;; We need this for building squashfs images with symlinks.
-(define-public squashfs-tools-next
-  (let ((commit "fb33dfc32b131a1162dcf0e35bd88254ae10e265")
-        (revision "1"))
-    (package (inherit squashfs-tools)
-      (name "squashfs-tools-next")
-      (version (string-append "4.3-" revision (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/plougher/squashfs-tools.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1x2skf8hxzfch978nzx5mh46d4hhi6gl22270hiarjszsjk3bnsx")))))))
-
 (define-public pigz
   (package
     (name "pigz")
