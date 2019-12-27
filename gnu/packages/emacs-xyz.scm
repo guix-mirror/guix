@@ -19807,8 +19807,8 @@ contrast and few colors.")
       (license license:gpl3+))))
 
 (define-public emacs-doom-themes
-  (let ((commit "088bfad9a6983c42016da33cd11b9ee855451dcb")
-        (revision "2")
+  (let ((commit "c2d0ed3fe73e415d29e05d56da08ba41018eec4f")
+        (revision "3")
         (version "2.1.6"))
     (package
       (name "emacs-doom-themes")
@@ -19820,7 +19820,7 @@ contrast and few colors.")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
-                 (base32 "1dmq0vja1k907id56y4012cm3f49vf106v3gglk9sf4kbi9cash2"))))
+                 (base32 "1bdi7dkddyn0s357v2jv0mlhgsyc66kcvbl01ly370pqia6r0gpc"))))
       (build-system emacs-build-system)
       (native-inputs
        `(("emacs-ert-runner" ,emacs-ert-runner)))
@@ -19852,9 +19852,15 @@ contrast and few colors.")
                            (chmod file #o600) ; needed to write changes.
                            (emacs-batch-disable-compilation file))
                          (cons "doom-themes-ext-neotree.el"
+                               ;; NOTE: When updating this package, determine
+                               ;; whether changed theme files can byte-compile.
+                               ;; If they can successfully byte-compile, add them
+                               ;; to this list of exceptions.
                                (lset-difference string-contains
                                                 (find-files "." ".*-theme.el")
-                                                '("snazzy" "tomorrow-day"))))
+                                                '("material"
+                                                  "snazzy"
+                                                  "tomorrow-day"))))
                #t)))))
       (synopsis "Wide collection of color themes for Emacs")
       (description "Emacs-doom-themes contains numerous popular color themes for
