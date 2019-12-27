@@ -3402,14 +3402,14 @@ message passing.")
 (define-public r-bigmemory
   (package
     (name "r-bigmemory")
-    (version "4.5.33")
+    (version "4.5.36")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "bigmemory" version))
        (sha256
         (base32
-         "0ycl9dzm3drpyas625h34rir5bnbjlncxlvawfsfmqwcbmwdjdvj"))))
+         "03pg8mxdc7q0249visjmc8bc3xmwxsfg3i2n6higicj4cfz7zihq"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bh" ,r-bh)
