@@ -1999,14 +1999,14 @@ genes or proteins in these datasets.")
 (define-public r-inspect
   (package
     (name "r-inspect")
-    (version "1.16.0")
+    (version "1.16.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "INSPEcT" version))
        (sha256
         (base32
-         "043066zygf2y2jp6dvfwl56hkzcdvkmymhjx3gh4mhi48l71zqv9"))))
+         "03cf9c94ra4f847ndlf8sn2cq1kl1055514wjq0lqbvlbfdj1dq3"))))
     (properties `((upstream-name . "INSPEcT")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2015,6 +2015,7 @@ genes or proteins in these datasets.")
        ("r-biocparallel" ,r-biocparallel)
        ("r-deseq2" ,r-deseq2)
        ("r-desolve" ,r-desolve)
+       ("r-gdata" ,r-gdata)
        ("r-genomeinfodb" ,r-genomeinfodb)
        ("r-genomicalignments" ,r-genomicalignments)
        ("r-genomicfeatures" ,r-genomicfeatures)
