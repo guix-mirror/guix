@@ -27,6 +27,7 @@
 ;;; Copyright © 2019 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 ;;; Copyright © 2019 Hartmt Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2872,8 +2873,13 @@ portions of LAME.")
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
     (arguments
-     '(#:tests? #f                    ;no 'check' target
-       #:configure-flags '("--with-pic")
+     '(#:tests? #f                      ;no 'check' target
+       #:configure-flags '("--with-pic"
+                           "--enable-cxx"
+                           ;; XXX: The following prevents a build error
+                           ;; because of missing depcomp when C++ bindings are
+                           ;; requested.
+                           "--disable-dependency-tracking")
        #:phases
        (modify-phases %standard-phases
          ;; This is needed for linking the static libraries
