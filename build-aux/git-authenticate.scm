@@ -24,6 +24,7 @@
              (guix git)
              (guix gnupg)
              (guix utils)
+             ((guix build utils) #:select (mkdir-p))
              (guix i18n)
              (guix progress)
              (srfi srfi-1)
@@ -31,8 +32,10 @@
              (srfi srfi-26)
              (srfi srfi-34)
              (srfi srfi-35)
+             (rnrs io ports)
              (ice-9 match)
-             (ice-9 format))
+             (ice-9 format)
+             (ice-9 pretty-print))
 
 
 (define %committers
@@ -297,6 +300,49 @@ each of them.  Return an alist showing the number of occurrences of each key."
 
 
 ;;;
+;;; Caching.
+;;;
+
+(define (authenticated-commit-cache-file)
+  "Return the name of the file that contains the cache of
+previously-authenticated commits."
+  (string-append (cache-directory) "/authentication/channels/guix"))
+
+(define (previously-authenticated-commits)
+  "Return the previously-authenticated commits as a list of commit IDs (hex
+strings)."
+  (catch 'system-error
+    (lambda ()
+      (call-with-input-file (authenticated-commit-cache-file)
+        read))
+    (lambda args
+      (if (= ENOENT (system-error-errno args))
+          '()
+          (apply throw args)))))
+
+(define (cache-authenticated-commit commit-id)
+  "Record in ~/.cache COMMIT-ID and its closure as authenticated (only
+COMMIT-ID is written to cache, though)."
+  (define %max-cache-length
+    ;; Maximum number of commits in cache.
+    200)
+
+  (let ((lst  (delete-duplicates
+               (cons commit-id (previously-authenticated-commits))))
+        (file (authenticated-commit-cache-file)))
+    (mkdir-p (dirname file))
+    (with-atomic-file-output file
+      (lambda (port)
+        (let ((lst (if (> (length lst) %max-cache-length)
+                       (take lst %max-cache-length) ;truncate
+                       lst)))
+          (chmod port #o600)
+          (display ";; List of previously-authenticated commits.\n\n"
+                   port)
+          (pretty-print lst port))))))
+
+
+;;;
 ;;; Entry point.
 ;;;
 
@@ -312,8 +358,19 @@ each of them.  Return an alist showing the number of occurrences of each key."
        (define end-commit
          (commit-lookup repository (string->oid end)))
 
+       (define authenticated-commits
+         ;; Previously-authenticated commits that don't need to be checked
+         ;; again.
+         (filter-map (lambda (id)
+                       (false-if-exception
+                        (commit-lookup repository (string->oid id))))
+                     (previously-authenticated-commits)))
+
        (define commits
-         (commit-difference end-commit start-commit))
+         ;; Commits to authenticate, excluding the closure of
+         ;; AUTHENTICATED-COMMITS.
+         (commit-difference end-commit start-commit
+                            authenticated-commits))
 
        (define reporter
          (progress-reporter/bar (length commits)))
@@ -327,14 +384,17 @@ each of them.  Return an alist showing the number of occurrences of each key."
                       (lambda (report)
                         (authenticate-commits repository commits
                                               #:report-progress report)))))
-         (format #t (G_ "Signing statistics:~%"))
-         (for-each (match-lambda
-                     ((signer . count)
-                      (format #t "  ~a ~10d~%" signer count)))
-                   (sort stats
-                         (match-lambda*
-                           (((_ . count1) (_ . count2))
-                            (> count1 count2)))))))
+         (cache-authenticated-commit (oid->string (commit-id end-commit)))
+
+         (unless (null? stats)
+           (format #t (G_ "Signing statistics:~%"))
+           (for-each (match-lambda
+                       ((signer . count)
+                        (format #t "  ~a ~10d~%" signer count)))
+                     (sort stats
+                           (match-lambda*
+                             (((_ . count1) (_ . count2))
+                              (> count1 count2))))))))
       ((command start)
        (let* ((head (repository-head repository))
               (end  (reference-target head)))
