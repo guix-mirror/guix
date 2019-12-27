@@ -9074,6 +9074,38 @@ and a high score table.")
     (home-page "https://wiki.gnome.org/Apps/Mahjongg")
     (license license:gpl2+)))
 
+(define-public gnome-themes-extra
+  (package
+    (name "gnome-themes-extra")
+    (version "3.28")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/" name "-"
+                           version ".tar.xz"))
+       (sha256
+        (base32
+         "06aqg9asq2vqi9wr29bs4v8z2bf4manhbhfghf4nvw01y2zs0jvw"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("gtk+-2" ,gtk+-2)
+       ("librsvg" ,librsvg)
+       ("libxml2" ,libxml2)))
+    (home-page "https://gitlab.gnome.org/GNOME/gnome-themes-extra")
+    (synopsis "GNOME Extra Themes")
+    (description "This package provides themes and related elements that don't
+really fit in other upstream packages.  It offers legacy support for GTK+ 2
+versions of Adwaita, Adwaita-dark and HighContrast themes.  It also provides
+index files needed for Adwaita to be used outside of GNOME.")
+    (license license:lgpl2.1+)))
+
 (define-public polari
   (package
     (name "polari")
