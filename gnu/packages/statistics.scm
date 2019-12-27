@@ -4891,14 +4891,14 @@ generally.")
 (define-public r-robust
   (package
     (name "r-robust")
-    (version "0.4-18.1")
+    (version "0.4-18.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "robust" version))
        (sha256
         (base32
-         "0xs098pfw5zdcdk3rsxkylfl6d2pyp566s5v92bzhgl7h8c90cfy"))))
+         "02x7d6dgx3skiadvx5m3c44b4bhz37ycpfhc25dhhv50y1db6l3k"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-fit-models" ,r-fit-models)
