@@ -2126,14 +2126,14 @@ achieved for all methods using the BiocParallel framework.")
 (define-public r-biocsingular
   (package
     (name "r-biocsingular")
-    (version "1.2.0")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "BiocSingular" version))
        (sha256
         (base32
-         "0qd7r2k56ym7ivjgapxbk7fyj2d7396f1ad1hkgnicgyw1an5q1r"))))
+         "0fjfmmpda7pszsck2hm7bp4509pl3xaz02q2q03d5vla62h1h81k"))))
     (properties `((upstream-name . "BiocSingular")))
     (build-system r-build-system)
     (propagated-inputs
