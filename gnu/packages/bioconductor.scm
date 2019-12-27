@@ -3792,19 +3792,20 @@ fitting a three-component normal mixture on z-scores.")
 (define-public r-rgadem
   (package
     (name "r-rgadem")
-    (version "2.34.0")
+    (version "2.34.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "rGADEM" version))
        (sha256
         (base32
-         "14ylbrzb9haqwfdd9g813mzhll6gwvqf2r7cmbaxz5lkl0j0nglx"))))
+         "12xm4p4qsczf57kip8bvi6pr8sb5gvn11dnbz7lbh6sc03sx3q2h"))))
     (properties `((upstream-name . "rGADEM")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biostrings" ,r-biostrings)
        ("r-bsgenome" ,r-bsgenome)
+       ("r-genomicranges" ,r-genomicranges)
        ("r-iranges" ,r-iranges)
        ("r-seqlogo" ,r-seqlogo)))
     (home-page "https://bioconductor.org/packages/rGADEM/")
