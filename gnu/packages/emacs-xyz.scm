@@ -1037,14 +1037,14 @@ terminals.")
     (version "0.4")
     (source
      (origin
-      (method git-fetch)
-      (uri (git-reference
-            (url "https://github.com/purcell/reformatter.el.git")
-            (commit version)))
-      (file-name (git-file-name name version))
-      (sha256
-       (base32
-        "0hhy6x1bkwlhdlarsgm06g3am4yh02yqv8qs34szpzgy53x84qah"))))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/purcell/reformatter.el.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0hhy6x1bkwlhdlarsgm06g3am4yh02yqv8qs34szpzgy53x84qah"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/purcell/reformatter.el")
     (synopsis "Define commands which run reformatters on the current buffer")
