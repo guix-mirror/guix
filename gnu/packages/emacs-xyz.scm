@@ -1725,8 +1725,8 @@ searches.  Unlike code@{emacs-wiki.el}, it can be combined with any format.")
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/kiwanami/emacs-calfw.git")
-              (commit (string-append "v" version))))
+             (url "https://github.com/kiwanami/emacs-calfw.git")
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32
