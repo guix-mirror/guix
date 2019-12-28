@@ -1569,8 +1569,8 @@ links.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/Wilfred/ag.el.git")
-                     (commit version)))
+                    (url "https://github.com/Wilfred/ag.el.git")
+                    (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
