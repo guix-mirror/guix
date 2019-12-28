@@ -15890,8 +15890,8 @@ Pandoc, the document-conversion tool.")
     (license license:bsd-3)))
 
 (define-public emacs-ccls
-  (let ((commit "b1acc336f27d8a3bbc750c2dc3be915a4ac1afea")
-        (revision "3"))
+  (let ((commit "aab3e31fd716daf59f9794e62d473357263e8cc0")
+        (revision "4"))
     (package
       (name "emacs-ccls")
       (version (git-version "0.1" revision commit))
@@ -15904,7 +15904,7 @@ Pandoc, the document-conversion tool.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1qgfxc5d1hb32ks1fxpx7agpw7dvnkz99wydlflc9fqq75g8v142"))))
+           "1ykgw21ypyhwlyflppjcgqrj1xw4d9rld4z65qvwhk3f12cv113j"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("ccls" ,ccls)
