@@ -41,6 +41,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages pulseaudio)
@@ -551,4 +552,26 @@ is to provide an accurate identifier for record tracks.")
      "This package provides a Python library for audo decoding.  It uses
 whatever audio backend is available, such as GStreamer, Core Audio, MAD,
 FFmpeg, etc.")
+    (license license:expat)))
+
+(define-public python-pyacoustid
+  (package
+    (name "python-pyacoustid")
+    (version "1.1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyacoustid" version))
+       (sha256
+        (base32
+         "1zan6c22ca6sjy0g9ajwjp6mkzw7jv8r3n7jzska09a6x254lf87"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-audioread" ,python-audioread)
+       ("python-requests" ,python-requests)))
+    (home-page "https://github.com/sampsyo/pyacoustid")
+    (synopsis "Bindings for Chromaprint acoustic fingerprinting")
+    (description
+     "This package provides bindings for the Chromaprint acoustic
+fingerprinting library and the Acoustid API.")
     (license license:expat)))
