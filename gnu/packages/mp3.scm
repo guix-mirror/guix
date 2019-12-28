@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages cdrom)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
@@ -526,3 +528,27 @@ command-line tool.")
 fingerprints which are used by the Acoustid service.  Its main purpose
 is to provide an accurate identifier for record tracks.")
     (license license:lgpl2.1+)))
+
+(define-public python-audioread
+  (package
+    (name "python-audioread")
+    (version "2.1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "audioread" version))
+       (sha256
+        (base32
+         "0s6iilb8ca6j6nv5a5hbyxi5alr3crvsbr6kggh82a44pkx08f87"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f)) ; there is no "audiofile" fixture
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://github.com/sampsyo/audioread")
+    (synopsis "Decode audio files using whichever backend is available")
+    (description
+     "This package provides a Python library for audo decoding.  It uses
+whatever audio backend is available, such as GStreamer, Core Audio, MAD,
+FFmpeg, etc.")
+    (license license:expat)))
