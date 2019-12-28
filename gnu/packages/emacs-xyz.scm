@@ -799,10 +799,10 @@ programs.")
 
 (define-public emacs-dante
   (let ((commit "38b589417294c7ea44bf65b73b8046d950f9531b")
-        (revision "3"))
+        (revision "1"))
     (package
       (name "emacs-dante")
-      (version (git-version "1.5" revision commit))
+      (version (git-version "1.6" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
