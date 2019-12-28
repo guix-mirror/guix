@@ -2199,7 +2199,7 @@ evaluations.  The entry point is @code{M-x build-farm} command.")
 (define-public emacs-d-mode
   (package
     (name "emacs-d-mode")
-    (version "2.0.9")
+    (version "2.0.10")
     (source
      (origin
        (method git-fetch)
@@ -2208,7 +2208,7 @@ evaluations.  The entry point is @code{M-x build-farm} command.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0fzplvi1sm8k2sabfdvrd7j2xypwqh0g9v1mxa75dajdmcd85zpj"))))
+        (base32 "0915kb9jcaixgindhj85fmykkhvj31ckp1yg6746fznwdgfrlifv"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-undercover" ,emacs-undercover)))
