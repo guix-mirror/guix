@@ -1200,11 +1200,11 @@ or unexpected behavior inside an elisp configuration file (typically
     (name "emacs-wget")
     (version "0.5.0")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://debian/pool/main/w/wget-el/wget-el_"
-                                 version ".orig.tar.gz"))
-             (sha256
-              (base32 "10byvyv9dk0ib55gfqm7bcpxmx2qbih1jd03gmihrppr2mn52nff"))))
+              (method url-fetch)
+              (uri (string-append "mirror://debian/pool/main/w/wget-el/wget-el_"
+                                  version ".orig.tar.gz"))
+              (sha256
+               (base32 "10byvyv9dk0ib55gfqm7bcpxmx2qbih1jd03gmihrppr2mn52nff"))))
     (build-system gnu-build-system)
     (inputs `(("wget" ,wget)))
     (native-inputs `(("emacs" ,emacs-minimal)))
