@@ -11786,7 +11786,7 @@ standard Unix password manager\").")
 
 (define-public emacs-auth-source-pass
   (let ((commit "847a1f54ed48856b4dfaaa184583ef2c84173edf")
-        (revision "1"))
+        (revision "2"))
     (package
       (name "emacs-auth-source-pass")
       (version (git-version "5.0.0" revision commit))
@@ -11794,7 +11794,7 @@ standard Unix password manager\").")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/NicolasPetton/auth-password-store.git")
+               (url "https://github.com/DamienCassou/auth-password-store.git")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -11806,7 +11806,7 @@ standard Unix password manager\").")
                           "-L" "."
                           "-l" "test/auth-source-pass-tests.el"
                           "-f" "ert-run-tests-batch-and-exit")))
-      (home-page "https://github.com/NicolasPetton/auth-password-store")
+      (home-page "https://github.com/DamienCassou/auth-password-store")
       (synopsis "Integrate @code{auth-source} with @code{password-store}")
       (description "This package helps Emacs integrate with the Unix
 @code{password-store} application.")
