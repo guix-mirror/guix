@@ -514,6 +514,7 @@ any X11 window.")
     (native-search-paths
      (list (search-path-specification
             (variable "PASSWORD_STORE_SYSTEM_EXTENSION_DIR")
+            (separator #f)                        ;single entry
             (files '("lib/password-store/extensions")))))
     (inputs
      `(("dmenu" ,dmenu)
