@@ -4788,15 +4788,16 @@ unacceptable HTML and/or CSS from a string.")
     (version "3.6.7")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; Version on rubygems.org does not contain Rakefile, so download from
        ;; GitHub instead.
-       (uri (string-append "https://github.com/ohler55/oj/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+              (url "https://github.com/ohler55/oj")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1x28ga72jxlnmsd8g8c0fw81vlh54r0qgagw2lxsd3x3la091g2h"))))
+         "1fqx58pwjiln7053lw2jy6ns4agcpxq2ac4f2fkd2ca3fxwpmh03"))))
     (build-system ruby-build-system)
     (arguments
      '(#:test-target "test_all"
@@ -4815,7 +4816,7 @@ unacceptable HTML and/or CSS from a string.")
     (description
      "Oj is a JSON parser and generator for Ruby, where the encoding and
 decoding of JSON is implemented as a C extension to Ruby.")
-    (home-page "http://www.ohler.com/oj")
+    (home-page "http://www.ohler.com/oj/")
     (license (list license:expat     ; Ruby code
                    license:bsd-3)))) ; extension code
 
