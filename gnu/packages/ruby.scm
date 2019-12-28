@@ -7,7 +7,7 @@
 ;;; Copyright © 2015, 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017, 2018, 2019 Christopher Baines <mail@cbaines.net>
@@ -3515,15 +3515,16 @@ net/http library.")
     (version "1.13.1")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; Tests are not distributed at rubygems.org so download from GitHub
        ;; instead.
-       (uri (string-append "https://github.com/intridea/multi_json/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+              (url "https://github.com/intridea/multi_json")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1s64xqvrnrxmb59v6b2kchnisawg5ai9ky1w60dy6z6ws9la1xv4"))))
+         "18wpb6p01rrkl4v33byh70vxj2a5jxkfxzv3pz8z6pssy4ymwkm4"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
