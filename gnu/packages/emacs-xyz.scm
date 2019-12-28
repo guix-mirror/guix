@@ -711,8 +711,8 @@ replacement.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/haskell/haskell-mode")
-                     (commit (string-append "v" version))))
+                    (url "https://github.com/haskell/haskell-mode")
+                    (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32 "1qk36y0v9fzass6785il65c6wb5cfj4ihhwkvgnzmbafpa8p4dvq"))
@@ -740,47 +740,47 @@ replacement.")
        (modify-phases %standard-phases
          (delete 'configure)
          (add-before
-          'build 'pre-build
-          (lambda* (#:key inputs #:allow-other-keys)
-            (define (el-dir store-dir)
-              (match (find-files store-dir "\\.el$")
-                ((f1 f2 ...) (dirname f1))
-                (_ "")))
+             'build 'pre-build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (define (el-dir store-dir)
+               (match (find-files store-dir "\\.el$")
+                 ((f1 f2 ...) (dirname f1))
+                 (_ "")))
 
-            (let ((sh (string-append (assoc-ref inputs "bash") "/bin/sh")))
-              (define emacs-prefix? (cut string-prefix? "emacs-" <>))
+             (let ((sh (string-append (assoc-ref inputs "bash") "/bin/sh")))
+               (define emacs-prefix? (cut string-prefix? "emacs-" <>))
 
-              (setenv "SHELL" "sh")
-              (setenv "EMACSLOADPATH"
-                      (string-concatenate
-                       (map (match-lambda
-                              (((? emacs-prefix? name) . dir)
-                               (string-append (el-dir dir) ":"))
-                              (_ ""))
-                            inputs)))
-              (substitute* (find-files "." "\\.el") (("/bin/sh") sh))
-              ;; embed filename to fix test failure
-              (let ((file "tests/haskell-cabal-tests.el"))
-                (substitute* file
-                  (("\\(buffer-file-name\\)")
-                   (format #f "(or (buffer-file-name) ~s)" file))))
-              #t)))
+               (setenv "SHELL" "sh")
+               (setenv "EMACSLOADPATH"
+                       (string-concatenate
+                        (map (match-lambda
+                               (((? emacs-prefix? name) . dir)
+                                (string-append (el-dir dir) ":"))
+                               (_ ""))
+                             inputs)))
+               (substitute* (find-files "." "\\.el") (("/bin/sh") sh))
+               ;; embed filename to fix test failure
+               (let ((file "tests/haskell-cabal-tests.el"))
+                 (substitute* file
+                   (("\\(buffer-file-name\\)")
+                    (format #f "(or (buffer-file-name) ~s)" file))))
+               #t)))
          (replace
-          'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let* ((out (assoc-ref outputs "out"))
-                   (el-dir (string-append out "/share/emacs/site-lisp"))
-                   (doc (string-append
-                         out "/share/doc/haskell-mode-" ,version))
-                   (info (string-append out "/share/info")))
-              (define (copy-to-dir dir files)
-                (for-each (lambda (f)
-                            (install-file f dir))
-                          files))
+             'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (el-dir (string-append out "/share/emacs/site-lisp"))
+                    (doc (string-append
+                          out "/share/doc/haskell-mode-" ,version))
+                    (info (string-append out "/share/info")))
+               (define (copy-to-dir dir files)
+                 (for-each (lambda (f)
+                             (install-file f dir))
+                           files))
 
-              (with-directory-excursion "doc"
-                (invoke "makeinfo" "haskell-mode.texi")
-                (install-file "haskell-mode.info" info))
+               (with-directory-excursion "doc"
+                 (invoke "makeinfo" "haskell-mode.texi")
+                 (install-file "haskell-mode.info" info))
                (copy-to-dir doc '("CONTRIBUTING.md" "NEWS" "README.md"))
                (copy-to-dir el-dir (find-files "." "\\.elc?"))
                ;; These are part of other packages.
