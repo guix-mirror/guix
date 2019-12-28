@@ -495,7 +495,7 @@ process, passing on the arguments as command line arguments.")
 (define-public emacs-minions
   (package
     (name "emacs-minions")
-    (version "0.3.1")
+    (version "0.3.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -504,7 +504,7 @@ process, passing on the arguments as command line arguments.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0q2y37zfxlbfvgdn70ikg3abp8vljna4ir9nyqlz1awmz5i1c43s"))))
+                "16rplpbfy3dnvqqgavk9jb1f1ihr5875zlixd4zxb1pqxs3jkgw3"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
