@@ -15915,7 +15915,7 @@ Pandoc, the document-conversion tool.")
       (synopsis "Emacs support for the @code{ccls} language server")
       (description "This package extends @code{lsp-mode} to work with @code{C}
 and @code{C++} files through the @code{ccls} language server.")
-      (license license:bsd-3))))
+      (license license:expat))))
 
 (define-public emacs-org-brain
   (package
