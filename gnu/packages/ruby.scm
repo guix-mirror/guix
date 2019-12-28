@@ -6802,15 +6802,15 @@ and locking between worker processes.")
     (version "1.8.2")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; Fetch from github so tests are included.
-       (uri (string-append
-             "https://github.com/rubyworks/ae/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+              (url "https://github.com/rubyworks/ae")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "147jmkx54x7asy2d8m4dyrhhf4hdx4galpnhwzai030y3cdsfrrl"))))
+         "11299jj5ma8mi7b4majkyjy70y6zlqpgl8aql1c5lvfjavlpwmlp"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -6836,7 +6836,7 @@ and locking between worker processes.")
     (description
      "Assertive Expressive (AE) is an assertions library specifically designed
 for reuse by other test frameworks.")
-    (home-page "https://rubyworks.github.io/ae")
+    (home-page "https://rubyworks.github.io/ae/")
     (license license:bsd-2)))
 
 (define-public ruby-lemon
