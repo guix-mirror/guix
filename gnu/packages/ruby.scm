@@ -6578,14 +6578,15 @@ requests either using arguments or with an interactive prompt.")
     (version "1.5.0")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; Fetch from GitHub as the gem does not contain testing code.
-       (uri (string-append "https://github.com/rubyworks/ansi/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+              (url "https://github.com/rubyworks/ansi")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1zdip30hivyipi8hndhb457bhiz033awd00bgrsk5axjrwp6zhly"))))
+         "1wsz7xxwl3vkh277jb7fd7akqnqqgbvalxzpjwniiqk8ghfprbi5"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -6616,7 +6617,7 @@ methods, a @code{Mixin} module for including color methods, a @code{Logger}, a
 @code{ProgressBar}, and a @code{String} subclass.  The library also includes a
 @code{Terminal} module which provides information about the current output
 device.")
-    (home-page "https://rubyworks.github.io/ansi")
+    (home-page "https://rubyworks.github.io/ansi/")
     (license license:bsd-2)))
 
 (define-public ruby-systemu
