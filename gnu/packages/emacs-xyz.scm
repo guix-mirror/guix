@@ -1960,8 +1960,8 @@ single buffer.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/politza/tablist.git")
-                     (commit (string-append "v" version))))
+                    (url "https://github.com/politza/tablist.git")
+                    (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
