@@ -3930,16 +3930,17 @@ invocation, and source and documentation browsing.")
     (name "ruby-guard")
     (version "2.13.0")
     (source (origin
-              (method url-fetch)
+              (method git-fetch)
               ;; The gem does not include a Rakefile, nor does it contain a
               ;; gemspec file, nor does it come with the tests.  This is why
               ;; we fetch the tarball from Github.
-              (uri (string-append "https://github.com/guard/guard/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (git-reference
+                     (url "https://github.com/guard/guard")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1hwj0yi17k6f5axrm0k2bb7fq71dlp0zfywmd7pij9iimbppcca0"))))
+                "16pxcszr0g2jnl3090didxh1d8z5m2mly14m3w4rspb8fmclsnjs"))))
     (build-system ruby-build-system)
     (arguments
      `(#:tests? #f ; tests require cucumber
@@ -3970,7 +3971,7 @@ invocation, and source and documentation browsing.")
      "Guard is a command line tool to easily handle events on file system
 modifications.  Guard automates various tasks by running custom rules whenever
 file or directories are modified.")
-    (home-page "http://guardgem.org/")
+    (home-page "https://guardgem.org/")
     (license license:expat)))
 
 (define-public ruby-tilt
