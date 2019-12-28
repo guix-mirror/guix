@@ -6346,7 +6346,12 @@ so it might be a tiny bit slower.")
        (modify-phases %standard-phases
          (replace 'build
            (lambda _
-             (invoke "python" "waf-light" "configure" "build")))
+             ;; XXX: Find a way to add all extra tools.
+             (let ((tools '("gccdeps"
+                            "clang_compilation_database")))
+               (invoke "python" "waf-light" "configure" "build"
+                       (string-append "--tools="
+                                      (string-join tools ","))))))
          (replace 'check
            (lambda _
              (invoke "python" "waf" "--version")))
