@@ -2249,13 +2249,13 @@ running Extempore process, and more.")
     (name "emacs-keyfreq")
     (version "20160516.716")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "http://melpa.org/packages/keyfreq-"
-               version ".el"))
-        (sha256
-          (base32
-            "008hd7d06qskc3mx0bbdgpgy2pwxr8185fzlyqf9qjg49y74p6g8"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://melpa.org/packages/keyfreq-"
+                           version ".el"))
+       (sha256
+        (base32
+         "008hd7d06qskc3mx0bbdgpgy2pwxr8185fzlyqf9qjg49y74p6g8"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/dacap/keyfreq")
     (synopsis "Track Emacs command frequencies")
