@@ -1864,8 +1864,8 @@ written in the Go programming language.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/jd/google-maps.el.git")
-                     (commit version)))
+                    (url "https://github.com/jd/google-maps.el.git")
+                    (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
