@@ -1423,8 +1423,8 @@ light user interface.")
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/momomo5717/emms-mode-line-cycle")
-              (commit version)))
+             (url "https://github.com/momomo5717/emms-mode-line-cycle")
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32
