@@ -155,5 +155,5 @@ with window managers that do not provide compositing.
 
 Picom is a fork of compton, which is a fork of xcompmgr-dana,
 which in turn is a fork of xcompmgr.")
-    (license (list license:expat      ; The original compton lincense.
+    (license (list license:expat      ; The original compton license.
                    license:mpl2.0)))) ; License used by new picom files.
