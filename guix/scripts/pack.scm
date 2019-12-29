@@ -753,11 +753,6 @@ last resort for relocation."
                  (manifest-entry-output entry)
                  args))))
 
-(define (map-manifest-entries proc manifest)
-  "Apply PROC to all the entries of MANIFEST and return a new manifest."
-  (make-manifest
-   (map proc (manifest-entries manifest))))
-
 
 ;;;
 ;;; Command-line options.

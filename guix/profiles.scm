@@ -93,6 +93,7 @@
             manifest-pattern-output
 
             concatenate-manifests
+            map-manifest-entries
             manifest-remove
             manifest-add
             manifest-lookup
@@ -519,6 +520,11 @@ procedure is here for backward-compatibility and will eventually vanish."
 (define (concatenate-manifests lst)
   "Concatenate the manifests listed in LST and return the resulting manifest."
   (manifest (append-map manifest-entries lst)))
+
+(define (map-manifest-entries proc manifest)
+  "Apply PROC to all the entries of MANIFEST and return a new manifest."
+  (make-manifest
+   (map proc (manifest-entries manifest))))
 
 (define (entry-predicate pattern)
   "Return a procedure that returns #t when passed a manifest entry that
