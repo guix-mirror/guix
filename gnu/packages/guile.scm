@@ -595,6 +595,9 @@ Guile's foreign function interface.")
                (base32
                 "0q0habjiy3h9cigb7q1br9kz6z212dn2ab31f6dgd3rrmsfn5rvb"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags
+       '("GUILE_AUTO_COMPILE=0"))) ;to prevent guild warnings
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
