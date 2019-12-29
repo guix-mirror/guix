@@ -9091,6 +9091,12 @@ and a high score table.")
         (base32
          "06aqg9asq2vqi9wr29bs4v8z2bf4manhbhfghf4nvw01y2zs0jvw"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       ;; Don't create 'icon-theme.cache'.
+       (let* ((coreutils (assoc-ref %build-inputs "coreutils"))
+              (true      (string-append coreutils "/bin/true")))
+         (list (string-append "GTK_UPDATE_ICON_CACHE=" true)))))
     (native-inputs
      `(("glib:bin" ,glib "bin")
        ("intltool" ,intltool)
