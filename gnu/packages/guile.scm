@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018 Amirouche <amirouche@hypermove.net>
 ;;; Copyright © 2018 Danny Milosavljevic <dannym@scratchpost.org>
@@ -584,7 +584,7 @@ Guile's foreign function interface.")
 (define-public guile-bytestructures
   (package
     (name "guile-bytestructures")
-    (version "1.0.6")
+    (version "1.0.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/TaylanUB/scheme-bytestructures"
@@ -592,7 +592,7 @@ Guile's foreign function interface.")
                                   "/bytestructures-" version ".tar.gz"))
               (sha256
                (base32
-                "07dffrmc6cnw9mmw0pdrqlkbhzzpz0hm8p26z738l2j5i84dypnk"))))
+                "0q0habjiy3h9cigb7q1br9kz6z212dn2ab31f6dgd3rrmsfn5rvb"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
