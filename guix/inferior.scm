@@ -82,6 +82,7 @@
             inferior-package-native-search-paths
             inferior-package-transitive-native-search-paths
             inferior-package-search-paths
+            inferior-package-provenance
             inferior-package-derivation
 
             inferior-package->manifest-entry
@@ -415,6 +416,19 @@ package."
 
 (define inferior-package-transitive-native-search-paths
   (cut %inferior-package-search-paths <> 'package-transitive-native-search-paths))
+
+(define (inferior-package-provenance package)
+  "Return a \"provenance sexp\" for PACKAGE, an inferior package.  The result
+is similar to the sexp returned by 'package-provenance' for regular packages."
+  (inferior-package-field package
+                          '(let* ((describe
+                                   (false-if-exception
+                                    (resolve-interface '(guix describe))))
+                                  (provenance
+                                   (false-if-exception
+                                    (module-ref describe
+                                                'package-provenance))))
+                             (or provenance (const #f)))))
 
 (define (proxy client backend)                    ;adapted from (guix ssh)
   "Proxy communication between CLIENT and BACKEND until CLIENT closes the
