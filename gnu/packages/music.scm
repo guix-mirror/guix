@@ -2569,11 +2569,21 @@ socket or command line.")
                  (base32
                   "11bf0jnj8h2fxhpdp498189r4s6b47vy4wripv0z4nx7lxajl88i"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'link-to-mpv
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "curseradio/curseradio.py"
+               (("/usr/bin/mpv")
+                (string-append (assoc-ref inputs "mpv") "/bin/mpv")))
+             #t)))))
     (propagated-inputs
      `(("python-lxml" ,python-lxml)
        ("python-requests" ,python-requests)
-       ("python-pyxdg" ,python-pyxdg)
-       ("mpv" ,mpv)))
+       ("python-pyxdg" ,python-pyxdg)))
+    (inputs
+     `(("mpv" ,mpv)))
     (home-page "https://github.com/chronitis/curseradio")
     (synopsis "Command-line Internet radio player")
     (description "Curseradio is a Curses-based radio player that uses a
