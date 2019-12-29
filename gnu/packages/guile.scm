@@ -601,7 +601,8 @@ Guile's foreign function interface.")
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("guile" ,guile-2.2)))
     (inputs
      `(("guile" ,guile-2.2)))
     (synopsis "Structured access to bytevector contents for Guile")
