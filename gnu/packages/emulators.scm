@@ -1162,6 +1162,20 @@ multi-system game/emulator system.")
        #:configure-flags (list "--enable-release") ;for optimizations
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-build
+           ;; XXX: The following works around a build failure introduced when
+           ;; Fluidsynth was updated to version 2.1.  It has been applied
+           ;; upstream as 68758a879e0c8ecc0d40962516d4e808aa4e15e5 and can be
+           ;; removed once ScummVM 2.1.1+ is out.
+           (lambda _
+             (substitute* "audio/softsynth/fluidsynth.cpp"
+               (("#include <fluidsynth.h>") "")
+               (("#include \"common/scummsys.h\"") "#include \"config.h\"")
+               (("#include \"common/config-manager.h\"" line)
+                (string-append "#include <fluidsynth.h>\n"
+                               "#include \"common/scummsys.h\"\n"
+                               line)))
+             #t))
          (replace 'configure
            ;; configure does not work followed by both "SHELL=..." and
            ;; "CONFIG_SHELL=..."; set environment variables instead
