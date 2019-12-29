@@ -2874,6 +2874,7 @@ portions of LAME.")
        ("pkg-config" ,pkg-config)))
     (arguments
      '(#:tests? #f                      ;no 'check' target
+       #:parallel-build? #f             ;fails on some systems
        #:configure-flags '("--with-pic"
                            "--enable-cxx"
                            ;; XXX: The following prevents a build error
