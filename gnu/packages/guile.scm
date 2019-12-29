@@ -585,20 +585,22 @@ Guile's foreign function interface.")
   (package
     (name "guile-bytestructures")
     (version "1.0.7")
+    (home-page "https://github.com/TaylanUB/scheme-bytestructures")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/TaylanUB/scheme-bytestructures"
-                                  "/releases/download/v" version
-                                  "/bytestructures-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
               (sha256
                (base32
                 "0q0habjiy3h9cigb7q1br9kz6z212dn2ab31f6dgd3rrmsfn5rvb"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("guile" ,guile-2.2)))
-    (home-page "https://github.com/TaylanUB/scheme-bytestructures")
     (synopsis "Structured access to bytevector contents for Guile")
     (description
      "Guile bytestructures offers a system imitating the type system
