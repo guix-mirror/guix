@@ -5753,14 +5753,15 @@ A modified copy of yajl is used, and included in the package.")
     (version "0.9.16")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; Tests do not pass if we build from the distributed gem.
-       (uri (string-append "https://github.com/lsegal/yard/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+              (url "https://github.com/lsegal/yard")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0sqpbayy9sb406jh0zqg6qha1xds863qz9531dh6vp58hc00clfq"))))
+         "0a4r1pfs0ms4vlccsf1x2jckx35lqm8b8lh6rdjxqfr5fia5izpf"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
