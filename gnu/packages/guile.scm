@@ -591,6 +591,7 @@ Guile's foreign function interface.")
               (uri (git-reference
                     (url home-page)
                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "0q0habjiy3h9cigb7q1br9kz6z212dn2ab31f6dgd3rrmsfn5rvb"))))
