@@ -10,6 +10,7 @@
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
+;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -818,7 +819,10 @@ package or any valid argument to @command{setfont}, as in this example:
 '((\"tty1\" . \"LatGrkCyr-8x16\")
   (\"tty2\" . (file-append
                 font-tamzen
-                \"/share/kbd/consolefonts/TamzenForPowerline10x20.psf\")))
+                \"/share/kbd/consolefonts/TamzenForPowerline10x20.psf\"))
+  (\"tty3\" . (file-append
+                font-terminus
+                \"/share/consolefonts/ter-132n\"))) ; for HDPI
 @end example\n")))
 
 (define* (console-font-service tty #:optional (font "LatGrkCyr-8x16"))
