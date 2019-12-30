@@ -7730,6 +7730,114 @@ the World and demonstrating that he is even more evil than his brother Vlad.")
     ;; Drascula uses a BSD-like license.
     (license (license:non-copyleft "file:///readme.txt"))))
 
+(define (make-lure-package name language hash)
+  (package
+    (name name)
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://sourceforge/scummvm/extras/"
+             "Lure%20of%20the%20Temptress/"
+             name "-" version ".zip"))
+       (sha256
+        (base32 hash))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((out (assoc-ref %outputs "out"))
+                (share (string-append out "/share"))
+                (data (string-append share "/lure/" ,language))
+                (apps (string-append share "/applications"))
+                (bin (string-append out "/bin"))
+                (executable (string-append bin "/" ,name))
+                (scummvm (assoc-ref %build-inputs "scummvm")))
+           (let ((unzip (string-append (assoc-ref %build-inputs "unzip")
+                                       "/bin/unzip")))
+             (invoke unzip "-j" (assoc-ref %build-inputs "source")))
+           (let ((doc (string-append share "/doc/lure-" ,version)))
+             (for-each (lambda (f) (install-file f doc))
+                       (find-files "." "\\.(txt|PDF|pdf)$")))
+           (for-each (lambda (f) (install-file f data))
+                     (find-files "." "\\.(vga|VGA)$"))
+           ;; Build the executable.
+           (mkdir-p bin)
+           (let ((bash (assoc-ref %build-inputs "bash")))
+             (with-output-to-file executable
+               (lambda ()
+                 (format #t "#!~a/bin/bash~%" bash)
+                 (format #t "exec ~a/bin/scummvm -q ~a -p ~a lure~%"
+                         scummvm ,language data))))
+           (chmod executable #o755)
+           ;; Create desktop file.  There is no dedicated
+           ;; icon for the game, so we borrow SCUMMVM's.
+           (mkdir-p apps)
+           (with-output-to-file (string-append apps "/" ,name ".desktop")
+             (lambda _
+               (format #t
+                       "[Desktop Entry]~@
+                     Name=Lure of the Temptress~@
+                     GenericName=Lure~@
+                     Exec=~a~@
+                     Icon=~a/share/icons/hicolor/scalable/apps/scummvm.svg~@
+                     Categories=AdventureGame;Game;RolePlaying;~@
+                     Keywords=game;adventure;roleplaying;2D,fantasy;~@
+                     Comment=Classic 2D point and click adventure game~@
+                     Comment[de]=klassisches 2D-Abenteuerspiel in Zeigen-und-Klicken-Manier~@
+                     Comment[fr]=Jeu classique d'aventure pointer-et-cliquer en 2D~@
+                     Comment[it]=Gioco classico di avventura punta e clicca 2D~@
+                     Type=Application~%"
+                       executable scummvm)))
+           #t))))
+    (native-inputs
+     `(("bash" ,bash)
+       ("unzip" ,unzip)))
+    (inputs
+     `(("scummvm" ,scummvm)))
+    (home-page "https://www.scummvm.org")
+    (synopsis "2D point and click fantasy adventure game")
+    (description
+     "Lure of the Temptress is a classic 2D point and click adventure game.
+
+You are Diermot, an unwilling hero who'd prefer a quiet life, and are, to all
+intents and purposes, a good man.  After decades of unrest the King has united
+the warring factions in his kingdom and all his lands are at peace, except
+a remote region around a town called Turnvale.  A revolt has recently taken
+place in Turnvale, a revolt orchestrated by an apprentice sorceress called
+Selena, the titular temptress.  The king calls together his finest horsemen
+and heads off (with you in tow) to Turnvale just to witness how hellish
+mercenary monsters called Skorl are invading the town.
+
+The king's men are defeated, the king is killed and you fall of your horse and
+bang your head heavily on the ground.  You have been *unconscious for a while
+when you realize that you are in a dingy cell guarded by a not so friendly
+Skorl.  Maybe it would be an idea to try and escape...")
+    (license (license:non-copyleft "file:///README"))))
+
+(define-public lure
+  (make-lure-package
+   "lure" "en" "0201i70qcs1m797kvxjx3ygkhg6kcl5yf49sihba2ga8l52q45zk"))
+
+(define-public lure-de
+  (make-lure-package
+   "lure-de" "de" "0sqq7h5llml6rv85x0bfv4bgzwhs4c82p4w4zmfcaab6cjlad0sy"))
+
+(define-public lure-es
+  (make-lure-package
+   "lure-es" "es" "1dvv5znvlsakw6w5r16calv9jkgw27aymgybsf4q22lcmpxbj1lk"))
+
+(define-public lure-fr
+  (make-lure-package
+   "lure-fr" "fr" "1y51jjb7f8023832g44vd1jsb6ni85586pi2n5hjg9qjk6gi90r9"))
+
+(define-public lure-it
+  (make-lure-package
+   "lure-it" "it" "1ks6n39r1cllisrrh6pcr39swsdv7ng3gx5c47vaw71zzfr70hjj"))
+
 (define-public gnurobots
   (package
     (name "gnurobots")
