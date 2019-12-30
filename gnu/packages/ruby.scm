@@ -5068,16 +5068,15 @@ generates Ruby program.")
     (version "2.0.6")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; Download from GitHub so that the patch can be applied.
-       (uri (string-append
-             "https://github.com/rack/rack/archive/"
-             version
-             ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+              (url "https://github.com/rack/rack")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0pb3g5ymvbf07xaxcn51dpqv3djlxavckp3qkxsjdxiqznb0d9p1"))
+         "1n7z4g1x6yxip096cdc04wq7yk7ywpinq28g2xjb46r4nlv5h0j6"))
        ;; Ignore test which fails inside the build environment but works
        ;; outside.
        (patches (search-patches "ruby-rack-ignore-failing-test.patch"))))
@@ -5103,7 +5102,15 @@ generates Ruby program.")
                                  (number->string (+ 22 size-diff))
                                  "-"
                                  (number->string (+ 33 size-diff))))))
-             #t)))))
+             #t))
+         (add-before 'reset-gzip-timestamps 'make-files-writable
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Make sure .gz files are writable so that the
+             ;; 'reset-gzip-timestamps' phase can do its work.
+             (let ((out (assoc-ref outputs "out")))
+               (for-each make-file-writable
+                         (find-files out "\\.gz$"))
+               #t))))))
     (native-inputs
      `(("ruby-minitest" ,ruby-minitest)
        ("ruby-minitest-sprint" ,ruby-minitest-sprint)
