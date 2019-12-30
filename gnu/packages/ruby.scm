@@ -7013,15 +7013,15 @@ binary-to-text encoding.  The main modern use of Ascii85 is in PostScript and
     (version "1.5.1")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; fetch from github as the gem does not contain testing code
-       (uri (string-append
-             "https://github.com/prawnpdf/ttfunk/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+              (url "https://github.com/prawnpdf/ttfunk")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1ymcn12n5iws401yz03zsj8rr653fdqq13czsrciq09phgh9jzc5"))))
+         "0dx9891zcli0sjrslmsvrwalv86hbjbqlmbrcasnjr069v05h9v9"))))
     (build-system ruby-build-system)
     (arguments
      `(#:test-target "spec"
