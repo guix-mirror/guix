@@ -246,6 +246,29 @@ Desktop.  It is designed to be as simple as possible and has some unique
 features to enable users to create their discs easily and quickly.")
     (license license:gpl2+)))
 
+(define-public gnome-menus
+  (package
+    (name "gnome-menus")
+    (version "3.32.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/gnome-menus/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0x2blzqrapmbsbfzxjcdcpa3vkw9hq5k96h9kvjmy9kl415wcl68"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib" ,glib)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Menu support for GNOME desktop")
+    (description "GNOME Menus contains the libgnome-menu library, the layout
+configuration files for the GNOME menu, as well as a simple menu editor.")
+    (home-page "https://gitlab.gnome.org/GNOME/gnome-menus")
+    (license license:gpl2)))
+
 (define-public deja-dup
   (package
     (name "deja-dup")
