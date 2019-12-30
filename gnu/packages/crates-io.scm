@@ -3048,13 +3048,15 @@ file IO.")
         (sha256
          (base32 "1bmanbbcdmssfbgik3fs323g7vljc5wkjz7s61jsbbz2kg0nckrh"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs (("rust-adler32" ,rust-adler32-1.0))))
     (home-page  "https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide")
     (synopsis "Pure rust replacement for the miniz DEFLATE/zlib encoder/decoder")
     (description
      "A pure rust replacement for the miniz DEFLATE/zlib encoder/decoder.  Using
 @code{flate2} with the @code{rust_backend} feature provides an easy to use
 streaming API for miniz_oxide.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-miniz-oxide-0.2
