@@ -67,12 +67,15 @@ the Rust programming language.")
          (base32
           "16wpvrghvd0353584i1idnsgm0r3vchg8fyrm0x8ayv1rgvbljgf"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-winapi" ,rust-winapi-0.3))))
     (home-page "https://github.com/ogham/rust-ansi-term")
     (synopsis "Library for ANSI terminal colours and styles")
     (description
      "This is a library for controlling colours and formatting, such as red bold
 text or blue underlined text, on ANSI terminals.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-antidote-1.0
