@@ -2982,6 +2982,7 @@ useful types and distributions, and some randomness-related algorithms.")
 
 (define-public rust-rand-core-0.4
   (package
+    (inherit rust-rand-core-0.5)
     (name "rust-rand-core")
     (version "0.4.2")
     (source
@@ -2992,15 +2993,11 @@ useful types and distributions, and some randomness-related algorithms.")
         (sha256
          (base32
           "1p09ynysrq1vcdlmcqnapq4qakl2yd1ng3kxh3qscpx09k2a6cww"))))
-    (build-system cargo-build-system)
-    (home-page "https://crates.io/crates/rand_core")
-    (synopsis
-      "Core random number generator traits and tools for implementation.")
-    (description
-      "Core random number generator traits and tools for implementation.")
-    (properties '((hidden? . #t)))
-    (license (list license:asl2.0
-                   license:expat))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0))))))
 
 (define-public rust-rand-core-0.3
   (package
