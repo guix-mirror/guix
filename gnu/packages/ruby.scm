@@ -7054,14 +7054,15 @@ part of the Prawn PDF generator.")
     (version "3.9.1")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; Fetch from GitHub because distributed gem does not contain tests.
-       (uri (string-append "https://github.com/puma/puma/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+              (url "https://github.com/puma/puma")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "03pifga841h17brh4vgia8i2ybh3cmsyg0dbybzdf6dq51wzcxdx"))))
+         "1kj75k81iik3aj73pkc9ixj9rwf95ipkyma65n28m64dgw02qi1f"))))
     (build-system ruby-build-system)
     (arguments
      `(#:tests? #f ; Tests require an out-dated version of minitest.
@@ -7079,7 +7080,7 @@ for Ruby/Rack applications.  Puma is intended for use in both development and
 production environments.  In order to get the best throughput, it is highly
 recommended that you use a Ruby implementation with real threads like Rubinius
 or JRuby.")
-    (home-page "http://puma.io")
+    (home-page "https://puma.io/")
     (license license:expat)))
 
 (define-public ruby-hoe-git
