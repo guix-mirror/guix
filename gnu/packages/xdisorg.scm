@@ -117,20 +117,28 @@
                   #t))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2     ;incompatible with python 3
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'build 'configure
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "screenlayout/xrandr.py"
                (("\"xrandr\"") (string-append "\"" (assoc-ref inputs "xrandr")
                                               "/bin/xrandr\"")))
+             #t))
+         (add-after 'install 'wrap-gi-typelib
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out               (assoc-ref outputs "out"))
+                   (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
+               (wrap-program (string-append out "/bin/arandr")
+                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
              #t)))
        #:tests? #f)) ;no tests
-    (inputs `(("pygtk" ,python2-pygtk)
+    (inputs `(("gtk+" ,gtk+)
+              ("pycairo" ,python-pycairo)
+              ("pygobject" ,python-pygobject)
               ("xrandr" ,xrandr)))
     (native-inputs `(("gettext"           ,gettext-minimal)
-                     ("python-docutils"   ,python2-docutils)))
+                     ("python-docutils"   ,python-docutils)))
     (home-page "https://christian.amsuess.com/tools/arandr/")
     (synopsis "Another RandR graphical user interface")
     ;; TRANSLATORS: "X11 resize-and-rotate" should not be translated.
