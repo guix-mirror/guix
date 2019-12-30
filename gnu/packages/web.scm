@@ -1516,7 +1516,7 @@ minimum to provide high performance operation.")
 (define-public libsass
   (package
     (name "libsass")
-    (version "3.5.5")
+    (version "3.6.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1525,7 +1525,7 @@ minimum to provide high performance operation.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0830pjcvhzxh6yixj82x5k5r1xnadjqzi16kp53213icbly0r9ma"))))
+                "1vn0q343d1vxz5q0xb6f9dzjah8z6j0s6x0lwvwdd55xa8z7rsnh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
