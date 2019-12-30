@@ -270,14 +270,14 @@ unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
 (define-public git-annex
   (package
     (name "git-annex")
-    (version "7.20191218")
+    (version "7.20191230")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/"
                            "git-annex/git-annex-" version ".tar.gz"))
        (sha256
-        (base32 "1dy5255x2cx68313p6vchqy5q1l0na8ckf5mkfi080hkhq8vj2q6"))))
+        (base32 "1xsd4vhiv3zkcqjh2pxhbkjx75hcalcc9bpdlfc27wzxsxyrwz12"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags
@@ -356,6 +356,7 @@ unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
        ("ghc-esqueleto" ,ghc-esqueleto)
        ("ghc-exceptions" ,ghc-exceptions)
        ("ghc-feed" ,ghc-feed)
+       ("ghc-filepath-bytestring" ,ghc-filepath-bytestring)
        ("ghc-free" ,ghc-free)
        ("ghc-hslogger" ,ghc-hslogger)
        ("ghc-http-client" ,ghc-http-client)
