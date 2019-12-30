@@ -1550,7 +1550,7 @@ stylesheets, you'll need to use another program that uses this library,
 (define-public sassc
   (package
     (name "sassc")
-    (version "3.5.0")
+    (version "3.6.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1559,7 +1559,7 @@ stylesheets, you'll need to use another program that uses this library,
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0jsfz1zg4gwk0dq8i92ll12axs3s70wsdsmdyi71zx8zmvib5nl6"))))
+                "1sxm54mkhs9m4vnl7vn11y17mhzamc403hv3966j1c7p2rbzg5pv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
