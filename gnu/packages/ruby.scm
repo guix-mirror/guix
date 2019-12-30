@@ -4066,17 +4066,16 @@ aware transformations between times in different time zones.")
     (version "1.2017.3")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; Download from GitHub because the rubygems version does not contain
        ;; Rakefile or tests.
-       (uri (string-append
-             "https://github.com/tzinfo/tzinfo-data/archive/v"
-             version
-             ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+              (url "https://github.com/tzinfo/tzinfo-data")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "01wff7syqzikbxalbg3isgxasmvzicr85bzadzkb6bf20bip4v54"))
+         "0v3phl5l3jrm6waxcszqmj2dkjhqawxfsxb6mss7vkp1hlckqcdp"))
        ;; Remove the known test failure.
        ;; https://github.com/tzinfo/tzinfo-data/issues/10
        ;; https://bugs.launchpad.net/ubuntu/+source/glibc/+bug/1587128
