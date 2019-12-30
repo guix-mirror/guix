@@ -5804,8 +5804,12 @@ useful types and distributions, and some randomness-related algorithms.")
         (sha256
          (base32
           "1vxwyzs4fy1ffjc8l00fsyygpiss135irjf7nyxgq2v0lqf3lvam"))))
-    (arguments `())
-    (properties '((hidden? . #t)))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-rand-core" ,rust-rand-core-0.3))
+       #:cargo-development-inputs
+       (("rust-autocfg" ,rust-autocfg-0.1))))))
 
 (define-public rust-rand-core-0.5
   (package
