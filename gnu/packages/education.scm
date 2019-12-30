@@ -495,7 +495,7 @@ letters of the alphabet, spelling, eye-hand coordination, etc.")
                                   "fet-" version ".tar.bz2"))
               (sha256
                (base32
-                "0wwfg8vdh4vp4bx043h66m5m0r1b0mlii36s1qq42pdbaxk94i23"))))
+                "1dzlbhp42dxdxbcrjwrjl4kj65cibxgjqc3ir1w78yprikihdxca"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
