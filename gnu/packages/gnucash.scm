@@ -57,15 +57,15 @@
   ;; directory.
   (package
     (name "gnucash")
-    (version "3.7")
+    (version "3.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/gnucash/gnucash%20%28stable%29/"
-                           version "/gnucash-" version ".tar.bz2"))
+                           version "/gnucash-" version "b" ".tar.bz2"))
        (sha256
         (base32
-         "1d2qi3ny0bxa16ifh3465z1jgn1l0fmqk9dkph4ialw076gv13kb"))))
+         "0dvzm3bib7jcj685sklpzyy9mrak9mxyvih2k9fk4sl3v21wlphg"))))
     (build-system cmake-build-system)
     (inputs
      `(("guile" ,guile-2.2)
@@ -208,7 +208,7 @@ installed as well as Yelp, the Gnome help browser.")
                              version "/gnucash-docs-" version revision ".tar.gz"))
          (sha256
           (base32
-           "1h4hm58ikffbhplx4gm8pzm9blfwqa1sz8yc2fqi21vs5v0ijf9r"))))
+           "19v6kchda724xkkgwlw5rg21jcpirhch12j9sr6ibnv61sd4ql52"))))
       (build-system gnu-build-system)
       ;; These are native-inputs because they are only required for building the
       ;; documentation.
