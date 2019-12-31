@@ -40,6 +40,7 @@
             progress-reporter/file
             progress-reporter/bar
             progress-reporter/trace
+            progress-report-port
 
             display-download-progress
             erase-current-line
@@ -342,3 +343,33 @@ should be a <progress-reporter> object."
               (put-bytevector out buffer 0 bytes)
               (report total)
               (loop total (get-bytevector-n! in buffer 0 buffer-size))))))))
+
+(define (progress-report-port reporter port)
+  "Return a port that continuously reports the bytes read from PORT using
+REPORTER, which should be a <progress-reporter> object."
+  (match reporter
+    (($ <progress-reporter> start report stop)
+     (let* ((total 0)
+            (read! (lambda (bv start count)
+                     (let ((n (match (get-bytevector-n! port bv start count)
+                                ((? eof-object?) 0)
+                                (x x))))
+                       (set! total (+ total n))
+                       (report total)
+                       n))))
+       (start)
+       (make-custom-binary-input-port "progress-port-proc"
+                                      read! #f #f
+                                      (lambda ()
+                                        ;; XXX: Kludge!  When used through
+                                        ;; 'decompressed-port', this port ends
+                                        ;; up being closed twice: once in a
+                                        ;; child process early on, and at the
+                                        ;; end in the parent process.  Ignore
+                                        ;; the early close so we don't output
+                                        ;; a spurious "download-succeeded"
+                                        ;; trace.
+                                        (unless (zero? total)
+                                          (stop))
+                                        (close-port port)))))))
+

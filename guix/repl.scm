@@ -37,7 +37,7 @@
                              (or (pred x)
                                  (one-of rest ...))))))
     (one-of symbol? string? keyword? pair? null? array?
-            number? boolean?)))
+            number? boolean? char?)))
 
 (define (send-repl-response exp output)
   "Write the response corresponding to the evaluation of EXP to PORT, an

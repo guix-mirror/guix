@@ -3998,6 +3998,29 @@ directories.  It includes code for pattern matching, finding files, modifying
 file contents, and more.")
     (license license:bsd-3)))
 
+(define-public ghc-filepath-bytestring
+  (package
+    (name "ghc-filepath-bytestring")
+    (version "1.4.2.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+              "https://hackage.haskell.org/package/filepath-bytestring/"
+              "filepath-bytestring-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06shdskjj391hb9295slm9gg2rbn5fdq5v6fg0mgn3yl5dv8q5dx"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "http://hackage.haskell.org/package/filepath-bytestring")
+    (synopsis "Library for manipulating RawFilePaths in a cross-platform way")
+    (description "This package provides a drop-in replacement for the standard
+@code{filepath} library, operating on @code{RawFilePath} values rather than
+@code{FilePath} values to get the speed benefits of using @code{ByteStrings}.")
+    (license license:bsd-3)))
+
 (define-public ghc-findbin
   (package
     (name "ghc-findbin")

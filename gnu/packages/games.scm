@@ -502,6 +502,45 @@ cows can think too: all you have to do is run @command{cowthink}.  If you're
 tired of cows, a variety of other ASCII-art messengers are available.")
     (license license:gpl3+)))
 
+(define-public lolcat
+  (let ((commit "35dca3d0a381496d7195cd78f5b24aa7b62f2154")
+        (revision "0"))
+    (package
+      (name "lolcat")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jaseg/lolcat.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "0jjbkqcc2ikjxd1xgdyv4rb0vsw218181h89f2ywg29ffs3ypd8g"))
+         (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ;; no check target
+         #:make-flags (list "CC=gcc")
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'bootstrap)
+           (delete 'configure)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out  (assoc-ref outputs "out"))
+                      (dest (string-append out "/bin")))
+                 (mkdir-p dest)
+                 (install-file "lolcat" dest)
+                 (install-file "censor" dest)
+                 #t))))))
+      (home-page "https://github.com/jaseg/lolcat")
+      (synopsis "Rainbow coloring effect for text console display")
+      (description "@command{lolcat} concatenates files and streams like
+regular @command{cat}, but it also adds terminal escape codes between
+characters and lines resulting in a rainbow effect.")
+      (license license:wtfpl2))))
+
 (define-public freedoom
   (package
     (name "freedoom")
@@ -907,7 +946,7 @@ watch your CPU playing while enjoying a cup of tea!")
 (define-public nethack
   (package
     (name "nethack")
-    (version "3.6.2")
+    (version "3.6.4")
     (source
       (origin
         (method url-fetch)
@@ -915,7 +954,7 @@ watch your CPU playing while enjoying a cup of tea!")
          (string-append "https://www.nethack.org/download/" version "/nethack-"
                         (string-join (string-split version #\.) "") "-src.tgz"))
         (sha256
-          (base32 "07fvkm3v11a4pjrq2f66vjslljsvk6raal53skn4gqsfdbd0ml7v"))))
+          (base32 "0ndxgnsprwgjnk0qb24iljkpijnfncgvfb3h3zb129h3cs2anc85"))))
     (inputs
       `(("ncurses" ,ncurses)
         ("bison" ,bison)
@@ -7915,7 +7954,6 @@ can be downloaded from @url{https://zero.sjeng.org/best-network}.")
                           "/src/ktuberling-" version ".tar.xz"))
       (sha256
        (base32 "1qdf4q6wjh1lnlqw5c8z4rpj9w5vbyjfri1dah6yjm3mwppbc12j"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -7965,7 +8003,6 @@ This package is part of the KDE games module.")
                           "/src/picmi-" version ".tar.xz"))
       (sha256
        (base32 "0z9mpmv49w914gqdx274brdzl6d1bz9j9nkvbwgmr3iq1ba49m3f"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -8003,7 +8040,6 @@ This package is part of the KDE games module.")
                            "/src/kolf-" version ".tar.xz"))
        (sha256
         (base32 "06sfd0llr5cc3zf1vrpcxgw9bm009ky7y8822kynic9ipcd4z1hw"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -8083,7 +8119,6 @@ other Mah Jongg like games.")
                           version "/src/kmahjongg-" version ".tar.xz"))
       (sha256
        (base32 "08na845h0nhmfrszdmvfq5y1dy7kgbrlzjp0f5snvbbf7w44ci6p"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -8124,7 +8159,6 @@ This package is part of the KDE games module.")
                           version "/src/kshisen-" version ".tar.xz"))
       (sha256
        (base32 "1bq5m48af4h5apfp3bfsp76nlpv6h5sc0gd544zv7cgpfznz1sds"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -8164,7 +8198,6 @@ This package is part of the KDE games module.")
                           version "/src/kajongg-" version ".tar.xz"))
       (sha256
        (base32 "0ql6p5zifdpdf65r7ki9ml123azpwwk9x3x8r9ij6xhjnf7p7x6w"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -8209,7 +8242,6 @@ This package is part of the KDE games module.")
                           "/src/kbreakout-" version ".tar.xz"))
       (sha256
        (base32 "0gwzx1z9mxrjlcjzglg8cxkyd6900whcar3b5j9laxxarc6xhj8w"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -8248,7 +8280,6 @@ This package is part of the KDE games module.")
                           "/src/kmines-" version ".tar.xz"))
       (sha256
        (base32 "0ac3za36lh8hpx6mqfic9amwmzhzhzplm9hg3pw12gxl5a9mvfsf"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -8287,7 +8318,6 @@ This package is part of the KDE games module.")
                           version "/src/konquest-" version ".tar.xz"))
       (sha256
        (base32 "02gjxskhi10a1sqh3skcild8zria7wncz1a4sbz7ax1p851q76k1"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -8328,7 +8358,6 @@ This package is part of the KDE games module.")
                           version "/src/kbounce-" version ".tar.xz"))
       (sha256
        (base32 "02rfv0qzz5cmyfx8f56a45hbm9gsp6m3dcy8ajwx88rw5wpbrr11"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -8368,7 +8397,6 @@ This package is part of the KDE games module.")
                           version "/src/kblocks-" version ".tar.xz"))
       (sha256
        (base32 "0qrm0dihzhkxsq9l49ndzms802x6jn92vvabb2zf2q9z593m69cx"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -8410,7 +8438,6 @@ This package is part of the KDE games module.")
                           version "/src/ksudoku-" version ".tar.xz"))
       (sha256
        (base32 "0rcscz91hilm7l3am5w02n0n8l7xhi4l0n4sskznh68kblw0ggw2"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -8472,7 +8499,6 @@ This package is part of the KDE games module.")
                           "/src/klines-" version ".tar.xz"))
       (sha256
        (base32 "1g1f46jp0rb8gpqkgcf915ydpsscn1sxk3gjvm8bcqgx9ddq59xa"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -8517,7 +8543,6 @@ This package is part of the KDE games module.")
                            version ".tar.xz"))
       (sha256
        (base32 "16rcvq796r3asz4v4ap75xvwnxd3dd2nsq5r9vxvzl6rrf1w9bj4"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -8559,7 +8584,6 @@ This package is part of the KDE games module.")
                           "/src/kdiamond-" version ".tar.xz"))
       (sha256
        (base32 "1v5yb9hb26lk277zhw8d37ks829yfqr5anzx1qhms44gca5kqhva"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -8599,7 +8623,6 @@ This package is part of the KDE games module.")
                           "/src/kfourinline-" version ".tar.xz"))
       (sha256
        (base32 "1vprs6dc1ccn3g6k594i9s94xy4b91vzlqjysyc6fqcq2fs54ny3"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -8640,7 +8663,6 @@ This package is part of the KDE games module.")
                           "/src/kblackbox-" version ".tar.xz"))
       (sha256
        (base32 "1x42sfpf75c6mavwkc7g7dm11y9s5dpj8igphly5kvm0pajqby0n"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -8682,7 +8704,6 @@ This package is part of the KDE games module.")
                           "/src/knetwalk-" version ".tar.xz"))
       (sha256
        (base32 "1i340salzgqdw8y33wrrydmpgx3pvwf5wrbljlh67cjf6s4csx7d"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -8725,7 +8746,6 @@ This package is part of the KDE games module.")
                            "/src/bomber-" version ".tar.xz"))
        (sha256
         (base32 "1lvzd0mzgq25akvwvkm57l3plm65k731v2i1ahakn985bb5gc3is"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -8768,7 +8788,6 @@ This package is part of the KDE games module.")
                           "/src/granatier-" version ".tar.xz"))
       (sha256
        (base32 "141qmdinz7ikbbrs8dq6cap3nl22sl7pw62r80pf3xxwn2q4phpa"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -8807,7 +8826,6 @@ This package is part of the KDE games module.")
                           "/src/ksirk-" version ".tar.xz"))
        (sha256
         (base32 "1b1wixs2hp5qnvdygfwa3kvy0kn94ysa4ifmx90q6r3yfr2lpfca"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -8864,7 +8882,6 @@ This package is part of the KDE games module.")
                            "/src/palapeli-" version ".tar.xz"))
        (sha256
         (base32 "1g91ydbc0x2y2gn3lcb5w03mn7k78l5bq4cb1s59kx6yjbflv3pw"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -8913,7 +8930,6 @@ This package is part of the KDE games module.")
                            "/src/kiriki-" version ".tar.xz"))
        (sha256
         (base32 "1xg25dj95g81dc5l7k47am4j52abrwwfx4h73lvsbn4lc8lfmshw"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -8953,7 +8969,6 @@ This package is part of the KDE games module.")
                            "/src/kigo-" version ".tar.xz"))
        (sha256
         (base32 "00l5gcbi8xyj9c1lngkrddka3a4m4cd78prfplrpq32ma9xq681f"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -9001,7 +9016,6 @@ This package is part of the KDE games module.")
                            "/src/kubrick-" version ".tar.xz"))
        (sha256
         (base32 "0ma8wja4rqlsmsr8cyicfpkwlgqva4450ls4c0ql53p0kabf04gx"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -9044,7 +9058,6 @@ This package is part of the KDE games module.")
                            "/src/lskat-" version ".tar.xz"))
        (sha256
         (base32 "1qk5hd27zb42pbcxq5wyzz62nj5f0qdmgy54r9rnk92pzzzk94s9"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -9084,7 +9097,6 @@ This package is part of the KDE games module.")
                           "/src/kapman-" version ".tar.xz"))
       (sha256
        (base32 "03pq38caam30q4bw14c045kayw2d87xq1yaa3s2jkrylylfq3p0f"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -9125,7 +9137,6 @@ This package is part of the KDE games module.")
                            "/src/kspaceduel-" version ".tar.xz"))
        (sha256
         (base32 "1hppni0ihs7psc0dly5rxyy2a38nzhlig9yfyhi3lkh36z05pql8"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -9162,7 +9173,6 @@ This package is part of the KDE games module.")
                            "/src/bovo-" version ".tar.xz"))
        (sha256
         (base32 "0dbpng0w52nahmx7brsll66zw23ql1g6pcvn2k4g2lnvxch0i59g"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -9200,7 +9210,6 @@ This package is part of the KDE games module.")
                            "/src/killbots-" version ".tar.xz"))
        (sha256
         (base32 "1qi86q7diw7glkp9v33yim9nhz2da4balbxa1hjrdgjdv8zdbxbm"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -9243,7 +9252,6 @@ This package is part of the KDE games module.")
                           "/src/ksnakeduel-" version ".tar.xz"))
       (sha256
        (base32 "0mprrnpax8pv7ab36zwhvdfj8id52w8g6x76nnj8qvkdlkjiqdnn"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -9283,7 +9291,6 @@ This package is part of the KDE games module.")
                           "/src/kollision-" version ".tar.xz"))
       (sha256
        (base32 "1p7qrn3d0ybpvc9k6k5wzj54dsrp1rqh39844maz0ay2fhvmch12"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -9322,7 +9329,6 @@ This package is part of the KDE games module.")
 "/src/knavalbattle-" version ".tar.xz"))
       (sha256
        (base32 "0sdfjplqkb30x2mvh66pkzay6vn5px87779sh2s8lpl6fcw0v9g4"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -9364,7 +9370,6 @@ This package is part of the KDE games module.")
 "/src/kreversi-" version ".tar.xz"))
       (sha256
        (base32 "0b6q8df2bawgnrswhq59z37axad0q3zpvvzxdds7sz1lw505xw9h"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -9408,7 +9413,6 @@ This package is part of the KDE games module.")
                           "/src/ksquares-" version ".tar.xz"))
       (sha256
        (base32 "0hv8hls5s627lys08nnw72rfzsafj3dmp49mh2afzmh6lgk9h5vy"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -9446,7 +9450,6 @@ This package is part of the KDE games module.")
                           "/src/kjumpingcube-" version ".tar.xz"))
       (sha256
        (base32 "0d67zqkf2xffjkj671gl2n6nj6jajyn6rgqqj5i6gm500mqi9rm1"))))
-    (properties `((tags . ("Desktop" "KDE" "Games"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)

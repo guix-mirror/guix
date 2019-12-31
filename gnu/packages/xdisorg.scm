@@ -85,6 +85,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages bison)
@@ -228,6 +229,36 @@ list of options (usually programs to launch).  It renders the menu graphically
 with X11 or Wayland, or in a text terminal with ncurses.")
     (license (list license:gpl3+        ; client program[s] and other sources
                    license:lgpl3+))))   ; library and bindings
+
+(define-public copyq
+(package
+  (name "copyq")
+  (version "3.9.3")
+  (source (origin
+            (method git-fetch)
+            (uri (git-reference
+                   (url "https://github.com/hluk/CopyQ.git")
+                   (commit (string-append "v" version))))
+            (file-name (git-file-name name version))
+            (sha256
+             (base32
+              "0wlwq9xg8rzsbj0b29z358k4mbrqy04iraa8x0p26pa95yskgcma"))))
+  (build-system cmake-build-system)
+  (arguments
+   `(#:configure-flags '("-DCMAKE_BUILD_TYPE=Release")
+     #:tests? #f)) ; Test suite is a rather manual process.
+  (inputs
+   `(("qtbase" ,qtbase)
+     ("qtscript" ,qtscript)
+     ("qtsvg" ,qtsvg)
+     ("qtx11extras" ,qtx11extras)))
+  (synopsis "Clipboard manager with advanced features")
+  (description "CopyQ is clipboard manager with editing and scripting
+features.  CopyQ monitors system clipboard and saves its content in customized
+tabs.  Saved clipboard can be later copied and pasted directly into any
+application.")
+  (home-page "https://hluk.github.io/CopyQ/")
+  (license license:gpl3+)))
 
 (define-public xclip
   (package

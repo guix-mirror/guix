@@ -1583,7 +1583,7 @@ reverb effects.")
 (define-public setbfree
   (package
     (name "setbfree")
-    (version "0.8.9")
+    (version "0.8.11")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1592,7 +1592,7 @@ reverb effects.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1lpsa64xvwa9xbbp8zcwxy5w0daffc7fziny2pizabqh7m9xqjl2"))))
+                "1s3ps3cjwlm63ml4izb7mizy8ci5pl9a19lvz62xf0br089h3afc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no "check" target
@@ -2185,7 +2185,7 @@ capabilities, custom envelopes, effects, etc.")
 (define-public yoshimi
   (package
     (name "yoshimi")
-    (version "1.6.0.3")
+    (version "1.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/yoshimi/"
@@ -2193,7 +2193,7 @@ capabilities, custom envelopes, effects, etc.")
                                   "/yoshimi-" version ".tar.bz2"))
               (sha256
                (base32
-                "1z2mnmm299ng6jcwa61dzr1ilwa5fjgsggxl2wa5smji6b4npmx7"))))
+                "1shnz429zgl0b4y5bpb61frk1747jwqfahq4hx44c972580zghzh"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -2569,11 +2569,21 @@ socket or command line.")
                  (base32
                   "11bf0jnj8h2fxhpdp498189r4s6b47vy4wripv0z4nx7lxajl88i"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'link-to-mpv
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "curseradio/curseradio.py"
+               (("/usr/bin/mpv")
+                (string-append (assoc-ref inputs "mpv") "/bin/mpv")))
+             #t)))))
     (propagated-inputs
      `(("python-lxml" ,python-lxml)
        ("python-requests" ,python-requests)
-       ("python-pyxdg" ,python-pyxdg)
-       ("mpv" ,mpv)))
+       ("python-pyxdg" ,python-pyxdg)))
+    (inputs
+     `(("mpv" ,mpv)))
     (home-page "https://github.com/chronitis/curseradio")
     (synopsis "Command-line Internet radio player")
     (description "Curseradio is a Curses-based radio player that uses a
@@ -2882,6 +2892,7 @@ Songs can be searched by artist, name or even by a part of the song text.")
        ("python-munkres" ,python-munkres)
        ("python-musicbrainzngs" ,python-musicbrainzngs)
        ("python-mutagen" ,python-mutagen)
+       ("python-pyacoustid" ,python-pyacoustid)
        ("python-pyyaml" ,python-pyyaml)
        ("python-unidecode" ,python-unidecode)))
     (home-page "https://beets.io")
@@ -3924,7 +3935,7 @@ sample library.")
                                            (string-map (lambda (c)
                                                          (if (char=? c #\.)
                                                              #\_ c)) version)))))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1nninz8qyqlxxjdnrm79y3gr3056pga9l2fsqh674jd3cjvafya3"))))
@@ -4383,7 +4394,7 @@ at @code{musicbrainz.org}.")
 (define-public clyrics
   (package
     (name "clyrics")
-    (version "0.11")
+    (version "0.12")
     (source
      (origin
        (method git-fetch)
@@ -4392,8 +4403,7 @@ at @code{musicbrainz.org}.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0vfjy555achgi5zwa34x4q7r692nc6bq4jx518a5w4m7k5fvm71j"))))
+        (base32 "1l9iqz6vxrrxapv7s110g360bqxksir4dcqd8w0l4lhmnfmz3vnk"))))
     (build-system trivial-build-system)
     (inputs
      `(("bash" ,bash)                   ; for the wrapped program
@@ -5007,7 +5017,7 @@ Soul Force), MVerb, Nekobi, and ProM.")
 (define-public avldrums-lv2
   (package
     (name "avldrums-lv2")
-    (version "0.4.0")
+    (version "0.4.1")
     (source
      (origin
        (method git-fetch)
@@ -5019,8 +5029,7 @@ Soul Force), MVerb, Nekobi, and ProM.")
              (recursive? #t)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1z70rcq6z3gkb4fm8dm9hs31bslwr97zdh2n012fzki9b9rdj5qv"))))
+        (base32 "1vwdp3d8qzd493qa99ddya7iql67bbfxmbcl8hk96lxif2lhmyws"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no "check" target

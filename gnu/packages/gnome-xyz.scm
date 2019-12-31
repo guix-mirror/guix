@@ -139,16 +139,104 @@ the Obsidian icon theme.")
          (delete 'bootstrap)
          (delete 'configure))))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("glib:bin" ,glib "bin")
+       ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
-     `(("glib" ,glib)
-       ("glib" ,glib "bin")))
+     `(("glib" ,glib)))
     (synopsis "Transforms GNOME's dash into a dock")
     (description "This extension moves the dash out of the
 overview, transforming it into a dock for easier application launching and
 faster window switching.")
     (home-page "https://micheleg.github.io/dash-to-dock/")
+    (license license:gpl2+)))
+
+(define-public gnome-shell-extension-hide-app-icon
+  (let ((commit "4188aa5f4ba24901a053a0c3eb0d83baa8625eab")
+        (revision "0"))
+    (package
+      (name "gnome-shell-extension-hide-app-icon")
+      (version (git-version "2.7" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url (string-append "https://github.com/michael-rapp"
+                                   "/gnome-shell-extension-hide-app-icon.git"))
+               (commit commit)))
+         (sha256
+          (base32
+           "1i28n4bz6wrhn07vpxkr6l1ljyn7g8frp5xrr11z3z32h2hxxcd6"))
+         (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:tests? #f                ; no test target
+         #:make-flags (list (string-append "EXTENSIONS_DIR="
+                                           (assoc-ref %outputs "out")
+                                           "/share/gnome-shell/extensions"))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)      ; no configure script
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out"))
+                     (pre "/share/gnome-shell/extensions/")
+                     (dir "hide-app-icon@mrapp.sourceforge.com"))
+                 (copy-recursively dir (string-append out pre dir))
+                 #t))))))
+      (native-inputs
+       `(("glib" ,glib "bin")
+         ("intltool" ,intltool)))
+      (propagated-inputs
+       `(("glib" ,glib)))
+      (synopsis "Hide app icon from GNOME's panel")
+      (description "This extension allows to hide the icon and/or title of the
+currently focused application in the top panel of the GNOME shell.")
+      (home-page
+       "https://github.com/michael-rapp/gnome-shell-extension-hide-app-icon/")
+      (license
+        ;; README.md and LICENSE.txt disagree -- the former claims v3, the
+        ;; latter v2.  No mention of "or later" in either place or in the code.
+        (list license:gpl2
+              license:gpl3)))))
+
+(define-public gnome-shell-extension-dash-to-panel
+  (package
+    (name "gnome-shell-extension-dash-to-panel")
+    (version "26")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/home-sweet-gnome/dash-to-panel.git")
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "1phfx2pblygpcvsppsqqqflm7qnz46mqkw29hj0nv2dn69hf4xbc"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:make-flags (list (string-append "INSTALLBASE="
+                                         (assoc-ref %outputs "out")
+                                         "/share/gnome-shell/extensions")
+                          (string-append "VERSION="
+                                         ,(package-version
+                                           gnome-shell-extension-dash-to-panel)))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'bootstrap)
+         (delete 'configure))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("glib" ,glib)
+       ("glib" ,glib "bin")))
+    (synopsis "Icon taskbar for GNOME Shell")
+    (description "This extension moves the dash into the gnome main
+panel so that the application launchers and system tray are combined
+into a single panel, similar to that found in KDE Plasma and Windows 7+.")
+    (home-page "https://github.com/home-sweet-gnome/dash-to-panel/")
     (license license:gpl2+)))
 
 (define-public gnome-shell-extension-noannoyance
@@ -213,3 +301,37 @@ It uses ES6 syntax and claims to be more actively maintained than others.")
 dark elements.  It supports GNOME, Unity, Xfce, and Openbox.")
     (home-page "https://numixproject.github.io")
     (license license:gpl3+)))
+
+(define-public papirus-icon-theme
+  (let ((version "0.0.0") ;; The package does not use semver
+        (revision "0")
+        (tag "20191201"))
+    (package
+      (name "papirus-icon-theme")
+      (version (git-version version revision tag))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/PapirusDevelopmentTeam/papirus-icon-theme.git")
+               (commit tag)))
+         (sha256
+          (base32
+           "0lnz1kmz28xh1f4slbsx7ycji5hgszyiyprbf5w5fbjhvi5gzw1h"))
+         (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'bootstrap)
+         (delete 'configure)
+         (delete 'build))))
+      (native-inputs
+       `(("gtk+:bin" ,gtk+ "bin")))
+      (home-page "https://git.io/papirus-icon-theme")
+      (synopsis "Fork of Paper icon theme with a lot of new icons and a few extras")
+      (description "Papirus is a fork of the icon theme Paper with a lot of new icons
+and a few extra features.")
+      (license license:gpl3))))

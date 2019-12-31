@@ -46,7 +46,7 @@ Copyright @copyright{} 2017, 2018 Carlo Zancanaro@*
 Copyright @copyright{} 2017 Thomas Danckaert@*
 Copyright @copyright{} 2017 humanitiesNerd@*
 Copyright @copyright{} 2017 Christopher Allan Webber@*
-Copyright @copyright{} 2017, 2018 Marius Bakke@*
+Copyright @copyright{} 2017, 2018, 2019 Marius Bakke@*
 Copyright @copyright{} 2017, 2019 Hartmut Goebel@*
 Copyright @copyright{} 2017, 2019 Maxim Cournoyer@*
 Copyright @copyright{} 2017, 2018, 2019 Tobias Geerinckx-Rice@*
@@ -2472,7 +2472,7 @@ Boot the USB installation image in an VM:
 
 @example
 qemu-system-x86_64 -m 1024 -smp 1 -enable-kvm \
-  -net user -net nic,model=virtio -boot menu=on,order=d \
+  -nic user,model=virtio-net-pci -boot menu=on,order=d \
   -drive file=guix-system.img \
   -drive media=cdrom,file=guix-system-install-@value{VERSION}.@var{system}.iso
 @end example
@@ -4597,6 +4597,18 @@ unsafe.
 
 The primary purpose of this operation is to facilitate inspection of
 archive contents coming from possibly untrusted substitute servers.
+
+@item --list
+@itemx -t
+Read a single-item archive as served by substitute servers
+(@pxref{Substitutes}) and print the list of files it contains, as in
+this example:
+
+@example
+$ wget -O - \
+  https://@value{SUBSTITUTE-SERVER}/nar/lzip/@dots{}-emacs-26.3 \
+  | lzip -d | guix archive -t
+@end example
 
 @end table
 
@@ -10309,14 +10321,23 @@ updating list of substitutes from 'https://guix.example.org'... 100.0%
   local hash: 0725l22r5jnzazaacncwsvp9kgf42266ayyp814v7djxs7nk963q
   https://@value{SUBSTITUTE-SERVER}/nar/@dots{}-openssl-1.0.2d: 0725l22r5jnzazaacncwsvp9kgf42266ayyp814v7djxs7nk963q
   https://guix.example.org/nar/@dots{}-openssl-1.0.2d: 1zy4fmaaqcnjrzzajkdn3f5gmjk754b43qkq47llbyak9z0qjyim
+  differing files:
+    /lib/libcrypto.so.1.1
+    /lib/libssl.so.1.1
+
 /gnu/store/@dots{}-git-2.5.0 contents differ:
   local hash: 00p3bmryhjxrhpn2gxs2fy0a15lnip05l97205pgbk5ra395hyha
   https://@value{SUBSTITUTE-SERVER}/nar/@dots{}-git-2.5.0: 069nb85bv4d4a6slrwjdy8v1cn4cwspm3kdbmyb81d6zckj3nq9f
   https://guix.example.org/nar/@dots{}-git-2.5.0: 0mdqa9w1p6cmli6976v4wi0sw9r4p5prkj7lzfd1877wk11c9c73
+  differing file:
+    /libexec/git-core/git-fsck
+
 /gnu/store/@dots{}-pius-2.1.1 contents differ:
   local hash: 0k4v3m9z1zp8xzzizb7d8kjj72f9172xv078sq4wl73vnq9ig3ax
   https://@value{SUBSTITUTE-SERVER}/nar/@dots{}-pius-2.1.1: 0k4v3m9z1zp8xzzizb7d8kjj72f9172xv078sq4wl73vnq9ig3ax
   https://guix.example.org/nar/@dots{}-pius-2.1.1: 1cy25x1a4fzq5rk0pmvc8xhwyffnqz95h2bpvqsz2mpvlbccy0gs
+  differing file:
+    /share/man/man1/pius.1.gz
 
 @dots{}
 
@@ -10345,8 +10366,20 @@ results, the inclusion of random numbers, and directory listings sorted
 by inode number.  See @uref{https://reproducible-builds.org/docs/}, for
 more information.
 
-To find out what is wrong with this Git binary, we can do something along
-these lines (@pxref{Invoking guix archive}):
+To find out what is wrong with this Git binary, the easiest approach is
+to run:
+
+@example
+guix challenge git \
+  --diff=diffoscope \
+  --substitute-urls="https://@value{SUBSTITUTE-SERVER} https://guix.example.org"
+@end example
+
+This automatically invokes @command{diffoscope}, which displays detailed
+information about files that differ.
+
+Alternately, we can do something along these lines (@pxref{Invoking guix
+archive}):
 
 @example
 $ wget -q -O - https://@value{SUBSTITUTE-SERVER}/nar/@dots{}-git-2.5.0 \
@@ -10401,6 +10434,29 @@ The one option that matters is:
 @item --substitute-urls=@var{urls}
 Consider @var{urls} the whitespace-separated list of substitute source
 URLs to compare to.
+
+@item --diff=@var{mode}
+Upon mismatches, show differences according to @var{mode}, one of:
+
+@table @asis
+@item @code{simple} (the default)
+Show the list of files that differ.
+
+@item @code{diffoscope}
+@itemx @var{command}
+Invoke @uref{https://diffoscope.org/, Diffoscope}, passing it
+two directories whose contents do not match.
+
+When @var{command} is an absolute file name, run @var{command} instead
+of Diffoscope.
+
+@item @code{none}
+Do not show further details about the differences.
+@end table
+
+Thus, unless @code{--diff=none} is passed, @command{guix challenge}
+downloads the store items from the given substitute servers so that it
+can compare them.
 
 @item --verbose
 @itemx -v
@@ -20356,6 +20412,19 @@ The port on which to connect to the database.
 @end table
 @end deftp
 
+@subsubheading Mumi
+
+@cindex Mumi, Debbugs Web interface
+@cindex Debbugs, Mumi Web interface
+@uref{https://git.elephly.net/gitweb.cgi?p=software/mumi.git, Mumi} is a
+Web interface to the Debbugs bug tracker, by default for
+@uref{https://bugs.gnu.org, the GNU instance}.  Mumi is a Web server,
+but it also fetches and indexes mail retrieved from Debbugs.
+
+@defvr {Scheme Variable} mumi-service-type
+This is the service type for Mumi.
+@end defvr
+
 @subsubheading FastCGI
 @cindex fastcgi
 @cindex fcgiwrap
@@ -26100,7 +26169,7 @@ below, which enables networking and requests 1@tie{}GiB of RAM for the
 emulated machine:
 
 @example
-$ /gnu/store/@dots{}-run-vm.sh -m 1024 -net user
+$ /gnu/store/@dots{}-run-vm.sh -m 1024 -smp 2 -net user,model=virtio-net-pci
 @end example
 
 The VM shares its store with the host system.
@@ -26586,7 +26655,7 @@ vm-image} on x86_64 hardware:
 
 @example
 $ qemu-system-x86_64 \
-   -net user -net nic,model=virtio \
+   -nic user,model=virtio-net-pci \
    -enable-kvm -m 1024 \
    -device virtio-blk,drive=myhd \
    -drive if=none,file=/tmp/qemu-image,id=myhd
@@ -26599,16 +26668,14 @@ Here is what each of these options means:
 This specifies the hardware platform to emulate.  This should match the
 host.
 
-@item -net user
+@item -nic user,model=virtio-net-pci
 Enable the unprivileged user-mode network stack.  The guest OS can
 access the host but not vice versa.  This is the simplest way to get the
-guest OS online.
-
-@item -net nic,model=virtio
-You must create a network interface of a given model.  If you do not
-create a NIC, the boot will fail.  Assuming your hardware platform is
+guest OS online.  @code{model} specifies which network device to emulate:
+@code{virtio-net-pci} is a special device made for virtualized operating
+systems and recommended for most uses.  Assuming your hardware platform is
 x86_64, you can get a list of available NIC models by running
-@command{qemu-system-x86_64 -net nic,model=help}.
+@command{qemu-system-x86_64 -nic model=help}.
 
 @item -enable-kvm
 If your system has hardware virtualization extensions, enabling the
@@ -26632,11 +26699,11 @@ the ``myhd'' drive.
 @end table
 
 The default @command{run-vm.sh} script that is returned by an invocation of
-@command{guix system vm} does not add a @command{-net user} flag by default.
+@command{guix system vm} does not add a @command{-nic user} flag by default.
 To get network access from within the vm add the @code{(dhcp-client-service)}
 to your system definition and start the VM using
-@command{`guix system vm config.scm` -net user}.  An important caveat of using
-@command{-net user} for networking is that @command{ping} will not work, because
+@command{`guix system vm config.scm` -nic user}.  An important caveat of using
+@command{-nic user} for networking is that @command{ping} will not work, because
 it uses the ICMP protocol.  You'll have to use a different command to check for
 network connectivity, for example @command{guix download}.
 
@@ -26650,7 +26717,7 @@ To enable SSH inside a VM you need to add an SSH server like
 22 by default, to the host.  You can do this with
 
 @example
-`guix system vm config.scm` -net user,hostfwd=tcp::10022-:22
+`guix system vm config.scm` -nic user,model=virtio-net-pci,hostfwd=tcp::10022-:22
 @end example
 
 To connect to the VM you can run

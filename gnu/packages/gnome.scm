@@ -43,6 +43,8 @@
 ;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;; Copyright © 2019 Raghav Gururajan <raghavgururajan@disroot.org>
+;;; Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
+;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -99,6 +101,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnuzilla)
+  #:use-module (gnu packages geo)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gstreamer)
@@ -193,9 +196,9 @@
     (version "3.12.2")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://gnome/sources/" name "/"
+             (uri (string-append "mirror://gnome/sources/brasero/"
                                  (version-major+minor version) "/"
-                                 name "-" version ".tar.xz"))
+                                 "brasero-" version ".tar.xz"))
              (sha256
               (base32
                "0h90y674j26rvjahb8cc0w79zx477rb6zaqcj26wzvq8kmpic8k8"))))
@@ -219,6 +222,7 @@
      `(("hicolor-icon-theme" ,hicolor-icon-theme)))
     (native-inputs
      `(("intltool" ,intltool)
+       ("itstool" ,itstool)
        ("glib" ,glib "bin")                       ; glib-compile-schemas, etc.
        ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)))
@@ -229,14 +233,13 @@
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
        ("gtk+" ,gtk+)
-       ("itstool" ,itstool)
        ("libcanberra" ,libcanberra)
        ("libice" ,libice)
        ("libnotify" ,libnotify)
        ("libsm" ,libsm)
        ("libxml2" ,libxml2)
        ("totem-pl-parser" ,totem-pl-parser)))
-    (home-page "https://projects.gnome.org/brasero/")
+    (home-page "https://wiki.gnome.org/Apps/Brasero")
     (synopsis "CD/DVD burning tool for Gnome")
     (description "Brasero is an application to burn CD/DVD for the Gnome
 Desktop.  It is designed to be as simple as possible and has some unique
@@ -328,39 +331,40 @@ either on a local, or remote machine via a number of methods.")
   (let ((commit "fbc306168edab63db80b904956117cbbdc514ee4"))
     (package
       (name "dia")
-      (version (string-append "0.97.2-" (string-take commit 7)))
+      (version (git-version "0.97.3" "1" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://git.gnome.org/browse/dia")
+                      (url "https://gitlab.gnome.org/GNOME/dia.git/")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "1b4bba0k8ph4cwgw8xjglss0p6n111bpd5app67lrq79mp0ad06l"))))
       (build-system gnu-build-system)
       (inputs
-       `(("glib" ,glib "bin")
-         ("pango" ,pango)
+       `(("freetype" ,freetype)
          ("gdk-pixbuf" ,gdk-pixbuf)
          ("gtk+" ,gtk+-2)
+         ("libart-lgpl" ,libart-lgpl)
          ("libxml2" ,libxml2)
-         ("freetype" ,freetype)
-         ("libart-lgpl" ,libart-lgpl)))
+         ("pango" ,pango)))
       (native-inputs
-       `(("intltool" ,intltool)
-         ("pkg-config" ,pkg-config)
+       `(("autoconf" ,autoconf)
          ("automake" ,automake)
-         ("autoconf" ,autoconf)
+         ("intltool" ,intltool)
+         ("glib" ,glib "bin")
          ("libtool" ,libtool)
          ("perl" ,perl)
+         ("pkg-config" ,pkg-config)
          ("python-wrapper" ,python-wrapper)))
       (arguments
        `(#:phases
          (modify-phases %standard-phases
-           (add-after 'unpack 'run-autogen
+           (add-before 'bootstrap 'dont-configure-during-bootstrap
              (lambda _
-               (system* "sh" "autogen.sh"))))))
+               (setenv "NOCONFIGURE" "true")
+               #t)))))
       (home-page "https://wiki.gnome.org/Apps/Dia")
       (synopsis "Diagram creation for GNOME")
       (description "Dia can be used to draw different types of diagrams, and
@@ -452,6 +456,38 @@ access the common Google services, and has full asynchronous support.")
 documents.  This package also contains binaries that can convert XPS documents
 to other formats.")
     (license license:lgpl2.1+)))
+
+(define-public gnome-characters
+  (package
+    (name "gnome-characters")
+    (version "3.30.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/"
+                           "gnome-characters/" (version-major+minor version)
+                           "/gnome-characters-" version ".tar.xz"))
+       (sha256
+        (base32
+         "08cwz39iwgsyyb2wqhb8vfbmh1cwfkgfiy7adp08w7rwqi99x3dp"))))
+    (build-system meson-build-system)
+    (arguments '(#:glib-or-gtk? #t))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gtk+:bin" ,gtk+ "bin")
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-minimal)))
+    (inputs
+     `(("gjs" ,gjs)
+       ("gtk+" ,gtk+)
+       ("libunistring" ,libunistring)))
+    (home-page "https://wiki.gnome.org/Apps/CharacterMap")
+    (synopsis "Find and insert unusual characters")
+    (description "Characters is a simple utility application to find
+and insert unusual characters.  It allows you to quickly find the
+character you are looking for by searching for keywords.")
+    (license license:bsd-3)))
 
 (define-public gnome-common
   (package
@@ -674,6 +710,42 @@ and keep up to date translations of documentation.")
     (home-page "https://git.gnome.org/browse/gnome-disk-utility")
     (synopsis "Disk management utility for GNOME")
     (description "Disk management utility for GNOME.")
+    (license license:gpl2+)))
+
+(define-public gnome-font-viewer
+  (package
+    (name "gnome-font-viewer")
+    (version "3.30.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/gnome-font-viewer/"
+                                  (version-major+minor version)
+                                  "/gnome-font-viewer-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1wwnx2zrlbd2d6np7m9s78alx6j6ranrnh1g2z6zrv9qcj8rpzz5"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-post-install-script
+           (lambda _
+             (substitute* "meson-postinstall.sh"
+               (("update-desktop-database") (which "true")))
+             #t)))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("gnome-desktop" ,gnome-desktop)
+       ("gtk+" ,gtk+)))
+    (home-page "https://gitlab.gnome.org/GNOME/gnome-font-viewer")
+    (synopsis "GNOME Fonts")
+    (description "Application to show you the fonts installed on your computer
+for your use as thumbnails.  Selecting any thumbnails shows the full view of how
+the font would look under various sizes.")
     (license license:gpl2+)))
 
 (define-public gcr
@@ -1779,10 +1851,9 @@ library.")
     (version "0.8.14")
     (source (origin
               (method url-fetch)
-              (uri (let ((upstream-name "libIDL"))
-		     (string-append "mirror://gnome/sources/" upstream-name "/"
-                                    (version-major+minor version) "/"
-                                    upstream-name "-" version ".tar.bz2")))
+              (uri (string-append "mirror://gnome/sources/libIDL/"
+                                  (version-major+minor version) "/"
+                                  "libIDL-" version ".tar.bz2"))
               (sha256
                (base32
                 "08129my8s9fbrk0vqvnmx6ph4nid744g5vbwphzkaik51664vln5"))))
@@ -1799,6 +1870,7 @@ Definition Language (idl) files, which is a specification for defining
 portable interfaces. libidl was initially written for orbit (the orb from the
 GNOME project, and the primary means of libidl distribution).  However, the
 functionality was designed to be as reusable and portable as possible.")
+    (properties `((upstream-name . "libIDL")))
     (license license:lgpl2.0+)))
 
 
@@ -5081,32 +5153,38 @@ metadata in photo and video files of various formats.")
                 "1m9i8r4gyd2hzlxjjwfyck4kz7gdg2vz2k6l6d0ga9hdfq2l4p9l"))))
     (build-system meson-build-system)
     (arguments
-     '(#:glib-or-gtk? #t))
+     '(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           (lambda _
+             (substitute* "build-aux/meson/postinstall.py"
+               (("gtk-update-icon-cache") (which "true"))
+               (("update-desktop-database") (which "true")))
+             #t)))))
     (propagated-inputs
      `(("dconf" ,dconf)))
     (native-inputs
-     `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
-       ("gettext" ,gettext-minimal)
-       ("gtk+" ,gtk+ "bin") ; gtk-update-icon-cache
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)))
     (inputs
-     `(("glib:bin" ,glib "bin")
-       ("gstreamer" ,gstreamer)
+     `(("gcr" ,gcr)
+       ("gexiv2" ,gexiv2)
        ("gst-plugins-base" ,gst-plugins-base)
+       ("gstreamer" ,gstreamer)
+       ("json-glib" ,json-glib)
        ("libgdata" ,libgdata)
        ("libgee" ,libgee)
-       ("gexiv2" ,gexiv2)
+       ("libgphoto2" ,libgphoto2)
+       ("libgudev" ,libgudev)
        ("libraw" ,libraw)
-       ("json-glib" ,json-glib)
-       ("webkitgtk" ,webkitgtk)
-       ("sqlite" ,sqlite)
        ("libsoup" ,libsoup)
        ("libxml2" ,libxml2)
-       ("libgudev" ,libgudev)
-       ("libgphoto2" ,libgphoto2)
-       ("gcr" ,gcr)))
+       ("sqlite" ,sqlite)
+       ("webkitgtk" ,webkitgtk)))
     (home-page "https://wiki.gnome.org/Apps/Shotwell")
     (synopsis "Photo manager for GNOME 3")
     (description
@@ -7111,52 +7189,54 @@ associations for GNOME.")
     (build-system trivial-build-system)
     (arguments '(#:builder (begin (mkdir %output) #t)))
     (propagated-inputs
-     ;; TODO: Add more packages according to:
-     ;;       <https://packages.debian.org/jessie/gnome-core>.
-     `(("adwaita-icon-theme"        ,adwaita-icon-theme)
-       ("baobab"                    ,baobab)
-       ("font-cantarell"            ,font-cantarell)
-       ("font-dejavu"               ,font-dejavu)
-       ("at-spi2-core"              ,at-spi2-core)
-       ("dbus"                      ,dbus)
-       ("dconf"                     ,dconf)
-       ("desktop-file-utils"        ,desktop-file-utils)
-       ("eog"                       ,eog)
-       ("epiphany"                  ,epiphany)
-       ("evince"                    ,evince)
-       ("file-roller"               ,file-roller)
-       ("gedit"                     ,gedit)
-       ("glib-networking"           ,glib-networking)
-       ("gnome-backgrounds"         ,gnome-backgrounds)
-       ("gnome-bluetooth"           ,gnome-bluetooth)
-       ("gnome-calculator"          ,gnome-calculator)
-       ("gnome-contacts"            ,gnome-contacts)
-       ("gnome-control-center"      ,gnome-control-center)
-       ("gnome-disk-utility"        ,gnome-disk-utility)
-       ("gnome-default-applications" ,gnome-default-applications)
-       ("gnome-keyring"             ,gnome-keyring)
-       ("gnome-online-accounts"     ,gnome-online-accounts)
-       ("gnome-screenshot"          ,gnome-screenshot)
-       ("gnome-session"             ,gnome-session)
-       ("gnome-settings-daemon"     ,gnome-settings-daemon)
-       ("gnome-shell"               ,gnome-shell)
-       ("gnome-system-monitor"      ,gnome-system-monitor)
-       ("gnome-terminal"            ,gnome-terminal)
-       ("gnome-themes-standard"     ,gnome-themes-standard)
-       ("gst-plugins-base"          ,gst-plugins-base)
-       ("gst-plugins-good"          ,gst-plugins-good)
-       ("gucharmap"                 ,gucharmap)
-       ("gvfs"                      ,gvfs)
-       ("hicolor-icon-theme"        ,hicolor-icon-theme)
-       ("nautilus"                  ,nautilus)
-       ("pinentry-gnome3"           ,pinentry-gnome3)
-       ("pulseaudio"                ,pulseaudio)
-       ("shared-mime-info"          ,shared-mime-info)
-       ("system-config-printer"     ,system-config-printer)
-       ("totem"                     ,totem)
-       ("xdg-user-dirs"             ,xdg-user-dirs)
-       ("yelp"                      ,yelp)
-       ("zenity"                    ,zenity)))
+     ;; TODO: Add or remove packages according to:
+     ;;       <https://calc.disroot.org/2nu6mpf88ynq.html>.
+     ;; GNOME-Core-OS-Services
+     `(("accountsservice" ,accountsservice)
+       ("network-manager" ,network-manager)
+       ("packagekit" ,packagekit)
+       ("upower" ,upower)
+     ;; GNOME-Core-Shell
+       ("adwaita-icon-theme" ,adwaita-icon-theme)
+       ("gdm" ,gdm)
+       ("glib-networking" ,glib-networking)
+       ("gnome-backgrounds" ,gnome-backgrounds)
+       ("gnome-bluetooth" ,gnome-bluetooth)
+       ("gnome-control-center" ,gnome-control-center)
+       ("gnome-desktop" ,gnome-desktop)
+       ("gnome-keyring" ,gnome-keyring)
+       ("gnome-session" ,gnome-session)
+       ("gnome-settings-daemon" ,gnome-settings-daemon)
+       ("gnome-shell-extensions" ,gnome-shell-extensions)
+       ("gnome-shell" ,gnome-shell)
+       ("gnome-themes-extra" ,gnome-themes-extra)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gvfs" ,gvfs)
+       ("mutter" ,mutter)
+       ("orca" ,orca)
+     ;; GNOME-Core-Utilities
+       ("baobab" ,baobab)
+       ("cheese" ,cheese)
+       ("eog" ,eog)
+       ("epiphany" ,epiphany)
+       ("evince" ,evince)
+       ("file-roller" ,file-roller)
+       ("gedit" ,gedit)
+       ("gnome-calculator" ,gnome-calculator)
+       ("gnome-calendar" ,gnome-calendar)
+       ("gnome-characters" ,gnome-characters)
+       ("gnome-clocks" ,gnome-clocks)
+       ("gnome-contacts" ,gnome-contacts)
+       ("gnome-disk-utility" ,gnome-disk-utility)
+       ("gnome-font-viewer" ,gnome-font-viewer)
+       ("gnome-maps" ,gnome-maps)
+       ("gnome-screenshot" ,gnome-screenshot)
+       ("gnome-system-monitor" ,gnome-system-monitor)
+       ("gnome-terminal" ,gnome-terminal)
+       ("nautilus" ,nautilus)
+       ("simple-scan" ,simple-scan)
+       ("totem" ,totem)
+       ("yelp" ,yelp)))
     (synopsis "The GNU desktop environment")
     (home-page "https://www.gnome.org/")
     (description
@@ -7518,11 +7598,11 @@ GNOME Shell appearance and extension, etc.")
     (arguments
      '(#:configure-flags '("-Dextension_set=all")))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("glib:bin" ,glib "bin")
+       ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
-     `(("glib" ,glib)
-       ("glib" ,glib "bin")))
+     `(("glib" ,glib)))
     (synopsis "Extensions for GNOME Shell")
     (description "GNOME Shell extensions modify and extend GNOME Shell
 functionality and behavior.")
@@ -8148,6 +8228,7 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
        ("iso-codes" ,iso-codes)))
     (native-inputs
      `(("glib" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)
        ("xmllint" ,libxml2)
 
@@ -8769,7 +8850,7 @@ advanced image management tool")
 (define-public libhandy
   (package
     (name "libhandy")
-    (version "0.0.11")
+    (version "0.0.12")
     (source
      (origin
        (method git-fetch)
@@ -8778,7 +8859,7 @@ advanced image management tool")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0622zp5wrvn5bvgardijxd11y76g1i54fs32y03dw9nrar7i6vb0"))))
+        (base32 "09wlknarzsbk9hr5ws6s7x5kibkhx9ayrbhshfqib4zkhq2f76hw"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
@@ -8808,7 +8889,8 @@ advanced image management tool")
     (home-page "https://source.puri.sm/Librem5/libhandy")
     (synopsis "Library full of GTK+ widgets for mobile phones")
     (description "The aim of the handy library is to help with developing user
-intefaces for mobile devices using GTK+.")
+interfaces for mobile devices using GTK+.  It provides responsive GTK+ widgets
+for usage on small and big screens.")
     (license license:lgpl2.1+)))
 
 (define-public libgit2-glib
@@ -8910,6 +8992,43 @@ repository and commit your work.")
     (home-page "https://wiki.gnome.org/Apps/Gitg")
     (license license:gpl2+)))
 
+(define-public gamin
+  (package
+    (name "gamin")
+    (version "0.1.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "02n1zr9y8q9lyczhcz0nxar1vmf8p2mmbw8kq0v43wg21jr4i6d5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-deprecated-macro
+           (lambda _
+             (substitute* '("server/gam_node.c"
+                            "server/gam_subscription.h"
+                            "server/gam_node.h"
+                            "server/gam_subscription.c")
+               (("G_CONST_RETURN") "const"))
+             #t)))))
+    (inputs
+     `(("glib" ,glib)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://people.gnome.org/~veillard/gamin/")
+    (synopsis "File alteration monitor")
+    (description
+     "Gamin is a file and directory monitoring system defined to be a subset
+of the FAM (File Alteration Monitor) system.  This is a service provided by a
+library which allows to detect when a file or a directory has been modified.")
+    (license license:gpl2+)))
+
 (define-public gnome-mahjongg
   (package
     (name "gnome-mahjongg")
@@ -8945,4 +9064,97 @@ repository and commit your work.")
 tile-matching game Mahjong.  It features multiple board layouts, tile themes,
 and a high score table.")
     (home-page "https://wiki.gnome.org/Apps/Mahjongg")
+    (license license:gpl2+)))
+
+(define-public gnome-themes-extra
+  (package
+    (name "gnome-themes-extra")
+    (version "3.28")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/" name "-"
+                           version ".tar.xz"))
+       (sha256
+        (base32
+         "06aqg9asq2vqi9wr29bs4v8z2bf4manhbhfghf4nvw01y2zs0jvw"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       ;; Don't create 'icon-theme.cache'.
+       (let* ((coreutils (assoc-ref %build-inputs "coreutils"))
+              (true      (string-append coreutils "/bin/true")))
+         (list (string-append "GTK_UPDATE_ICON_CACHE=" true)))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("gtk+-2" ,gtk+-2)
+       ("librsvg" ,librsvg)
+       ("libxml2" ,libxml2)))
+    (home-page "https://gitlab.gnome.org/GNOME/gnome-themes-extra")
+    (synopsis "GNOME Extra Themes")
+    (description "This package provides themes and related elements that don't
+really fit in other upstream packages.  It offers legacy support for GTK+ 2
+versions of Adwaita, Adwaita-dark and HighContrast themes.  It also provides
+index files needed for Adwaita to be used outside of GNOME.")
+    (license license:lgpl2.1+)))
+
+(define-public polari
+  (package
+    (name "polari")
+    (version "3.32.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/polari/"
+                                  (version-major+minor version)
+                                  "/polari-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0h0w9j3y067l911gpj446b3a2w1i2vzr1w2a7cz7i5rhn6qkf2sp"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           (lambda _
+             (substitute* "meson/meson-postinstall.sh"
+               (("gtk-update-icon-cache") (which "true")))
+             #t))
+         (add-after 'glib-or-gtk-wrap 'wrap-typelib
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((prog (string-append (assoc-ref outputs "out")
+                                        "/bin/polari")))
+               (wrap-program prog
+                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
+               #t))))))
+    (inputs
+     `(("glib" ,glib)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gspell" ,gspell)
+       ("gtk+" ,gtk+)
+       ("gjs" ,gjs)
+       ("libsecret" ,libsecret)
+       ("libsoup" ,libsoup)
+       ("telepathy-glib" ,telepathy-glib)
+       ("telepathy-logger" ,telepathy-logger)))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("yelp-tools" ,yelp-tools)))
+    (propagated-inputs
+     `(("telepathy-idle" ,telepathy-idle)
+       ("telepathy-mission-control" ,telepathy-mission-control)))
+    (synopsis "Simple IRC Client")
+    (description
+     "Polari is a simple Internet Relay Chat (IRC) client that is designed to
+integrate seamlessly with the GNOME desktop.")
+    (home-page "https://wiki.gnome.org/Apps/Polari")
     (license license:gpl2+)))

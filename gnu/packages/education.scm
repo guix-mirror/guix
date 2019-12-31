@@ -254,7 +254,7 @@ easy.")
 (define-public snap
   (package
     (name "snap")
-    (version "5.3.8")
+    (version "5.4.0")
     (source
      (origin
        (method git-fetch)
@@ -264,7 +264,7 @@ easy.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1lm5vvykdzgn667kvnsv0ab5bl0kjsr05kvcd18a7pn0g8sykfpc"))))
+         "05m3x8yc9a7x9hfkrz2bm3yqkc63cdb8v3yznkjqq04sfx5dfd04"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -488,14 +488,14 @@ letters of the alphabet, spelling, eye-hand coordination, etc.")
 (define-public fet
   (package
     (name "fet")
-    (version "5.41.0")
+    (version "5.42.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.lalescu.ro/liviu/fet/download/"
                                   "fet-" version ".tar.bz2"))
               (sha256
                (base32
-                "0ppa5h1p0y0z8x4xpn45b0x3nl1khyh56m22v6xysk3znxlak4q7"))))
+                "1dzlbhp42dxdxbcrjwrjl4kj65cibxgjqc3ir1w78yprikihdxca"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -555,7 +555,7 @@ language and very flexible regarding to new or unknown keyboard layouts.")
 (define-public ktouch
   (package
     (name "ktouch")
-    (version "19.08.2")
+    (version "19.08.3")
     (source
       (origin
         (method url-fetch)
@@ -563,11 +563,11 @@ language and very flexible regarding to new or unknown keyboard layouts.")
                             version "/src/ktouch-" version ".tar.xz"))
         (sha256
          (base32
-          "0dm6xcwai0bx2h16rny1xa9n1509mfxvy39kfxx5qih53p15jrnk"))))
+          "0dqxb3xsjc2rwc9779l5fnr4crhq51bc8ln4azbgnnkzldvq6a4a"))))
     (build-system qt-build-system)
     (arguments
      `(#:phases
-       (modify-phases (@ (guix build qt-build-system) %standard-phases)
+       (modify-phases %standard-phases
          (add-after 'configure 'patch-makefiles
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((qtdec (assoc-ref inputs "qtdeclarative")))

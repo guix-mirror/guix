@@ -207,6 +207,124 @@ usable on embedded products.")
            "--disable-nls"))))
     (synopsis "Newlib variant for small systems with limited memory")))
 
+
+;;; The following definitions are for the "7-2018-q2-update" variant of the
+;;; ARM cross toolchain as offered on https://developer.arm.com
+(define-public gcc-arm-none-eabi-7-2018-q2-update
+  (let ((xgcc (cross-gcc "arm-none-eabi"
+                         #:xgcc gcc-7
+                         #:xbinutils (cross-binutils "arm-none-eabi")))
+        (revision "1")
+        (svn-revision 261907))
+    (package (inherit xgcc)
+      (version (string-append "7-2018-q2-update-"
+                              revision "." (number->string svn-revision)))
+      (source
+       (origin
+         (method svn-fetch)
+         (uri (svn-reference
+               (url "svn://gcc.gnu.org/svn/gcc/branches/ARM/embedded-7-branch/")
+               (revision svn-revision)))
+         (file-name (string-append "gcc-arm-embedded-" version "-checkout"))
+         (sha256
+          (base32
+           "192ggs63bixf3irpijgfkjks73yx1r3a4i6grk1y0i0iny76pmx5"))
+         (patches
+          (append
+           (origin-patches (package-source gcc-7))
+           (search-patches "gcc-7-cross-environment-variables.patch")))))
+      (native-inputs
+       `(("gcc" ,gcc-5)
+         ("flex" ,flex)
+         ("isl" ,isl-0.18)
+         ,@(alist-delete "isl" (package-native-inputs xgcc))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments xgcc)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'expand-version-string
+               (lambda _
+                 (make-file-writable "gcc/DEV-PHASE")
+                 (with-output-to-file "gcc/DEV-PHASE"
+                   (lambda ()
+                     (display "7-2018-q2-update")))
+                 #t))
+             (add-after 'unpack 'fix-genmultilib
+               (lambda _
+                 (substitute* "gcc/genmultilib"
+                   (("#!/bin/sh") (string-append "#!" (which "sh"))))
+                 #t))))
+         ((#:configure-flags flags)
+          ;; The configure flags are largely identical to the flags used by the
+          ;; "GCC ARM embedded" project.
+          `(append (list "--enable-multilib"
+                         "--with-newlib"
+                         "--with-multilib-list=rmprofile"
+                         "--with-host-libstdcxx=-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm"
+                         "--enable-plugins"
+                         "--disable-decimal-float"
+                         "--disable-libffi"
+                         "--disable-libgomp"
+                         "--disable-libmudflap"
+                         "--disable-libquadmath"
+                         "--disable-libssp"
+                         "--disable-libstdcxx-pch"
+                         "--disable-nls"
+                         "--disable-shared"
+                         "--disable-threads"
+                         "--disable-tls")
+                   (delete "--disable-multilib" ,flags)))))
+      (native-search-paths
+       (list (search-path-specification
+              (variable "CROSS_C_INCLUDE_PATH")
+              (files '("arm-none-eabi/include")))
+             (search-path-specification
+              (variable "CROSS_CPLUS_INCLUDE_PATH")
+              (files '("arm-none-eabi/include")))
+             (search-path-specification
+              (variable "CROSS_LIBRARY_PATH")
+              (files '("arm-none-eabi/lib"))))))))
+
+(define-public newlib-arm-none-eabi-7-2018-q2-update
+  ;; This is the same commit as used for the 7-2018-q2-update release
+  ;; according to the release.txt.
+  (let ((commit "3ccfb407af410ba7e54ea0da11ae1e40b554a6f4")
+        (revision "0"))
+    (package
+      (inherit newlib-arm-none-eabi)
+      (version (git-version "3.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "http://sourceware.org/git/newlib-cygwin.git")
+               (commit commit)))
+         (file-name (git-file-name "newlib" commit))
+         (sha256
+          (base32
+           "1dq23fqrk75g1a4v7569fvnnw5q440zawbxi3w0g05n8jlqsmvcy"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments newlib-arm-none-eabi)
+         ;; The configure flags are identical to the flags used by the "GCC ARM
+         ;; embedded" project.
+         ((#:configure-flags flags)
+          `(cons* "--enable-newlib-io-c99-formats"
+                  "--enable-newlib-retargetable-locking"
+                  "--with-headers=yes"
+                  ,flags))))
+      (native-inputs
+       `(("xbinutils" ,(cross-binutils "arm-none-eabi"))
+         ("xgcc" ,gcc-arm-none-eabi-7-2018-q2-update)
+         ("texinfo" ,texinfo))))))
+
+(define-public newlib-nano-arm-none-eabi-7-2018-q2-update
+  (package (inherit newlib-arm-none-eabi-7-2018-q2-update)
+    (name "newlib-nano")
+    (arguments
+     (package-arguments newlib-nano-arm-none-eabi))
+    (synopsis "Newlib variant for small systems with limited memory")))
+
+
 (define (make-libstdc++-arm-none-eabi xgcc newlib)
   (let ((libstdc++ (make-libstdc++ xgcc)))
     (package (inherit libstdc++)
@@ -286,6 +404,14 @@ languages are C and C++.")
 (define-public arm-none-eabi-nano-toolchain-6
   (arm-none-eabi-toolchain gcc-arm-none-eabi-6
                            newlib-nano-arm-none-eabi))
+
+(define-public arm-none-eabi-toolchain-7-2018-q2-update
+  (arm-none-eabi-toolchain gcc-arm-none-eabi-7-2018-q2-update
+                           newlib-arm-none-eabi-7-2018-q2-update))
+
+(define-public arm-none-eabi-nano-toolchain-7-2018-q2-update
+  (arm-none-eabi-toolchain gcc-arm-none-eabi-7-2018-q2-update
+                           newlib-nano-arm-none-eabi-7-2018-q2-update))
 
 (define-public gdb-arm-none-eabi
   (package

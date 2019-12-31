@@ -96,4 +96,30 @@
              (lset= eq? (commit-difference master4 master2)
                     (list master4 merge master3 devel1 devel2)))))))
 
+(unless (which (git-command)) (test-skip 1))
+(test-assert "commit-difference, excluded commits"
+  (with-temporary-git-repository directory
+      '((add "a.txt" "A")
+        (commit "first commit")
+        (add "b.txt" "B")
+        (commit "second commit")
+        (add "c.txt" "C")
+        (commit "third commit")
+        (add "d.txt" "D")
+        (commit "fourth commit")
+        (add "e.txt" "E")
+        (commit "fifth commit"))
+    (with-repository directory repository
+      (let ((commit1 (find-commit repository "first"))
+            (commit2 (find-commit repository "second"))
+            (commit3 (find-commit repository "third"))
+            (commit4 (find-commit repository "fourth"))
+            (commit5 (find-commit repository "fifth")))
+        (and (lset= eq? (commit-difference commit4 commit1 (list commit2))
+                    (list commit3 commit4))
+             (lset= eq? (commit-difference commit4 commit1 (list commit3))
+                    (list commit4))
+             (lset= eq? (commit-difference commit4 commit1 (list commit5))
+                    (list commit2 commit3 commit4)))))))
+
 (test-end "git")

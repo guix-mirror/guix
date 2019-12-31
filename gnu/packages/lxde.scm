@@ -142,16 +142,16 @@ or external monitor.")
 (define-public lxtask
   (package
     (name "lxtask")
-    (version "0.1.7")
+    (version "0.1.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/lxde/LXTask"
                                   "%20%28task%20manager%29/LXTask%20"
                                   (version-major+minor version) ".x/"
-                                  name "-" version ".tar.xz"))
+                                  "lxtask-" version ".tar.xz"))
               (sha256
                (base32
-                "1zihhvzsg9bl6k0gv7jwx6cgsi3rmcagvnmshc1h0mjq2immmdph"))))
+                "0cv4hx5dg01hbyi5p10pl78n0a40xajpq4wx9c7886pkmpq8isj1"))))
     (build-system gnu-build-system)
     (inputs `(("gtk+" ,gtk+-2)))
     (native-inputs `(("intltool"   ,intltool)

@@ -67,7 +67,7 @@
   #:use-module (ice-9 match))
 
 (define-public diffoscope
-  (let ((version "131"))
+  (let ((version "134"))
     (package
       (name "diffoscope")
       (version version)
@@ -79,7 +79,7 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0jai3kycjlrc64f4vg8yklri6ds1451qy6r6sw2646bhjr0gs233"))))
+                  "04078cn3lazcrpgzzzy1s9721hprkylrvfa58izm4dcvgd7a593z"))))
       (build-system python-build-system)
       (arguments
        `(#:phases (modify-phases %standard-phases
@@ -209,7 +209,8 @@
                        ("wabt" ,wabt)
                        ("xxd" ,xxd)
                        ("xz" ,xz)
-                       ("zip" ,zip)))
+                       ("zip" ,zip)
+                       ("zstd" ,zstd)))
       (home-page "https://diffoscope.org/")
       (synopsis "Compare files, archives, and directories in depth")
       (description

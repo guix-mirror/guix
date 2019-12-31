@@ -24,7 +24,7 @@
 # Copyright © 2019 John Soo <jsoo1@asu.edu>
 # Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 # Copyright © 2019 Evan Straw <evan.straw99@gmail.com>
-# Copyright © 2019 Brett Gilio <brettg@posteo.de>
+# Copyright © 2019 Brett Gilio <brettg@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -159,6 +159,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/docbook.scm			\
   %D%/packages/docker.scm			\
   %D%/packages/documentation.scm		\
+  %D%/packages/drones.scm			\
   %D%/packages/dunst.scm			\
   %D%/packages/dvtm.scm				\
   %D%/packages/easyrpg.scm			\
@@ -271,6 +272,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/iso-codes.scm			\
   %D%/packages/java.scm				\
   %D%/packages/java-compression.scm		\
+  %D%/packages/java-graphics.scm		\
   %D%/packages/java-maths.scm			\
   %D%/packages/javascript.scm			\
   %D%/packages/jemalloc.scm			\
@@ -281,7 +283,9 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/kawa.scm				\
   %D%/packages/kde.scm				\
   %D%/packages/kde-frameworks.scm		\
+  %D%/packages/kde-multimedia.scm		\
   %D%/packages/kde-plasma.scm			\
+  %D%/packages/kde-utils.scm			\
   %D%/packages/kerberos.scm			\
   %D%/packages/key-mon.scm			\
   %D%/packages/kodi.scm				\
@@ -711,6 +715,19 @@ dist_patch_DATA =						\
   %D%/packages/patches/ath9k-htc-firmware-gcc.patch		\
   %D%/packages/patches/ath9k-htc-firmware-objcopy.patch		\
   %D%/packages/patches/audacity-build-with-system-portaudio.patch \
+  %D%/packages/patches/audiofile-fix-datatypes-in-tests.patch	\
+  %D%/packages/patches/audiofile-fix-sign-conversion.patch	\
+  %D%/packages/patches/audiofile-CVE-2015-7747.patch		\
+  %D%/packages/patches/audiofile-CVE-2018-13440.patch		\
+  %D%/packages/patches/audiofile-CVE-2018-17095.patch		\
+  %D%/packages/patches/audiofile-Check-the-number-of-coefficients.patch \
+  %D%/packages/patches/audiofile-Fail-on-error-in-parseFormat.patch \
+  %D%/packages/patches/audiofile-Fix-index-overflow-in-IMA.cpp.patch \
+  %D%/packages/patches/audiofile-Fix-multiply-overflow-sfconvert.patch \
+  %D%/packages/patches/audiofile-Fix-overflow-in-MSADPCM-decodeSam.patch \
+  %D%/packages/patches/audiofile-division-by-zero-BlockCodec-runPull.patch \
+  %D%/packages/patches/audiofile-hurd.patch \
+  %D%/packages/patches/audiofile-signature-of-multiplyCheckOverflow.patch \
   %D%/packages/patches/automake-skip-amhello-tests.patch	\
   %D%/packages/patches/avahi-CVE-2018-1000845.patch		\
   %D%/packages/patches/avahi-localstatedir.patch		\
@@ -804,6 +821,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/elixir-path-length.patch			\
   %D%/packages/patches/elm-compiler-disable-reactor.patch	\
   %D%/packages/patches/elm-compiler-fix-map-key.patch		\
+  %D%/packages/patches/emacs27-exec-path.patch			\
   %D%/packages/patches/emacs-dired-toggle-sudo-emacs-26.patch   \
   %D%/packages/patches/emacs-exec-path.patch			\
   %D%/packages/patches/emacs-fix-scheme-indent-function.patch	\
@@ -868,6 +886,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-6-source-date-epoch-1.patch		\
   %D%/packages/patches/gcc-6-source-date-epoch-2.patch		\
   %D%/packages/patches/gcc-7-cross-mingw.patch			\
+  %D%/packages/patches/gcc-7-cross-environment-variables.patch	\
   %D%/packages/patches/gcc-8-cross-environment-variables.patch	\
   %D%/packages/patches/gcc-8-strmov-store-file-names.patch	\
   %D%/packages/patches/gcc-9-asan-fix-limits-include.patch	\
@@ -938,6 +957,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gpm-glibc-2.26.patch			\
   %D%/packages/patches/gpsbabel-minizip.patch     		\
   %D%/packages/patches/gpsbabel-qstring.patch     		\
+  %D%/packages/patches/grantlee-merge-theme-dirs.patch		\
   %D%/packages/patches/grep-timing-sensitive-test.patch		\
   %D%/packages/patches/groovy-add-exceptionutilsgenerator.patch	\
   %D%/packages/patches/grub-efi-fat-serial-number.patch		\
@@ -969,7 +989,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/hdf4-shared-fortran.patch 		\
   %D%/packages/patches/hdf4-tirpc.patch 			\
   %D%/packages/patches/hdf5-config-date.patch			\
-  %D%/packages/patches/hdf5-mpi-deprecations.patch		\
   %D%/packages/patches/hdf5-1.8-mpi-deprecations.patch		\
   %D%/packages/patches/hdf-eos2-build-shared.patch 		\
   %D%/packages/patches/hdf-eos2-remove-gctp.patch		\
@@ -1012,6 +1031,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/java-xerces-xjavac_taskdef.patch	\
   %D%/packages/patches/jbig2dec-ignore-testtest.patch		\
   %D%/packages/patches/kdbusaddons-kinit-file-name.patch	\
+  %D%/packages/patches/libnftnl-dont-check-NFTNL_FLOWTABLE_SIZE.patch	\
   %D%/packages/patches/libvirt-create-machine-cgroup.patch	\
   %D%/packages/patches/libziparchive-add-includes.patch		\
   %D%/packages/patches/localed-xorg-keyboard.patch		\
@@ -1025,6 +1045,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/kmod-module-directory.patch		\
   %D%/packages/patches/kmscon-runtime-keymap-switch.patch	\
   %D%/packages/patches/kpackage-allow-external-paths.patch	\
+  %D%/packages/patches/kmplayer-aarch64.patch			\
+  %D%/packages/patches/kmplayer-upstream_Fix-build-with-Qt-5.9.patch	\
   %D%/packages/patches/kpmcore-fix-tests.patch			\
   %D%/packages/patches/kpmcore-remove-broken-test.patch		\
   %D%/packages/patches/kobodeluxe-paths.patch			\
@@ -1058,6 +1080,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libexif-CVE-2017-7544.patch		\
   %D%/packages/patches/libexif-CVE-2018-20030.patch		\
   %D%/packages/patches/libextractor-exiv2.patch			\
+  %D%/packages/patches/libgeotiff-adapt-test-script-for-proj-6.2.patch		\
   %D%/packages/patches/libgit2-avoid-python.patch		\
   %D%/packages/patches/libgit2-mtime-0.patch			\
   %D%/packages/patches/libgnome-encoding.patch			\
@@ -1103,7 +1126,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/lierolibre-remove-arch-warning.patch	\
   %D%/packages/patches/lierolibre-try-building-other-arch.patch	\
   %D%/packages/patches/linkchecker-tests-require-network.patch	\
-  %D%/packages/patches/linux-libre-active-entropy.patch		\
   %D%/packages/patches/linux-pam-no-setfsuid.patch		\
   %D%/packages/patches/lirc-localstatedir.patch			\
   %D%/packages/patches/lirc-reproducible-build.patch		\
@@ -1157,7 +1179,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/mrrescue-support-love-11.patch		\
   %D%/packages/patches/mrustc-0.8.0-fix-variable-length-integer-receiving.patch \
   %D%/packages/patches/mtools-mformat-uninitialized.patch	\
-  %D%/packages/patches/mumble-1.2.19-abs.patch			\
   %D%/packages/patches/mumps-build-parallelism.patch		\
   %D%/packages/patches/mumps-shared-libseq.patch		\
   %D%/packages/patches/mumps-shared-mumps.patch			\

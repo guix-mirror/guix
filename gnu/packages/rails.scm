@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,14 +33,14 @@
     (version "1.7.2")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://github.com/rails/spring/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/rails/spring")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1dd58y0cpsm2izj74yscn0ybfygmgcbbfdw1891g7cq41aai4b35"))))
+         "0smwrndjmnr7g7jjskw05zin3gh6kx5db6yrkiqi6i9wl5mrn9n5"))))
     (build-system ruby-build-system)
     (arguments
      `(#:test-target "test:unit"

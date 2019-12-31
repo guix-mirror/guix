@@ -1162,6 +1162,20 @@ multi-system game/emulator system.")
        #:configure-flags (list "--enable-release") ;for optimizations
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-build
+           ;; XXX: The following works around a build failure introduced when
+           ;; Fluidsynth was updated to version 2.1.  It has been applied
+           ;; upstream as 68758a879e0c8ecc0d40962516d4e808aa4e15e5 and can be
+           ;; removed once ScummVM 2.1.1+ is out.
+           (lambda _
+             (substitute* "audio/softsynth/fluidsynth.cpp"
+               (("#include <fluidsynth.h>") "")
+               (("#include \"common/scummsys.h\"") "#include \"config.h\"")
+               (("#include \"common/config-manager.h\"" line)
+                (string-append "#include <fluidsynth.h>\n"
+                               "#include \"common/scummsys.h\"\n"
+                               line)))
+             #t))
          (replace 'configure
            ;; configure does not work followed by both "SHELL=..." and
            ;; "CONFIG_SHELL=..."; set environment variables instead
@@ -1204,7 +1218,7 @@ play them on systems for which they were never designed!")
 (define-public mame
   (package
     (name "mame")
-    (version "0.216")
+    (version "0.217")
     (source
      (origin
        (method git-fetch)
@@ -1214,7 +1228,7 @@ play them on systems for which they were never designed!")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1q3mrlinkg3hxry7ssl5713lclz3k243q30933flxh99fnzgajwc"))
+         "03h4d0d8lh6djjff3zqhjm14klc9n129yzwygdqppz0f43w97cmw"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.

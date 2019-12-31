@@ -52,11 +52,10 @@
             base64url-alphabet
             get-delimited-base64
             put-delimited-base64)
-  #:use-module (rnrs)
-  #:use-module ((srfi srfi-13)
-                #:select (string-index
-                          string-prefix? string-suffix?
-                          string-concatenate string-trim-both)))
+  #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-60)
+  #:use-module (rnrs bytevectors)
+  #:use-module (rnrs io ports))
 
 
 (define-syntax define-alias
@@ -67,12 +66,19 @@
 ;; Force the use of Guile's own primitives to avoid the overhead of its 'fx'
 ;; procedures.
 
-(define-alias fxbit-field bitwise-bit-field)
+(define-alias fxbit-field bit-field)
 (define-alias fxarithmetic-shift ash)
 (define-alias fxarithmetic-shift-left ash)
 (define-alias fxand logand)
 (define-alias fxior logior)
 (define-alias fxxor logxor)
+(define-alias fx=? =)
+(define-alias fx+ +)
+(define-alias mod modulo)
+
+(define-syntax-rule (assert exp)
+  (unless exp
+    (throw 'assertion-failure 'exp)))
 
 (define base64-alphabet
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/")

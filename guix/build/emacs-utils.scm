@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,7 @@
   #:export (%emacs
             emacs-batch-eval
             emacs-batch-edit-file
+            emacs-batch-disable-compilation
             emacs-generate-autoloads
             emacs-byte-compile-directory
             emacs-substitute-sexps
@@ -49,6 +51,12 @@
   (invoke (%emacs) "--quick" "--batch"
           (string-append "--visit=" file)
           (format #f "--eval=~S" expr)))
+
+(define (emacs-batch-disable-compilation file)
+  (emacs-batch-edit-file file
+    '(progn
+      (add-file-local-variable 'no-byte-compile t)
+      (basic-save-buffer))))
 
 (define (emacs-generate-autoloads name directory)
   "Generate autoloads for Emacs package NAME placed in DIRECTORY."

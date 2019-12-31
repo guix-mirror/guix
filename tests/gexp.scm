@@ -886,6 +886,12 @@
     (run-with-store %store
       (lower-gexp #~(foo #$+)))))
 
+(test-equal "lower-gexp, character literal"
+  '(#\+)
+  (lowered-gexp-sexp
+   (run-with-store %store
+     (lower-gexp #~(#\+)))))
+
 (test-assertm "gexp->derivation #:references-graphs"
   (mlet* %store-monad
       ((one (text-file "one" (random-text)))

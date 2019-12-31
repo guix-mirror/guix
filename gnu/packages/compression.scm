@@ -779,7 +779,7 @@ time for compression ratio.")
 (define-public squashfs-tools
   (package
     (name "squashfs-tools")
-    (version "4.3")
+    (version "4.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/squashfs/squashfs/"
@@ -787,10 +787,10 @@ time for compression ratio.")
                                   "squashfs" version ".tar.gz"))
               (sha256
                (base32
-                "1xpklm0y43nd9i6jw43y2xh5zvlmj9ar2rvknh0bh7kv8c95aq0d"))))
+                "0zmhvczscqz0mzh4b9m8m42asq14db0a6lc8clp5ljq5ybrv70d9"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; no check target
+     '(#:tests? #f                      ; no check target
        #:make-flags
        (list "CC=gcc"
              "XZ_SUPPORT=1"
@@ -802,13 +802,6 @@ time for compression ratio.")
          (replace 'configure
            (lambda _
              (chdir "squashfs-tools")
-             #t))
-         (add-after 'unpack 'fix-glibc-compatability
-           (lambda _
-             (substitute* '("squashfs-tools/mksquashfs.c"
-                            "squashfs-tools/unsquashfs.c")
-               (("<sys/sysinfo.h>")
-                "<sys/sysinfo.h>\n#include <sys/sysmacros.h>"))
              #t)))))
     (inputs
      `(("lz4" ,lz4)
@@ -825,23 +818,6 @@ It is intended to be used for archival use, for live CDs, and for embedded
 systems where low overhead is needed.  This package allows you to create and
 extract such file systems.")
     (license license:gpl2+)))
-
-;; We need this for building squashfs images with symlinks.
-(define-public squashfs-tools-next
-  (let ((commit "fb33dfc32b131a1162dcf0e35bd88254ae10e265")
-        (revision "1"))
-    (package (inherit squashfs-tools)
-      (name "squashfs-tools-next")
-      (version (string-append "4.3-" revision (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/plougher/squashfs-tools.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1x2skf8hxzfch978nzx5mh46d4hhi6gl22270hiarjszsjk3bnsx")))))))
 
 (define-public pigz
   (package

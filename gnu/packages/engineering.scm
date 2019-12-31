@@ -186,16 +186,16 @@ plans and designs.")
 (define-public geda-gaf
   (package
     (name "geda-gaf")
-    (version "1.9.2")
+    (version "1.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://ftp.geda-project.org/geda-gaf/unstable/v"
+                    "http://ftp.geda-project.org/geda-gaf/stable/v"
                     (version-major+minor version) "/"
                     version "/geda-gaf-" version ".tar.gz"))
               (sha256
                (base32
-                "14mk45pfz11v54q66gafw2l68n1p5ssvvjmdm8ffgc8x1w5ajfrz"))))
+                "06ivgarvwbzjz2wigxzzkm8iszldi2p6x3a6jnlczjyrz4csddsy"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -205,12 +205,14 @@ plans and designs.")
            (lambda _
              (setenv "HOME" (getenv "TMPDIR"))
              #t))
-         ;; FIXME: These two tests fail for unknown reasons.  They return "2"
-         ;; when they should return "1".
          (add-after 'unpack 'disable-failing-tests
            (lambda _
-             (substitute* "utils/tests/gxyrs/tests.list"
-               (("^do_nothing.*") ""))
+             (substitute* "xorn/tests/Makefile.in"
+               (("-Werror") ""))
+             ;; This test returns its correct result in an unexpected order.
+             (substitute* "libgeda/scheme/unit-tests/t0402-config.scm"
+               (("\\(begin-config-test 'config-keys" m)
+                (string-append "#;" m)))
              #t)))
        #:configure-flags
        (let ((pcb (assoc-ref %build-inputs "pcb")))
@@ -219,13 +221,15 @@ plans and designs.")
                               pcb "/share/pcb/pcblib-newlib:"
                               pcb "/share/pcb/newlib")))))
     (inputs
-     `(("glib" ,glib)
+     `(("gamin" ,gamin)
+       ("glib" ,glib)
        ("gtk" ,gtk+-2)
        ("guile" ,guile-2.0)
        ("desktop-file-utils" ,desktop-file-utils)
        ("shared-mime-info" ,shared-mime-info)
        ("m4" ,m4)
-       ("pcb" ,pcb)))
+       ("pcb" ,pcb)
+       ("python" ,python-2))) ; for xorn
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("perl" ,perl))) ; for tests
@@ -248,14 +252,14 @@ utilities.")
   (package
     (inherit geda-gaf)
     (name "lepton-eda")
-    (version "1.9.5-20180820")
+    (version "1.9.9-20191003")
     (home-page "https://github.com/lepton-eda/lepton-eda")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url home-page) (commit version)))
               (sha256
                (base32
-                "1ayaccvw18zh4g7a4x5jf6yxkphi5xafb0hpc732g59qkgwfcmlr"))
+                "08cc3zfk84qq9mrkc9pp4r9jlavvm01wwy0yd9frql68w2zw6mip"))
               (file-name (git-file-name name version))))
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -266,7 +270,14 @@ utilities.")
        ("groff" ,groff)
        ("which" ,which)
        ,@(package-native-inputs geda-gaf)))
-    ;; For now it's Guile 2.0, not 2.2.
+    (inputs
+     `(("glib" ,glib)
+       ("gtk" ,gtk+-2)
+       ("guile" ,guile-2.2)
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("shared-mime-info" ,shared-mime-info)
+       ("m4" ,m4)
+       ("pcb" ,pcb)))
     (arguments
      (substitute-keyword-arguments (package-arguments geda-gaf)
        ((#:configure-flags flags ''())
@@ -300,6 +311,17 @@ utilities.")
                            ,(string-take version
                                          (string-index version #\-)))
                    (format port "#define PACKAGE_GIT_COMMIT \"cabbag3\"~%")))
+               #t))
+           (add-after 'install 'compile-scheme-files
+             (lambda* (#:key outputs #:allow-other-keys)
+               (invoke "make" "precompile")
+               (for-each (lambda (program)
+                           (wrap-program program
+                             `("GUILE_LOAD_COMPILED_PATH" ":" prefix
+                               (,(string-append (assoc-ref outputs "out")
+                                                "/share/lepton-eda/ccache/")))))
+                         (find-files (string-append (assoc-ref outputs "out") "/bin")
+                                     ".*"))
                #t))))))
     (description
      "Lepton EDA ia an @dfn{electronic design automation} (EDA) tool set
@@ -713,8 +735,8 @@ fonts to gEDA.")
       (license license:gpl2+))))
 
 (define-public libfive
-  (let ((commit "9d857d1923abecb0e5935b9287d22661f6efaac5")
-        (revision "2"))
+  (let ((commit "6e39254e57c179459bb929df49ae96a6017a0ed6")
+        (revision "3"))
     (package
       (name "libfive")
       (version (git-version "0" revision commit))
@@ -725,7 +747,7 @@ fonts to gEDA.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1r40kyx30wz31cwwlfvfh7fgqkxq3n8dxhswpi9qpf4r5h3l8wsn"))
+                  "0ryv2hcbrwqc087w7rrs4a2irkcpmqync00g4dh8n7jn10w2jkim"))
                 (file-name (git-file-name name version))
                 (snippet
                  ;; Remove bundled catch since we provide our own.
@@ -740,12 +762,18 @@ fonts to gEDA.")
            (add-after 'unpack 'remove-native-compilation
              (lambda _
                (substitute* "CMakeLists.txt" (("-march=native") ""))
+               #t))
+           (add-after 'unpack 'find-catch
+             (lambda* (#:key inputs #:allow-other-keys)
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-append (assoc-ref inputs "catch")
+                                      "/include/catch"))
                #t)))))
       (native-inputs
        `(("pkg-config" ,pkg-config)))
       (inputs
        `(("boost" ,boost)
-         ("catch" ,catch-framework)
+         ("catch" ,catch-framework2)
          ("libpng" ,libpng)
          ("qtbase" ,qtbase)
          ("eigen" ,eigen)
@@ -758,7 +786,7 @@ libfive, solid models are defined as Scheme scripts, and there are no opaque
 function calls into the geometry kernel: everything is visible to the user.
 Even fundamental, primitive shapes are represented as code in the user-level
 language.")
-      (license (list license:lgpl2.1+             ;library
+      (license (list license:mpl2.0               ;library
                      license:gpl2+)))))           ;Guile bindings and GUI
 
 (define-public ao

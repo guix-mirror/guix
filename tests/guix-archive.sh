@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2013, 2014, 2015, 2019 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -73,6 +73,11 @@ guile -c "(use-modules (guix serialization))
 guix archive -x "$tmpdir" < "$archive"
 test -x "$tmpdir/bin/guile"
 test -d "$tmpdir/lib/guile"
+
+# Check '--list'.
+guix archive -t < "$archive" | grep "^D /share/guile"
+guix archive -t < "$archive" | grep "^x /bin/guile"
+guix archive -t < "$archive" | grep "^r /share/guile.*/boot-9\.scm"
 
 if echo foo | guix archive --authorize
 then false; else true; fi

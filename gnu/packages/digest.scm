@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,7 +25,7 @@
 (define-public xxhash
   (package
     (name "xxhash")
-    (version "0.6.5")
+    (version "0.7.2")
     (source
      (origin
        (method git-fetch)
@@ -34,16 +34,13 @@
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "137hifc3f3cb4ib64rd6y83arc9hmbyncgrij2v8m94mx66g2aks"))))
+        (base32 "1f9gl0cymmi92ihsfan0p4zmyf2hxwx4arjimpbmbp719nbcvdsx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
        (list "CC=gcc"
              "XXH_FORCE_MEMORY_ACCESS=1" ; improved performance with GCC
              (string-append "prefix=" (assoc-ref %outputs "out")))
-       #:test-target "test"
-       ;; Parallel testing tries to run ‘xxhsum’ before it's been built.
-       #:parallel-tests? #f
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script

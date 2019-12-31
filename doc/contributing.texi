@@ -38,6 +38,48 @@ version from the Git repository:
 git clone https://git.savannah.gnu.org/git/guix.git
 @end example
 
+@cindex authentication, of a Guix checkout
+How do you ensure that you obtained a genuine copy of the repository?
+Guix itself provides a tool to @dfn{authenticate} your checkout, but you
+must first make sure this tool is genuine in order to ``bootstrap'' the
+trust chain.  To do that, run:
+
+@c XXX: Adjust instructions when there's a known tag to start from.
+@example
+git verify-commit `git log --format=%H build-aux/git-authenticate.scm`
+@end example
+
+The output must look something like:
+
+@example
+gpg: Signature made Fri 27 Dec 2019 01:27:41 PM CET
+gpg:                using RSA key 3CE464558A84FDC69DB40CFB090B11993D9AEBB5
+@dots{}
+gpg: Signature made Fri 27 Dec 2019 01:25:22 PM CET
+gpg:                using RSA key 3CE464558A84FDC69DB40CFB090B11993D9AEBB5
+@dots{}
+@end example
+
+@noindent
+... meaning that changes to this file are all signed with key
+@code{3CE464558A84FDC69DB40CFB090B11993D9AEBB5} (you may need to fetch
+this key from a key server, if you have not done it yet).
+
+From there on, you can authenticate all the commits included in your
+checkout by running:
+
+@example
+make authenticate
+@end example
+
+The first run takes a couple of minutes, but subsequent runs are faster.
+
+@quotation Note
+You are advised to run @command{make authenticate} after every
+@command{git pull} invocation.  This ensures you keep receiving valid
+changes to the repository
+@end quotation
+
 The easiest way to set up a development environment for Guix is, of
 course, by using Guix!  The following command starts a new shell where
 all the dependencies and appropriate environment variables are set up to
@@ -962,11 +1004,8 @@ the URL: it is not very useful and if the name changes, the URL will probably
 be wrong.
 
 @item
-See if Guix builds with
-@example
-guix environment --pure guix -- make
-@end example
-and look for warnings, especially those about use of undefined symbols.
+Check if Guix builds (@pxref{Building from Git}) and address the
+warnings, especially those about use of undefined symbols.
 
 @item
 Make sure your changes do not break Guix and simulate a @code{guix pull} with:

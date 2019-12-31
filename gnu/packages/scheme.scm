@@ -223,20 +223,18 @@ features an integrated Emacs-like editor and a large runtime library.")
 
 (define-public bigloo
   ;; Upstream modifies source tarballs in place, making significant changes
-  ;; long after the initial publication: <https://bugs.gnu.org/33525>.  For
-  ;; transparency, we give this "second 4.3b" release a different version
-  ;; number.
-  (let ((upstream-version "4.3e"))
+  ;; long after the initial publication: <https://bugs.gnu.org/33525>.
+  (let ((upstream-version "4.3f"))
     (package
       (name "bigloo")
-      (version "4.3e1")
+      (version "4.3f")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "ftp://ftp-sop.inria.fr/indes/fp/Bigloo/bigloo"
                                     upstream-version ".tar.gz"))
                 (sha256
                  (base32
-                  "12k1kxyn3yilba0508xh8wkrw6279gnghzqi0bs2ayf5d2wkqdj3"))
+                  "09whj8z91qbihk59dw2yb2ccbx9nk1c4l65j62pfs1pz822cpyh9"))
                 ;; Remove bundled libraries.
                 (modules '((guix build utils)))
                 (snippet
@@ -307,7 +305,7 @@ features an integrated Emacs-like editor and a large runtime library.")
        `(("pkg-config" ,pkg-config)))
       (propagated-inputs
        `(("gmp" ,gmp)))                            ; bigloo.h refers to gmp.h
-      (home-page "http://www-sop.inria.fr/indes/fp/Bigloo/")
+      (home-page "https://www-sop.inria.fr/indes/fp/Bigloo/")
       (synopsis "Efficient Scheme compiler")
       (description
        "Bigloo is a Scheme implementation devoted to one goal: enabling Scheme

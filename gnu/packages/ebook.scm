@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017, 2019 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -337,7 +337,7 @@ following formats:
 (define-public xchm
   (package
     (name "xchm")
-    (version "1.30")
+    (version "1.31")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rzvncj/xCHM"
@@ -345,7 +345,7 @@ following formats:
                                   version "/xchm-" version ".tar.gz"))
               (sha256
                (base32
-                "1865wb3ppmx5y12rqfhv4wri0lfdah41zsfz94xb8gym80m8zac5"))))
+                "0aw6bysqiwbw75n3ad229ihlmh7chqs1wlxm0398z3lfp2y6n7qf"))))
     (build-system gnu-build-system)
     (inputs
      `(("wxwidgets" ,wxwidgets)

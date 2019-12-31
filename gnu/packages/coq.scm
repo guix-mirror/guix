@@ -58,6 +58,7 @@
             (variable "COQPATH")
             (files (list "lib/coq/user-contrib")))))
     (build-system ocaml-build-system)
+    (outputs '("out" "ide"))
     (inputs
      `(("lablgtk" ,lablgtk)
        ("python" ,python-2)
@@ -71,6 +72,13 @@
          (add-after 'unpack 'make-git-checkout-writable
            (lambda _
              (for-each make-file-writable (find-files "."))
+             #t))
+         (add-after 'unpack 'remove-lablgtk-references
+           (lambda _
+             ;; This is not used anywhere, but creates a reference to lablgtk in
+             ;; every binary
+             (substitute* '("config/coq_config.mli" "configure.ml")
+               ((".*coqideincl.*") ""))
              #t))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
@@ -88,6 +96,23 @@
                      "-j" (number->string (parallel-job-count))
                      "world")))
          (delete 'check)
+         (add-after 'install 'remove-duplicate
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               ;; These are exact copies of the version without the .opt suffix.
+               ;; Remove them to save 35 MiB in the result
+               (delete-file (string-append bin "/coqtop.opt"))
+               (delete-file (string-append bin "/coqidetop.opt")))
+             #t))
+         (add-after 'install 'install-ide
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (ide (assoc-ref outputs "ide")))
+               (mkdir-p (string-append ide "/bin"))
+               (rename-file (string-append out "/bin/coqide")
+                            (string-append ide "/bin/coqide")))
+             #t))
          (add-after 'install 'check
            (lambda _
              (with-directory-excursion "test-suite"

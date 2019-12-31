@@ -2107,8 +2107,7 @@ color-related widgets.")
            "0g8jacm2iqd7lw2m7f1dp1nnrsk38bl3m8pihm8zz9gxs8d31sf5"))))
       (build-system cmake-build-system)
       (inputs
-       `(("llvm-6" ,llvm-6)
-         ("clang-6" ,clang-6)
+       `(("clang-toolchain" ,clang-toolchain-6)
          ("libxml2" ,libxml2)
          ("libxslt" ,libxslt)
          ("python-wrapper" ,python-wrapper)
@@ -2124,7 +2123,7 @@ color-related widgets.")
              (lambda _ (chdir "sources/shiboken2") #t))
            (add-before 'configure 'set-build-env
              (lambda* (#:key inputs #:allow-other-keys)
-               (let ((llvm (assoc-ref inputs "llvm-6")))
+               (let ((llvm (assoc-ref inputs "clang-toolchain")))
                  (setenv "CLANG_INSTALL_DIR" llvm)
                  #t))))))
       (home-page "https://wiki.qt.io/Qt_for_Python")
@@ -2162,8 +2161,7 @@ color-related widgets.")
        `(("libcxx" ,libcxx-6)
          ("libxml2" ,libxml2)
          ("libxslt" ,libxslt)
-         ("llvm-6" ,llvm-6)
-         ("clang-6" ,clang-6)
+         ("clang-toolchain" ,clang-toolchain-6)
          ("qtbase" ,qtbase)
          ("qtdatavis3d" ,qtdatavis3d)
          ("qtlocation" ,qtlocation)
@@ -2189,13 +2187,12 @@ color-related widgets.")
          ;; FIXME: Building tests fail.
          #:configure-flags '("-DBUILD_TESTS=FALSE")
          #:phases
-         (modify-phases
-             %standard-phases
+         (modify-phases %standard-phases
            (add-after 'unpack 'go-to-source-dir
              (lambda _ (chdir "sources/pyside2") #t))
            (add-before 'configure 'set-clang-dir
              (lambda* (#:key inputs #:allow-other-keys)
-               (let ((clang (assoc-ref inputs "clang-6"))
+               (let ((clang (assoc-ref inputs "clang-toolchain"))
                      (libcxx (assoc-ref inputs "libcxx")))
                  (setenv "CLANG_INSTALL_DIR" clang)
                  (substitute* "cmake/Macros/PySideModules.cmake"

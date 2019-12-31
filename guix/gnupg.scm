@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2013, 2014, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2013, 2014, 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -59,28 +59,37 @@
   ;; unreliable.
   (make-parameter "pool.sks-keyservers.net"))
 
+;; Regexps for status lines.  See file `doc/DETAILS' in GnuPG.
+
+(define sigid-rx
+  (make-regexp
+   "^\\[GNUPG:\\] SIG_ID ([A-Za-z0-9+/]+) ([[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}) ([[:digit:]]+)"))
+(define goodsig-rx
+  (make-regexp "^\\[GNUPG:\\] GOODSIG ([[:xdigit:]]+) (.+)$"))
+(define validsig-rx
+  (make-regexp
+   "^\\[GNUPG:\\] VALIDSIG ([[:xdigit:]]+) ([[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}) ([[:digit:]]+) .*$"))
+(define expkeysig-rx                    ; good signature, but expired key
+  (make-regexp "^\\[GNUPG:\\] EXPKEYSIG ([[:xdigit:]]+) (.*)$"))
+(define errsig-rx
+  ;; Note: The fingeprint part (the last element of the line) appeared in
+  ;; GnuPG 2.2.7 according to 'doc/DETAILS', and it may be missing.
+  (make-regexp
+   "^\\[GNUPG:\\] ERRSIG ([[:xdigit:]]+) ([^ ]+) ([^ ]+) ([^ ]+) ([[:digit:]]+) ([[:digit:]]+)(.*)"))
+
+
 (define* (gnupg-verify sig file
                        #:optional (keyring (current-keyring)))
   "Verify signature SIG for FILE against the keys in KEYRING.  All the keys in
 KEYRING as assumed to be \"trusted\", whether or not they expired or were
 revoked.  Return a status s-exp if GnuPG failed."
 
-  (define (status-line->sexp line)
-    ;; See file `doc/DETAILS' in GnuPG.
-    (define sigid-rx
-      (make-regexp
-       "^\\[GNUPG:\\] SIG_ID ([A-Za-z0-9+/]+) ([[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}) ([[:digit:]]+)"))
-    (define goodsig-rx
-      (make-regexp "^\\[GNUPG:\\] GOODSIG ([[:xdigit:]]+) (.+)$"))
-    (define validsig-rx
-      (make-regexp
-       "^\\[GNUPG:\\] VALIDSIG ([[:xdigit:]]+) ([[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}) ([[:digit:]]+) .*$"))
-    (define expkeysig-rx                    ; good signature, but expired key
-      (make-regexp "^\\[GNUPG:\\] EXPKEYSIG ([[:xdigit:]]+) (.*)$"))
-    (define errsig-rx
-      (make-regexp
-       "^\\[GNUPG:\\] ERRSIG ([[:xdigit:]]+) ([^ ]+) ([^ ]+) ([^ ]+) ([[:digit:]]+) ([[:digit:]]+)"))
+  (define (maybe-fingerprint str)
+    (match (string-trim-both str)
+      ((or "-" "") #f)
+      (fpr         fpr)))
 
+  (define (status-line->sexp line)
     (cond ((regexp-exec sigid-rx line)
            =>
            (lambda (match)
@@ -108,7 +117,7 @@ revoked.  Return a status s-exp if GnuPG failed."
           ((regexp-exec errsig-rx line)
            =>
            (lambda (match)
-             `(signature-error ,(match:substring match 1) ; key id or fingerprint
+             `(signature-error ,(match:substring match 1) ; key id
                                ,(match:substring match 2) ; pubkey algo
                                ,(match:substring match 3) ; hash algo
                                ,(match:substring match 4) ; sig class
@@ -120,7 +129,9 @@ revoked.  Return a status s-exp if GnuPG failed."
                                   (case rc
                                     ((9) 'missing-key)
                                     ((4) 'unknown-algorithm)
-                                    (else rc))))))
+                                    (else rc)))
+                               ,(maybe-fingerprint ; fingerprint or #f
+                                 (match:substring match 7)))))
           (else
            `(unparsed-line ,line))))
 
@@ -142,33 +153,37 @@ revoked.  Return a status s-exp if GnuPG failed."
 
 (define (gnupg-status-good-signature? status)
   "If STATUS, as returned by `gnupg-verify', denotes a good signature, return
-a key-id/user pair; return #f otherwise."
-  (any (lambda (sexp)
-         (match sexp
-           (((or 'good-signature 'expired-key-signature) key-id user)
-            (cons key-id user))
-           (_ #f)))
-       status))
+a fingerprint/user pair; return #f otherwise."
+  (match (assq 'valid-signature status)
+    (('valid-signature fingerprint date timestamp)
+     (match (or (assq 'good-signature status)
+                (assq 'expired-key-signature status))
+       ((_ key-id user) (cons fingerprint user))
+       (_ #f)))
+    (_
+     #f)))
 
 (define (gnupg-status-missing-key? status)
-  "If STATUS denotes a missing-key error, then return the key-id of the
-missing key."
+  "If STATUS denotes a missing-key error, then return the fingerprint of the
+missing key or its key id if the fingerprint is unavailable."
   (any (lambda (sexp)
          (match sexp
-           (('signature-error key-id _ ...)
-            key-id)
+           (('signature-error key-id _ ... 'missing-key fingerprint)
+            (or fingerprint key-id))
            (_ #f)))
        status))
 
-(define* (gnupg-receive-keys key-id server
+(define* (gnupg-receive-keys fingerprint/key-id server
                              #:optional (keyring (current-keyring)))
+  "Download FINGERPRINT/KEY-ID from SERVER, a key server, and add it to
+KEYRING."
   (unless (file-exists? keyring)
     (mkdir-p (dirname keyring))
     (call-with-output-file keyring (const #t)))   ;create an empty keybox
 
-  (system* (%gpg-command) "--keyserver" server
-           "--no-default-keyring" "--keyring" keyring
-           "--recv-keys" key-id))
+  (zero? (system* (%gpg-command) "--keyserver" server
+                  "--no-default-keyring" "--keyring" keyring
+                  "--recv-keys" fingerprint/key-id)))
 
 (define* (gnupg-verify* sig file
                         #:key
@@ -176,35 +191,48 @@ missing key."
                         (server (%openpgp-key-server))
                         (keyring (current-keyring)))
   "Like `gnupg-verify', but try downloading the public key if it's missing.
-Return #t if the signature was good, #f otherwise.  KEY-DOWNLOAD specifies a
-download policy for missing OpenPGP keys; allowed values: 'always', 'never',
-and 'interactive' (default)."
+Return two values: 'valid-signature and a fingerprint/name pair upon success,
+'missing-key and a fingerprint if the key could not be found, and
+'invalid-signature with a fingerprint if the signature is invalid.
+
+KEY-DOWNLOAD specifies a download policy for missing OpenPGP keys; allowed
+values: 'always', 'never', and 'interactive' (default).  Return a
+fingerprint/user name pair on success and #f otherwise."
   (let ((status (gnupg-verify sig file)))
-    (or (gnupg-status-good-signature? status)
-        (let ((missing (gnupg-status-missing-key? status)))
-          (define (download-and-try-again)
-            ;; Download the missing key and try again.
-            (begin
-              (gnupg-receive-keys missing server keyring)
-              (gnupg-status-good-signature? (gnupg-verify sig file
-                                                          keyring))))
+    (match (gnupg-status-good-signature? status)
+      ((fingerprint . user)
+       (values 'valid-signature (cons fingerprint user)))
+      (#f
+       (let ((missing (gnupg-status-missing-key? status)))
+         (define (download-and-try-again)
+           ;; Download the missing key and try again.
+           (if (gnupg-receive-keys missing server keyring)
+               (match (gnupg-status-good-signature?
+                       (gnupg-verify sig file keyring))
+                 (#f
+                  (values 'invalid-signature missing))
+                 ((fingerprint . user)
+                  (values 'valid-signature
+                          (cons fingerprint user))))
+               (values 'missing-key missing)))
 
-          (define (receive?)
-            (let ((answer
-                   (begin
-                     (format #t (G_ "Would you like to add this key \
+         (define (receive?)
+           (let ((answer
+                  (begin
+                    (format #t (G_ "Would you like to add this key \
 to keyring '~a'?~%")
-                             keyring)
-                     (read-line))))
-              (string-match (locale-yes-regexp) answer)))
+                            keyring)
+                    (read-line))))
+             (string-match (locale-yes-regexp) answer)))
 
-          (and missing
-               (case key-download
-                 ((never) #f)
-                 ((always)
-                  (download-and-try-again))
-                 (else
-                  (and (receive?)
-                       (download-and-try-again)))))))))
+         (case key-download
+           ((never)
+            (values 'missing-key missing))
+           ((always)
+            (download-and-try-again))
+           (else
+            (if (receive?)
+                (download-and-try-again)
+                (values 'missing-key missing)))))))))
 
 ;;; gnupg.scm ends here

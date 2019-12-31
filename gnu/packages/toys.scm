@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Jesse Gibbons <jgibbons2357+guix@gmail.com>
+;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,9 +21,14 @@
 (define-module (gnu packages toys)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
   #:use-module (guix build-system gnu)
+  #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages))
@@ -156,3 +162,41 @@ The GNU project hosts a similar collection of filters, the GNU talkfilters.")
              license:public-domain      ; jethro, kraut, ken, studly
              license:gpl1+         ; cockney, jive, nyc only say "gpl"
              license:expat)))))    ; newspeak
+
+(define-public xsnow
+  (package
+    (name "xsnow")
+    (version "2.0.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://www.ratrabbit.nl/ratrabbit/system/files/xsnow/xsnow-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "086s42frbz9bk550414v908yrax4iwwlvlxv4zwp39cyp7wgws03"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-install-path
+           (lambda _
+             ;; Install program to bin instead of games.
+             (substitute* "src/Makefile.in"
+               (("(gamesdir = \\$\\(exec_prefix\\)/)games" _ prefix)
+                (string-append prefix "bin")))
+             #t)))))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("libx11" ,libx11)
+       ("libxpm" ,libxpm)
+       ("libxt" ,libxt)
+       ("libxxml2" ,libxml2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.ratrabbit.nl/ratrabbit/content/xsnow/introduction")
+    (synopsis "Let it snow on the desktop")
+    (description "@code{Xsnow} animates snowfall and Santa with reindeer on
+the desktop background.  Additional customizable effects include wind, stars
+and various scenery elements.")
+    (license license:gpl3+)))

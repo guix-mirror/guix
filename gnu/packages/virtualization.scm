@@ -57,6 +57,7 @@
   #:use-module (gnu packages golang)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages libbsd)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ncurses)
@@ -690,14 +691,14 @@ domains, their live performance and resource utilization statistics.")
 (define-public criu
   (package
     (name "criu")
-    (version "3.11")
+    (version "3.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.openvz.org/criu/criu-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "03nimyn3wy5mlw30gq7bvlzvvprqjv8f25240yj5arzlld8mhsw8"))))
+                "1yn9ix9lqvqvjrs3a3g6g1wqfniyf9n7giy0mr3jvijmrcm7y0pa"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -705,7 +706,11 @@ domains, their live performance and resource utilization statistics.")
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
              (string-append "LIBDIR=" (assoc-ref %outputs "out")
-                            "/lib"))
+                            "/lib")
+             (string-append "ASCIIDOC=" (assoc-ref %build-inputs "asciidoc")
+                            "/bin/asciidoc")
+             (string-append "XMLTO=" (assoc-ref %build-inputs "xmlto")
+                            "/bin/xmlto"))
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
@@ -721,21 +726,17 @@ domains, their live performance and resource utilization statistics.")
                                     ;; which define some of the same constants.
                                     (assoc-ref inputs "kernel-headers")
                                     "/include"))
-             ;; Prevent xmlto from failing the install phase.
+             #t))
+         (add-after 'configure 'fix-documentation
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              (substitute* "Documentation/Makefile"
-               (("XMLTO.*:=.*")
-                (string-append "XMLTO:="
-                               (assoc-ref inputs "xmlto")
-                               "/bin/xmlto"
-                               " --skip-validation "
-                               " -x "
-                               (assoc-ref inputs "docbook-xsl")
-                               "/xml/xsl/docbook-xsl-"
-                               ,(package-version docbook-xsl)
-                               "/manpages/docbook.xsl"))
-               (("\\$\\(XMLTO\\);")
-                (string-append (assoc-ref inputs "xmlto")
-                               "/bin/xmlto;")))
+               (("-m custom.xsl")
+                (string-append
+                 "-m custom.xsl --skip-validation -x "
+                 (assoc-ref inputs "docbook-xsl") "/xml/xsl/"
+                 ,(package-name docbook-xsl) "-"
+                 ,(package-version docbook-xsl)
+                 "/manpages/docbook.xsl")))
              #t))
          (add-after 'unpack 'hardcode-variables
            (lambda* (#:key inputs #:allow-other-keys)
@@ -783,7 +784,8 @@ domains, their live performance and resource utilization statistics.")
        ("libaio" ,libaio)
        ("libcap" ,libcap)
        ("libnet" ,libnet)
-       ("libnl" ,libnl)))
+       ("libnl" ,libnl)
+       ("libbsd" ,libbsd)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("perl" ,perl)
@@ -959,7 +961,7 @@ Open Container Initiative specification.")
 (define-public umoci
   (package
     (name "umoci")
-    (version "0.4.4")
+    (version "0.4.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -968,7 +970,7 @@ Open Container Initiative specification.")
               (file-name (string-append "umoci-" version ".tar.xz"))
               (sha256
                (base32
-                "1wchmha5k2f370jfijmx9fqp0cp99zfa9ajmfbq3j24qc8p5k8lk"))))
+                "0x1yyvpllz6fyy9xip6f7b6c94v984n3faf8p50fr9y4ygkgi15a"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/openSUSE/umoci"
@@ -1147,15 +1149,14 @@ by default and can be made read-only.")
 (define-public bochs
   (package
     (name "bochs")
-    (version "2.6.9")
+    (version "2.6.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://sourceforge.net/projects/bochs/files/bochs/"
                            version "/bochs-" version ".tar.gz"))
        (sha256
-        (base32
-         "1379cq4cnfprhw8mgh60i0q9j8fz8d7n3d5fnn2g9fdiv5znfnzf"))))
+        (base32 "1c3mw4b8wrjf8z44fvhycs95j1wd1c0b4khcv63giiia5j5q0gvj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f)) ; No tests exist

@@ -602,14 +602,14 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "3.0.7")
+    (version "3.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.wireshark.org/download/src/wireshark-"
                            version ".tar.xz"))
        (sha256
-        (base32 "1wljg5z994r8zbjig52zlgp0b8lqbzdl1d6ysnw9hcvm2y82farv"))))
+        (base32 "0v5nn7i2nbqr59jsw8cs2052hr7xd96x1sa3480g8ks5kahk7zac"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -1675,7 +1675,7 @@ networks.")
 (define-public speedtest-cli
   (package
     (name "speedtest-cli")
-    (version "2.1.1")
+    (version "2.1.2")
     (source
      (origin
        (method git-fetch)
@@ -1684,7 +1684,7 @@ networks.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0swm7nbk99w2xf1cb0l3c8y1vm4rqw6785p5j04alyb0g98vqa4b"))))
+        (base32 "1456yly6iym2c9bl6pi4sz8xbw34bm2dxm1vzpydsd6jazwpmy26"))))
     (build-system python-build-system)
     (home-page "https://github.com/sivel/speedtest-cli")
     (synopsis "Internet bandwidth tester")
@@ -1976,14 +1976,14 @@ displays the results in real time.")
 (define-public strongswan
   (package
     (name "strongswan")
-    (version "5.8.1")
+    (version "5.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.strongswan.org/strongswan-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "034rd6kr1bmnvj8rg2kcxdjb0cgj3dn9310mmm94j1awxan71byr"))))
+        (base32 "03j3fx357bh89n44a5v9wdc92azdx2d37j7jmlyr4z1kwzdhv446"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -2703,15 +2703,14 @@ maximum extent possible.")
 (define-public batctl
   (package
    (name "batctl")
-   (version "2019.3")
+   (version "2019.5")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "https://downloads.open-mesh.org/batman/releases/batman-adv-"
                          version "/batctl-" version ".tar.gz"))
      (sha256
-      (base32
-       "0307a01n72kg7vcm60mi8jna6bydiin2cr3ylrixra1596hkzn9b"))))
+      (base32 "1b9w4636dq8m38nzr8j0v0j3b0vdsw84c58c2isc33h66dx8brgz"))))
    (inputs
     `(("libnl" ,libnl)))
    (native-inputs

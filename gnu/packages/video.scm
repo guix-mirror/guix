@@ -24,7 +24,7 @@
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -34,6 +34,7 @@
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Timo Eisenmann <eisenmann@fn.de>
 ;;; Copyright © 2019 Arne Babenhauserheide <arne_bab@web.de>
+;;; Copyright © 2019 Riku Viitanen <riku.viitanen@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -207,14 +208,14 @@ old-fashioned output methods with powerful ascii-art renderer.")
 (define-public celluloid
   (package
     (name "celluloid")
-    (version "0.17")
+    (version "0.18")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/celluloid-player/celluloid/releases"
                            "/download/v" version "/celluloid-" version ".tar.xz"))
        (sha256
-        (base32 "0a3bhvs38gxjplygb0q9cx5djl5y0bmnxgaq0sd65j610a60f5h0"))))
+        (base32 "0gmscx9zb8ppfjlnmgbcmhknhawa05sdhxi7dv5wjapjq0glq481"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -1055,7 +1056,7 @@ audio/video codec library.")
 (define-public ffmpegthumbnailer
   (package
     (name "ffmpegthumbnailer")
-    (version "2.2.0")
+    (version "2.2.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1064,7 +1065,7 @@ audio/video codec library.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0kl8aa547icy9b05njps02a8sw4yn4f8fzs228kig247sn09s4cp"))))
+                "1bakbr714j7yxdal1f5iq0gcl4cxggbbgj227ihdh5kvygqlwich"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1435,6 +1436,49 @@ projects while introducing many more.")
 
 (define-public gnome-mpv
   (deprecated-package "gnome-mpv" celluloid))
+
+(define-public mpv-mpris
+  (package
+    (name "mpv-mpris")
+    (version "0.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/hoyon/mpv-mpris")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "06hq3j1jjlaaz9ss5l7illxz8vm5bng86jl24kawglwkqayhdnjx"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no tests
+       #:make-flags '("CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; no configure script
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "mpris.so" (string-append out "/lib")))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("mpv" ,mpv)))
+    (home-page "https://github.com/hoyon/mpv-mpris")
+    (synopsis "MPRIS plugin for mpv")
+    (description "This package provides an @dfn{MPRIS} (Media Player Remote
+Interfacing Specification) plugin for the @code{mpv} media player.  It implements
+@code{org.mpris.MediaPlayer2} and @code{org.mpris.MediaPlayer2.Player} D-Bus
+interfaces.
+
+To load this plugin, specify the following option when starting mpv:
+@code{--script $GUIX_PROFILE/lib/mpris.so} or link it into
+@file{$HOME/.config/mpv/scripts}.")
+    (license license:expat)))
 
 (define-public libvpx
   (package
@@ -2090,15 +2134,15 @@ format changes.")
 (define-public xvid
   (package
     (name "xvid")
-    (version "1.3.5")
+    (version "1.3.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://downloads.xvid.org/downloads/xvidcore-"
+                    "http://downloads.xvid.com/downloads/xvidcore-"
                     version ".tar.bz2"))
               (sha256
                (base32
-                "1d0hy1w9sn6491a3vhyf3vmhq4xkn6yd4ralx1191s6qz5wz483w"))))
+                "0zppakvcgq5a42mhqqsbliclpg2jrhbmbfgrzalyfzr47jqmhssy"))))
     (build-system gnu-build-system)
     (native-inputs `(("yasm" ,yasm)))
     (arguments
@@ -2298,7 +2342,7 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "24.0.3")
+    (version "24.0.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2307,7 +2351,7 @@ be used for realtime video capture via Linux-specific APIs.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0g8nzs696f3myz4hvygav85b0jgjmn6dicy50axmapdv8miff9xa"))))
+                "0m15ch2ix9qrdf1a9mj7wcpl72z3h13zx60c9q72sb1435id2g1q"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; no tests
@@ -3032,7 +3076,7 @@ RTSP or SIP clients and servers.")
 (define-public libdvbpsi
   (package
     (name "libdvbpsi")
-    (version "1.3.2")
+    (version "1.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3040,7 +3084,7 @@ RTSP or SIP clients and servers.")
                     version "/libdvbpsi-" version ".tar.bz2"))
               (sha256
                (base32
-                "1zn5hfv4qbahmydbwh59a3b480s3m5ss27r6ml35gqdip7r3jkmc"))))
+                "04h1l3vrkrdsrvkgzcr51adk10g6hxcxvgjphyyxz718ry5rkd82"))))
     (build-system gnu-build-system)
     (home-page "https://www.videolan.org/developers/libdvbpsi.html")
     (synopsis "Library for decoding and generation of MPEG TS and DVB PSI
@@ -3612,7 +3656,7 @@ video from a Wayland session.")
 (define-public gaupol
   (package
     (name "gaupol")
-    (version "1.6")
+    (version "1.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3621,7 +3665,7 @@ video from a Wayland session.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "164wlxxjiqvkzbqjzvqvz2zkn0kgqmhn52294xx4vc9b9ngdnn0m"))))
+                "1cp0ka8hzma1dxiisdhl2fznxklj2pl63vkdqcd91lrblghdj6x9"))))
     (build-system python-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -3676,4 +3720,67 @@ creating subtitles, editing texts and timing subtitles to match video.  The
 user interface features a builtin video player and is designed with attention
 to convenience of translating and batch processing of multiple documents.")
     (home-page "https://otsaloma.io/gaupol/")
+    (license license:gpl3+)))
+
+(define-public theorafile
+  (let ((commit "404b14d7602b5918d117eaa64e8aa6601ede8593"))
+    (package
+      (name "theorafile")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/FNA-XNA/Theorafile.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "128c3pjzqbgrj020glm5jd6ss18vl19471lj615w2brjwb7c1f0z"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:make-flags '("CC=gcc")
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'check
+             (lambda _
+               (setenv "CC" "gcc")
+               (invoke "make" "test")))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (install-file "libtheorafile.so" (string-append out "/lib"))
+                 (install-file "theorafile.h" (string-append out "/include")))
+               #t)))))
+      (native-inputs
+       ;; For tests.
+       `(("sdl2" ,sdl2)))
+      (home-page "https://github.com/FNA-XNA/Theorafile")
+      (synopsis "Ogg Theora Video Decoder Library")
+      (description "Theorafile is a library for quickly and easily decoding Ogg
+Theora videos.  Theorafile was written to be used for FNA's VideoPlayer.")
+      (license license:zlib))))
+
+(define-public dvdbackup
+  (package
+    (name "dvdbackup")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/dvdbackup/dvdbackup/"
+                           "dvdbackup-" version "/"
+                           "dvdbackup-" version ".tar.xz"))
+       (sha256
+        (base32 "1rl3h7waqja8blmbpmwy01q9fgr5r0c32b8dy3pbf59bp3xmd37g"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libdvdcss" ,libdvdcss)
+       ("libdvdread" ,libdvdread)))
+    (home-page "http://dvdbackup.sourceforge.net")
+    (synopsis "DVD video ripper")
+    (description
+     "A simple command line tool to backup video from a DVD.  Decrypts the
+DVD using @command{libdvdcss}, but does @strong{not} demux, remux,
+transcode or reformat the videos in any way, producing perfect backups.")
     (license license:gpl3+)))

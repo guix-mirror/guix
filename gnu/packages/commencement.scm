@@ -2585,4 +2585,17 @@ an  d binaries, plus debugging symbols in the @code{debug} output), and Binutils
 (define-public gcc-toolchain-9
   (make-gcc-toolchain gcc-9))
 
+;; Provide the Fortran toolchain package only for the version of gfortran that
+;; is used by Guix internally to build Fortran libraries, because combining
+;; code compiled with different versions can cause problems.
+
+(define-public gfortran-toolchain
+  (package (inherit (make-gcc-toolchain gfortran))
+    (synopsis "Complete GCC tool chain for Fortran development")
+    (description "This package provides a complete GCC tool chain for
+Fortran development to be installed in user profiles.  This includes
+gfortran, as well as libc (headers and binaries, plus debugging symbols
+in the @code{debug} output), and binutils.")))
+
+
 ;;; commencement.scm ends here

@@ -38,7 +38,7 @@
   #:use-module (guix config)
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
-  #:autoload   (guix describe) (package-provenance)
+  #:use-module (guix describe)
   #:autoload   (guix store roots) (gc-roots)
   #:use-module ((guix build utils)
                 #:select (directory-exists? mkdir-p))
@@ -883,7 +883,10 @@ processed, #f otherwise."
                                  opts))
            (manifest (match files
                        (() (profile-manifest profile))
-                       (_  (concatenate-manifests (map load-manifest files)))))
+                       (_  (map-manifest-entries
+                            manifest-entry-with-provenance
+                            (concatenate-manifests
+                             (map load-manifest files))))))
            (step1    (options->removable opts manifest
                                          (manifest-transaction)))
            (step2    (options->installable opts manifest step1))

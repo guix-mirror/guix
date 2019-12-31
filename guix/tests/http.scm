@@ -65,14 +65,14 @@ needed."
            (close-port socket)
            #t)))
 
-(define (%local-url)
+(define* (%local-url #:optional (port (%http-server-port)))
   ;; URL to use for 'home-page' tests.
-  (string-append "http://localhost:" (number->string (%http-server-port))
+  (string-append "http://localhost:" (number->string port)
                  "/foo/bar"))
 
 (define* (call-with-http-server responses+data thunk)
   "Call THUNK with an HTTP server running and returning RESPONSES+DATA on HTTP
-requests.  Each elements of RESPONSES+DATA must be a tuple containing a
+requests.  Each element of RESPONSES+DATA must be a tuple containing a
 response and a string, or an HTTP response code and a string."
   (define responses
     (map (match-lambda

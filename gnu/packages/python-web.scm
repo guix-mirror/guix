@@ -2532,14 +2532,14 @@ CSS tidy.  Also supports URL rewriting in CSS files.")
 (define-public python-elasticsearch
   (package
     (name "python-elasticsearch")
-    (version "6.1.1")
+    (version "7.1.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "elasticsearch" version))
         (sha256
          (base32
-          "1kjxl45yvvgfb5fmamx0kfsfg9pzphiqrwbkns3s28r1w7ya74cd"))))
+          "0rnjvlhw4v3vg14l519qliy1s1zpmx3827q0xfviwvk42rr7hh01"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)

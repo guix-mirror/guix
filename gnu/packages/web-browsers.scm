@@ -9,6 +9,7 @@
 ;;; Copyright © 2018 Timo Eisenmann <eisenmann@fn.de>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -275,19 +276,20 @@ access.")
 (define-public qutebrowser
   (package
     (name "qutebrowser")
-    (version "0.11.0")
+    (version "1.8.3")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/The-Compiler/"
+       (uri (string-append "https://github.com/qutebrowser/"
                            "qutebrowser/releases/download/v" version "/"
                            "qutebrowser-" version ".tar.gz"))
        (sha256
         (base32
-         "13ihx66jm1dd6vx8px7pm0kbzf2sf9x43hhivc1rp17kahnxxdyv"))))
+         "055zmzk3q0m3hx1742nfy2mdawfllrkvijnbzp1hiv01dj1bxaf8"))))
     (build-system python-build-system)
     (native-inputs
-     `(("asciidoc" ,asciidoc)))
+     `(("asciidoc" ,asciidoc)
+       ("python-attrs" ,python-attrs))) ; for tests
     (inputs
      `(("python-colorama" ,python-colorama)
        ("python-cssutils" ,python-cssutils)
@@ -299,7 +301,12 @@ access.")
        ("python-pyqt" ,python-pyqt)
        ("qtwebkit" ,qtwebkit)))
     (arguments
-     `(#:tests? #f                      ;no tests
+     `(;; FIXME: Tests have been added to Qutebrowser. But they currently fail on
+       ;; trying to locate QtWebEngine, and run it on a specific display.
+       ;; There does not seem to be a trivial way to suppress this test.
+       ;; Either fix this, or wait for a liberated QtWebEngine to make into GNU Guix.
+       ;; Change this according to <https://bugs.gnu.org/35866>.
+       #:tests? #f
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'install-more
@@ -310,7 +317,6 @@ access.")
                (invoke "a2x" "-f" "manpage" "doc/qutebrowser.1.asciidoc")
                (install-file "doc/qutebrowser.1"
                              (string-append out "/share/man/man1"))
-
                (for-each
                 (lambda (i)
                   (let ((src  (format #f "icons/qutebrowser-~dx~d.png" i i))
@@ -321,11 +327,10 @@ access.")
                 '(16 24 32 48 64 128 256 512))
                (install-file "icons/qutebrowser.svg"
                              (string-append hicolor "/scalable/apps"))
-               
-               (substitute* "qutebrowser.desktop"
+               (substitute* "misc/org.qutebrowser.qutebrowser.desktop"
                  (("Exec=qutebrowser")
                   (string-append "Exec=" out "/bin/qutebrowser")))
-               (install-file "qutebrowser.desktop" app)
+               (install-file "misc/org.qutebrowser.qutebrowser.desktop" app)
                #t))))))
     (home-page "https://qutebrowser.org/")
     (synopsis "Minimal, keyboard-focused, vim-like web browser")

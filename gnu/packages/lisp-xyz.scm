@@ -15,6 +15,7 @@
 ;;; Copyright © 2019 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright © 2019 Jesse Gildersleve <jessejohngildersleve@protonmail.com>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6651,8 +6652,8 @@ threads.")
          ((#:tests? _ #f) #f))))))
 
 (define-public sbcl-cl-store
-  (let ((commit "cd01f2610d3360dc01ab972bd9317407aaea7745")
-        (revision "0"))
+  (let ((commit "c787337a16ea8cf8a06227f35933a4ec774746b3")
+        (revision "1"))
     (package
       (name "sbcl-cl-store")
       (version (git-version "0.8.11" revision commit))
@@ -6665,7 +6666,7 @@ threads.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "05b7kh5af2ax7vlmphpac4vbqr84j5ivppj96qzb64fxpjpqglm4"))))
+           "194srkg8nrym19c6i7zbnkzshc1qhqa82m53qnkirz9fw928bqxr"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("rt" ,sbcl-rt)))
@@ -6673,7 +6674,7 @@ threads.")
       (description
        "CL-STORE is a portable serialization package which should give you the
 ability to store all Common Lisp data types into streams.")
-      (home-page "http://www.common-lisp.net/project/cl-store/")
+      (home-page "https://www.common-lisp.net/project/cl-store/")
       (license license:expat))))
 
 (define-public cl-store
