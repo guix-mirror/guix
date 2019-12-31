@@ -72,6 +72,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
@@ -1847,6 +1848,52 @@ colors on all monitors attached to an XRandR-capable X11 display server.")
     (description "@code{sct} is a lightweight utility to set the color
 temperature of the screen.")
     (license (license:non-copyleft "file://sct.c")))) ; "OpenBSD" license
+
+(define-public xsecurelock
+  (package
+    (name "xsecurelock")
+    (version "1.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/google/xsecurelock/releases"
+                    "/download/v" version "/xsecurelock-" version ".tar.gz"))
+              (sha256
+               (base32 "070gknyv0s5hz9hkc6v73m2v7ssyjwgl93b5hd4glayfqxqjbmdp"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       '("--with-pam-service-name=login"
+         "--with-xkb"
+         "--with-default-authproto-module=/run/setuid-programs/authproto_pam")))
+    (native-inputs
+     `(("pandoc" ,ghc-pandoc)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fontconfig" ,fontconfig)
+       ("libX11" ,libx11)
+       ("libxcomposite" ,libxcomposite)
+       ("libxext" ,libxext)
+       ("libxfixes" ,libxfixes)
+       ("libxft" ,libxft)
+       ("libxmu" ,libxmu)
+       ("libxrandr" ,libxrandr)
+       ("libxscrnsaver" ,libxscrnsaver)
+       ("linux-pam" ,linux-pam)))
+    (home-page "https://github.com/google/xsecurelock")
+    (synopsis "X11 screen lock utility with the primary goal of security")
+    (description "@code{xsecurelock} is an X11 screen locker which uses
+a modular design to avoid the usual pitfalls of screen locking utility design.
+
+As a consequence of the modular design, the usual screen locker service
+shouldn't be used with @code{xsecurelock}.  Instead, you need to add a helper
+binary to setuid-binaries:
+@example
+(setuid-programs (cons*
+                   (file-append xsecurelock \"/libexec/xsecurelock/authproto_pam\")
+                   %setuid-programs))
+@end example")
+    (license license:asl2.0)))
 
 (define-public wl-clipboard
   (package
