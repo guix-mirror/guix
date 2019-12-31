@@ -5754,14 +5754,14 @@ the GObject Introspection bindings to libnotify for non-GTK applications.")
 (define-public python-lxml
   (package
     (name "python-lxml")
-    (version "4.4.1")
+    (version "4.4.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "lxml" version))
         (sha256
          (base32
-          "14jnpfcpgqr9sx8ppd286jzcbk0b36hbqsvd8jkvffipzw5v8768"))))
+          "01nvb5j8vs9nk4z5s3250b1m22b4d08kffa36if3g1mdygdrvxpg"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
