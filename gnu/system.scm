@@ -590,18 +590,13 @@ of PROVENANCE-SERVICE-TYPE to its services."
 
          bash-completion
 
-         ;; XXX: We don't use (canonical-package guile-2.2) here because that
-         ;; would create a collision in the global profile between the GMP
-         ;; variant propagated by 'guile-final' and the GMP variant propagated
-         ;; by 'gnutls', itself propagated by 'guix'.
          guile-2.2
          guile-readline guile-colorized
 
          ;; The packages below are also in %FINAL-INPUTS, so take them from
          ;; there to avoid duplication.
-         (map canonical-package
-              (list bash coreutils findutils grep sed
-                    diffutils patch gawk tar gzip bzip2 xz lzip))))
+         (list bash coreutils findutils grep sed
+               diffutils patch gawk tar gzip bzip2 xz lzip)))
 
 (define %default-issue
   ;; Default contents for /etc/issue.

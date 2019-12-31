@@ -291,18 +291,18 @@ selected keymap."
   (define set-installer-path
     ;; Add the specified binary to PATH for later use by the installer.
     #~(let* ((inputs
-              '#$(append (list bash ;start subshells
-                               connman ;call connmanctl
-                               cryptsetup
-                               dosfstools ;mkfs.fat
-                               e2fsprogs ;mkfs.ext4
-                               btrfs-progs ;mkfs.btrfs
-                               jfsutils ;jfs_mkfs
-                               kbd ;chvt
-                               guix ;guix system init call
-                               util-linux ;mkwap
-                               shadow)
-                         (map canonical-package (list coreutils)))))
+              '#$(list bash ;start subshells
+                       connman ;call connmanctl
+                       cryptsetup
+                       dosfstools ;mkfs.fat
+                       e2fsprogs ;mkfs.ext4
+                       btrfs-progs
+                       jfsutils ;jfs_mkfs
+                       kbd ;chvt
+                       guix ;guix system init call
+                       util-linux ;mkwap
+                       shadow
+                       coreutils)))
         (with-output-to-port (%make-void-port "w")
           (lambda ()
             (set-path-environment-variable "PATH" '("bin" "sbin") inputs)))))

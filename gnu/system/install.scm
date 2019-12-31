@@ -384,8 +384,7 @@ Access documentation at any time by pressing Alt-F2.\x1b[0m
           ;; Having /bin/sh is a good idea.  In particular it allows Tramp
           ;; connections to this system to work.
           (service special-files-service-type
-                   `(("/bin/sh" ,(file-append (canonical-package bash)
-                                              "/bin/sh"))))
+                   `(("/bin/sh" ,(file-append bash "/bin/sh"))))
 
           ;; Loopback device, needed by OpenSSH notably.
           (service static-networking-service-type
@@ -408,7 +407,7 @@ Access documentation at any time by pressing Alt-F2.\x1b[0m
                    (list bare-bones-os
                          glibc-utf8-locales
                          texinfo
-                         (canonical-package guile-2.2))))))
+                         guile-2.2)))))
 
 (define %issue
   ;; Greeting.
@@ -480,7 +479,7 @@ Access documentation at any time by pressing Alt-F2.\x1b[0m
      ;; Explicitly allow for empty passwords.
      (base-pam-services #:allow-empty-passwords? #t))
 
-    (packages (cons* (canonical-package glibc) ;for 'tzselect' & co.
+    (packages (cons* glibc ;for 'tzselect' & co.
                      parted gptfdisk ddrescue
                      fontconfig
                      font-dejavu font-gnu-unifont

@@ -45,7 +45,7 @@
                 #:select (alsa-utils crda eudev e2fsprogs fuse gpm kbd lvm2 rng-tools))
   #:use-module (gnu packages bash)
   #:use-module ((gnu packages base)
-                #:select (canonical-package coreutils glibc glibc-utf8-locales))
+                #:select (coreutils glibc glibc-utf8-locales))
   #:use-module (gnu packages package-management)
   #:use-module ((gnu packages gnupg) #:select (guile-gcrypt))
   #:use-module (gnu packages linux)
@@ -1212,7 +1212,7 @@ the tty to run, among other things."
   (name-services nscd-configuration-name-services ;list of <packages>
                  (default '()))
   (glibc      nscd-configuration-glibc            ;<package>
-              (default (canonical-package glibc))))
+              (default glibc)))
 
 (define-record-type* <nscd-cache> nscd-cache make-nscd-cache
   nscd-cache?
@@ -2445,9 +2445,7 @@ to handle."
                    (rules (list lvm2 fuse alsa-utils crda))))
 
         (service special-files-service-type
-                 `(("/bin/sh" ,(file-append (canonical-package bash)
-                                            "/bin/sh"))
-                   ("/usr/bin/env" ,(file-append (canonical-package coreutils)
-                                                 "/bin/env"))))))
+                 `(("/bin/sh" ,(file-append bash "/bin/sh"))
+                   ("/usr/bin/env" ,(file-append coreutils "/bin/env"))))))
 
 ;;; base.scm ends here

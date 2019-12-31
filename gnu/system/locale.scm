@@ -86,7 +86,7 @@ or #f on failure."
      #f)))
 
 (define* (single-locale-directory locales
-                                  #:key (libc (canonical-package glibc)))
+                                  #:key (libc glibc))
   "Return a directory containing all of LOCALES for LIBC compiled.
 
 Because locale data formats are incompatible when switching from one libc to

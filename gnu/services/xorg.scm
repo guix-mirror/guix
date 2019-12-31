@@ -29,7 +29,7 @@
   #:use-module (gnu system keyboard)
   #:use-module (gnu services base)
   #:use-module (gnu services dbus)
-  #:use-module ((gnu packages base) #:select (canonical-package))
+  #:use-module (gnu packages base)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages fonts)
