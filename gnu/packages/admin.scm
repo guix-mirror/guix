@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
-;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
@@ -1200,7 +1200,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.29")
+    (version "1.8.30")
     (source (origin
               (method url-fetch)
               (uri
@@ -1210,7 +1210,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "0z4wyadh9cks17gdpfgx4kvbrlnyb6nai2sd6chk7qh4jsngylyf"))
+                "1rvrqlqrrjsd06dczgj9cwjdkpkqil5zzlwh87h06ms6qzfx6nm3"))
               (modules '((guix build utils)))
               (snippet
                '(begin
