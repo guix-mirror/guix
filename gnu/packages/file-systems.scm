@@ -145,6 +145,15 @@ transaction log.
 @end enumerate\n")
     (license license:gpl3+)))          ; no explicit version given
 
+(define-public jfsutils/static
+  (static-package
+   (package
+     (inherit jfsutils)
+     (name "jfsutils-static")
+     (inputs
+      `(("util-linux:static" ,util-linux "static")
+        ,@(package-inputs jfsutils))))))
+
 (define-public disorderfs
   (package
     (name "disorderfs")
