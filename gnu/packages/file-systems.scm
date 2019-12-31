@@ -28,6 +28,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system linux-module)
+  #:use-module (guix build-system trivial)
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
@@ -153,6 +154,38 @@ transaction log.
      (inputs
       `(("util-linux:static" ,util-linux "static")
         ,@(package-inputs jfsutils))))))
+
+(define-public jfs_fsck/static
+  (package
+    (name "jfs_fsck-static")
+    (version (package-version jfsutils))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 ftw)
+                      (srfi srfi-26))
+         (let* ((jfsutils (assoc-ref %build-inputs "jfsutils"))
+                (fsck     "jfs_fsck")
+                (out      (assoc-ref %outputs "out"))
+                (sbin     (string-append out "/sbin")))
+           (mkdir-p sbin)
+           (with-directory-excursion sbin
+             (install-file (string-append jfsutils "/sbin/" fsck)
+                           ".")
+             (remove-store-references fsck)
+             (chmod fsck #o555))
+           #t))))
+    (inputs
+     `(("jfsutils" ,jfsutils/static)))
+    (home-page (package-home-page jfsutils))
+    (synopsis "Statically-linked jfs_fsck command from jfsutils")
+    (description "This package provides statically-linked jfs_fsck command taken
+from the jfsutils package.  It is meant to be used in initrds.")
+    (license (package-license jfsutils))))
 
 (define-public disorderfs
   (package
