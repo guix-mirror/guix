@@ -3,6 +3,7 @@
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -296,6 +297,45 @@ string.  Trailing spaces are trimmed."
 
 
 ;;;
+;;; JFS file systems.
+;;;
+
+;; Taken from <linux-libre>/fs/jfs/jfs_superblock.h.
+
+(define-syntax %jfs-endianness
+  ;; Endianness of JFS file systems.
+  (identifier-syntax (endianness little)))
+
+(define (jfs-superblock? sblock)
+  "Return #t when SBLOCK is a JFS superblock."
+  (bytevector=? (sub-bytevector sblock 0 4)
+                (string->utf8 "JFS1")))
+
+(define (read-jfs-superblock device)
+  "Return the raw contents of DEVICE's JFS superblock as a bytevector, or #f
+if DEVICE does not contain a JFS file system."
+  (read-superblock device 32768 184 jfs-superblock?))
+
+(define (jfs-superblock-uuid sblock)
+  "Return the UUID of JFS superblock SBLOCK as a 16-byte bytevector."
+  (sub-bytevector sblock 136 16))
+
+(define (jfs-superblock-volume-name sblock)
+  "Return the volume name of SBLOCK as a string of at most 16 characters, or
+#f if SBLOCK has no volume name."
+  (null-terminated-latin1->string (sub-bytevector sblock 152 16)))
+
+(define (check-jfs-file-system device)
+  "Return the health of a JFS file system on DEVICE."
+  (match (status:exit-val
+          (system* "jfs_fsck" "-p" "-v" device))
+    (0 'pass)
+    (1 'errors-corrected)
+    (2 'reboot-required)
+    (_ 'fatal-error)))
+
+
+;;;
 ;;; LUKS encrypted devices.
 ;;;
 
@@ -420,7 +460,9 @@ partition field reader that returned a value."
         (partition-field-reader read-fat32-superblock
                                 fat32-superblock-volume-name)
         (partition-field-reader read-fat16-superblock
-                                fat16-superblock-volume-name)))
+                                fat16-superblock-volume-name)
+        (partition-field-reader read-jfs-superblock
+                                jfs-superblock-volume-name)))
 
 (define %partition-uuid-readers
   (list (partition-field-reader read-iso9660-superblock
@@ -432,7 +474,9 @@ partition field reader that returned a value."
         (partition-field-reader read-fat32-superblock
                                 fat32-superblock-uuid)
         (partition-field-reader read-fat16-superblock
-                                fat16-superblock-uuid)))
+                                fat16-superblock-uuid)
+        (partition-field-reader read-jfs-superblock
+                                jfs-superblock-uuid)))
 
 (define read-partition-label
   (cut read-partition-field <> %partition-label-readers))
@@ -527,6 +571,7 @@ were found."
      ((string-prefix? "ext" type) check-ext2-file-system)
      ((string-prefix? "btrfs" type) check-btrfs-file-system)
      ((string-suffix? "fat" type) check-fat-file-system)
+     ((string-prefix? "jfs" type) check-jfs-file-system)
      (else #f)))
 
   (if check-procedure
