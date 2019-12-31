@@ -346,6 +346,32 @@ uses duplicity as the backend, which supports incremental backups and storage
 either on a local, or remote machine via a number of methods.")
     (license license:gpl3+)))
 
+(define-public gnome-user-docs
+  (package
+   (name "gnome-user-docs")
+   (version "3.32.3")
+   (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnome/sources/gnome-user-docs/"
+                          (version-major+minor version)
+                          "/gnome-user-docs-" version ".tar.xz"))
+      (sha256
+       (base32 "0dvsl0ldg8rf7yq0r4dv1pn41s7gjgcqp7agkbflkbmhrl6vbhig"))))
+   (build-system gnu-build-system)
+   (native-inputs
+    `(("gettext" ,gettext-minimal)
+      ("itstool" ,itstool)
+      ("pkg-config" ,pkg-config)
+      ("xmllint" ,libxml2)))
+   (synopsis "User documentation for the GNOME desktop")
+   (description
+    "The GNOME User Documentation explains how to use the GNOME desktop and its
+components.  It covers usage and setup of the core GNOME programs by end-users
+and system administrators.")
+   (home-page "https://live.gnome.org/DocumentationProject")
+   (license license:cc-by3.0)))
+
 (define-public gnome-getting-started-docs
   (package
    (name "gnome-getting-started-docs")
