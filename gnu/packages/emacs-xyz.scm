@@ -29,7 +29,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Sohom Bhattacharjee <soham.bhattacharjee15@gmail.com>
@@ -9258,7 +9258,7 @@ configuration of Chinese fonts.")
 (define-public emacs-php-mode
   (package
     (name "emacs-php-mode")
-    (version "1.22.1")
+    (version "1.22.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -9267,7 +9267,7 @@ configuration of Chinese fonts.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1yc7f39bv2ni8q5372r4kj04z7rikvc8w1mqx5c4zph5r02jab7i"))))
+                "1r4bpyavlndd4c78cv5cc97bc0gkd4cggiyz4kd2vg6zlyc1nld3"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/ejmr/php-mode")
     (synopsis "Major mode for editing PHP code")
