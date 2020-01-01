@@ -19120,3 +19120,24 @@ can look for already created artifacts by using its class, name, date of the
 creation or other properties.  It also makes it easy to restore such
 artifacts.")
     (license license:gpl2)))
+
+(define-public r-versions
+  (package
+    (name "r-versions")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "versions" version))
+       (sha256
+        (base32
+         "0zm49j785dgv7fyr1yl9q5f0dsk8hhpim5q5bpkgrkzv7pwjribd"))))
+    (properties `((upstream-name . "versions")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/versions/")
+    (synopsis "Query and install specific versions of CRAN packages")
+    (description
+     "This package allows you to install specified versions of R packages
+hosted on CRAN and provides functions to list available versions and the
+versions of currently installed packages.")
+    (license license:bsd-3)))
