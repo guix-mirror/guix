@@ -41,7 +41,7 @@
 ;;; Copyright © 2018 Alex Branham <alex.branham@gmail.com>
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2018, 2019 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2018, 2019, 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019 Dimakakos Dimos <bendersteed@teknik.io>
 ;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
 ;;; Copyright © 2019 mikadoZero <mikadozero@yandex.com>
@@ -103,6 +103,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages telephony)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tcl)
@@ -20157,7 +20158,7 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
   ;; Get the current version from `telega-version` in telega.el.
   ;; or by running M-x telega-version.
   (let ((commit "9bfb637b2e71f5f293debd35abd627a064faf8ef")
-	(revision "1")
+	(revision "2")
 	(version "0.5.4"))
     (package
       (name "emacs-telega")
@@ -20174,14 +20175,15 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
-       `(#:test-target "test"
-         #:modules ((guix build gnu-build-system)
+       `(#:modules ((guix build gnu-build-system)
                     ((guix build emacs-build-system) #:prefix emacs:)
                     (guix build utils)
                     (guix build emacs-utils))
          #:imported-modules (,@%gnu-build-system-modules
                              (guix build emacs-build-system)
                              (guix build emacs-utils))
+         #:test-target "test"
+         #:make-flags (list "WITH_VOIP=t")
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'prefix-patch
@@ -20259,6 +20261,7 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
          ("libwebp" ,libwebp))) ; sticker support.
       (native-inputs
        `(("tdlib" ,tdlib)
+         ("libtgvoip" ,libtgvoip) ; VoIP support.
          ("emacs" ,emacs)
          ("python" ,python)))
       (synopsis "GNU Emacs client for the Telegram messenger")
