@@ -24,7 +24,7 @@
 ;;; Copyright © 2016 Steve Webber <webber.sl@gmail.com>
 ;;; Copyright © 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@hyperbola.info>
 ;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2019 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
@@ -4144,7 +4144,7 @@ for Un*x systems with X11.")
 (define-public freeciv
   (package
    (name "freeciv")
-   (version "2.6.0")
+   (version "2.6.1")
    (source
     (origin
      (method url-fetch)
@@ -4156,8 +4156,7 @@ for Un*x systems with X11.")
                   (version-major+minor version) "/" version
                   "/freeciv-" version ".tar.bz2")))
      (sha256
-      (base32
-       "16f9wsnn7073s6chzbm3819swd0iw019p9nrzr3diiynk28kj83w"))))
+      (base32 "1qmrhrwm0ryvsh1zsxcxj128lhyvaxap7k39sam3hh8rl0fq9rnc"))))
    (build-system gnu-build-system)
    (inputs
     `(("curl" ,curl)
