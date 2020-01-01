@@ -8797,12 +8797,19 @@ proven statistical guarantees.")
          (base32
           "0bn0wz3j48248187mfmypyqnh73mq734snxxhr05vmgcl51kl4sb"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1.0)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-syn" ,rust-syn-1.0))
+       #:cargo-development-inputs
+       (("rust-serde" ,rust-serde-1.0))))
     (home-page "https://serde.rs")
     (synopsis
       "Macros 1.1 implementation of #[derive(Serialize, Deserialize)]")
     (description
       "Macros 1.1 implementation of #[derive(Serialize, Deserialize)]")
-    (properties '((hidden? . #t)))
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-serde-json-1.0
