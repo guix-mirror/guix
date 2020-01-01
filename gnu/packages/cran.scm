@@ -19084,3 +19084,39 @@ AFT models.")
 using the @code{parallel} package for instance) using file locks.  It supports
 both exclusive and shared locking.")
     (license license:asl2.0)))
+
+(define-public r-archivist
+  (package
+    (name "r-archivist")
+    (version "2.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "archivist" version))
+       (sha256
+        (base32
+         "1i11hrcq1910jgd6diw6h3sxx624v57zjianm49pqvb2dvd0b8y7"))))
+    (properties `((upstream-name . "archivist")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dbi" ,r-dbi)
+       ("r-digest" ,r-digest)
+       ("r-flock" ,r-flock)
+       ("r-httr" ,r-httr)
+       ("r-lubridate" ,r-lubridate)
+       ("r-magrittr" ,r-magrittr)
+       ("r-rcurl" ,r-rcurl)
+       ("r-rsqlite" ,r-rsqlite)))
+    (home-page "https://pbiecek.github.io/archivist/")
+    (synopsis "Tools for storing, restoring and searching for R objects")
+    (description
+     "Data exploration and modelling is a process in which a lot of data
+artifacts are produced.  Artifacts like: subsets, data aggregates, plots,
+statistical models, different versions of data sets and different versions of
+results.  Archivist helps to store and manage artifacts created in R.  It
+allows you to store selected artifacts as binary files together with their
+metadata and relations.  Archivist allows sharing artifacts with others.  It
+can look for already created artifacts by using its class, name, date of the
+creation or other properties.  It also makes it easy to restore such
+artifacts.")
+    (license license:gpl2)))
