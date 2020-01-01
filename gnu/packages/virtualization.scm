@@ -87,6 +87,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -302,21 +303,21 @@ server and embedded PowerPC, and S390 guests.")
 (define-public libosinfo
   (package
     (name "libosinfo")
-    (version "1.5.0")
+    (version "1.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://releases.pagure.org/libosinfo/libosinfo-"
-                           version ".tar.gz"))
+                           version ".tar.xz"))
        (sha256
         (base32
-         "12b0xj9fz9q91d1pz9xm6aqap5k1ip0m9m3qvqmwjy1lk1kjasdz"))))
-    (build-system gnu-build-system)
+         "1s97sv24bybggjx6hgqba2qdqz3ivfpd4cmkh4zm5y59sim109mv"))))
+    (build-system meson-build-system)
     (arguments
      `(#:configure-flags
-       (list (string-append "--with-usb-ids-path="
+       (list (string-append "-Dwith-usb-ids-path="
                             (assoc-ref %build-inputs "usb.ids"))
-             (string-append "--with-pci-ids-path="
+             (string-append "-Dwith-pci-ids-path="
                             (assoc-ref %build-inputs "pci.ids")))))
     (inputs
      `(("libsoup" ,libsoup)
