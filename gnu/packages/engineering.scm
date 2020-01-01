@@ -928,7 +928,7 @@ render model libraries.")
 (define-public kicad-symbols
   (package
     (name "kicad-symbols")
-    (version "5.1.4")
+    (version "5.1.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -937,15 +937,19 @@ render model libraries.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1lna4xlvzrxif3569pkp6mrg7fj62z3a3ri5j97lnmnnzhiddnh3"))))
+                "048b07ffsaav1ssrchw2p870lvb4rsyb5vnniy670k7q9p16qq6h"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f)) ; No tests exist
+     `(#:tests? #f))                    ; no tests exist
     (home-page "https://kicad-pcb.org/")
     (synopsis "Official KiCad schematic symbol libraries for KiCad 5")
     (description "This package contains the official KiCad schematic symbol
 libraries for KiCad 5.")
-    ;; TODO: Exception: "To the extent that the creation of electronic designs that use 'Licensed Material' can be considered to be 'Adapted Material', then the copyright holder waives article 3 of the license with respect to these designs and any generated files which use data provided as part of the 'Licensed Material'."
+    ;; TODO: Exception: "To the extent that the creation of electronic designs
+    ;; that use 'Licensed Material' can be considered to be 'Adapted Material',
+    ;; then the copyright holder waives article 3 of the license with respect to
+    ;; these designs and any generated files which use data provided as part of
+    ;; the 'Licensed Material'."
     ;; See <https://github.com/KiCad/kicad-symbols/blob/master/LICENSE.md>.
     (license license:cc-by-sa4.0)))
 
