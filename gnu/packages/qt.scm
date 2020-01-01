@@ -13,6 +13,7 @@
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 John Soo <jsoo1@asu.edu>
+;;; Copyright © 2020 Mike Rosset <mike.rosset@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,30 +53,40 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages ninja)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages pciutils)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages regex)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages telephony)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages vulkan)
   #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xiph)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xml)
   #:use-module (srfi srfi-1))
@@ -1520,6 +1531,140 @@ reason.  The most common use case where text-to-speech comes in handy is when
 the end-user is driving and cannot attend the incoming messages on the phone.
 In such a scenario, the messaging application can read out the incoming
 message.")))
+
+(define-public qtwebengine
+  (package
+    (inherit qtsvg)
+    (name "qtwebengine")
+    (version (package-version qtbase))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                  (version-major+minor version) "/" version
+                                  "/submodules/" name "-everywhere-src-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "08c60nh95m98mcqk444axs76xi6m9x0wvdxrzk9c2cxwqdbz59fa"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ("gperf" ,gperf)
+       ("ninja" ,ninja)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python-2" ,python-2)
+       ("ruby" ,ruby)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("atk" ,atk)
+       ("cups-minimal" ,cups-minimal)
+       ("dbus" ,dbus)
+       ("ffmpeg" ,ffmpeg)
+       ("fontconfig" ,fontconfig)
+       ("harbuzz" ,harfbuzz)
+       ("icu4c" ,icu4c)
+       ("jsoncpp" ,jsoncpp)
+       ("lcms" ,lcms)
+       ("libcap" ,libcap)
+       ("libevent" ,libevent)
+       ("libgcrypt" ,libgcrypt)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libvpx" ,libvpx)
+       ;; FIXME: configure does not find system lcms
+       ;; ("lcms" ,lcms)
+       ("libwebp" ,libwebp)
+       ("libx11" ,libx11)
+       ("libxcb" ,libxcb)
+       ("libxcomposite" ,libxcomposite)
+       ("libxcursor" ,libxcursor)
+       ("libxi" ,libxi)
+       ("libxkbcommon" ,libxkbcommon)
+       ;; FIXME: libxml2 needs to built with icu support though it links to
+       ;; libxml2 configure summary still states "Checking for compatible
+       ;; system libxml2... no"
+       ("libxml2" ,libxml2)
+       ("libxrandr" ,libxrandr)
+       ("libxrender" ,libxrender)
+       ("libxslt" ,libxslt)
+       ("libxtst" ,libxtst)
+       ("mesa" ,mesa)
+       ("minizip" ,minizip)
+       ("nss" ,nss)
+       ("opus" ,opus)
+       ("pciutils" ,pciutils)
+       ("protobuf" ,protobuf)
+       ("pulseaudio" ,pulseaudio)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtwebchannel" ,qtwebchannel)
+       ("re2" ,re2)
+       ("snappy" ,snappy)
+       ("udev" ,eudev)
+       ("xcb-util" ,xcb-util)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'configure 'substitute-source
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out"))
+                     (nss (assoc-ref inputs "nss"))
+                     (udev (assoc-ref inputs "udev")))
+                 ;; Qtwebengine is not installed into the same prefix as
+                 ;; qtbase.  Some qtbase QTLibraryInfo constants will not
+                 ;; work.  Replace with the full path to the qtwebengine
+                 ;; translations and locales in the store.
+                 (substitute* "src/core/web_engine_library_info.cpp"
+                   (("QLibraryInfo::location\\(QLibraryInfo::TranslationsPath\\)")
+                    (string-append "QLatin1String(\"" out "/share/qt5/translations\")"))
+                   (("QLibraryInfo::location\\(QLibraryInfo::DataPath\\)")
+                    (string-append "QLatin1String(\"" out "/share/qt5\")")))
+                 ;; Substitute full dynamic library path for nss.
+                 (substitute* "src/3rdparty/chromium/crypto/nss_util.cc"
+                   (("libnssckbi.so")
+                    (string-append nss "/lib/nss/libnssckbi.so")))
+                 ;; Substitute full dynamic library path for udev.
+                 (substitute* "src/3rdparty/chromium/device/udev_linux/udev1_loader.cc"
+                   (("libudev.so.1")
+                    (string-append udev "/lib/libudev.so.1")))
+                 #t)))
+           (add-before 'configure 'set-env
+             (lambda _
+               ;; Avoids potential race conditions.
+               (setenv "PYTHONDONTWRITEBYTECODE" "1")
+               (setenv "NINJAFLAGS"
+                       (string-append "-k1" ;less verbose build output
+                                      ;; Respect the '--cores' option of 'guix build'.
+                                      " -j" (number->string (parallel-job-count))))
+               #t))
+           (replace 'configure
+             (lambda _
+               ;; Valid QT_BUILD_PARTS variables are:
+               ;; libs tools tests examples demos docs translations
+               (invoke "qmake" "QT_BUILD_PARTS = libs tools" "--"
+                       "--webengine-printing-and-pdf=no"
+                       "--webengine-ffmpeg=system"
+                       "--webengine-icu=system"
+                       "--webengine-pepper-plugins=no")))))
+       ;; Tests are disabled due to "Could not find QtWebEngineProcess error"
+       ;; It's possible this can be fixed by setting QTWEBENGINEPROCESS_PATH
+       ;; before running tests.
+       ((#:tests? _ #f) #f)))
+    (native-search-paths
+     (list (search-path-specification
+            (file-type 'regular)
+            (separator #f)
+            (variable "QTWEBENGINEPROCESS_PATH")
+            (files '("lib/qt5/libexec/QtWebEngineProcess")))))
+    (home-page "https://wiki.qt.io/QtWebEngine")
+    (synopsis "Qt WebEngine module")
+    (description "The Qt5WebEngine module provides support for web applications
+using the Chromium browser project.  The Chromium source code has Google services
+and binaries removed, and adds modular support for using system libraries.")
+    (license license:lgpl2.1+)))
 
 (define-public python-sip
   (package
