@@ -4167,11 +4167,11 @@ for Un*x systems with X11.")
    (native-inputs
     `(("pkg-config" ,pkg-config)))
    (home-page "http://www.freeciv.org/")
-   (synopsis "Turn based empire building strategy game")
-   (description "Freeciv is a turn based empire building strategy game
+   (synopsis "Turn-based empire building strategy game")
+   (description "Freeciv is a turn-based empire building strategy game
 inspired by the history of human civilization.  The game commences in
 prehistory and your mission is to lead your tribe from the Stone Age
-to the Space Age.")
+into the Space Age.")
    (license license:gpl2+)))
 
 (define-public no-more-secrets
