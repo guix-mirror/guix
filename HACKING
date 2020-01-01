@@ -63,12 +63,3 @@ after two weeks, and if you’re confident, it’s OK to commit.
 
 That last part is subject to being adjusted, allowing individuals to commit
 directly on non-controversial changes on parts they’re familiar with.
-
-* Using emacs-debbugs
-
-Bug reports and patches are tracked using debbugs. If you are on emacs, you
-can use emacs-debbugs.
-
-List all open bug reports on guix-patches with
-
-C-u M-x debbugs-gnu <RET> <RET> guix-patches <RET> n y

@@ -26,6 +26,7 @@ choice.
 * Packaging Guidelines::        Growing the distribution.
 * Coding Style::                Hygiene of the contributor.
 * Submitting Patches::          Share your work.
+* Tracking Bugs and Patches::   Using Debbugs.
 @end menu
 
 @node Building from Git
@@ -827,12 +828,12 @@ Thus, access to the repository is not strictly necessary.  We welcome
 contributions in the form of patches as produced by @code{git
 format-patch} sent to the @email{guix-patches@@gnu.org} mailing list.
 
-This mailing list is backed by a Debbugs instance accessible at
-@uref{https://bugs.gnu.org/guix-patches}, which allows us to keep track
-of submissions.  Each message sent to that mailing list gets a new
-tracking number assigned; people can then follow up on the submission by
-sending email to @code{@var{NNN}@@debbugs.gnu.org}, where @var{NNN} is
-the tracking number (@pxref{Sending a Patch Series}).
+This mailing list is backed by a Debbugs instance, which allows us to
+keep track of submissions (@pxref{Tracking Bugs and Patches}).  Each
+message sent to that mailing list gets a new tracking number assigned;
+people can then follow up on the submission by sending email to
+@code{@var{NNN}@@debbugs.gnu.org}, where @var{NNN} is the tracking
+number (@pxref{Sending a Patch Series}).
 
 Please write commit logs in the ChangeLog format (@pxref{Change Logs,,,
 standards, GNU Coding Standards}); you can check the commit history for
@@ -1040,3 +1041,52 @@ they are kept together.  See
 for more information.  You can install @command{git send-email} with
 @command{guix install git:send-email}.
 @c Debbugs bug: https://debbugs.gnu.org/db/15/15361.html
+
+@node Tracking Bugs and Patches
+@section Tracking Bugs and Patches
+
+@cindex bug reports, tracking
+@cindex patch submissions, tracking
+@cindex issue tracking
+@cindex Debbugs, issue tracking system
+Bug reports and patch submissions are currently tracked using the
+Debbugs instance at @uref{https://bugs.gnu.org}.  Bug reports are filed
+against the @code{guix} ``package'' (in Debbugs parlance), by sending
+email to @email{bug-guix@@gnu.org}, while patch submissions are filed
+against the @code{guix-patches} package by sending email to
+@email{guix-patches@@gnu.org} (@pxref{Submitting Patches}).
+
+A web interface (actually @emph{two} web interfaces!) are available to
+browse issues:
+
+@itemize
+@item
+@url{https://bugs.gnu.org/guix} lists bug reports;
+@item
+@url{https://bugs.gnu.org/guix-patches} lists patch submissions.
+@end itemize
+
+You can also access both of these @i{via} the (nicer)
+@url{https://issues.guix.gnu.org} interface@footnote{The web interface
+at @url{https://issues.guix.gnu.org} is powered by Mumi, a nice piece of
+software written in Guile, and you can help!  See
+@url{https://git.elephly.net/gitweb.cgi?p=software/mumi.git}.}.  To view
+discussions related to issue number @var{n}, go to
+@indicateurl{https://issues.guix.gnu.org/issue/@var{n}} or
+@indicateurl{https://bugs.gnu.org/@var{n}}.
+
+If you use Emacs, you may find it more convenient to interact with
+issues using @file{debbugs.el}, which you can install with:
+
+@example
+guix install emacs-debbugs
+@end example
+
+For example, to list all open issues on @code{guix-patches}, hit:
+
+@example
+@kbd{C-u} @kbd{M-x} debbugs-gnu @kbd{RET} @kbd{RET} guix-patches @kbd{RET} n y
+@end example
+
+@xref{Top,,, debbugs-ug, Debbugs User Guide}, for more information on
+this nifty tool!
