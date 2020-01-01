@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Julian Graham <joolean@gmail.com>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
@@ -155,7 +155,7 @@ is used in some video games and movies.")
 (define-public deutex
   (package
    (name "deutex")
-   (version "5.2.0")
+   (version "5.2.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://github.com/Doom-Utils/deutex"
@@ -163,7 +163,7 @@ is used in some video games and movies.")
                                 "deutex-" version ".tar.xz"))
             (sha256
              (base32
-              "1d536d3i78k4ch8mjg7lqnamnyfpp2x5x7mzx5smqi9ad8lb6hqz"))))
+              "07w3asqxx89wl2wfv1z3cak8v83h3ys3b39mq9qq4gyf3xdhs76n"))))
    (build-system gnu-build-system)
    (native-inputs `(("asciidoc" ,asciidoc)))
    (home-page "https://github.com/Doom-Utils/deutex")
