@@ -855,7 +855,7 @@ language.")
          ("python" ,python)
          ("wxwidgets" ,wxwidgets)
          ("wxpython" ,python-wxpython)))
-      (home-page "http://kicad-pcb.org/")
+      (home-page "https://kicad-pcb.org/")
       (synopsis "Electronics Design Automation Suite")
       (description "Kicad is a program for the formation of printed circuit
 boards and electrical circuits.  The software has a number of programs that
@@ -919,7 +919,7 @@ electrical diagrams), gerbview (viewing Gerber files) and others.")
              (sha256
               (base32
                "08qrz5zzsb5127jlnv24j0sgiryd5nqwg3lfnwi8j9a25agqk13j"))))))
-      (home-page "http://kicad-pcb.org/")
+      (home-page "https://kicad-pcb.org/")
       (synopsis "Libraries for kicad")
       (description "This package provides Kicad component, footprint and 3D
 render model libraries.")
@@ -941,7 +941,7 @@ render model libraries.")
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ; No tests exist
-    (home-page "http://kicad-pcb.org/")
+    (home-page "https://kicad-pcb.org/")
     (synopsis "Official KiCad schematic symbol libraries for KiCad 5")
     (description "This package contains the official KiCad schematic symbol
 libraries for KiCad 5.")
