@@ -1149,3 +1149,9 @@ you're confident, it's OK to commit.
 
 That last part is subject to being adjusted, allowing individuals to commit
 directly on non-controversial changes on parts they’re familiar with.
+
+One last thing: the project keeps moving forward because committers not
+only push their own awesome changes, but also offer some of their time
+@emph{reviewing} and pushing other people's changes.  As a committer,
+you're welcome to use your expertise and commit rights to help other
+contributors, too!
