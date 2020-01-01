@@ -27,6 +27,7 @@ choice.
 * Coding Style::                Hygiene of the contributor.
 * Submitting Patches::          Share your work.
 * Tracking Bugs and Patches::   Using Debbugs.
+* Commit Access::               Pushing to the official repository.
 @end menu
 
 @node Building from Git
@@ -827,6 +828,8 @@ Development is done using the Git distributed version control system.
 Thus, access to the repository is not strictly necessary.  We welcome
 contributions in the form of patches as produced by @code{git
 format-patch} sent to the @email{guix-patches@@gnu.org} mailing list.
+Seasoned Guix developers may also want to look at the section on commit
+access (@pxref{Commit Access}).
 
 This mailing list is backed by a Debbugs instance, which allows us to
 keep track of submissions (@pxref{Tracking Bugs and Patches}).  Each
@@ -1090,3 +1093,59 @@ For example, to list all open issues on @code{guix-patches}, hit:
 
 @xref{Top,,, debbugs-ug, Debbugs User Guide}, for more information on
 this nifty tool!
+
+@node Commit Access
+@section Commit Access
+
+@cindex commit access, for developers
+For frequent contributors, having write access to the repository is
+convenient.  When you deem it necessary, feel free to ask for it on the
+mailing list.  When you get commit access, please make sure to follow
+the policy below (discussions of the policy can take place on
+@email{guix-devel@@gnu.org}).
+
+Non-trivial patches should always be posted to
+@email{guix-patches@@gnu.org} (trivial patches include fixing typos,
+etc.).  This mailing list fills the patch-tracking database
+(@pxref{Tracking Bugs and Patches}).
+
+For patches that just add a new package, and a simple one, it's OK to
+commit, if you're confident (which means you successfully built it in a
+chroot setup, and have done a reasonable copyright and license
+auditing).  Likewise for package upgrades, except upgrades that trigger
+a lot of rebuilds (for example, upgrading GnuTLS or GLib).  We have a
+mailing list for commit notifications (@email{guix-commits@@gnu.org}),
+so people can notice.  Before pushing your changes, make sure to run
+@code{git pull --rebase}.
+
+All commits that are pushed to the central repository on Savannah must
+be signed with an OpenPGP key, and the public key should be uploaded to
+your user account on Savannah and to public key servers, such as
+@code{keys.openpgp.org}.  To configure Git to automatically sign
+commits, run:
+
+@example
+git config commit.gpgsign true
+git config user.signingkey CABBA6EA1DC0FF33
+@end example
+
+You can prevent yourself from accidentally pushing unsigned commits to
+Savannah by using the pre-push Git hook called located at
+@file{etc/git/pre-push}:
+
+@example
+cp etc/git/pre-push .git/hooks/pre-push
+@end example
+
+When pushing a commit on behalf of somebody else, please add a
+@code{Signed-off-by} line at the end of the commit log message---e.g.,
+with @command{git am --signoff}.  This improves tracking of who did
+what.
+
+For anything else, please post to @email{guix-patches@@gnu.org} and
+leave time for a review, without committing anything (@pxref{Submitting
+Patches}).  If you didn’t receive any reply after two weeks, and if
+you're confident, it's OK to commit.
+
+That last part is subject to being adjusted, allowing individuals to commit
+directly on non-controversial changes on parts they’re familiar with.
