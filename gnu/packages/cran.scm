@@ -19038,3 +19038,27 @@ does regression.")
 observantions.  This method brings less bias and more efficient estimates for
 AFT models.")
     (license license:gpl2)))
+
+(define-public r-adapenetclass
+  (package
+    (name "r-adapenetclass")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "AdapEnetClass" version))
+       (sha256
+        (base32
+         "01k3mj4g1ckbng7wkzzn9h0k9yf01cpnnkly0sjda574c5jhj0rc"))))
+    (properties `((upstream-name . "AdapEnetClass")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-glmnet" ,r-glmnet)
+       ("r-imputeyn" ,r-imputeyn)
+       ("r-lars" ,r-lars)
+       ("r-quadprog" ,r-quadprog)))
+    (home-page "https://cran.r-project.org/web/packages/AdapEnetClass/")
+    (synopsis "Class of adaptive elastic net methods for censored data")
+    (description
+     "This package provides methods for variable selection for AFT models.")
+    (license license:gpl2)))
