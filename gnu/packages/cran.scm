@@ -19062,3 +19062,25 @@ AFT models.")
     (description
      "This package provides methods for variable selection for AFT models.")
     (license license:gpl2)))
+
+(define-public r-flock
+  (package
+    (name "r-flock")
+    (version "0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "flock" version))
+       (sha256
+        (base32
+         "1zg93p74icj4bhxnmnssj2xp6vw4yaksyavq03497v33xfpdxss7"))))
+    (properties `((upstream-name . "flock")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://cran.r-project.org/web/packages/flock/")
+    (synopsis "Process synchronization using file locks")
+    (description
+     "This package implements synchronization between R processes (spawned by
+using the @code{parallel} package for instance) using file locks.  It supports
+both exclusive and shared locking.")
+    (license license:asl2.0)))
