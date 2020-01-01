@@ -669,6 +669,13 @@ Method Engine.")
                                (assoc-ref inputs "rime-data")
                                "/share/rime-data\"\n")))
              #t))
+         (add-after 'unpack 'fix-file-names
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; IBus uses the component file rime.xml to start the Rime
+             ;; engine.  It must be patched with appropriate file names.
+             (substitute* "rime.xml"
+               (("/usr") (assoc-ref outputs "out")))
+             #t))
          (delete 'configure))))
     (inputs
      `(("gdk-pixbuf" ,gdk-pixbuf)
