@@ -5,7 +5,6 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2019 Reza Alizadeh Majd <r.majd@pantherx.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,7 +25,6 @@
   #:use-module ((guix licenses) #:prefix l:)
   #:use-module (gnu packages)
   #:use-module (guix packages)
-  #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
@@ -46,8 +44,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
-  #:use-module (guix build-system gnu)
-  #:use-module (guix build-system go))
+  #:use-module (guix build-system gnu))
 
 (define-public cuirass
   (let ((commit "e20ff86d97f7dd92dad140b5919e3cbdf2fb1ce6")
@@ -155,25 +152,3 @@
 intended as a replacement for Hydra.")
       (home-page "https://www.gnu.org/software/guix/")
       (license l:gpl3+))))
-
-(define-public gitlab-runner
-  (package
-    (name "gitlab-runner")
-    (version "12.6.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri
-        (string-append
-         "https://gitlab.com/gitlab-org/gitlab-runner/archive/v"
-         version "/gitlab-runner-v" version ".tar.gz"))
-       (sha256
-        (base32 "1gb3mflz57niyyn4kj5l4m1g2sa2w4cn8gig5dfr04ns9w9kj8jr"))))
-    (build-system go-build-system)
-    (arguments '(#:import-path "gitlab.com/gitlab-org/gitlab-runner"))
-    (home-page "https://docs.gitlab.com/runner/")
-    (synopsis "GitLab Runner")
-    (description "Gitlab Runner is used to run Gitlab's CI/CD jobs and send
-back the results to Gitlab instance.  It is used in conjunction with Gitlab
-CI.")
-    (license l:expat)))
