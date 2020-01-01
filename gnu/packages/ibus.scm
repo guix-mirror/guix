@@ -116,7 +116,7 @@
                                "/share/X11/locale")))
              (substitute* "ui/gtk3/xkblayout.vala"
                (("\"(setxkbmap|xmodmap)\"" _ prog)
-                (string-append "\"" (assoc-ref inputs prog) "\"")))
+                (string-append "\"" (assoc-ref inputs prog) "/bin/" prog "\"")))
              #t))
          (add-after 'wrap-program 'wrap-with-additional-paths
            (lambda* (#:key outputs #:allow-other-keys)
