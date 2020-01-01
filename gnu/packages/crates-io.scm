@@ -6663,8 +6663,18 @@ useful types and distributions, and some randomness-related algorithms.")
         (sha256
          (base32
           "0wahppm0s64gkr2vmhcgwc0lij37in1lgfxg5rbgqlz0l5vgcxbv"))))
-    (arguments `())
-    (properties '((hidden? . #t)))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cloudabi" ,rust-cloudabi-0.0)
+        ("rust-fuchsia-cprng" ,rust-fuchsia-cprng-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-rand-core" ,rust-rand-core-0.4)
+        ("rust-rdrand" ,rust-rdrand-0.4)
+        ("rust-stdweb" ,rust-stdweb-0.4)
+        ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
+        ("rust-winapi" ,rust-winapi-0.3))))))
 
 (define-public rust-rand-pcg-0.1
   (package
