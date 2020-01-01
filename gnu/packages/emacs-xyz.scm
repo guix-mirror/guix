@@ -14,7 +14,7 @@
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2019 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2016, 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
@@ -7929,7 +7929,7 @@ distribution, primarily targeting Clojure users")
 (define-public emacs-orgalist
   (package
     (name "emacs-orgalist")
-    (version "1.9")
+    (version "1.10")
     (source
      (origin
        (method url-fetch)
@@ -7937,7 +7937,7 @@ distribution, primarily targeting Clojure users")
                            "orgalist-" version ".el"))
        (sha256
         (base32
-         "1rmmcyiiqkq54hn74nhzxzl4nvd902hv6gq341jwhrm7yiagffi6"))))
+         "1m97m53d4sl7lvjk4nhcxkm3qv8zcvgfrfzkjgaxavf5ci7p4wb7"))))
     (build-system emacs-build-system)
     (home-page "http://elpa.gnu.org/packages/orgalist.html")
     (synopsis "Manage Org-like lists in non-Org buffers")
