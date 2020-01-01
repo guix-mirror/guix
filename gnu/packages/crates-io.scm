@@ -7577,7 +7577,8 @@ useful types and distributions, and some randomness-related algorithms.")
           "0jzdgszfa4bliigiy4hi66k7fs3gfwi2qxn8vik84ph77fwdwvvs"))))
     ;; This version is a 0.3 API wrapper around the 0.4 version.
     (arguments
-     `(#:cargo-inputs (("rand-core" ,rust-rand-core-0.4))))))
+     `(#:skip-build? #t
+       #:cargo-inputs (("rand-core" ,rust-rand-core-0.4))))))
 
 (define-public rust-rand-hc-0.1
   (package
