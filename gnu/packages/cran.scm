@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Roel Janssen <roel@gnu.org>
@@ -18988,3 +18988,26 @@ algorithm to identify key players, and Valente's bridging metric.  The
 betweenness, Key Players, and bridging implementations are parallelized with
 OpenMP.")
     (license license:gpl2)))
+
+(define-public r-emplik
+  (package
+    (name "r-emplik")
+    (version "1.0-4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "emplik" version))
+       (sha256
+        (base32
+         "1g4hz85bvw29c77zs0ig487z92jjl682vv457x81l077h0psvk7c"))))
+    (properties `((upstream-name . "emplik")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-quantreg" ,r-quantreg)))
+    (home-page "http://www.ms.uky.edu/~mai/EmpLik.html")
+    (synopsis "Empirical likelihood ratio for censored/truncated data")
+    (description
+     "This package provides empirical likelihood ratio tests for
+means/quantiles/hazards from possibly censored and/or truncated data.  It also
+does regression.")
+    (license license:gpl2+)))
