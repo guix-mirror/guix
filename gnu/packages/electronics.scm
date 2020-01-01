@@ -137,7 +137,7 @@ as simple logic analyzer and/or oscilloscope hardware.")
 (define-public libsigrok
   (package
     (name "libsigrok")
-    (version "0.5.1")
+    (version "0.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -145,7 +145,7 @@ as simple logic analyzer and/or oscilloscope hardware.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "171b553dir5gn6w4f7n37waqk62nq2kf1jykx4ifjacdz5xdw3z4"))))
+                "0g6fl684bpqm5p2z4j12c62m45j1dircznjina63w392ns81yd2d"))))
     (outputs '("out" "doc"))
     (arguments
      `(#:tests? #f                      ; tests need USB access
