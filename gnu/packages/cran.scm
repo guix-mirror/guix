@@ -19206,3 +19206,29 @@ these four functions: @code{rARS()}, @code{rMARS()}, @code{rCCARS()}, and
 @code{rASS()}.  These functions can realize sampling based on the algorithms
 above.")
     (license license:gpl2)))
+
+(define-public r-adaptalint
+  (package
+    (name "r-adaptalint")
+    (version "0.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "adaptalint" version))
+       (sha256
+        (base32
+         "15qdcvnnbgcps8j5k79354wsc9alswijv8lcafg2i3lghaw536yf"))))
+    (properties `((upstream-name . "adaptalint")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-lintr" ,r-lintr)
+       ("r-purrr" ,r-purrr)))
+    (home-page "https://cran.r-project.org/web/packages/adaptalint/")
+    (synopsis "Check R code style")
+    (description
+     "This package provides tools to infer the code style (which style rules
+are followed and which ones are not) from one package and use it to check
+another.  This makes it easier to find and correct the most important problems
+first.")
+    (license license:gpl3)))
