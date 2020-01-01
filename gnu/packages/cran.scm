@@ -19179,3 +19179,30 @@ organized into a directed acyclic graph.  It contains an interactive Shiny
 application @code{adaprApp()}.  It uses Git and file hashes to track version
 histories of inputs and outputs.")
     (license license:lgpl2.0)))
+
+(define-public r-adapsamp
+  (package
+    (name "r-adapsamp")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "AdapSamp" version))
+       (sha256
+        (base32
+         "1jayjrsiib2ij4rxxj59g71r3xhzl5yqh0lhi8k6cfy03i7dkvis"))))
+    (properties `((upstream-name . "AdapSamp")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-pracma" ,r-pracma)))
+    (home-page "https://cran.r-project.org/web/packages/AdapSamp/")
+    (synopsis "Adaptive sampling algorithms")
+    (description
+     "For distributions whose probability density functions are log-concave,
+the adaptive rejection sampling algorithm can be used to build envelope
+functions for sampling.  For others, the modified adaptive rejection sampling
+algorithm, the concave-convex adaptive rejection sampling algorithm, and the
+adaptive slice sampling algorithm can be used.  This R package mainly includes
+these four functions: @code{rARS()}, @code{rMARS()}, @code{rCCARS()}, and
+@code{rASS()}.  These functions can realize sampling based on the algorithms
+above.")
+    (license license:gpl2)))
