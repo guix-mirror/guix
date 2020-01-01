@@ -574,7 +574,6 @@ of PROVENANCE-SERVICE-TYPE to its services."
          iw wireless-tools
 
          iproute
-         net-tools                        ; XXX: remove when Inetutils suffices
          man-db
          info-reader                     ;the standalone Info reader (no Perl)
 
