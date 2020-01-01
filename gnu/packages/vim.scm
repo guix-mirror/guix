@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 HiPhish <hiphish@posteo.de>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Jakub Kądziołka <kuba@kadziolka.net>
@@ -68,7 +68,7 @@
 (define-public vim
   (package
     (name "vim")
-    (version "8.2.0066")
+    (version "8.2.0069")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -77,7 +77,7 @@
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "1yrmbqfwyj2ri61ahgzrglznpy1p6f1ldqkazhyxpwl4azk4n7zx"))))
+               "0kxzfcpv96s1lbx97g6451p1i7yanws5bvzl05jh1ywaqv5f4y7g"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
