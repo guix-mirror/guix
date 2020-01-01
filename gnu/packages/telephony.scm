@@ -14,6 +14,7 @@
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 ;;; Copyright © 2019 Ivan Vilata i Balaguer <ivan@selidor.net>
+;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -947,3 +948,27 @@ This package provides the Jami client for the GNOME desktop.")
 
 (define-public jami-client-gnome
   (deprecated-package "jami-client-gnome" jami))
+
+(define-public libtgvoip
+  (package
+    (name "libtgvoip")
+    (version "2.4.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/zevlg/libtgvoip.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "04dbwd3lwdannhxb2sh6z02i3lka9sb5s039pki6ka4siq5xzk1j"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("openssl" ,openssl)
+       ("libopusenc" ,libopusenc)))
+    (synopsis "VoIP library for Telegram clients")
+    (description "A collection of libraries and header files for implementing
+telephony functionality into custom Telegram clients.")
+    (home-page "https://github.com/zevlg/libtgvoip")
+    (license license:unlicense)))
