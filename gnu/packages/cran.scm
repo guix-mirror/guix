@@ -19141,3 +19141,41 @@ artifacts.")
 hosted on CRAN and provides functions to list available versions and the
 versions of currently installed packages.")
     (license license:bsd-3)))
+
+(define-public r-adapr
+  (package
+    (name "r-adapr")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "adapr" version))
+       (sha256
+        (base32
+         "1s57jdbi5pik56xjz1d4438ax6cywg2yq2s47h5g6wrwvpgr1qfw"))))
+    (properties `((upstream-name . "adapr")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-archivist" ,r-archivist)
+       ("r-devtools" ,r-devtools)
+       ("r-digest" ,r-digest)
+       ("r-doparallel" ,r-doparallel)
+       ("r-gdata" ,r-gdata)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-git2r" ,r-git2r)
+       ("r-igraph" ,r-igraph)
+       ("r-knitr" ,r-knitr)
+       ("r-plotly" ,r-plotly)
+       ("r-plyr" ,r-plyr)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("r-shiny" ,r-shiny)
+       ("r-shinydashboard" ,r-shinydashboard)
+       ("r-versions" ,r-versions)))
+    (home-page "https://cran.r-project.org/web/packages/adapr/")
+    (synopsis "Implementation of an accountable data analysis process")
+    (description
+     "This package tracks reading and writing within R scripts that are
+organized into a directed acyclic graph.  It contains an interactive Shiny
+application @code{adaprApp()}.  It uses Git and file hashes to track version
+histories of inputs and outputs.")
+    (license license:lgpl2.0)))
