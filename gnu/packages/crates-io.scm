@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
-;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -11469,6 +11469,39 @@ If that fails, no determination is made, and calls return None.")
         (sha256
          (base32
           "1pf91pvj8n6akh7w6j5ypka6aqz08b3qpzgs0ak2kjf4frkiljwi"))))))
+
+(define-public rust-version-sync-0.8
+  (package
+    (name "rust-version-sync")
+    (version "0.8.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "version-sync" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "01pq0ia7ak7d69c3chjgdmaaq271yrspgbzmk6wmrwb74hx3skw4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-itertools" ,rust-itertools-0.8)
+        ("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-pulldown-cmark" ,rust-pulldown-cmark-0.4)
+        ("rust-regex" ,rust-regex-1.1)
+        ("rust-semver-parser" ,rust-semver-parser-0.9)
+        ("rust-syn" ,rust-syn-0.15)
+        ("rust-toml" ,rust-toml-0.5)
+        ("rust-url" ,rust-url-1.7))))
+    (home-page "https://github.com/mgeisler/version-sync")
+    (synopsis
+     "Ensure that version numbers are updated when the crate version changes")
+    (description
+     "Simple crate for ensuring that version numbers in README files are
+updated when the crate version changes.")
+    (license license:expat)))
 
 (define-public rust-void-1.0
   (package
