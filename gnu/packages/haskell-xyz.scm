@@ -9690,6 +9690,40 @@ are not exception safe and can be broken by @code{killThread}.")
     (description "Reasonably fast data encoding library.")
     (license license:bsd-3)))
 
+(define-public ghc-say
+  (package
+    (name "ghc-say")
+    (version "0.1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/say/say-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1r5kffjfwpas45g74sip8glrj1m9nygrnxjm7xgw898rq9pnafgn"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)
+       ("ghc-unliftio" ,ghc-unliftio)))
+    (home-page "https://github.com/fpco/say")
+    (synopsis
+     "Send textual messages to a Handle in a thread-friendly way")
+    (description
+     "A thread safe API to write a line of textual data to a Handle, such
+as sending some messages to the terminal - that has the following properties:
+@itemize
+@item Properly handle character encoding settings on the Handle
+@item For reasonably sized messages, ensure that the entire message is written
+ in one chunk to avoid interleaving data with other threads
+@item Avoid unnecessary memory allocations and copies
+@item Minimize locking.
+@end itemize")
+    (license license:expat)))
+
 (define-public ghc-scientific
   (package
     (name "ghc-scientific")
