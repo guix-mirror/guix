@@ -106,7 +106,7 @@ to take care of the OS-specific details when writing software that uses serial p
 (define-public sigrok-firmware-fx2lafw
   (package
     (name "sigrok-firmware-fx2lafw")
-    (version "0.1.6")
+    (version "0.1.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -114,7 +114,7 @@ to take care of the OS-specific details when writing software that uses serial p
                     "sigrok-firmware-fx2lafw-" version ".tar.gz"))
               (sha256
                (base32
-                "18x5zj3xbcylvb651dia6n4zxbdnv0j62r5af60d0l2g68knkjg4"))))
+                "0fyfd82mvrcf55v5a3afq1mh1kfswk4c37qrbln6x92jm3b41x53"))))
     (arguments
      `(#:implicit-inputs? #f))
     (native-inputs
