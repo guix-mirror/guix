@@ -15,7 +15,7 @@
 ;;; Copyright © 2016, 2018, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
@@ -1542,7 +1542,7 @@ To load this plugin, specify the following option when starting mpv:
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2019.11.28")
+    (version "2020.01.01")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ytdl-org/youtube-dl/"
@@ -1550,7 +1550,7 @@ To load this plugin, specify the following option when starting mpv:
                                   version ".tar.gz"))
               (sha256
                (base32
-                "19xiwdn3l0kizyj7cik9vyhgrlwg7ss4wl4hy2pbbbqwh5vwppwk"))))
+                "0p8v18jpf0ijpqlgavqs5vky9v956dhhck7drsv7gkzfw2y6mc0a"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
