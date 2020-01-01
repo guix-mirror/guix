@@ -9912,7 +9912,7 @@ to occurrences in strings and comments.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((file-path (assoc-ref inputs "file")))
                (substitute* "py3status/parse_config.py"
-                 (("\\['file', '-b'")
+                 (("\\[\"file\", \"-b\"")
                   (string-append "['" file-path "/bin/file', '-b'")))
                #t))))
        #:tests? #f)) ; TODO: Requires many libraries not in Guix.
