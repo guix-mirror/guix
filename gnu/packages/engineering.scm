@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018, 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
@@ -795,7 +795,7 @@ language.")
 (define-public kicad
     (package
       (name "kicad")
-      (version "5.1.4")
+      (version "5.1.5")
       (source
        (origin
          (method url-fetch)
@@ -804,7 +804,7 @@ language.")
                 "https://launchpad.net/kicad/" (version-major version)
                 ".0/" version "/+download/kicad-" version ".tar.xz"))
          (sha256
-          (base32 "1r60dgh6aalbpq1wsmpyxkz0nn4ck8ydfdjcrblpl69k5rks5k2j"))))
+          (base32 "0x3417f2pa7p65s9f7l49rqbnrzy8gz6i0n07mlbxqbnm0fmlql0"))))
       (build-system cmake-build-system)
       (arguments
        `(#:out-of-source? #t
