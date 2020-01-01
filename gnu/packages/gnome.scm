@@ -548,7 +548,18 @@ to other formats.")
         (base32
          "08cwz39iwgsyyb2wqhb8vfbmh1cwfkgfiy7adp08w7rwqi99x3dp"))))
     (build-system meson-build-system)
-    (arguments '(#:glib-or-gtk? #t))
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'wrap
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; GNOME Characters needs Typelib files from GTK and
+                      ;; gnome-desktop.
+                      (wrap-program (string-append (assoc-ref outputs "out")
+                                                   "/bin/gnome-characters")
+                        `("GI_TYPELIB_PATH" ":" prefix
+                          (,(getenv "GI_TYPELIB_PATH"))))
+                      #t)))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
@@ -558,7 +569,8 @@ to other formats.")
     (inputs
      `(("gjs" ,gjs)
        ("gtk+" ,gtk+)
-       ("libunistring" ,libunistring)))
+       ("libunistring" ,libunistring)
+       ("gnome-desktop" ,gnome-desktop)))
     (home-page "https://wiki.gnome.org/Apps/CharacterMap")
     (synopsis "Find and insert unusual characters")
     (description "Characters is a simple utility application to find
