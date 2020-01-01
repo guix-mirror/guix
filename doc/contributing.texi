@@ -1099,8 +1099,59 @@ this nifty tool!
 
 @cindex commit access, for developers
 For frequent contributors, having write access to the repository is
-convenient.  When you deem it necessary, feel free to ask for it on the
-mailing list.  When you get commit access, please make sure to follow
+convenient.  When you deem it necessary, consider applying for commit
+access by following these steps:
+
+@enumerate
+@item
+Find three committers who would vouch for you.  You can view the list of
+committers at
+@url{https://savannah.gnu.org/project/memberlist.php?group=guix}.  Each
+of them should email a statement to @email{guix-maintainers@@gnu.org} (a
+private alias for the collective of maintainers), signed with their
+OpenPGP key.
+
+Committers are expected to have had some interactions with you as a
+contributor and to be able to judge whether you are sufficiently
+familiar with the project's practices.  It is @emph{not} a judgment on
+the value of your work, so a refusal should rather be interpreted as
+``let's try again later''.
+
+@item
+Send @email{guix-maintainers@@gnu.org} a message stating your intent,
+listing the three committers who support your application, signed with
+the OpenPGP key you will use to sign commits, and giving its fingerprint
+(see below).  See @uref{https://emailselfdefense.fsf.org/en/}, for an
+introduction to public-key cryptography with GnuPG.
+
+@item
+Maintainers ultimately decide whether to grant you commit access,
+usually following your referrals' recommendation.
+
+@item
+If and once you've been given access, please send a message to
+@email{guix-devel@@gnu.org} to say so, again signed with the OpenPGP key
+you will use to sign commits (do that before pushing your first commit).
+That way, everyone can notice and ensure you control that OpenPGP key.
+
+@c TODO: Add note about adding the fingerprint to the list of authorized
+@c keys once that has stabilized.
+
+@item
+Make sure to read the rest of this section and... profit!
+@end enumerate
+
+@quotation Note
+Maintainers are happy to give commit access to people who have been
+contributing for some time and have a track record---don't be shy and
+don't underestimate your work!
+
+However, note that the project is working towards a more automated patch
+review and merging system, which, as a consequence, may lead us to have
+fewer people with commit access to the main repository.  Stay tuned!
+@end quotation
+
+If you get commit access, please make sure to follow
 the policy below (discussions of the policy can take place on
 @email{guix-devel@@gnu.org}).
 
