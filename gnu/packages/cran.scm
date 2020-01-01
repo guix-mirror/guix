@@ -19011,3 +19011,30 @@ OpenMP.")
 means/quantiles/hazards from possibly censored and/or truncated data.  It also
 does regression.")
     (license license:gpl2+)))
+
+(define-public r-imputeyn
+  (package
+    (name "r-imputeyn")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "imputeYn" version))
+       (sha256
+        (base32
+         "1b21w1aa5f7yiq8k0wa86wvbg4ij7f6ldwn6asfqwb0b90rvsgvs"))))
+    (properties `((upstream-name . "imputeYn")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-boot" ,r-boot)
+       ("r-emplik" ,r-emplik)
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-quadprog" ,r-quadprog)
+       ("r-survival" ,r-survival)))
+    (home-page "https://cran.r-project.org/web/packages/imputeYn/")
+    (synopsis "Impute last largest censored observation under weighted least squares")
+    (description
+     "This package allows for the imputation of the last largest censored
+observantions.  This method brings less bias and more efficient estimates for
+AFT models.")
+    (license license:gpl2)))
