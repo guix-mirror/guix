@@ -1248,12 +1248,27 @@ depending on a large number of #[cfg] parameters.  Structured like an
          (base32
           "1nf6ld3bims1n5vfzhkvcb55pdzh04bbhzf8nil5vvw05nxzarsh"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-ansi-term" ,rust-ansi-term-0.11)
+        ("rust-atty" ,rust-atty-0.2)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-clippy" ,rust-clippy-0.0)
+        ("rust-strsim" ,rust-strsim-0.8)
+        ("rust-textwrap" ,rust-textwrap-0.11)
+        ("rust-unicode-width" ,rust-unicode-width-0.1)
+        ("rust-vec-map" ,rust-vec-map-0.8)
+        ("rust-yaml-rust" ,rust-yaml-rust-0.4))
+       #:cargo-development-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-regex" ,rust-regex-1.1)
+        ("rust-version-sync" ,rust-version-sync-0.8))))
     (home-page "https://clap.rs/")
     (synopsis "Command Line Argument Parser")
     (description
      "This package provides a simple to use, efficient, and full-featured
 Command Line Argument Parser.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-clicolors-control-1.0
