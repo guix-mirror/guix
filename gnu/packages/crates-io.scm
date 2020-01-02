@@ -5060,11 +5060,17 @@ functions and static variables these libraries contain.")
          (base32
           "1xz18ixccl5c6np4linv3ypc7hpmmgpc5zzd2ymp2ssfx0mhbdhl"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-serde-test" ,rust-serde-test-1.0))))
     (home-page "https://github.com/rust-lang/log")
     (synopsis "Lightweight logging facade for Rust")
     (description
      "This package provides a lightweight logging facade for Rust.")
-    (properties '((hidden? . #t)))
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-log-0.3
