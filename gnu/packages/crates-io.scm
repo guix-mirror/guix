@@ -4774,6 +4774,9 @@ language tags.")
          (base32
           "052ac27w189hrf1j3hz7sga46rp84zl2hqnzyihxv78mgzr2jmxw"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs (("rust-spin" ,rust-spin-0.5))))
     (home-page  "https://github.com/rust-lang-nursery/lazy-static.rs")
     (synopsis "Macro for declaring lazily evaluated statics in Rust")
     (description
@@ -4782,7 +4785,6 @@ Rust.  Using this macro, it is possible to have @code{static}s that require code
 to be executed at runtime in order to be initialized.  This includes anything
 requiring heap allocations, like vectors or hash maps, as well as anything that
 requires non-const function calls to be computed.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
