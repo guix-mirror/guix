@@ -7433,12 +7433,29 @@ to write.")
          (base32
           "1jl4449jcl4wgmzld6ffwqj5gwxrp8zvx8w573g1z368qg6xlwbd"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-packed-simd" ,rust-packed-simd-0.3)
+        ("rust-rand-chacha" ,rust-rand-chacha-0.1)
+        ("rust-rand-core" ,rust-rand-core-0.4)
+        ("rust-rand-hc" ,rust-rand-hc-0.1)
+        ("rust-rand-isaac" ,rust-rand-isaac-0.1)
+        ("rust-rand-jitter" ,rust-rand-jitter-0.1)
+        ("rust-rand-os" ,rust-rand-os-0.1)
+        ("rust-rand-pcg" ,rust-rand-pcg-0.1)
+        ("rust-rand-xorshift" ,rust-rand-xorshift-0.1)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-autocfg" ,rust-autocfg-0.1)
+        ("rust-rand-xoshiro" ,rust-rand-xoshiro-0.3))))
     (home-page "https://crates.io/crates/rand")
     (synopsis "Random number generators and other randomness functionality")
     (description
      "Rand provides utilities to generate random numbers, to convert them to
 useful types and distributions, and some randomness-related algorithms.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
@@ -7460,8 +7477,7 @@ useful types and distributions, and some randomness-related algorithms.")
        #:cargo-inputs
        (("rust-fuchsia-zircon" ,rust-fuchsia-zircon-0.3)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-winapi" ,rust-winapi-0.3))))
-    (properties `())))
+        ("rust-winapi" ,rust-winapi-0.3))))))
 
 (define-public rust-rand-0.3
   (package
@@ -7480,8 +7496,7 @@ useful types and distributions, and some randomness-related algorithms.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
-        ("rust-rand" ,rust-rand-0.4))))
-    (properties `())))
+        ("rust-rand" ,rust-rand-0.4))))))
 
 (define-public rust-rand-chacha-0.2
   (package
