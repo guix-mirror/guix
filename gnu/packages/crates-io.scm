@@ -7241,12 +7241,17 @@ dependency to expose a precomputed hash.")
          (base32
           "09rgb5ab0jgw39kyad0lgqs4nb9yaf7mwcrgxqnsxbn4il54g7lw"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-unicode-xid" ,rust-unicode-xid-0.2))
+       #:cargo-development-inputs
+       (("rust-quote" ,rust-quote-1.0))))
     (home-page "https://github.com/alexcrichton/proc-macro2")
     (synopsis "Stable implementation of the upcoming new `proc_macro` API")
     (description "This package provides a stable implementation of the upcoming new
 `proc_macro` API.  Comes with an option, off by default, to also reimplement itself
 in terms of the upstream unstable API.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0 license:expat))))
 
 (define-public rust-proc-macro2-0.4
