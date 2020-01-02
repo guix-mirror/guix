@@ -8757,11 +8757,16 @@ proven statistical guarantees.")
          (base32
           "1p8r24hagcsrl92w5z32nfrg9040qkgqf8iwwnf7mzigpavwk5lp"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-serde-derive" ,rust-serde-derive-1.0))
+       #:cargo-development-inputs
+       (("rust-serde-derive" ,rust-serde-derive-1.0))))
     (home-page "https://serde.rs")
     (synopsis "Generic serialization/deserialization framework")
     (description
      "This package provides a generic serialization/deserialization framework.")
-    (properties '((hidden? . #t)))
     (license (list license:expat license:asl2.0))))
 
 ;; Circular dev dependency on bincode.
