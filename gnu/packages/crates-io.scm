@@ -11820,11 +11820,15 @@ attribute that is not in the shared backend crate.")
          (base32
           "0n28mr6vncf1k1qr2b5bvfxq4jvqkjdzq0z0ab6w2f5d6v8q3q3l"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-0.6))))
     (home-page "https://github.com/rustwasm/wasm-bindgen")
     (synopsis "Internal testing macro for wasm-bindgen")
     (description
      "This library contains the internal testing macro for wasm-bindgen.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
