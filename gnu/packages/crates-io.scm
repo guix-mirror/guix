@@ -11925,7 +11925,7 @@ UTF-32 types are provided, including support for malformed encoding.")
         (sha256
          (base32
           "0yh816lh6lf56dpsgxy189c2ai1z3j8mw9si6izqb6wsjkbcjz8n"))))
-    (arguments '())))
+    (arguments '(#:skip-build? #t))))
 
 (define-public rust-winapi-build-0.1
   (package
