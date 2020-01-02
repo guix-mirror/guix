@@ -5,6 +5,7 @@
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Meiyo Peng <meiyo@disroot.org>
+;;; Copyright © 2020 kanichos <kanichos@yandex.ru>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -688,3 +689,23 @@ input methods as well as those for Chinese dialects.  It has the ability to
 compose phrases and sentences intelligently and provide very accurate
 traditional Chinese output.")
     (license gpl3+)))
+
+(define-public libhangul
+  (package
+    (name "libhangul")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://kldp.net/hangul/release/"
+                           "3442-libhangul-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ni9b0v70wkm0116na7ghv03pgxsfpfszhgyj3hld3bxamfal1ar"))))
+    (build-system gnu-build-system)
+    (home-page "https://github.com/libhangul/libhangul")
+    (synopsis "Library to support hangul input method logic")
+    (description
+     "This package provides a library to support hangul input method logic,
+hanja dictionary and small hangul character classification.")
+    (license lgpl2.1+)))
