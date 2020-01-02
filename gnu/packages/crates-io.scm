@@ -7468,7 +7468,13 @@ useful types and distributions, and some randomness-related algorithms.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0v679h38pjjqj5h4md7v2slsvj6686qgcn7p9fbw3h43iwnk1b34"))))))
+          "0v679h38pjjqj5h4md7v2slsvj6686qgcn7p9fbw3h43iwnk1b34"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-rand" ,rust-rand-0.4))))
+    (properties `())))
 
 (define-public rust-rand-chacha-0.2
   (package
