@@ -93,7 +93,7 @@
 (define-public bullet
   (package
     (name "bullet")
-    (version "2.88")
+    (version "2.89")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -102,7 +102,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "00qkif245yj7n2f262bgjaxv1bz3wmmcsfnjgy3qpzvlpzpns5z8"))
+                "10ncf2z474jnv7p5lv01ak2mk2hib3rj5rz1zr8v2v5pnciqbijl"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -112,11 +112,10 @@
                               '("Gwen" "clsocket" "enet" "glad" "imgui"
                                 "lua-5.2.3" "midi" "minizip" "openvr"
                                 "optionalX11" "serial" "zlib")))
-                  ;; These need files from ThirdPartyLibs
+                  ;; These need files from ThirdPartyLibs.
                   (substitute* "Extras/CMakeLists.txt"
-                    (("BulletRobotics") "")
-                    (("obj2sdf") ""))
-                  ;; Tests fail on linking, cannot find -lBussIK
+                    (("BulletRobotics") ""))
+                  ;; Tests fail on linking, cannot find -lBussIK.
                   (substitute* "test/CMakeLists.txt"
                     ((" InverseDynamics")
                      "../examples/ThirdPartyLibs/BussIK InverseDynamics"))
@@ -133,7 +132,7 @@
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'remove-failing-tests
-           ;; These tests fail specifically after removing 3rd party code
+           ;; These tests fail specifically after removing 3rd party code.
            (lambda _
              (substitute* "test/SharedMemory/CMakeLists.txt"
                (("ADD_TEST") "# ADD_TEST"))
