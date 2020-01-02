@@ -12053,12 +12053,15 @@ color in a Windows console.")
         (sha256
          (base32
           "0vkyl3fbbf05n5ph5yz8sfaccrk9x3qsr25560w6w68ldf5i7bvx"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-winapi" ,rust-winapi-0.3))))
     (build-system cargo-build-system)
     (home-page "https://bitbucket.org/DaveLancaster/winutil")
     (synopsis "Library wrapping a handful of useful winapi functions")
     (description
      "A simple library wrapping a handful of useful winapi functions.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-ws2-32-sys-0.2
