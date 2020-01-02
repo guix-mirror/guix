@@ -7454,7 +7454,14 @@ useful types and distributions, and some randomness-related algorithms.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1gfgnqfj2pyh27dcb720jpawskllwnbvxh816ddyykv269xz8ml3"))))))
+          "1gfgnqfj2pyh27dcb720jpawskllwnbvxh816ddyykv269xz8ml3"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-fuchsia-zircon" ,rust-fuchsia-zircon-0.3)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (properties `())))
 
 (define-public rust-rand-0.3
   (package
