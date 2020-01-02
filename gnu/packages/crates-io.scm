@@ -11873,13 +11873,16 @@ Locate installed execuable in cross platforms.")
          (base32
           "1dhx6dndjsz1y7c9w06922412kdxyrrkqblvggm76mh8z17hxz7g"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-development-inputs
+       (("rust-winapi" ,rust-winapi-0.3))))
     (home-page "https://github.com/starkat99/widestring-rs")
     (synopsis "Wide string Rust FFI library")
     (description
      "A wide string Rust FFI library for converting to and from wide strings,
 such as those often used in Windows API or other FFI libraries.  Both UTF-16 and
 UTF-32 types are provided, including support for malformed encoding.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
