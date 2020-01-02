@@ -234,3 +234,23 @@ install: libbitshuffle.so
      "This package provides a @code{pathlib}-compatible @code{Zipfile} object
 wrapper.  It provides a backport of the @code{Path} object.")
     (license license:expat)))
+
+(define-public python-zstandard
+  (package
+  (name "python-zstandard")
+  (version "0.13.0")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (pypi-uri "zstandard" version))
+      (sha256
+        (base32 "0q9msi00s93iqm8vzd839r7yc51gz54z90h5bckqyjdxa6vxijz5"))))
+  (build-system python-build-system)
+  (native-inputs
+   `(("python-hypothesis" ,python-hypothesis)))
+  (home-page "https://github.com/indygreg/python-zstandard")
+  (synopsis "Zstandard bindings for Python")
+  (description "This project provides Python bindings for interfacing
+with the Zstandard compression library. A C extension and CFFI
+interface are provided.")
+  (license license:bsd-3)))
