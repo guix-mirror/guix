@@ -5288,9 +5288,9 @@ share them with others via social networking and more.")
     (version "3.32.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/file-roller/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "file-roller-" version ".tar.xz"))
               (sha256
                (base32
                 "0w8s6hakgsvb2nqwbv0lr8ki4cbf1pz5z3qwkb0b2k7ppbh7j2n6"))))
