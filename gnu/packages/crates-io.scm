@@ -7463,7 +7463,7 @@ useful types and distributions, and some randomness-related algorithms.")
   (package
     (inherit rust-rand-0.6)
     (name "rust-rand")
-    (version "0.4.3")
+    (version "0.4.6")
     (source
       (origin
         (method url-fetch)
@@ -7471,11 +7471,13 @@ useful types and distributions, and some randomness-related algorithms.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1gfgnqfj2pyh27dcb720jpawskllwnbvxh816ddyykv269xz8ml3"))))
+          "14qjfv3gggzhnma20k0sc1jf8y6pplsaq7n1j9ls5c8kf2wl0a2m"))))
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-fuchsia-zircon" ,rust-fuchsia-zircon-0.3)
+       (("rust-fuchsia-cprng" ,rust-fuchsia-cprng-0.1)
+        ("rust-rand-core" ,rust-rand-core-0.3)
+        ("rust-rdrand" ,rust-rdrand-0.4)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-winapi" ,rust-winapi-0.3))))))
 
