@@ -281,9 +281,13 @@ second element is the name it should appear at, such as:
 
 (define (activate-modprobe modprobe)
   "Tell the kernel to use MODPROBE to load modules."
-  (call-with-output-file "/proc/sys/kernel/modprobe"
-    (lambda (port)
-      (display modprobe port))))
+
+  ;; If the kernel was built without loadable module support, this file is
+  ;; unavailable, so check for its existence first.
+  (when (file-exists? "/proc/sys/kernel/modprobe")
+    (call-with-output-file "/proc/sys/kernel/modprobe"
+      (lambda (port)
+        (display modprobe port)))))
 
 (define (activate-firmware directory)
   "Tell the kernel to look for device firmware under DIRECTORY.  This
