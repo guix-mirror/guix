@@ -9932,12 +9932,20 @@ deleting all contents when it's dropped.")
          (base32
           "1vqk7aq2l04my2r3jiyyxirnf8f90nzcvjasvrajivb85s7p7i3x"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-rand" ,rust-rand-0.6)
+        ("rust-redox-syscall" ,rust-redox-syscall-0.1)
+        ("rust-remove-dir-all" ,rust-remove-dir-all-0.5)
+        ("rust-winapi" ,rust-winapi-0.3))))
     (home-page "http://stebalien.com/projects/tempfile-rs")
     (synopsis "Library for managing temporary files and directories")
     (description
      "This package provides a library for managing temporary files and
 directories.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
