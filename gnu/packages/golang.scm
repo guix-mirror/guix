@@ -3058,3 +3058,27 @@ sensors).")
 colorized or SGR defined output to the standard output.")
     (home-page "https://godoc.org/github.com/fatih/color")
     (license license:expat)))
+
+(define-public go-github-com-google-go-cmp-cmp
+  (package
+    (name "go-github-com-google-go-cmp-cmp")
+    (version "0.3.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/google/go-cmp.git")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1caw49i0plkjxir7kdf5qhwls3krqwfmi7g4h392rdfwi3kfahx1"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/google/go-cmp/cmp"
+       #:unpack-path "github.com/google/go-cmp"))
+    (synopsis "Determine equality of values in Go")
+    (description "This package provides a more powerful and safer
+alternative to @code{reflect.DeepEqual} for comparing whether two values
+are semantically equal in Go (for writing tests).")
+    (home-page "https://godoc.org/github.com/google/go-cmp/cmp")
+    (license license:asl2.0)))
