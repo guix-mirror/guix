@@ -8,7 +8,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +33,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system python)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages assembly)
@@ -45,6 +46,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages libreoffice)
   #:use-module (gnu packages lua)
@@ -353,6 +355,108 @@ OpenBSD team.")
      "@code{ghostwriter} provides a relaxing, distraction-free writing
 environment with Markdown markup.")
     (license license:gpl3+)))           ; icons/* under CC-BY-SA3
+
+(define-public manuskript
+  (package
+    (name "manuskript")
+    (version "0.10.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/olivierkes/manuskript.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0q413vym7hzjpyg3krj5y63hwpncdifjkyswqmr76zg5yqnklnh3"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share/manuskript")))
+               ;; Install data.
+               (mkdir-p share)
+               (for-each
+                (lambda (d)
+                  (let ((destination  (string-append share "/" d)))
+                    (mkdir-p destination)
+                    (copy-recursively d destination)))
+                '("bin" "i18n" "icons" "libs" "manuskript" "resources"))
+               ;; Install documentation.
+               (let ((doc (string-append out
+                                         "/doc/manuskript-" ,version
+                                         "/sample-projects")))
+                 (mkdir-p doc)
+                 (copy-recursively "sample-projects" doc))
+               ;; Wrap executable in "$out/share/manuskript/bin" and
+               ;; link to it from "$out/bin".
+               (let ((bin (string-append out "/bin"))
+                     (executable (string-append share "/bin/manuskript")))
+                 (wrap-program executable
+                   (list "PYTHONPATH" 'prefix (list (getenv "PYTHONPATH"))))
+                 (mkdir-p bin)
+                 (with-directory-excursion bin
+                   (symlink (string-append share "/bin/manuskript")
+                            "manuskript")))
+               ;; Install icons and create .desktop file.
+               (let ((apps (string-append out "/share/applications"))
+                     (icons-dir (string-append out "/share/pixmaps")))
+                 (install-file "icons/Manuskript/manuskript.svg" icons-dir)
+                 (mkdir-p apps)
+                 (with-output-to-file (string-append apps "/manuskript.desktop")
+                   (lambda _
+                     (format #t
+                             "[Desktop Entry]~@
+                         Name=Manuskript~@
+                         MimeType=application/x-manuskript-book;~@
+                         Exec=~a/bin/manuskript %f~@
+                         Comment=Tool for writers~@
+                         Comment[es]=Herramienta para escritores/as~@
+                         Keywords=manuskript;office;write;edit;novel;text;msk~@
+                         Terminal=false~@
+                         Type=Application~@
+                         Icon=manuskript~@
+                         Categories=Office;WordProcessor;~%"
+                             out))))
+               #t))))))
+    (inputs
+     `(("ghc-pandoc" ,ghc-pandoc)
+       ("python-lxml" ,python-lxml)
+       ("python-markdown" ,python-markdown)
+       ("python-pyqt" ,python-pyqt)
+       ("qtsvg" ,qtsvg)))
+    (home-page "http://www.theologeek.ch/manuskript/")
+    (synopsis "Tool for writers")
+    (description "Manuskript provides a rich environment to help
+writers create their first draft and then further refine and edit
+their masterpiece.  With Manuskript you can:
+
+@itemize
+@item Grow your premise from one sentence, to a paragraph, to a full
+summary,
+@item Create characters,
+@item Conceive plots,
+@item Construct outlines (Outline mode and/or Index cards),
+@item Write with focus (Distraction free mode),
+@item Build worlds,
+@item Track items,
+@item Edit and re-organize chapters and scenes,
+@item View Story line,
+@item Compose with fiction or non-fiction templates and writing modes,
+@item Import and export document formats such as HTML, ePub,
+OpenDocument, DocX, and more.
+@end itemize
+
+Additionally Manuskript can help in many more ways with a spell
+checker, markdown highlighter, frequency analyzer, and automatic save
+in plain text file format.")
+    (license license:gpl3+)))
 
 (define-public editorconfig-core-c
   (package
