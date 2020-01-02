@@ -1968,6 +1968,9 @@ Telegram messenger.")
       (build-system cmake-build-system)
       (arguments
        `(#:tests? #t
+         #:configure-flags
+         (list "-DCMAKE_BUILD_TYPE=Release"
+               "-DTD_ENABLE_LTO=OFF") ; FIXME: Get LTO to work.
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'remove-failing-tests
