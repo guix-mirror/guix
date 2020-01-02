@@ -11769,11 +11769,11 @@ attribute that is not in the shared backend crate.")
          (base32
           "08rnfhjyk0f6liv8n4rdsvhx7r02glkhcbj2lp9lcbkbfpad9hnr"))))
     (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
     (home-page "https://rustwasm.github.io/wasm-bindgen/")
     (synopsis "Shared support between wasm-bindgen and wasm-bindgen cli")
     (description "This package provides shared support between
 @code{wasm-bindgen} and @code{wasm-bindgen} cli, an internal dependency.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
