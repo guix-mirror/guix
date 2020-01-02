@@ -12077,11 +12077,16 @@ color in a Windows console.")
          (base32
           "0ppscg5qfqaw0gzwv2a4nhn5bn01ff9iwn6ysqnzm4n8s3myz76m"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-winapi" ,rust-winapi-0.2))
+       #:cargo-development-inputs
+       (("rust-winapi-build" ,rust-winapi-build-0.1))))
     (home-page "https://github.com/retep998/winapi-rs")
     (synopsis "Function definitions for the Windows API library ws2_32")
     (description
      "Contains function definitions for the Windows API library ws2_32.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-xattr-0.2
