@@ -16,7 +16,7 @@
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
-;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -1950,9 +1950,9 @@ Telegram messenger.")
     (license license:gpl2+)))
 
 (define-public tdlib
-  (let ((commit "afca63a4f43531058a079e91eb5c81f54ad744b5")
+  (let ((commit "80c35676a2eb1e9b71db355ee217bba79fbdce31")
         (revision "1")
-        (version "1.5.0"))
+        (version "1.5.4"))
     (package
       (name "tdlib")
       (version (git-version version revision commit))
@@ -1963,7 +1963,7 @@ Telegram messenger.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1aa3p4k32mfshgc6fv58gwg8pnaix39rv455hfx6znj7llr8na6k"))
+                  "09c0pygqirapgxxzcc3sr0x67qhz8cx2klznrbdyi0118r9s8a7a"))
                 (file-name (git-file-name name version))))
       (build-system cmake-build-system)
       (arguments
