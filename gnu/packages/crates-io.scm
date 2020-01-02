@@ -7261,7 +7261,13 @@ in terms of the upstream unstable API.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0nd71fl24sys066jrha6j7i34nfkjv44yzw8yww9742wmc8j0gfg"))))))
+          "0nd71fl24sys066jrha6j7i34nfkjv44yzw8yww9742wmc8j0gfg"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-unicode-xid" ,rust-unicode-xid-0.1))
+       #:cargo-development-inputs
+       (("rust-quote" ,rust-quote-0.6))))))
 
 (define-public rust-proptest-0.9
   (package
