@@ -335,6 +335,35 @@ It has miners for Facebook, Flickr, Google, ownCloud and SkyDrive.")
     (home-page "https://wiki.gnome.org/Projects/GnomeOnlineMiners")
     (license license:gpl2)))
 
+(define-public libmediaart
+  (package
+    (name "libmediaart")
+    (version "1.9.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0gc10imyabk57ar54m0qzms0x9dnmkymhkzyk8w1aj3y4lby0yx5"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gdk-pixbuf" ,gdk-pixbuf)
+       ("gettext" ,gettext-minimal)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+:doc", gtk+ "doc")
+       ("vala" ,vala)))
+    (synopsis "Media art library for the GNOME desktop")
+    (description
+     "The libmediaart library is the foundation for media art caching,
+extraction, and lookup for applications on the desktop.")
+    (home-page "https://gitlab.gnome.org/GNOME/libmediaart")
+    (license license:lgpl2.1+)))
+
 (define-public gnome-menus
   (package
     (name "gnome-menus")
