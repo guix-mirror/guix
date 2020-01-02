@@ -7938,6 +7938,32 @@ pasting into and from @code{tmux} paste buffers.")
 to search.")
       (license license:gpl3+))))
 
+(define-public emacs-monky
+  (package
+    (name "emacs-monky")
+    (version "0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ananthakumaran/monky.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1fgn7al4zwz2k5wb5dy3byqg9lsrjk9fra341mxh5ma2pfwxjgps"))))
+    (build-system emacs-build-system)
+    (home-page "https://ananthakumaran.in/monky/index.html")
+    (arguments
+     `(#:tests? #t
+       #:test-command '("emacs" "--batch"
+                        "-l" "test/monky-unit-test.el"
+                        "-f" "ert-run-tests-batch-and-exit")))
+    (synopsis "Interactive interface for the Mercurial version control system")
+    (description
+     "Monky provides an Emacs interface for Mercurial (Hg).  Using Monky, you
+can selectively commit files, view the diffs, and other things.")
+    (license license:gpl3+)))
+
 (define-public emacs-monroe
   (package
     (name "emacs-monroe")
