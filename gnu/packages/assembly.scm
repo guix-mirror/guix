@@ -177,9 +177,9 @@ to the clients.")
     (supported-systems '("x86_64-linux" "i686-linux"))
     (synopsis "Assembler for x86 processors")
     (description
-     "FASM is an assembler that supports x86 and IA-64 Intel architectures.
-It does multiple passes to optimize machine code.  It has macro abilities and
-focuses on operating system portability.")
+     "@acronym{FASM, the Flat ASseMbler} is an assembler that supports x86 and
+IA-64 Intel architectures.  It does multiple passes to optimize machine code.
+It has macro abilities and focuses on operating system portability.")
     (home-page "https://flatassembler.net/")
     (license license:bsd-2)))
 
