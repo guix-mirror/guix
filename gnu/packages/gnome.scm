@@ -7279,8 +7279,9 @@ associations for GNOME.")
     (propagated-inputs
      ;; TODO: Add or remove packages according to:
      ;;       <https://calc.disroot.org/2nu6mpf88ynq.html>.
+     `(
      ;; GNOME-Core-OS-Services
-     `(("accountsservice" ,accountsservice)
+       ("accountsservice" ,accountsservice)
        ("network-manager" ,network-manager)
        ("packagekit" ,packagekit)
        ("upower" ,upower)
@@ -7292,12 +7293,15 @@ associations for GNOME.")
        ("gnome-bluetooth" ,gnome-bluetooth)
        ("gnome-control-center" ,gnome-control-center)
        ("gnome-desktop" ,gnome-desktop)
+       ("gnome-getting-started-docs" ,gnome-getting-started-docs)
        ("gnome-keyring" ,gnome-keyring)
+       ("gnome-menus" ,gnome-menus)
        ("gnome-session" ,gnome-session)
        ("gnome-settings-daemon" ,gnome-settings-daemon)
        ("gnome-shell-extensions" ,gnome-shell-extensions)
        ("gnome-shell" ,gnome-shell)
        ("gnome-themes-extra" ,gnome-themes-extra)
+       ("gnome-user-docs" ,gnome-user-docs)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gvfs" ,gvfs)
        ("mutter" ,mutter)
@@ -7324,7 +7328,10 @@ associations for GNOME.")
        ("nautilus" ,nautilus)
        ("simple-scan" ,simple-scan)
        ("totem" ,totem)
-       ("yelp" ,yelp)))
+       ("yelp" ,yelp)
+     ;; Others
+       ("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("gnome-online-accounts" ,gnome-online-accounts)))
     (synopsis "The GNU desktop environment")
     (home-page "https://www.gnome.org/")
     (description
