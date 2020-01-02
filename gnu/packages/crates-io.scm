@@ -12028,12 +12028,16 @@ x86_64-pc-windows-gnu target.  Please don't use this crate directly, depend on
          (base32
           "1agaf3hcav113i86912ajnw6jxcy4rvkrgyf8gdj8kc031mh3xcn"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-winapi" ,rust-winapi-0.3)
+        ("rust-winapi-util" ,rust-winapi-util-0.1))))
     (home-page "https://github.com/BurntSushi/termcolor/tree/master/wincolor")
     (synopsis "Windows API for controlling text color in a Windows console")
     (description
      "This package provides a simple Windows specific API for controlling text
 color in a Windows console.")
-    (properties '((hidden? . #t)))
     (license (list license:unlicense
                    license:expat))))
 
