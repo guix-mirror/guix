@@ -21,7 +21,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017, 2018 nee <nee-git@hidamari.blue>
@@ -1006,9 +1006,9 @@ forgotten when the session ends.")
     (version "3.34.1")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://gnome/sources/" name "/"
+             (uri (string-append "mirror://gnome/sources/evince/"
                                  (version-major+minor version) "/"
-                                 name "-" version ".tar.xz"))
+                                 "evince-" version ".tar.xz"))
              (sha256
               (base32
                "1pr6fvbaam1mzxjwyqd53hcxzdjzf73idn10j4j7n54nwg6hgr45"))))
