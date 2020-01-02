@@ -2918,40 +2918,6 @@ cross platform API.")
     (license (list license:asl2.0
                    license:expat))))
 
-(define-public rust-rustfix-0.4
-  (package
-    (name "rust-rustfix")
-    (version "0.4.6")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "rustfix" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "01zn0ysnass3mmrhxk90584y713vjfq1x97mi4saac99g9vsql3i"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-failure" ,rust-failure-0.1)
-        ("rust-log" ,rust-log-0.4)
-        ("rust-serde" ,rust-serde-1.0)
-        ("rust-serde-json" ,rust-serde-json-1.0))
-       #:cargo-development-inputs
-       (("rust-difference" ,rust-difference-2.0)
-        ("rust-duct" ,rust-duct-0.13)
-        ("rust-env-logger" ,rust-env-logger-0.6)
-        ("rust-log" ,rust-log-0.4)
-        ("rust-proptest" ,rust-proptest-0.9)
-        ("rust-tempdir" ,rust-tempdir-0.3))))
-    (home-page "https://github.com/rust-lang/rustfix")
-    (synopsis "Automatically apply the suggestions made by rustc")
-    (description
-     "Automatically apply the suggestions made by rustc.")
-    (license (list license:expat license:asl2.0))))
-
 (define-public rust-fixedbitset-0.1
   (package
     (name "rust-fixedbitset")
@@ -7726,27 +7692,6 @@ useful types and distributions, and some randomness-related algorithms.")
     (license (list license:asl2.0
                    license:expat))))
 
-(define-public rust-rand-xorshift-0.1
-  (package
-    (name "rust-rand-xorshift")
-    (version "0.1.1")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "rand_xorshift" version))
-        (file-name (string-append name "-" version ".crate"))
-        (sha256
-         (base32
-          "0p2x8nr00hricpi2m6ca5vysiha7ybnghz79yqhhx6sl4gkfkxyb"))))
-    (build-system cargo-build-system)
-    (home-page "https://crates.io/crates/rand-xorshift")
-    (synopsis "Xorshift random number generator")
-    (description
-      "Xorshift random number generator")
-    (properties '((hidden? . #t)))
-    (license (list license:asl2.0
-                   license:expat))))
-
 (define-public rust-rand-xorshift-0.2
   (package
     (name "rust-rand-xorshift")
@@ -7773,6 +7718,27 @@ useful types and distributions, and some randomness-related algorithms.")
     (description
      "Xorshift random number generator.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-rand-xorshift-0.1
+  (package
+    (name "rust-rand-xorshift")
+    (version "0.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand_xorshift" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "0p2x8nr00hricpi2m6ca5vysiha7ybnghz79yqhhx6sl4gkfkxyb"))))
+    (build-system cargo-build-system)
+    (home-page "https://crates.io/crates/rand-xorshift")
+    (synopsis "Xorshift random number generator")
+    (description
+      "Xorshift random number generator")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
 
 (define-public rust-rand-xoshiro-0.3
   (package
@@ -8334,6 +8300,40 @@ require unstable language features.")
     (description
      "This package provides a library for querying the version of a installed
 rustc compiler.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-rustfix-0.4
+  (package
+    (name "rust-rustfix")
+    (version "0.4.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustfix" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "01zn0ysnass3mmrhxk90584y713vjfq1x97mi4saac99g9vsql3i"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-failure" ,rust-failure-0.1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0))
+       #:cargo-development-inputs
+       (("rust-difference" ,rust-difference-2.0)
+        ("rust-duct" ,rust-duct-0.13)
+        ("rust-env-logger" ,rust-env-logger-0.6)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-proptest" ,rust-proptest-0.9)
+        ("rust-tempdir" ,rust-tempdir-0.3))))
+    (home-page "https://github.com/rust-lang/rustfix")
+    (synopsis "Automatically apply the suggestions made by rustc")
+    (description
+     "Automatically apply the suggestions made by rustc.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-rusty-fork-0.2
@@ -9930,30 +9930,8 @@ directories.")
      "Compact buffer/string type for zero-copy parsing.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-term-0.4
-  (package
-    (name "rust-term")
-    (version "0.4.6")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "term" version))
-        (file-name (string-append name "-" version ".crate"))
-        (sha256
-         (base32
-          "1wbh8ngqkqr3f6wz902yplf60bd5yapnckvrkgmzp5nffi7n8qzs"))))
-    (build-system cargo-build-system)
-    (home-page "https://github.com/Stebalien/term")
-    (synopsis "Terminal formatting library")
-    (description
-     "This package provides a terminal formatting library in rust.")
-    (properties '((hidden? . #t)))
-    (license (list license:asl2.0
-                   license:expat))))
-
 (define-public rust-term-0.5
   (package
-    (inherit rust-term-0.4)
     (name "rust-term")
     (version "0.5.2")
     (source
@@ -9964,11 +9942,19 @@ directories.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0hkgjrfisj6zjwz525639pmsvzhlc48a0h65nw87qrdp6jihdlgd"))))))
+         "0hkgjrfisj6zjwz525639pmsvzhlc48a0h65nw87qrdp6jihdlgd"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/Stebalien/term")
+    (synopsis "Terminal formatting library")
+    (description
+     "This package provides a terminal formatting library in rust.")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
 
 (define-public rust-term-0.5.1
   (package
-    (inherit rust-term-0.4)
+    (inherit rust-term-0.5)
     (name "rust-term")
     (version "0.5.1")
     (source
@@ -9982,6 +9968,20 @@ directories.")
          "0qbmqd8jbjlqr4608qdmvp6yin5ypifzi5s2xyhlw8g8s5ynfssy"))))
     (arguments `(#:skip-build? #t))
     (properties '())))
+
+(define-public rust-term-0.4
+  (package
+    (inherit rust-term-0.5)
+    (name "rust-term")
+    (version "0.4.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "term" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1wbh8ngqkqr3f6wz902yplf60bd5yapnckvrkgmzp5nffi7n8qzs"))))))
 
 (define-public rust-termcolor-1.0
   (package
