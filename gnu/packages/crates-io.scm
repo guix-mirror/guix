@@ -10004,11 +10004,14 @@ directories.")
          (base32
           "0vjfsn1a8zvqhnrbygrz1id6yckwv1dncw3w4zj65qdx0f00kmln"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-wincolor" ,rust-wincolor-1.0))))
     (home-page "https://github.com/BurntSushi/termcolor")
     (synopsis "Library for writing colored text to a terminal")
     (description "This package provides a simple cross platform library for
 writing colored text to a terminal.")
-    (properties '((hidden? . #t)))
     (license (list license:unlicense
                    license:expat))))
 
