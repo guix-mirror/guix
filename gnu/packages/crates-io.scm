@@ -3794,7 +3794,7 @@ useful types and distributions, and some randomness-related algorithms.")
          (base32
           "0p2x8nr00hricpi2m6ca5vysiha7ybnghz79yqhhx6sl4gkfkxyb"))))
     (build-system cargo-build-system)
-    (home-page "https://crates.io/crates/rand_xorshift")
+    (home-page "https://crates.io/crates/rand-xorshift")
     (synopsis "Xorshift random number generator")
     (description
       "Xorshift random number generator")
