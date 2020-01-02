@@ -5,7 +5,7 @@
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2014 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.org>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -249,7 +249,7 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
 (define-public mg
   (package
     (name "mg")
-    (version "20180408")
+    (version "20180927")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -258,7 +258,7 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "06w86xk7sjl2x2h3z6msn8kpmwj05qdimcym77wzhz5s94dzh1bl"))
+                "14vrm8lvwksf697sqks7xfd1xaqjlqjc9afjk33sksq5p27wr203"))
               (modules '((guix build utils)))
               (snippet '(begin
                           (substitute* "GNUmakefile"
