@@ -70,7 +70,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages assembly)
   #:use-module (gnu packages rust)
-  #:use-module (gnu packages rust-cbindgen)
+  #:use-module (gnu packages rust-apps)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages icu4c)
