@@ -1294,7 +1294,7 @@ colorization.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-term" ,rust-term-0.5.1))))
+       (("rust-term" ,rust-term-0.5))))
     (home-page "https://github.com/rust-lang/rust-clippy")
     (synopsis
      "Lints to avoid common pitfalls in Rust")
@@ -9951,23 +9951,6 @@ directories.")
     (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
-
-(define-public rust-term-0.5.1
-  (package
-    (inherit rust-term-0.5)
-    (name "rust-term")
-    (version "0.5.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "term" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "0qbmqd8jbjlqr4608qdmvp6yin5ypifzi5s2xyhlw8g8s5ynfssy"))))
-    (arguments `(#:skip-build? #t))
-    (properties '())))
 
 (define-public rust-term-0.4
   (package
