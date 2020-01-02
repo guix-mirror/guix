@@ -7930,7 +7930,7 @@ distribution, primarily targeting Clojure users")
 (define-public emacs-orgalist
   (package
     (name "emacs-orgalist")
-    (version "1.10")
+    (version "1.11")
     (source
      (origin
        (method url-fetch)
@@ -7938,7 +7938,7 @@ distribution, primarily targeting Clojure users")
                            "orgalist-" version ".el"))
        (sha256
         (base32
-         "1m97m53d4sl7lvjk4nhcxkm3qv8zcvgfrfzkjgaxavf5ci7p4wb7"))))
+         "0zbqkk540rax32s8szp5zgz3a02zw88fc1dmjmyw6h3ls04m91kl"))))
     (build-system emacs-build-system)
     (home-page "http://elpa.gnu.org/packages/orgalist.html")
     (synopsis "Manage Org-like lists in non-Org buffers")
