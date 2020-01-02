@@ -8094,11 +8094,14 @@ uses finite automata and guarantees linear time matching on all inputs.")
          (base32
           "0p47lf38yj2g2fnmvnraccqlxwk35zr76hlnqi8yva932nzqam6d"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-ucd-util" ,rust-ucd-util-0.1))))
     (home-page "https://github.com/rust-lang/regex")
     (synopsis "Regular expression parser")
     (description
      "This package provides a regular expression parser.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
