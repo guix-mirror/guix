@@ -8837,11 +8837,21 @@ proven statistical guarantees.")
          (base32
           "1hipk84x40454mf599752mi7l08wb8qakz8vd6d3zp57d0mfnwig"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-indexmap" ,rust-indexmap-1.0)
+        ("rust-itoa" ,rust-itoa-0.4)
+        ("rust-ryu" ,rust-ryu-1.0)
+        ("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-serde-bytes" ,rust-serde-bytes-0.11)
+        ("rust-serde-derive" ,rust-serde-derive-1.0)
+        ("rust-trybuild" ,rust-trybuild-1.0))))
     (home-page "https://github.com/serde-rs/json")
     (synopsis "A JSON serialization file format")
     (description
      "This package provides a JSON serialization file format.")
-    (properties '((hidden? . #t)))
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-serde-test-1.0
