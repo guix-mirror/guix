@@ -13,6 +13,7 @@
 ;;; Copyright © 2018, 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +32,7 @@
 
 (define-module (gnu packages ocaml)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
@@ -5177,3 +5179,34 @@ Text inside doc comments is marked up in ocamldoc syntax.  Odoc's main
 advantage over ocamldoc is an accurate cross-referencer, which handles the
 complexity of the OCaml module system.")
     (license license:isc)))
+
+(define-public ocaml-lacaml
+  (package
+    (name "ocaml-lacaml")
+    (version "11.0.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mmottl/lacaml.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "180yb79a3qgx067qcpm50q12hrimjygf06rgkzbish9d1zfm670c"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:tests? #f)) ; No test target.
+    (native-inputs
+     `(("openblas" ,openblas)
+       ("lapack" ,lapack)
+       ("ocaml-base" ,ocaml-base)
+       ("ocaml-stdio" ,ocaml-stdio)))
+    (home-page "https://mmottl.github.io/lacaml/")
+    (synopsis
+     "OCaml-bindings to BLAS and LAPACK")
+    (description
+     "Lacaml interfaces the BLAS-library (Basic Linear Algebra Subroutines) and
+LAPACK-library (Linear Algebra routines).  It also contains many additional
+convenience functions for vectors and matrices.")
+    (license license:lgpl2.1)))
