@@ -8213,3 +8213,20 @@ visualization.")
 
 (define-public ecl-cl-ana.int-char
   (sbcl-package->ecl-package sbcl-cl-ana.int-char))
+
+(define-public sbcl-cl-ana.memoization
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.memoization")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "memoization/cl-ana.memoization.asd")
+       ((#:asd-system-name _ #f) "cl-ana.memoization")))))
+
+(define-public cl-ana.memoization
+  (sbcl-package->cl-source-package sbcl-cl-ana.memoization))
+
+(define-public ecl-cl-ana.memoization
+  (sbcl-package->ecl-package sbcl-cl-ana.memoization))
