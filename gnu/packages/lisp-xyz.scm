@@ -7404,3 +7404,38 @@ functions for arrays and vectors.  Originally from Plump.")
 
 (define-public cl-array-utils
   (sbcl-package->cl-source-package sbcl-array-utils))
+
+(define-public sbcl-plump
+  (let ((commit "16f1231bf706cfbc54d9e55a853ca945e4452a08")
+        (revision "0"))
+    (package
+      (name "sbcl-plump")
+      (version (git-version "2.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/Shinmera/plump")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0705k8pbip51v74rccgwscwph439f2pma9f915qf1h4bhjx999ip"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("array-utils" ,sbcl-array-utils)
+         ("documentation-utils" ,sbcl-documentation-utils)))
+      (synopsis "Lenient XML / XHTML / HTML parser for Common Lisp")
+      (description
+       "Plump is a parser for HTML/XML-like documents, focusing on being
+lenient towards invalid markup.  It can handle things like invalid attributes,
+bad closing tag order, unencoded entities, inexistent tag types, self-closing
+tags and so on.  It parses documents to a class representation and offers a
+small set of DOM functions to manipulate it.  It can be extended to parse to
+your own classes.")
+      (home-page "https://shinmera.github.io/plump/")
+      (license license:zlib))))
+
+(define-public cl-plump
+  (sbcl-package->cl-source-package sbcl-plump))
