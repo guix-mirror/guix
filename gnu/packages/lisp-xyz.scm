@@ -8723,3 +8723,18 @@ visualization.")
 
 (define-public cl-ana.makeres
   (sbcl-package->cl-source-package sbcl-cl-ana.makeres))
+
+(define-public sbcl-cl-ana.makeres-macro
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.makeres-macro")
+    (inputs
+     `(("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
+       ("cl-ana.makeres" ,sbcl-cl-ana.makeres)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "makeres-macro/cl-ana.makeres-macro.asd")
+       ((#:asd-system-name _ #f) "cl-ana.makeres-macro")))))
+
+(define-public cl-ana.makeres-macro
+  (sbcl-package->cl-source-package sbcl-cl-ana.makeres-macro))
