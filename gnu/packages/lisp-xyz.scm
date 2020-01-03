@@ -8230,3 +8230,27 @@ visualization.")
 
 (define-public ecl-cl-ana.memoization
   (sbcl-package->ecl-package sbcl-cl-ana.memoization))
+
+(define-public sbcl-cl-ana.typespec
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.typespec")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("cffi" ,sbcl-cffi)
+       ("cl-ana.int-char" ,sbcl-cl-ana.int-char)
+       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
+       ("cl-ana.memoization" ,sbcl-cl-ana.memoization)
+       ("cl-ana.string-utils" ,sbcl-cl-ana.string-utils)
+       ("cl-ana.symbol-utils" ,sbcl-cl-ana.symbol-utils)
+       ("cl-ana.tensor" ,sbcl-cl-ana.tensor)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "typespec/cl-ana.typespec.asd")
+       ((#:asd-system-name _ #f) "cl-ana.typespec")))))
+
+(define-public cl-ana.typespec
+  (sbcl-package->cl-source-package sbcl-cl-ana.typespec))
+
+(define-public ecl-cl-ana.typespec
+  (sbcl-package->ecl-package sbcl-cl-ana.typespec))
