@@ -1733,7 +1733,7 @@ is subjective.")
 (define-public tuxguitar
   (package
     (name "tuxguitar")
-    (version "1.5.2")
+    (version "1.5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1741,7 +1741,7 @@ is subjective.")
                     version "/tuxguitar-" version "-src.tar.gz"))
               (sha256
                (base32
-                "10arfpgm2pw7mn922klklzn05lw5ifqx070shdrar81afmkfbbd9"))))
+                "1qy5kjcsl3c86kdlyvsf6dsfmfl1mv8zg0ln6g3qg3i8f35vlpp6"))))
     (build-system ant-build-system)
     (arguments
      `(#:build-target "build"
