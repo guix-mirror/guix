@@ -8171,3 +8171,30 @@ visualization.")
 
 (define-public ecl-cl-ana.table-utils
   (sbcl-package->ecl-package sbcl-cl-ana.table-utils))
+
+(define-public sbcl-cl-ana.hdf-cffi
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.hdf-cffi")
+    (inputs
+     `(("cffi" ,sbcl-cffi)
+       ("hdf5" ,hdf5-parallel-openmpi)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "hdf-cffi/cl-ana.hdf-cffi.asd")
+       ((#:asd-system-name _ #f) "cl-ana.hdf-cffi")
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "hdf-cffi/hdf-cffi.lisp"
+                 (("/usr/lib/i386-linux-gnu/hdf5/serial/libhdf5.so")
+                  (string-append
+                   (assoc-ref inputs "hdf5")
+                   "/lib/libhdf5.so")))))))))))
+
+(define-public cl-ana.hdf-cffi
+  (sbcl-package->cl-source-package sbcl-cl-ana.hdf-cffi))
+
+(define-public ecl-cl-ana.hdf-cffi
+  (sbcl-package->ecl-package sbcl-cl-ana.hdf-cffi))
