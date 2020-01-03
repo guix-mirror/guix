@@ -7251,3 +7251,32 @@ path, maximum flow, minimum spanning tree, etc.).")
        ((#:asd-file _ "") "graph.json.asd")
        ((#:asd-system-name _ #f) "graph-json")))
     (synopsis "Serialize graphs to and from JSON format")))
+
+(define-public sbcl-trivial-indent
+  (let ((commit "2d016941751647c6cc5bd471751c2cf68861c94a")
+        (revision "0"))
+    (package
+      (name "sbcl-trivial-indent")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/Shinmera/trivial-indent")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1sj90nqz17w4jq0ixz00gb9g5g6d2s7l8r17zdby27gxxh51w266"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Simple Common Lisp library to allow indentation hints for SWANK")
+      (description
+       "This library allows you to define custom indentation hints for your
+macros if the one recognised by SLIME automatically produces unwanted
+results.")
+      (home-page "https://shinmera.github.io/trivial-indent/")
+      (license license:zlib))))
+
+(define-public cl-trivial-indent
+  (sbcl-package->cl-source-package sbcl-trivial-indent))
