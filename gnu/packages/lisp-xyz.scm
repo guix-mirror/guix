@@ -8254,3 +8254,27 @@ visualization.")
 
 (define-public ecl-cl-ana.typespec
   (sbcl-package->ecl-package sbcl-cl-ana.typespec))
+
+(define-public sbcl-cl-ana.hdf-typespec
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.hdf-typespec")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("cffi" ,sbcl-cffi)
+       ("cl-ana.hdf-cffi" ,sbcl-cl-ana.hdf-cffi)
+       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
+       ("cl-ana.memoization" ,sbcl-cl-ana.memoization)
+       ("cl-ana.string-utils" ,sbcl-cl-ana.string-utils)
+       ("cl-ana.symbol-utils" ,sbcl-cl-ana.symbol-utils)
+       ("cl-ana.typespec" ,sbcl-cl-ana.typespec)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "hdf-typespec/cl-ana.hdf-typespec.asd")
+       ((#:asd-system-name _ #f) "cl-ana.hdf-typespec")))))
+
+(define-public cl-ana.hdf-typespec
+  (sbcl-package->cl-source-package sbcl-cl-ana.hdf-typespec))
+
+(define-public ecl-cl-ana.hdf-typespec
+  (sbcl-package->ecl-package sbcl-cl-ana.hdf-typespec))
