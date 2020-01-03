@@ -7372,3 +7372,35 @@ Each test can contain a bunch of test forms that make up its body.")
 
 (define-public cl-parachute
   (sbcl-package->cl-source-package sbcl-parachute))
+
+(define-public sbcl-array-utils
+  (let ((commit "f90eb9070d0b2205af51126a35033574725e5c56")
+        (revision "0"))
+    (package
+      (name "sbcl-array-utils")
+      (version (git-version "1.1.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/Shinmera/array-utils")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0zhwfbpr53vs1ii4sx75dz2k9yhh1xpwdqqpg8nmfndxkmhpbi3x"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("parachute" ,sbcl-parachute)))
+      (inputs
+       `(("documentation-utils" ,sbcl-documentation-utils)))
+      (synopsis "Tiny collection of array and vector utilities for Common Lisp")
+      (description
+       "A miniature toolkit that contains some useful shifting/popping/pushing
+functions for arrays and vectors.  Originally from Plump.")
+      (home-page "https://shinmera.github.io/array-utils/")
+      (license license:zlib))))
+
+(define-public cl-array-utils
+  (sbcl-package->cl-source-package sbcl-array-utils))
