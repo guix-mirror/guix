@@ -8111,3 +8111,22 @@ visualization.")
 
 (define-public cl-ana.error-propogation
   (sbcl-package->cl-source-package sbcl-cl-ana.error-propogation))
+
+(define-public sbcl-cl-ana.quantity
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.quantity")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("cl-ana.error-propogation" ,sbcl-cl-ana.error-propogation)
+       ("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
+       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
+       ("cl-ana.macro-utils" ,sbcl-cl-ana.macro-utils)
+       ("cl-ana.symbol-utils" ,sbcl-cl-ana.symbol-utils)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "quantity/cl-ana.quantity.asd")
+       ((#:asd-system-name _ #f) "cl-ana.quantity")))))
+
+(define-public cl-ana.quantity
+  (sbcl-package->cl-source-package sbcl-cl-ana.quantity))
