@@ -22044,6 +22044,9 @@ The local NFSv4 domain name.
 This must be a string or @code{#f}.
 If it is @code{#f} then the daemon will use the host's fully qualified domain name.
 
+@item @code{verbosity} (default: @code{0})
+The verbosity level of the daemon.
+
 @end table
 @end deftp
 

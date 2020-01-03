@@ -167,7 +167,9 @@
   (domain                idmap-configuration-domain
                          (default #f))
   (nfs-utils             idmap-configuration-nfs-utils
-                         (default nfs-utils)))
+                         (default nfs-utils))
+  (verbosity             idmap-configuration-verbosity
+                         (default 0)))
 
 (define idmap-service-type
   (let ((proc
@@ -185,6 +187,10 @@
              (plain-file "idmapd.conf"
                          (string-append
                           "\n[General]\n"
+                          "Verbosity = "
+                          (number->string
+                           (idmap-configuration-verbosity config))
+                          "\n"
                           (if domain
                               (format #f "Domain = ~a\n" domain)
                               "")
