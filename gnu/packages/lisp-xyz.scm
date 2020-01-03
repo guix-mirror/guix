@@ -8814,3 +8814,22 @@ visualization.")
 
 (define-public cl-ana.makeres-graphviz
   (sbcl-package->cl-source-package sbcl-cl-ana.makeres-graphviz))
+
+(define-public sbcl-cl-ana.makeres-branch
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.makeres-branch")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
+       ("cl-ana.hash-table-utils" ,sbcl-cl-ana.hash-table-utils)
+       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
+       ("cl-ana.map" ,sbcl-cl-ana.map)
+       ("cl-ana.makeres" ,sbcl-cl-ana.makeres)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "makeres-branch/cl-ana.makeres-branch.asd")
+       ((#:asd-system-name _ #f) "cl-ana.makeres-branch")))))
+
+(define-public cl-ana.makeres-branch
+  (sbcl-package->cl-source-package sbcl-cl-ana.makeres-branch))
