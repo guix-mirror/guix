@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -161,7 +161,10 @@ release."
       ;; alist of attributes.
       (map (lambda (chunk)
              (description->alist (string-join chunk "\n")))
-           (chunk-lines (read-lines (http-fetch/cached url)))))))
+           (let* ((port  (http-fetch/cached url))
+                  (lines (read-lines port)))
+             (close-port port)
+             (chunk-lines lines))))))
 
 (define* (latest-bioconductor-package-version name #:optional type)
   "Return the version string corresponding to the latest release of the
@@ -206,7 +209,10 @@ from ~s: ~a (~s)~%"
                           (http-get-error-code c)
                           (http-get-error-reason c))
                   #f))
-         (description->alist (read-string (http-fetch url))))))
+         (let* ((port   (http-fetch url))
+                (result (description->alist (read-string port))))
+           (close-port port)
+           result))))
     ((bioconductor)
      ;; Currently, the bioconductor project does not offer a way to access a
      ;; package's DESCRIPTION file over HTTP, so we determine the version,
