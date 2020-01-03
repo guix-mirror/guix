@@ -8096,3 +8096,18 @@ visualization.")
 
 (define-public ecl-cl-ana.tensor
   (sbcl-package->ecl-package sbcl-cl-ana.tensor))
+
+(define-public sbcl-cl-ana.error-propogation
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.error-propogation")
+    (inputs
+     `(("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
+       ("cl-ana.math-functions" ,sbcl-cl-ana.math-functions)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "error-propogation/cl-ana.error-propogation.asd")
+       ((#:asd-system-name _ #f) "cl-ana.error-propogation")))))
+
+(define-public cl-ana.error-propogation
+  (sbcl-package->cl-source-package sbcl-cl-ana.error-propogation))
