@@ -8399,3 +8399,22 @@ visualization.")
 
 (define-public cl-ana.ntuple-table
   (sbcl-package->cl-source-package sbcl-cl-ana.ntuple-table))
+
+(define-public sbcl-cl-ana.csv-table
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.csv-table")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("antik" ,sbcl-antik)
+       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
+       ("cl-ana.table" ,sbcl-cl-ana.table)
+       ("cl-csv" ,sbcl-cl-csv)
+       ("iterate" ,sbcl-iterate)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "csv-table/cl-ana.csv-table.asd")
+       ((#:asd-system-name _ #f) "cl-ana.csv-table")))))
+
+(define-public cl-ana.csv-table
+  (sbcl-package->cl-source-package sbcl-cl-ana.csv-table))
