@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2018 Kyle Meyer <kyle@kyleam.com>
 ;;;
@@ -20,7 +20,7 @@
 
 (define-module (guix scripts substitute)
   #:use-module (guix ui)
-  #:use-module ((guix store) #:hide (close-connection))
+  #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix combinators)
   #:use-module (guix config)
@@ -37,7 +37,6 @@
                 #:select (uri-abbreviation nar-uri-abbreviation
                           (open-connection-for-uri
                            . guix:open-connection-for-uri)
-                          close-connection
                           store-path-abbreviation byte-count->string))
   #:use-module (guix progress)
   #:use-module ((guix build syscalls)
@@ -556,7 +555,7 @@ initial connection on which HTTP requests are sent."
              ;; Note that even upon "Connection: close", we can read from BODY.
              (match (assq 'connection (response-headers resp))
                (('connection 'close)
-                (close-connection p)
+                (close-port p)
                 (connect #f                       ;try again
                          (append tail (drop requests processed))
                          result))

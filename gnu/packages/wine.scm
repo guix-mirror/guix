@@ -44,6 +44,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
@@ -75,7 +76,7 @@
 (define-public wine
   (package
     (name "wine")
-    (version "4.0.2")
+    (version "4.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dl.winehq.org/wine/source/"
@@ -83,7 +84,7 @@
                                   "/wine-" version ".tar.xz"))
               (sha256
                (base32
-                "0x5x9pvhryzhq1m7i8gx5wwwj341zz05zymadlhfw5w45xlm0h4r"))))
+                "1nhgw1wm613ln9dhjm0d03zs5adcmnqr2b50p21jbmm5k2gns0i5"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gettext-minimal)
@@ -154,7 +155,7 @@
 
        #:phases
        (modify-phases %standard-phases
-         ;; Explicitely set the 32-bit version of vulkan-loader when installing
+         ;; Explicitly set the 32-bit version of vulkan-loader when installing
          ;; to i686-linux or x86_64-linux.
          ;; TODO: Add more JSON files as they become available in Mesa.
          ,@(match (%current-system)
@@ -216,7 +217,7 @@ integrate Windows applications into your desktop.")
              (string-append "libdir=" %output "/lib/wine64"))
        #:phases
        (modify-phases %standard-phases
-         ;; Explicitely set both the 64-bit and 32-bit versions of vulkan-loader
+         ;; Explicitly set both the 64-bit and 32-bit versions of vulkan-loader
          ;; when installing to x86_64-linux so both are available.
          ;; TODO: Add more JSON files as they become available in Mesa.
          ,@(match (%current-system)
@@ -390,7 +391,7 @@ integrate Windows applications into your desktop.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         ;; Explicitely set the 32-bit version of vulkan-loader when installing
+         ;; Explicitly set the 32-bit version of vulkan-loader when installing
          ;; to i686-linux or x86_64-linux.
          ;; TODO: Add more JSON files as they become available in Mesa.
          ,@(match (%current-system)
@@ -463,7 +464,7 @@ integrated into the main branch.")
              (string-append "libdir=" %output "/lib/wine64"))
        #:phases
        (modify-phases %standard-phases
-         ;; Explicitely set both the 64-bit and 32-bit versions of vulkan-loader
+         ;; Explicitly set both the 64-bit and 32-bit versions of vulkan-loader
          ;; when installing to x86_64-linux so both are available.
          ;; TODO: Add more JSON files as they become available in Mesa.
          ,@(match (%current-system)
@@ -549,7 +550,7 @@ version)")
   ;; This package provides 32-bit dxvk libraries on 64-bit systems.
   (package
     (name "dxvk32")
-    (version "1.4.4")
+    (version "1.5")
     (home-page "https://github.com/doitsujin/dxvk/")
     (source (origin
               (method git-fetch)
@@ -559,7 +560,7 @@ version)")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0zr8hqyig18q4wp96cmfrkrgxxbgxida6k8cv6qbbldni29qy20w"))))
+                "009p99jkskrmy186gsqrf0p3v9z3lskw51r4vdp35af057q26a6x"))))
     (build-system meson-build-system)
     (arguments
      `(#:system "i686-linux"
@@ -567,10 +568,14 @@ version)")
                                (string-append (assoc-ref %build-inputs "source")
                                               "/build-wine32.txt"))))
     (native-inputs
-     `(("glslang" ,glslang)
-       ("wine" ,wine)))
-    (synopsis "Vulkan-based D3D11 and D3D10 implementation for Wine")
-    (description "A Vulkan-based translation layer for Direct3D 10/11 which
+     ;; Since 1.5 dxvk needs gcc-8.1.  See
+     ;; https://github.com/doitsujin/dxvk/issues/1292#issuecomment-567067373.
+     `(("gcc" ,gcc-9)
+       ("glslang" ,glslang)))
+    (inputs
+     `(("wine" ,wine-staging)))
+    (synopsis "Vulkan-based D3D9, D3D10 and D3D11 implementation for Wine")
+    (description "A Vulkan-based translation layer for Direct3D 9/10/11 which
 allows running complex 3D applications with high performance using Wine.
 
 Use @command{setup_dxvk} to install the required libraries to a Wine prefix.")
@@ -615,14 +620,15 @@ Use @command{setup_dxvk} to install the required libraries to a Wine prefix.")
                              ("x86_64-linux" "../lib32")
                              (_ "../lib")))
                  (("x64") "../lib"))))))))
-    (native-inputs
-     `(("glslang" ,glslang)))
     (inputs
      `(("wine" ,(match (%current-system)
-                  ("x86_64-linux" wine64)
+                  ;; ("x86_64-linux" wine64)
+                  ("x86_64-linux" wine64-staging)
+                  ;; ("x86_64-linux" mingw-w64-x86_64)
                   (_ wine)))
        ,@(match (%current-system)
            ("x86_64-linux"
             `(("dxvk32" ,dxvk32)))
-           (_ '()))))
+           (_ '()))
+       ))
     (supported-systems '("i686-linux" "x86_64-linux"))))

@@ -15,6 +15,7 @@
 ;;; Copyright © 2019 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright © 2019 Jesse Gildersleve <jessejohngildersleve@protonmail.com>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -821,6 +822,53 @@ compressor.  It works on data produced by @code{parse-js} to generate a
 
 (define-public cl-uglify-js
   (sbcl-package->cl-source-package sbcl-cl-uglify-js))
+
+(define-public uglify-js
+  (package
+    (inherit sbcl-cl-uglify-js)
+    (name "uglify-js")
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (let* ((bin    (string-append (assoc-ref %outputs "out") "/bin/"))
+              (script (string-append bin "uglify-js")))
+         (use-modules (guix build utils))
+         (mkdir-p bin)
+         (with-output-to-file script
+           (lambda _
+             (format #t "#!~a/bin/sbcl --script
+ (require :asdf)
+ (push (truename \"~a/lib/sbcl\") asdf:*central-registry*)"
+                     (assoc-ref %build-inputs "sbcl")
+                     (assoc-ref %build-inputs "sbcl-cl-uglify-js"))
+             ;; FIXME: cannot use progn here because otherwise it fails to
+             ;; find cl-uglify-js.
+             (for-each
+              write
+              '(;; Quiet, please!
+                (let ((*standard-output* (make-broadcast-stream))
+                      (*error-output* (make-broadcast-stream)))
+                  (asdf:load-system :cl-uglify-js))
+                (let ((file (cadr *posix-argv*)))
+                  (if file
+                      (format t "~a"
+                              (cl-uglify-js:ast-gen-code
+                               (cl-uglify-js:ast-mangle
+                                (cl-uglify-js:ast-squeeze
+                                 (with-open-file (in file)
+                                                 (parse-js:parse-js in))))
+                               :beautify nil))
+                      (progn
+                       (format *error-output*
+                               "Please provide a JavaScript file.~%")
+                       (sb-ext:exit :code 1))))))))
+         (chmod script #o755)
+         #t)))
+    (inputs
+     `(("sbcl" ,sbcl)
+       ("sbcl-cl-uglify-js" ,sbcl-cl-uglify-js)))
+    (synopsis "JavaScript compressor")))
 
 (define-public sbcl-cl-strings
   (let ((revision "1")
@@ -6651,8 +6699,8 @@ threads.")
          ((#:tests? _ #f) #f))))))
 
 (define-public sbcl-cl-store
-  (let ((commit "cd01f2610d3360dc01ab972bd9317407aaea7745")
-        (revision "0"))
+  (let ((commit "c787337a16ea8cf8a06227f35933a4ec774746b3")
+        (revision "1"))
     (package
       (name "sbcl-cl-store")
       (version (git-version "0.8.11" revision commit))
@@ -6665,7 +6713,7 @@ threads.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "05b7kh5af2ax7vlmphpac4vbqr84j5ivppj96qzb64fxpjpqglm4"))))
+           "194srkg8nrym19c6i7zbnkzshc1qhqa82m53qnkirz9fw928bqxr"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("rt" ,sbcl-rt)))
@@ -6673,7 +6721,7 @@ threads.")
       (description
        "CL-STORE is a portable serialization package which should give you the
 ability to store all Common Lisp data types into streams.")
-      (home-page "http://www.common-lisp.net/project/cl-store/")
+      (home-page "https://www.common-lisp.net/project/cl-store/")
       (license license:expat))))
 
 (define-public cl-store
@@ -7203,3 +7251,191 @@ path, maximum flow, minimum spanning tree, etc.).")
        ((#:asd-file _ "") "graph.json.asd")
        ((#:asd-system-name _ #f) "graph-json")))
     (synopsis "Serialize graphs to and from JSON format")))
+
+(define-public sbcl-trivial-indent
+  (let ((commit "2d016941751647c6cc5bd471751c2cf68861c94a")
+        (revision "0"))
+    (package
+      (name "sbcl-trivial-indent")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/Shinmera/trivial-indent")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1sj90nqz17w4jq0ixz00gb9g5g6d2s7l8r17zdby27gxxh51w266"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Simple Common Lisp library to allow indentation hints for SWANK")
+      (description
+       "This library allows you to define custom indentation hints for your
+macros if the one recognised by SLIME automatically produces unwanted
+results.")
+      (home-page "https://shinmera.github.io/trivial-indent/")
+      (license license:zlib))))
+
+(define-public cl-trivial-indent
+  (sbcl-package->cl-source-package sbcl-trivial-indent))
+
+(define-public sbcl-documentation-utils
+  (let ((commit "98630dd5f7e36ae057fa09da3523f42ccb5d1f55")
+        (revision "0"))
+    (package
+      (name "sbcl-documentation-utils")
+      (version (git-version "1.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/Shinmera/documentation-utils.git")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "098qhkqskmmrh4wix34mawf7p5c87yql28r51r75yjxj577k5idq"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("trivial-indent" ,sbcl-trivial-indent)))
+      (synopsis "Few simple tools to document Common Lisp libraries")
+      (description
+       "This is a small library to help you with managing the Common Lisp
+docstrings for your library.")
+      (home-page "https://shinmera.github.io/documentation-utils/")
+      (license license:zlib))))
+
+(define-public cl-documentation-utils
+  (sbcl-package->cl-source-package sbcl-documentation-utils))
+
+(define-public sbcl-form-fiddle
+  (let ((commit "e0c23599dbb8cff3e83e012f3d86d0764188ad18")
+        (revision "0"))
+    (package
+      (name "sbcl-form-fiddle")
+      (version (git-version "1.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/Shinmera/form-fiddle")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "041iznc9mpfyrl0sv5893ys9pbb2pvbn9g3clarqi7gsfj483jln"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("documentation-utils" ,sbcl-documentation-utils)))
+      (synopsis "Utilities to destructure Common Lisp lambda forms")
+      (description
+       "Often times we need to destructure a form definition in a Common Lisp
+macro.  This library provides a set of simple utilities to help with that.")
+      (home-page "https://shinmera.github.io/form-fiddle/")
+      (license license:zlib))))
+
+(define-public cl-form-fiddle
+  (sbcl-package->cl-source-package sbcl-form-fiddle))
+
+(define-public sbcl-parachute
+  (let ((commit "ca04dd8e43010a6dfffa26dbe1d62af86008d666")
+        (revision "0"))
+    (package
+      (name "sbcl-parachute")
+      (version (git-version "1.1.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/Shinmera/parachute")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1mvsm3r0r6a2bg75nw0q7n9vlby3ch45qjl7hnb5k1z2n5x5lh60"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("documentation-utils" ,sbcl-documentation-utils)
+         ("form-fiddle" ,sbcl-form-fiddle)))
+      (synopsis "Extensible and cross-compatible testing framework for Common Lisp")
+      (description
+       "Parachute is a simple-to-use and extensible testing framework.
+In Parachute, things are organised as a bunch of named tests within a package.
+Each test can contain a bunch of test forms that make up its body.")
+      (home-page "https://shinmera.github.io/parachute/")
+      (license license:zlib))))
+
+(define-public cl-parachute
+  (sbcl-package->cl-source-package sbcl-parachute))
+
+(define-public sbcl-array-utils
+  (let ((commit "f90eb9070d0b2205af51126a35033574725e5c56")
+        (revision "0"))
+    (package
+      (name "sbcl-array-utils")
+      (version (git-version "1.1.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/Shinmera/array-utils")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0zhwfbpr53vs1ii4sx75dz2k9yhh1xpwdqqpg8nmfndxkmhpbi3x"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("parachute" ,sbcl-parachute)))
+      (inputs
+       `(("documentation-utils" ,sbcl-documentation-utils)))
+      (synopsis "Tiny collection of array and vector utilities for Common Lisp")
+      (description
+       "A miniature toolkit that contains some useful shifting/popping/pushing
+functions for arrays and vectors.  Originally from Plump.")
+      (home-page "https://shinmera.github.io/array-utils/")
+      (license license:zlib))))
+
+(define-public cl-array-utils
+  (sbcl-package->cl-source-package sbcl-array-utils))
+
+(define-public sbcl-plump
+  (let ((commit "16f1231bf706cfbc54d9e55a853ca945e4452a08")
+        (revision "0"))
+    (package
+      (name "sbcl-plump")
+      (version (git-version "2.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/Shinmera/plump")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0705k8pbip51v74rccgwscwph439f2pma9f915qf1h4bhjx999ip"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("array-utils" ,sbcl-array-utils)
+         ("documentation-utils" ,sbcl-documentation-utils)))
+      (synopsis "Lenient XML / XHTML / HTML parser for Common Lisp")
+      (description
+       "Plump is a parser for HTML/XML-like documents, focusing on being
+lenient towards invalid markup.  It can handle things like invalid attributes,
+bad closing tag order, unencoded entities, inexistent tag types, self-closing
+tags and so on.  It parses documents to a class representation and offers a
+small set of DOM functions to manipulate it.  It can be extended to parse to
+your own classes.")
+      (home-page "https://shinmera.github.io/plump/")
+      (license license:zlib))))
+
+(define-public cl-plump
+  (sbcl-package->cl-source-package sbcl-plump))

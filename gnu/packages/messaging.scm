@@ -10,13 +10,13 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
-;;; Copyright © 2019 Brett Gilio <brettg@posteo.net>
+;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -263,15 +263,14 @@ access to servers running the Discord protocol.")
 (define-public hexchat
   (package
     (name "hexchat")
-    (version "2.14.2")
+    (version "2.14.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dl.hexchat.net/hexchat/hexchat-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "064nq151nzsljv97dmkifyl162d2738vbgvm1phx7yv04pjvk4kp"))
-              (patches (search-patches "hexchat-crash-exit.patch"))))
+                "10p829jm1r6kidkgf5lhqhyqc5mxdcq96q3zhadsckasvc9rs6lh"))))
     (build-system meson-build-system)
     (native-inputs `(("gettext" ,gettext-minimal)
                      ("glib:bin" ,glib "bin")       ;need glib-genmarshal
@@ -1245,15 +1244,14 @@ with several different talk daemons at the same time.")
 (define-public gloox
   (package
     (name "gloox")
-    (version "1.0.22")
+    (version "1.0.23")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://camaya.net/download/gloox-"
                            version ".tar.bz2"))
        (sha256
-        (base32
-         "0r69gq8if9yy1amjzl7qrq9lzhhna7qgz905ln4wvkwchha1ppja"))))
+        (base32 "12jz8glg9zmyk0iyv1ywf5i0hq93dfq8lvn6lyjgy8730w66mjwp"))))
     (build-system gnu-build-system)
     (inputs
      `(("libidn" ,libidn)
@@ -1950,9 +1948,9 @@ Telegram messenger.")
     (license license:gpl2+)))
 
 (define-public tdlib
-  (let ((commit "afca63a4f43531058a079e91eb5c81f54ad744b5")
+  (let ((commit "80c35676a2eb1e9b71db355ee217bba79fbdce31")
         (revision "1")
-        (version "1.5.0"))
+        (version "1.5.4"))
     (package
       (name "tdlib")
       (version (git-version version revision commit))
@@ -1963,11 +1961,14 @@ Telegram messenger.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1aa3p4k32mfshgc6fv58gwg8pnaix39rv455hfx6znj7llr8na6k"))
+                  "09c0pygqirapgxxzcc3sr0x67qhz8cx2klznrbdyi0118r9s8a7a"))
                 (file-name (git-file-name name version))))
       (build-system cmake-build-system)
       (arguments
        `(#:tests? #t
+         #:configure-flags
+         (list "-DCMAKE_BUILD_TYPE=Release"
+               "-DTD_ENABLE_LTO=OFF") ; FIXME: Get LTO to work.
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'remove-failing-tests

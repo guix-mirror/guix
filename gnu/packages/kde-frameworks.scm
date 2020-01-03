@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016-2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -193,12 +193,12 @@ common build settings used in software produced by the KDE community.")
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
     (inputs
      `(("qtbase" ,qtbase)
        ("phonon" ,phonon)
        ("qtbase" ,qtbase)
-       ("qttools" ,qttools)
        ("qtx11extras" ,qtx11extras)
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
@@ -3257,7 +3257,8 @@ library.")
      `(("ki18n" ,ki18n)
        ("sonnet" ,sonnet)))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)))
     (inputs
      `(("kauth" ,kauth)
        ("kcodecs" ,kcodecs)
@@ -3270,8 +3271,7 @@ library.")
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kwindowsystem" ,kwindowsystem)
        ("qtbase" ,qtbase)
-       ("qtspeech" ,qtspeech)
-       ("qttools" ,qttools)))
+       ("qtspeech" ,qtspeech)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -3494,6 +3494,45 @@ setUrl, setUserAgent and call.")
 script engines.")
     ;; dual licensed
     (license (list license:gpl2+ license:lgpl2.1+))))
+
+(define-public purpose
+  (package
+    (name "purpose")
+    (version "5.63.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1mc5z131z9da6qjhlxqz64ys4fgq38iryna58f8l04x8f9igjn8f"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(;;TODO: ("kaccounts" ,kaccounts)
+       ("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("knotifications" ,knotifications)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("kirigami" ,kirigami)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))
+    (arguments
+     `(#:tests? #f  ;; seem to require network; don't find QTQuick components
+       #:configure-flags '("-DBUILD_TESTING=OFF"))) ; not run anyway
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Offers available actions for a specific purpose")
+    (description "This framework offers the possibility to create integrate
+services and actions on any application without having to implement them
+specifically.  Purpose will offer them mechanisms to list the different
+alternatives to execute given the requested action type and will facilitate
+components so that all the plugins can receive all the information they
+need.")
+    (license license:lgpl2.1+)))
 
 ;; This version of kdbusaddons does not use kinit as an input, and is used to
 ;; build kinit-bootstrap, as well as bootstrap versions of all kinit

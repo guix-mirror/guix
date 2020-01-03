@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2019 Evan Straw <evan.straw99@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,15 +37,17 @@
 (define-public rtl-sdr
   (package
     (name "rtl-sdr")
-    (version "0.5.3")
+    (version "0.6.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://cgit.osmocom.org/rtl-sdr/snapshot/rtl-sdr-"
-                           version ".tar.xz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "git://git.osmocom.org/rtl-sdr.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "08awca3v28sa4lxym4r81pzf0la0j86wbmpyhv3xd53an9gkpjy9"))))
+         "0lmvsnb4xw4hmz6zs0z5ilsah5hjz29g1s0050n59fllskqr3b8k"))))
     (build-system cmake-build-system)
     (inputs
      `(("libusb" ,libusb)))

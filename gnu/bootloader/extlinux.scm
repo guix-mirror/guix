@@ -74,7 +74,9 @@ TIMEOUT ~a~%"
                       (format port "~%"))
                    #~())))))
 
-  (computed-file "extlinux.conf" builder))
+  (computed-file "extlinux.conf" builder
+                 #:options '(#:local-build? #t
+                             #:substitutable? #f)))
 
 
 

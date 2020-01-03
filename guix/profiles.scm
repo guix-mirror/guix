@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 Huang Ying <huang.ying.caritas@gmail.com>
 ;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -93,6 +94,7 @@
             manifest-pattern-output
 
             concatenate-manifests
+            map-manifest-entries
             manifest-remove
             manifest-add
             manifest-lookup
@@ -519,6 +521,11 @@ procedure is here for backward-compatibility and will eventually vanish."
 (define (concatenate-manifests lst)
   "Concatenate the manifests listed in LST and return the resulting manifest."
   (manifest (append-map manifest-entries lst)))
+
+(define (map-manifest-entries proc manifest)
+  "Apply PROC to all the entries of MANIFEST and return a new manifest."
+  (make-manifest
+   (map proc (manifest-entries manifest))))
 
 (define (entry-predicate pattern)
   "Return a procedure that returns #t when passed a manifest entry that
@@ -1457,6 +1464,9 @@ are cross-built for TARGET."
   (mlet* %store-monad ((system (if system
                                    (return system)
                                    (current-system)))
+                       (target (if target
+                                   (return target)
+                                   (current-target-system)))
                        (ok?    (if allow-collisions?
                                    (return #t)
                                    (check-for-collisions manifest system

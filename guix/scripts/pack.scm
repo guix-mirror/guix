@@ -319,7 +319,7 @@ to the search paths of PROFILE."
                          entry-point
                          localstatedir?
                          (symlinks '())
-                         (archiver squashfs-tools-next))
+                         (archiver squashfs-tools))
   "Return a squashfs image containing a store initialized with the closure of
 PROFILE, a derivation.  The image contains a subset of /gnu/store, empty mount
 points for virtual file systems (like procfs), and optional symlinks.
@@ -753,11 +753,6 @@ last resort for relocation."
                  (manifest-entry-output entry)
                  args))))
 
-(define (map-manifest-entries proc manifest)
-  "Apply PROC to all the entries of MANIFEST and return a new manifest."
-  (make-manifest
-   (map proc (manifest-entries manifest))))
-
 
 ;;;
 ;;; Command-line options.
@@ -979,36 +974,32 @@ Create a bundle of PACKAGE.\n"))
                                         (('manifest . file) file)
                                         (_ #f))
                                       opts)))
-      (define properties
+      (define with-provenance
         (if (assoc-ref opts 'save-provenance?)
-            (lambda (package)
-              (match (package-provenance package)
-                (#f
-                 (warning (G_ "could not determine provenance of package ~a~%")
-                          (package-full-name package))
-                 '())
-                (sexp
-                 `((provenance . ,sexp)))))
-            (const '())))
+            (lambda (manifest)
+              (map-manifest-entries
+               (lambda (entry)
+                 (let ((entry (manifest-entry-with-provenance entry)))
+                   (unless (assq 'provenance (manifest-entry-properties entry))
+                     (warning (G_ "could not determine provenance of package ~a~%")
+                              (manifest-entry-name entry)))
+                   entry))
+               manifest))
+            identity))
 
-      (cond
-       ((and (not (null? manifests)) (not (null? packages)))
-        (leave (G_ "both a manifest and a package list were given~%")))
-       ((not (null? manifests))
-        (concatenate-manifests
-         (map (lambda (file)
-                (let ((user-module (make-user-module
-                                    '((guix profiles) (gnu)))))
-                  (load* file user-module)))
-              manifests)))
-       (else
-        (manifest
-         (map (match-lambda
-                ((package output)
-                 (package->manifest-entry package output
-                                          #:properties
-                                          (properties package))))
-              packages))))))
+      (with-provenance
+       (cond
+        ((and (not (null? manifests)) (not (null? packages)))
+         (leave (G_ "both a manifest and a package list were given~%")))
+        ((not (null? manifests))
+         (concatenate-manifests
+          (map (lambda (file)
+                 (let ((user-module (make-user-module
+                                     '((guix profiles) (gnu)))))
+                   (load* file user-module)))
+               manifests)))
+        (else
+         (packages->manifest packages))))))
 
   (with-error-handling
     (with-store store
@@ -1045,7 +1036,7 @@ Create a bundle of PACKAGE.\n"))
                                   bootstrap-xz
                                   (assoc-ref opts 'compressor)))
                  (archiver    (if (equal? pack-format 'squashfs)
-                                  squashfs-tools-next
+                                  squashfs-tools
                                   (if bootstrap?
                                       %bootstrap-coreutils&co
                                       tar)))

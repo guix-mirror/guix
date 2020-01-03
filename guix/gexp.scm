@@ -1,7 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -456,7 +457,10 @@ This is the declarative counterpart of 'gexp->file'."
   ;; Compile FILE by returning a derivation that builds the file.
   (match file
     (($ <scheme-file> name gexp splice?)
-     (gexp->file name gexp #:splice? splice?))))
+     (gexp->file name gexp
+                 #:splice? splice?
+                 #:system system
+                 #:target target))))
 
 ;; Appending SUFFIX to BASE's output file name.
 (define-record-type <file-append>
@@ -1598,12 +1602,19 @@ imported modules in its search path.  Look up EXP's modules in MODULE-PATH."
                            (chmod port #o555))))
                       #:system system
                       #:target target
-                      #:module-path module-path)))
+                      #:module-path module-path
+
+                      ;; These derivations are not worth offloading or
+                      ;; substituting.
+                      #:local-build? #t
+                      #:substitutable? #f)))
 
 (define* (gexp->file name exp #:key
                      (set-load-path? #t)
                      (module-path %load-path)
-                     (splice? #f))
+                     (splice? #f)
+                     (system (%current-system))
+                     target)
   "Return a derivation that builds a file NAME containing EXP.  When SPLICE?
 is true, EXP is considered to be a list of expressions that will be spliced in
 the resulting file.
@@ -1626,10 +1637,14 @@ Lookup EXP's modules in MODULE-PATH."
                                                     exp
                                                     (gexp ((ungexp exp)))))))))
                         #:local-build? #t
-                        #:substitutable? #f)
+                        #:substitutable? #f
+                        #:system system
+                        #:target target)
       (mlet %store-monad ((set-load-path
                            (load-path-expression modules module-path
-                                                 #:extensions extensions)))
+                                                 #:extensions extensions
+                                                 #:system system
+                                                 #:target target)))
         (gexp->derivation name
                           (gexp
                            (call-with-output-file (ungexp output)
@@ -1642,7 +1657,9 @@ Lookup EXP's modules in MODULE-PATH."
                                                       (gexp ((ungexp exp)))))))))
                           #:module-path module-path
                           #:local-build? #t
-                          #:substitutable? #f))))
+                          #:substitutable? #f
+                          #:system system
+                          #:target target))))
 
 (define* (text-file* name #:rest text)
   "Return as a monadic value a derivation that builds a text file containing

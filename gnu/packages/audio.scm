@@ -13,7 +13,7 @@
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2018 Brett Gilio <brettg@posteo.net>
+;;; Copyright © 2018 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
@@ -26,6 +26,8 @@
 ;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2019 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
+;;; Copyright © 2019 Hartmt Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -466,6 +468,54 @@ engineers, musicians, soundtrack editors and composers.")
 and editing digital audio.  It features digital effects and spectrum analysis
 tools.")
     (license license:gpl2+)))
+
+(define-public audiofile
+  (package
+    (name "audiofile")
+    (version "0.3.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://audiofile.68k.org/audiofile-" version ".tar.gz"))
+       (sha256
+        (base32 "0rb927zknk9kmhprd8rdr4azql4gn2dp75a36iazx2xhkbqhvind"))
+       (patches
+        ;; CVE references according to nixpgs
+        (search-patches
+         "audiofile-fix-datatypes-in-tests.patch"
+         "audiofile-fix-sign-conversion.patch"
+         "audiofile-hurd.patch"
+         "audiofile-CVE-2015-7747.patch"
+         ;; CVE-2017-6829:
+         "audiofile-Fix-index-overflow-in-IMA.cpp.patch"
+         ;; CVE-2017-6827, CVE-2017-6828, CVE-2017-6832, CVE-2017-6835,
+         ;; CVE-2017-6837:
+         "audiofile-Check-the-number-of-coefficients.patch"
+         ;; CVE-2017-6839:
+         "audiofile-Fix-overflow-in-MSADPCM-decodeSam.patch"
+         ;; CVE-2017-6830, CVE-2017-6834, CVE-2017-6836, CVE-2017-6838:
+         "audiofile-Fix-multiply-overflow-sfconvert.patch"
+         "audiofile-signature-of-multiplyCheckOverflow.patch"
+         ;; CVE-2017-6831:
+         "audiofile-Fail-on-error-in-parseFormat.patch"
+         ;; CVE-2017-6833:
+         "audiofile-division-by-zero-BlockCodec-runPull.patch"
+         "audiofile-CVE-2018-13440.patch"
+         "audiofile-CVE-2018-17095.patch"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("alsa-lib" ,alsa-lib)))
+    (home-page "https://audiofile.68k.org/")
+    (synopsis "Library to handle various audio file formats")
+    (description "This is an open-source version of SGI's audiofile library.
+It provides a uniform programming interface for processing of audio data to
+and from audio files of many common formats.
+
+Currently supported file formats include AIFF/AIFF-C, WAVE, and NeXT/Sun
+.snd/.au, BICS, and raw data.  Supported compression formats are currently
+G.711 mu-law and A-law.")
+    (license license:lgpl2.1+)))
 
 (define-public autotalent
   (package
@@ -1111,7 +1161,7 @@ follower.")
 (define-public fluidsynth
   (package
     (name "fluidsynth")
-    (version "2.0.9")
+    (version "2.1.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1120,7 +1170,7 @@ follower.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "08bhwv0gw7zq1z0b36m2dzxl6zcgvmvaa60nly2wif7rinkprp5n"))))
+                "0jhla1641rx77va4b6n4shn8srj87rpwvp170byj1bg8z8g89ji1"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
@@ -2823,8 +2873,14 @@ portions of LAME.")
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
     (arguments
-     '(#:tests? #f                    ;no 'check' target
-       #:configure-flags '("--with-pic")
+     '(#:tests? #f                      ;no 'check' target
+       #:parallel-build? #f             ;fails on some systems
+       #:configure-flags '("--with-pic"
+                           "--enable-cxx"
+                           ;; XXX: The following prevents a build error
+                           ;; because of missing depcomp when C++ bindings are
+                           ;; requested.
+                           "--disable-dependency-tracking")
        #:phases
        (modify-phases %standard-phases
          ;; This is needed for linking the static libraries
@@ -3351,7 +3407,7 @@ mixers.")
                             "/lib/alsa-lib")
              (string-append "--with-dbusconfdir="
                             (assoc-ref %outputs "out")
-                            "/etc/dbus-1"))))
+                            "/etc/dbus-1/system.d"))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)

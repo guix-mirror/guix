@@ -4,7 +4,7 @@
 ;;; Copyright © 2017, 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018, 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
@@ -43,6 +43,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (gnu packages)
   #:use-module (gnu packages astronomy)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
@@ -60,6 +61,7 @@
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages java)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -77,7 +79,7 @@
 (define-public geos
   (package
     (name "geos")
-    (version "3.7.1")
+    (version "3.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.osgeo.org/geos/geos-"
@@ -85,7 +87,7 @@
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1312m02xk4sp6f1xdpb9w0ic0zbxg90p5y66qnwidl5fksscf1h0"))))
+                "1mb2v9fy1gnbjhcgv0xny11ggfb17vkzsajdyibigwsxr4ylq4cr"))))
     (build-system gnu-build-system)
     (arguments `(#:phases
                  (modify-phases %standard-phases
@@ -227,32 +229,30 @@ and driving.")
 (define-public libgeotiff
   (package
     (name "libgeotiff")
-    (version "1.4.3")
+    (version "1.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://download.osgeo.org/geotiff/libgeotiff/libgeotiff-"
                            version ".tar.gz"))
+       (patches (search-patches
+                 ;; See libgeotiff 1.5.1 issue
+                 ;; https://github.com/OSGeo/libgeotiff/issues/22
+                 "libgeotiff-adapt-test-script-for-proj-6.2.patch"))
        (sha256
-        (base32 "0rbjqixi4c8yz19larlzq6jda0px2gpmpp9c52cyhplbjsdhsldq"))
+        (base32 "0b31mlzcv5b1y7jdvb7p0pa3xradrg3x5g32ym911lbhq4rrgsgr"))
        (modules '((guix build utils)))
        (snippet
         '(begin
            ;; Remove .csv files, distributed from EPSG under a restricted
            ;; license. See LICENSE for full license text.
            (for-each delete-file (find-files "." "\\.csv$"))
-           ;; Now that we have removed the csv files, we need to modify the Makefile.
-           (substitute* "Makefile.in"
-             (("^all-am: .*$")
-              "all-am: Makefile $(LTLIBRARIES) $(HEADERS) geo_config.h\n")
-             (("^install-data-am: .*$")
-              "install-data-am: install-includeHEADERS"))
            #t))))
     (build-system gnu-build-system)
     (inputs
      `(("libjpeg-turbo" ,libjpeg-turbo)
        ("libtiff" ,libtiff)
-       ("proj.4" ,proj.4)
+       ("proj" ,proj)
        ("zlib" ,zlib)))
     (arguments
      `(#:configure-flags
@@ -320,6 +320,39 @@ fully fledged Spatial SQL capabilities.")
                    license:lgpl2.1+
                    license:mpl1.1
                    license:public-domain))))
+
+(define-public proj
+  (package
+    (name "proj")
+    (version "6.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.osgeo.org/proj/proj-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0l1as8f4zfg74fms6h5p5psziw0lpznja1xnirzsscpnfbwc005k"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("sqlite" ,sqlite)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://proj.org/")
+    (synopsis "Coordinate transformation software")
+    (description
+     "Proj is a generic coordinate transformation software that transforms
+geospatial coordinates from one coordinate reference system (CRS) to another.
+This includes cartographic projections as well as geodetic transformations.
+PROJ includes command line applications for easy conversion of coordinates
+from text files or directly from user input.  In addition, proj also exposes
+an application programming interface that lets developers use the
+functionality of proj in their own software.")
+    (license (list license:expat
+                   ;; src/projections/patterson.cpp
+                   license:asl2.0
+                   ;; src/geodesic.*, src/tests/geodtest.cpp
+                   license:x11))))
 
 (define-public proj.4
   (package
@@ -534,7 +567,7 @@ development.")
 (define-public gdal
   (package
     (name "gdal")
-    (version "2.2.4")
+    (version "3.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -542,7 +575,7 @@ development.")
                      version ".tar.gz"))
               (sha256
                (base32
-                "1951f7b69x3d1vic0rmq92q8f4bj3hbxnxmj5jl0cc3zg0isgmdr"))
+                "0f80izh9wshrsw55kg9abpip74hk6frk3hgqrkqbyn3f6i8g2z3q"))
               (modules '((guix build utils)))
               (snippet
                 `(begin
@@ -576,6 +609,8 @@ development.")
            (with "--with-libtiff" "libtiff")
            (with "--with-geotiff" "libgeotiff")
            (with "--with-libz" "zlib")
+           (with "--with-expat" "expat")
+           (with "--with-sqlite3" "sqlite")
            "--with-pcre"))
        #:phases
        (modify-phases %standard-phases
@@ -584,7 +619,8 @@ development.")
              (substitute* "frmts/mrf/mrf_band.cpp"
                (("\"../zlib/zlib.h\"") "<zlib.h>")))))))
     (inputs
-     `(("freexl" ,freexl)
+     `(("expat" ,expat)
+       ("freexl" ,freexl)
        ("geos" ,geos)
        ("giflib" ,giflib)
        ("json-c" ,json-c)
@@ -593,9 +629,12 @@ development.")
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)
        ("libwebp" ,libwebp)
+       ("netcdf" ,netcdf)
        ("pcre" ,pcre)
+       ("proj" ,proj)
+       ("sqlite" ,sqlite)
        ("zlib" ,zlib)))
-    (home-page "http://www.gdal.org/")
+    (home-page "https://gdal.org/")
     (synopsis "Raster and vector geospatial data format library")
     (description "GDAL is a translator library for raster and vector geospatial
 data formats.  As a library, it presents a single raster abstract data model
@@ -645,14 +684,14 @@ utilities for data translation and processing.")
 (define-public postgis
   (package
     (name "postgis")
-    (version "2.4.8")
+    (version "3.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.osgeo.org/postgis/source/postgis-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0nanza15xzfhbpbq49p1xqz96dgbsam5332y9zj6snmz2mq685ll"))))
+                "15557fbk0xkngihwhqsbdyz2ng49blisf5zydw81j0gabk6x4vy0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -671,10 +710,12 @@ utilities for data translation and processing.")
     (inputs
      `(("gdal" ,gdal)
        ("geos" ,geos)
+       ("json-c" ,json-c)
+       ("libjpeg" ,libjpeg-turbo)
        ("libxml2" ,libxml2)
        ("pcre" ,pcre)
        ("postgresql" ,postgresql)
-       ("proj.4" ,proj.4)))
+       ("proj" ,proj)))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)))
@@ -1012,16 +1053,17 @@ volunteers.")
 (define-public libspatialindex
   (package
     (name "libspatialindex")
-    (version "1.8.5")
+    (version "1.9.3")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://download.osgeo.org/libspatialindex/"
-                           "spatialindex-src-" version ".tar.gz"))
+       (uri (string-append "https://github.com/libspatialindex/libspatialindex/"
+                           "releases/download/" version "/spatialindex-src-"
+                           version ".tar.bz2"))
        (sha256
         (base32
-         "1vxzm7kczwnb6qdmc0hb00z8ykx11zk3sb68gc7rch4vrfi4dakw"))))
-    (build-system gnu-build-system)
+         "02n5vjcyk04w0djidyp21hfbxfpbbara8ifd9nml6158rwqr8lja"))))
+    (build-system cmake-build-system)
     (home-page "https://libspatialindex.org")
     (synopsis "Spatial indexing library")
     (description "The purpose of this library is to provide:

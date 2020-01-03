@@ -3,6 +3,7 @@
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,8 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system linux-module)
+  #:use-module (guix build-system trivial)
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
@@ -40,7 +43,9 @@
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages nfs)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -56,8 +61,8 @@
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/httpfs/" name "/"
-                           name "-" version ".tar.gz"))
+       (uri (string-append "mirror://sourceforge/httpfs/httpfs2/"
+                           "httpfs2-" version ".tar.gz"))
        (sha256
         (base32
          "1h8ggvhw30n2r6w11n1s458ypggdqx6ldwd61ma4yd7binrlpjq1"))))
@@ -106,6 +111,81 @@ ISO images when you only need to inspect their contents or extract specific
 files.  Since the HTTP protocol itself has no notion of directories, only a
 single file can be mounted.")
     (license license:gpl2+)))
+
+(define-public jfsutils
+  (package
+    (name "jfsutils")
+    (version "1.1.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://jfs.sourceforge.net/project/pub/jfsutils-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "0kbsy2sk1jv4m82rxyl25gwrlkzvl3hzdga9gshkxkhm83v1aji4"))
+       (patches (search-patches "jfsutils-add-sysmacros.patch"
+                                "jfsutils-include-systypes.patch"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("util-linux" ,util-linux)))
+    (home-page "http://jfs.sourceforge.net/home.html")
+    (synopsis "Utilities for managing JFS file systems")
+    (description
+     "The JFSutils are a collection of utilities for managing the @acronym{JFS,
+Journaled File System}, a 64-bit journaling file system created by IBM and later
+ported to the kernel Linux.  The following commands are available:
+@enumerate
+@item @command{fsck.jfs}: check and repair a JFS file system or replay its
+transaction log.
+@item @command{logdump}: dump the JFS journal log.
+@item @command{logredo}: replay the JFS journal log.
+@item @command{mkfs.jfs}: create a new JFS file system.
+@item @command{xchklog}: save a JFS fsck log to a file.
+@item @command{xchkdmp}: dump the contents of such a log file.
+@item @command{xpeek}: a JFS file system editor with a shell-like interface.
+@end enumerate\n")
+    (license license:gpl3+)))          ; no explicit version given
+
+(define-public jfsutils/static
+  (static-package
+   (package
+     (inherit jfsutils)
+     (name "jfsutils-static")
+     (inputs
+      `(("util-linux:static" ,util-linux "static")
+        ,@(package-inputs jfsutils))))))
+
+(define-public jfs_fsck/static
+  (package
+    (name "jfs_fsck-static")
+    (version (package-version jfsutils))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 ftw)
+                      (srfi srfi-26))
+         (let* ((jfsutils (assoc-ref %build-inputs "jfsutils"))
+                (fsck     "jfs_fsck")
+                (out      (assoc-ref %outputs "out"))
+                (sbin     (string-append out "/sbin")))
+           (mkdir-p sbin)
+           (with-directory-excursion sbin
+             (install-file (string-append jfsutils "/sbin/" fsck)
+                           ".")
+             (remove-store-references fsck)
+             (chmod fsck #o555))
+           #t))))
+    (inputs
+     `(("jfsutils" ,jfsutils/static)))
+    (home-page (package-home-page jfsutils))
+    (synopsis "Statically-linked jfs_fsck command from jfsutils")
+    (description "This package provides statically-linked jfs_fsck command taken
+from the jfsutils package.  It is meant to be used in initrds.")
+    (license (package-license jfsutils))))
 
 (define-public disorderfs
   (package
@@ -322,3 +402,113 @@ to read all files, and it does not support all the compression methods in
 APFS.")
       (home-page "https://github.com/sgan81/apfs-fuse")
       (license license:gpl2+))))
+
+(define-public zfs
+  (package
+    (name "zfs")
+    (version "0.8.2")
+    (outputs '("out" "module" "src"))
+    (source
+      (origin
+        (method url-fetch)
+          (uri (string-append "https://github.com/zfsonlinux/zfs/releases"
+                              "/download/zfs-" version
+                              "/zfs-" version ".tar.gz"))
+          (sha256
+           (base32
+            "1f7aig15q3z832pr2n48j3clafic2yk1vvqlh28vpklfghjqwq27"))))
+    (build-system linux-module-build-system)
+    (arguments
+     `(;; The ZFS kernel module should not be downloaded since the license
+       ;; terms don't allow for distributing it, only building it locally.
+       #:substitutable? #f
+       ;; Tests cannot run in an unprivileged build environment.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'really-configure
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "configure"
+                 (("-/bin/sh") (string-append "-" (which "sh")))
+                 ((" /bin/sh") (string-append " " (which "sh"))))
+               (invoke "./configure"
+                       "--with-config=all"
+                       (string-append "--prefix=" out)
+                       (string-append "--with-dracutdir=" out "/lib/dracut")
+                       (string-append "--with-udevdir=" out "/lib/udev")
+                       (string-append "--with-mounthelperdir=" out "/sbin")
+                       (string-append "--with-linux="
+                                      (assoc-ref inputs "linux-module-builder")
+                                      "/lib/modules/build")))))
+         (add-after 'unpack 'patch-source
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out        (assoc-ref outputs "out"))
+                   (src        (assoc-ref outputs "src"))
+                   (util-linux (assoc-ref inputs "util-linux"))
+                   (nfs-utils  (assoc-ref inputs "nfs-utils")))
+               (substitute* "module/zfs/zfs_ctldir.c"
+                 (("/usr/bin/env\", \"umount")
+                  (string-append util-linux "/bin/umount\", \"-n"))
+                 (("/usr/bin/env\", \"mount")
+                  (string-append util-linux "/bin/mount\", \"-n")))
+               (substitute* "lib/libzfs/libzfs_mount.c"
+                 (("/bin/mount") (string-append util-linux "/bin/mount"))
+                 (("/bin/umount") (string-append util-linux "/bin/umount")))
+               (substitute* "lib/libshare/nfs.c"
+                 (("/usr/sbin/exportfs")
+                  (string-append nfs-utils "/sbin/exportfs")))
+               (substitute* "config/zfs-build.m4"
+                 (("\\$sysconfdir/init.d") (string-append out "/etc/init.d")))
+               (substitute* '("etc/zfs/Makefile.am"
+                              "cmd/zed/Makefile.am")
+                 (("\\$\\(sysconfdir)") (string-append out "/etc")))
+               (substitute* "cmd/vdev_id/vdev_id"
+                 (("PATH=/bin:/sbin:/usr/bin:/usr/sbin")
+                  (string-append "PATH="
+                                 (dirname (which "chmod")) ":"
+                                 (dirname (which "grep")) ":"
+                                 (dirname (which "sed")) ":"
+                                 (dirname (which "gawk")))))
+               (substitute* "contrib/pyzfs/Makefile.in"
+                 ((".*install-lib.*") ""))
+               (substitute* '("Makefile.am" "Makefile.in")
+                 (("\\$\\(prefix)/src") (string-append src "/src"))))
+             #t))
+         (replace 'build
+           (lambda _ (invoke "make")))
+         (replace 'install
+           (lambda* (#:key outputs inputs native-inputs #:allow-other-keys)
+             (let* ((out    (assoc-ref outputs "out"))
+                    (moddir (assoc-ref outputs "module"))
+                    (kmod   (assoc-ref (or native-inputs inputs) "kmod")))
+               (invoke "make" "install"
+                       (string-append "DEFAULT_INITCONF_DIR=" out "/etc/default")
+                       (string-append "DEPMOD=" kmod "/bin/depmod")
+                       (string-append "INSTALL_PATH=" out)
+                       (string-append "INSTALL_MOD_PATH=" moddir)
+                       "INSTALL_MOD_STRIP=1")
+               (install-file "contrib/bash_completion.d/zfs"
+                             (string-append out "/share/bash-completion/completions"))
+               (symlink "../share/pkgconfig/" (string-append out "/lib/pkgconfig"))
+               #t))))))
+    (native-inputs
+     `(("attr" ,attr)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("eudev" ,eudev)
+       ("libaio" ,libaio)
+       ("libtirpc" ,libtirpc)
+       ("nfs-utils" ,nfs-utils)
+       ("openssl" ,openssl)
+       ("python" ,python)
+       ("python-cffi" ,python-cffi)
+       ("util-linux" ,util-linux)
+       ("zlib" ,zlib)))
+    (home-page "https://zfsonlinux.org/")
+    (synopsis "Native ZFS on Linux")
+    (description
+     "ZFS on Linux is an advanced file system and volume manager which was
+originally developed for Solaris and is now maintained by the OpenZFS
+community.")
+    (license license:cddl1.0)))

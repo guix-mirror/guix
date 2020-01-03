@@ -1492,18 +1492,19 @@ masters from remote CVS hosts.")
 (define-public vc-dwim
   (package
     (name "vc-dwim")
-    (version "1.8")
+    (version "1.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/vc-dwim/vc-dwim-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0d5sqafc40l878m8wjr35jxmalj4kam1m6ph60v08ng4ml5g7931"))))
+               "0mf1dd7wdqxsm4fcfinfd7iadzarmzvg747pbsbi32qpavpk8gdf"))))
     (build-system gnu-build-system)
-    (inputs `(("perl" ,perl)
-              ("inetutils" ,inetutils))) ; for `hostname', used in the tests
-    (native-inputs `(("emacs" ,emacs-minimal))) ; for `ctags'
+    (inputs `(("perl" ,perl)))
+    (native-inputs
+     `(("emacs" ,emacs-minimal)     ; for `ctags'
+       ("inetutils" ,inetutils)))   ; for `hostname', used in the tests
     (home-page "https://www.gnu.org/software/vc-dwim/")
     (synopsis "Version-control-agnostic ChangeLog diff and commit tool")
     (description
@@ -1518,18 +1519,18 @@ standards-compliant ChangeLog entries based on the changes that it detects.")
 (define-public diffstat
   (package
     (name "diffstat")
-    (version "1.62")
+    (version "1.63")
     (source (origin
               (method url-fetch)
               (uri
                (list
                  (string-append "ftp://invisible-island.net/diffstat/"
-                                name "-" version ".tgz")
+                                "diffstat-" version ".tgz")
                  (string-append "http://invisible-mirror.net/archives/diffstat/"
-                                name "-" version ".tgz")))
+                                "diffstat-" version ".tgz")))
               (sha256
                (base32
-                "07sr482y6iw7n7ddkba0w51kbjc99snvnijkn5ba2xzd8hv1h2bz"))))
+                "0vyw200s5dv1257pmrh6c6fdkmw3slyz5szpqfx916xr04sdbpby"))))
     (build-system gnu-build-system)
     (home-page "https://invisible-island.net/diffstat/")
     (synopsis "Make histograms from the output of @command{diff}")
@@ -1752,7 +1753,7 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
 (define-public tig
   (package
     (name "tig")
-    (version "2.4.1")
+    (version "2.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1760,7 +1761,7 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
                     version "/tig-" version ".tar.gz"))
               (sha256
                (base32
-                "1f2qhpzbl7f35lsjcnx8lxzskha24m4frczsw78284jp7qcamdmn"))))
+                "1x5famvvs93ih7sr11x7m33dksb1k7zs1s3c4zkyf0cjmxkpqlzz"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)

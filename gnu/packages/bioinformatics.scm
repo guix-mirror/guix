@@ -11,9 +11,10 @@
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
-;;; Copyright © 2018 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
+;;; Copyright © 2018, 2019 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
+;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -84,10 +85,10 @@
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages java)
   #:use-module (gnu packages java-compression)
-  #:use-module (gnu packages javascript)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages dlang)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages man)
@@ -1615,7 +1616,7 @@ genome (2.9 GB for paired-end).")
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     '(#:parallel-build? #f ; not supported
+     '(#:parallel-build? #f             ; not supported
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'use-system-samtools
@@ -1639,16 +1640,18 @@ genome (2.9 GB for paired-end).")
                (("#include <bam.h>") "#include <samtools/bam.h>")
                (("#include <sam.h>") "#include <samtools/sam.h>"))
              #t)))))
+    (native-inputs
+     `(("gcc" ,gcc-5))) ;; doesn't build with later versions
     (inputs
      `(("boost" ,boost)
        ("bowtie" ,bowtie)
-       ("samtools" ,samtools-0.1)
        ("ncurses" ,ncurses)
-       ("python" ,python-2)
        ("perl" ,perl)
-       ("zlib" ,zlib)
-       ("seqan" ,seqan-1)))
-    (home-page "http://ccb.jhu.edu/software/tophat/index.shtml")
+       ("python" ,python-2)
+       ("samtools" ,samtools-0.1)
+       ("seqan" ,seqan-1)
+       ("zlib" ,zlib)))
+    (home-page "https://ccb.jhu.edu/software/tophat/index.shtml")
     (synopsis "Spliced read mapper for RNA-Seq data")
     (description
      "TopHat is a fast splice junction mapper for nucleotide sequence
@@ -2995,7 +2998,8 @@ reasonable amount of time and memory.  For large alignments, FastTree is
     (inputs
      `(("libgtextutils" ,libgtextutils)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("gcc" ,gcc-6) ;; doesn't build with later versions
+       ("pkg-config" ,pkg-config)))
     (home-page "http://hannonlab.cshl.edu/fastx_toolkit/")
     (synopsis "Tools for FASTA/FASTQ file preprocessing")
     (description
@@ -6918,14 +6922,14 @@ testing and other simple calculations.")
 (define-public r-shortread
   (package
     (name "r-shortread")
-    (version "1.44.0")
+    (version "1.44.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ShortRead" version))
        (sha256
         (base32
-         "18v2khq53za1m8i9va1z4wynah55gccbb42nq769vdcw7bl80wpa"))))
+         "1dh3q83hmi4l72vpif6dn51dzbi9ljrjgkq2zxg4sqy2jxv4vwza"))))
     (properties `((upstream-name . "ShortRead")))
     (build-system r-build-system)
     (inputs
@@ -7683,13 +7687,13 @@ powerful online queries from gene annotation to database mining.")
 (define-public r-biocparallel
   (package
     (name "r-biocparallel")
-    (version "1.20.0")
+    (version "1.20.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "BiocParallel" version))
               (sha256
                (base32
-                "1wgnad4089xn8yxl9md7xprgh3vswcbyxg7di0931ik6x54m9zws"))))
+                "0g0znb4whsvb9hpwx9xaasdi5n4vjqw8cpdyqgrdrjm91rls1h21"))))
     (properties
      `((upstream-name . "BiocParallel")))
     (build-system r-build-system)
@@ -7779,13 +7783,13 @@ tab-delimited (tabix) files.")
 (define-public r-delayedarray
   (package
     (name "r-delayedarray")
-    (version "0.12.0")
+    (version "0.12.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "DelayedArray" version))
               (sha256
                (base32
-                "0329n1gbg2bq2vjhxfqqgakg75cdzcrcrgcwafjbg5zhkq86lc0q"))))
+                "1yr4i2x127v814nxg53aibp77p3vg76f3n3hgknpwx3snfhc81xs"))))
     (properties
      `((upstream-name . "DelayedArray")))
     (build-system r-build-system)
@@ -7811,13 +7815,13 @@ array-like objects like @code{DataFrame} objects (typically with Rle columns),
 (define-public r-summarizedexperiment
   (package
     (name "r-summarizedexperiment")
-    (version "1.16.0")
+    (version "1.16.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "SummarizedExperiment" version))
               (sha256
                (base32
-                "04ljfw49ydgshrjv71qv9xr6y23a9vb8kp5fdjvpa8f6gzlb2a8m"))))
+                "1z9bdk49dajafkfvv99nv6zyn6v70iyyy2jgdp5w5z8174a2bnn1"))))
     (properties
      `((upstream-name . "SummarizedExperiment")))
     (build-system r-build-system)
@@ -7987,13 +7991,13 @@ information about the latest version of the Gene Ontologies.")
 (define-public r-topgo
   (package
     (name "r-topgo")
-    (version "2.37.0")
+    (version "2.38.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "topGO" version))
               (sha256
                (base32
-                "1cplr92aq3pa266ilvmg9xfmc95gag89b5jka04a5mh88j24y2ca"))))
+                "1kw9m2j67895k58lx9msc248pjwblp8clxwgsl01cql7sgi1xzlf"))))
     (properties
      `((upstream-name . "topGO")))
     (build-system r-build-system)
@@ -10623,13 +10627,13 @@ libraries.")
 (define-public r-scater
   (package
     (name "r-scater")
-    (version "1.14.5")
+    (version "1.14.6")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "scater" version))
               (sha256
                (base32
-                "1c2p1dqz4lckk657v5g0labxrf0i21l0wa3rvszslmrszn60mkif"))))
+                "0sxd1s8wdlj9926bagq4crjrk1nnmh3j3bhgrw160zfgc3y8pzck"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-beachmat" ,r-beachmat)
@@ -13286,21 +13290,23 @@ million cells.")
 (define-public python-bbknn
   (package
     (name "python-bbknn")
-    (version "1.3.1")
+    (version "1.3.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "bbknn" version))
        (sha256
         (base32
-         "1qgdganvj3lyxj84v7alm23b9vqhwpn8z0115qndpnpy90qxynwz"))))
+         "1jbsh01f57zj4bhvjr3jh4532zznqd6nccmgrl3qi9gnhkf7c4y0"))))
     (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; TODO: Enable after migration to scikit-learn.
     (propagated-inputs
      `(("python-annoy" ,python-annoy)
        ("python-cython" ,python-cython)
-       ("python-faiss" ,python-faiss)
        ("python-numpy" ,python-numpy)
-       ("python-scanpy" ,python-scanpy)))
+       ("python-scipy" ,python-scipy)
+       ("python-umap-learn" ,python-umap-learn)))
     (home-page "https://github.com/Teichlab/bbknn")
     (synopsis "Batch balanced KNN")
     (description "BBKNN is a batch effect removal tool that can be directly

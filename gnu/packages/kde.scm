@@ -64,7 +64,43 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
+
+(define-public grantleetheme
+  (package
+    (name "grantleetheme")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/grantleetheme-" version ".tar.xz"))
+       (sha256
+        (base32 "0j77q1yyfmggzgkqgcw2xr0v9xg3h5cdhh8jry8h2llw75ahy6xb"))
+       (patches (search-patches "grantlee-merge-theme-dirs.patch"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("libxml2" ,libxml2))) ;; xmllint required for tests
+    (inputs
+     `(("grantlee" ,grantlee)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("knewstuff" ,knewstuff)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
+    (home-page "https://cgit.kde.org/grantleetheme.git")
+    (synopsis "Library providing Grantlee theme support")
+    (description "This library provides Grantlee theme support.")
+    (license ;; LGPL for libraries, FDL for documentation
+     (list license:lgpl2.0+ license:fdl1.2+))))
 
 (define-public kdenlive
   (let ((version "18.08.1"))
@@ -222,7 +258,7 @@ projects.")
     (arguments
      `(#:tests? #f  ;; there are some issues with the test suite
        #:phases
-       (modify-phases (@ (guix build qt-build-system) %standard-phases)
+       (modify-phases %standard-phases
          (add-before 'configure 'add-include-path
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "cmake/modules/FindClang.cmake"
@@ -488,7 +524,7 @@ different notification systems.")
      `(#:configure-flags '("-DBUILD_TESTING=ON")
        #:tests? #f ; tests fail hard in our build environment
        #:phases
-       (modify-phases (@ (guix build qt-build-system) %standard-phases)
+       (modify-phases %standard-phases
          (add-before 'check 'check-setup
            (lambda _
              (setenv "QT_QPA_PLATFORM" "offscreen")
@@ -651,3 +687,31 @@ Python, PHP, and Perl.")
     (synopsis "Runtime library for kdegames")
     (description "Runtime library for kdegames")
     (license (list license:gpl2+  license:fdl1.2+))))
+
+(define-public zeroconf-ioslave
+  (package
+    (name "zeroconf-ioslave")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/zeroconf-ioslave-" version ".tar.xz"))
+       (sha256
+        (base32 "1vbi4kpyrk530q2dj8ql2i0gxjybdbmkqpl8vkhrihl7r7f0xc5p"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("kdbusaddons" ,kdbusaddons)
+       ("kdnssd" ,kdnssd)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("qtbase" ,qtbase)))
+    (home-page "https://kde.org/applications/internet/org.kde.zeroconf_ioslave")
+    (synopsis "DNS-SD Service Discovery Monitor")
+    (description "Adds an entry to Dolphin's Network page to show local
+services such as printers which advertise themselves with DNSSD (called Avahi
+or Bonjour by other projects).")
+    (license ;; GPL for programs, LGPL for libraries, FDL for documentation
+     (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))

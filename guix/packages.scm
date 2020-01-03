@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -236,7 +236,7 @@ name of its URI."
 
 (define %hurd-systems
   ;; The GNU/Hurd systems for which support is being developed.
-  '("i585-gnu" "i686-gnu"))
+  '("i586-gnu" "i686-gnu"))
 
 (define %hydra-supported-systems
   ;; This is the list of system types for which build machines are available.

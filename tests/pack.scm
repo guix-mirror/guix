@@ -28,7 +28,7 @@
   #:use-module (guix tests)
   #:use-module (guix gexp)
   #:use-module (gnu packages bootstrap)
-  #:use-module ((gnu packages compression) #:select (squashfs-tools-next))
+  #:use-module ((gnu packages compression) #:select (squashfs-tools))
   #:use-module (srfi srfi-64))
 
 (define %store
@@ -199,7 +199,7 @@
                            (string-append "." #$profile "/bin"))
 
                          (setenv "PATH"
-                                 (string-append #$squashfs-tools-next "/bin"))
+                                 (string-append #$squashfs-tools "/bin"))
                          (invoke "unsquashfs" #$image)
                          (with-directory-excursion "squashfs-root"
                            (when (and (file-exists? (string-append bin

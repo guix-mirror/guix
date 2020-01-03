@@ -87,6 +87,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -302,21 +303,21 @@ server and embedded PowerPC, and S390 guests.")
 (define-public libosinfo
   (package
     (name "libosinfo")
-    (version "1.5.0")
+    (version "1.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://releases.pagure.org/libosinfo/libosinfo-"
-                           version ".tar.gz"))
+                           version ".tar.xz"))
        (sha256
         (base32
-         "12b0xj9fz9q91d1pz9xm6aqap5k1ip0m9m3qvqmwjy1lk1kjasdz"))))
-    (build-system gnu-build-system)
+         "1s97sv24bybggjx6hgqba2qdqz3ivfpd4cmkh4zm5y59sim109mv"))))
+    (build-system meson-build-system)
     (arguments
      `(#:configure-flags
-       (list (string-append "--with-usb-ids-path="
+       (list (string-append "-Dwith-usb-ids-path="
                             (assoc-ref %build-inputs "usb.ids"))
-             (string-append "--with-pci-ids-path="
+             (string-append "-Dwith-pci-ids-path="
                             (assoc-ref %build-inputs "pci.ids")))))
     (inputs
      `(("libsoup" ,libsoup)
@@ -961,7 +962,7 @@ Open Container Initiative specification.")
 (define-public umoci
   (package
     (name "umoci")
-    (version "0.4.4")
+    (version "0.4.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -970,7 +971,7 @@ Open Container Initiative specification.")
               (file-name (string-append "umoci-" version ".tar.xz"))
               (sha256
                (base32
-                "1wchmha5k2f370jfijmx9fqp0cp99zfa9ajmfbq3j24qc8p5k8lk"))))
+                "0x1yyvpllz6fyy9xip6f7b6c94v984n3faf8p50fr9y4ygkgi15a"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/openSUSE/umoci"
@@ -1149,15 +1150,14 @@ by default and can be made read-only.")
 (define-public bochs
   (package
     (name "bochs")
-    (version "2.6.9")
+    (version "2.6.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://sourceforge.net/projects/bochs/files/bochs/"
                            version "/bochs-" version ".tar.gz"))
        (sha256
-        (base32
-         "1379cq4cnfprhw8mgh60i0q9j8fz8d7n3d5fnn2g9fdiv5znfnzf"))))
+        (base32 "1c3mw4b8wrjf8z44fvhycs95j1wd1c0b4khcv63giiia5j5q0gvj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f)) ; No tests exist

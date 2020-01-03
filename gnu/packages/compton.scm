@@ -1,6 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Alexandru-Sergiu Marton <brown121407@member.fsf.org>
+;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,10 +24,15 @@
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
+  #:use-module (gnu packages datastructures)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages libevent)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages textutils)
@@ -103,3 +110,50 @@ performance).
 @item Some more options...
 @end itemize\n")
       (license license:expat))))
+
+(define-public picom
+  (package
+    (name "picom")
+    (version "7.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/yshui/picom.git")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32
+         "1l48fxl04vkzr4r94sl37nbbw7a621rn8sxmkbdv4252i1gjxd4z"))
+       (file-name (string-append "picom-" version))))
+    (build-system meson-build-system)
+    (inputs
+     `(("dbus" ,dbus)
+       ("libconfig" ,libconfig)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libev" ,libev)
+       ("mesa" ,mesa)
+       ("xprop" ,xprop)
+       ("xcb-util-renderutil" ,xcb-util-renderutil)
+       ("xcb-util-image" ,xcb-util-image)
+       ("pixman" ,pixman)
+       ("uthash" ,uthash)
+       ("libxdg-basedir" ,libxdg-basedir)
+       ("pcre" ,pcre)))
+    (native-inputs
+     `(("asciidoc" ,asciidoc)
+       ("pkg-config" ,pkg-config)
+       ("xorgproto" ,xorgproto)))
+    (arguments
+     `(#:build-type "release"
+       #:configure-flags '("-Dbuild_docs=true")))
+    (home-page "https://github.com/yshui/picom")
+    (synopsis "Compositor for X11, forked from Compton")
+    (description
+     "Picom is a standalone compositor for Xorg, suitable for use
+with window managers that do not provide compositing.
+
+Picom is a fork of compton, which is a fork of xcompmgr-dana,
+which in turn is a fork of xcompmgr.")
+    (license (list license:expat      ; The original compton license.
+                   license:mpl2.0)))) ; License used by new picom files.

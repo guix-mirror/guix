@@ -347,10 +347,11 @@ Log progress and checkout info to LOG-PORT."
 ;;; Commit difference.
 ;;;
 
-(define (commit-closure commit)
-  "Return the closure of COMMIT as a set."
+(define* (commit-closure commit #:optional (visited (setq)))
+  "Return the closure of COMMIT as a set.  Skip commits contained in VISITED,
+a set, and adjoin VISITED to the result."
   (let loop ((commits (list commit))
-             (visited (setq)))
+             (visited visited))
     (match commits
       (()
        visited)
@@ -360,15 +361,16 @@ Log progress and checkout info to LOG-PORT."
            (loop (append (commit-parents head) tail)
                  (set-insert head visited)))))))
 
-(define (commit-difference new old)
+(define* (commit-difference new old #:optional (excluded '()))
   "Return the list of commits between NEW and OLD, where OLD is assumed to be
-an ancestor of NEW.
+an ancestor of NEW.  Exclude all the commits listed in EXCLUDED along with
+their ancestors.
 
 Essentially, this computes the set difference between the closure of NEW and
 that of OLD."
   (let loop ((commits (list new))
              (result '())
-             (visited (commit-closure old)))
+             (visited (commit-closure old (list->setq excluded))))
     (match commits
       (()
        (reverse result))

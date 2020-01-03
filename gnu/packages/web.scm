@@ -103,7 +103,6 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages java)
-  #:use-module (gnu packages javascript)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
@@ -111,6 +110,7 @@
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages libunistring)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages markup)
   #:use-module (gnu packages ncurses)
@@ -214,14 +214,14 @@ Interface} specification.")
     ;; ’stable’ and recommends that “in general you deploy the NGINX mainline
     ;; branch at all times” (https://www.nginx.com/blog/nginx-1-6-1-7-released/)
     ;; Consider updating the nginx-documentation package together with this one.
-    (version "1.17.6")
+    (version "1.17.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1dipq90h3n1xdslwbijwlhbk84r7q0bswlbvi970may09lqsbd1w"))))
+                "1zwiqljhzf0ym6r3hrg6k2qfb2mxi7i0lpafg4xnkr875225c9xn"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
@@ -1516,7 +1516,7 @@ minimum to provide high performance operation.")
 (define-public libsass
   (package
     (name "libsass")
-    (version "3.5.5")
+    (version "3.6.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1525,7 +1525,7 @@ minimum to provide high performance operation.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0830pjcvhzxh6yixj82x5k5r1xnadjqzi16kp53213icbly0r9ma"))))
+                "1vn0q343d1vxz5q0xb6f9dzjah8z6j0s6x0lwvwdd55xa8z7rsnh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1550,7 +1550,7 @@ stylesheets, you'll need to use another program that uses this library,
 (define-public sassc
   (package
     (name "sassc")
-    (version "3.5.0")
+    (version "3.6.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1559,7 +1559,7 @@ stylesheets, you'll need to use another program that uses this library,
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0jsfz1zg4gwk0dq8i92ll12axs3s70wsdsmdyi71zx8zmvib5nl6"))))
+                "1sxm54mkhs9m4vnl7vn11y17mhzamc403hv3966j1c7p2rbzg5pv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -4194,8 +4194,8 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
   (package-with-python2 python-feedparser))
 
 (define-public guix-data-service
-  (let ((commit "a019a5ed821cf1b7b2c2b0e1bd2dc25a51bbcb84")
-        (revision "8"))
+  (let ((commit "4ed14007c44f55869d30358b6da2235069dfcaf9")
+        (revision "15"))
     (package
       (name "guix-data-service")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -4207,7 +4207,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1kckfdgh8v9mmxxrsz6n2ibs78jr821qpbqh4mz8fyavm28c7h3f"))))
+                  "06smgbw9jdyarnz877dsd6mjcd3nhs9hav5z6h8cngvpznjf3hy8"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
@@ -4285,13 +4285,14 @@ PostgreSQL database.")
     (name "gumbo-parser")
     (version "0.10.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/google/"
-                                  "gumbo-parser/archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/google/gumbo-parser")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1bgg2kbj311pqdzw2v33za7k66g1rv44kkvvnz2gnpaasi9k0ii8"))))
+                "0xslckwdh2i0g2qjsb6rnm8mjmbagvziz0hjlf7d1lbljfms1iw1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))         ;tests require bundling googletest sources
@@ -5369,16 +5370,17 @@ used to start services with both privileged and non-privileged port numbers.")
     (version "5.6.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/htacg/tidy-html5/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/htacg/tidy-html5")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0n29wcgw32rhnraj9j21ibhwi0xagmmcskhbaz8ihxly7nx3p9h8"))))
+         "0w175c5d1babq0w1zzdzw9gl6iqbgyq58v8587s7srp05y3hwy9k"))))
     (build-system cmake-build-system)
     (outputs '("out"
-               "static"))               ; 1.0MiB of .a files
+               "static"))               ; 1.3MiB of .a files
     (arguments
      `(#:tests? #f                      ; no tests available
        #:build-type "Release"
@@ -5414,7 +5416,7 @@ functions of Tidy.")
 (define-public hiawatha
   (package
     (name "hiawatha")
-    (version "10.9")
+    (version "10.10")
     (source
      (origin
        (method url-fetch)
@@ -5427,7 +5429,7 @@ functions of Tidy.")
                              (list "extra/nghttp2.tgz" "mbedtls"))
                    #t))
        (sha256
-        (base32 "1f2j2x1ziawz8ijg3s3izqpyzpiwfyhlsvbv0szxvhvj4a0l7pbl"))))
+        (base32 "1nd46cx1qp5lh2kwnn2mlwk9zm8jm7pgf90xs9vpwr7saxbnzr5m"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; no tests included
@@ -6540,12 +6542,14 @@ container.")))
     (name "java-jsoup")
     (version "1.10.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/jhy/jsoup/archive/jsoup-"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/jhy/jsoup")
+                     (commit (string-append "jsoup-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0xbzw7rjv7s4nz1xk9b2cnin6zkpaldmc3svk71waa7hhjgp0a20"))))
+                "1hdpdx0x140r5x3yc251v7dj1h4j5a7nh9k885aw9q5vvz49lkf4"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "jsoup.jar"

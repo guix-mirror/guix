@@ -114,7 +114,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
 (define-public isc-bind
   (package
     (name "bind")
-    (version "9.14.8")
+    (version "9.14.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -122,7 +122,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
                     "/bind-" version ".tar.gz"))
               (sha256
                (base32
-                "0xm0xrpgxq6gk6r6aa2w0lygnq02y1p614dmyjdmlsfnrrsslig5"))))
+                "0g2ph3hlw86yib8hv13qgkb4i84s9zv22r4k6yqlycm2izamwmr9"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs
@@ -320,14 +320,14 @@ asynchronous fashion.")
 (define-public nsd
   (package
     (name "nsd")
-    (version "4.2.3")
+    (version "4.2.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.nlnetlabs.nl/downloads/nsd/nsd-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1664wpglrwqk627xma10f9qa652vzmf90gsjd8pribyj74xrczc1"))))
+        (base32 "0z7j3vwqqj0hh8n5irb2yqwzl45k4sn2wczbq1b1lqv5cxv6vgcy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -595,15 +595,14 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "2.9.1")
+    (version "2.9.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://secure.nic.cz/files/knot-dns/"
                            "knot-" version ".tar.xz"))
        (sha256
-        (base32
-         "0kd0v2w1c2by1l8jw91x16wkyyy9wh9lyr93g4w0qdmadjaj34gi"))
+        (base32 "1vmndmbzwwrqczhygkhpdn5xxljcnaa3d0z5yw6vb2bmm8rxz319"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -671,18 +670,18 @@ synthesis, and on-the-fly re-configuration.")
 (define-public knot-resolver
   (package
     (name "knot-resolver")
-    (version "4.2.2")
+    (version "4.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://secure.nic.cz/files/knot-resolver/"
                                   "knot-resolver-" version ".tar.xz"))
               (sha256
                (base32
-                "0n0llpclhparq9wbcrymxkl5d03c4y4p3shcbdxfv6j22vzqvdh3"))))
+                "09ffmqx79lv5psr433x4n946njgsn071b9b7161pcb9bmrqz380c"))))
     (build-system meson-build-system)
     (arguments
      '(#:configure-flags
-       '("-Dmanaged_ta=disabled"    ; We'll manage the DNS root data ourself.
+       '("-Dmanaged_ta=disabled"      ; we'll manage the DNS root data ourself
          "-Ddoc=enabled")
        #:phases
        (modify-phases %standard-phases

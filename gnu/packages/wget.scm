@@ -133,7 +133,7 @@ in downloaded documents to relative links.")
     (description
      "@code{wgetpaste} is an extremely simple command-line interface to various
 online pastebin services.")
-    (license license:public-domain)))
+    (license license:expat)))
 
 (define-public wget2
   (package

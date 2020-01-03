@@ -105,7 +105,7 @@ such as compact binary encodings, XML, or JSON.")
 (define-public msgpack
   (package
     (name "msgpack")
-    (version "3.2.0")
+    (version "3.2.1")
     (source
      (origin
        (method url-fetch)
@@ -120,8 +120,7 @@ such as compact binary encodings, XML, or JSON.")
            (close-output-port p)
            #t))
        (sha256
-        (base32
-         "1zhsap7d9zqdm9h1qnpaw78v1sh3rx2if7gk4dszs5m3cg1jiapv"))))
+        (base32 "1ljqmgscdb0f8w8kx2lnswnisyxchcmijbjbmswkv0g187bvqg23"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("googletest" ,googletest)

@@ -12,6 +12,7 @@
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
+;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,14 +48,14 @@
 (define-public python-sphinx
   (package
     (name "python-sphinx")
-    (version "2.2.2")
+    (version "2.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Sphinx" version))
        (sha256
         (base32
-         "1wjcm382824rq8ijls9mlqwl2h8l26s201v5fwprhnins671m72m"))))
+         "19a28nsb0w4bs6k8rdfyk6vzrcwdpvhs2wq77rgpmww59yvndrz6"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -68,16 +69,16 @@
                 "@pytest.mark.skip()"))
              (invoke "make" "test"))))))
     (propagated-inputs
-     `(("python-imagesize" ,python-imagesize)
-       ("python-sphinx-alabaster-theme"
-        ,python-sphinx-alabaster-theme)
-       ("python-babel" ,python-babel)
-       ("python-snowballstemmer" ,python-snowballstemmer)
+     `(("python-babel" ,python-babel)
        ("python-docutils" ,python-docutils)
        ("python-jinja2" ,python-jinja2)
+       ("python-imagesize" ,python-imagesize)
        ("python-packaging" ,python-packaging)
        ("python-pygments" ,python-pygments)
        ("python-requests" ,python-requests)
+       ("python-snowballstemmer" ,python-snowballstemmer)
+       ("python-sphinx-alabaster-theme"
+        ,python-sphinx-alabaster-theme)
        ("python-sphinxcontrib-applehelp" ,python-sphinxcontrib-applehelp)
        ("python-sphinxcontrib-devhelp" ,python-sphinxcontrib-devhelp)
        ("python-sphinxcontrib-htmlhelp" ,python-sphinxcontrib-htmlhelp)
@@ -92,12 +93,12 @@
        ("python-mock" ,python-mock)
        ("python-nose" ,python-nose)
        ("python-pytest" ,python-pytest)))
-    (home-page "https://sphinx-doc.org/")
+    (home-page "http://www.sphinx-doc.org")
     (synopsis "Python documentation generator")
     (description "Sphinx is a tool that makes it easy to create documentation
 for Python projects or other documents consisting of multiple reStructuredText
 sources.")
-    (license license:bsd-3)
+    (license license:bsd-2)
     (properties `((python2-variant . ,(delay python2-sphinx))))))
 
 ;; Sphinx 2 does not support Python 2, so we stick with this older version here.
@@ -168,15 +169,22 @@ Apple help books.")
 (define-public python-sphinx-copybutton
   (package
     (name "python-sphinx-copybutton")
-    (version "0.2.5")
+    (version "0.2.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "sphinx-copybutton" version))
        (sha256
         (base32
-         "1bk006nv5s9ym6v67cxd4d2wvd8wm6czqi21mqcs33risygksncl"))))
+         "0ny9jpygj93z8jyjpi4v6jjz90pmns74s389wq16igzzq2mpgfjm"))))
     (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; XXX: Check requires network access.
+    (propagated-inputs
+     `(("python-flit" ,python-flit)
+       ("python-setuptools" ,python-setuptools)
+       ("python-sphinx" ,python-sphinx)
+       ("python-wheel" ,python-wheel)))
     (home-page "https://github.com/choldgraf/sphinx-copybutton")
     (synopsis "Sphinx extension to add \"copy\" buttons to code blocks")
     (description
@@ -242,7 +250,7 @@ HTML help files.")
     (description
      "@code{sphinxcontrib-jsmath} is a Sphinx extension which renders display
 math in HTML via JavaScript.")
-    (license license:bsd-3)))
+    (license license:bsd-2)))
 
 (define-public python-sphinxcontrib-newsfeed
   (package
@@ -267,23 +275,23 @@ Blog, News or Announcements section to a Sphinx website.")
 (define-public python-sphinxcontrib-programoutput
   (package
     (name "python-sphinxcontrib-programoutput")
-    (version "0.10")
+    (version "0.15")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "sphinxcontrib-programoutput" version))
               (sha256
                (base32
-                "153hhnlbx4688zj9wd64819ps5znc2jlyp5crkgzvn5hxgy99vpx"))))
+                "155bz0z2cz544pphkd3nk7ph83mz7nn0ql135kzi62kqmd75ppc0"))))
     (build-system python-build-system)
     (arguments
-     ;; FIXME: Many tests are failing and the upstream is gone.
+     ;; FIXME: Many tests are failing.
      '(#:tests? #f))
     (propagated-inputs
      `(("python-sphinx" ,python-sphinx)))
     (synopsis "Sphinx extension to include program output")
     (description "A Sphinx extension to literally insert the output of arbitrary
 commands into documents, helping you to keep your command examples up to date.")
-    (home-page "https://github.com/lunaryorn/sphinxcontrib-programoutput")
+    (home-page "https://github.com/NextThought/sphinxcontrib-programoutput")
     (license license:bsd-2)))
 
 (define-public python2-sphinxcontrib-programoutput
@@ -332,21 +340,21 @@ documents.")
 (define-public python-sphinxcontrib-svg2pdfconverter
   (package
     (name "python-sphinxcontrib-svg2pdfconverter")
-    (version "0.1.0")
+    (version "1.0.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "sphinxcontrib-svg2pdfconverter" version))
               (sha256
                (base32
-                "1abvbgkkii13q8nsb10r0gc5lm0p9iq1iwhfhakn5ifn6asa0183"))))
+                "1hhaxmqc7wh8gnyw5jaqckliknvk0p21y12wk3bdmncgkaf9ar8f"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-sphinx" ,python-sphinx)))
-    (home-page "https://github.com/missinglinkelectronics/sphinxcontrib-svg2pdfconverter/releases")
+    (home-page "https://github.com/missinglinkelectronics/sphinxcontrib-svg2pdfconverter")
     (synopsis "Sphinx SVG to PDF converter extension")
-    (description "A Sphinx extension to convert SVG images to PDF in case the builder does not support
-SVG images natively (e.g. LaTeX).")
-    (license license:bsd-3)))
+    (description "A Sphinx extension to convert SVG images to PDF in case the
+builder does not support SVG images natively (e.g. LaTeX).")
+    (license license:bsd-2)))
 
 (define-public python-sphinxcontrib-websupport
   (package

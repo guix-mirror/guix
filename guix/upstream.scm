@@ -318,16 +318,20 @@ values: 'interactive' (default), 'always', and 'never'."
                                                      (basename url) tarball)))
                              (mbegin %store-monad
                                (built-derivations (list drv))
-                               (return (derivation->output-path drv)))))))
-
-               (ret  (gnupg-verify* sig data #:key-download key-download)))
-          (if ret
-              tarball
-              (begin
-                (warning (G_ "signature verification failed for `~a'~%")
-                         url)
-                (warning (G_ "(could be because the public key is not in your keyring)~%"))
-                #f))))))
+                               (return (derivation->output-path drv))))))))
+          (let-values (((status data)
+                        (gnupg-verify* sig data #:key-download key-download)))
+            (match status
+              ('valid-signature
+               tarball)
+              ('invalid-signature
+               (warning (G_ "signature verification failed for '~a' (key: ~a)~%")
+                        url data)
+               #f)
+              ('missing-key
+               (warning (G_ "missing public key ~a for '~a'~%")
+                        data url)
+               #f)))))))
 
 (define (find2 pred lst1 lst2)
   "Like 'find', but operate on items from both LST1 and LST2.  Return two

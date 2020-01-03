@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -64,7 +64,7 @@ to take care of the OS-specific details when writing software that uses serial p
 (define-public libsigrokdecode
   (package
     (name "libsigrokdecode")
-    (version "0.5.2")
+    (version "0.5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -72,7 +72,7 @@ to take care of the OS-specific details when writing software that uses serial p
                     version ".tar.gz"))
               (sha256
                (base32
-                "1w434nl1syjkvwl08lji3r9sr60lbxp1nqys8hqwzv2lgiwrx3g0"))))
+                "1h1zi1kpsgf6j2z8j8hjpv1q7n49i3fhqjn8i178rka3cym18265"))))
     (outputs '("out" "doc"))
     (arguments
      `(#:phases
@@ -106,7 +106,7 @@ to take care of the OS-specific details when writing software that uses serial p
 (define-public sigrok-firmware-fx2lafw
   (package
     (name "sigrok-firmware-fx2lafw")
-    (version "0.1.6")
+    (version "0.1.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -114,7 +114,7 @@ to take care of the OS-specific details when writing software that uses serial p
                     "sigrok-firmware-fx2lafw-" version ".tar.gz"))
               (sha256
                (base32
-                "18x5zj3xbcylvb651dia6n4zxbdnv0j62r5af60d0l2g68knkjg4"))))
+                "0fyfd82mvrcf55v5a3afq1mh1kfswk4c37qrbln6x92jm3b41x53"))))
     (arguments
      `(#:implicit-inputs? #f))
     (native-inputs
@@ -137,7 +137,7 @@ as simple logic analyzer and/or oscilloscope hardware.")
 (define-public libsigrok
   (package
     (name "libsigrok")
-    (version "0.5.1")
+    (version "0.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -145,7 +145,7 @@ as simple logic analyzer and/or oscilloscope hardware.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "171b553dir5gn6w4f7n37waqk62nq2kf1jykx4ifjacdz5xdw3z4"))))
+                "0g6fl684bpqm5p2z4j12c62m45j1dircznjina63w392ns81yd2d"))))
     (outputs '("out" "doc"))
     (arguments
      `(#:tests? #f                      ; tests need USB access

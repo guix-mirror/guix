@@ -70,14 +70,13 @@
 
 
 (define* (http-fetch uri #:key port (text? #f) (buffered? #t)
-                     keep-alive? (verify-certificate? #t)
+                     (verify-certificate? #t)
                      (headers '((user-agent . "GNU Guile"))))
   "Return an input port containing the data at URI, and the expected number of
 bytes available or #f.  If TEXT? is true, the data at URI is considered to be
 textual.  Follow any HTTP redirection.  When BUFFERED? is #f, return an
-unbuffered port, suitable for use in `filtered-port'.  When KEEP-ALIVE? is
-true, send a 'Connection: keep-alive' HTTP header, in which case PORT may be
-reused for future HTTP requests.  HEADERS is an alist of extra HTTP headers.
+unbuffered port, suitable for use in `filtered-port'.  HEADERS is an alist of
+extra HTTP headers.
 
 When VERIFY-CERTIFICATE? is true, verify HTTPS server certificates.
 
@@ -100,7 +99,11 @@ Raise an '&http-get-error' condition if downloading fails."
         (setvbuf port 'none))
       (let*-values (((resp data)
                      (http-get uri #:streaming? #t #:port port
-                               #:keep-alive? #t
+                               ;; XXX: When #:keep-alive? is true, if DATA is
+                               ;; a chunked-encoding port, closing DATA won't
+                               ;; close PORT, leading to a file descriptor
+                               ;; leak.
+                               #:keep-alive? #f
                                #:headers headers))
                     ((code)
                      (response-code resp)))

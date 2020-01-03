@@ -1,12 +1,12 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
-;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018, 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
@@ -186,16 +186,16 @@ plans and designs.")
 (define-public geda-gaf
   (package
     (name "geda-gaf")
-    (version "1.9.2")
+    (version "1.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://ftp.geda-project.org/geda-gaf/unstable/v"
+                    "http://ftp.geda-project.org/geda-gaf/stable/v"
                     (version-major+minor version) "/"
                     version "/geda-gaf-" version ".tar.gz"))
               (sha256
                (base32
-                "14mk45pfz11v54q66gafw2l68n1p5ssvvjmdm8ffgc8x1w5ajfrz"))))
+                "06ivgarvwbzjz2wigxzzkm8iszldi2p6x3a6jnlczjyrz4csddsy"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -205,12 +205,14 @@ plans and designs.")
            (lambda _
              (setenv "HOME" (getenv "TMPDIR"))
              #t))
-         ;; FIXME: These two tests fail for unknown reasons.  They return "2"
-         ;; when they should return "1".
          (add-after 'unpack 'disable-failing-tests
            (lambda _
-             (substitute* "utils/tests/gxyrs/tests.list"
-               (("^do_nothing.*") ""))
+             (substitute* "xorn/tests/Makefile.in"
+               (("-Werror") ""))
+             ;; This test returns its correct result in an unexpected order.
+             (substitute* "libgeda/scheme/unit-tests/t0402-config.scm"
+               (("\\(begin-config-test 'config-keys" m)
+                (string-append "#;" m)))
              #t)))
        #:configure-flags
        (let ((pcb (assoc-ref %build-inputs "pcb")))
@@ -219,13 +221,15 @@ plans and designs.")
                               pcb "/share/pcb/pcblib-newlib:"
                               pcb "/share/pcb/newlib")))))
     (inputs
-     `(("glib" ,glib)
+     `(("gamin" ,gamin)
+       ("glib" ,glib)
        ("gtk" ,gtk+-2)
        ("guile" ,guile-2.0)
        ("desktop-file-utils" ,desktop-file-utils)
        ("shared-mime-info" ,shared-mime-info)
        ("m4" ,m4)
-       ("pcb" ,pcb)))
+       ("pcb" ,pcb)
+       ("python" ,python-2))) ; for xorn
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("perl" ,perl))) ; for tests
@@ -248,14 +252,14 @@ utilities.")
   (package
     (inherit geda-gaf)
     (name "lepton-eda")
-    (version "1.9.5-20180820")
+    (version "1.9.9-20191003")
     (home-page "https://github.com/lepton-eda/lepton-eda")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url home-page) (commit version)))
               (sha256
                (base32
-                "1ayaccvw18zh4g7a4x5jf6yxkphi5xafb0hpc732g59qkgwfcmlr"))
+                "08cc3zfk84qq9mrkc9pp4r9jlavvm01wwy0yd9frql68w2zw6mip"))
               (file-name (git-file-name name version))))
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -266,7 +270,14 @@ utilities.")
        ("groff" ,groff)
        ("which" ,which)
        ,@(package-native-inputs geda-gaf)))
-    ;; For now it's Guile 2.0, not 2.2.
+    (inputs
+     `(("glib" ,glib)
+       ("gtk" ,gtk+-2)
+       ("guile" ,guile-2.2)
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("shared-mime-info" ,shared-mime-info)
+       ("m4" ,m4)
+       ("pcb" ,pcb)))
     (arguments
      (substitute-keyword-arguments (package-arguments geda-gaf)
        ((#:configure-flags flags ''())
@@ -300,6 +311,17 @@ utilities.")
                            ,(string-take version
                                          (string-index version #\-)))
                    (format port "#define PACKAGE_GIT_COMMIT \"cabbag3\"~%")))
+               #t))
+           (add-after 'install 'compile-scheme-files
+             (lambda* (#:key outputs #:allow-other-keys)
+               (invoke "make" "precompile")
+               (for-each (lambda (program)
+                           (wrap-program program
+                             `("GUILE_LOAD_COMPILED_PATH" ":" prefix
+                               (,(string-append (assoc-ref outputs "out")
+                                                "/share/lepton-eda/ccache/")))))
+                         (find-files (string-append (assoc-ref outputs "out") "/bin")
+                                     ".*"))
                #t))))))
     (description
      "Lepton EDA ia an @dfn{electronic design automation} (EDA) tool set
@@ -713,8 +735,8 @@ fonts to gEDA.")
       (license license:gpl2+))))
 
 (define-public libfive
-  (let ((commit "9d857d1923abecb0e5935b9287d22661f6efaac5")
-        (revision "2"))
+  (let ((commit "6e39254e57c179459bb929df49ae96a6017a0ed6")
+        (revision "3"))
     (package
       (name "libfive")
       (version (git-version "0" revision commit))
@@ -725,7 +747,7 @@ fonts to gEDA.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1r40kyx30wz31cwwlfvfh7fgqkxq3n8dxhswpi9qpf4r5h3l8wsn"))
+                  "0ryv2hcbrwqc087w7rrs4a2irkcpmqync00g4dh8n7jn10w2jkim"))
                 (file-name (git-file-name name version))
                 (snippet
                  ;; Remove bundled catch since we provide our own.
@@ -740,12 +762,18 @@ fonts to gEDA.")
            (add-after 'unpack 'remove-native-compilation
              (lambda _
                (substitute* "CMakeLists.txt" (("-march=native") ""))
+               #t))
+           (add-after 'unpack 'find-catch
+             (lambda* (#:key inputs #:allow-other-keys)
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-append (assoc-ref inputs "catch")
+                                      "/include/catch"))
                #t)))))
       (native-inputs
        `(("pkg-config" ,pkg-config)))
       (inputs
        `(("boost" ,boost)
-         ("catch" ,catch-framework)
+         ("catch" ,catch-framework2)
          ("libpng" ,libpng)
          ("qtbase" ,qtbase)
          ("eigen" ,eigen)
@@ -758,7 +786,7 @@ libfive, solid models are defined as Scheme scripts, and there are no opaque
 function calls into the geometry kernel: everything is visible to the user.
 Even fundamental, primitive shapes are represented as code in the user-level
 language.")
-      (license (list license:lgpl2.1+             ;library
+      (license (list license:mpl2.0               ;library
                      license:gpl2+)))))           ;Guile bindings and GUI
 
 (define-public ao
@@ -767,7 +795,7 @@ language.")
 (define-public kicad
     (package
       (name "kicad")
-      (version "5.1.4")
+      (version "5.1.5")
       (source
        (origin
          (method url-fetch)
@@ -776,7 +804,7 @@ language.")
                 "https://launchpad.net/kicad/" (version-major version)
                 ".0/" version "/+download/kicad-" version ".tar.xz"))
          (sha256
-          (base32 "1r60dgh6aalbpq1wsmpyxkz0nn4ck8ydfdjcrblpl69k5rks5k2j"))))
+          (base32 "0x3417f2pa7p65s9f7l49rqbnrzy8gz6i0n07mlbxqbnm0fmlql0"))))
       (build-system cmake-build-system)
       (arguments
        `(#:out-of-source? #t
@@ -827,7 +855,7 @@ language.")
          ("python" ,python)
          ("wxwidgets" ,wxwidgets)
          ("wxpython" ,python-wxpython)))
-      (home-page "http://kicad-pcb.org/")
+      (home-page "https://kicad-pcb.org/")
       (synopsis "Electronics Design Automation Suite")
       (description "Kicad is a program for the formation of printed circuit
 boards and electrical circuits.  The software has a number of programs that
@@ -891,7 +919,7 @@ electrical diagrams), gerbview (viewing Gerber files) and others.")
              (sha256
               (base32
                "08qrz5zzsb5127jlnv24j0sgiryd5nqwg3lfnwi8j9a25agqk13j"))))))
-      (home-page "http://kicad-pcb.org/")
+      (home-page "https://kicad-pcb.org/")
       (synopsis "Libraries for kicad")
       (description "This package provides Kicad component, footprint and 3D
 render model libraries.")
@@ -900,7 +928,7 @@ render model libraries.")
 (define-public kicad-symbols
   (package
     (name "kicad-symbols")
-    (version "5.1.4")
+    (version "5.1.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -909,15 +937,19 @@ render model libraries.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1lna4xlvzrxif3569pkp6mrg7fj62z3a3ri5j97lnmnnzhiddnh3"))))
+                "048b07ffsaav1ssrchw2p870lvb4rsyb5vnniy670k7q9p16qq6h"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f)) ; No tests exist
-    (home-page "http://kicad-pcb.org/")
+     `(#:tests? #f))                    ; no tests exist
+    (home-page "https://kicad-pcb.org/")
     (synopsis "Official KiCad schematic symbol libraries for KiCad 5")
     (description "This package contains the official KiCad schematic symbol
 libraries for KiCad 5.")
-    ;; TODO: Exception: "To the extent that the creation of electronic designs that use 'Licensed Material' can be considered to be 'Adapted Material', then the copyright holder waives article 3 of the license with respect to these designs and any generated files which use data provided as part of the 'Licensed Material'."
+    ;; TODO: Exception: "To the extent that the creation of electronic designs
+    ;; that use 'Licensed Material' can be considered to be 'Adapted Material',
+    ;; then the copyright holder waives article 3 of the license with respect to
+    ;; these designs and any generated files which use data provided as part of
+    ;; the 'Licensed Material'."
     ;; See <https://github.com/KiCad/kicad-symbols/blob/master/LICENSE.md>.
     (license license:cc-by-sa4.0)))
 
@@ -1177,13 +1209,14 @@ language, ADMS transforms Verilog-AMS code into other target languages.")
     (name "capstone")
     (version "3.0.5")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/aquynh/capstone/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/aquynh/capstone")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1wbd1g3r32ni6zd9vwrq3kn7fdp9y8qwn9zllrrbk8n5wyaxcgci"))))
+                "0dgf82kxj4rs45d6s8sr984c38sll1n5scpypjlyh21gh2yl4qfw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f

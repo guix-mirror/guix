@@ -132,7 +132,6 @@
        "ftp://ftp.hu.netfilter.org/"
        "ftp://www.lt.netfilter.org/pub/")
       (kernel.org
-       "http://ramses.wh2.tu-dresden.de/pub/mirrors/kernel.org/"
        "http://linux-kernel.uio.no/pub/"
        "http://kernel.osuosl.org/pub/"
        "http://ftp.be.debian.org/pub/"

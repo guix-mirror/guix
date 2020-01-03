@@ -7,7 +7,7 @@
 ;;; Copyright © 2015, 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017, 2018, 2019 Christopher Baines <mail@cbaines.net>
@@ -3515,15 +3515,16 @@ net/http library.")
     (version "1.13.1")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; Tests are not distributed at rubygems.org so download from GitHub
        ;; instead.
-       (uri (string-append "https://github.com/intridea/multi_json/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+              (url "https://github.com/intridea/multi_json")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1s64xqvrnrxmb59v6b2kchnisawg5ai9ky1w60dy6z6ws9la1xv4"))))
+         "18wpb6p01rrkl4v33byh70vxj2a5jxkfxzv3pz8z6pssy4ymwkm4"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -3929,16 +3930,17 @@ invocation, and source and documentation browsing.")
     (name "ruby-guard")
     (version "2.13.0")
     (source (origin
-              (method url-fetch)
+              (method git-fetch)
               ;; The gem does not include a Rakefile, nor does it contain a
               ;; gemspec file, nor does it come with the tests.  This is why
               ;; we fetch the tarball from Github.
-              (uri (string-append "https://github.com/guard/guard/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (git-reference
+                     (url "https://github.com/guard/guard")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1hwj0yi17k6f5axrm0k2bb7fq71dlp0zfywmd7pij9iimbppcca0"))))
+                "16pxcszr0g2jnl3090didxh1d8z5m2mly14m3w4rspb8fmclsnjs"))))
     (build-system ruby-build-system)
     (arguments
      `(#:tests? #f ; tests require cucumber
@@ -3969,7 +3971,7 @@ invocation, and source and documentation browsing.")
      "Guard is a command line tool to easily handle events on file system
 modifications.  Guard automates various tasks by running custom rules whenever
 file or directories are modified.")
-    (home-page "http://guardgem.org/")
+    (home-page "https://guardgem.org/")
     (license license:expat)))
 
 (define-public ruby-tilt
@@ -4064,17 +4066,16 @@ aware transformations between times in different time zones.")
     (version "1.2017.3")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; Download from GitHub because the rubygems version does not contain
        ;; Rakefile or tests.
-       (uri (string-append
-             "https://github.com/tzinfo/tzinfo-data/archive/v"
-             version
-             ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+              (url "https://github.com/tzinfo/tzinfo-data")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "01wff7syqzikbxalbg3isgxasmvzicr85bzadzkb6bf20bip4v54"))
+         "0v3phl5l3jrm6waxcszqmj2dkjhqawxfsxb6mss7vkp1hlckqcdp"))
        ;; Remove the known test failure.
        ;; https://github.com/tzinfo/tzinfo-data/issues/10
        ;; https://bugs.launchpad.net/ubuntu/+source/glibc/+bug/1587128
@@ -4786,15 +4787,16 @@ unacceptable HTML and/or CSS from a string.")
     (version "3.6.7")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; Version on rubygems.org does not contain Rakefile, so download from
        ;; GitHub instead.
-       (uri (string-append "https://github.com/ohler55/oj/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+              (url "https://github.com/ohler55/oj")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1x28ga72jxlnmsd8g8c0fw81vlh54r0qgagw2lxsd3x3la091g2h"))))
+         "1fqx58pwjiln7053lw2jy6ns4agcpxq2ac4f2fkd2ca3fxwpmh03"))))
     (build-system ruby-build-system)
     (arguments
      '(#:test-target "test_all"
@@ -4813,7 +4815,7 @@ unacceptable HTML and/or CSS from a string.")
     (description
      "Oj is a JSON parser and generator for Ruby, where the encoding and
 decoding of JSON is implemented as a C extension to Ruby.")
-    (home-page "http://www.ohler.com/oj")
+    (home-page "http://www.ohler.com/oj/")
     (license (list license:expat     ; Ruby code
                    license:bsd-3)))) ; extension code
 
@@ -5065,16 +5067,15 @@ generates Ruby program.")
     (version "2.0.6")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; Download from GitHub so that the patch can be applied.
-       (uri (string-append
-             "https://github.com/rack/rack/archive/"
-             version
-             ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+              (url "https://github.com/rack/rack")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0pb3g5ymvbf07xaxcn51dpqv3djlxavckp3qkxsjdxiqznb0d9p1"))
+         "1n7z4g1x6yxip096cdc04wq7yk7ywpinq28g2xjb46r4nlv5h0j6"))
        ;; Ignore test which fails inside the build environment but works
        ;; outside.
        (patches (search-patches "ruby-rack-ignore-failing-test.patch"))))
@@ -5100,7 +5101,15 @@ generates Ruby program.")
                                  (number->string (+ 22 size-diff))
                                  "-"
                                  (number->string (+ 33 size-diff))))))
-             #t)))))
+             #t))
+         (add-before 'reset-gzip-timestamps 'make-files-writable
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Make sure .gz files are writable so that the
+             ;; 'reset-gzip-timestamps' phase can do its work.
+             (let ((out (assoc-ref outputs "out")))
+               (for-each make-file-writable
+                         (find-files out "\\.gz$"))
+               #t))))))
     (native-inputs
      `(("ruby-minitest" ,ruby-minitest)
        ("ruby-minitest-sprint" ,ruby-minitest-sprint)
@@ -5744,14 +5753,15 @@ A modified copy of yajl is used, and included in the package.")
     (version "0.9.16")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; Tests do not pass if we build from the distributed gem.
-       (uri (string-append "https://github.com/lsegal/yard/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+              (url "https://github.com/lsegal/yard")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0sqpbayy9sb406jh0zqg6qha1xds863qz9531dh6vp58hc00clfq"))))
+         "0a4r1pfs0ms4vlccsf1x2jckx35lqm8b8lh6rdjxqfr5fia5izpf"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -6577,14 +6587,15 @@ requests either using arguments or with an interactive prompt.")
     (version "1.5.0")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; Fetch from GitHub as the gem does not contain testing code.
-       (uri (string-append "https://github.com/rubyworks/ansi/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+              (url "https://github.com/rubyworks/ansi")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1zdip30hivyipi8hndhb457bhiz033awd00bgrsk5axjrwp6zhly"))))
+         "1wsz7xxwl3vkh277jb7fd7akqnqqgbvalxzpjwniiqk8ghfprbi5"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -6615,7 +6626,7 @@ methods, a @code{Mixin} module for including color methods, a @code{Logger}, a
 @code{ProgressBar}, and a @code{String} subclass.  The library also includes a
 @code{Terminal} module which provides information about the current output
 device.")
-    (home-page "https://rubyworks.github.io/ansi")
+    (home-page "https://rubyworks.github.io/ansi/")
     (license license:bsd-2)))
 
 (define-public ruby-systemu
@@ -6801,15 +6812,15 @@ and locking between worker processes.")
     (version "1.8.2")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; Fetch from github so tests are included.
-       (uri (string-append
-             "https://github.com/rubyworks/ae/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+              (url "https://github.com/rubyworks/ae")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "147jmkx54x7asy2d8m4dyrhhf4hdx4galpnhwzai030y3cdsfrrl"))))
+         "11299jj5ma8mi7b4majkyjy70y6zlqpgl8aql1c5lvfjavlpwmlp"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -6835,7 +6846,7 @@ and locking between worker processes.")
     (description
      "Assertive Expressive (AE) is an assertions library specifically designed
 for reuse by other test frameworks.")
-    (home-page "https://rubyworks.github.io/ae")
+    (home-page "https://rubyworks.github.io/ae/")
     (license license:bsd-2)))
 
 (define-public ruby-lemon
@@ -7002,15 +7013,15 @@ binary-to-text encoding.  The main modern use of Ascii85 is in PostScript and
     (version "1.5.1")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; fetch from github as the gem does not contain testing code
-       (uri (string-append
-             "https://github.com/prawnpdf/ttfunk/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+              (url "https://github.com/prawnpdf/ttfunk")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1ymcn12n5iws401yz03zsj8rr653fdqq13czsrciq09phgh9jzc5"))))
+         "0dx9891zcli0sjrslmsvrwalv86hbjbqlmbrcasnjr069v05h9v9"))))
     (build-system ruby-build-system)
     (arguments
      `(#:test-target "spec"
@@ -7050,14 +7061,15 @@ part of the Prawn PDF generator.")
     (version "3.9.1")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; Fetch from GitHub because distributed gem does not contain tests.
-       (uri (string-append "https://github.com/puma/puma/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+              (url "https://github.com/puma/puma")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "03pifga841h17brh4vgia8i2ybh3cmsyg0dbybzdf6dq51wzcxdx"))))
+         "1kj75k81iik3aj73pkc9ixj9rwf95ipkyma65n28m64dgw02qi1f"))))
     (build-system ruby-build-system)
     (arguments
      `(#:tests? #f ; Tests require an out-dated version of minitest.
@@ -7075,7 +7087,7 @@ for Ruby/Rack applications.  Puma is intended for use in both development and
 production environments.  In order to get the best throughput, it is highly
 recommended that you use a Ruby implementation with real threads like Rubinius
 or JRuby.")
-    (home-page "http://puma.io")
+    (home-page "https://puma.io/")
     (license license:expat)))
 
 (define-public ruby-hoe-git

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -159,6 +160,7 @@
             %guile-for-build
             current-system
             set-current-system
+            current-target-system
             text-file
             interned-file
             interned-file-tree
@@ -1815,6 +1817,11 @@ the store."
   ;; Set the %CURRENT-SYSTEM fluid at bind time.
   (lambda (state)
     (values (%current-system system) state)))
+
+(define-inlinable (current-target-system)
+  ;; Consult the %CURRENT-TARGET-SYSTEM fluid at bind time.
+  (lambda (state)
+    (values (%current-target-system) state)))
 
 (define %guile-for-build
   ;; The derivation of the Guile to be used within the build environment,

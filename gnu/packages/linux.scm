@@ -186,11 +186,11 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
                               "deblob-check"))
           (sha256 deblob-check-hash))))
 
-(define deblob-scripts-5.3
+(define deblob-scripts-5.4
   (linux-libre-deblob-scripts
-   "5.3.17"
-   (base32 "15n09zq38d69y1wl28s3nasf3377qp2yil5b887zpqrm00dif7i4")
-   (base32 "1xk3gzgnl9m29avka32zkggl36sdxyvps40hr12hjy42l1ysfshm")))
+   "5.4.4"
+   (base32 "0ckxn7k5zgcqk30dq943bnamr6a6zjbw2aqjl3x30f4kvh5f6k25")
+   (base32 "09hy3jqb8lny861pxjbjvzg90imi8p7z10j14xp0rclxmyb81rk3")))
 
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
@@ -356,42 +356,42 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-(define-public linux-libre-5.3-version "5.3.18")
-(define-public linux-libre-5.3-pristine-source
-  (let ((version linux-libre-5.3-version)
-        (hash (base32 "133342nv9ddjad2rizmcbilg9rhg339sfqr9l77j4cgkqhblkw90")))
+(define-public linux-libre-5.4-version "5.4.7")
+(define-public linux-libre-5.4-pristine-source
+  (let ((version linux-libre-5.4-version)
+        (hash (base32 "1jgwg5qb7lb30m5ywvpfagzrl6d0i524qpy3v99mina6j4fv5jdb")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
-                            deblob-scripts-5.3)))
+                            deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.90")
+(define-public linux-libre-4.19-version "4.19.92")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "1zgpbim9019aymvgh0fr5g2r9j2xspw14amlnk09w5mgdl56rn19")))
+        (hash (base32 "18l3k0hgyanh6axgmmaaff139vpw6lf3fcf9iglpqwgspgw7rhr9")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.159")
+(define-public linux-libre-4.14-version "4.14.161")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "1wi6m3w40z0v9krb12g9q09s9y471r51rhcv3qa81lc53cx2vm78")))
+        (hash (base32 "1jc1izlvgymp9x61r4yz2xhplwmp6x8laxqj9wy33iz6a2gn48wx")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.206")
+(define-public linux-libre-4.9-version "4.9.207")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "1mnabj0d5ra40hijwynnzxnh5w1qnvkvj2l3ydsdhkdwm6cpiwhx")))
+        (hash (base32 "090181vij95py22jhx7baaxabb78w0j5hsfsnzp6bv2vgdz671na")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.206")
+(define-public linux-libre-4.4-version "4.4.207")
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "14ylg9cm7z12mvkzg8z92gsw0libw9xz392ayzw0d9cgw1py39ax")))
+        (hash (base32 "024flajnl3l4yk8sgqdrfrl21js4vsjcv4ivmjblj4l9fl3hdjb6")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -424,10 +424,9 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (patches (append (origin-patches source)
                      patches))))
 
-(define-public linux-libre-5.3-source
-  (source-with-patches linux-libre-5.3-pristine-source
-                       (list (search-patch "linux-libre-active-entropy.patch")
-                             %boot-logo-patch
+(define-public linux-libre-5.4-source
+  (source-with-patches linux-libre-5.4-pristine-source
+                       (list %boot-logo-patch
                              %linux-libre-arm-export-__sync_icache_dcache-patch)))
 
 (define-public linux-libre-4.19-source
@@ -520,9 +519,9 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (description "Headers of the Linux-Libre kernel.")
     (license license:gpl2)))
 
-(define-public linux-libre-headers-5.3
-  (make-linux-libre-headers* linux-libre-5.3-version
-                             linux-libre-5.3-source))
+(define-public linux-libre-headers-5.4
+  (make-linux-libre-headers* linux-libre-5.4-version
+                             linux-libre-5.4-source))
 
 (define-public linux-libre-headers-4.19
   (make-linux-libre-headers* linux-libre-4.19-version
@@ -777,16 +776,16 @@ It has been modified to remove all non-free binary blobs.")
 ;;; Generic kernel packages.
 ;;;
 
-(define-public linux-libre-5.3
-  (make-linux-libre* linux-libre-5.3-version
-                     linux-libre-5.3-source
+(define-public linux-libre-5.4
+  (make-linux-libre* linux-libre-5.4-version
+                     linux-libre-5.4-source
                      '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
                      #:configuration-file kernel-config))
 
-(define-public linux-libre-version         linux-libre-5.3-version)
-(define-public linux-libre-pristine-source linux-libre-5.3-pristine-source)
-(define-public linux-libre-source          linux-libre-5.3-source)
-(define-public linux-libre                 linux-libre-5.3)
+(define-public linux-libre-version         linux-libre-5.4-version)
+(define-public linux-libre-pristine-source linux-libre-5.4-pristine-source)
+(define-public linux-libre-source          linux-libre-5.4-source)
+(define-public linux-libre                 linux-libre-5.4)
 
 (define-public linux-libre-4.19
   (make-linux-libre* linux-libre-4.19-version
@@ -2836,8 +2835,20 @@ mapper.  Kernel components are part of Linux-libre.")
              (string-append "INSTALL_MAN=" %output "/share/man")
              (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib")
              "BUILD_STATIC=")
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key target #:allow-other-keys)
+             (when ,(%current-target-system)
+               ;; Cross-compilation: use the cross tools.
+               (substitute* (find-files "." "Makefile")
+                 (("CC = .*$")
+                  (string-append "CC = " target "-gcc\n"))
+                 (("AR = .*$")
+                  (string-append "AR = " target "-ar\n"))
+                 (("RANLIB = .*$")
+                  (string-append "RANLIB = " target "-ranlib\n"))))
+             #t)))
        #:tests? #f))
     (synopsis "Tools for manipulating Linux Wireless Extensions")
     (description "Wireless Tools are used to manipulate the now-deprecated
@@ -3934,7 +3945,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "5.3.1")
+    (version "5.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -3942,7 +3953,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "0f6s1iwiqbncrvxp74k50s88x6zqf85sjxg04kyni82l1vk1m8xz"))))
+                "1ykhasv0jc3qi3xrm5841mzkmlbkjw6rm70gl4aww90jj6ak55qg"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"
@@ -4512,6 +4523,7 @@ from that to the system kernel's @file{/dev/random} machinery.")
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list (string-append "DESTDIR=" out)
                             (string-append "LDFLAGS=-Wl,-rpath=" out "/lib")
+                            "libdir=/lib"
                             "docdir=/share/doc/cpupower"
                             "confdir=$(docdir)/examples"
                             ;; The Makefile recommends the following changes

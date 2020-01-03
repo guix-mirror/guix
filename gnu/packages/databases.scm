@@ -10,7 +10,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -1405,14 +1405,14 @@ changes.")
 (define-public tdb
   (package
     (name "tdb")
-    (version "1.4.2")
+    (version "1.4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/tdb/tdb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0jh0iqbb6pkvqrqn033w5g6gwa4bdgkvp49z0qpkk3h2wk6b4h4h"))))
+                "06waz0k50c7v3chd08mzp2rv7w4k4q9isbxx3vhlfpx1vy9q61f8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -2640,17 +2640,18 @@ PickleShare.")
 (define-public python-apsw
   (package
     (name "python-apsw")
-    (version "3.20.1-r1")
+    (version "3.28.0-r1")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "https://github.com/rogerbinns/apsw/archive/"
-                            version ".tar.gz"))
-        (file-name (string-append "apsw-" version ".tar.gz"))
+        (uri (string-append "https://github.com/rogerbinns/apsw/releases"
+                            "/download/" version "/apsw-" version ".zip"))
         (sha256
           (base32
-           "00ai7m2pqi26qaflhz314d8k5i3syw7xzr145fhfl0crhyh6adz2"))))
+           "0x62534l5hcgwrc4k2gxpdzc1sxlhm6m4nwlay74rnmr77qh8wly"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
     (inputs
      `(("sqlite" ,sqlite)))
     (arguments
@@ -2665,8 +2666,7 @@ PickleShare.")
              (invoke "gcc" "-fPIC" "-shared" "-o" "./testextension.sqlext"
                      "-I." "-Isqlite3" "src/testextension.c")
              #t))
-         (delete 'check)
-         (add-after 'install 'check
+         (replace 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
              (invoke "python" "setup.py" "test")

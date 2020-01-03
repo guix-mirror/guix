@@ -5,7 +5,8 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2019 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages cdrom)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
@@ -39,6 +41,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages pulseaudio)
@@ -473,13 +476,13 @@ compression format (.mpc files).")
 (define-public eyed3
   (package
     (name "eyed3")
-    (version "0.8.11")
+    (version "0.8.12")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "eyeD3" version))
        (sha256
-        (base32 "1347mhjysbdpmmvdqm6lhskdw0qj9vjdn4n172ffnz958adrnk0f"))))
+        (base32 "0vabr7hh6vy1w8gn35vmx9qwiyrfv734d5ahifg7x3pv0c5fqkp5"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))    ; the required test data contains copyrighted material
@@ -526,3 +529,49 @@ command-line tool.")
 fingerprints which are used by the Acoustid service.  Its main purpose
 is to provide an accurate identifier for record tracks.")
     (license license:lgpl2.1+)))
+
+(define-public python-audioread
+  (package
+    (name "python-audioread")
+    (version "2.1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "audioread" version))
+       (sha256
+        (base32
+         "0s6iilb8ca6j6nv5a5hbyxi5alr3crvsbr6kggh82a44pkx08f87"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f)) ; there is no "audiofile" fixture
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://github.com/sampsyo/audioread")
+    (synopsis "Decode audio files using whichever backend is available")
+    (description
+     "This package provides a Python library for audo decoding.  It uses
+whatever audio backend is available, such as GStreamer, Core Audio, MAD,
+FFmpeg, etc.")
+    (license license:expat)))
+
+(define-public python-pyacoustid
+  (package
+    (name "python-pyacoustid")
+    (version "1.1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyacoustid" version))
+       (sha256
+        (base32
+         "1zan6c22ca6sjy0g9ajwjp6mkzw7jv8r3n7jzska09a6x254lf87"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-audioread" ,python-audioread)
+       ("python-requests" ,python-requests)))
+    (home-page "https://github.com/sampsyo/pyacoustid")
+    (synopsis "Bindings for Chromaprint acoustic fingerprinting")
+    (description
+     "This package provides bindings for the Chromaprint acoustic
+fingerprinting library and the Acoustid API.")
+    (license license:expat)))

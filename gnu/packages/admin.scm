@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
-;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
@@ -23,12 +23,13 @@
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2019 Brett Gilio <brettg@posteo.net>
+;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.lonestar.org>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -753,7 +754,7 @@ connection alive.")
 (define-public isc-dhcp
   (let* ((bind-major-version "9")
          (bind-minor-version "11")
-         (bind-patch-version "13")
+         (bind-patch-version "14")
          (bind-release-type "")         ; for patch release, use "-P"
          (bind-release-version "")      ; for patch release, e.g. "6"
          (bind-version (string-append bind-major-version
@@ -776,6 +777,7 @@ connection alive.")
       (build-system gnu-build-system)
       (arguments
        `(#:parallel-build? #f
+         #:configure-flags '("--with-randomdev=/dev/random")
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'replace-bundled-bind
@@ -806,6 +808,12 @@ connection alive.")
                   (format #f "RELEASETYPE=~a\n" ,bind-release-type))
                  (("^RELEASEVER=.*")
                   (format #f "RELEASEVER=~a\n" ,bind-release-version)))
+               #t))
+           (add-before 'configure 'fix-bind-cross-compilation
+             (lambda _
+               (substitute* "configure"
+                 (("--host=\\$host")
+                  "--host=$host_alias"))
                #t))
            (add-after 'configure 'post-configure
              (lambda* (#:key outputs #:allow-other-keys)
@@ -894,7 +902,7 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "0z8g81xinqx8j3y2fclxa31dq7zsi9cj9srmvd9agnpwzk4kqgzx"))))
+                      "1pv3bvm9dzyz2kqjkw15sgh0hd5fzsv274v5z6jp9c4nb5130fyr"))))
 
                 ;; When cross-compiling, we need the cross Coreutils and sed.
                 ;; Otherwise just use those from %FINAL-INPUTS.
@@ -1192,7 +1200,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.29")
+    (version "1.8.30")
     (source (origin
               (method url-fetch)
               (uri
@@ -1202,7 +1210,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "0z4wyadh9cks17gdpfgx4kvbrlnyb6nai2sd6chk7qh4jsngylyf"))
+                "1rvrqlqrrjsd06dczgj9cwjdkpkqil5zzlwh87h06ms6qzfx6nm3"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1575,7 +1583,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20191018")
+    (version "20191213")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1583,7 +1591,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0k6xr9v46pnw8kl7jh23zfafs2vq3gk2sgkmjdf9a8jx8n3aifgd"))))
+                "1106d5b7q8jlgc2z0gz83jdah1yml4fz5z0jjcs7a52pv00c9am8"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
@@ -1822,7 +1830,7 @@ various ways that may be running with too much privilege.")
 (define-public smartmontools
   (package
     (name "smartmontools")
-    (version "7.0")
+    (version "7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1830,7 +1838,7 @@ various ways that may be running with too much privilege.")
                     version "/smartmontools-" version ".tar.gz"))
               (sha256
                (base32
-                "077nx2rn9szrg6isdh0938zbp7vr3dsyxl4jdyyzv1xwhqksrqg5"))))
+                "0imqb7ka4ia5573w8rnpck571pjjc9698pdjcapy9cfyk4n4swrz"))))
     (build-system gnu-build-system)
     (inputs `(("libcap-ng" ,libcap-ng)))
     (home-page "https://www.smartmontools.org/")
@@ -2486,13 +2494,13 @@ a new command using the matched rule, and runs it.")
 (define-public di
   (package
     (name "di")
-    (version "4.47.2")
+    (version "4.47.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gentoo.com/di/di-" version ".tar.gz"))
        (sha256
-        (base32 "1g97pp2hznskqlkhl6ppyzgdmv878bcqiwh633kdnm70d1pvh192"))))
+        (base32 "0m4npba50sf5s61g5z3xd2r7937zwja941f2h3f081xi24c2hfck"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; obscure test failures
@@ -2795,15 +2803,16 @@ buffers.")
 (define-public igt-gpu-tools
   (package
     (name "igt-gpu-tools")
-    (version "1.23")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://cgit.freedesktop.org/xorg/app/"
-                                  "intel-gpu-tools/snapshot/"
-                                  "igt-gpu-tools-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0vzv2i4jfv2pkbqby5k3ap9pzidkmajwqmg3s7wnv8i1h33775iq"))))
+    (version "1.24")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.freedesktop.org/drm/igt-gpu-tools.git")
+             (commit (string-append "igt-gpu-tools-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1gpdjs5aj6vsnzwcjvw5bb120lgffvvshi4202phr0bzw3b92ky8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f              ; many of the tests try to load kernel modules
@@ -2816,6 +2825,7 @@ buffers.")
              (invoke "sh" "autogen.sh"))))))
     (inputs
      `(("cairo" ,cairo)
+       ("elfutils" ,elfutils)           ; libdw
        ("eudev" ,eudev)
        ("glib" ,glib)
        ("kmod" ,kmod)
@@ -2926,7 +2936,7 @@ you are running, what theme or icon set you are using, etc.")
 (define-public screenfetch
   (package
     (name "screenfetch")
-    (version "3.9.0")
+    (version "3.9.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2935,7 +2945,7 @@ you are running, what theme or icon set you are using, etc.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "13i7dczbqwhws08zzrdraki1zkqv0qkbgx9c1r8vmg5qr9f7hfzg"))))
+                "04l8aqr474pb115nagn9f6y48jw92n1qfszgw7dbhgl4mpn95lcr"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -2982,14 +2992,14 @@ everyone's screenshots nowadays.")
 (define-public nnn
   (package
     (name "nnn")
-    (version "2.7")
+    (version "2.8.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/jarun/nnn/releases/download/v"
                            version "/nnn-v" version ".tar.gz"))
        (sha256
-        (base32 "1wvh11iw7s3r8c985s99fqm2l7cn7dkbx7ah3xpk34jvry7j3vg5"))))
+        (base32 "1g47bndxld875d0xb3pgmlw223mz47p1xcvwym861y6l4zkgiyp0"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)
@@ -3018,7 +3028,7 @@ make it a perfect utility on modern distros.")
 (define-public thermald
   (package
     (name "thermald")
-    (version "1.9")
+    (version "1.9.1")
     (source
      (origin
       (method git-fetch)
@@ -3027,7 +3037,7 @@ make it a perfect utility on modern distros.")
              (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "1ajhivl9jifcf12nbk281yayk7666v65m249aclyli0bz1kh8cfs"))))
+       (base32 "0iagc3jqpnh6q2fa1gx4wx6r8qg0556j60xr159zqg95djr4dv99"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

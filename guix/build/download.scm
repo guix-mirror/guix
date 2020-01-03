@@ -28,6 +28,7 @@
   #:use-module (guix build utils)
   #:use-module (guix progress)
   #:use-module (rnrs io ports)
+  #:use-module ((ice-9 binary-ports) #:select (unget-bytevector))
   #:use-module (rnrs bytevectors)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
@@ -158,16 +159,7 @@ out if the connection could not be established in less than TIMEOUT seconds."
 ;; See <http://bugs.gnu.org/12202>.
 (module-autoload! (current-module)
                   '(gnutls)
-                  '(gnutls-version make-session connection-end/client))
-
-(define %tls-ports
-  ;; Mapping of session record ports to the underlying file port.
-  (make-weak-key-hash-table))
-
-(define (register-tls-record-port record-port port)
-  "Hold a weak reference from RECORD-PORT to PORT, where RECORD-PORT is a TLS
-session record port using PORT as its underlying communication port."
-  (hashq-set! %tls-ports record-port port))
+                  '(make-session connection-end/client))
 
 (define %x509-certificate-directory
   ;; The directory where X.509 authority PEM certificates are stored.
@@ -273,18 +265,7 @@ host name without trailing dot."
     ;; "(gnutls) Priority Strings"); see <http://bugs.gnu.org/23311>.
     ;; Explicitly disable SSLv3, which is insecure:
     ;; <https://tools.ietf.org/html/rfc7568>.
-    ;;
-    ;; FIXME: Since we currently fail to handle TLS 1.3 (with GnuTLS 3.6.5),
-    ;; remove it; see <https://bugs.gnu.org/34102>.
-    (set-session-priorities! session
-                             (string-append
-                              "NORMAL:%COMPAT:-VERS-SSL3.0"
-
-                              ;; The "VERS-TLS1.3" priority string is not
-                              ;; supported by GnuTLS 3.5.
-                              (if (string-prefix? "3.5." (gnutls-version))
-                                  ""
-                                  ":-VERS-TLS1.3")))
+    (set-session-priorities! session "NORMAL:%COMPAT:-VERS-SSL3.0")
 
     (set-session-credentials! session
                               (if (and verify-certificate? ca-certs)
@@ -322,17 +303,40 @@ host name without trailing dot."
           (apply throw args))))
 
     (let ((record (session-record-port session)))
-      ;; Since we use `fileno' above, the file descriptor behind PORT would be
-      ;; closed when PORT is GC'd.  If we used `port->fdes', it would instead
-      ;; never be closed.  So we use `fileno', but keep a weak reference to
-      ;; PORT, so the file descriptor gets closed when RECORD is GC'd.
-      (register-tls-record-port record port)
+      (define (read! bv start count)
+        (define read-bv (get-bytevector-some record))
+        (if (eof-object? read-bv)
+            0  ; read! returns 0 on eof-object
+            (let ((read-bv-len (bytevector-length read-bv)))
+              (bytevector-copy! read-bv 0 bv start (min read-bv-len count))
+              (when (< count read-bv-len)
+                (unget-bytevector record bv count (- read-bv-len count)))
+              read-bv-len)))
+      (define (write! bv start count)
+        (put-bytevector record bv start count)
+        (force-output record)
+        count)
+      (define (get-position)
+        (port-position record))
+      (define (set-position! new-position)
+        (set-port-position! record new-position))
+      (define (close)
+        (unless (port-closed? port)
+          (close-port port))
+        (unless (port-closed? record)
+          (close-port record)))
 
-      ;; Write HTTP requests line by line rather than byte by byte:
-      ;; <https://bugs.gnu.org/22966>.  This is possible with Guile >= 2.2.
-      (setvbuf record 'line)
+      (setvbuf record 'block)
 
-      record)))
+      ;; Return a port that wraps RECORD to ensure that closing it also
+      ;; closes PORT, the actual socket port, and its file descriptor.
+      ;; XXX: This wrapper would be unnecessary if GnuTLS could
+      ;; automatically close SESSION's file descriptor when RECORD is
+      ;; closed, but that doesn't seem to be possible currently (as of
+      ;; 3.6.9).
+      (make-custom-binary-input/output-port "gnutls wrapped port" read! write!
+                                            get-position set-position!
+                                            close))))
 
 (define (ensure-uri uri-or-string)                ;XXX: copied from (web http)
   (cond
@@ -440,16 +444,9 @@ VERIFY-CERTIFICATE? is true, verify HTTPS server certificates."
                      #:verify-certificate? verify-certificate?)
            s)))))
 
-(define (close-connection port)
-  "Like 'close-port', but (1) idempotent, and (2) also closes the underlying
-port if PORT is a TLS session record port."
-  ;; FIXME: This is a partial workaround for <http://bugs.gnu.org/20145>,
-  ;; because 'http-fetch' & co. may return a chunked input port whose 'close'
-  ;; method calls 'close-port', not 'close-connection'.
+(define (close-connection port)                   ;deprecated
   (unless (port-closed? port)
-    (close-port port))
-  (and=> (hashq-ref %tls-ports port)
-         close-connection))
+    (close-port port)))
 
 ;; XXX: This is an awful hack to make sure the (set-port-encoding! p
 ;; "ISO-8859-1") call in `read-response' passes, even during bootstrap

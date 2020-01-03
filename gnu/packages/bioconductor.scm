@@ -1053,14 +1053,14 @@ problems in CEL-level data to help evaluate performance of quality metrics.")
 (define-public r-affycoretools
   (package
     (name "r-affycoretools")
-    (version "1.58.2")
+    (version "1.58.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "affycoretools" version))
        (sha256
         (base32
-         "0cgy9phwdk4x9lr11xh6zs7v8r5xq959fmsmzwrpnd50dr7hzkvd"))))
+         "12r9ljkp3xix0xq8d1488c8wb3a4whb805v48ynmv985bs3phc71"))))
     (properties `((upstream-name . "affycoretools")))
     (build-system r-build-system)
     (propagated-inputs
@@ -1999,14 +1999,14 @@ genes or proteins in these datasets.")
 (define-public r-inspect
   (package
     (name "r-inspect")
-    (version "1.16.0")
+    (version "1.16.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "INSPEcT" version))
        (sha256
         (base32
-         "043066zygf2y2jp6dvfwl56hkzcdvkmymhjx3gh4mhi48l71zqv9"))))
+         "03cf9c94ra4f847ndlf8sn2cq1kl1055514wjq0lqbvlbfdj1dq3"))))
     (properties `((upstream-name . "INSPEcT")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2015,6 +2015,7 @@ genes or proteins in these datasets.")
        ("r-biocparallel" ,r-biocparallel)
        ("r-deseq2" ,r-deseq2)
        ("r-desolve" ,r-desolve)
+       ("r-gdata" ,r-gdata)
        ("r-genomeinfodb" ,r-genomeinfodb)
        ("r-genomicalignments" ,r-genomicalignments)
        ("r-genomicfeatures" ,r-genomicfeatures)
@@ -2126,14 +2127,14 @@ achieved for all methods using the BiocParallel framework.")
 (define-public r-biocsingular
   (package
     (name "r-biocsingular")
-    (version "1.2.0")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "BiocSingular" version))
        (sha256
         (base32
-         "0qd7r2k56ym7ivjgapxbk7fyj2d7396f1ad1hkgnicgyw1an5q1r"))))
+         "0fjfmmpda7pszsck2hm7bp4509pl3xaz02q2q03d5vla62h1h81k"))))
     (properties `((upstream-name . "BiocSingular")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3423,14 +3424,14 @@ data.")
 (define-public r-enrichplot
   (package
     (name "r-enrichplot")
-    (version "1.6.0")
+    (version "1.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "enrichplot" version))
        (sha256
         (base32
-         "1jblx00b869xhx1c4n9m2g1hqr00rm9ywr1hrlx42bdd8k5ax1xh"))))
+         "0707f5ll58psh7pr001cmmk5di7dprnbry1cy2mw20vn8p24nf3x"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
@@ -3458,14 +3459,14 @@ All the visualization methods are developed based on ggplot2 graphics.")
 (define-public r-clusterprofiler
   (package
     (name "r-clusterprofiler")
-    (version "3.14.0")
+    (version "3.14.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "clusterProfiler" version))
        (sha256
         (base32
-         "0mm9iafrsjb8sj27k9mg40ab13vq4rmrzhaajm6g1wdkb2jqikjk"))))
+         "1y1l3yf1r1ykl9ngipvyzl5hbxxsfz7z5q5rcywkyss2b2b6gsg8"))))
     (properties
      `((upstream-name . "clusterProfiler")))
     (build-system r-build-system)
@@ -3792,19 +3793,20 @@ fitting a three-component normal mixture on z-scores.")
 (define-public r-rgadem
   (package
     (name "r-rgadem")
-    (version "2.34.0")
+    (version "2.34.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "rGADEM" version))
        (sha256
         (base32
-         "14ylbrzb9haqwfdd9g813mzhll6gwvqf2r7cmbaxz5lkl0j0nglx"))))
+         "12xm4p4qsczf57kip8bvi6pr8sb5gvn11dnbz7lbh6sc03sx3q2h"))))
     (properties `((upstream-name . "rGADEM")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biostrings" ,r-biostrings)
        ("r-bsgenome" ,r-bsgenome)
+       ("r-genomicranges" ,r-genomicranges)
        ("r-iranges" ,r-iranges)
        ("r-seqlogo" ,r-seqlogo)))
     (home-page "https://bioconductor.org/packages/rGADEM/")
@@ -7175,14 +7177,14 @@ access.")
 (define-public r-multiassayexperiment
   (package
     (name "r-multiassayexperiment")
-    (version "1.12.0")
+    (version "1.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MultiAssayExperiment" version))
        (sha256
         (base32
-         "0hqg0b0hd5msnb4jcn1nbfyy1n1llfkipy2ivwncivkmbdn8psp4"))))
+         "0xpi5qpffg9pn8szkvicpc43a0r534wngyqwvsip8w66zi8c9kpc"))))
     (properties
      `((upstream-name . "MultiAssayExperiment")))
     (build-system r-build-system)

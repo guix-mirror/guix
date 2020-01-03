@@ -17,6 +17,9 @@
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Jesse John Gildersleve <jessejohngildersleve@zohomail.eu>
+;;; Copyright © 2019 Valentin Ignatev <valentignatev@gmail.com>
+;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2019 Amin Bandali <bandali@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,6 +64,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages web)       ; for jansson
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -83,14 +87,20 @@
                                       "emacs-source-date-epoch.patch"))
              (modules '((guix build utils)))
              (snippet
-              ;; Delete the bundled byte-compiled elisp files and
-              ;; generated autoloads.
               '(with-directory-excursion "lisp"
+                 ;; Delete the bundled byte-compiled elisp files and generated
+                 ;; autoloads.
                  (for-each delete-file
                            (append (find-files "." "\\.elc$")
                                    (find-files "." "loaddefs\\.el$")
                                    ;; This is the only "autoloads" file that
                                    ;; does not have "*loaddefs.el" name.
+                                   ;; TODO: Next time changing this package,
+                                   ;; replace the following with a call to
+                                   ;; `find-files', so that `delete-file'
+                                   ;; wouldn't error out when the file is
+                                   ;; missing, making the entire snippet field
+                                   ;; reusable as-is for `emacs-next' below.
                                    '("eshell/esh-groups.el")))
 
                  ;; Make sure Tramp looks for binaries in the right places on
@@ -210,6 +220,102 @@ documentation on all aspects of the system, from basic editing to writing
 large Lisp programs.  It has full Unicode support for nearly all human
 languages.")
     (license license:gpl3+)))
+
+(define-public emacs-next
+  (let ((commit "36abf6864604b3061c2e070f8997491fa2bce44c")
+        (revision "0")
+        (emacs-version "27.0.50"))
+    (package
+      (inherit emacs)
+      (name "emacs-next")
+      (version (git-version emacs-version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.savannah.gnu.org/git/emacs.git")
+               (commit commit)))
+         (sha256
+          (base32 "1ckn607p0clz0dhhlizvv7l03p4nminy48h53xrpz55w4rcrcm2l"))
+         (file-name (git-file-name name version))
+         (patches (search-patches "emacs27-exec-path.patch"
+                                  "emacs-fix-scheme-indent-function.patch"
+                                  "emacs-source-date-epoch.patch"))
+         (modules (origin-modules (package-source emacs)))
+         ;; TODO: once the snippet for `emacs' is changed to not fail when
+         ;; eshell/esh-groups.el does not exist, replace this snippet with
+         ;; (snippet (origin-snippet (package-source emacs))))).
+         (snippet
+          '(with-directory-excursion "lisp"
+             ;; Make sure Tramp looks for binaries in the right places on
+             ;; remote Guix System machines, where 'getconf PATH' returns
+             ;; something bogus.
+             (substitute* "net/tramp-sh.el"
+               ;; Patch the line after "(defcustom tramp-remote-path".
+               (("\\(tramp-default-remote-path")
+                (format #f "(tramp-default-remote-path ~s ~s ~s ~s "
+                        "~/.guix-profile/bin" "~/.guix-profile/sbin"
+                        "/run/current-system/profile/bin"
+                        "/run/current-system/profile/sbin")))
+
+             ;; Make sure Man looks for C header files in the right
+             ;; places.
+             (substitute* "man.el"
+               (("\"/usr/local/include\"" line)
+                (string-join
+                 (list line
+                       "\"~/.guix-profile/include\""
+                       "\"/var/guix/profiles/system/profile/include\"")
+                 " ")))
+             #t))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments emacs)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             ;; The 'reset-gzip-timestamps phase will throw a
+             ;; permission error if gzip files aren't writable then
+             (add-before
+                 'reset-gzip-timestamps
+                 'make-compressed-files-writable
+               (lambda _
+                 (for-each make-file-writable
+                           (find-files %output ".*\\.t?gz$"))
+                 #t))
+             ;; restore the dump file that Emacs installs somewhere in
+             ;; libexec/ to its original state
+             (add-after 'glib-or-gtk-wrap 'restore-emacs-pdmp
+               (lambda* (#:key outputs target #:allow-other-keys)
+                 (let* ((libexec (string-append (assoc-ref outputs "out")
+                                                "/libexec"))
+                        ;; each of these find-files should return one file
+                        (pdmp (find-files libexec "^emacs\\.pdmp$"))
+                        (pdmp-real (find-files libexec
+                                               "^\\.emacs\\.pdmp-real$")))
+                   (for-each (lambda (wrapper real)
+                               (delete-file wrapper)
+                               (rename-file real wrapper))
+                             pdmp pdmp-real)
+                   #t)))))))
+      (inputs
+       `(("jansson" ,jansson)
+         ,@(package-inputs emacs)))
+      (native-inputs
+       `(("autoconf" ,autoconf)      ; needed when building from trunk
+         ,@(package-native-inputs emacs)))
+
+      ;; TODO: consider changing `emacs' to use a more robust way of
+      ;; specifying version for "EMACSLOADPATH", so as to avoid having to
+      ;; duplicate native-search-paths here.
+      (native-search-paths
+       (list (search-path-specification
+              (variable "EMACSLOADPATH")
+              ;; The versioned entry is for the Emacs' builtin libraries.
+              (files
+               (list "share/emacs/site-lisp"
+                     (string-append "share/emacs/" emacs-version "/lisp"))))
+             (search-path-specification
+              (variable "INFOPATH")
+              (files '("share/info"))))))))
 
 (define-public emacs-minimal
   ;; This is the version that you should use as an input to packages that just

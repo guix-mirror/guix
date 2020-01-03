@@ -3,9 +3,10 @@
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
 ;;; Copyright © 2019 Andy Tai <atai@atai.org>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +37,8 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages man)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -143,14 +146,14 @@ to the clients.")
 (define-public fasm
   (package
     (name "fasm")
-    (version "1.73.11")
+    (version "1.73.21")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://flatassembler.net/fasm-"
                            version ".tgz"))
        (sha256
-        (base32 "1zhbs72qc8bw5158zh6mvzznfamcx5a1bsmbmq9ci0d7wb58sxmg"))))
+        (base32 "143zh7x3q0r2kclshh8n5w4i5pw4lh60si7rspvc725xxjpjkvcv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests exist
@@ -174,9 +177,9 @@ to the clients.")
     (supported-systems '("x86_64-linux" "i686-linux"))
     (synopsis "Assembler for x86 processors")
     (description
-     "FASM is an assembler that supports x86 and IA-64 Intel architectures.
-It does multiple passes to optimize machine code.  It has macro abilities and
-focuses on operating system portability.")
+     "@acronym{FASM, the Flat ASseMbler} is an assembler that supports x86 and
+IA-64 Intel architectures.  It does multiple passes to optimize machine code.
+It has macro abilities and focuses on operating system portability.")
     (home-page "https://flatassembler.net/")
     (license license:bsd-2)))
 
@@ -249,3 +252,50 @@ assembler, a C compiler and a linker.  The assembler uses Intel syntax
 functionality independent of any particular bytecode, language, or
 runtime")
       (license license:lgpl2.1+))))
+
+(define-public rgbds
+  (package
+    (name "rgbds")
+    (version "0.3.9")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/rednex/rgbds.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0pzd9ig3ahpgq7jbj82grllxx1v01d620insr2m8h0c6jj25n5hv"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'check
+           (lambda _
+             (with-directory-excursion "test/asm"
+               (invoke "./test.sh"))
+             (with-directory-excursion "test/link"
+               (invoke "./test.sh")))))
+       #:make-flags `("CC=gcc"
+                      ,(string-append "PREFIX="
+                                      (assoc-ref %outputs "out")))))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ("pkg-config" ,pkg-config)
+       ("util-linux" ,util-linux)))
+    (inputs
+     `(("libpng" ,libpng)))
+    (home-page "https://github.com/rednex/rgbds")
+    (synopsis "Rednex Game Boy Development System")
+    (description
+     "RGBDS (Rednex Game Boy Development System) is an assembler/linker
+package for the Game Boy and Game Boy Color.  It consists of:
+@itemize @bullet
+@item rgbasm (assembler)
+@item rgblink (linker)
+@item rgbfix (checksum/header fixer)
+@item rgbgfx (PNG-to-Game Boy graphics converter)
+@end itemize")
+    (license license:expat)))

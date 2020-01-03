@@ -363,14 +363,17 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.12.2")
+    (version "1.13.2")
     (source (origin
              (method url-fetch)
-             (uri (string-append "https://bitbucket.org/mutt/mutt/downloads/"
-                                 "mutt-" version ".tar.gz"))
+             (uri (list
+                    (string-append "ftp://ftp.mutt.org/pub/mutt/mutt-"
+                                   version ".tar.gz")
+                    (string-append "https://bitbucket.org/mutt/mutt/downloads/"
+                                   "mutt-" version ".tar.gz")))
              (sha256
               (base32
-               "10k8352s0z7yan6d4z2am80qd3bsaky4h89g72wl4xr3x067ahmw"))
+               "0x4yfvk8415p80h9an242n6q3b43mw6mnnczh95zd3j0zwdr6wrg"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -496,7 +499,7 @@ It adds a large amount of new and improved features to mutt.")
 (define-public gmime
   (package
     (name "gmime")
-    (version "3.2.4")
+    (version "3.2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gmime/"
@@ -504,7 +507,7 @@ It adds a large amount of new and improved features to mutt.")
                                   "/gmime-" version ".tar.xz"))
               (sha256
                (base32
-                "096hh4g6z343kncw9svcrzv05d41n4v2q5k9jsm6gc40w30ag7i4"))))
+                "0ndsg1z1kq4w4caascydvialpyn4rfbjdn7xclzbzhw53x85cxgv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -764,6 +767,63 @@ Maildir-format.  Mu's purpose in life is to help you to quickly find the
 messages you need; in addition, it allows you to view messages, extract
 attachments, create new maildirs, and so on.")
     (license gpl3+)))
+
+(define mumimu
+  ;; This is a fork of mu for use in Mumi that stores message bug IDs in its
+  ;; database.  It also renames the library to "mumimu" to avoid confusion.
+  (let ((commit "ad30b5e9c85f0465aeeeac461d8c32d95775d450")
+        (revision "1"))
+    (package
+      (inherit mu)
+      (name "mumimu")
+      ;; TODO The version here used to be (package-version guile-email), but
+      ;; that code caused problems
+      (version (git-version "0.2.2" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.elephly.net/software/mumimu.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1y8r8csvkyxncgpi469dir4n4sga4z9xdzc18qh5s8bk29qj689n"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments mu)
+         ((#:tests? anything '())
+          #f)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (replace 'patch-configure
+               (lambda _
+                 (delete-file "autogen.sh")
+                 (substitute* "configure.ac"
+                   ;; Use latest Guile
+                   (("guile-2.0") "guile-2.2"))
+                 (substitute* '("guile/Makefile.am"
+                                "guile/mu/Makefile.am")
+                   (("share/guile/site/2.0/") "share/guile/site/2.2/"))
+                 #t))
+             (replace 'fix-ffi
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (substitute* "guile/mumimu.scm"
+                   (("\"libguile-mu\"")
+                    (format #f "\"~a/lib/libguile-mumimu\""
+                            (assoc-ref outputs "out"))))
+                 #t))
+             (delete 'install-emacs-autoloads)))
+         ((#:configure-flags flags)
+          '("--disable-gtk"
+            "--disable-webkit"
+            "--disable-mu4e"))))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ("glib" ,glib "bin")
+         ("tzdata" ,tzdata-for-tests)
+         ("texinfo" ,texinfo))))))
 
 (define-public alot
   (package
@@ -1154,14 +1214,14 @@ which can add many functionalities to the base client.")
 (define-public msmtp
   (package
     (name "msmtp")
-    (version "1.8.6")
+    (version "1.8.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://marlam.de/msmtp/releases/"
                            "/msmtp-" version ".tar.xz"))
        (sha256
-        (base32 "1qa260xrm0fzlwxpjvgvq39m4dfkskjlyb7m4y2vlr8c8d3z29b6"))))
+        (base32 "1waiiksa57byb7gvx1zmh6srvl6r8rvwqklk0slb3iaf4kfbqlws"))))
     (build-system gnu-build-system)
     (inputs
      `(("libsecret" ,libsecret)
@@ -1289,7 +1349,7 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.3.8")
+    (version "2.3.9.2")
     (source
      (origin
        (method url-fetch)
@@ -1297,7 +1357,7 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            "dovecot-" version ".tar.gz"))
        (sha256
-        (base32 "0jdng27hqqagjy6v7ymd0xflbv5dbc1rhh450nk39ar6pw1qsxy5"))))
+        (base32 "1yc6hi4hqg4hcc4495sf4m5f1lnargphi6dawj43if21vncgp127"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1628,14 +1688,14 @@ header.")
 (define-public perl-email-sender
   (package
     (name "perl-email-sender")
-    (version "1.300033")
+    (version "1.300034")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
                            "Email-Sender-" version ".tar.gz"))
        (sha256
-        (base32 "1flbnzyng4g0h1aksbsip1qa6sawgfihvblspqc0xsis8g9vcza7"))))
+        (base32 "14aj9kqa9dr2bdhzn2qvjj2mffj8wjb5397z8qw7qg057fk3ib05"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-capture-tiny" ,perl-capture-tiny)))
@@ -2802,15 +2862,14 @@ killed threads.")
 (define-public pan
   (package
     (name "pan")
-    (version "0.145")
+    (version "0.146")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://pan.rebelbase.com/download/releases/"
                            version "/source/" name "-" version ".tar.bz2"))
        (sha256
-        (base32
-         "1b4wamv33hprghcjk903bpvnd233yxyrm18qnh13alc8h1553nk8"))))
+        (base32 "17agd27sn4a7nahvkpg0w39kv74njgdrrygs74bbvpaj8rk2hb55"))))
     (arguments
      `(#:configure-flags '("--with-gtk3" "--with-gtkspell" "--with-gnutls"
                            "--enable-libnotify" "--enable-manual"
@@ -2946,17 +3005,50 @@ replacement for the @code{urlview} program.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1575gn5p086sjxz5hvg6iyskq6cxf6vf50s9nsc4xgrbcqa3pv2c"))))
+                  "1575gn5p086sjxz5hvg6iyskq6cxf6vf50s9nsc4xgrbcqa3pv2c"))
+                (modules '((guix build utils)))
+                (snippet
+                 '(begin
+                    (substitute* "Makefile.am"
+                      ;; Install .go files to $prefix/lib instead of
+                      ;; $prefix/share.
+                      (("^godir[[:space:]]*=.*")
+                       "godir = \
+$(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n")
+
+                      ;; Install assets.
+                      (("^assetsdir.*" _)
+                       "\
+assetsdir    = $(pkgdatadir)/assets
+assetscssdir = $(assetsdir)/css
+assetsimgdir = $(assetsdir)/img
+assetsjsdir  = $(assetsdir)/js
+
+assetscss_DATA = $(wildcard assets/css/*)
+assetsimg_DATA = $(wildcard assets/img/*)
+assetsjs_DATA  = $(wildcard assets/js/*)\n"))
+                    #t))))
       (build-system gnu-build-system)
       (arguments
-       `(#:phases
+       `(#:modules ((guix build gnu-build-system)
+                    ((guix build guile-build-system)
+                     #:select (target-guile-effective-version))
+                    (guix build utils))
+         #:imported-modules ((guix build guile-build-system)
+                             ,@%gnu-build-system-modules)
+
+         #:configure-flags '("--localstatedir=/var")
+
+         #:phases
          (modify-phases %standard-phases
            (add-after 'install 'wrap-executable
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (bin (string-append out "/bin"))
-                      (scm (string-append out "/share/guile/site/2.2"))
-                      (go  (string-append out "/lib/guile/2.2/site-ccache")))
+                      (version (target-guile-effective-version))
+                      (scm (string-append out "/share/guile/site/" version))
+                      (go  (string-append out "/lib/guile/" version
+                                          "/site-ccache")))
                  (wrap-program (string-append bin "/mumi")
                    `("GUILE_LOAD_PATH" ":" prefix
                      (,scm ,(getenv "GUILE_LOAD_PATH")))
@@ -2969,7 +3061,9 @@ replacement for the @code{urlview} program.")
          ("guile-fibers" ,guile-fibers)
          ("guile-json" ,guile-json-1)
          ("guile-syntax-highlight" ,guile-syntax-highlight)
-         ("guile" ,guile-2.2)))
+         ("gnutls" ,gnutls)         ;needed to talk to https://debbugs.gnu.org
+         ("guile" ,guile-2.2)
+         ("mumimu" ,mumimu)))   ;'mumimu' executable recorded in (mumi config)
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)

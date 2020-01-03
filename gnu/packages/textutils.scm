@@ -17,6 +17,7 @@
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2019 Yoshinori Arai <kumagusu08@gmail.com>
+;;; Copyright © 2019 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,6 +48,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages java)
   #:use-module (gnu packages ncurses)
@@ -61,14 +63,14 @@
 (define-public dos2unix
   (package
     (name "dos2unix")
-    (version "7.4.0")
+    (version "7.4.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://waterlan.home.xs4all.nl/" name "/"
-                           name "-" version ".tar.gz"))
+       (uri (string-append "https://waterlan.home.xs4all.nl/dos2unix/"
+                           "dos2unix-" version ".tar.gz"))
        (sha256
-        (base32 "12h4c61g376bhq03y5g2xszkrkrj5hwd928rly3xsp6rvfmnbixs"))))
+        (base32 "08w6yywzirsxq8bh87jycvvw922ybhc2l426j2iqzliyn1h8mm8w"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "CC=gcc"
@@ -232,6 +234,7 @@ nested include statements).")
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
+       ("gcc" ,gcc-5) ;; doesn't build with later versions
        ("libtool" ,libtool)))
     (home-page "https://github.com/agordon/libgtextutils")
     (synopsis "Gordon's text utils library")
@@ -472,7 +475,7 @@ as existing hashing techniques, with provably negligible risk of collisions.")
 (define-public oniguruma
   (package
     (name "oniguruma")
-    (version "6.9.3")
+    (version "6.9.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/kkos/"
@@ -480,7 +483,7 @@ as existing hashing techniques, with provably negligible risk of collisions.")
                                   "/onig-" version ".tar.gz"))
               (sha256
                (base32
-                "0pvj37r1rd5h5vw99mdk8z4k44gq1ldwrapkamdiicksdfkr4ndb"))))
+                "0lvd1rpp49i0k1icblb0i76lj2cwmhf1c5p1jdz2m6g0ywpx4sa6"))))
     (build-system gnu-build-system)
     (home-page "https://github.com/kkos/oniguruma")
     (synopsis "Regular expression library")

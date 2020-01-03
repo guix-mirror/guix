@@ -70,7 +70,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages assembly)
   #:use-module (gnu packages rust)
-  #:use-module (gnu packages rust-cbindgen)
+  #:use-module (gnu packages rust-apps)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages icu4c)
@@ -963,6 +963,13 @@ from forcing GEXP-PROMISE."
     'GL', 'gnome-2', 'canberra', 'Xss', 'cups', 'gssapi_krb5',
     'avcodec', 'avutil', 'pulse' ]\n\n"
                                all)))
+             #t))
+         (add-after 'link-libxul-with-libraries 'fix-ffmpeg-runtime-linker
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Arrange to load libavcodec.so by its absolute file name.
+             (substitute* "dom/media/platforms/ffmpeg/FFmpegRuntimeLinker.cpp"
+               (("libavcodec\\.so")
+                (string-append (assoc-ref inputs "ffmpeg") "/lib/libavcodec.so")))
              #t))
          (replace 'bootstrap
            (lambda _

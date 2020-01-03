@@ -5,6 +5,7 @@
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Meiyo Peng <meiyo@disroot.org>
+;;; Copyright © 2020 kanichos <kanichos@yandex.ru>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,7 +58,7 @@
 (define-public ibus
   (package
     (name "ibus")
-    (version "1.5.20")
+    (version "1.5.21")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ibus/ibus/"
@@ -65,7 +66,7 @@
                                   version "/ibus-" version ".tar.gz"))
               (sha256
                (base32
-                "0d6hcbw6ai91jl87lqnyn8bxi5y5kba5i9nz7knknyh69g5fbwac"))))
+                "1fd2d1jqpp1nn74x04zcilhhab0zar82n0kg614rma6n43kfbhdd"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f  ; tests fail because there's no connection to dbus
@@ -116,7 +117,7 @@
                                "/share/X11/locale")))
              (substitute* "ui/gtk3/xkblayout.vala"
                (("\"(setxkbmap|xmodmap)\"" _ prog)
-                (string-append "\"" (assoc-ref inputs prog) "\"")))
+                (string-append "\"" (assoc-ref inputs prog) "/bin/" prog "\"")))
              #t))
          (add-after 'wrap-program 'wrap-with-additional-paths
            (lambda* (#:key outputs #:allow-other-keys)
@@ -688,3 +689,67 @@ input methods as well as those for Chinese dialects.  It has the ability to
 compose phrases and sentences intelligently and provide very accurate
 traditional Chinese output.")
     (license gpl3+)))
+
+(define-public libhangul
+  (package
+    (name "libhangul")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://kldp.net/hangul/release/"
+                           "3442-libhangul-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ni9b0v70wkm0116na7ghv03pgxsfpfszhgyj3hld3bxamfal1ar"))))
+    (build-system gnu-build-system)
+    (home-page "https://github.com/libhangul/libhangul")
+    (synopsis "Library to support hangul input method logic")
+    (description
+     "This package provides a library to support hangul input method logic,
+hanja dictionary and small hangul character classification.")
+    (license lgpl2.1+)))
+
+(define-public ibus-libhangul
+  (package
+    (name "ibus-libhangul")
+    (version "1.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/libhangul/ibus-hangul/"
+                           "releases/download/" version
+                           "/ibus-hangul-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1400ba2p34vr9q285lqvjm73f6m677cgfdymmjpiwyrjgbbiqrjy"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (wrap-program (string-append (assoc-ref outputs "out")
+                                          "/libexec/ibus-setup-hangul")
+               `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))
+               `("LD_LIBRARY_PATH" ":" prefix
+                 (,(string-append (assoc-ref inputs "libhangul") "/lib")))
+               `("GI_TYPELIB_PATH" ":" prefix
+                 (,(getenv "GI_TYPELIB_PATH"))))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")))
+    (inputs
+     `(("ibus" ,ibus)
+       ("glib" ,glib)
+       ("python-pygobject" ,python-pygobject)
+       ("gtk+" ,gtk+)
+       ("libhangul" ,libhangul)
+       ("python" ,python)))
+    (home-page "https://github.com/libhangul/ibus-hangul")
+    (synopsis "Hangul engine for IBus")
+    (description
+     "ibus-hangul is a Korean input method engine for IBus.")
+    (license gpl2+)))

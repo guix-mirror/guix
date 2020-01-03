@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -384,9 +384,19 @@ set timeout=~a~%"
 submenu \"GNU system, old configurations...\" {~%")
                     #$@(map menu-entry->gexp old-entries)
                     (format port "}~%"))
-                 #~()))))
+                 #~())
+          (format port "
+if [ \"${grub_platform}\" == efi ]; then
+  menuentry \"Firmware setup\" {
+    fwsetup
+  }
+fi~%"))))
 
-  (computed-file "grub.cfg" builder))
+  ;; Since this file is rather unique, there's no point in trying to
+  ;; substitute it.
+  (computed-file "grub.cfg" builder
+                 #:options '(#:local-build? #t
+                             #:substitutable? #f)))
 
 
 

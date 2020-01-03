@@ -58,14 +58,14 @@
 (define-public cifs-utils
   (package
     (name "cifs-utils")
-    (version "6.9")
+    (version "6.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.samba.org/pub/linux-cifs/"
                            "cifs-utils/cifs-utils-" version ".tar.bz2"))
        (sha256 (base32
-                "175cp509wn1zv8p8mv37hkf6sxiskrsxdnq22mhlsg61jazz3n0q"))))
+                "19q4b5bzlxhn1hpi843xrp6f50d33w7m0rs26krkg5h3x742kz4j"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -81,12 +81,24 @@
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'set-root-sbin
+         (replace 'bootstrap
+           ;; Force a bootstrap to fix a ‘cannot find install-sh, install.sh,
+           ;; or shtool’ error since version 6.10.
            (lambda _
+             (invoke "autoreconf" "-vfi")
+             #t))
+         (add-before 'configure 'set-root-sbin
+           (lambda* (#:key outputs #:allow-other-keys)
              ;; Don't try to install into "/sbin".
              (setenv "ROOTSBINDIR"
-                     (string-append (assoc-ref %outputs "out") "/sbin"))
-             #t)))))
+                     (string-append (assoc-ref outputs "out") "/sbin"))
+             #t))
+         (add-before 'install 'create-man8dir
+           ;; Create a directory that isn't created since version 6.10.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/share/man/man8"))
+               #t))))))
     (synopsis "User-space utilities for Linux CIFS (Samba) mounts")
     (description "@code{cifs-utils} is a set of user-space utilities for
 mounting and managing @dfn{Common Internet File System} (CIFS) shares using
@@ -156,14 +168,14 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.11.2")
+    (version "4.11.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.samba.org/pub/samba/stable/"
                                  "samba-" version ".tar.gz"))
              (sha256
               (base32
-               "07wzn0fq90mbrfsm5qvyrzvhb9s76yvwqvw9hxazn9azryvz2yyj"))))
+               "096vc6j36924xrjzqr6lqmf9qwgwv9szxb35rsfi0mq78nx72m5r"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -247,14 +259,14 @@ Desktops into Active Directory environments using the winbind daemon.")
 (define-public talloc
   (package
     (name "talloc")
-    (version "2.3.0")
+    (version "2.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/talloc/talloc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1iigk4a7n9k9qqq0h3a5vah67ycpqzvahvdhzy15lm428jrvrmbm"))))
+                "0xwzgzrqamfdlklwacp9d219pqkah0yfrhxb1j7bxlmgzp924j7g"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -314,14 +326,14 @@ destructors.  It is the core memory allocator used in Samba.")
 (define-public tevent
   (package
     (name "tevent")
-    (version "0.10.1")
+    (version "0.10.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/tevent/tevent-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1dhhd7fz6wyvlwrk1a6gj5m2mcjsc3ilx0mcv1qsr1lbndldm93r"))))
+                "15k6i8ad5lpxfjsjyq9h64zlyws8d3cm0vwdnaw8z1xjwli7hhpq"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

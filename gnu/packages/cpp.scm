@@ -185,7 +185,7 @@ batches.")
                 (modules '((guix build utils)))
                 (snippet '(delete-file-recursively "./test/thirdparty"))))
       (native-inputs
-       `(("catch2" ,catch-framework2)))
+       `(("catch2" ,catch-framework2-1)))
       (build-system cmake-build-system)
       (arguments
        `(#:phases

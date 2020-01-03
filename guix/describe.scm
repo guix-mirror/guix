@@ -30,7 +30,8 @@
             current-profile-entries
             package-path-entries
 
-            package-provenance))
+            package-provenance
+            manifest-entry-with-provenance))
 
 ;;; Commentary:
 ;;;
@@ -144,3 +145,18 @@ property of manifest entries, or #f if it could not be determined."
                   (and main
                        `(,main
                          ,@(if extra (list extra) '()))))))))))
+
+(define (manifest-entry-with-provenance entry)
+  "Return ENTRY with an additional 'provenance' property if it's not already
+there."
+  (let ((properties (manifest-entry-properties entry)))
+    (if (assq 'properties properties)
+        entry
+        (let ((item (manifest-entry-item entry)))
+          (manifest-entry
+            (inherit entry)
+            (properties
+             (match (and (package? item) (package-provenance item))
+               (#f   properties)
+               (sexp `((provenance ,@sexp)
+                       ,@properties)))))))))

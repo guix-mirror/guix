@@ -102,7 +102,7 @@ Start COW-STORE service on target directory and launch guix install command in
 a subshell.  LOCALE must be the locale name under which that command will run,
 or #f.  Return #t on success and #f on failure."
   (let ((install-command
-         (format #f "guix system init ~a ~a"
+         (format #f "guix system init --fallback ~a ~a"
                  (%installer-configuration-file)
                  (%installer-target-dir))))
     (mkdir-p (%installer-target-dir))
