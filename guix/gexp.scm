@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -1602,7 +1602,12 @@ imported modules in its search path.  Look up EXP's modules in MODULE-PATH."
                            (chmod port #o555))))
                       #:system system
                       #:target target
-                      #:module-path module-path)))
+                      #:module-path module-path
+
+                      ;; These derivations are not worth offloading or
+                      ;; substituting.
+                      #:local-build? #t
+                      #:substitutable? #f)))
 
 (define* (gexp->file name exp #:key
                      (set-load-path? #t)
