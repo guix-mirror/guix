@@ -8130,3 +8130,25 @@ visualization.")
 
 (define-public cl-ana.quantity
   (sbcl-package->cl-source-package sbcl-cl-ana.quantity))
+
+(define-public sbcl-cl-ana.table
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.table")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("cl-ana.functional-utils" ,sbcl-cl-ana.functional-utils)
+       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
+       ("cl-ana.macro-utils" ,sbcl-cl-ana.macro-utils)
+       ("cl-ana.string-utils" ,sbcl-cl-ana.string-utils)
+       ("cl-ana.symbol-utils" ,sbcl-cl-ana.symbol-utils)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "table/cl-ana.table.asd")
+       ((#:asd-system-name _ #f) "cl-ana.table")))))
+
+(define-public cl-ana.table
+  (sbcl-package->cl-source-package sbcl-cl-ana.table))
+
+(define-public ecl-cl-ana.table
+  (sbcl-package->ecl-package sbcl-cl-ana.table))
