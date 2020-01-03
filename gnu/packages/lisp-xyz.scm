@@ -8454,3 +8454,20 @@ visualization.")
 
 (define-public cl-ana.linear-algebra
   (sbcl-package->cl-source-package sbcl-cl-ana.linear-algebra))
+
+(define-public sbcl-cl-ana.lorentz
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.lorentz")
+    (inputs
+     `(("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
+       ("cl-ana.linear-algebra" ,sbcl-cl-ana.linear-algebra)
+       ("cl-ana.tensor" ,sbcl-cl-ana.tensor)
+       ("iterate" ,sbcl-iterate)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "lorentz/cl-ana.lorentz.asd")
+       ((#:asd-system-name _ #f) "cl-ana.lorentz")))))
+
+(define-public cl-ana.lorentz
+  (sbcl-package->cl-source-package sbcl-cl-ana.lorentz))
