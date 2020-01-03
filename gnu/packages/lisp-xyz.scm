@@ -8523,3 +8523,22 @@ visualization.")
 
 (define-public ecl-cl-ana.map
   (sbcl-package->ecl-package sbcl-cl-ana.map))
+
+(define-public sbcl-cl-ana.fitting
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.fitting")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("cl-ana.error-propogation" ,sbcl-cl-ana.error-propogation)
+       ("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
+       ("cl-ana.map" ,sbcl-cl-ana.map)
+       ("cl-ana.math-functions" ,sbcl-cl-ana.math-functions)
+       ("gsll" ,sbcl-gsll)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "fitting/cl-ana.fitting.asd")
+       ((#:asd-system-name _ #f) "cl-ana.fitting")))))
+
+(define-public cl-ana.fitting
+  (sbcl-package->cl-source-package sbcl-cl-ana.fitting))
