@@ -7280,3 +7280,33 @@ results.")
 
 (define-public cl-trivial-indent
   (sbcl-package->cl-source-package sbcl-trivial-indent))
+
+(define-public sbcl-documentation-utils
+  (let ((commit "98630dd5f7e36ae057fa09da3523f42ccb5d1f55")
+        (revision "0"))
+    (package
+      (name "sbcl-documentation-utils")
+      (version (git-version "1.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/Shinmera/documentation-utils.git")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "098qhkqskmmrh4wix34mawf7p5c87yql28r51r75yjxj577k5idq"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("trivial-indent" ,sbcl-trivial-indent)))
+      (synopsis "Few simple tools to document Common Lisp libraries")
+      (description
+       "This is a small library to help you with managing the Common Lisp
+docstrings for your library.")
+      (home-page "https://shinmera.github.io/documentation-utils/")
+      (license license:zlib))))
+
+(define-public cl-documentation-utils
+  (sbcl-package->cl-source-package sbcl-documentation-utils))
