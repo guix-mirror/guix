@@ -6542,7 +6542,7 @@ functions to assist in reviewing changes on files.")
 (define-public emacs-pyvenv
   (package
     (name "emacs-pyvenv")
-    (version "1.20")
+    (version "1.21")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -6551,7 +6551,7 @@ functions to assist in reviewing changes on files.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1x052fsavb94x3scpqd6n9spqgzaahzbdxhg4qa5sy6hqsabn6zh"))))
+                "055sgk8zf4wb5nqsf3qasf5gg861zlb1831733f1qcrd2ij5gzxx"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
