@@ -8833,3 +8833,34 @@ visualization.")
 
 (define-public cl-ana.makeres-branch
   (sbcl-package->cl-source-package sbcl-cl-ana.makeres-branch))
+
+(define-public sbcl-cl-ana.makeres-utils
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.makeres-utils")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("cl-ana.file-utils" ,sbcl-cl-ana.file-utils)
+       ("cl-ana.fitting" ,sbcl-cl-ana.fitting)
+       ("cl-ana.functional-utils" ,sbcl-cl-ana.functional-utils)
+       ("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
+       ("cl-ana.histogram" ,sbcl-cl-ana.histogram)
+       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
+       ("cl-ana.macro-utils" ,sbcl-cl-ana.macro-utils)
+       ("cl-ana.makeres" ,sbcl-cl-ana.makeres)
+       ("cl-ana.map" ,sbcl-cl-ana.map)
+       ("cl-ana.pathname-utils" ,sbcl-cl-ana.pathname-utils)
+       ("cl-ana.plotting" ,sbcl-cl-ana.plotting)
+       ("cl-ana.reusable-table" ,sbcl-cl-ana.reusable-table)
+       ("cl-ana.string-utils" ,sbcl-cl-ana.string-utils)
+       ("cl-ana.symbol-utils" ,sbcl-cl-ana.symbol-utils)
+       ("cl-ana.table" ,sbcl-cl-ana.table)))
+    (native-inputs
+     `(("cl-fad" ,sbcl-cl-fad)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "makeres-utils/cl-ana.makeres-utils.asd")
+       ((#:asd-system-name _ #f) "cl-ana.makeres-utils")))))
+
+(define-public cl-ana.makeres-utils
+  (sbcl-package->cl-source-package sbcl-cl-ana.makeres-utils))
