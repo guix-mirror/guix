@@ -7824,3 +7824,39 @@ from/to strings, streams and files.")
 
 (define-public ecl-cl-csv
   (sbcl-package->ecl-package sbcl-cl-csv))
+
+(define-public sbcl-external-program
+  (let ((commit "5888b8f1fd3953feeeacecbba4384ddda584a749")
+        (revision "1"))
+    (package
+      (name "sbcl-external-program")
+      (version (git-version "0.0.6" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sellout/external-program.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0vww1x3yilb3bjwg6k184vaj4vxyxw4vralhnlm6lk4xac67kc9z"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("trivial-features" ,sbcl-trivial-features)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (synopsis "Common Lisp library for running external programs")
+      (description
+       "EXTERNAL-PROGRAM enables running programs outside the Lisp
+process.  It is an attempt to make the RUN-PROGRAM functionality in
+implementations like SBCL and CCL as portable as possible without
+sacrificing much in the way of power.")
+      (home-page "https://github.com/sellout/external-program")
+      (license license:llgpl))))
+
+(define-public cl-external-program
+  (sbcl-package->cl-source-package sbcl-external-program))
+
+(define-public ecl-external-program
+  (sbcl-package->ecl-package sbcl-external-program))
