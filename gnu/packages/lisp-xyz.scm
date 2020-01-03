@@ -7785,3 +7785,42 @@ and camel-case rules.")
 
 (define-public ecl-lisp-unit2
   (sbcl-package->ecl-package sbcl-lisp-unit2))
+
+(define-public sbcl-cl-csv
+  (let ((commit "3eba29c8364b033fbe0d189c2500559278b6a362")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-csv")
+      (version (git-version "1.0.6" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/AccelerationNet/cl-csv.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "07h4ni89jzx93clx453hlnnb5g53hhlcmz5hghqv6ysam48lc8g6"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       ;; See: https://github.com/AccelerationNet/cl-csv/pull/34
+       `(#:tests? #f))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-interpol" ,sbcl-cl-interpol)
+         ("iterate" ,sbcl-iterate)))
+      (native-inputs
+       `(("lisp-unit2" ,sbcl-lisp-unit2)))
+      (synopsis "Common lisp library for comma-separated values")
+      (description
+       "This is a Common Lisp library providing functions to read/write CSV
+from/to strings, streams and files.")
+      (home-page "https://github.com/AccelerationNet/cl-csv")
+      (license license:bsd-3))))
+
+(define-public cl-csv
+  (sbcl-package->cl-source-package sbcl-cl-csv))
+
+(define-public ecl-cl-csv
+  (sbcl-package->ecl-package sbcl-cl-csv))
