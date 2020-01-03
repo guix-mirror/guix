@@ -8864,3 +8864,28 @@ visualization.")
 
 (define-public cl-ana.makeres-utils
   (sbcl-package->cl-source-package sbcl-cl-ana.makeres-utils))
+
+(define-public sbcl-cl-ana.statistical-learning
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.statistical-learning")
+    (inputs
+     `(("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
+       ("cl-ana.functional-utils" ,sbcl-cl-ana.functional-utils)
+       ("cl-ana.histogram" ,sbcl-cl-ana.histogram)
+       ("cl-ana.linear-algebra" ,sbcl-cl-ana.linear-algebra)
+       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
+       ("cl-ana.macro-utils" ,sbcl-cl-ana.macro-utils)
+       ("cl-ana.math-functions" ,sbcl-cl-ana.math-functions)
+       ("cl-ana.map" ,sbcl-cl-ana.map)
+       ("cl-ana.statistics" ,sbcl-cl-ana.statistics)))
+    (native-inputs
+     `(("cl-fad" ,sbcl-cl-fad)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "")
+        "statistical-learning/cl-ana.statistical-learning.asd")
+       ((#:asd-system-name _ #f) "cl-ana.statistical-learning")))))
+
+(define-public cl-ana.statistical-learning
+  (sbcl-package->cl-source-package sbcl-cl-ana.statistical-learning))
