@@ -130,7 +130,7 @@
 (define-record-type* <gss-configuration>
   gss-configuration make-gss-configuration
   gss-configuration?
-  (pipefs-directory            gss-configuration-pipefs-directory
+  (pipefs-directory      gss-configuration-pipefs-directory
                          (default default-pipefs-directory))
   (nfs-utils             gss-configuration-gss
                          (default nfs-utils)))
@@ -162,11 +162,11 @@
 (define-record-type* <idmap-configuration>
   idmap-configuration make-idmap-configuration
   idmap-configuration?
-  (pipefs-directory            idmap-configuration-pipefs-directory
+  (pipefs-directory      idmap-configuration-pipefs-directory
                          (default default-pipefs-directory))
   (domain                idmap-configuration-domain
-                           (default #f))
-  (nfs-utils             idmap-configuration-idmap
+                         (default #f))
+  (nfs-utils             idmap-configuration-nfs-utils
                          (default nfs-utils)))
 
 (define idmap-service-type
@@ -175,7 +175,7 @@
    (lambda (config)
 
      (define nfs-utils
-       (idmap-configuration-idmap config))
+       (idmap-configuration-nfs-utils config))
 
      (define pipefs-directory
        (idmap-configuration-pipefs-directory config))
