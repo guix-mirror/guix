@@ -7310,3 +7310,33 @@ docstrings for your library.")
 
 (define-public cl-documentation-utils
   (sbcl-package->cl-source-package sbcl-documentation-utils))
+
+(define-public sbcl-form-fiddle
+  (let ((commit "e0c23599dbb8cff3e83e012f3d86d0764188ad18")
+        (revision "0"))
+    (package
+      (name "sbcl-form-fiddle")
+      (version (git-version "1.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/Shinmera/form-fiddle")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "041iznc9mpfyrl0sv5893ys9pbb2pvbn9g3clarqi7gsfj483jln"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("documentation-utils" ,sbcl-documentation-utils)))
+      (synopsis "Utilities to destructure Common Lisp lambda forms")
+      (description
+       "Often times we need to destructure a form definition in a Common Lisp
+macro.  This library provides a set of simple utilities to help with that.")
+      (home-page "https://shinmera.github.io/form-fiddle/")
+      (license license:zlib))))
+
+(define-public cl-form-fiddle
+  (sbcl-package->cl-source-package sbcl-form-fiddle))
