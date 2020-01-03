@@ -37,7 +37,7 @@
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2019 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2019, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Jesse Gibbons <jgibbons2357+guix@gmail.com>
@@ -5181,7 +5181,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
 (define-public tome4
   (package
     (name "tome4")
-    (version "1.6.4")
+    (version "1.6.5")
     (synopsis "Single-player, RPG roguelike game set in the world of Eyal")
     (source
      (origin
@@ -5190,7 +5190,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
                            version ".tar.bz2"))
        (sha256
         (base32
-         "1hrh79aqmvwwd7idlr3lzpdpc9dgm1k5p7w2462chcjvd8vhfhb7"))
+         "0ifi057idid8xq7af8ybs99b6939hyfif1ml1ihjpx02vinmd419"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -5249,11 +5249,11 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
                              (wrapper (string-append bin "/" ,name)))
                         ;; icon
                         (mkdir-p pixmaps)
-                        (system* unzip "-j"
-                                 (string-append
-                                  "game/engines/te4-" ,version ".teae")
-                                 (string-append
-                                  "data/gfx/" icon) "-d" pixmaps)
+                        (invoke unzip "-j"
+                                (string-append
+                                 "game/engines/te4-" ,version ".teae")
+                                (string-append
+                                 "data/gfx/" icon) "-d" pixmaps)
                         ;; game executable
                         (install-file "t-engine" data)
                         (mkdir-p bin)
