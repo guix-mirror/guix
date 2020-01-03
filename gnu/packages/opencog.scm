@@ -109,3 +109,46 @@ sequences of rules to perform reasoning.  It is a layer that sits on top of
 ordinary distributed (graph) databases, providing a large variety of advanced
 features not otherwise available.")
       (license license:agpl3))))
+
+(define-public cogserver
+  ;; There are no releases.
+  (let ((commit "c8ad85fef446819e6bd711f0791887a5aa6a41f9")
+        (revision "1"))
+    (package
+      (name "cogserver")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/opencog/cogserver.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0flwl2cbmnj7kjcx8vwk7rbhsp2si0a51ci0hx88a3xx1f76cp3f"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #f ; See https://github.com/opencog/cogserver/issues/24
+         #:test-target "tests"
+         #:configure-flags
+         (list (string-append "-DGUILE_INCLUDE_DIR="
+                              (assoc-ref %build-inputs "guile")
+                              "/include/guile/2.2/")
+               (string-append "-DGUILE_SITE_DIR="
+                              (assoc-ref %outputs "out")
+                              "/share/guile/site/2.2/"))))
+      (inputs
+       `(("atomspace" ,atomspace)
+         ("boost" ,boost)
+         ("cogutil" ,cogutil)
+         ("gmp" ,gmp)
+         ("guile" ,guile-2.2)))
+      (native-inputs
+       `(("cxxtest" ,cxxtest)
+         ("python" ,python-minimal)
+         ("pkg-config" ,pkg-config)))
+      (home-page "https://github.com/opencog/cogserver/")
+      (synopsis "OpenCog network server")
+      (description "The OpenCog Cogserver is a network and job server for the
+OpenCog framework.")
+      (license license:agpl3))))
