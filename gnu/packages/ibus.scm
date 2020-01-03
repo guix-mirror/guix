@@ -709,3 +709,47 @@ traditional Chinese output.")
      "This package provides a library to support hangul input method logic,
 hanja dictionary and small hangul character classification.")
     (license lgpl2.1+)))
+
+(define-public ibus-libhangul
+  (package
+    (name "ibus-libhangul")
+    (version "1.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/libhangul/ibus-hangul/"
+                           "releases/download/" version
+                           "/ibus-hangul-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1400ba2p34vr9q285lqvjm73f6m677cgfdymmjpiwyrjgbbiqrjy"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (wrap-program (string-append (assoc-ref outputs "out")
+                                          "/libexec/ibus-setup-hangul")
+               `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))
+               `("LD_LIBRARY_PATH" ":" prefix
+                 (,(string-append (assoc-ref inputs "libhangul") "/lib")))
+               `("GI_TYPELIB_PATH" ":" prefix
+                 (,(getenv "GI_TYPELIB_PATH"))))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")))
+    (inputs
+     `(("ibus" ,ibus)
+       ("glib" ,glib)
+       ("python-pygobject" ,python-pygobject)
+       ("gtk+" ,gtk+)
+       ("libhangul" ,libhangul)
+       ("python" ,python)))
+    (home-page "https://github.com/libhangul/ibus-hangul")
+    (synopsis "Hangul engine for IBus")
+    (description
+     "ibus-hangul is a Korean input method engine for IBus.")
+    (license gpl2+)))
