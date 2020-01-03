@@ -7917,3 +7917,20 @@ visualization.")
 
 (define-public ecl-cl-ana.package-utils
   (sbcl-package->ecl-package sbcl-cl-ana.package-utils))
+
+(define-public sbcl-cl-ana.string-utils
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.string-utils")
+    (inputs
+     `(("split-sequence" ,sbcl-split-sequence)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "string-utils/cl-ana.string-utils.asd")
+       ((#:asd-system-name _ #f) "cl-ana.string-utils")))))
+
+(define-public cl-ana.string-utils
+  (sbcl-package->cl-source-package sbcl-cl-ana.string-utils))
+
+(define-public ecl-cl-ana.string-utils
+  (sbcl-package->ecl-package sbcl-cl-ana.string-utils))
