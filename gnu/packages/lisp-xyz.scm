@@ -8542,3 +8542,28 @@ visualization.")
 
 (define-public cl-ana.fitting
   (sbcl-package->cl-source-package sbcl-cl-ana.fitting))
+
+(define-public sbcl-cl-ana.histogram
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.histogram")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("iterate" ,sbcl-iterate)
+       ("cl-ana.binary-tree" ,sbcl-cl-ana.binary-tree)
+       ("cl-ana.clos-utils" ,sbcl-cl-ana.clos-utils)
+       ("cl-ana.fitting" ,sbcl-cl-ana.fitting)
+       ("cl-ana.functional-utils" ,sbcl-cl-ana.functional-utils)
+       ("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
+       ("cl-ana.hash-table-utils" ,sbcl-cl-ana.hash-table-utils)
+       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
+       ("cl-ana.macro-utils" ,sbcl-cl-ana.macro-utils)
+       ("cl-ana.map" ,sbcl-cl-ana.map)
+       ("cl-ana.tensor" ,sbcl-cl-ana.tensor)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "histogram/cl-ana.histogram.asd")
+       ((#:asd-system-name _ #f) "cl-ana.histogram")))))
+
+(define-public cl-ana.histogram
+  (sbcl-package->cl-source-package sbcl-cl-ana.histogram))
