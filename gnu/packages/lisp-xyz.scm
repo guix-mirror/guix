@@ -7602,3 +7602,18 @@ intending to program in Lisp.")
 
 (define-public cl-gsll
   (sbcl-package->cl-source-package sbcl-gsll))
+
+(define-public sbcl-antik
+  (package
+    (inherit sbcl-antik-base)
+    (name "sbcl-antik")
+    (inputs
+     `(("gsll" ,sbcl-gsll)
+       ("physical-dimension" ,sbcl-physical-dimension)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-antik-base)
+       ((#:asd-file _ "") "antik.asd")
+       ((#:asd-system-name _ #f) "antik")))))
+
+(define-public cl-antik
+  (sbcl-package->cl-source-package sbcl-antik))
