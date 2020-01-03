@@ -24,6 +24,7 @@
   #:use-module (gnu packages linux)
   #:use-module (guix)
   #:use-module (guix records)
+  #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
   #:use-module (gnu build file-systems)
   #:export (rpcbind-service-type
@@ -96,23 +97,33 @@
                          (default default-pipefs-directory)))
 
 (define pipefs-service-type
-  (shepherd-service-type
-   'pipefs
-   (lambda (config)
-     (define pipefs-directory (pipefs-configuration-mount-point config))
+  (let ((proc
+         (lambda (config)
+           (define pipefs-directory (pipefs-configuration-mount-point config))
 
-     (shepherd-service
-      (documentation "Mount the pipefs pseudo file system.")
-      (provision '(rpc-pipefs))
+           (shepherd-service
+            (documentation "Mount the pipefs pseudo file system.")
+            (provision '(rpc-pipefs))
 
-      (start #~(lambda ()
-                 (mkdir-p #$pipefs-directory)
-                 (mount "rpc_pipefs" #$pipefs-directory "rpc_pipefs")
-                 (member #$pipefs-directory (mount-points))))
+            (start #~(lambda ()
+                       (mkdir-p #$pipefs-directory)
+                       (mount "rpc_pipefs" #$pipefs-directory "rpc_pipefs")
+                       (member #$pipefs-directory (mount-points))))
 
-      (stop #~(lambda (pid . args)
-                (umount #$pipefs-directory MNT_DETACH)
-                (not (member #$pipefs-directory (mount-points)))))))))
+            (stop #~(lambda (pid . args)
+                      (umount #$pipefs-directory MNT_DETACH)
+                      (not (member #$pipefs-directory (mount-points)))))))))
+    (service-type
+     (name 'pipefs)
+     (extensions
+      (list (service-extension shepherd-root-service-type
+                               (compose list proc))))
+     ;; We use the extensions feature to allow other services to automatically
+     ;; configure and start this service.  Only one value can be provided.  We
+     ;; override it with the value returned by the extending service.
+     (compose identity)
+     (extend (lambda (config values) (first values)))
+     (default-value (pipefs-configuration)))))
 
 
 
