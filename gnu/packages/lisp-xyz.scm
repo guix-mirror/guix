@@ -8325,3 +8325,29 @@ visualization.")
 
 (define-public ecl-cl-ana.typed-table
   (sbcl-package->ecl-package sbcl-cl-ana.typed-table))
+
+(define-public sbcl-cl-ana.hdf-table
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.hdf-table")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("cl-ana.binary-tree" ,sbcl-cl-ana.binary-tree)
+       ("cl-ana.hdf-cffi" ,sbcl-cl-ana.hdf-cffi)
+       ("cl-ana.hdf-typespec" ,sbcl-cl-ana.hdf-typespec)
+       ("cl-ana.hdf-utils" ,sbcl-cl-ana.hdf-utils)
+       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
+       ("cl-ana.memoization" ,sbcl-cl-ana.memoization)
+       ("cl-ana.table" ,sbcl-cl-ana.table)
+       ("cl-ana.typed-table" ,sbcl-cl-ana.typed-table)
+       ("cl-ana.typespec" ,sbcl-cl-ana.typespec)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "hdf-table/cl-ana.hdf-table.asd")
+       ((#:asd-system-name _ #f) "cl-ana.hdf-table")))))
+
+(define-public cl-ana.hdf-table
+  (sbcl-package->cl-source-package sbcl-cl-ana.hdf-table))
+
+(define-public ecl-cl-ana.hdf-table
+  (sbcl-package->ecl-package sbcl-cl-ana.hdf-table))
