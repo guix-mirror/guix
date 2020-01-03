@@ -170,37 +170,48 @@
                          (default nfs-utils)))
 
 (define idmap-service-type
-  (shepherd-service-type
-   'idmap
-   (lambda (config)
+  (let ((proc
+         (lambda (config)
 
-     (define nfs-utils
-       (idmap-configuration-nfs-utils config))
+           (define nfs-utils
+             (idmap-configuration-nfs-utils config))
 
-     (define pipefs-directory
-       (idmap-configuration-pipefs-directory config))
+           (define pipefs-directory
+             (idmap-configuration-pipefs-directory config))
 
-     (define domain (idmap-configuration-domain config))
+           (define domain (idmap-configuration-domain config))
 
-     (define (idmap-config-file config)
-       (plain-file "idmapd.conf"
-                   (string-append
-                    "\n[General]\n"
-                    (if domain
-                        (format #f "Domain = ~a\n" domain))
-                    "\n[Mapping]\n"
-                    "Nobody-User = nobody\n"
-                    "Nobody-Group = nogroup\n")))
+           (define (idmap-config-file config)
+             (plain-file "idmapd.conf"
+                         (string-append
+                          "\n[General]\n"
+                          (if domain
+                              (format #f "Domain = ~a\n" domain)
+                              "")
+                          "\n[Mapping]\n"
+                          "Nobody-User = nobody\n"
+                          "Nobody-Group = nogroup\n")))
 
-     (define idmap-command
-       #~(list (string-append #$nfs-utils "/sbin/rpc.idmapd") "-f"
-               "-p" #$pipefs-directory
-               "-c" #$(idmap-config-file config)))
+           (define idmap-command
+             #~(list (string-append #$nfs-utils "/sbin/rpc.idmapd") "-f"
+                     "-p" #$pipefs-directory
+                     ;; TODO: this is deprecated
+                     "-c" #$(idmap-config-file config)))
 
-     (shepherd-service
-       (documentation "Start the RPC IDMAP daemon.")
-       (requirement '(rpcbind-daemon rpc-pipefs))
-       (provision '(idmap-daemon))
-       (start #~(make-forkexec-constructor #$idmap-command))
-       (stop #~(make-kill-destructor))))))
-
+           (shepherd-service
+            (documentation "Start the RPC IDMAP daemon.")
+            (requirement '(rpcbind-daemon rpc-pipefs))
+            (provision '(idmap-daemon))
+            (start #~(make-forkexec-constructor #$idmap-command))
+            (stop #~(make-kill-destructor))))))
+    (service-type
+     (name 'idmap)
+     (extensions
+      (list (service-extension shepherd-root-service-type
+                               (compose list proc))))
+     ;; We use the extensions feature to allow other services to automatically
+     ;; configure and start this service.  Only one value can be provided.  We
+     ;; override it with the value returned by the extending service.
+     (compose identity)
+     (extend (lambda (config values) (first values)))
+     (default-value (idmap-configuration)))))
