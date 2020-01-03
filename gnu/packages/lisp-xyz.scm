@@ -8418,3 +8418,21 @@ visualization.")
 
 (define-public cl-ana.csv-table
   (sbcl-package->cl-source-package sbcl-cl-ana.csv-table))
+
+(define-public sbcl-cl-ana.reusable-table
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.reusable-table")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("cl-ana.table" ,sbcl-cl-ana.table)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "reusable-table/cl-ana.reusable-table.asd")
+       ((#:asd-system-name _ #f) "cl-ana.reusable-table")))))
+
+(define-public cl-ana.reusable-table
+  (sbcl-package->cl-source-package sbcl-cl-ana.reusable-table))
+
+(define-public ecl-cl-ana.reusable-table
+  (sbcl-package->ecl-package sbcl-cl-ana.reusable-table))
