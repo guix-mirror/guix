@@ -7340,3 +7340,35 @@ macro.  This library provides a set of simple utilities to help with that.")
 
 (define-public cl-form-fiddle
   (sbcl-package->cl-source-package sbcl-form-fiddle))
+
+(define-public sbcl-parachute
+  (let ((commit "ca04dd8e43010a6dfffa26dbe1d62af86008d666")
+        (revision "0"))
+    (package
+      (name "sbcl-parachute")
+      (version (git-version "1.1.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/Shinmera/parachute")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1mvsm3r0r6a2bg75nw0q7n9vlby3ch45qjl7hnb5k1z2n5x5lh60"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("documentation-utils" ,sbcl-documentation-utils)
+         ("form-fiddle" ,sbcl-form-fiddle)))
+      (synopsis "Extensible and cross-compatible testing framework for Common Lisp")
+      (description
+       "Parachute is a simple-to-use and extensible testing framework.
+In Parachute, things are organised as a bunch of named tests within a package.
+Each test can contain a bunch of test forms that make up its body.")
+      (home-page "https://shinmera.github.io/parachute/")
+      (license license:zlib))))
+
+(define-public cl-parachute
+  (sbcl-package->cl-source-package sbcl-parachute))
