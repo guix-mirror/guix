@@ -10,7 +10,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
@@ -263,15 +263,14 @@ access to servers running the Discord protocol.")
 (define-public hexchat
   (package
     (name "hexchat")
-    (version "2.14.2")
+    (version "2.14.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dl.hexchat.net/hexchat/hexchat-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "064nq151nzsljv97dmkifyl162d2738vbgvm1phx7yv04pjvk4kp"))
-              (patches (search-patches "hexchat-crash-exit.patch"))))
+                "10p829jm1r6kidkgf5lhqhyqc5mxdcq96q3zhadsckasvc9rs6lh"))))
     (build-system meson-build-system)
     (native-inputs `(("gettext" ,gettext-minimal)
                      ("glib:bin" ,glib "bin")       ;need glib-genmarshal
