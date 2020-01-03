@@ -5180,6 +5180,39 @@ advantage over ocamldoc is an accurate cross-referencer, which handles the
 complexity of the OCaml module system.")
     (license license:isc)))
 
+(define-public ocaml-fftw3
+  (package
+    (name "ocaml-fftw3")
+    (version "0.8.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Chris00/fftw-ocaml.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0l66yagjkwdcib6q55wd8wiap50vi23qiahkghlvm28z7nvbclfk"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-target "tests"))
+    (propagated-inputs
+     `(("fftw" ,fftw)
+       ("fftwf" ,fftwf)))
+    (native-inputs
+     `(("ocaml-cppo" ,ocaml-cppo)
+       ("ocaml-lacaml" ,ocaml-lacaml)))
+    (home-page
+     "https://github.com/Chris00/fftw-ocaml")
+    (synopsis
+     "Bindings to FFTW3")
+    (description
+     "Bindings providing OCaml support for the seminal Fast Fourier Transform
+library FFTW.")
+    (license license:lgpl2.1))) ; with static linking exception.
+
 (define-public ocaml-lacaml
   (package
     (name "ocaml-lacaml")
