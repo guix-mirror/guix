@@ -8668,3 +8668,23 @@ visualization.")
 
 (define-public cl-ana.table-viewing
   (sbcl-package->cl-source-package sbcl-cl-ana.table-viewing))
+
+(define-public sbcl-cl-ana.serialization
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.serialization")
+    (inputs
+     `(("cl-ana.error-propogation" ,sbcl-cl-ana.error-propogation)
+       ("cl-ana.hdf-utils" ,sbcl-cl-ana.hdf-utils)
+       ("cl-ana.hdf-table" ,sbcl-cl-ana.hdf-table)
+       ("cl-ana.histogram" ,sbcl-cl-ana.histogram)
+       ("cl-ana.int-char" ,sbcl-cl-ana.int-char)
+       ("cl-ana.macro-utils" ,sbcl-cl-ana.macro-utils)
+       ("cl-ana.typespec" ,sbcl-cl-ana.typespec)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "serialization/cl-ana.serialization.asd")
+       ((#:asd-system-name _ #f) "cl-ana.serialization")))))
+
+(define-public cl-ana.serialization
+  (sbcl-package->cl-source-package sbcl-cl-ana.serialization))
