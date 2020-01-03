@@ -2652,8 +2652,7 @@ PickleShare.")
              (invoke "gcc" "-fPIC" "-shared" "-o" "./testextension.sqlext"
                      "-I." "-Isqlite3" "src/testextension.c")
              #t))
-         (delete 'check)
-         (add-after 'install 'check
+         (replace 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
              (invoke "python" "setup.py" "test")
