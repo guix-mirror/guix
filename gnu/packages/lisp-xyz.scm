@@ -8755,3 +8755,19 @@ visualization.")
 
 (define-public cl-ana.makeres-block
   (sbcl-package->cl-source-package sbcl-cl-ana.makeres-block))
+
+(define-public sbcl-cl-ana.makeres-progress
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.makeres-progress")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
+       ("cl-ana.makeres" ,sbcl-cl-ana.makeres)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "makeres-progress/cl-ana.makeres-progress.asd")
+       ((#:asd-system-name _ #f) "cl-ana.makeres-progress")))))
+
+(define-public cl-ana.makeres-progress
+  (sbcl-package->cl-source-package sbcl-cl-ana.makeres-progress))
