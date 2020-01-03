@@ -7655,3 +7655,77 @@ doesn't support them.")
 
 (define-public ecl-cl-interpol
   (sbcl-package->ecl-package sbcl-cl-interpol))
+
+(define sbcl-symbol-munger-boot0
+  ;; There is a cyclical dependency between symbol-munger and lisp-unit2.
+  ;; See https://github.com/AccelerationNet/symbol-munger/issues/4
+  (let ((commit "cc2bb4b7acd454d756484aec81ba487648385fc3")
+        (revision "1"))
+    (package
+      (name "sbcl-symbol-munger-boot0")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/AccelerationNet/symbol-munger.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0diav5ricqsybqvbp4bkxyj3bn3v9n7xb2pqqc4vg1algsw2pyjl"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:asd-file "symbol-munger.asd"
+         #:asd-system-name "symbol-munger"))
+      (inputs
+       `(("iterate" ,sbcl-iterate)
+         ("alexandria" ,sbcl-alexandria)))
+      (native-inputs
+       `(("lisp-unit" ,sbcl-lisp-unit)))
+      (synopsis
+       "Capitalization and spacing conversion functions for Common Lisp")
+      (description
+       "This is a Common Lisp library to change the capitalization and spacing
+of a string or a symbol.  It can convert to and from Lisp, english, underscore
+and camel-case rules.")
+      (home-page "https://github.com/AccelerationNet/symbol-munger")
+      ;; The package declares a BSD license, but all of the license
+      ;; text is MIT.
+      ;; See https://github.com/AccelerationNet/symbol-munger/issues/5
+      (license license:expat))))
+
+(define sbcl-lisp-unit2-boot0
+  ;; There is a cyclical dependency between symbol-munger and lisp-unit2.
+  ;; See https://github.com/AccelerationNet/symbol-munger/issues/4
+  (let ((commit "fb9721524d1e4e73abb223ee036d74ce14a5505c")
+        (revision "1"))
+    (package
+      (name "sbcl-lisp-unit2-boot0")
+      (version (git-version "0.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/AccelerationNet/lisp-unit2.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1rsqy8y0jqll6xn9a593848f5wvd5ribv4csry1ly0hmdhfnqzlp"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:asd-file "lisp-unit2.asd"
+         #:asd-system-name "lisp-unit2"))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-interpol" ,sbcl-cl-interpol)
+         ("iterate" ,sbcl-iterate)
+         ("symbol-munger-boot0" ,sbcl-symbol-munger-boot0)))
+      (synopsis "Test Framework for Common Lisp")
+      (description
+       "LISP-UNIT2 is a Common Lisp library that supports unit testing in the
+style of JUnit for Java.  It is a new version of the lisp-unit library written
+by Chris Riesbeck.")
+      (home-page "https://github.com/AccelerationNet/lisp-unit2")
+      (license license:expat))))
