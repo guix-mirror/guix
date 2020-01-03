@@ -8471,3 +8471,23 @@ visualization.")
 
 (define-public cl-ana.lorentz
   (sbcl-package->cl-source-package sbcl-cl-ana.lorentz))
+
+(define-public sbcl-cl-ana.clos-utils
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.clos-utils")
+    (inputs
+     `(("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
+       ("cl-ana.symbol-utils" ,sbcl-cl-ana.symbol-utils)
+       ("cl-ana.tensor" ,sbcl-cl-ana.tensor)
+       ("closer-mop" ,sbcl-closer-mop)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "clos-utils/cl-ana.clos-utils.asd")
+       ((#:asd-system-name _ #f) "cl-ana.clos-utils")))))
+
+(define-public cl-ana.clos-utils
+  (sbcl-package->cl-source-package sbcl-cl-ana.clos-utils))
+
+(define-public ecl-cl-ana.clos-utils
+  (sbcl-package->ecl-package sbcl-cl-ana.clos-utils))
