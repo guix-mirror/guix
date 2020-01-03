@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
+;;; Copyright © 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,11 +59,11 @@
   (shepherd-service-type
    'rpcbind
    (lambda (config)
-     (define nfs-utils
+     (define rpcbind
        (rpcbind-configuration-rpcbind config))
 
      (define rpcbind-command
-       #~(list (string-append #$nfs-utils "/bin/rpcbind") "-f"
+       #~(list (string-append #$rpcbind "/bin/rpcbind") "-f"
                #$@(if (rpcbind-configuration-warm-start? config) '("-w") '())))
 
      (shepherd-service
