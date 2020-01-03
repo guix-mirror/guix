@@ -297,9 +297,9 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
     (home-page "https://homepage.boetes.org/software/mg/")
     (synopsis "Microscopic GNU Emacs clone")
     (description
-     "Mg (mg) is a GNU Emacs style editor, with which it is \"broadly\"
-compatible.  This is a portable version of the mg maintained by the OpenBSD
-team.")
+     "Mg (@command{mg}) is a GNU Emacs style editor, with which it is
+\"broadly\" compatible.  This is a portable version of the mg maintained by the
+OpenBSD team.")
     (license license:public-domain)))
 
 (define-public ghostwriter
