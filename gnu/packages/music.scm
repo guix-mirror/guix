@@ -4875,7 +4875,7 @@ audio and MIDI plugins that can also run as standalone JACK applications.")
 (define-public zam-plugins
   (package
     (name "zam-plugins")
-    (version "3.11")
+    (version "3.12")
     (source
      (origin
        (method git-fetch)
@@ -4889,8 +4889,7 @@ audio and MIDI plugins that can also run as standalone JACK applications.")
          (recursive? #t)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0jlbxm0g93plgd3g4r9rsr0c7868ms49bs0ljpqb6kw6132hsapp"))))
+        (base32 "0icsbarc9azcp0kjjydmiqn401v60jmf16zdcp4040q8g7bpfmfa"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ;no "check" target
