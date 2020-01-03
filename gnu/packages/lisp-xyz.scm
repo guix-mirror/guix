@@ -8436,3 +8436,21 @@ visualization.")
 
 (define-public ecl-cl-ana.reusable-table
   (sbcl-package->ecl-package sbcl-cl-ana.reusable-table))
+
+(define-public sbcl-cl-ana.linear-algebra
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.linear-algebra")
+    (inputs
+     `(("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
+       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
+       ("cl-ana.math-functions" ,sbcl-cl-ana.math-functions)
+       ("cl-ana.tensor" ,sbcl-cl-ana.tensor)
+       ("gsll" ,sbcl-gsll)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "linear-algebra/cl-ana.linear-algebra.asd")
+       ((#:asd-system-name _ #f) "cl-ana.linear-algebra")))))
+
+(define-public cl-ana.linear-algebra
+  (sbcl-package->cl-source-package sbcl-cl-ana.linear-algebra))
