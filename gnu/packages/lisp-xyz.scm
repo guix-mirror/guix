@@ -8198,3 +8198,18 @@ visualization.")
 
 (define-public ecl-cl-ana.hdf-cffi
   (sbcl-package->ecl-package sbcl-cl-ana.hdf-cffi))
+
+(define-public sbcl-cl-ana.int-char
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.int-char")
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "int-char/cl-ana.int-char.asd")
+       ((#:asd-system-name _ #f) "cl-ana.int-char")))))
+
+(define-public cl-ana.int-char
+  (sbcl-package->cl-source-package sbcl-cl-ana.int-char))
+
+(define-public ecl-cl-ana.int-char
+  (sbcl-package->ecl-package sbcl-cl-ana.int-char))
