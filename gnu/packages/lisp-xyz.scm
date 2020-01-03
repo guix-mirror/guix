@@ -8585,3 +8585,21 @@ visualization.")
 
 (define-public ecl-cl-ana.file-utils
   (sbcl-package->ecl-package sbcl-cl-ana.file-utils))
+
+(define-public sbcl-cl-ana.statistics
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.statistics")
+    (inputs
+     `(("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
+       ("cl-ana.histogram" ,sbcl-cl-ana.histogram)
+       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
+       ("cl-ana.macro-utils" ,sbcl-cl-ana.macro-utils)
+       ("cl-ana.map" ,sbcl-cl-ana.map)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "statistics/cl-ana.statistics.asd")
+       ((#:asd-system-name _ #f) "cl-ana.statistics")))))
+
+(define-public cl-ana.statistics
+  (sbcl-package->cl-source-package sbcl-cl-ana.statistics))
