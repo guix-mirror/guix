@@ -8056,3 +8056,22 @@ visualization.")
 
 (define-public ecl-cl-ana.macro-utils
   (sbcl-package->ecl-package sbcl-cl-ana.macro-utils))
+
+(define-public sbcl-cl-ana.binary-tree
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.binary-tree")
+    (inputs
+     `(("cl-ana.functional-utils" ,sbcl-cl-ana.functional-utils)
+       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
+       ("cl-ana.macro-utils" ,sbcl-cl-ana.macro-utils)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "binary-tree/cl-ana.binary-tree.asd")
+       ((#:asd-system-name _ #f) "cl-ana.binary-tree")))))
+
+(define-public cl-ana.binary-tree
+  (sbcl-package->cl-source-package sbcl-cl-ana.binary-tree))
+
+(define-public ecl-cl-ana.binary-tree
+  (sbcl-package->ecl-package sbcl-cl-ana.binary-tree))
