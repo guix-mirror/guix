@@ -19853,6 +19853,10 @@ contrast and few colors.")
            ;; files. In order to cope with this issue, we disable
            ;; byte-compilation until this issue is resolved.
            ;; <https://github.com/hlissner/emacs-doom-themes/issues/314>
+           ;;
+           ;; NOTE: Byte-comp has been disabled in/after commit 9cd6872.
+           ;; However our method of selective disabling is preferential to
+           ;; just widely disabling byte-compilation.
            (add-after 'move-themes 'disable-breaking-compilation
              (lambda _
                (for-each (lambda (file)
