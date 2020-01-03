@@ -7986,3 +7986,18 @@ visualization.")
 
 (define-public ecl-cl-ana.generic-math
   (sbcl-package->ecl-package sbcl-cl-ana.generic-math))
+
+(define-public sbcl-cl-ana.math-functions
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.math-functions")
+    (inputs
+     `(("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
+       ("gsll" ,sbcl-gsll)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "math-functions/cl-ana.math-functions.asd")
+       ((#:asd-system-name _ #f) "cl-ana.math-functions")))))
+
+(define-public cl-ana.math-functions
+  (sbcl-package->cl-source-package sbcl-cl-ana.math-functions))
