@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
-;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Theodoros Foradis <theodoros@foradis.org>
@@ -1209,13 +1209,14 @@ language, ADMS transforms Verilog-AMS code into other target languages.")
     (name "capstone")
     (version "3.0.5")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/aquynh/capstone/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/aquynh/capstone")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1wbd1g3r32ni6zd9vwrq3kn7fdp9y8qwn9zllrrbk8n5wyaxcgci"))))
+                "0dgf82kxj4rs45d6s8sr984c38sll1n5scpypjlyh21gh2yl4qfw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
