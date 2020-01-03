@@ -136,26 +136,39 @@
                          (default nfs-utils)))
 
 (define gss-service-type
-  (shepherd-service-type
-   'gss
-   (lambda (config)
-     (define nfs-utils
-       (gss-configuration-gss config))
+  (let ((proc
+         (lambda (config)
+           (define nfs-utils
+             (gss-configuration-gss config))
 
-     (define pipefs-directory
-       (gss-configuration-pipefs-directory config))
+           (define pipefs-directory
+             (gss-configuration-pipefs-directory config))
 
-     (define gss-command
-       #~(list (string-append #$nfs-utils "/sbin/rpc.gssd") "-f"
-               "-p" #$pipefs-directory))
+           (define gss-command
+             #~(list (string-append #$nfs-utils "/sbin/rpc.gssd") "-f"
+                     "-p" #$pipefs-directory))
 
-     (shepherd-service
-      (documentation "Start the RPC GSS daemon.")
-      (requirement '(rpcbind-daemon rpc-pipefs))
-      (provision '(gss-daemon))
+           (shepherd-service
+            (documentation "Start the RPC GSS daemon.")
+            (requirement '(rpcbind-daemon rpc-pipefs))
+            (provision '(gss-daemon))
 
-      (start #~(make-forkexec-constructor #$gss-command))
-      (stop #~(make-kill-destructor))))))
+            (start #~(make-forkexec-constructor #$gss-command))
+            (stop #~(make-kill-destructor))))))
+    (service-type
+     (name 'gss)
+     (extensions
+      (list (service-extension shepherd-root-service-type
+                               (compose list proc))))
+     ;; We use the extensions feature to allow other services to automatically
+     ;; configure and start this service.  Only one value can be provided.  We
+     ;; override it with the value returned by the extending service.
+     (compose identity)
+     (extend (lambda (config values)
+               (match values
+                 ((first . rest) first)
+                 (_ config))))
+     (default-value (gss-configuration)))))
 
 
 
