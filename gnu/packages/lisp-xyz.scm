@@ -7729,3 +7729,43 @@ style of JUnit for Java.  It is a new version of the lisp-unit library written
 by Chris Riesbeck.")
       (home-page "https://github.com/AccelerationNet/lisp-unit2")
       (license license:expat))))
+
+(define-public sbcl-symbol-munger
+  (let ((commit "97598d4c3c53fd5da72ab78908fbd5d8c7a13416")
+        (revision "1"))
+    (package
+      (name "sbcl-symbol-munger")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/AccelerationNet/symbol-munger.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0y8jywjy0ldyhp7bxf16fdvdd2qgqnd7nlhlqfpfnzxcqk4xy1km"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("iterate" ,sbcl-iterate)))
+      (native-inputs
+       `(("lisp-unit2-boot0" ,sbcl-lisp-unit2-boot0)))
+      (synopsis
+       "Capitalization and spacing conversion functions for Common Lisp")
+      (description
+       "This is a Common Lisp library to change the capitalization and spacing
+of a string or a symbol.  It can convert to and from Lisp, english, underscore
+and camel-case rules.")
+      (home-page "https://github.com/AccelerationNet/symbol-munger")
+      ;; The package declares a BSD license, but all of the license
+      ;; text is MIT.
+      ;; See https://github.com/AccelerationNet/symbol-munger/issues/5
+      (license license:expat))))
+
+(define-public cl-symbol-munger
+  (sbcl-package->cl-source-package sbcl-symbol-munger))
+
+(define-public ecl-symbol-munger
+  (sbcl-package->ecl-package sbcl-symbol-munger))
