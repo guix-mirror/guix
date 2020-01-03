@@ -25,6 +25,7 @@
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 JoJo <jo@jo.zone>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -9084,6 +9085,46 @@ API.")
     (home-page "https://github.com/ekmett/profunctors/")
     (synopsis "Profunctors for Haskell")
     (description "This library provides profunctors for Haskell.")
+    (license license:bsd-3)))
+
+(define-public ghc-project-template
+  (package
+    (name "ghc-project-template")
+    (version "0.2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/project-template/project-template-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1p69ww4rhah2qxragl615wl4a6mk4x9w09am8knmz3s4lxpljlpb"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-conduit-extra" ,ghc-conduit-extra)
+       ("ghc-resourcet" ,ghc-resourcet)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (arguments
+     `(#:cabal-revision
+       ("1"
+        "0lq3sqnq0nr0gbvgzp0lqdl3j3mqdmdlf8xsw0j3pjh581xj3k0a")))
+    (home-page "https://github.com/fpco/haskell-ide")
+    (synopsis "Specify Haskell project templates and generate files")
+    (description
+     "Haskell library for both generating and consuming project templates.
+
+ost IDEs provide the concept of a project template: instead of writing all
+of the code for a project from scratch, you select a template, answer a few
+questions, and a bunch of files are automatically generated.
+
+project-template tries to provide a canonical Haskell library for implementing
+the ideal templating system.")
     (license license:bsd-3)))
 
 (define-public ghc-psqueues
