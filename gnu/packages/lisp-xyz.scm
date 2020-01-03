@@ -53,6 +53,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages lisp)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
@@ -7539,3 +7540,65 @@ computer known.")
 
 (define-public cl-science-data
   (sbcl-package->cl-source-package sbcl-science-data))
+
+(define-public sbcl-gsll
+  (let ((commit "1a8ada22f9cf5ed7372d352b2317f4ccdb6ab308")
+        (revision "1"))
+    (package
+      (name "sbcl-gsll")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.common-lisp.net/antik/gsll.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0z5nypfk26hxihb08p085644afawicrgb4xvadh3lmrn46qbjfn4"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("lisp-unit" ,sbcl-lisp-unit)))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cffi-grovel" ,sbcl-cffi-grovel)
+         ("cffi-libffi" ,sbcl-cffi-libffi)
+         ("foreign-array" ,sbcl-foreign-array)
+         ("gsl" ,gsl)
+         ("metabang-bind" ,sbcl-metabang-bind)
+         ("trivial-features" ,sbcl-trivial-features)
+         ("trivial-garbage" ,sbcl-trivial-garbage)))
+      (arguments
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-cffi-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "gsll.asd"
+                 ((":depends-on \\(#:foreign-array")
+                  ":depends-on (#:foreign-array #:cffi-libffi"))
+               (substitute* "init/init.lisp"
+                 (("libgslcblas.so" all)
+                  (string-append
+                   (assoc-ref inputs "gsl") "/lib/" all)))
+               (substitute* "init/init.lisp"
+                 (("libgsl.so" all)
+                  (string-append
+                   (assoc-ref inputs "gsl") "/lib/" all))))))))
+      (synopsis "GNU Scientific Library for Lisp")
+      (description
+       "The GNU Scientific Library for Lisp (GSLL) allows the use of the
+GNU Scientific Library (GSL) from Common Lisp.  This library provides a
+full range of common mathematical operations useful to scientific and
+engineering applications.  The design of the GSLL interface is such
+that access to most of the GSL library is possible in a Lisp-natural
+way; the intent is that the user not be hampered by the restrictions
+of the C language in which GSL has been written.  GSLL thus provides
+interactive use of GSL for getting quick answers, even for someone not
+intending to program in Lisp.")
+      (home-page "https://common-lisp.net/project/gsll/")
+      (license license:gpl3))))
+
+(define-public cl-gsll
+  (sbcl-package->cl-source-package sbcl-gsll))
