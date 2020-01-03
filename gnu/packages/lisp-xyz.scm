@@ -7504,3 +7504,21 @@ computer known.")
 
 (define-public ecl-foreign-array
   (sbcl-package->ecl-package sbcl-foreign-array))
+
+(define-public sbcl-physical-dimension
+  (package
+    (inherit sbcl-antik-base)
+    (name "sbcl-physical-dimension")
+    (inputs
+     `(("fare-utils" ,sbcl-fare-utils)
+       ("foreign-array" ,sbcl-foreign-array)
+       ("trivial-utf-8" ,sbcl-trivial-utf-8)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-antik-base)
+       ((#:asd-file _ "") "physical-dimension.asd")
+       ((#:asd-system-name _ #f) "physical-dimension")))
+    (synopsis
+     "Common Lisp library providing computations with physical units")))
+
+(define-public cl-physical-dimension
+  (sbcl-package->cl-source-package sbcl-physical-dimension))
