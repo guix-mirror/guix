@@ -760,3 +760,65 @@ adjust the level of difficulty.")
     (description "Tux4Kids-Common is a library of code shared between
 TuxMath and TuxType.")
     (license license:gpl3+)))
+
+(define-public tuxmath
+  (package
+    (name "tuxmath")
+    (version "2.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tux4kids/tuxmath")
+             (commit (string-append "upstream/" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1f1pz83w6d3mbik2h6xavfxmk5apxlngxbkh80x0m55lhniwkdxv"))
+       (modules '((guix build utils)))
+       ;; Unbundle fonts.
+       (snippet
+        `(begin
+           (for-each delete-file (find-files "data/fonts" "\\.ttf$"))
+           #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'set-paths 'set-sdl-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CPATH"
+                     (string-append (assoc-ref inputs "sdl")
+                                    "/include/SDL:"
+                                    (or (getenv "CPATH") "")))
+             #t))
+         (add-after 'install 'install-desktop-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (apps (string-append out "/share/applications"))
+                    (pixmaps (string-append out "/share/pixmaps")))
+               (install-file "tuxmath.desktop" apps)
+               (for-each (lambda (f) (install-file f pixmaps))
+                         (find-files "data/images/icons/"
+                                     "tuxmath\\.(png|ico|svg)$"))
+               #t))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("librsvg" ,librsvg)
+       ("libxml2" ,libxml2)
+       ("sdl" ,(sdl-union (list sdl sdl-image sdl-mixer sdl-net sdl-pango)))
+       ("t4k-common" ,t4k-common)))
+    (home-page "https://github.com/tux4kids/tuxmath")
+    (synopsis "Educational math tutorial game")
+    (description "@emph{Tux, of Math Command} is an educational math
+tutorial game starring Tux, the Linux penguin, in which you play the
+part of Commander Tux, as he defends his friends from an attack of
+math equations.  Comets are crashing towards the friendly penguins in
+their igloos, and you must destroy the comets by solving their
+equations.
+
+TuxMath also includes Factoroids, a game that gives practice in
+factoring numbers and simplifying fractions, as well as zapping rocks
+floating through space.")
+    (license license:gpl3+)))
