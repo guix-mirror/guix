@@ -3143,3 +3143,39 @@ common task.")
 test when a comparison fails.")
     (home-page "https://github.com/gotestyourself/gotest.tools")
     (license license:asl2.0)))
+
+(define-public gotestsum
+  (package
+    (name "gotestsum")
+    (version "0.4.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/gotestyourself/gotestsum.git")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0y71qr3ss3hgc8c7nmvpwk946xy1jc5d8whsv6y77wb24ncla7n0"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "gotest.tools/gotestsum"))
+    (native-inputs
+     `(("go-github-com-fatih-color" ,go-github-com-fatih-color)
+       ("go-golang.org-x-sync-errgroup" ,go-golang.org-x-sync-errgroup)
+       ("go-github-com-pkg-errors" ,go-github-com-pkg-errors)
+       ("go-github-com-sirupsen-logrus"
+        ,go-github-com-sirupsen-logrus)
+       ("go-github-com-spf13-pflag" ,go-github-com-spf13-pflag)
+       ("go-github-com-jonboulle-clockwork"
+        ,go-github-com-jonboulle-clockwork)
+       ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
+       ("go-gotest-tools-assert" ,go-gotest-tools-assert)
+       ("go-github-com-google-go-cmp-cmp"
+        ,go-github-com-google-go-cmp-cmp)))
+    (synopsis "Go test runner with output optimized for humans")
+    (description "This package provides a @code{go test} runner with output
+optimized for humans, JUnit XML for CI integration, and a summary of the
+test results.")
+    (home-page "https://github.com/gotestyourself/gotestsum")
+    (license license:asl2.0)))
