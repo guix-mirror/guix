@@ -8351,3 +8351,30 @@ visualization.")
 
 (define-public ecl-cl-ana.hdf-table
   (sbcl-package->ecl-package sbcl-cl-ana.hdf-table))
+
+(define-public sbcl-cl-ana.gsl-cffi
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.gsl-cffi")
+    (inputs
+     `(("cffi" ,sbcl-cffi)
+       ("gsl" ,gsl)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "gsl-cffi/cl-ana.gsl-cffi.asd")
+       ((#:asd-system-name _ #f) "cl-ana.gsl-cffi")
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "gsl-cffi/gsl-cffi.lisp"
+                 (("define-foreign-library gsl-cffi" all)
+                  (string-append all " (:unix "
+                                 (assoc-ref inputs "gsl")
+                                 "/lib/libgsl.so)")))))))))))
+
+(define-public cl-ana.gsl-cffi
+  (sbcl-package->cl-source-package sbcl-cl-ana.gsl-cffi))
+
+(define-public ecl-cl-ana.gsl-cffi
+  (sbcl-package->ecl-package sbcl-cl-ana.gsl-cffi))
