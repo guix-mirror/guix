@@ -5323,7 +5323,7 @@ parallel.")
 (define-public emacs-request
   (package
     (name "emacs-request")
-    (version "0.3.1")
+    (version "0.3.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5332,7 +5332,7 @@ parallel.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0fhhd349l4iqkrjxqzpckfk2w45x2g4cccpm1dqzv9m49md1wphx"))))
+                "1djywhvvb6kwdj0nd3axjvb7k2g06dzkc6hsf29w9rsk96vr8ryl"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-deferred" ,emacs-deferred)))
