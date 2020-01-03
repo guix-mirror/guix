@@ -8506,3 +8506,20 @@ visualization.")
 
 (define-public ecl-cl-ana.hash-table-utils
   (sbcl-package->ecl-package sbcl-cl-ana.hash-table-utils))
+
+(define-public sbcl-cl-ana.map
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.map")
+    (inputs
+     `(("cl-ana.hash-table-utils" ,sbcl-cl-ana.hash-table-utils)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "map/cl-ana.map.asd")
+       ((#:asd-system-name _ #f) "cl-ana.map")))))
+
+(define-public cl-ana.map
+  (sbcl-package->cl-source-package sbcl-cl-ana.map))
+
+(define-public ecl-cl-ana.map
+  (sbcl-package->ecl-package sbcl-cl-ana.map))
