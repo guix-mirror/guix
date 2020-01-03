@@ -8152,3 +8152,22 @@ visualization.")
 
 (define-public ecl-cl-ana.table
   (sbcl-package->ecl-package sbcl-cl-ana.table))
+
+(define-public sbcl-cl-ana.table-utils
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.table-utils")
+    (inputs
+     `(("cl-ana.string-utils" ,sbcl-cl-ana.string-utils)
+       ("cl-ana.symbol-utils" ,sbcl-cl-ana.symbol-utils)
+       ("cl-ana.table" ,sbcl-cl-ana.table)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "table-utils/cl-ana.table-utils.asd")
+       ((#:asd-system-name _ #f) "cl-ana.table-utils")))))
+
+(define-public cl-ana.table-utils
+  (sbcl-package->cl-source-package sbcl-cl-ana.table-utils))
+
+(define-public ecl-cl-ana.table-utils
+  (sbcl-package->ecl-package sbcl-cl-ana.table-utils))
