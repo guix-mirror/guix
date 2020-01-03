@@ -8075,3 +8075,24 @@ visualization.")
 
 (define-public ecl-cl-ana.binary-tree
   (sbcl-package->ecl-package sbcl-cl-ana.binary-tree))
+
+(define-public sbcl-cl-ana.tensor
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.tensor")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
+       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
+       ("cl-ana.macro-utils" ,sbcl-cl-ana.macro-utils)
+       ("cl-ana.symbol-utils" ,sbcl-cl-ana.symbol-utils)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "tensor/cl-ana.tensor.asd")
+       ((#:asd-system-name _ #f) "cl-ana.tensor")))))
+
+(define-public cl-ana.tensor
+  (sbcl-package->cl-source-package sbcl-cl-ana.tensor))
+
+(define-public ecl-cl-ana.tensor
+  (sbcl-package->ecl-package sbcl-cl-ana.tensor))
