@@ -74,7 +74,6 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages xorg)
-  #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
 
 (define (asdf-substitutions lisp)
@@ -319,9 +318,9 @@ high-level, object-oriented functional programming language.  CLISP includes
 an interpreter, a compiler, a debugger, and much more.")
     (license license:gpl2+)))
 
-(define sbcl-boot0
+(define-public sbcl
   (package
-    (name "sbcl-boot0")
+    (name "sbcl")
     (version "1.5.8")
     (source
      (origin
@@ -358,8 +357,13 @@ an interpreter, a compiler, a debugger, and much more.")
      ;; 2019-09-05, ECL was last updated in 2016 while CLISP was last updated
      ;; in 2010.
      ;;
-     ;; For now we stick to CLISP for all systems.
-     `(("clisp" ,clisp)
+     ;; For now we stick to CLISP for all systems.  We keep the `match' here to
+     ;; make it easier to change the host compiler for various architectures.
+     `(,@(match (%current-system)
+           ((or "x86_64-linux" "i686-linux")
+            `(("clisp" ,clisp)))
+           (_
+            `(("clisp" ,clisp))))
        ("which" ,which)
        ("inetutils" ,inetutils)         ;for hostname(1)
        ("ed" ,ed)
@@ -427,7 +431,11 @@ an interpreter, a compiler, a debugger, and much more.")
          (replace 'build
            (lambda* (#:key outputs #:allow-other-keys)
              (setenv "CC" "gcc")
-             (invoke "sh" "make.sh" "clisp"
+             (invoke "sh" "make.sh" ,@(match (%current-system)
+                                        ((or "x86_64-linux" "i686-linux")
+                                         `("clisp"))
+                                        (_
+                                         `("clisp")))
                      (string-append "--prefix="
                                     (assoc-ref outputs "out"))
                      "--with-sb-core-compression"
@@ -484,46 +492,6 @@ statistical profiler, a code coverage tool, and many other extensions.")
     ;; loop macro has its own license.  See COPYING file for further notes.
     (license (list license:public-domain license:bsd-2
                    (license:x11-style "file://src/code/loop.lisp")))))
-
-(define-public sbcl
-  ;; Since 1.5.9, SBCL requires itself to build.
-  ;; See https://bugs.launchpad.net/sbcl/+bug/1855272.
-  (package
-    (inherit sbcl-boot0)
-    (name "sbcl")
-    (version "1.5.9")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://sourceforge/sbcl/sbcl/" version "/sbcl-"
-                           version "-source.tar.bz2"))
-       (sha256
-        (base32 "1dmrlklil7x3j68mwmjfpd71vkphr24s4rx6d61jpc54x0jhvnyb"))
-       (modules '((guix build utils)))
-       (snippet
-        ;; Add sbcl-bundle-systems to 'default-system-source-registry'.
-        `(begin
-           (substitute* "contrib/asdf/asdf.lisp"
-             ,@(asdf-substitutions name))
-           #t))))
-    (build-system gnu-build-system)
-    (outputs '("out" "doc"))
-    (native-inputs
-     `(("sbcl" ,sbcl-boot0)
-       ,@(fold alist-delete (package-native-inputs sbcl-boot0)
-               '("clisp"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-boot0)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (replace 'build
-             (lambda* (#:key outputs #:allow-other-keys)
-               (setenv "CC" "gcc")
-               (invoke "sh" "make.sh" "sbcl"
-                       (string-append "--prefix="
-                                      (assoc-ref outputs "out"))
-                       "--with-sb-core-compression"
-                       "--with-sb-xref-for-internals")))))))))
 
 (define-public ccl
   ;; Warning: according to upstream, CCL is not bootstrappable.
