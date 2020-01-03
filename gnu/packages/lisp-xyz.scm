@@ -8771,3 +8771,31 @@ visualization.")
 
 (define-public cl-ana.makeres-progress
   (sbcl-package->cl-source-package sbcl-cl-ana.makeres-progress))
+
+(define-public sbcl-cl-ana.makeres-table
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.makeres-table")
+    (inputs
+     `(("cl-ana.csv-table" ,sbcl-cl-ana.csv-table)
+       ("cl-ana.hash-table-utils" ,sbcl-cl-ana.hash-table-utils)
+       ("cl-ana.hdf-table" ,sbcl-cl-ana.hdf-table)
+       ("cl-ana.hdf-utils" ,sbcl-cl-ana.hdf-utils)
+       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
+       ("cl-ana.macro-utils" ,sbcl-cl-ana.macro-utils)
+       ("cl-ana.makeres" ,sbcl-cl-ana.makeres)
+       ("cl-ana.makeres-macro" ,sbcl-cl-ana.makeres-macro)
+       ("cl-ana.memoization" ,sbcl-cl-ana.memoization)
+       ("cl-ana.ntuple-table" ,sbcl-cl-ana.ntuple-table)
+       ("cl-ana.reusable-table" ,sbcl-cl-ana.reusable-table)
+       ("cl-ana.string-utils" ,sbcl-cl-ana.string-utils)
+       ("cl-ana.table" ,sbcl-cl-ana.table)))
+    (native-inputs
+     `(("cl-fad" ,sbcl-cl-fad)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "makeres-table/cl-ana.makeres-table.asd")
+       ((#:asd-system-name _ #f) "cl-ana.makeres-table")))))
+
+(define-public cl-ana.makeres-table
+  (sbcl-package->cl-source-package sbcl-cl-ana.makeres-table))
