@@ -5334,6 +5334,8 @@ parallel.")
                (base32
                 "1djywhvvb6kwdj0nd3axjvb7k2g06dzkc6hsf29w9rsk96vr8ryl"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #f)) ; requires network access.
     (propagated-inputs
      `(("emacs-deferred" ,emacs-deferred)))
     (home-page "https://github.com/tkf/emacs-request")
