@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2019 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -476,13 +476,13 @@ compression format (.mpc files).")
 (define-public eyed3
   (package
     (name "eyed3")
-    (version "0.8.11")
+    (version "0.8.12")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "eyeD3" version))
        (sha256
-        (base32 "1347mhjysbdpmmvdqm6lhskdw0qj9vjdn4n172ffnz958adrnk0f"))))
+        (base32 "0vabr7hh6vy1w8gn35vmx9qwiyrfv734d5ahifg7x3pv0c5fqkp5"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))    ; the required test data contains copyrighted material
