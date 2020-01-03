@@ -8799,3 +8799,18 @@ visualization.")
 
 (define-public cl-ana.makeres-table
   (sbcl-package->cl-source-package sbcl-cl-ana.makeres-table))
+
+(define-public sbcl-cl-ana.makeres-graphviz
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.makeres-graphviz")
+    (inputs
+     `(("cl-ana.makeres" ,sbcl-cl-ana.makeres)
+       ("external-program" ,sbcl-external-program)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "makeres-graphviz/cl-ana.makeres-graphviz.asd")
+       ((#:asd-system-name _ #f) "cl-ana.makeres-graphviz")))))
+
+(define-public cl-ana.makeres-graphviz
+  (sbcl-package->cl-source-package sbcl-cl-ana.makeres-graphviz))
