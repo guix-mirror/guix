@@ -5,6 +5,7 @@
 ;;; Copyright © 2018, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2018, 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -137,7 +138,10 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
   (define (inputs)
     (if (%current-target-system)                ; is this package cross built?
         `(("cross-libc"
-           ,(cross-bootstrap-libc (%current-target-system))))
+           ,(cross-bootstrap-libc (%current-target-system)))
+          ("cross-libc:static"
+           ,(cross-bootstrap-libc (%current-target-system))
+           "static"))
         '()))
 
   (define (native-inputs)
