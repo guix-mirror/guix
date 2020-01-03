@@ -10,7 +10,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -2630,13 +2630,14 @@ PickleShare.")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "https://github.com/rogerbinns/apsw/archive/"
-                            version ".tar.gz"))
-        (file-name (string-append "apsw-" version ".tar.gz"))
+        (uri (string-append "https://github.com/rogerbinns/apsw/releases"
+                            "/download/" version "/apsw-" version ".zip"))
         (sha256
           (base32
-           "00ai7m2pqi26qaflhz314d8k5i3syw7xzr145fhfl0crhyh6adz2"))))
+           "02mgxyznxg0va85r1lk6pvjh7qvar33fivj0bn534jb0yy271a9y"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
     (inputs
      `(("sqlite" ,sqlite)))
     (arguments
