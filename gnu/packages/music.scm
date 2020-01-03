@@ -4822,7 +4822,7 @@ and debugging of event signal flows inside plugin graphs.")
 (define-public x42-plugins
   (package
     (name "x42-plugins")
-    (version "20191013")
+    (version "20191215")
     (source
      (origin
        (method url-fetch)
@@ -4830,8 +4830,7 @@ and debugging of event signal flows inside plugin graphs.")
         (string-append "http://gareus.org/misc/x42-plugins/x42-plugins-"
                        version ".tar.xz"))
        (sha256
-        (base32
-         "18kn1bmc0s6dp834kc51ibifzzn3bxwya4p8s8yq9f4mpmkghi24"))))
+        (base32 "1mwfvhsvc0qgjyiwd8pmmam1mav43lmv39fljhmj9yri558v5g1c"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no "check" target
