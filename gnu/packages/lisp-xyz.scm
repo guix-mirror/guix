@@ -7968,3 +7968,21 @@ visualization.")
 
 (define-public ecl-cl-ana.list-utils
   (sbcl-package->ecl-package sbcl-cl-ana.list-utils))
+
+(define-public sbcl-cl-ana.generic-math
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.generic-math")
+    (inputs
+     `(("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
+       ("cl-ana.package-utils" ,sbcl-cl-ana.package-utils)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "generic-math/cl-ana.generic-math.asd")
+       ((#:asd-system-name _ #f) "cl-ana.generic-math")))))
+
+(define-public cl-ana.generic-math
+  (sbcl-package->cl-source-package sbcl-cl-ana.generic-math))
+
+(define-public ecl-cl-ana.generic-math
+  (sbcl-package->ecl-package sbcl-cl-ana.generic-math))
