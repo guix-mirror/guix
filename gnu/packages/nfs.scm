@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +21,7 @@
 
 (define-module (gnu packages nfs)
   #:use-module (gnu packages)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages kerberos)
@@ -42,32 +44,27 @@
 (define-public nfs-utils
   (package
     (name "nfs-utils")
-    (version "2.1.1")
+    (version "2.4.2")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "mirror://kernel.org/linux/utils/nfs-utils/" version
                    "/nfs-utils-" version ".tar.xz"))
-             (patches (search-patches "nfs-utils-missing-headers.patch"))
              (sha256
               (base32
-               "1vqrqzhg9nh2wj1icp7k8v9dibgnn521b45np79nnkmqf16bbbhg"))))
+               "0f0hm8jq1p5gra55v621qpbb3mryakaikzpy5znkvxym0dx76r24"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        `("--without-tcp-wrappers"
          ,(string-append "--with-start-statd="
                          (assoc-ref %outputs "out") "/sbin/start-statd")
-         ,(string-append "--with-krb5=" (assoc-ref %build-inputs "mit-krb5")))
+         ,(string-append "--with-krb5=" (assoc-ref %build-inputs "mit-krb5"))
+         ,(string-append "--with-pluginpath="
+                         (assoc-ref %outputs "out")
+                         "/lib/libnfsidmap"))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-glibc-compatability
-           (lambda _
-             (substitute* '("utils/blkmapd/device-discovery.c"
-                            "utils/blkmapd/dm-device.c")
-               (("<sys/stat.h>")
-                "<sys/stat.h>\n#include <sys/sysmacros.h>"))
-             #t))
          (add-before 'configure 'adjust-command-file-names
            (lambda _
              ;; Remove assumptions of FHS from start-statd script
@@ -80,6 +77,11 @@
                (("^exec rpc.statd")
                 (string-append "exec "
                  (assoc-ref %outputs "out") "/sbin/rpc.statd")))
+
+             ;; find rpcgen
+             (substitute* "configure"
+               (("/usr/local/bin/rpcgen")
+                (which "rpcgen")))
 
              ;; This hook tries to write to /var
              ;; That needs to be done by a service too.
@@ -96,20 +98,23 @@
              (substitute* `("utils/statd/statd.c")
                (("/usr/sbin/")
                 (string-append (assoc-ref %outputs "out") "/sbin/")))
-             (substitute* `("utils/osd_login/Makefile.in"
-                            "utils/mount/Makefile.in"
+             (substitute* `("utils/mount/Makefile.in"
+                            "utils/nfsdcld/Makefile.in"
                             "utils/nfsdcltrack/Makefile.in")
                (("^sbindir = /sbin")
                 (string-append "sbindir = "
                                (assoc-ref %outputs "out") "/sbin")))
              #t)))))
-    (inputs `(("libevent" ,libevent)
-              ("libnfsidmap" ,libnfsidmap)
-              ("sqlite" ,sqlite)
-              ("lvm2" ,lvm2)
-              ("util-linux" ,util-linux)
-              ("mit-krb5" ,mit-krb5)
-              ("libtirpc" ,libtirpc)))
+    (inputs
+     `(("keyutils" ,keyutils)
+       ("libevent" ,libevent)
+       ("libnfsidmap" ,libnfsidmap)
+       ("rpcsvc-proto" ,rpcsvc-proto) ;for 'rpcgen'
+       ("sqlite" ,sqlite)
+       ("lvm2" ,lvm2)
+       ("util-linux" ,util-linux)
+       ("mit-krb5" ,mit-krb5)
+       ("libtirpc" ,libtirpc)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://www.kernel.org/pub/linux/utils/nfs-utils/")
