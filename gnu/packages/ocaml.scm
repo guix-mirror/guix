@@ -3092,7 +3092,7 @@ instead of bindings to a C library.")
        ("react" ,ocaml-react)
        ("camomile" ,ocaml-camomile)
        ("zed" ,ocaml-zed)))
-    (home-page "https://github.com/diml/utop")
+    (home-page "https://github.com/ocaml-community/utop")
     (synopsis "Improved interface to the OCaml toplevel")
     (description "UTop is an improved toplevel for OCaml.  It can run in a
 terminal or in Emacs.  It supports line editing, history, real-time and context
