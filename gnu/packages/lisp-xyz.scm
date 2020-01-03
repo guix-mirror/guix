@@ -7860,3 +7860,43 @@ sacrificing much in the way of power.")
 
 (define-public ecl-external-program
   (sbcl-package->ecl-package sbcl-external-program))
+
+(define sbcl-cl-ana-boot0
+  (let ((commit "fa7cee4c50aa1c859652813049ba0da7c18a0df9")
+        (revision "1"))
+    (package
+     (name "sbcl-cl-ana-boot0")
+     (version (git-version "0.0.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ghollisjr/cl-ana.git")
+             (commit commit)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0mr47l57m276dbpap7irr4fcnk5fgknhf6mgv4043s8h73amk5qh"))))
+     (build-system asdf-build-system/sbcl)
+     (synopsis "Common Lisp data analysis library")
+     (description
+      "CL-ANA is a data analysis library in Common Lisp providing tabular and
+binned data analysis along with nonlinear least squares fitting and
+visualization.")
+     (home-page "https://github.com/ghollisjr/cl-ana")
+     (license license:gpl3))))
+
+(define-public sbcl-cl-ana.pathname-utils
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.pathname-utils")
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "pathname-utils/cl-ana.pathname-utils.asd")
+       ((#:asd-system-name _ #f) "cl-ana.pathname-utils")))))
+
+(define-public cl-ana.pathname-utils
+  (sbcl-package->cl-source-package sbcl-cl-ana.pathname-utils))
+
+(define-public ecl-cl-ana.pathname-utils
+  (sbcl-package->ecl-package sbcl-cl-ana.pathname-utils))
