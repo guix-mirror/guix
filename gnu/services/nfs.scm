@@ -56,23 +56,36 @@
                        (default #t)))
 
 (define rpcbind-service-type
-  (shepherd-service-type
-   'rpcbind
-   (lambda (config)
-     (define rpcbind
-       (rpcbind-configuration-rpcbind config))
+  (let ((proc
+         (lambda (config)
+           (define rpcbind
+             (rpcbind-configuration-rpcbind config))
 
-     (define rpcbind-command
-       #~(list (string-append #$rpcbind "/bin/rpcbind") "-f"
-               #$@(if (rpcbind-configuration-warm-start? config) '("-w") '())))
+           (define rpcbind-command
+             #~(list (string-append #$rpcbind "/bin/rpcbind") "-f"
+                     #$@(if (rpcbind-configuration-warm-start? config) '("-w") '())))
 
-     (shepherd-service
-      (documentation "Start the RPC bind daemon.")
-      (requirement '(networking))
-      (provision '(rpcbind-daemon))
+           (shepherd-service
+            (documentation "Start the RPC bind daemon.")
+            (requirement '(networking))
+            (provision '(rpcbind-daemon))
 
-      (start #~(make-forkexec-constructor #$rpcbind-command))
-      (stop #~(make-kill-destructor))))))
+            (start #~(make-forkexec-constructor #$rpcbind-command))
+            (stop #~(make-kill-destructor))))))
+    (service-type
+     (name 'rpcbind)
+     (extensions
+      (list (service-extension shepherd-root-service-type
+                               (compose list proc))))
+     ;; We use the extensions feature to allow other services to automatically
+     ;; configure and start this service.  Only one value can be provided.  We
+     ;; override it with the value returned by the extending service.
+     (compose identity)
+     (extend (lambda (config values)
+               (match values
+                 ((first . rest) first)
+                 (_ config))))
+     (default-value (rpcbind-configuration)))))
 
 
 
