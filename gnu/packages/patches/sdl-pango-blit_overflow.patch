@@ -1,0 +1,32 @@
+Index: sdlpango-0.1.2/src/SDL_Pango.c
+===================================================================
+--- sdlpango-0.1.2.orig/src/SDL_Pango.c	2007-10-08 19:44:15.000000000 +0000
++++ sdlpango-0.1.2/src/SDL_Pango.c	2007-10-08 19:45:27.000000000 +0000
+@@ -725,16 +725,23 @@
+     int x = rect->x;
+     int y = rect->y;
+ 
++    if(x < 0) {
++	width += x; x = 0;
++    }
+     if(x + width > surface->w) {
+ 	width = surface->w - x;
+-	if(width <= 0)
+-	    return;
++    }
++    if(width <= 0)
++	return;
++
++    if(y < 0) {
++	height += y; y = 0;
+     }
+     if(y + height > surface->h) {
+ 	height = surface->h - y;
+-	if(height <= 0)
+-	    return;
+     }
++    if(height <= 0)
++	return;
+ 
+     if(SDL_LockSurface(surface)) {
+ 	SDL_SetError("surface lock failed");
