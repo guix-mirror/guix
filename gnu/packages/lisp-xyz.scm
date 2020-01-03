@@ -8018,3 +8018,20 @@ visualization.")
 
 (define-public ecl-cl-ana.calculus
   (sbcl-package->ecl-package sbcl-cl-ana.calculus))
+
+(define-public sbcl-cl-ana.symbol-utils
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.symbol-utils")
+    (inputs
+     `(("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "symbol-utils/cl-ana.symbol-utils.asd")
+       ((#:asd-system-name _ #f) "cl-ana.symbol-utils")))))
+
+(define-public cl-ana.symbol-utils
+  (sbcl-package->cl-source-package sbcl-cl-ana.symbol-utils))
+
+(define-public ecl-cl-ana.symbol-utils
+  (sbcl-package->ecl-package sbcl-cl-ana.symbol-utils))
