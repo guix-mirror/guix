@@ -1128,33 +1128,31 @@ incoming requests with their respective handler.")
       (license license:asl2.0))))
 
 (define-public go-github-com-spf13-pflag
-  (let ((commit "4f9190456aed1c2113ca51ea9b89219747458dc1")
-        (revision "0"))
-    (package
-      (name "go-github-com-spf13-pflag")
-      (version (git-version "0.0.0" revision commit))
-      (source
-        (origin
-          (method git-fetch)
-          (uri (git-reference
-                 (url "https://github.com/spf13/pflag.git")
-                 (commit commit)))
-          (file-name (git-file-name name version))
-          (sha256
-            (base32
-              "12vrlcsbwjqlfc49rwky45mbcj74c0kb6z54354pzas6fwzyi1kc"))))
-      (build-system go-build-system)
-      (arguments
-        '(#:import-path "github.com/spf13/pflag"))
-      (home-page "https://github.com/spf13/pflag")
-      (synopsis "Replacement for Go's @code{flag} package")
-      (description
-       "Pflag is library to replace Go's @code{flag} package.  It implements
+  (package
+    (name "go-github-com-spf13-pflag")
+    (version "1.0.5")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/spf13/pflag.git")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "0gpmacngd0gpslnbkzi263f5ishigzgh6pbdv9hp092rnjl4nd31"))))
+    (build-system go-build-system)
+    (arguments
+      '(#:import-path "github.com/spf13/pflag"))
+    (home-page "https://github.com/spf13/pflag")
+    (synopsis "Replacement for Go's @code{flag} package")
+    (description
+     "Pflag is library to replace Go's @code{flag} package.  It implements
 POSIX/GNU-style command-line options with double hyphens.  It is is compatible
 with the
 @uref{https://www.gnu.org/software/libc/manual/html_node/Argument-Syntax.html,
 GNU extensions} to the POSIX recommendations for command-line options.")
-      (license license:bsd-3))))
+    (license license:bsd-3)))
 
 (define-public go-github-com-sirupsen-logrus
   (package
