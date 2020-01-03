@@ -1012,7 +1012,7 @@ bit bucket."
         (lambda () exp ...)))))
 
 (define (create-btrfs-file-system partition)
-  "Create an btrfs file-system for PARTITION file-name."
+  "Create a btrfs file-system for PARTITION file-name."
   (with-null-output-ports
    (invoke "mkfs.btrfs" "-f" partition)))
 
