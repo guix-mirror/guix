@@ -8688,3 +8688,38 @@ visualization.")
 
 (define-public cl-ana.serialization
   (sbcl-package->cl-source-package sbcl-cl-ana.serialization))
+
+(define-public sbcl-cl-ana.makeres
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.makeres")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("cl-ana.error-propogation" ,sbcl-cl-ana.error-propogation)
+       ("cl-ana.file-utils" ,sbcl-cl-ana.file-utils)
+       ("cl-ana.functional-utils" ,sbcl-cl-ana.functional-utils)
+       ("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
+       ("cl-ana.hash-table-utils" ,sbcl-cl-ana.hash-table-utils)
+       ("cl-ana.hdf-utils" ,sbcl-cl-ana.hdf-utils)
+       ("cl-ana.histogram" ,sbcl-cl-ana.histogram)
+       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
+       ("cl-ana.macro-utils" ,sbcl-cl-ana.macro-utils)
+       ("cl-ana.map" ,sbcl-cl-ana.map)
+       ("cl-ana.memoization" ,sbcl-cl-ana.memoization)
+       ("cl-ana.pathname-utils" ,sbcl-cl-ana.pathname-utils)
+       ("cl-ana.plotting" ,sbcl-cl-ana.plotting)
+       ("cl-ana.reusable-table" ,sbcl-cl-ana.reusable-table)
+       ("cl-ana.serialization" ,sbcl-cl-ana.serialization)
+       ("cl-ana.string-utils" ,sbcl-cl-ana.string-utils)
+       ("cl-ana.symbol-utils" ,sbcl-cl-ana.symbol-utils)
+       ("cl-ana.table" ,sbcl-cl-ana.table)
+       ("external-program" ,sbcl-external-program)))
+    (native-inputs
+     `(("cl-fad" ,sbcl-cl-fad)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "makeres/cl-ana.makeres.asd")
+       ((#:asd-system-name _ #f) "cl-ana.makeres")))))
+
+(define-public cl-ana.makeres
+  (sbcl-package->cl-source-package sbcl-cl-ana.makeres))
