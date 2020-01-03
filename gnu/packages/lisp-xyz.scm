@@ -7483,3 +7483,24 @@ computer known.")
 
 (define-public ecl-antik-base
   (sbcl-package->ecl-package sbcl-antik-base))
+
+(define-public sbcl-foreign-array
+  (package
+    (inherit sbcl-antik-base)
+    (name "sbcl-foreign-array")
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-antik-base)
+       ((#:asd-file _ "") "foreign-array.asd")
+       ((#:asd-system-name _ #f) "foreign-array")))
+    (inputs
+     `(("antik-base" ,sbcl-antik-base)
+       ("cffi" ,sbcl-cffi)
+       ("trivial-garbage" ,sbcl-trivial-garbage)
+       ("static-vectors" ,sbcl-static-vectors)))
+    (synopsis "Common Lisp library providing access to foreign arrays")))
+
+(define-public cl-foreign-array
+  (sbcl-package->cl-source-package sbcl-foreign-array))
+
+(define-public ecl-foreign-array
+  (sbcl-package->ecl-package sbcl-foreign-array))
