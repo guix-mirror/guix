@@ -7769,3 +7769,19 @@ and camel-case rules.")
 
 (define-public ecl-symbol-munger
   (sbcl-package->ecl-package sbcl-symbol-munger))
+
+(define-public sbcl-lisp-unit2
+  (package
+    (inherit sbcl-lisp-unit2-boot0)
+    (name "sbcl-lisp-unit2")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("cl-interpol" ,sbcl-cl-interpol)
+       ("iterate" ,sbcl-iterate)
+       ("symbol-munger" ,sbcl-symbol-munger)))))
+
+(define-public cl-lisp-unit2
+  (sbcl-package->cl-source-package sbcl-lisp-unit2))
+
+(define-public ecl-lisp-unit2
+  (sbcl-package->ecl-package sbcl-lisp-unit2))
