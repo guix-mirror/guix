@@ -12,9 +12,9 @@
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2019 Katherine Cox-Buday <cox.katherine.e@gmail.com>
+;;; Copyright © 2019, 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright © 2019 Jesse Gildersleve <jessejohngildersleve@protonmail.com>
-;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -7439,3 +7439,47 @@ your own classes.")
 
 (define-public cl-plump
   (sbcl-package->cl-source-package sbcl-plump))
+
+(define-public sbcl-antik-base
+  (let ((commit "e4711a69b3d6bf37b5727af05c3cfd03e8428ba3")
+        (revision "1"))
+    (package
+      (name "sbcl-antik-base")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.common-lisp.net/antik/antik.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "047ga2c38par2xbgg4qx6hwv06qhf1c1f67as8xvir6s80lip1km"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("iterate" ,sbcl-iterate)
+         ("metabang-bind" ,sbcl-metabang-bind)
+         ("named-readtables" ,sbcl-named-readtables)
+         ("split-sequence" ,sbcl-split-sequence)))
+      (native-inputs
+       `(("lisp-unit" ,sbcl-lisp-unit)))
+      (synopsis "Scientific and engineering computation in Common Lisp")
+      (description
+       "Antik provides a foundation for scientific and engineering
+computation in Common Lisp.  It is designed not only to facilitate
+numerical computations, but to permit the use of numerical computation
+libraries and the interchange of data and procedures, whether
+foreign (non-Lisp) or Lisp libraries.  It is named after the
+Antikythera mechanism, one of the oldest examples of a scientific
+computer known.")
+      (home-page "https://common-lisp.net/project/antik/")
+      (license license:gpl3))))
+
+(define-public cl-antik-base
+  (sbcl-package->cl-source-package sbcl-antik-base))
+
+(define-public ecl-antik-base
+  (sbcl-package->ecl-package sbcl-antik-base))
