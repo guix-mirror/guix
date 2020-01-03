@@ -7617,3 +7617,41 @@ intending to program in Lisp.")
 
 (define-public cl-antik
   (sbcl-package->cl-source-package sbcl-antik))
+
+(define-public sbcl-cl-interpol
+  (let ((commit "1fd288d861db85bc4677cff3cdd6af75fda1afb4")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-interpol")
+      (version (git-version "0.2.6" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/edicl/cl-interpol.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1hnikak52hmcq1r5f616m6qq1108qnkw80pja950nv1fq5p0ppjn"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-unicode" ,sbcl-cl-unicode)
+         ("named-readtables" ,sbcl-named-readtables)))
+      (native-inputs
+       `(("flexi-streams" ,sbcl-flexi-streams)))
+      (synopsis "String interpolation for Common Lisp")
+      (description
+       "CL-INTERPOL is a library for Common Lisp which modifies the
+reader so that you can have interpolation within strings similar to
+Perl or Unix Shell scripts.  It also provides various ways to insert
+arbitrary characters into literal strings even if your editor/IDE
+doesn't support them.")
+      (home-page "https://edicl.github.io/cl-interpol/")
+      (license license:bsd-3))))
+
+(define-public cl-interpol
+  (sbcl-package->cl-source-package sbcl-cl-interpol))
+
+(define-public ecl-cl-interpol
+  (sbcl-package->ecl-package sbcl-cl-interpol))
