@@ -29,7 +29,7 @@
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
-;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -520,13 +520,17 @@ login, passwd, su, groupadd, and useradd.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda* (#:key inputs outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs target #:allow-other-keys)
              (let* ((out    (assoc-ref outputs "out"))
                     (man8   (string-append out "/share/man/man8"))
                     (sbin   (string-append out "/sbin"))
                     (shadow (assoc-ref inputs "shadow"))
                     (login  (string-append shadow "/bin/login")))
                (substitute* "Makefile"
+                 ,@(if (%current-target-system)
+                       '((("CC=.*$")
+                          (string-append "CC=" target "-gcc\n")))
+                       '())
                  (("^SBINDIR.*")
                   (string-append "SBINDIR = " out
                                  "/sbin\n"))
