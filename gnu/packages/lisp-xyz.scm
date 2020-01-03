@@ -8620,3 +8620,31 @@ visualization.")
 
 (define-public ecl-cl-ana.gnuplot-interface
   (sbcl-package->ecl-package sbcl-cl-ana.gnuplot-interface))
+
+(define-public sbcl-cl-ana.plotting
+  (package
+    (inherit sbcl-cl-ana-boot0)
+    (name "sbcl-cl-ana.plotting")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("cl-ana.error-propogation" ,sbcl-cl-ana.error-propogation)
+       ("cl-ana.functional-utils" ,sbcl-cl-ana.functional-utils)
+       ("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
+       ("cl-ana.gnuplot-interface" ,sbcl-cl-ana.gnuplot-interface)
+       ("cl-ana.histogram" ,sbcl-cl-ana.histogram)
+       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
+       ("cl-ana.macro-utils" ,sbcl-cl-ana.macro-utils)
+       ("cl-ana.map" ,sbcl-cl-ana.map)
+       ("cl-ana.math-functions" ,sbcl-cl-ana.math-functions)
+       ("cl-ana.pathname-utils" ,sbcl-cl-ana.pathname-utils)
+       ("cl-ana.string-utils" ,sbcl-cl-ana.string-utils)
+       ("cl-ana.tensor" ,sbcl-cl-ana.tensor)
+       ("external-program" ,sbcl-external-program)
+       ("split-sequence" ,sbcl-split-sequence)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
+       ((#:asd-file _ "") "plotting/cl-ana.plotting.asd")
+       ((#:asd-system-name _ #f) "cl-ana.plotting")))))
+
+(define-public cl-ana.plotting
+  (sbcl-package->cl-source-package sbcl-cl-ana.plotting))
