@@ -7522,3 +7522,20 @@ computer known.")
 
 (define-public cl-physical-dimension
   (sbcl-package->cl-source-package sbcl-physical-dimension))
+
+(define-public sbcl-science-data
+  (package
+    (inherit sbcl-antik-base)
+    (name "sbcl-science-data")
+    (inputs
+     `(("physical-dimension" ,sbcl-physical-dimension)
+       ("drakma" ,sbcl-drakma)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-antik-base)
+       ((#:asd-file _ "") "science-data.asd")
+       ((#:asd-system-name _ #f) "science-data")))
+    (synopsis
+     "Common Lisp library for scientific and engineering numerical data")))
+
+(define-public cl-science-data
+  (sbcl-package->cl-source-package sbcl-science-data))
