@@ -22,6 +22,7 @@
   #:use-module (gnu services shepherd)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages nfs)
   #:use-module (guix)
   #:use-module (guix records)
   #:use-module (srfi srfi-1)
@@ -41,7 +42,11 @@
 
             gss-service-type
             gss-configuration
-            gss-configuration?))
+            gss-configuration?
+
+            nfs-service-type
+            nfs-configuration
+            nfs-configuration?))
 
 
 (define default-pipefs-directory "/var/lib/nfs/rpc_pipefs")
@@ -234,3 +239,177 @@
      (compose identity)
      (extend (lambda (config values) (first values)))
      (default-value (idmap-configuration)))))
+
+(define-record-type* <nfs-configuration>
+  nfs-configuration make-nfs-configuration
+  nfs-configuration?
+  (nfs-utils           nfs-configuration-nfs-utils
+                       (default nfs-utils))
+  (nfs-version         nfs-configuration-nfs-version
+                       (default #f)) ; string
+  (exports             nfs-configuration-exports
+                       (default '()))
+  (rpcmountd-port      nfs-configuration-rpcmountd-port
+                       (default #f))
+  (rpcstatd-port       nfs-configuration-rpcstatd-port
+                       (default #f))
+  (rpcbind             nfs-configuration-rpcbind
+                       (default rpcbind))
+  (idmap-domain        nfs-configuration-idmap-domain
+                       (default "localdomain"))
+  (nfsd-port           nfs-configuration-nfsd-port
+                       (default 2049))
+  (nfsd-threads        nfs-configuration-nfsd-threads
+                       (default 8))
+  (pipefs-directory    nfs-configuration-pipefs-directory
+                       (default default-pipefs-directory))
+  ;; List of modules to debug; any of nfsd, nfs, rpc, idmap, statd, or mountd.
+  (debug               nfs-configuration-debug
+                       (default '())))
+
+(define (nfs-shepherd-services config)
+  "Return a list of <shepherd-service> for the NFS daemons with CONFIG."
+  (match-record config <nfs-configuration>
+    (nfs-utils nfs-version exports
+               rpcmountd-port rpcstatd-port nfsd-port nfsd-threads
+               pipefs-directory debug)
+    (list (shepherd-service
+           (documentation "Run the NFS statd daemon.")
+           (provision '(rpc.statd))
+           (requirement '(rpcbind-daemon))
+           (start
+            #~(make-forkexec-constructor
+               (list #$(file-append nfs-utils "/sbin/rpc.statd")
+                     ;; TODO: notification support may require a little more
+                     ;; configuration work.
+                     "--no-notify"
+                     #$@(if (member 'statd debug)
+                            '("--no-syslog") ; verbose logging to stderr
+                            '())
+                     "--foreground"
+                     #$@(if rpcstatd-port
+                            '("--port" (number->string rpcstatd-port))
+                            '()))
+               #:pid-file "/var/run/rpc.statd.pid"))
+           (stop #~(make-kill-destructor)))
+          (shepherd-service
+           (documentation "Run the NFS mountd daemon.")
+           (provision '(rpc.mountd))
+           (requirement '(rpc.statd))
+           (start
+            #~(make-forkexec-constructor
+               (list #$(file-append nfs-utils "/sbin/rpc.mountd")
+                     #$@(if (member 'mountd debug)
+                            '("--debug" "all")
+                            '())
+                     #$@(if rpcmountd-port
+                            '("--port" (number->string rpcmountd-port))
+                            '()))))
+           (stop #~(make-kill-destructor)))
+          (shepherd-service
+           (documentation "Run the NFS daemon.")
+           (provision '(rpc.nfsd))
+           (requirement '(rpc.statd networking))
+           (start
+            #~(lambda _
+                (zero? (system* #$(file-append nfs-utils "/sbin/rpc.nfsd")
+                                #$@(if (member 'nfsd debug)
+                                       '("--debug")
+                                       '())
+                                "--port" #$(number->string nfsd-port)
+                                #$@(if nfs-version
+                                       '("--nfs-version" nfs-version)
+                                       '())
+                                #$(number->string nfsd-threads)))))
+           (stop
+            #~(lambda _
+                (zero?
+                 (system* #$(file-append nfs-utils "/sbin/rpc.nfsd") "0")))))
+          (shepherd-service
+           (documentation "Run the NFS mountd daemon and refresh exports.")
+           (provision '(nfs))
+           (requirement '(rpc.nfsd rpc.mountd rpc.statd rpcbind-daemon))
+           (start
+            #~(lambda _
+                (let ((rpcdebug #$(file-append nfs-utils "/sbin/rpcdebug")))
+                  (cond
+                   ((member 'nfsd '#$debug)
+                    (system* rpcdebug "-m" "nfsd" "-s" "all"))
+                   ((member 'nfs '#$debug)
+                    (system* rpcdebug "-m" "nfs" "-s" "all"))
+                   ((member 'rpc '#$debug)
+                    (system* rpcdebug "-m" "rpc" "-s" "all"))))
+                (zero? (system*
+                        #$(file-append nfs-utils "/sbin/exportfs")
+                        "-r"            ; re-export
+                        "-a"            ; everthing
+                        "-v"            ; be verbose
+                        "-d" "all"      ; debug
+                        ))))
+           (stop
+            #~(lambda _
+                (let ((rpcdebug #$(file-append nfs-utils "/sbin/rpcdebug")))
+                  (cond
+                   ((member 'nfsd '#$debug)
+                    (system* rpcdebug "-m" "nfsd" "-c" "all"))
+                   ((member 'nfs '#$debug)
+                    (system* rpcdebug "-m" "nfs" "-c" "all"))
+                   ((member 'rpc '#$debug)
+                    (system* rpcdebug "-m" "rpc" "-c" "all"))))
+                #t))
+           (respawn? #f)))))
+
+(define nfs-service-type
+  (service-type
+   (name 'nfs)
+   (extensions
+    (list
+     (service-extension shepherd-root-service-type nfs-shepherd-services)
+     (service-extension activation-service-type
+                        (const #~(begin
+                                   (use-modules (guix build utils))
+                                   (system* "mount" "-t" "nfsd"
+                                            "nfsd" "/proc/fs/nfsd")
+
+                                   (mkdir-p "/var/lib/nfs")
+                                   ;; directory containing monitor list
+                                   (mkdir-p "/var/lib/nfs/sm")
+                                   ;; Needed for client recovery tracking
+                                   (mkdir-p "/var/lib/nfs/v4recovery")
+                                   (let ((user (getpw "nobody")))
+                                     (chown "/var/lib/nfs"
+                                            (passwd:uid user)
+                                            (passwd:gid user))
+                                     (chown "/var/lib/nfs/v4recovery"
+                                            (passwd:uid user)
+                                            (passwd:gid user)))
+                                   #t)))
+     (service-extension etc-service-type
+                        (lambda (config)
+                          `(("exports"
+                             ,(plain-file "exports"
+                                          (string-join
+                                           (map string-join
+                                                (nfs-configuration-exports config))
+                                           "\n"))))))
+     ;; The NFS service depends on these other services.  They are extended so
+     ;; that users don't need to configure them manually.
+     (service-extension idmap-service-type
+                        (lambda (config)
+                          (idmap-configuration
+                           (domain (nfs-configuration-idmap-domain config))
+                           (verbosity
+                            (if (member 'idmap (nfs-configuration-debug config))
+                                10 0))
+                           (pipefs-directory (nfs-configuration-pipefs-directory config))
+                           (nfs-utils (nfs-configuration-nfs-utils config)))))
+     (service-extension pipefs-service-type
+                        (lambda (config)
+                          (pipefs-configuration
+                           (mount-point (nfs-configuration-pipefs-directory config)))))
+     (service-extension rpcbind-service-type
+                        (lambda (config)
+                          (rpcbind-configuration
+                           (rpcbind (nfs-configuration-rpcbind config)))))))
+   (description
+    "Run all NFS daemons and refresh the list of exported file systems.")))

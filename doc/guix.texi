@@ -29,7 +29,7 @@ Copyright @copyright{} 2015, 2016 Mathieu Lirzin@*
 Copyright @copyright{} 2014 Pierre-Antoine Rault@*
 Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@*
 Copyright @copyright{} 2015, 2016, 2017, 2019 Leo Famulari@*
-Copyright @copyright{} 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus@*
+Copyright @copyright{} 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
 Copyright @copyright{} 2016, 2017, 2018 Chris Marusich@*
 Copyright @copyright{} 2016, 2017, 2018, 2019 Efraim Flashner@*
@@ -21939,6 +21939,78 @@ Defaults to @samp{#f}.
 The @code{(gnu services nfs)} module provides the following services,
 which are most commonly used in relation to mounting or exporting
 directory trees as @dfn{network file systems} (NFS).
+
+While it is possible to use the individual components that together make
+up a Network File System service, we recommended to configure an NFS
+server with the @code{nfs-service-type}.
+
+@subsubheading NFS Service
+@cindex NFS, server
+
+The NFS service takes care of setting up all NFS component services,
+kernel configuration file systems, and installs configuration files in
+the locations that NFS expects.
+
+@defvr {Scheme Variable} nfs-service-type
+A service type for a complete NFS server.
+@end defvr
+
+@deftp {Data Type} nfs-configuration
+This data type represents the configuration of the NFS service and all
+of its subsystems.
+
+It has the following parameters:
+@table @asis
+@item @code{nfs-utils} (default: @code{nfs-utils})
+The nfs-utils package to use.
+
+@item @code{nfs-version} (default: @code{#f})
+If a string value is provided, the @command{rpc.nfsd} daemon will be
+limited to supporting the given version of the NFS protocol.
+
+@item @code{exports} (default: @code{'()})
+This is a list of directories the NFS server should export.  Each entry
+is a list consisting of two elements: a directory name and a string
+containing all options.  This is an example in which the directory
+@file{/export} is served to all NFS clients as a read-only share:
+
+@lisp
+(nfs-configuration
+ (exports
+  '(("/export"
+     "*(ro,insecure,no_subtree_check,crossmnt,fsid=0)"))))
+@end lisp
+
+@item @code{rpcmountd-port} (default: @code{#f})
+The network port that the @command{rpc.mountd} daemon should use.
+
+@item @code{rpcstatd-port} (default: @code{#f})
+The network port that the @command{rpc.statd} daemon should use.
+
+@item @code{rpcbind} (default: @code{rpcbind})
+The rpcbind package to use.
+
+@item @code{idmap-domain} (default: @code{"localdomain"})
+The local NFSv4 domain name.
+
+@item @code{nfsd-port} (default: @code{2049})
+The network port that the @command{nfsd} daemon should use.
+
+@item @code{nfsd-threads} (default: @code{8})
+The number of threads used by the @command{nfsd} daemon.
+
+@item @code{pipefs-directory} (default: @code{"/var/lib/nfs/rpc_pipefs"})
+The directory where the pipefs file system is mounted.
+
+@item @code{debug} (default: @code{'()"})
+A list of subsystems for which debugging output should be enabled.  This
+is a list of symbols.  Any of these symbols are valid: @code{nfsd},
+@code{nfs}, @code{rpc}, @code{idmap}, @code{statd}, or @code{mountd}.
+@end table
+@end deftp
+
+If you don't need a complete NFS service or prefer to build it yourself
+you can use the individual component services that are documented below.
 
 @subsubheading RPC Bind Service
 @cindex rpcbind
