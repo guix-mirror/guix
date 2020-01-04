@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
 ;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
+;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1595,3 +1596,35 @@ cookies, serving files, and more.")
     (description
      "Haskell library which exposes zero-copy sendfile functionality in a portable way.")
     (license license:bsd-3)))
+
+(define-public ghc-scalpel-core
+  (package
+    (name "ghc-scalpel-core")
+    (version "0.6.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://hackage.haskell.org/package/scalpel-core/"
+               "scalpel-core-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1qf0gnidyh8zk0acj99vn6hsj37m410lrm50sqpiv1i36rpmmsqh"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-data-default" ,ghc-data-default)
+       ("ghc-fail" ,ghc-fail)
+       ("ghc-pointedlist" ,ghc-pointedlist)
+       ("ghc-regex-base" ,ghc-regex-base)
+       ("ghc-regex-tdfa" ,ghc-regex-tdfa)
+       ("ghc-tagsoup" ,ghc-tagsoup)
+       ("ghc-vector" ,ghc-vector)))
+    (native-inputs `(("ghc-hunit" ,ghc-hunit)))
+    (home-page "https://github.com/fimad/scalpel")
+    (synopsis
+     "High level web scraping library for Haskell")
+    (description
+     "Scalpel core provides a subset of the scalpel web scraping library
+that is intended to have lightweight dependencies and to be free of all
+non-Haskell dependencies.")
+    (license license:asl2.0)))
