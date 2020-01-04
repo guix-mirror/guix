@@ -400,6 +400,33 @@ file.")
 (define-public cl-zpb-ttf
   (sbcl-package->cl-source-package sbcl-zpb-ttf))
 
+(define-public sbcl-cl-aa
+  (package
+    (name "sbcl-cl-aa")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://projects.tuxee.net/cl-vectors/"
+                           "files/cl-vectors-" version ".tar.gz"))
+       (sha256
+        (base32
+         "04lhwi0kq8pkwhgd885pk80m1cp9sfvjjn5zj70s1dnckibhdmqh"))))
+    (build-system asdf-build-system/sbcl)
+    (arguments '(#:asd-file "cl-aa.asd"))
+    (home-page "http://projects.tuxee.net/cl-vectors/")
+    (synopsis "Polygon rasterizer")
+    (description
+     "This is a Common Lisp library implementing the AA polygon rasterization
+algorithm from the @url{http://antigrain.com, Antigrain} project.")
+    (license license:expat)))
+
+(define-public ecl-cl-aa
+  (sbcl-package->ecl-package sbcl-cl-aa))
+
+(define-public cl-aa
+  (sbcl-package->cl-source-package sbcl-cl-aa))
+
 (define-public sbcl-clx
   (package
     (name "sbcl-clx")
