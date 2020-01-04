@@ -550,6 +550,40 @@ a sequence (or chain) of such elements.")
 (define-public cl-flexichain
   (sbcl-package->cl-source-package sbcl-flexichain))
 
+(define-public sbcl-cl-pdf
+  ;; There are no releases
+  (let ((commit "752e337e6d6fc206f09d091a982e7f8e5c404e4e")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-pdf")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mbattyani/cl-pdf.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1cg3k3m3r11ipb8j008y8ipynj97l3xjlpi2knqc9ndmx4r3kb1r"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("iterate" ,sbcl-iterate)
+         ("zpb-ttf" ,sbcl-zpb-ttf)))
+      (home-page "https://github.com/mbattyani/cl-pdf")
+      (synopsis "Common Lisp library for generating PDF files")
+      (description
+       "CL-PDF is a cross-platform Common Lisp library for generating PDF
+files.")
+      (license license:bsd-2))))
+
+(define-public ecl-cl-pdf
+  (sbcl-package->ecl-package sbcl-cl-pdf))
+
+(define-public cl-pdf
+  (sbcl-package->cl-source-package sbcl-cl-pdf))
+
 (define-public sbcl-clx
   (package
     (name "sbcl-clx")
