@@ -948,8 +948,8 @@ generation.")
       (license gpl2+))))
 
 (define-public femtolisp
-  (let ((commit "68c5b1225572ecf2c52baf62f928063e5a30511b")
-        (revision "1"))
+  (let ((commit "ec7601076a976f845bc05ad6bd3ed5b8cde58a97")
+        (revision "2"))
     (package
       (name "femtolisp")
       (version (string-append "0.0.0-" revision "." (string-take commit 7)))
@@ -961,7 +961,7 @@ generation.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "04rnwllxnl86zw8c6pwxznn49bvkvh0f1lfliy085vjzvlq3rgja"))))
+                  "1fcyiqlqn27nd4wxi27km8mhmlzpzzsxzpwsl1bxbmhraq468njw"))))
       ;; See "utils.h" for supported systems. Upstream bug:
       ;; https://github.com/JeffBezanson/femtolisp/issues/25
       (supported-systems
