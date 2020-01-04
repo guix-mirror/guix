@@ -3,6 +3,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 ng0 <ng0@n0.is>
 ;;; Copyright © 2019 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -883,3 +884,27 @@ suitable for both the desktop and mobile devices.")
                  (("zinnia") "wagomu"))
                #t))))))
     (license lgpl2.1))) ; all files
+
+(define-public link-grammar
+  (package
+    (name "link-grammar")
+    (version "5.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.abisource.com/downloads/"
+                                  "link-grammar/" version
+                                  "/link-grammar-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0ak1v469k56v3511kxxkxvx1nw6zcxcl0f1kcvc82ffacqbr4y96"))))
+    (build-system gnu-build-system)
+    (home-page "https://www.abisource.com/projects/link-grammar/")
+    (synopsis "Link grammar parser")
+    (description "The Link Grammar Parser is a syntactic parser of English,
+Russian, Arabic and Persian (and other languages as well), based on Link
+Grammar, an original theory of syntax and morphology.  Given a sentence, the
+system assigns to it a syntactic structure, which consists of a set of
+labelled links connecting pairs of words.  The parser also produces a
+\"constituent\" (HPSG style phrase tree) representation of a sentence (showing
+noun phrases, verb phrases, etc.).")
+    (license bsd-3)))
