@@ -310,7 +310,7 @@ format.")
 (define-public cppcheck
   (package
     (name "cppcheck")
-    (version "1.89")
+    (version "1.90")
     (source (origin
       (method git-fetch)
       (uri (git-reference
@@ -318,7 +318,7 @@ format.")
              (commit version)))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "07yn1zycsb7sn1v7fprihbl0ih4n2zkd7l9jvmkjcskvwn4n21h0"))))
+       (base32 "0h7ir2x0k005fm586dxmaphgv5cyz25k3k4sh02p7zb78gzx398h"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DBUILD_TESTS=ON")))
