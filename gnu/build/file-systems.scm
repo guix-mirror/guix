@@ -4,6 +4,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 David C. Trudgian <dave@trudgian.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -343,6 +344,10 @@ if DEVICE does not contain a JFS file system."
 ;; <https://gitlab.com/cryptsetup/cryptsetup/wikis/Specification>.  We follow
 ;; version 1.2.1 of this document.
 
+;; The LUKS2 header format is described in "LUKS2 On-Disk Format Specification":
+;; <https://gitlab.com/cryptsetup/LUKS2-docs/blob/master/luks2_doc_wip.pdf>.
+;; It is a WIP document.
+
 (define-syntax %luks-endianness
   ;; Endianness of LUKS headers.
   (identifier-syntax (endianness big)))
@@ -356,12 +361,16 @@ if DEVICE does not contain a JFS file system."
   (let ((magic   (sub-bytevector sblock 0 6))
         (version (bytevector-u16-ref sblock 6 %luks-endianness)))
     (and (bytevector=? magic %luks-magic)
-         (= version 1))))
+         (or (= version 1) (= version 2)))))
 
 (define (read-luks-header file)
   "Read a LUKS header from FILE.  Return the raw header on success, and #f if
 not valid header was found."
-  ;; Size in bytes of the LUKS header, including key slots.
+  ;; Size in bytes of the LUKS binary header, which includes key slots in
+  ;; LUKS1.  In LUKS2 the binary header is partially backward compatible, so
+  ;; that UUID can be extracted as for LUKS1. Keyslots and other metadata are
+  ;; not part of this header in LUKS2, but are included in the JSON metadata
+  ;; area that follows.
   (read-superblock file 0 592 luks-superblock?))
 
 (define (luks-header-uuid header)
