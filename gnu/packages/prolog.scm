@@ -103,8 +103,7 @@ manner.  It also features an interactive interpreter.")
        #:tests? #t
        #:configure-flags
        (list "-DINSTALL_DOCUMENTATION=ON"
-             "-DBUILD_PDF_DOCUMENTATION=ON"
-             "-DSWIPL_INSTALL_IN_LIB=OFF"))) ; FIXME: Breaks RUNPATH validation.
+             "-DSWIPL_INSTALL_IN_LIB=OFF") ; FIXME: Breaks RUNPATH validation.
        #:phases
        (modify-phases %standard-phases
          ;; XXX: Delete a variety of tests which fail either attempting to
