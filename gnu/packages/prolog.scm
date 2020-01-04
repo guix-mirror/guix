@@ -20,9 +20,23 @@
 
 (define-module (gnu packages prolog)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages backup)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages libunwind)
+  #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages xorg)
   #:use-module (srfi srfi-1))
 
 (define-public gprolog
@@ -68,3 +82,46 @@ manner.  It also features an interactive interpreter.")
     (supported-systems (fold delete
                              %supported-systems
                              '("armhf-linux" "mips64el-linux")))))
+
+(define-public swi-prolog
+  (package
+    (name "swi-prolog")
+    (version "8.1.19")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/SWI-Prolog/swipl-devel.git")
+                    (recursive? #t) ; TODO: Determine if this can be split out.
+                    (commit (string-append "V" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0p1psf1lrkm9vdz5fggyfnr7hwyf6rvf80gygbw47hhfx46li8jh"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:parallel-build? #t
+       #:tests? #f ; FIXME: Some tests require network access.
+       #:configure-flags
+       (list "-DINSTALL_DOCUMENTATION=ON"
+             "-DBUILD_PDF_DOCUMENTATION=ON"
+             "-DSWIPL_INSTALL_IN_LIB=OFF"))) ; FIXME: Breaks RUNPATH validation.
+    (native-inputs
+     `(("zlib" ,zlib)
+       ("gmp" ,gmp)
+       ("readline" ,readline)
+       ("texinfo" ,texinfo)
+       ("libarchive" ,libarchive)
+       ("libunwind" ,libunwind)
+       ("libjpeg", libjpeg)
+       ("libxft" ,libxft)
+       ("fontconfig" ,fontconfig)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("openssl" ,openssl)))
+    (home-page "https://www.swi-prolog.org/")
+    (synopsis "ISO/Edinburgh-style Prolog interpreter")
+    (description "SWI-Prolog is a fast and powerful ISO/Edinburgh-style Prolog
+compiler with a rich set of built-in predicates.  It offers a fast, robust and
+small environment which enables substantial applications to be developed with
+it.")
+    (license license:bsd-2)))
