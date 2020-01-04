@@ -22,6 +22,8 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages language)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -196,4 +198,55 @@ OpenCog framework.")
       (description "Attention Allocation is an OpenCog subsystem meant to
 control the application of processing and memory resources to specific
 tasks.")
+      (license license:agpl3))))
+
+(define-public opencog
+  ;; There are no recent releases.
+  (let ((commit "ceac90507610cb2d0ee98f97a2086865292b1204")
+        (revision "1"))
+    (package
+      (name "opencog")
+      (version (git-version "0.1.4" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/opencog/opencog.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1j8wv910fvrmph370wv5pv2f4bc2s9vl6i7bw3pkmwbdhxkhjbhm"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:test-target "tests"
+         #:configure-flags
+         (list
+          (string-append "-DGUILE_INCLUDE_DIR="
+                         (assoc-ref %build-inputs "guile")
+                         "/include/guile/2.2/")
+          (string-append "-DGUILE_SITE_DIR="
+                         (assoc-ref %outputs "out")
+                         "/share/guile/site/2.2/"))))
+      (inputs
+       `(("attention" ,attention)
+         ("atomspace" ,atomspace)
+         ("boost" ,boost)
+         ("cogserver" ,cogserver)
+         ("cogutil" ,cogutil)
+         ("gmp" ,gmp)
+         ("guile" ,guile-2.2)
+         ("libuuid" ,util-linux)
+         ("link-grammar" ,link-grammar)))
+      (native-inputs
+       `(("cxxtest" ,cxxtest)
+         ("python" ,python-minimal)
+         ("pkg-config" ,pkg-config)))
+      (home-page "https://github.com/opencog/attention/")
+      (synopsis "Framework for integrated artificial intelligence")
+      (description "OpenCog is a framework for developing AI systems,
+especially appropriate for integrative multi-algorithm systems, and artificial
+general intelligence systems.  It currently contains a functional core
+framework, and a number of cognitive agents at varying levels of completion,
+some already displaying interesting and useful functionalities alone and in
+combination.")
       (license license:agpl3))))
