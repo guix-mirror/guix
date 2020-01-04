@@ -3674,6 +3674,35 @@ front-ends.  Company comes with many back-ends, e.g. @code{company-elisp}.
 These are distributed in separate files and can be used individually.")
     (license license:gpl3+)))
 
+(define-public emacs-company-posframe
+  (let ((version "0.1.0")
+        (revision "1")
+        (commit "67d899502384fb9ab2870aba0af41523dea7b64f"))
+    (package
+      (name "emacs-company-posframe")
+      (version (git-version version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/tumashu/company-posframe.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "051smlvz1siwglsd9k9l0m20mygrx4niflmyshha0064287aysxr"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-company" ,emacs-company)
+         ("emacs-posframe" ,emacs-posframe)))
+      (home-page "https://github.com/tumashu/company-posframe")
+      (synopsis "Use a posframe for @code{emacs-company}'s candidate menu")
+      (description
+       "Allows @code{emacs-company} to use child frames for its candidate menus.
+
+@code{emacs-company-posframe} is fast enough for daily use and supports CJK
+languages.")
+      (license license:gpl3+))))
+
 (define-public emacs-irony-mode
   (package
     (name "emacs-irony-mode")
