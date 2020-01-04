@@ -462,6 +462,25 @@ paths.")))
 (define-public cl-paths-ttf
   (sbcl-package->cl-source-package sbcl-cl-paths-ttf))
 
+(define-public sbcl-cl-vectors
+  (package
+    (inherit sbcl-cl-aa)
+    (name "sbcl-cl-vectors")
+    (arguments '(#:asd-file "cl-vectors.asd"))
+    (inputs
+     `(("cl-aa" ,sbcl-cl-aa)
+       ("cl-paths" ,sbcl-cl-paths)))
+    (synopsis "Create, transform and render anti-aliased vectorial paths")
+    (description
+     "This is a pure Common Lisp library to create, transform and render
+anti-aliased vectorial paths.")))
+
+(define-public ecl-cl-vectors
+  (sbcl-package->ecl-package sbcl-cl-vectors))
+
+(define-public cl-vectors
+  (sbcl-package->cl-source-package sbcl-cl-vectors))
+
 (define-public sbcl-clx
   (package
     (name "sbcl-clx")
