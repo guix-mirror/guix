@@ -427,6 +427,22 @@ algorithm from the @url{http://antigrain.com, Antigrain} project.")
 (define-public cl-aa
   (sbcl-package->cl-source-package sbcl-cl-aa))
 
+(define-public sbcl-cl-paths
+  (package
+    (inherit sbcl-cl-aa)
+    (name "sbcl-cl-paths")
+    (arguments '(#:asd-file "cl-paths.asd"))
+    (synopsis "Facilities to create and manipulate vectorial paths")
+    (description
+     "This package provides facilities to create and manipulate vectorial
+paths.")))
+
+(define-public ecl-cl-paths
+  (sbcl-package->ecl-package sbcl-cl-paths))
+
+(define-public cl-paths
+  (sbcl-package->cl-source-package sbcl-cl-paths))
+
 (define-public sbcl-clx
   (package
     (name "sbcl-clx")
