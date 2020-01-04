@@ -29,6 +29,7 @@
 ;;; Copyright © 2019 Kyle Andrews <kyle.c.andrews@gmail.com>
 ;;; Copyright © 2019 Josh Holland <josh@inv.alid.pw>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1944,3 +1945,51 @@ and clipboard selection.  When the clipboard is changed, it updates the
 cutbuffer.  When the cutbuffer is changed, it owns the clipboard selection.
 The cutbuffer and clipboard selection are always synchronized.")
     (license license:gpl2+)))
+
+(define-public jgmenu
+  (package
+    (name "jgmenu")
+    (version "3.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/johanmalm/jgmenu.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0q0m3sskgmjv28gzvjkphgg3yhwzc9w9fj9i342pibb50impjazy"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("librsvg" ,librsvg)
+       ("libx11" ,libx11)
+       ("libxml2" ,libxml2)
+       ("libxrandr" ,libxrandr)
+       ("pango" ,pango)
+       ("python" ,python)))
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'fix-paths
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((python (assoc-ref inputs "python")))
+                        (substitute* "src/jgmenu-pmenu.py"
+                          (("#!/usr/bin/env python3")
+                           (string-append "#!" python "/bin/python3")))
+                        #t)))
+                  (replace 'configure
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (setenv "prefix" out)
+                        (setenv "CC" "gcc")
+                        #t))))))
+    (synopsis "Simple X11 menu")
+    (description
+     "This is a simple menu for X11 designed for scripting and tweaking.  It
+can optionally use some appearance settings from XSettings, tint2 and GTK.")
+    (home-page "https://jgmenu.github.io/")
+    (license license:gpl2)))
