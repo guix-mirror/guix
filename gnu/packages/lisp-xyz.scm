@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
@@ -370,6 +370,35 @@ ANSI-compliant Common Lisp implementations.")
 
 (define-public cl-unicode
   (sbcl-package->cl-source-package sbcl-cl-unicode))
+
+(define-public sbcl-zpb-ttf
+  (package
+    (name "sbcl-zpb-ttf")
+    (version "1.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/xach/zpb-ttf.git")
+             (commit (string-append "release-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1wh66vjijzqlydnrihynpwp6796917xwrh0i9li93c17kyxa74ih"))))
+    (build-system asdf-build-system/sbcl)
+    (home-page "https://github.com/xach/zpb-ttf")
+    (synopsis "TrueType font file access for Common Lisp")
+    (description
+     "ZPB-TTF is a TrueType font file parser that provides an interface for
+reading typographic metrics, glyph outlines, and other information from the
+file.")
+    (license license:bsd-2)))
+
+(define-public ecl-zpb-ttf
+  (sbcl-package->ecl-package sbcl-zpb-ttf))
+
+(define-public cl-zpb-ttf
+  (sbcl-package->cl-source-package sbcl-zpb-ttf))
 
 (define-public sbcl-clx
   (package
