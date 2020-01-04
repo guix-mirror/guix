@@ -20,7 +20,7 @@
 
 (define-module (gnu packages prolog)
   #:use-module (guix download)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
   #:use-module (srfi srfi-1))
@@ -61,7 +61,8 @@
 solving over finite domains.  It accepts Prolog+ constraint programs and
 produces a compiled, native binary which can function in a stand-alone
 manner.  It also features an interactive interpreter.")
-    (license (list gpl2+ lgpl3+))
+    (license (list license:gpl2+
+                   license:lgpl3+))
 
     ;; See 'configure' for the list of supported architectures.
     (supported-systems (fold delete
