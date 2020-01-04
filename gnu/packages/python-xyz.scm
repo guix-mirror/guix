@@ -57,7 +57,7 @@
 ;;; Copyright © 2018, 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Luther Thompson <lutheroto@gmail.com>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
-;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019 Sam <smbaines8@gmail.com>
 ;;; Copyright © 2019 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
@@ -3055,14 +3055,14 @@ Server (PLS).")
 (define-public python-language-server
   (package
     (name "python-language-server")
-    (version "0.31.2")
+    (version "0.31.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-language-server" version))
        (sha256
         (base32
-         "1iq69wc1fyhirfyq25ih41wq9yvr7bchiw0i116adpdgcq6m9idq"))))
+         "1nrs56jpx7dvghaas0kc5k9lxas5vr3awj3k87p4akki43nsblb8"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pluggy" ,python-pluggy)
