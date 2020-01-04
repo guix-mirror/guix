@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,7 +18,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu packages gprolog)
+(define-module (gnu packages prolog)
   #:use-module (guix download)
   #:use-module (guix licenses)
   #:use-module (guix packages)

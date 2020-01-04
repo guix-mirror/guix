@@ -229,7 +229,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/golang.scm			\
   %D%/packages/gperf.scm			\
   %D%/packages/gpodder.scm			\
-  %D%/packages/gprolog.scm			\
   %D%/packages/gps.scm				\
   %D%/packages/graph.scm			\
   %D%/packages/graphics.scm			\
@@ -405,6 +404,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/popt.scm				\
   %D%/packages/printers.scm			\
   %D%/packages/profiling.scm			\
+  %D%/packages/prolog.scm			\
   %D%/packages/pth.scm				\
   %D%/packages/pulseaudio.scm			\
   %D%/packages/pumpio.scm			\
