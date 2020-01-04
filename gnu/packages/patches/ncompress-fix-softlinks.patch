@@ -1,4 +1,5 @@
-Patch taken from Debian sid.
+Patch taken from Debian sid.  Adapted to 4.2.4.6 for Guix by Tobias
+Geerinckx-Rice <me@tobias.gr>.
 
 Description: Support uncompressing and compressing soft links.
  Historically, ncompress for Debian has been built using a command line
@@ -17,8 +18,8 @@ Index: ncompress/GNUmakefile
  
  Makefile: Makefile.def GNUmakefile
  	sed \
--		-e 's:options= :options= $$(CFLAGS) -DNOFUNCDEF -DUTIME_H -DLSTAT $$(LDFLAGS) :' \
-+		-e 's:options= :options= $$(CFLAGS) -DNOFUNCDEF -DUTIME_H $$(LDFLAGS) :' \
+-		-e 's:options= :options= -DUTIME_H -DLSTAT :' \
++		-e 's:options= :options= -DUTIME_H :' \
  		Makefile.def > Makefile
  
  check:
