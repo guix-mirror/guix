@@ -443,6 +443,25 @@ paths.")))
 (define-public cl-paths
   (sbcl-package->cl-source-package sbcl-cl-paths))
 
+(define-public sbcl-cl-paths-ttf
+  (package
+    (inherit sbcl-cl-aa)
+    (name "sbcl-cl-paths-ttf")
+    (arguments '(#:asd-file "cl-paths-ttf.asd"))
+    (inputs
+     `(("cl-paths" ,sbcl-cl-paths)
+       ("zpb-ttf" ,sbcl-zpb-ttf)))
+    (synopsis "Facilities to create and manipulate vectorial paths")
+    (description
+     "This package provides facilities to create and manipulate vectorial
+paths.")))
+
+(define-public ecl-cl-paths-ttf
+  (sbcl-package->ecl-package sbcl-cl-paths-ttf))
+
+(define-public cl-paths-ttf
+  (sbcl-package->cl-source-package sbcl-cl-paths-ttf))
+
 (define-public sbcl-clx
   (package
     (name "sbcl-clx")
