@@ -481,6 +481,43 @@ anti-aliased vectorial paths.")))
 (define-public cl-vectors
   (sbcl-package->cl-source-package sbcl-cl-vectors))
 
+(define-public sbcl-spatial-trees
+  ;; There have been no releases.
+  (let ((commit "81fdad0a0bf109c80a53cc96eca2e093823400ba")
+        (revision "1"))
+    (package
+      (name "sbcl-spatial-trees")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rpav/spatial-trees.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "11rhc6h501dwcik2igkszz7b9n515cr99m5pjh4r2qfwgiri6ysa"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       '(#:tests? #f           ; spatial-trees.test requires spatial-trees.nns
+         #:asd-file "spatial-trees.asd"
+         #:test-asd-file "spatial-trees.test.asd"))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (home-page "https://github.com/rpav/spatial-trees")
+      (synopsis "Dynamic index data structures for spatially-extended data")
+      (description
+       "Spatial-trees is a set of dynamic index data structures for
+spatially-extended data.")
+      (license license:bsd-3))))
+
+(define-public ecl-spatial-trees
+  (sbcl-package->ecl-package sbcl-spatial-trees))
+
+(define-public cl-spatial-trees
+  (sbcl-package->cl-source-package sbcl-spatial-trees))
+
 (define-public sbcl-clx
   (package
     (name "sbcl-clx")
