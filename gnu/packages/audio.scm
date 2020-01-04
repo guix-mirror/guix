@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
-;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -2733,7 +2733,7 @@ Tracker 3 S3M and Impulse Tracker IT files.")
 (define-public soundtouch
   (package
     (name "soundtouch")
-    (version "2.1.1")
+    (version "2.1.2")
     (source
      (origin
        (method git-fetch)
@@ -2742,7 +2742,7 @@ Tracker 3 S3M and Impulse Tracker IT files.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0p6jzgfgqw061702dmd2b6r4arz48ac3mmx2qkvvzf8s5jjzykdh"))))
+        (base32 "174wgm3s0inmbnkrlnspxjwm2014qhjhkbdqa5r8rbfi0nzqxzsz"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
