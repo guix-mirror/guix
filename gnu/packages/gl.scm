@@ -106,7 +106,9 @@ as ASCII text.")
                (base32
                 "0s6sk49q8ijgbsrrryb7dzqx2fa744jhx1wck5cz5jia2010w06l"))))
     (build-system cmake-build-system)
-    (arguments '(#:tests? #f)) ; no test target
+    (arguments
+     '(#:tests? #f                      ;no test target
+       #:configure-flags '("-DFREEGLUT_BUILD_STATIC_LIBS=OFF")))
     (inputs `(("libx11" ,libx11)
               ("libxi" ,libxi)
               ("libxrandr" ,libxrandr)
