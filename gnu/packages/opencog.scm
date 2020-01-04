@@ -152,3 +152,48 @@ features not otherwise available.")
       (description "The OpenCog Cogserver is a network and job server for the
 OpenCog framework.")
       (license license:agpl3))))
+
+(define-public attention
+  ;; There are no releases.
+  (let ((commit "87d43679280ce486cd6757765d2e1df6d502991d")
+        (revision "1"))
+    (package
+      (name "attention")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/opencog/attention.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0sndslphicv6w9qpag168rqkxq5sf71l5qbfx6zhsd5bzlf5fhwv"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:test-target "tests"
+         #:configure-flags
+         (list
+          (string-append "-DGUILE_INCLUDE_DIR="
+                         (assoc-ref %build-inputs "guile")
+                         "/include/guile/2.2/")
+          (string-append "-DGUILE_SITE_DIR="
+                         (assoc-ref %outputs "out")
+                         "/share/guile/site/2.2/"))))
+      (inputs
+       `(("atomspace" ,atomspace)
+         ("boost" ,boost)
+         ("cogserver" ,cogserver)
+         ("cogutil" ,cogutil)
+         ("gmp" ,gmp)
+         ("guile" ,guile-2.2)))
+      (native-inputs
+       `(("cxxtest" ,cxxtest)
+         ("python" ,python-minimal)
+         ("pkg-config" ,pkg-config)))
+      (home-page "https://github.com/opencog/attention/")
+      (synopsis "OpenCog attention allocation subsystem")
+      (description "Attention Allocation is an OpenCog subsystem meant to
+control the application of processing and memory resources to specific
+tasks.")
+      (license license:agpl3))))
