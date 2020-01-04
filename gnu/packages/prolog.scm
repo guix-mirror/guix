@@ -100,11 +100,37 @@ manner.  It also features an interactive interpreter.")
     (build-system cmake-build-system)
     (arguments
      `(#:parallel-build? #t
-       #:tests? #f ; FIXME: Some tests require network access.
+       #:tests? #t
        #:configure-flags
        (list "-DINSTALL_DOCUMENTATION=ON"
              "-DBUILD_PDF_DOCUMENTATION=ON"
              "-DSWIPL_INSTALL_IN_LIB=OFF"))) ; FIXME: Breaks RUNPATH validation.
+       #:phases
+       (modify-phases %standard-phases
+         ;; XXX: Delete a variety of tests which fail either attempting to
+         ;; establish a network connection, or attempts to write to the
+         ;; immutable store. Phases marked *-pre are disabled /before/ building.
+         ;; Phases marked *-post are disabled /after/ building.
+         (add-after 'unpack 'delete-failing-tests-pre
+           (lambda _
+             (substitute* "src/CMakeLists.txt"
+               ((" save") ""))
+             (substitute* "src/test.pl"
+               (("testdir\\('Tests/save'\\).") ""))
+             (with-directory-excursion "src/Tests"
+               (for-each delete-file-recursively
+                         '("save")))
+             #t))
+         (add-before 'check 'delete-failing-tests-post
+           (lambda _
+             (with-directory-excursion "packages"
+               (for-each delete-file-recursively
+                         '("http"
+                           "pengines"
+                           "RDF"
+                           "semweb"
+                           "ssl")))
+             #t)))))
     (native-inputs
      `(("zlib" ,zlib)
        ("gmp" ,gmp)
