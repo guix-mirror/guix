@@ -518,6 +518,38 @@ spatially-extended data.")
 (define-public cl-spatial-trees
   (sbcl-package->cl-source-package sbcl-spatial-trees))
 
+(define-public sbcl-flexichain
+  ;; There are no releases.
+  (let ((commit "13d2a6c505ed0abfcd4c4ec7d7145059b06855d6")
+        (revision "1"))
+    (package
+      (name "sbcl-flexichain")
+      (version "1.5.1")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/robert-strandh/Flexichain.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0pfyvhsfbjd2sjb30grfs52r51a428xglv7bwydvpg2lc117qimg"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/robert-strandh/Flexichain.git")
+      (synopsis "Dynamically add elements to or remove them from sequences")
+      (description
+       "This package provides an implementation of the flexichain protocol,
+allowing client code to dynamically add elements to, and delete elements from
+a sequence (or chain) of such elements.")
+      (license license:lgpl2.1+))))
+
+(define-public ecl-flexichain
+  (sbcl-package->ecl-package sbcl-flexichain))
+
+(define-public cl-flexichain
+  (sbcl-package->cl-source-package sbcl-flexichain))
+
 (define-public sbcl-clx
   (package
     (name "sbcl-clx")
