@@ -33,7 +33,7 @@
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
-;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Stefan Stefanović <stefanx2ovic@gmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Brice Waegeneire <brice@waegenei.re>
@@ -87,6 +87,7 @@
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages man)
@@ -2655,6 +2656,50 @@ These tools are designed on top of libkmod, a library that is shipped with
 kmod.  The aim is to be compatible with tools, configurations and indices
 from the module-init-tools project.")
     (license license:gpl2+))) ; library under lgpl2.1+
+
+(define-public earlyoom
+  (package
+    (name "earlyoom")
+    (version "1.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/rfjakob/earlyoom.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0fwbx0y80nqgkxrc9kf9j3iwa0wbps2jmqir3pgqbc2cj0wjh0lr"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-before 'check 'set-home
+                    (lambda _
+                      (setenv "HOME" (getcwd))
+                      #t))
+                  (add-after 'build 'install-contribs
+                    ;; Install what seems useful from the contrib directory.
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (contrib (string-append
+                                       out "/share/earlyoom/contrib")))
+                        (install-file "contrib/notify_all_users.py" contrib)
+                        #t))))
+       #:make-flags (let* ((prefix (assoc-ref %outputs "out")))
+                      (list "CC=gcc"
+                            (string-append "VERSION=v" ,version)
+                            (string-append "PREFIX=" prefix)
+                            (string-append "SYSCONFDIR=" prefix "/etc")))
+       #:test-target "test"))
+    (native-inputs `(("go" ,go)               ;for the test suite
+                     ("pandoc" ,ghc-pandoc))) ;to generate the manpage
+    (home-page "https://github.com/rfjakob/earlyoom")
+    (synopsis "Simple out of memory (OOM) daemon for the Linux kernel")
+    (description "Early OOM is a minimalist out of memory (OOM) daemon that
+runs in user space and provides a more responsive and configurable alternative
+to the in-kernel OOM killer.")
+    (license license:expat)))
 
 (define-public eudev
   ;; The post-systemd fork, maintained by Gentoo.
