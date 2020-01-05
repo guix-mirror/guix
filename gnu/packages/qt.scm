@@ -723,6 +723,7 @@ from within Qt 5.")))
                "1l44476ibb8rv4rf80vbjdc3712lmrl1xcxswa513ip66k47p5vn"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:tests? _ #f) #f) ; TODO: Enable the tests
        ((#:phases phases)
         `(modify-phases ,phases
            (add-after 'unpack 'disable-network-tests
@@ -730,7 +731,8 @@ from within Qt 5.")))
                          (("qxmlquery") "# qxmlquery")
                          (("xmlpatterns ") "# xmlpatterns"))
                #t))))))
-    (native-inputs `(("perl" ,perl)))
+    (native-inputs `(("perl" ,perl)
+                     ("qtdeclarative" ,qtdeclarative)))
     (inputs `(("qtbase" ,qtbase)))
     (synopsis "Qt XML patterns module")
     (description "The QtXmlPatterns module is a XQuery and XPath engine for
@@ -758,8 +760,7 @@ xmlpatternsvalidator.")))
        ("pkg-config" ,pkg-config)
        ("python" ,python)
        ("python-wrapper" ,python-wrapper)
-       ("qtsvg" ,qtsvg)
-       ("qtxmlpatterns" ,qtxmlpatterns)))
+       ("qtsvg" ,qtsvg)))
     (inputs
      `(("mesa" ,mesa)
        ("qtbase" ,qtbase)))
