@@ -250,3 +250,46 @@ framework, and a number of cognitive agents at varying levels of completion,
 some already displaying interesting and useful functionalities alone and in
 combination.")
       (license license:agpl3))))
+
+(define-public agi-bio
+  ;; There are no releases.
+  (let ((commit "b5c6f3d99e8cca3798bf0cdf2c32f4bdb8098efb")
+        (revision "1"))
+    (package
+      (name "agi-bio")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/opencog/agi-bio.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "083rqwlcnc99l4mxchj6r7x147nvfshmb39lkv15ik4cm9s3ldhw"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #f ; there are none
+         #:configure-flags
+         (list
+          (string-append "-DGUILE_INCLUDE_DIR="
+                         (assoc-ref %build-inputs "guile")
+                         "/include/guile/2.2/")
+          (string-append "-DGUILE_SITE_DIR="
+                         (assoc-ref %outputs "out")
+                         "/share/guile/site/2.2/"))))
+      (inputs
+       `(("atomspace" ,atomspace)
+         ("cogutil" ,cogutil)
+         ("gmp" ,gmp)
+         ("guile" ,guile-2.2)))
+      (native-inputs
+       `(("cxxtest" ,cxxtest)
+         ("python" ,python-minimal)
+         ("pkg-config" ,pkg-config)))
+      (home-page "https://github.com/opencog/agi-bio")
+      (synopsis "Genomic and proteomic data exploration and pattern mining")
+      (description "This is a package for genomic and proteomic research using
+the OpenCog toolset with Guile.  This includes experiments in applying pattern
+mining and other OpenCog components.")
+      (license license:agpl3))))
