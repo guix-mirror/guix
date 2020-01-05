@@ -9,7 +9,7 @@
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
@@ -720,6 +720,36 @@ generators of mostly elementary and occasionally exotic nature.")
      "The infamous plugins are a collection of LV2 audio plugins for live
 performances.  The plugins include a cellular automaton synthesizer, an
 envelope follower, distortion effects, tape effects and more.")
+    (license license:gpl2+)))
+
+(define-public swh-plugins
+  (package
+    (name "swh-plugins")
+    (version "0.4.17")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/swh/ladspa.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1c98z2xxz9pgcb4dg99gz8qrylh5cnag0j18a52d88ifsy24isvq"))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal) ;for autopoint
+       ("libtool" ,libtool)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (inputs
+     `(("fftwf" ,fftwf)
+       ("perl-xml-parser" ,perl-xml-parser)))
+    (build-system gnu-build-system)
+    (home-page "https://github.com/swh/ladspa/")
+    (synopsis "The SWH Plugins package for the LADSPA plugin system")
+    (description "This package provides Steve Harris's LADSPA plugins.")
     (license license:gpl2+)))
 
 (define-public swh-plugins-lv2
