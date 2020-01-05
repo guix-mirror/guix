@@ -52,6 +52,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
@@ -70,9 +71,11 @@
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages popt)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
@@ -1205,6 +1208,49 @@ offers confimations after less than 5 seconds and have significantly lower
 fees that BTC.  Bitcoin ABC is the reference implementation of the Bitcoin
 Cash protocol.  This package provides the Bitcoin Cash command line client and
 a client based on Qt.  This is a fork of Bitcoin Core.")))
+
+(define-public libofx
+  (package
+    (name "libofx")
+    (version "0.9.15")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/libofx/libofx")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1jx56ma351p8af8dvavygjwf6ipa7qbgq7bpdsymwj27apdnixfy"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (list (string-append "--with-opensp-includes="
+                            (assoc-ref %build-inputs "opensp")
+                            "/include/OpenSP"))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gengetopt" ,gengetopt)
+       ("help2man" ,help2man)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl)
+       ("libxml++-2" ,libxml++-2)
+       ("opensp" ,opensp)))
+    (home-page "http://libofx.sourceforge.net/")
+    (synopsis "Library supporting the Open Financial Exchange format")
+    (description
+     "The LibOFX library is a API designed to allow applications to very easily
+support OFX command responses, usually provided by financial institutions.  The
+following three utilities are included with the library:
+@enumerate
+@item @code{ofxdump}
+@item @code{ofx2qif}
+@item @code{ofxconnect}
+@end enumerate")
+    (license license:gpl2+)))
 
 (define-public opensp
   (package
