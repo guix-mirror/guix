@@ -262,20 +262,21 @@ WEBP, XCF, XPM, and XV.")
                 "0alrhqgm40p4c92s26mimg9cm1y7rzr6m0p49687jxd9g6130i0n"))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
-    ;; no check target
-    ;; use libmad instead of smpeg
-    ;; explicitly link against shared libraries instead of dlopening them
-    (arguments `(#:tests? #f
-                 #:configure-flags '("--enable-music-mp3-mad-gpl"
-                                     "--disable-music-mod-shared"
-                                     "--disable-music-fluidsynth-shared"
-                                     "--disable-music-ogg-shared"
-                                     "--disable-music-flac-shared")))
-    (inputs `(("libvorbis" ,libvorbis)
-              ("libflac" ,flac)
-              ("libmad" ,libmad)
-              ("libmikmod" ,libmikmod)))
-    ;; FIXME: Add libfluidsynth
+    (arguments
+     `(#:tests? #f ; No check target.
+       #:configure-flags
+       '("--enable-music-mp3-mad-gpl" ; Use libmad instead of smpeg.
+         ;; Explicitly link against shared libraries instead of dlopening them.
+         "--disable-music-flac-shared"
+         "--disable-music-fluidsynth-shared"
+         "--disable-music-mod-shared"
+         "--disable-music-ogg-shared")))
+    (inputs
+     `(("fluidsynth" ,fluidsynth)
+       ("libflac" ,flac)
+       ("libmad" ,libmad)
+       ("libmikmod" ,libmikmod)
+       ("libvorbis" ,libvorbis)))
     (propagated-inputs `(("sdl" ,sdl)))
     (synopsis "SDL multi-channel audio mixer library")
     (description "SDL_mixer is a multi-channel audio mixer library for SDL.
