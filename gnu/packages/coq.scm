@@ -2,6 +2,7 @@
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Dan Frumin <dfrumin@cs.ru.nl>
+;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -309,7 +310,7 @@ assistant.")
 (define-public coq-mathcomp
   (package
     (name "coq-mathcomp")
-    (version "1.8.0")
+    (version "1.10.0")
     (source
      (origin
        (method git-fetch)
@@ -318,14 +319,14 @@ assistant.")
              (commit (string-append "mathcomp-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1sdrw3b6lc8crz02lp90a863rvyzhc9vcfsrdvc9m311yiaad4xv"))))
+        (base32 "1h5h1c2025r1ms5qryvwy6pikxmpmmjav6yl127xpzmqdi6w732d"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
        ("which" ,which)
        ("coq" ,coq)))
     (arguments
-     `(#:tests? #f             ; no need to test formally-verified programs :)
+     `(#:tests? #f ; No tests.
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -333,7 +334,6 @@ assistant.")
            (lambda _ (chdir "mathcomp") #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (setenv "COQLIB" (string-append (assoc-ref outputs "out") "/lib/coq/"))
              (invoke "make" "-f" "Makefile.coq"
                      (string-append "COQLIB=" (assoc-ref outputs "out")
                                     "/lib/coq/")
