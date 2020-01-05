@@ -688,17 +688,17 @@ from forcing GEXP-PROMISE."
              ;; accesses.  Having a too low ulimit will result in bogus linker
              ;; errors such as "foo.a: error adding symbols: malformed archive".
 
-             ;; Try increasing the soft resource limit of max open files to 4096,
+             ;; Try increasing the soft resource limit of max open files to 2048,
              ;; or equal to the hard limit, whichever is lower.
              (call-with-values (lambda () (getrlimit 'nofile))
                (lambda (soft hard)
-                 (when (and soft (< soft 4096))
+                 (when (and soft (< soft 2048))
                    (if hard
-                       (setrlimit 'nofile (min hard 4096) hard)
-                       (setrlimit 'nofile 4096 #f))
+                       (setrlimit 'nofile (min hard 2048) hard)
+                       (setrlimit 'nofile 2048 #f))
                    (format #t
                            "increased maximum number of open files from ~d to ~d~%"
-                           soft (if hard (min hard 4096) 4096)))))
+                           soft (if hard (min hard 2048) 2048)))))
              #t))
          (replace 'build
            (lambda* (#:key (parallel-build? #t) #:allow-other-keys)
