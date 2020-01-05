@@ -270,8 +270,7 @@ WEBP, XCF, XPM, and XV.")
                                      "--disable-music-mod-shared"
                                      "--disable-music-fluidsynth-shared"
                                      "--disable-music-ogg-shared"
-                                     "--disable-music-flac-shared"
-                                     "--disable-music-mp3-shared")))
+                                     "--disable-music-flac-shared")))
     (inputs `(("libvorbis" ,libvorbis)
               ("libflac" ,flac)
               ("libmad" ,libmad)
