@@ -17,6 +17,7 @@
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2019 Jethro Cao <jethrocao@gmail.com>
+;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -82,6 +83,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages stb)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
@@ -1956,3 +1958,32 @@ focuses solely on developing a fully accurate XNA4 runtime for the desktop.")
                    license:lgpl2.1      ; LzxDecoder.cs
                    ;; Mono.Xna:
                    license:expat))))
+
+(define-public libccd
+  (package
+    (name "libccd")
+    (version "2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/danfis/libccd.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0sfmn5pd7k5kyhbxnd689xmsa5v843r7sska96dlysqpljd691jc"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DBUILD_DOCUMENTATION=ON"
+                           "-DBUILD_TESTING=ON"
+                           "-DENABLE_DOUBLE_PRECISION=ON")))
+    (native-inputs
+     `(("python-sphinx" ,python-sphinx)))
+    (home-page "https://github.com/danfis/libccd")
+    (synopsis "Library for collision detection between two convex shapes")
+    (description "@code{libccd} is library for a collision detection
+between two convex shapes.  @code{libccd} implements variation on
+Gilbert–Johnson–Keerthi algorithm plus Expand Polytope Algorithm (EPA)
+and also implements algorithm Minkowski Portal Refinement (MPR,
+a.k.a. XenoCollide) as described in Game Programming Gems 7.")
+    (license license:expat)))
