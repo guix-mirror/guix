@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -453,8 +453,7 @@ from forcing GEXP-PROMISE."
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
-       ;; FIXME: Chromiums RUNPATH lacks entries for some libraries, so
-       ;; we have to disable validation and add a wrapper below.
+       ;; FIXME: Chromiums RUNPATH lacks entries for some libraries.
        #:validate-runpath? #f
        #:modules ((guix build gnu-build-system)
                   (guix build utils)
@@ -555,12 +554,7 @@ from forcing GEXP-PROMISE."
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-stuff
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "printing/cups_config_helper.py"
-               (("cups_config =.*")
-                (string-append "cups_config = '" (assoc-ref inputs "cups")
-                               "/bin/cups-config'\n")))
-
+           (lambda _
              (substitute*
                  '("base/process/launch_posix.cc"
                    "base/third_party/dynamic_annotations/dynamic_annotations.c"
@@ -630,6 +624,34 @@ from forcing GEXP-PROMISE."
                            "chrome/test/chromedriver/extension/manifest.json")))
 
              #t))
+         (add-after 'patch-stuff 'add-absolute-references
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((cups (assoc-ref inputs "cups"))
+                   (nss (assoc-ref inputs "nss"))
+                   (mesa (assoc-ref inputs "mesa"))
+                   (udev (assoc-ref inputs "udev")))
+               (substitute* "printing/cups_config_helper.py"
+                 (("cups_config =.*")
+                  (string-append "cups_config = '" cups
+                                 "/bin/cups-config'\n")))
+               (substitute* "crypto/nss_util.cc"
+                 (("libnssckbi\\.so")
+                  (string-append nss "/lib/nss/libnssckbi.so")))
+               (substitute* "device/udev_linux/udev1_loader.cc"
+                 (("libudev\\.so\\.1")
+                  (string-append udev "/lib/libudev.so.1")))
+               (substitute*
+                   '("ui/ozone/platform/x11/gl_ozone_glx.cc"
+                     "ui/ozone/common/egl_util.cc"
+                     "ui/gl/init/gl_initializer_x11.cc"
+                     "third_party/angle/src/libANGLE/renderer/gl/glx/FunctionsGLX.cpp")
+                 (("libGL\\.so\\.1")
+                  (string-append mesa "/lib/libGL.so.1"))
+                 (("libEGL\\.so\\.1")
+                  (string-append mesa "/lib/libEGL.so.1"))
+                 (("libGLESv2\\.so\\.2")
+                  (string-append mesa "/lib/libGLESv2.so.2")))
+               #t)))
          (add-before 'configure 'prepare-build-environment
            (lambda* (#:key inputs #:allow-other-keys)
 
@@ -699,9 +721,6 @@ from forcing GEXP-PROMISE."
                     (resources      (string-append lib "/resources"))
                     (preferences    (assoc-ref inputs "master-preferences"))
                     (gtk+           (assoc-ref inputs "gtk+"))
-                    (mesa           (assoc-ref inputs "mesa"))
-                    (nss            (assoc-ref inputs "nss"))
-                    (udev           (assoc-ref inputs "udev"))
                     (sh             (which "sh")))
 
                (substitute* '("chrome/app/resources/manpage.1.in"
@@ -735,10 +754,6 @@ from forcing GEXP-PROMISE."
                  (install-file "chromedriver" bin)
 
                  (wrap-program exe
-                   ;; TODO: Get these in RUNPATH.
-                   `("LD_LIBRARY_PATH" ":" prefix
-                     (,(string-append lib ":" nss "/lib/nss:" mesa "/lib:"
-                                      udev "/lib")))
                    ;; Avoid file manager crash.  See <https://bugs.gnu.org/26593>.
                    `("XDG_DATA_DIRS" ":" prefix (,(string-append gtk+ "/share")))))
 
