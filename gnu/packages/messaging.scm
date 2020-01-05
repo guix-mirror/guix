@@ -17,7 +17,7 @@
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
-;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
+;;; Copyright © 2019, 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -214,7 +214,7 @@ additional IM client.  BitlBee currently supports XMPP/Jabber (including
 Google Talk), MSN Messenger, Yahoo!  Messenger, AIM and ICQ, and the Twitter
 microblogging network (plus all other Twitter API compatible services like
 identi.ca and status.net).")
-    (home-page "http://www.bitlbee.org/")
+    (home-page "https://www.bitlbee.org/")
     (license (list license:gpl2+ license:bsd-2))))
 
 (define-public bitlbee-discord
