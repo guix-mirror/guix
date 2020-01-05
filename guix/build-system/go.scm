@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -82,6 +83,7 @@
                    (install-source? #t)
                    (import-path "")
                    (unpack-path "")
+                   (build-flags ''())
                    (tests? #t)
                    (allow-go-reference? #f)
                    (system (%current-system))
@@ -109,6 +111,7 @@
                 #:install-source? ,install-source?
                 #:import-path ,import-path
                 #:unpack-path ,unpack-path
+                #:build-flags ,build-flags
                 #:tests? ,tests?
                 #:allow-go-reference? ,allow-go-reference?
                 #:inputs %build-inputs)))
