@@ -48,6 +48,7 @@
   #:use-module (gnu packages xfce)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages scanner)
   #:use-module (gnu packages suckless)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages libusb)
@@ -1154,6 +1155,8 @@ or setting its password with passwd.")))
          ;; Add udev rules for MTP devices so that non-root users can access
          ;; them.
          (simple-service 'mtp udev-service-type (list libmtp))
+         ;; Add udev rules for scanners.
+         (simple-service 'sane udev-service-type (list sane-backends-minimal))
          ;; Add polkit rules, so that non-root users in the wheel group can
          ;; perform administrative tasks (similar to "sudo").
          polkit-wheel-service
