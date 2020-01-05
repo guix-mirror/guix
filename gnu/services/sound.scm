@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,16 +21,20 @@
   #:use-module (gnu services configuration)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services)
+  #:use-module (gnu system pam)
   #:use-module (gnu system shadow)
   #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix records)
   #:use-module (guix store)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pulseaudio)
   #:use-module (ice-9 match)
   #:export (alsa-configuration
-            alsa-service-type))
+            alsa-service-type
+
+            pulseaudio-service-type))
 
 ;;; Commentary:
 ;;;
@@ -96,5 +100,25 @@ ctl.!default {
     (list (service-extension etc-service-type alsa-etc-service)))
    (default-value (alsa-configuration))
    (description "Configure low-level Linux sound support, ALSA.")))
+
+
+;;;
+;;; PulseAudio
+;;;
+
+(define (pulseaudio-environment config)
+  ;; Define this variable in the global environment such that
+  ;; pulseaudio swh-plugins works.
+  `(("LADSPA_PATH"
+     . ,(file-append swh-plugins "/lib/ladspa"))))
+
+(define pulseaudio-service-type
+  (service-type
+   (name 'pulseaudio)
+   (extensions
+    (list (service-extension session-environment-service-type
+                             pulseaudio-environment)))
+   (default-value #f)
+   (description "Configure PulseAudio sound support.")))
 
 ;;; sound.scm ends here
