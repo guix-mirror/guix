@@ -10,6 +10,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 nee <nee@cock.li>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -376,7 +377,7 @@ menu to select one of the installed operating systems.")
        ("swig" ,swig)
        ("valgrind" ,valgrind)))
     (inputs
-     `(("python-2" ,python-2)))
+     `(("python" ,python)))
     (arguments
      `(#:make-flags
        (list "CC=gcc"
