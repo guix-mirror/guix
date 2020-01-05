@@ -1987,3 +1987,45 @@ Gilbert–Johnson–Keerthi algorithm plus Expand Polytope Algorithm (EPA)
 and also implements algorithm Minkowski Portal Refinement (MPR,
 a.k.a. XenoCollide) as described in Game Programming Gems 7.")
     (license license:expat)))
+
+(define-public ode
+  (package
+    (name "ode")
+    (version "0.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://bitbucket.org/odedevs/ode/downloads/"
+                           "ode-" version ".tar.gz"))
+       (sha256
+        (base32 "09xzrarxwxcf6rdv5jsjfjh454jnn29dpcw3wh6ic50kkipvg8sb"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "libccd")
+           #t))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DODE_WITH_LIBCCD_SYSTEM=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unbundle-libccd
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("configure_file\\(libccd/.*") ""))
+             #t)))))
+    (inputs
+     `(("glu" ,glu)
+       ("libccd" ,libccd)
+       ("mesa" ,mesa)))
+    (home-page "http://www.ode.org/")
+    (synopsis "High performance library for simulating rigid body dynamics")
+    (description "ODE is a high performance library for simulating
+rigid body dynamics.  It is fully featured, stable, mature and
+platform independent with an easy to use C/C++ API.  It has advanced
+joint types and integrated collision detection with friction.  ODE is
+useful for simulating vehicles, objects in virtual reality
+environments and virtual creatures.  It is currently used in many
+computer games, 3D authoring tools and simulation tools.")
+    ;; Software is dual-licensed.
+    (license (list license:lgpl2.1+ license:expat))))
