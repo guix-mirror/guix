@@ -2021,3 +2021,31 @@ environments and virtual creatures.  It is currently used in many
 computer games, 3D authoring tools and simulation tools.")
     ;; Software is dual-licensed.
     (license (list license:lgpl2.1+ license:expat))))
+
+(define-public chipmunk
+  (package
+    (name "chipmunk")
+    (version "7.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/slembcke/Chipmunk2D.git")
+             (commit (string-append "Chipmunk-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1qmkn01g06p3rnhmbyffmjns6wj5vhgf9cscigk3wzxcpwv1hyxb"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:configure-flags '("-DBUILD_STATIC=OFF"
+                           "-DBUILD_DEMOS=OFF")))
+    (inputs
+     `(("freeglut" ,freeglut)
+       ("libxmu" ,libxmu)
+       ("libxrandr" ,libxrandr)))
+    (home-page "http://chipmunk2d.net/")
+    (synopsis "Fast and lightweight 2D game physics library")
+    (description "Chipmunk is a simple, lightweight, fast and portable 2D
+rigid body physics library written in C.")
+    (license license:expat)))
