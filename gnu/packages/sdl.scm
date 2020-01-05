@@ -420,15 +420,19 @@ directory.")
       (substitute-keyword-arguments (package-arguments sdl-mixer)
          ((#:configure-flags flags)
           `(cons*
+            "--disable-music-opus-shared"
             ;; These options were renamed in SDL2 mixer. Keeping the inherited
             ;; variants produces a harmless warning.
             "--disable-music-mod-modplug-shared"
             "--disable-music-midi-fluidsynth-shared"
             ,flags))))
     (inputs
-     ;; The default MOD library changed in SDL2 mixer.
-     `(("libmodplug" ,libmodplug)
+     `(("opusfile" ,opusfile)
+       ;; The default MOD library changed in SDL2 mixer.
+       ("libmodplug" ,libmodplug)
        ,@(alist-delete "libmikmod" (package-inputs sdl-mixer))))
+    (native-inputs
+     `(("pkgconfig" ,pkg-config))) ; Needed to find the opus library.
     (propagated-inputs
      (propagated-inputs-with-sdl2 sdl-mixer))))
 
