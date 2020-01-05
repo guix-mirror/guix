@@ -3557,10 +3557,9 @@ keyboard shortcuts.")
                #t))))))
     (native-inputs
      `(("glib:bin" ,glib "bin")         ; for glib-compile-resources, etc.
+       ("gettext" ,gettext-minimal)
        ("gobject-introspection" ,gobject-introspection)
        ("gtk-doc" ,gtk-doc)
-       ("intltool" ,intltool)
-       ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)))
     (propagated-inputs
