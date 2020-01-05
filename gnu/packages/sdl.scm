@@ -11,6 +11,7 @@
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -274,8 +275,7 @@ WEBP, XCF, XPM, and XV.")
     (inputs `(("libvorbis" ,libvorbis)
               ("libflac" ,flac)
               ("libmad" ,libmad)
-              ("libmikmod" ,libmikmod)
-              ("libmodplug" ,libmodplug)))
+              ("libmikmod" ,libmikmod)))
     ;; FIXME: Add libfluidsynth
     (propagated-inputs `(("sdl" ,sdl)))
     (synopsis "SDL multi-channel audio mixer library")
@@ -416,6 +416,10 @@ directory.")
                    #t))
        (sha256
         (base32 "0694vsz5bjkcdgfdra6x9fq8vpzrl8m6q96gh58df7065hw5mkxl"))))
+    (inputs
+     ;; The default MOD library changed in SDL2 mixer.
+     `(("libmodplug" ,libmodplug)
+       ,@(alist-delete "libmikmod" (package-inputs sdl-mixer))))
     (propagated-inputs
      (propagated-inputs-with-sdl2 sdl-mixer))))
 
