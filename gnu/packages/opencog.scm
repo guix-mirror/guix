@@ -266,7 +266,7 @@ combination.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "083rqwlcnc99l4mxchj6r7x147nvfshmb39lkv15ik4cm9s3ldhw"))))
+                  "0c3q0nhmd03nvqm1ih10y28n596cjvfhkcfvzw2fmz1sn3ywdah4"))))
       (build-system cmake-build-system)
       (arguments
        `(#:tests? #f ; there are none
