@@ -415,6 +415,15 @@ directory.")
                    #t))
        (sha256
         (base32 "0694vsz5bjkcdgfdra6x9fq8vpzrl8m6q96gh58df7065hw5mkxl"))))
+    (arguments
+      (substitute-keyword-arguments (package-arguments sdl-mixer)
+         ((#:configure-flags flags)
+          `(cons*
+            ;; These options were renamed in SDL2 mixer. Keeping the inherited
+            ;; variants produces a harmless warning.
+            "--disable-music-mod-modplug-shared"
+            "--disable-music-midi-fluidsynth-shared"
+            ,flags))))
     (inputs
      ;; The default MOD library changed in SDL2 mixer.
      `(("libmodplug" ,libmodplug)
