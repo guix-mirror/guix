@@ -4,7 +4,7 @@
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
 ;;; Copyright © 2017, 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
@@ -110,8 +110,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.0.1")
-        (commit "41b4b713f4892918a9a1950acdd89f33b977d143")
-        (revision 10))
+        (commit "f38eabe952608478230895e380ef441d65ea625e")
+        (revision 11))
     (package
       (name "guix")
 
@@ -127,7 +127,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "08sblj4xy78va6zlxmxdq2id58pjr8rjqxxycd77hiacsqbjh9g6"))
+                  "1wnm1wqa38dpd5bk6avyfm0rgx72vlx36a06scyg8d57kl47mzjf"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
