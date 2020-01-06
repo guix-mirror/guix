@@ -14,7 +14,7 @@
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017, 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -1237,6 +1237,14 @@ It is intended primarily for use in testing.")
         (base32
           "0ln5f57vc8388kyh9vhx2infrdzfhbpgyby74h1qsnhwds95m0vh"))))
   (build-system perl-build-system)
+  (arguments
+   '(#:phases
+     (modify-phases %standard-phases
+       (add-after 'unpack 'dont-link-with-nsl ; Borrowed from Debian.
+         (lambda _
+           (substitute* "Makefile.PL"
+             (("-lnsl") ""))
+           #t)))))
   (inputs
     `(("perl-net-cidr-lite" ,perl-net-cidr-lite)
       ("perl-socket6" ,perl-socket6)))
