@@ -2159,6 +2159,251 @@ available, as well as a single-player mode with AI-controlled ships.")
     (license (list license:expat         ; game
                    license:silofl1.1)))) ; fonts
 
+(define %ufoai-commit "a542a87a891f96b1ab2c44d35b2f6f16859a5019")
+(define %ufoai-revision "0")
+(define %ufoai-version (git-version "2.6.0_dev" %ufoai-revision %ufoai-commit))
+(define ufoai-source
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "git://git.code.sf.net/p/ufoai/code") ;HTTPS fails mid-clone
+          (commit %ufoai-commit)))
+    (file-name (string-append "ufoai-" %ufoai-version "-checkout"))
+    (sha256
+     (base32
+      "024s7b9rcg7iw8i2p72gwnvabk23ljlq0nldws0y4b6hpwzyn1wz"))
+    (modules '((guix build utils)
+               (srfi srfi-1)
+               (ice-9 ftw)))
+    (snippet
+     '(begin
+        ;; Delete ~32MiB of bundled dependencies.
+        (with-directory-excursion "src/libs"
+          (for-each delete-file-recursively
+                    (lset-difference equal? (scandir ".")
+                                     '("." ".." "gtest" "mumble"))))
+
+        ;; Use relative path to Lua headers.
+        (substitute* "src/common/scripts_lua.h"
+          (("\\.\\./libs/lua/") ""))
+
+        ;; Adjust Makefile targets to not depend on 'ufo2map', since we build
+        ;; it as a separate package.  This way we don't need to make the same
+        ;; adjustments for 'ufoai-data' and 'ufoai' below.
+        (substitute* "build/maps.mk"
+          (("\\./ufo2map") "ufo2map")
+          (("maps: ufo2map") "maps:"))
+        (substitute* "build/modules/testall.mk"
+          (("testall: ufo2map") "testall:"))
+
+        ;; If no cURL headers are found, the build system will try to include
+        ;; the bundled version, even when not required.  Prevent that.
+        (substitute* "build/default.mk"
+          (("^include src/libs/curl/lib/Makefile\\.inc")
+           ""))
+
+        ;; While here, improve reproducibility by adding the '-X' flag to the
+        ;; zip command used to create the map files, in order to prevent time
+        ;; stamps from making it into the generated archives.
+        (substitute* "build/data.mk"
+          (("\\$\\(call ZIP\\)")
+           "$(call ZIP) -X"))
+        #t))))
+
+(define-public ufo2map
+  (package
+    (name "ufo2map")
+    (version %ufoai-version)
+    (home-page "https://ufoai.org/")
+    (source ufoai-source)
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("CC=gcc" "CXX=g++"
+                           "--enable-release"
+                           "--enable-ufo2map"
+                           "--disable-uforadiant"
+                           "--disable-cgame-campaign"
+                           "--disable-cgame-multiplayer"
+                           "--disable-cgame-skirmish"
+                           "--disable-game"
+                           "--disable-memory"
+                           "--disable-testall"
+                           "--disable-ufoded"
+                           "--disable-ufo"
+                           "--disable-ufomodel"
+                           "--disable-ufoslicer")
+       #:tests? #f ;no tests
+       #:phases (modify-phases %standard-phases
+                  (replace 'configure
+                    (lambda* (#:key (configure-flags '()) #:allow-other-keys)
+                      ;; The home-made configure script does not understand
+                      ;; some of the default flags of gnu-build-system.
+                      (apply invoke "./configure" configure-flags)))
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (install-file "ufo2map" (string-append out "/bin"))
+                        (install-file "debian/ufo2map.6"
+                                      (string-append out "/share/man/man6"))
+                        #t))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libjpeg" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("lua" ,lua-5.1)
+       ("sdl-union" ,(sdl-union (list sdl2 sdl2-mixer sdl2-ttf)))))
+    (synopsis "UFO: AI map generator")
+    (description
+     "This package provides @command{ufo2map}, a program used to generate
+maps for the UFO: Alien Invasion strategy game.")
+    (license license:gpl2+)))
+
+(define ufoai-data
+  (package
+    (name "ufoai-data")
+    (version %ufoai-version)
+    (home-page "https://ufoai.org/")
+    (source ufoai-source)
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f
+       #:configure-flags '("CC=gcc" "CXX=g++")
+       #:phases (modify-phases %standard-phases
+                  (replace 'configure
+                    (lambda* (#:key outputs (configure-flags '()) #:allow-other-keys)
+                      (apply invoke "./configure" configure-flags)))
+                  (replace 'build
+                    (lambda* (#:key (parallel-build? #t) #:allow-other-keys)
+                      (invoke "make"
+                              "-j" (if parallel-build?
+                                       (number->string (parallel-job-count))
+                                       "1")
+                              "maps")))
+                  (add-after 'build 'pack
+                    (lambda _
+                      (invoke "make" "pk3")))
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (for-each (lambda (file)
+                                    (install-file file out))
+                                  (find-files "base" "\\.pk3$"))
+                        #t))))))
+    (native-inputs
+     `(("python" ,python-2)
+       ("ufo2map" ,ufo2map)
+       ("which" ,which)
+       ("zip" ,zip)))
+    (synopsis "UFO: AI data files")
+    (description
+     "This package contains maps and other assets for UFO: Alien Invasion.")
+    ;; Most assets are available under either GPL2 or GPL2+.  Some use other
+    ;; licenses, see LICENSES for details.
+    (license (list license:gpl2+ license:gpl2 license:cc-by3.0
+                   license:cc-by-sa3.0 license:public-domain))))
+
+(define-public ufoai
+  (package
+    (name "ufoai")
+    (version %ufoai-version)
+    (home-page "https://ufoai.org/")
+    (source ufoai-source)
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--prefix=" (assoc-ref %outputs "out"))
+             (string-append "--datadir=" (assoc-ref %outputs "out")
+                            "/share/games/ufo")
+             "CC=gcc" "CXX=g++"
+             "--enable-release"
+             "--enable-game"
+             "--disable-ufo2map"
+             "--disable-dependency-tracking"
+
+             ;; Disable hard links to prevent huge NARs.
+             "--disable-hardlinkedgame"
+             "--disable-hardlinkedcgame")
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'symlink-data-files
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((data (assoc-ref inputs "ufoai-data")))
+                        ;; Symlink the data files to where the build system
+                        ;; expects to find them.  Ultimately these files are
+                        ;; copied to $out/share/games/ufoai/base, losing the
+                        ;; symlinks; we could fix that after install, but it
+                        ;; does not make a big difference in practice due to
+                        ;; deduplication.
+                        (with-directory-excursion "base"
+                          (for-each (lambda (file)
+                                      (symlink file (basename file)))
+                                    (find-files data "\\.pk3$")))
+                        #t)))
+                  (add-before 'configure 'create-language-files
+                    (lambda _
+                      (invoke "make" "lang")))
+                  (replace 'configure
+                    (lambda* (#:key outputs (configure-flags '()) #:allow-other-keys)
+                      (apply invoke "./configure" configure-flags)))
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          (invoke "./testall")
+                          (format #t "test suite not run~%"))
+                      #t))
+                  (add-after 'install 'install-man-pages
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (man6 (string-append out "/share/man/man6")))
+                        (install-file "debian/ufo.6" man6)
+                        (install-file "debian/ufoded.6" man6)
+                        #t))))
+
+       ;; TODO: Some map tests occasionally fail because of randomness issues,
+       ;; e.g. not enough generated aliens.  The test runner also fails early
+       ;; in the build container with 'failed to shutdown server'?
+       #:tests? #f))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2)
+       ("ufo2map" ,ufo2map)
+       ("ufoai-data" ,ufoai-data)))
+    (inputs
+     `(("curl" ,curl)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libogg" ,libogg)
+       ("libpng" ,libpng)
+       ("libtheora" ,libtheora)
+       ("libvorbis" ,libvorbis)
+       ("libxml2" ,libxml2)
+       ("lua" ,lua-5.1)
+       ("mesa" ,mesa)
+       ("minixml" ,minixml)
+       ("sdl-union" ,(sdl-union (list sdl2 sdl2-mixer sdl2-ttf)))
+       ("zlib" ,zlib)))
+    (synopsis "Turn-based tactical strategy game")
+    (description
+     "UFO: Alien Invasion is a tactical strategy game set in the year 2084.
+You control a secret organisation charged with defending Earth from a brutal
+alien enemy.  Build up your bases, prepare your team, and dive head-first into
+the fast and flowing turn-based combat.
+
+Over the long term you will need to conduct research into the alien threat to
+figure out their mysterious goals and use their powerful weapons for your own
+ends.  You will produce unique items and use them in combat against your
+enemies.
+
+You can also use them against your friends with the multiplayer functionality.
+
+Warning: This is a pre-release version of UFO: AI!  Some things may not work
+properly.")
+
+    ;; The game code and most assets are GPL2+, but we use GPL2 only here
+    ;; because some assets do not use the "or later" clause.  Many individual
+    ;; assets use Creative Commons or Public Domain; see the LICENSE file.
+    (license (delete license:gpl2+ (package-license ufoai-data)))))
+
 (define-public xshogi
   (package
     (name "xshogi")
