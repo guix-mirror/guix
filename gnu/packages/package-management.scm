@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
 ;;; Copyright © 2017, 2018 Oleg Pykhalov <go.wigust@gmail.com>
@@ -176,16 +176,27 @@
                         ;; Copy the bootstrap guile tarball in the store used
                         ;; by the test suite.
                         (define (intern file recursive?)
-                          (let ((base (strip-store-file-name file)))
-                            ;; Note: don't use 'guix download' here because we
-                            ;; need to set the 'recursive?' argument.
-                            (invoke "./test-env" "guile" "-c"
-                                    (object->string
-                                     `(begin
-                                        (use-modules (guix))
-                                        (with-store store
-                                          (add-to-store store ,base ,recursive?
-                                                        "sha256" ,file)))))))
+                          ;; Note: don't use 'guix download' here because we
+                          ;; need to set the 'recursive?' argument.
+                          (define base
+                            (strip-store-file-name file))
+
+                          (define code
+                            `(begin
+                               (use-modules (guix))
+                               (with-store store
+                                 (let* ((item (add-to-store store ,base
+                                                            ,recursive?
+                                                            "sha256" ,file))
+                                        (root (string-append "/tmp/gc-root-"
+                                                             (basename item))))
+                                   ;; Register a root so that the GC tests
+                                   ;; don't delete those.
+                                   (symlink item root)
+                                   (add-indirect-root store root)))))
+
+                          (invoke "./test-env" "guile" "-c"
+                                  (object->string code)))
 
                         (intern (assoc-ref inputs "boot-guile") #f)
 
