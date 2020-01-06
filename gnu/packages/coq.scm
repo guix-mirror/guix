@@ -549,16 +549,16 @@ uses Ltac to synthesize the substitution operation.")
 (define-public coq-equations
   (package
     (name "coq-equations")
-    (version "1.2")
+    (version "1.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/mattam82/Coq-Equations.git")
-                    (commit (string-append "v" version "-8.9"))))
+                    (commit (string-append "v" version "-8.10"))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1q3wvicr43bgy7xn1diwh4j43mnrhprrc2xd22qlbz9cl6bhf8bj"))))
+                "023q5dww3drw35dm9bi9p9d0wrj9k7vax7hfdsprf8l340pb4s0k"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml"  ,ocaml)
@@ -570,10 +570,9 @@ uses Ltac to synthesize the substitution operation.")
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "coq_makefile" "-f" "_CoqProject" "-o" "Makefile")))
+             (invoke "sh" "./configure.sh")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (setenv "COQLIB" (string-append (assoc-ref outputs "out") "/lib/coq/"))
              (invoke "make"
                      (string-append "COQLIB=" (assoc-ref outputs "out")
                                     "/lib/coq/")
