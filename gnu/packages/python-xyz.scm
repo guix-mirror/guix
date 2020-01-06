@@ -14613,12 +14613,13 @@ files, and Makefiles.")
     (version "0.6")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/Suor/whatever/archive/" version
-                           ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/Suor/whatever")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1rchg9hrlvw4sn20lq1zspczr4x1pv57c02gv73igiqx1hqpy2nc"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "1q7ajgqjfivxqsqgnhp4lc4p6jxyh4zprcsdbpd6dw54inaf0av5"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
