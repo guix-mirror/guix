@@ -196,14 +196,14 @@ language.")
     (name name)
     (version "3.0-rc1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/diegonehab/luasocket/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/diegonehab/luasocket")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0j8jx8bjicvp9khs26xjya8c495wrpb7parxfnabdqa5nnsxjrwb"))))
+                "1chs7z7a3i3lck4x7rz60ziwbf793gw169hpjdfca8y4yf1hzsxk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
