@@ -462,6 +462,62 @@ want what you have.")
 (define-public cataclysm-dark-days-ahead
   (deprecated-package "cataclysm-dark-days-ahead" cataclysm-dda))
 
+(define-public corsix-th
+  (package
+    (name "corsix-th")
+    (version "0.63")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/CorsixTH/CorsixTH.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1rkyk8g55xny276s0hr5k8mq6f4nzz56d3k2mp09dzfymrqb8hgi"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-binary
+           (lambda _
+             ;; Set Lua module paths and default MIDI soundfont on startup.
+             (let* ((out (assoc-ref %outputs "out"))
+                    (fluid (assoc-ref %build-inputs "fluid-3"))
+                    (lua-version ,(version-major+minor (package-version lua)))
+                    (lua-cpath
+                     (map (lambda (lib)
+                            (string-append
+                             (assoc-ref %build-inputs (string-append "lua-" lib))
+                             "/lib/lua/" lua-version "/?.so"))
+                          '("filesystem" "lpeg"))))
+               (wrap-program (string-append out "/bin/corsix-th")
+                 `("LUA_CPATH" ";" = ,lua-cpath)
+                 `("SDL_SOUNDFONTS" ":" suffix
+                   (,(string-append fluid "/share/soundfonts/FluidR3Mono_GM.sf3")))))
+             #t)))
+       #:tests? #f)) ; TODO need busted package to run tests
+    ;; Omit Lua-Socket dependency to disable automatic updates.
+    (inputs
+     `(("ffmpeg" ,ffmpeg)
+       ("fluid-3" ,fluid-3)
+       ("freetype" ,freetype)
+       ("lua" ,lua)
+       ("lua-filesystem" ,lua-filesystem)
+       ("lua-lpeg" ,lua-lpeg)
+       ("sdl2" ,sdl2)
+       ("sdl2-mixer" ,sdl2-mixer)))
+    (home-page "https://corsixth.com")
+    (synopsis "Implementation of the @i{Theme Hospital} game engine")
+    (description
+     "This package provides a reimplementation of the 1997 Bullfrog business
+simulation game @i{Theme Hospital}.  As well as faithfully recreating the
+original engine, CorsixTH adds support for high resolutions, custom levels and
+more.  This package does @emph{not} provide the game assets.")
+    (license (list
+              license:expat ; main license
+              license:bsd-3)))) ; CorsixTH/Src/random.c
+
 (define-public cowsay
   (package
     (name "cowsay")
