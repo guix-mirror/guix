@@ -311,7 +311,7 @@ inside Coq.")
          ;;   (lambda _ (invoke "./remake" "check")))
          (replace 'install
            (lambda _ (invoke "./remake" "install"))))))
-    (home-page "http://gappa.gforge.inria.fr/")
+    (home-page "https://gappa.gforge.inria.fr/")
     (synopsis "Verify and formally prove properties on numerical programs")
     (description "Gappa is a tool intended to help verifying and formally proving
 properties on numerical programs dealing with floating-point or fixed-point
