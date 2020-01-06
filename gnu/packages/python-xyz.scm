@@ -13316,14 +13316,15 @@ by path in a JSON document (see RFC 6901).")
     (version "1.16")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; pypi version lacks tests.js
-       (uri (string-append "https://github.com/stefankoegl/python-json-patch/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+              (url "https://github.com/stefankoegl/python-json-patch")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "085ykisl8v7mv9h7hvhdy3l2fjzs4214gx32r5k6nx4f76hbv6y5"))))
+         "0k9pff06lxama3nhsc7cdxbp83422bdy8ifs52i6xkas8hpyzfzr"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-jsonpointer" ,python-jsonpointer)))
