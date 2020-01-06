@@ -3,7 +3,7 @@
 ;;; Copyright © 2014 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016, 2017, 2019 Clément Lassieur <clement@lassieur.org>
@@ -250,14 +250,16 @@ handy.")
     (name name)
     (version "1.6.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/keplerproject/"
-                                  "luafilesystem/archive/v_"
-                                  "1_6_3" ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/keplerproject/luafilesystem")
+                     (commit (string-append "v_"
+                                            (string-join
+                                              (string-split version #\.) "_")))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0s10ckxin0bysd6gaywqhxkpw3ybjhprr8m655b8cx3pxjwd49am"))))
+                "1hxcnqj53540ysyw8fzax7f09pl98b8f55s712gsglcdxp2g2pri"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
