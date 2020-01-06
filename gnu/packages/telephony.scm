@@ -952,21 +952,23 @@ This package provides the Jami client for the GNOME desktop.")
 (define-public libtgvoip
   (package
     (name "libtgvoip")
-    (version "2.4.2")
+    (version "2.4.4")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/zevlg/libtgvoip.git")
+             (url "https://github.com/grishka/libtgvoip.git")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "04dbwd3lwdannhxb2sh6z02i3lka9sb5s039pki6ka4siq5xzk1j"))))
+         "122kn3jx6v0kkldlzlpzvlwqxgp6pmzxsjhrhcxw12bx9c08sar5"))))
     (build-system gnu-build-system)
     (inputs
-     `(("openssl" ,openssl)
-       ("libopusenc" ,libopusenc)))
+     `(("alsa-lib" ,alsa-lib)
+       ("libopusenc" ,libopusenc)
+       ("openssl" ,openssl)
+       ("pulseaudio" ,pulseaudio)))
     (synopsis "VoIP library for Telegram clients")
     (description "A collection of libraries and header files for implementing
 telephony functionality into custom Telegram clients.")
