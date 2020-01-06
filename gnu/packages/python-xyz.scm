@@ -13343,13 +13343,14 @@ applying JSON Patches according to RFC 6902.")
     (version "0.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/stefankoegl/python-json-patch/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/stefankoegl/python-json-patch")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0j0cd9z9zyp8kppp464jxrfgrnbgkzl1yi10i5gsv8yz6d95929d"))))))
+         "1fq02y57kinyknxjcav0slcb0k9mwdffqw2hnlhdkpj7palh2mwk"))))))
 
 (define-public python2-jsonpatch-0.4
   (package-with-python2 python-jsonpatch-0.4))
