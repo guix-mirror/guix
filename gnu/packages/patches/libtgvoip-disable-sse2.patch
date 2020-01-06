@@ -1,0 +1,51 @@
+Copied from Debian.
+
+Description: Disable SSE2 code on i386
+ This patch is not complete. A high-graded solution may use automatic switching
+ between SSE2 and C++ implementations based on the results of runtime checks.
+ The webrtc code already provides for one of them inside its GetCPUInfo function.
+Bug-Debian: https://bugs.debian.org/892823
+Author: Nicholas Guriev <guriev-ns@ya.ru>
+Last-Update: Tue, 29 Jan 2019 23:26:38 +0300
+
+--- a/libtgvoip.gyp
++++ b/libtgvoip.gyp
+@@ -871,11 +871,7 @@
+                 'WEBRTC_POSIX',
+               ],
+               'conditions': [
+-                [ '"<!(uname -m)" == "i686"', {
+-                  'cflags_cc': [
+-                    '-msse2',
+-                  ],
+-                }], ['"<!(uname -s)" == "Linux"', {
++                [ '"<!(uname -s)" == "Linux"', {
+                   'defines': [
+                     'WEBRTC_LINUX',
+                   ],
+--- a/webrtc_dsp/rtc_base/system/arch.h
++++ b/webrtc_dsp/rtc_base/system/arch.h
+@@ -28,7 +28,10 @@
+ #define WEBRTC_ARCH_64_BITS
+ #define WEBRTC_ARCH_LITTLE_ENDIAN
+ #elif defined(_M_IX86) || defined(__i386__)
++#if defined(__SSE2__)
++// This macro is mostly used to detect SSE2 extension.
+ #define WEBRTC_ARCH_X86_FAMILY
++#endif
+ #define WEBRTC_ARCH_X86
+ #define WEBRTC_ARCH_32_BITS
+ #define WEBRTC_ARCH_LITTLE_ENDIAN
+--- a/webrtc_dsp/typedefs.h
++++ b/webrtc_dsp/typedefs.h
+@@ -28,7 +28,10 @@
+ #define WEBRTC_ARCH_64_BITS
+ #define WEBRTC_ARCH_LITTLE_ENDIAN
+ #elif defined(_M_IX86) || defined(__i386__)
++#if defined(__SSE2__)
++// This macro is mostly used to detect SSE2 extension.
+ #define WEBRTC_ARCH_X86_FAMILY
++#endif
+ #define WEBRTC_ARCH_X86
+ #define WEBRTC_ARCH_32_BITS
+ #define WEBRTC_ARCH_LITTLE_ENDIAN

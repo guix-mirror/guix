@@ -1,0 +1,47 @@
+Copied from Debian.
+
+Description: Fix build of  WebRTC on non-Linux systems
+ * Define the WEBRTC_LINUX macro only on Linux, and not on GNU/Hurd or FreeBSD.
+ * Fix type cast in the CurrentThreadId function.
+Bug-Debian: https://bugs.debian.org/920851
+Author: Nicholas Guriev <guriev-ns@ya.ru>
+Last-Update: Tue, 29 Jan 2019 23:26:44 +0300
+
+--- a/libtgvoip.gyp
++++ b/libtgvoip.gyp
+@@ -869,20 +869,18 @@
+             '"<(OS)" == "linux"', {
+               'defines': [
+                 'WEBRTC_POSIX',
+-                'WEBRTC_LINUX',
+               ],
+               'conditions': [
+                 [ '"<!(uname -m)" == "i686"', {
+                   'cflags_cc': [
+                     '-msse2',
+                   ],
++                }], ['"<!(uname -s)" == "Linux"', {
++                  'defines': [
++                    'WEBRTC_LINUX',
++                  ],
+                 }]
+               ],
+-              'direct_dependent_settings': {
+-                'libraries': [
+-
+-                ],
+-              },
+             },
+           ],
+         ],
+--- a/webrtc_dsp/rtc_base/platform_thread_types.cc
++++ b/webrtc_dsp/rtc_base/platform_thread_types.cc
+@@ -31,7 +31,7 @@ PlatformThreadId CurrentThreadId() {
+   return syscall(__NR_gettid);
+ #else
+   // Default implementation for nacl and solaris.
+-  return reinterpret_cast<pid_t>(pthread_self());
++  return static_cast<pid_t>(pthread_self());
+ #endif
+ #endif  // defined(WEBRTC_POSIX)
+ }

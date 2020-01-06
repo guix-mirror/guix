@@ -960,6 +960,12 @@ This package provides the Jami client for the GNOME desktop.")
              (url "https://github.com/grishka/libtgvoip.git")
              (commit version)))
        (file-name (git-file-name name version))
+       ;; Fix compilation on i686-linux architecture.
+       ;; NOTE: Applying these patches is order-dependent!
+       ;; The patch for WebRTC /must/ precede the patch for SSE2.
+       (patches
+        (search-patches "libtgvoip-disable-webrtc.patch"
+                        "libtgvoip-disable-sse2.patch"))
        (sha256
         (base32
          "122kn3jx6v0kkldlzlpzvlwqxgp6pmzxsjhrhcxw12bx9c08sar5"))))
