@@ -9523,15 +9523,16 @@ encoding algorithms to do fuzzy string matching.")
     (name "python2-unicodecsv")
     (version "0.14.1")
     (source (origin
-             (method url-fetch)
+             (method git-fetch)
              ;; The test suite is not included in the PyPi release.
              ;; https://github.com/jdunck/python-unicodecsv/issues/19
-             (uri (string-append "https://github.com/jdunck/python-unicodecsv/"
-                                 "archive/" version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+             (uri (git-reference
+                    (url "https://github.com/jdunck/python-unicodecsv")
+                    (commit version)))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "087nqanfcyp6mlfbbr5lva5f3w6iz1bybls9xlrb8icmc474wh4w"))))
+               "15hx2k41a2lpv4hcml9zp4cvlx1171mnb5s4s13xc1pxkq3vgdjy"))))
     (build-system python-build-system)
     (arguments
      `(;; It supports Python 3, but Python 3 can already do Unicode CSV.
