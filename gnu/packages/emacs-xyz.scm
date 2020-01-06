@@ -20863,3 +20863,27 @@ It also provides original Helm commands: @command{helm-cider-spec},
 @command{helm-cider-spec-ns}, @command{helm-cider-repl-history},
 @command{helm-cider-cheatsheet}.")
       (license license:gpl3+))))
+
+(define-public emacs-edn
+  ;; No release since February 2016
+  (let ((commit "be9e32d1b49e35247b263b0243df7cfdc8d413ab"))
+    (package
+      (name "emacs-edn")
+      (version (git-version "1.1.2" "1" commit))
+      (home-page "https://github.com/expez/edn.el")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1xp2hjhn52k6l1g6ypva6dsklpawni7gvjafbz6404f9dyxflh7l"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-peg" ,emacs-peg)))
+      (synopsis "Read and write EDN from Elisp")
+      (description "This is an Emacs Lisp library for reading and writing the
+data format @code{edn}.  See @url{https://github.com/edn-format/edn}.")
+      (license license:gpl3+))))
