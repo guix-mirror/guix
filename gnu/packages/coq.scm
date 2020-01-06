@@ -404,7 +404,7 @@ part of the distribution.")
            (lambda _ (invoke "./remake" "check")))
          (replace 'install
            (lambda _ (invoke "./remake" "install"))))))
-    (home-page "http://coquelicot.saclay.inria.fr/index.html")
+    (home-page "http://coquelicot.saclay.inria.fr")
     (synopsis "Coq library for Reals")
     (description "Coquelicot is an easier way of writing formulas and theorem
 statements, achieved by relying on total functions in place of dependent types
