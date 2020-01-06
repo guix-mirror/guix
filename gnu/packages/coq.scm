@@ -254,7 +254,7 @@ provers.")
          (replace 'install
            (lambda _
              (invoke "./remake" "install"))))))
-    (home-page "http://flocq.gforge.inria.fr/")
+    (home-page "https://flocq.gforge.inria.fr/")
     (synopsis "Floating-point formalization for the Coq system")
     (description "Flocq (Floats for Coq) is a floating-point formalization for
 the Coq system.  It provides a comprehensive library of theorems on a multi-radix
