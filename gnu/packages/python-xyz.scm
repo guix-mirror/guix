@@ -12809,29 +12809,27 @@ exception message with a traceback that points to the culprit.")
 (define-public python-mwclient
   (package
     (name "python-mwclient")
-    (version "0.8.4")
+    (version "0.10.0")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; The PyPI version wouldn't contain tests.
-       (uri (string-append "https://github.com/mwclient/mwclient/archive/"
-                           "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+              (url "https://github.com/mwclient/mwclient")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1jj0yhilkjir00719fc7w133x7hdyhkxhk6xblla4asig45klsfv"))))
+         "1c3q6lwmb05yqywc4ya98ca7hsl15niili8rccl4n1yqp77c103v"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-requests" ,python-requests)
-       ("python-requests-oauthlib"
-        ,python-requests-oauthlib)
+     `(("python-requests-oauthlib" ,python-requests-oauthlib)
        ("python-six" ,python-six)))
     (native-inputs
      `(("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)
-       ("python-pytest-pep8" ,python-pytest-pep8)
-       ("python-pytest-cache" ,python-pytest-cache)
        ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-runner" ,python-pytest-runner)
        ("python-responses" ,python-responses)))
     (home-page "https://github.com/btongminh/mwclient")
     (synopsis "MediaWiki API client")
