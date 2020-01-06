@@ -566,13 +566,14 @@ transactions from C or Python.")
     (version "1.6.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/Anaconda-Platform/"
-                           "anaconda-client/archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/Anaconda-Platform/anaconda-client")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1wv4wi6k5jz7rlwfgvgfdizv77x3cr1wa2aj0k1595g7fbhkjhz2"))))
+         "0w1bfxnydjl9qp53r2gcvr6vlpdqqilcrzqxrll9sgg6vwdyiyyp"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pyyaml" ,python-pyyaml)
