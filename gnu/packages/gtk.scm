@@ -690,6 +690,8 @@ is part of the GNOME accessibility project.")
                    (setenv "DBUS_FATAL_WARNINGS" "0")
                    (invoke "dbus-launch" "meson" "test"))))))
    (propagated-inputs
+    ;; TODO: Replace by at-spi2-core-minimal in the next staging window, or
+    ;; when Inkscape 0.92 is upgraded to 1.0 to avoid a cycle.
     `(("at-spi2-core" ,at-spi2-core))) ; required by atk-bridge-2.0.pc
    (inputs
     `(("atk" ,atk)))
