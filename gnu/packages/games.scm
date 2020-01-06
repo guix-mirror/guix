@@ -3789,11 +3789,11 @@ with the \"Stamp\" tool within Tux Paint.")
              ("boost" ,boost)
              ("freetype" ,freetype)
              ("squirrel" ,squirrel)))
-   (native-inputs `(("pkg-config" ,pkg-config)))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
    (synopsis "2D platformer game")
-   (description "SuperTux is a free classic 2D jump'n run sidescroller game
-in a style similar to the original Super Mario games covered under
-the GNU GPL.")
+   (description "SuperTux is a classic 2D jump'n run sidescroller game in
+a style similar to the original Super Mario games.")
    (home-page "https://supertux.org/")
    (license license:gpl3+)))
 
