@@ -458,7 +458,7 @@ Grammars (PEGs).")
 (define (make-lua-luv name lua)
   (package
     (name name)
-    (version "1.30.1-1")
+    (version "1.32.0-0")
     (source (origin
               ;; The release tarball includes the sources of libuv but does
               ;; not include the pkg-config files.
@@ -469,7 +469,7 @@ Grammars (PEGs).")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0b2zxrsjxzhzwfp28lchplrp272v6zkbpq1ddz7a0rf20l7dbls1"))))
+                "0c65c1lhbl0axnyks3910gjs0z0hw7w6jvl07g8kbpnbvfl4qajh"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; there are none
