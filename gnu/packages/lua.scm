@@ -295,12 +295,14 @@ directory structure and file attributes.")
     (name name)
     (version "0.7")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/brunoos/luasec/archive/"
-                                  "luasec-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/brunoos/luasec")
+                     (commit (string-append "luasec-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0c9sdz3gvrsbvvdqzpnsappgwl40hfljlpfybqis6wia3mdyjxi1"))))
+                "1w2w030jn4lgbkmzp7j3znmj856vfj0ca8sn8r444r5zhmihd761"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
