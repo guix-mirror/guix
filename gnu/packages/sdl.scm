@@ -281,8 +281,14 @@ WEBP, XCF, XPM, and XV.")
     (synopsis "SDL multi-channel audio mixer library")
     (description "SDL_mixer is a multi-channel audio mixer library for SDL.
 It supports any number of simultaneously playing channels of 16 bit stereo
-audio, plus a single channel of music.  Supported format include FLAC, MOD,
-MIDI, Ogg Vorbis, and MP3.")
+audio, plus a single channel of music.  Supported formats include FLAC, MOD,
+MIDI, Ogg Vorbis, and MP3.
+
+This package supports two MIDI backends, selectable at runtime.  To use the
+newer @code{fluidsynth} library, install a soundfont such as @code{fluid-3}
+and specify it using the @code{SDL_SOUNDFONTS} environment variable.  For the
+legacy @code{timidity} backend, install a patch set such as @code{freepats}
+and set the path to the configuration file with @code{TIMIDITY_CFG}.")
     (home-page "https://www.libsdl.org/projects/SDL_mixer/")
     (license zlib)))
 
