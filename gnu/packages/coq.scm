@@ -21,6 +21,7 @@
 
 (define-module (gnu packages coq)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
@@ -207,18 +208,22 @@ provers.")
 (define-public coq-flocq
   (package
     (name "coq-flocq")
-    (version "3.1.0")
-    (source (origin
-              (method url-fetch)
-              ;; Use the ‘Latest version’ link for a stable URI across releases.
-              (uri (string-append "https://gforge.inria.fr/frs/download.php/"
-                                  "file/37901/flocq-" version ".tar.gz"))
-              (sha256
-               (base32
-                "02szrgz9m0ac51la1lqpiv6i2g0zbgx9gz5rp0q1g00ajldyna5c"))))
+    (version "3.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.inria.fr/flocq/flocq.git")
+             (commit (string-append "flocq-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "15bi36x7zj0glsb3s2gwqd4wswhfzh36rbp7imbyff53a7nna95l"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("ocaml" ,ocaml)
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("ocaml" ,ocaml)
        ("which" ,which)
        ("coq" ,coq)))
     (arguments
@@ -227,6 +232,12 @@ provers.")
                             "/lib/coq/user-contrib/Flocq"))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'remove-failing-examples
+           (lambda _
+             (substitute* "Remakefile.in"
+               ;; Fails on a union error.
+               (("Double_rounding_odd_radix.v") ""))
+             #t))
          (add-before 'configure 'fix-remake
            (lambda _
              (substitute* "remake.cpp"
