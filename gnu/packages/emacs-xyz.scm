@@ -17804,6 +17804,8 @@ processes for Emacs")
     (native-inputs
      `(("emacs-buttercup" ,emacs-buttercup)
        ("emacs-el-mock" ,emacs-el-mock)))
+    (inputs
+     `(("python" ,python)))
     (arguments
      `(#:tests? #t ;TODO: Investigate ‘treemacs--parse-collapsed-dirs’ test failure.
        #:phases
@@ -17824,7 +17826,35 @@ processes for Emacs")
                (emacs-substitute-sexps "test/test-treemacs.el"
                  ("(describe \"treemacs--parse-collapsed-dirs\""
                   ""))
-               (invoke "make" "test")))))))
+               (invoke "make" "test"))))
+         (add-before 'install 'patch-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (with-directory-excursion "../.." ;treemacs root
+               (chmod "src/elisp/treemacs-core-utils.el" #o644)
+               (emacs-substitute-variables "src/elisp/treemacs-core-utils.el"
+                 ("treemacs-dir"
+                  (string-append (assoc-ref outputs "out") "/")))
+               (chmod "src/elisp/treemacs-icons.el" #o644)
+               (substitute* "src/elisp/treemacs-icons.el"
+                 (("icons/default") "share/emacs-treemacs/images"))
+               (chmod "src/elisp/treemacs-customization.el" #o644)
+               (emacs-substitute-variables "src/elisp/treemacs-customization.el"
+                 ("treemacs-python-executable"
+                  (string-append (assoc-ref inputs "python") "/bin/python3")))
+               (chmod "src/elisp/treemacs-async.el" #o644)
+               (substitute* "src/elisp/treemacs-async.el"
+                 (("src/scripts") (string-append "share/" ,name "/scripts"))))
+             #t))
+         (add-after 'install 'install-data
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((images (string-append (assoc-ref outputs "out")
+                                          "/share/" ,name "/images")))
+               (with-directory-excursion "../.." ;treemacs root
+                 (copy-recursively "icons/default" images)
+                 (copy-recursively "src/scripts"
+                                   (string-append (assoc-ref outputs "out")
+                                                  "/share/" ,name "/scripts"))
+                 #t)))))))
     (home-page "https://github.com/Alexander-Miller/treemacs")
     (synopsis "Emacs tree style file explorer")
     (description "Powerful and flexible file tree project explorer.")
