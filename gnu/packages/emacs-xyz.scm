@@ -20887,3 +20887,35 @@ It also provides original Helm commands: @command{helm-cider-spec},
       (description "This is an Emacs Lisp library for reading and writing the
 data format @code{edn}.  See @url{https://github.com/edn-format/edn}.")
       (license license:gpl3+))))
+
+(define-public emacs-helm-clojuredocs
+  (let ((commit "5a7f0f2cb401be0b09e73262a1c18265ab9a3cea"))
+    (package
+      (name "emacs-helm-clojuredocs")
+      (version (git-version "0.3" "1" commit))
+      (home-page "https://github.com/mbuczko/helm-clojuredocs")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "015b8zxh91ljhqvn6z43gy08di54xcw9skw0i7frj3d7gk984qhl"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)
+         ("emacs-edn" ,emacs-edn)))
+      (synopsis "Search help on clojuredocs.org with Helm")
+      (description "This packages provides a Helm interface to lookup Clojure
+documentation on @url{https://clojuredocs.org} with Helm.
+
+Two function are exposed:
+@itemize
+@item @command{helm-clojuredocs}: opens a Helm session with no initial
+pattern.  Searching starts with minimal 3 characters entered.
+@item @command{helm-clojuredocs-at-point}: opens a Helm session with initial
+pattern guessed from thing under current cursor position.
+@end itemize\n")
+      (license license:gpl3+))))
