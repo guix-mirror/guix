@@ -426,6 +426,7 @@ SCM_TESTS =					\
   tests/scripts-build.scm			\
   tests/search-paths.scm			\
   tests/services.scm				\
+  tests/services/linux.scm			\
   tests/sets.scm				\
   tests/size.scm				\
   tests/snix.scm				\
