@@ -17830,6 +17830,24 @@ processes for Emacs")
     (description "Powerful and flexible file tree project explorer.")
     (license license:gpl3+)))
 
+(define-public emacs-treemacs-extra
+  (package
+    (inherit emacs-treemacs)
+    (name "emacs-treemacs-extra")
+    (propagated-inputs
+     `(,@(package-propagated-inputs emacs-treemacs)
+       ("emacs-evil" ,emacs-evil)
+       ("emacs-magit" ,emacs-magit)
+       ("emacs-projectile" ,emacs-projectile)))
+    (arguments
+     (substitute-keyword-arguments
+         (package-arguments emacs-treemacs)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'chdir-elisp 'copy-extra
+             (lambda _
+               (copy-recursively "../extra" ".")))))))))
+
 (define-public emacs-lsp-ui
   (package
     (name "emacs-lsp-ui")
