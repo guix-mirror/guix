@@ -3430,13 +3430,14 @@ capabilities.")
     (version "1.8.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/numpy/numpy/archive/v" version ".tar.gz"))
-       (file-name (string-append "python2-numpy-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/numpy/numpy")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name "numpy" version))
        (sha256
         (base32
-         "0sc20gz1b17xnyrkp5frca3ql5qfalpv916hfg2kqxpwr6jg0f1g"))))
+         "0ikgi15rsqwbkfsjjxrwh40lqyal2wvyp3923y6w6ch3dcr82sfk"))))
     (arguments
      (substitute-keyword-arguments (package-arguments python2-numpy)
        ((#:phases phases)
