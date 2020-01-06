@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
@@ -533,14 +533,14 @@ python-axolotl.")
     (version "0.1.39")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/tgalal/python-axolotl/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/tgalal/python-axolotl")
+              (commit version)))
+       (file-name (git-file-name name version))
        (patches (search-patches "python-axolotl-AES-fix.patch"))
        (sha256
-        (base32 "0badsgkgz0ir3hqynxzsfjgacppi874syvvmgccc6j164053x6zm"))))
+        (base32 "0xm9qgcwf6fq7rhzfcviwhbzcbj4i7wkxkab2z55fy1x82lya9g6"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
