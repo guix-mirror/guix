@@ -22,6 +22,7 @@
 ;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2019 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8614,6 +8615,49 @@ system dependencies.")
     (description "This Haskell package provides interfaces and helper
 functions for the ghc-persistent package.")
     (license license:expat)))
+
+(define-public ghc-pipes
+  (package
+    (name "ghc-pipes")
+    (version "4.3.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/pipes/"
+             "pipes-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ch3xr5f5if0psd3lsyrpkwrgh36synnzqcpimghprys68l4zfkn"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-mmorph" ,ghc-mmorph)
+       ("ghc-void" ,ghc-void)
+       ("ghc-semigroups" ,ghc-semigroups)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-quickcheck2"
+        ,ghc-test-framework-quickcheck2)))
+    (home-page
+     "https://hackage.haskell.org/package/pipes")
+    (synopsis "Compositional pipelines")
+    (description
+     "A clean and powerful stream processing library that lets you build
+and connect reusable streaming components.  Advantages over traditional streaming
+libraries:
+@itemize
+@item Concise API: Use simple commands like @code{for}, (@code{>->}), @code{await},
+and @code{yield}
+@item Blazing fast: Implementation tuned for speed, including shortcut fusion
+@item Lightweight Dependency: pipes is small and compiles very rapidly, including
+dependencies
+@item Elegant semantics: Use practical category theory
+@item ListT: Correct implementation of @code{ListT} that interconverts with pipes
+@item Bidirectionality: Implement duplex channels
+@end itemize")
+    (license license:bsd-3)))
 
 (define-public ghc-polyparse
   (package
