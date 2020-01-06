@@ -44,7 +44,7 @@
 (define-public coq
   (package
     (name "coq")
-    (version "8.9.1")
+    (version "8.10.2")
     (source
      (origin
        (method git-fetch)
@@ -53,7 +53,8 @@
              (commit (string-append "V" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1p4z967s18wkblayv12ygqsrqlyk5ax1pz40yf4kag8pva6gblhk"))))
+        (base32
+         "0ji2rzd70b3hcwfw97qk7rv3m2977ylqnq82l1555dp3njr8nm3q"))))
     (native-search-paths
      (list (search-path-specification
             (variable "COQPATH")
@@ -61,7 +62,7 @@
     (build-system ocaml-build-system)
     (outputs '("out" "ide"))
     (inputs
-     `(("lablgtk" ,lablgtk)
+     `(("lablgtk" ,lablgtk3)
        ("python" ,python-2)
        ("camlp5" ,camlp5)
        ("ocaml-num" ,ocaml-num)))
@@ -73,13 +74,6 @@
          (add-after 'unpack 'make-git-checkout-writable
            (lambda _
              (for-each make-file-writable (find-files "."))
-             #t))
-         (add-after 'unpack 'remove-lablgtk-references
-           (lambda _
-             ;; This is not used anywhere, but creates a reference to lablgtk in
-             ;; every binary
-             (substitute* '("config/coq_config.mli" "configure.ml")
-               ((".*coqideincl.*") ""))
              #t))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
