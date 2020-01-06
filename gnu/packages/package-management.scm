@@ -9,7 +9,7 @@
 ;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2018, 2019 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -621,13 +621,14 @@ environments.")
     (version "4.3.16")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/conda/conda/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/conda/conda")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1jq8hyrc5npb5sf4vw6s6by4602yj8f79vzpbwdfgpkn02nfk1dv"))))
+         "1qwy0awx4qf2pbk8z2b7q6wdcq7mvwpxxjhg27mbirdvs5hw7hb2"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -663,6 +664,8 @@ environments.")
                  ;; directory left when you build with the --keep-failed
                  ;; option
                  (delete-file "gateways/disk/test_delete.py")
+                 ;; This file is no longer writable after downloading with 'git-fetch'
+                 (make-file-writable "conda_env/support/saved-env/environment.yml")
                  #t))))
          (replace 'check
            (lambda _
