@@ -5632,7 +5632,8 @@ features useful for text console applications.")
            "1n1kpidvkdnsqyb82vlvk78gmly96kh8351lqxn2pzgwwns6fml2"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f)) ; no tests
+     '(#:use-setuptools? #f
+       #:tests? #f)) ; no tests
     (propagated-inputs `(("python-urwid" ,python-urwid)))
     (home-page "https://github.com/pazz/urwidtrees")
     (synopsis "Tree widgets for urwid")
