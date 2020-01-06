@@ -20833,3 +20833,33 @@ buffer.  It can be used to toggle an alternative mode-line, toggle its visibilit
 or simply disable the mode-line in buffers where it is not very useful.")
     (home-page "https://github.com/hlissner/emacs-hide-mode-line")
     (license license:expat)))
+
+(define-public emacs-helm-cider
+  ;; No new release since March 2018.
+  (let ((commit "9363cc537f06233345aa3af5cd46aa5681ad607b"))
+    (package
+      (name "emacs-helm-cider")
+      (version (git-version "0.4.0" "1" commit))
+      (home-page "https://github.com/clojure-emacs/helm-cider")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0vfn4smqba1vsshz48ggkj8gs94la0sxb1sq4shrb41qj2x3dci7"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)
+         ("emacs-cider" ,emacs-cider)))
+      (synopsis "Helm interface to Clojure's CIDER")
+      (description "Helm-CIDER adds Helm interfaces to
+@command{cider-apropos}, @command{cider-apropos-documentation},
+@command{cider-browse-ns} (namespaces).
+
+It also provides original Helm commands: @command{helm-cider-spec},
+@command{helm-cider-spec-ns}, @command{helm-cider-repl-history},
+@command{helm-cider-cheatsheet}.")
+      (license license:gpl3+))))
