@@ -5620,15 +5620,16 @@ features useful for text console applications.")
     (version "1.0.2")
     (source
       (origin
-        (method url-fetch)
+        (method git-fetch)
         ;; package author intends on distributing via github rather than pypi:
         ;; https://github.com/pazz/alot/issues/877#issuecomment-230173331
-        (uri (string-append "https://github.com/pazz/urwidtrees/archive/"
-                            version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
+        (uri (git-reference
+               (url "https://github.com/pazz/urwidtrees")
+               (commit version)))
+        (file-name (git-file-name name version))
         (sha256
           (base32
-            "0d30lyd3s2a97rhqfax5w9ssqds2z6aydqx3c6j2c2lk3cb4ngvh"))))
+           "1n1kpidvkdnsqyb82vlvk78gmly96kh8351lqxn2pzgwwns6fml2"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; no tests
