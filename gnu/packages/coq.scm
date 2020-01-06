@@ -453,17 +453,22 @@ provides BigN, BigZ, BigQ that used to be part of Coq standard library.")
 (define-public coq-interval
   (package
     (name "coq-interval")
-    (version "3.4.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://gforge.inria.fr/frs/download.php/"
-                                  "file/37524/interval-" version ".tar.gz"))
-              (sha256
-               (base32
-                "023j9sd64brqvjdidqkn5m8d7a93zd9r86ggh573z9nkjm2m7vvg"))))
+    (version "3.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.inria.fr/coqinterval/interval.git")
+             (commit (string-append "interval-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "03q3dfqi3r3f7aji5s06ig4aav9ajcwswwdzi5lrgr69z0m487k4"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("ocaml" ,ocaml)
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("ocaml" ,ocaml)
        ("which" ,which)
        ("coq" ,coq)))
     (propagated-inputs
