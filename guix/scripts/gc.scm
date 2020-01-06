@@ -22,7 +22,7 @@
   #:use-module (guix store)
   #:use-module (guix store roots)
   #:autoload   (guix build syscalls) (free-disk-space)
-  #:autoload   (guix profiles) (generation-profile)
+  #:autoload   (guix profiles) (generation-profile profile-generations)
   #:autoload   (guix scripts package) (delete-generations)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)

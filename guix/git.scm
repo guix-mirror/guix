@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,11 +47,6 @@
             git-checkout?
             git-checkout-url
             git-checkout-branch))
-
-;; XXX: Use this hack instead of #:autoload to avoid compilation errors.
-;; See <http://bugs.gnu.org/12202>.
-(module-autoload! (current-module)
-                  '(git submodule) '(repository-submodules))
 
 (define %repository-cache-directory
   (make-parameter (string-append (cache-directory #:ensure? #f)
@@ -200,11 +195,23 @@ dynamic extent of EXP."
   (call-with-repository directory
                         (lambda (repository) exp ...)))
 
+(define (load-git-submodules)
+  "Attempt to load (git submodules), which was missing until Guile-Git 0.2.0.
+Return true on success, false on failure."
+  (match (false-if-exception (resolve-interface '(git submodule)))
+    (#f
+     (set! load-git-submodules (const #f))
+     #f)
+    (iface
+     (module-use! (current-module) iface)
+     (set! load-git-submodules (const #t))
+     #t)))
+
 (define* (update-submodules repository
                             #:key (log-port (current-error-port)))
   "Update the submodules of REPOSITORY, a Git repository object."
   ;; Guile-Git < 0.2.0 did not have (git submodule).
-  (if (false-if-exception (resolve-interface '(git submodule)))
+  (if (load-git-submodules)
       (for-each (lambda (name)
                   (let ((submodule (submodule-lookup repository name)))
                     (format log-port (G_ "updating submodule '~a'...~%")

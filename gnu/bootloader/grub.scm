@@ -28,7 +28,7 @@
   #:use-module (gnu system uuid)
   #:use-module (gnu system file-systems)
   #:use-module (gnu system keyboard)
-  #:autoload   (gnu packages bootloaders) (grub)
+  #:use-module (gnu packages bootloaders)
   #:autoload   (gnu packages gtk) (guile-cairo guile-rsvg)
   #:autoload   (gnu packages xorg) (xkeyboard-config)
   #:use-module (ice-9 match)

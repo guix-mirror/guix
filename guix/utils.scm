@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
@@ -31,16 +31,13 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-39)
-  #:use-module (ice-9 binary-ports)
   #:use-module (ice-9 ftw)
-  #:autoload   (rnrs io ports) (make-custom-binary-input-port)
+  #:use-module (rnrs io ports)                    ;need 'port-position' etc.
   #:use-module ((rnrs bytevectors) #:select (bytevector-u8-set!))
   #:use-module (guix memoization)
   #:use-module ((guix build utils) #:select (dump-port mkdir-p delete-file-recursively))
   #:use-module ((guix build syscalls) #:select (mkdtemp! fdatasync))
   #:use-module (ice-9 format)
-  #:autoload   (ice-9 popen)  (open-pipe*)
-  #:autoload   (ice-9 rdelim) (read-line)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)

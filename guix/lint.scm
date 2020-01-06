@@ -45,7 +45,8 @@
   #:use-module (guix gnu-maintenance)
   #:use-module (guix cve)
   #:use-module ((guix swh) #:hide (origin?))
-  #:autoload   (guix git-download) (git-reference?)
+  #:autoload   (guix git-download) (git-reference?
+                                    git-reference-url git-reference-commit)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 format)

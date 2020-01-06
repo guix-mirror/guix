@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -33,7 +33,9 @@
   #:use-module (guix memoization)
   #:use-module (guix monads)
   #:use-module (guix channels)
-  #:autoload   (guix inferior) (open-inferior)
+  #:autoload   (guix inferior) (open-inferior
+                                inferior-available-packages
+                                close-inferior)
   #:use-module (guix scripts build)
   #:autoload   (guix build utils) (which)
   #:use-module ((guix build syscalls)

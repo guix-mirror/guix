@@ -71,7 +71,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
-  #:autoload   (gnu packages texinfo) (texinfo)
+  #:use-module (gnu packages texinfo)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
   #:use-module ((srfi srfi-1) #:hide (zip)))

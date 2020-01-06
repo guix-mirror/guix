@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -155,11 +155,11 @@ out if the connection could not be established in less than TIMEOUT seconds."
 ;; be bound if we need them, because (guix download) adds GnuTLS as an
 ;; input in that case.
 
-;; XXX: Use this hack instead of #:autoload to avoid compilation errors.
-;; See <http://bugs.gnu.org/12202>.
-(module-autoload! (current-module)
-                  '(gnutls)
-                  '(make-session connection-end/client))
+(define (load-gnutls)
+  ;; XXX: Use this hack instead of #:autoload to avoid compilation errors.
+  ;; See <http://bugs.gnu.org/12202>.
+  (module-use! (current-module) (resolve-interface '(gnutls)))
+  (set! load-gnutls (const #t)))
 
 (define %x509-certificate-directory
   ;; The directory where X.509 authority PEM certificates are stored.
@@ -245,6 +245,7 @@ host name without trailing dot."
     (format (current-error-port)
             "gnutls: [~a|~a] ~a" (getpid) level str))
 
+  (load-gnutls)
   (let ((session  (make-session connection-end/client))
         (ca-certs (%x509-certificate-directory)))
 

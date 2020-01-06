@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -45,8 +45,8 @@
   #:use-module (srfi srfi-37)
   #:autoload   (gnu packages) (specification->package %package-module-path)
   #:autoload   (guix download) (download-to-store)
-  #:autoload   (guix git-download) (git-reference?)
-  #:autoload   (guix git) (git-checkout?)
+  #:autoload   (guix git-download) (git-reference? git-reference-url)
+  #:autoload   (guix git) (git-checkout? git-checkout-url)
   #:use-module ((guix status) #:select (with-status-verbosity))
   #:use-module ((guix progress) #:select (current-terminal-columns))
   #:use-module ((guix build syscalls) #:select (terminal-columns))
