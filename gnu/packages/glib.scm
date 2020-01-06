@@ -213,6 +213,15 @@ shared NFS home directories.")
                  (string-append "command_line = g_strdup_printf (\""
                                 dbus "/bin/dbus-launch")))
               #t)))
+        (add-after 'unpack 'patch-gio-launch-desktop
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              ;; See also <https://gitlab.gnome.org/GNOME/glib/issues/1633>
+              ;; for another future fix.
+              (substitute* "gio/gdesktopappinfo.c"
+               (("gio-launch-desktop")
+                (string-append out "/libexec/gio-launch-desktop")))
+              #t)))
         (add-before 'build 'pre-build
           (lambda* (#:key inputs outputs #:allow-other-keys)
             ;; For tests/gdatetime.c.
@@ -321,6 +330,13 @@ shared NFS home directories.")
               (mkdir-p bin)
               (rename-file (string-append out "/bin")
                            (string-append bin "/bin"))
+              ;; This one is an implementation detail of glib.
+              ;; It is wrong that that's in "/bin" in the first place,
+              ;; but that's what upstream is doing right now.
+              ;; See <https://gitlab.gnome.org/GNOME/glib/issues/1633>.
+              (mkdir (string-append out "/libexec"))
+              (rename-file (string-append bin "/bin/gio-launch-desktop")
+                           (string-append out "/libexec/gio-launch-desktop"))
               ;; Do not refer to "bindir", which points to "${prefix}/bin".
               ;; We don't patch "bindir" to point to "$bin/bin", because that
               ;; would create a reference cycle between the "out" and "bin"
