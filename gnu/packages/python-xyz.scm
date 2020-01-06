@@ -14,7 +14,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Erik Edrosa <erik.edrosa@gmail.com>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2017 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
@@ -8063,15 +8063,15 @@ automatically detect a wide range of file encodings.")
     (version "0.6.2")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; The release on PyPI does not include tests.
-       (uri (string-append
-             "https://github.com/docopt/docopt/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+              (url "https://github.com/docopt/docopt")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "16bf890xbdz3m30rsv2qacklh2rdn1zrfspfnwzx9g7vwz8yw4r1"))))
+         "0aad9gbswnnhssin2q0m5lmpm0ahyf80ahs2zjigbn5y7fvljnd0"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
