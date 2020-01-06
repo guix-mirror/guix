@@ -344,14 +344,14 @@ secure session between the peers.")
     (version "0.9.2")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append
-              "https://github.com/pavouk/lgi/archive/"
-              version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/pavouk/lgi")
+               (commit version)))
+        (file-name (git-file-name name version))
         (sha256
-          (base32
-            "0kwcaj3ahi9gxfyp0lr5zgr6vi1mgsg9sz0980x0nwxlh9a11i6g"))))
+         (base32
+          "03rbydnj411xpjvwsyvhwy4plm96481d7jax544mvk7apd8sd5jj"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "CC=gcc"
