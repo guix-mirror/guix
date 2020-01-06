@@ -367,17 +367,22 @@ part of the distribution.")
 (define-public coq-coquelicot
   (package
     (name "coq-coquelicot")
-    (version "3.0.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://gforge.inria.fr/frs/download.php/"
-                                  "file/37523/coquelicot-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1biia7nfqf7vaqq5gmykl4rwjyvrcwss6r2jdf0in5pvp2rnrj2w"))))
+    (version "3.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.inria.fr/coquelicot/coquelicot.git")
+             (commit (string-append "coquelicot-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0m5wbr2s8lnf8b7cfwv15hyzsmbcaz6hgdn7aazcrkxnwr87vgkp"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("ocaml" ,ocaml)
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("ocaml" ,ocaml)
        ("which" ,which)
        ("coq" ,coq)))
     (propagated-inputs
