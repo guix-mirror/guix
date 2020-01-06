@@ -73,6 +73,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages mail)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages nano)
   #:use-module (gnu packages ncurses)
@@ -782,6 +783,47 @@ collaboration using typical untrusted file hosts or services.")
     (description
      "CGit is an attempt to create a fast web interface for the Git SCM, using
 a built-in cache to decrease server I/O pressure.")
+    (license license:gpl2)))
+
+(define-public python-git-multimail
+  (package
+    (name "python-git-multimail")
+    (version "1.5.0.post1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "git-multimail" version))
+       (sha256
+        (base32
+         "1zkrbsa70anwpw86ysfwalrb7nsr064kygfiyikyq1pl9pcl969y"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "git-multimail/git_multimail.py"
+               (("GIT_EXECUTABLE = 'git'")
+                (string-append "GIT_EXECUTABLE = '"
+                               (assoc-ref inputs "git") "/bin/git"
+                               "'"))
+               (("/usr/sbin/sendmail")
+                (string-append (assoc-ref inputs "sendmail")
+                               "/usr/sbin/sendmail")))
+             #t)))))
+    (inputs
+     `(("git" ,git)
+       ("sendmail" ,sendmail)))
+    (home-page "https://github.com/git-multimail/git-multimail")
+    (synopsis "Send notification emails for Git pushes")
+    (description
+     "This hook sends emails describing changes introduced by pushes to a Git
+repository.  For each reference that was changed, it emits one ReferenceChange
+email summarizing how the reference was changed, followed by one Revision
+email for each new commit that was introduced by the reference change.
+
+This script is designed to be used as a post-receive hook in a Git
+repository")
     (license license:gpl2)))
 
 (define-public python-ghp-import
