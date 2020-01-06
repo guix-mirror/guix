@@ -992,14 +992,14 @@ pictures, sounds, or video.")
   (package
     (inherit postgresql)
     (name "postgresql")
-    (version "11.5")
+    (version "11.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "106ikalvrilihlvhq7xj7snq98hgbgq6qsgjrd252wgw1c327pvz"))))))
+                "0w1iq488kpzfgfnlw4k32lz5by695mpnkq461jrgsr99z5zlz4j9"))))))
 
 (define-public postgresql-9.6
   (package
