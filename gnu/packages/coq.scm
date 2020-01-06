@@ -95,8 +95,8 @@
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin")))
-               ;; These are exact copies of the version without the .opt suffix.
-               ;; Remove them to save 35 MiB in the result
+               ;; These files are exact copies without `.opt` extension.
+               ;; Removing these saves 35 MiB in the resulting package.
                (delete-file (string-append bin "/coqtop.opt"))
                (delete-file (string-append bin "/coqidetop.opt")))
              #t))
@@ -112,9 +112,9 @@
            (lambda _
              (with-directory-excursion "test-suite"
                ;; These two tests fail.
-               ;; This one fails because the output is not formatted as expected.
+               ;; Fails because the output is not formatted as expected.
                (delete-file-recursively "coq-makefile/timing")
-               ;; This one fails because we didn't build coqtop.byte.
+               ;; Fails because we didn't build coqtop.byte.
                (delete-file-recursively "coq-makefile/findlib-package")
                (invoke "make")))))))
     (home-page "https://coq.inria.fr")
@@ -123,7 +123,7 @@
      "Coq is a proof assistant for higher-order logic, which allows the
 development of computer programs consistent with their formal specification.
 It is developed using Objective Caml and Camlp5.")
-    ;; The code is distributed under lgpl2.1.
+    ;; The source code is distributed under lgpl2.1.
     ;; Some of the documentation is distributed under opl1.0+.
     (license (list license:lgpl2.1 license:opl1.0+))))
 
