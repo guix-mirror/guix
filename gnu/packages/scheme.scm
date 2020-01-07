@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
 ;;; Copyright © 2018 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;;
@@ -555,7 +555,7 @@ of libraries.")
 (define-public gambit-c
   (package
     (name "gambit-c")
-    (version "4.9.2")
+    (version "4.9.3")
     (source
      (origin
        (method url-fetch)
@@ -565,7 +565,7 @@ of libraries.")
              (string-map (lambda (c) (if (char=? c #\.) #\_ c)) version)
              ".tgz"))
        (sha256
-        (base32 "1cpganh3jgjdw6qsapcbwxdbp1xwgx5gvdl4ymwf8p2c5k018dwy"))))
+        (base32 "1p6172vhcrlpjgia6hsks1w4fl8rdyjf9xjh14wxfkv7dnx8a5hk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
