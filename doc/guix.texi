@@ -25923,22 +25923,9 @@ must @emph{not} be an OS device name such as @file{/dev/sda1}.
 @end table
 @end deftp
 
-@cindex HDPI
-@cindex HiDPI
-@cindex resolution
 @c FIXME: Write documentation once it's stable.
-For now only GRUB has theme support.  GRUB themes are created using
-the @code{grub-theme} form, which is not fully documented yet.
-
-@deftp {Data Type} grub-theme
-Data type representing the configuration of the GRUB theme.
-
-@table @asis
-@item @code{gfxmode} (default: @code{'("auto")})
-The GRUB @code{gfxmode} to set (a list of screen resolution strings, see
-@pxref{gfxmode,,, grub, GNU GRUB manual}).
-@end table
-@end deftp
+For now only GRUB has theme support. GRUB themes are created using
+the @code{grub-theme} form, which is not documented yet.
 
 @defvr {Scheme Variable} %default-theme
 This is the default GRUB theme used by the operating system if no
@@ -25949,17 +25936,6 @@ It comes with a fancy background image displaying the GNU and Guix
 logos.
 @end defvr
 
-For example, to override the default resolution, you may use something
-like
-
-@lisp
-(bootloader
- (grub-configuration
- ;; @dots{}
- (theme (grub-theme
-         (inherit %default-theme)
-         (gfxmode '("1024x786x32" "auto"))))))
-@end lisp
 
 @node Invoking guix system
 @section Invoking @code{guix system}
