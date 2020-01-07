@@ -5273,3 +5273,48 @@ with support for multiple output devices.  Currently supported output targets
 include the X Window System, Quartz, Win32, image buffers, PostScript, PDF,
 and SVG file output.")
     (license license:lgpl3+)))
+
+(define-public lablgtk3
+  (package
+    (name "lablgtk")
+    (version "3.0.beta8")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/garrigue/lablgtk.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "08pgwnia240i2rw1rbgiahg673kwa7b6bvhsg3z4b47xr5sh9pvz"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-target "."
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'make-writable
+           (lambda _
+             (for-each (lambda (file)
+                         (chmod file #o644))
+                       (find-files "." "."))
+             #t)))))
+    (propagated-inputs
+     `(("ocaml-cairo2" ,ocaml-cairo2)))
+    (inputs
+     `(("camlp5" ,camlp5)
+       ("gtk+" ,gtk+)
+       ("gtksourceview-3" ,gtksourceview-3)
+       ("gtkspell3" ,gtkspell3)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/garrigue/lablgtk")
+    (synopsis "OCaml interface to GTK+3")
+    (description "LablGtk is an OCaml interface to GTK+ 1.2, 2.x and 3.x.  It
+provides a strongly-typed object-oriented interface that is compatible with the
+dynamic typing of GTK+.  Most widgets and methods are available.  LablGtk
+also provides bindings to gdk-pixbuf, the GLArea widget (in combination with
+LablGL), gnomecanvas, gnomeui, gtksourceview, gtkspell, libglade (and it can
+generate OCaml code from .glade files), libpanel, librsvg and quartz.")
+    ;; Version 2 only, with linking exception.
+    (license license:lgpl2.0)))
