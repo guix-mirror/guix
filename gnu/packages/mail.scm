@@ -1264,16 +1264,17 @@ delivery.")
     (source
      (origin
        (method url-fetch)
-       (uri (list (string-append "https://ftp.exim.org/pub/exim/exim4/exim-"
-                                 version ".tar.bz2")
-                  ;; ‘Fix’ releases (exim-x.y.z.f) are kept separately.
-                  (string-append "https://ftp.exim.org/pub/exim/exim4/fixes/exim-"
-                                 version ".tar.bz2")
-                  ;; After a new release the previous one is moved here.
-                  (string-append "https://ftp.exim.org/pub/exim/exim4/old/exim-"
-                                 version ".tar.bz2")))
+       (uri (let ((file-name (string-append "exim-" version ".tar.xz")))
+              (list (string-append "https://ftp.exim.org/pub/exim/exim4/"
+                                   file-name)
+                    ;; ‘Fix’ releases (exim-x.y.z.f) are kept separately.
+                    (string-append "https://ftp.exim.org/pub/exim/exim4/fixes/"
+                                   file-name)
+                    ;; After a new non-fix release, the old one is moved here.
+                    (string-append "https://ftp.exim.org/pub/exim/exim4/old/"
+                                   file-name))))
        (sha256
-        (base32 "1ng4flyv2jqjbw66dbdgma7kfnnph9h3s1yyc0q27n7q0sx3cwxn"))))
+        (base32 "01g4sfycv13glnmfrapwhjbdw6z1z7w5bwjldxjmglwfw5p3czak"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb-5.3) ; ‘#error Version 6 and later BDB API is not supported’
