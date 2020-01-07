@@ -22,7 +22,7 @@
 ;;; Copyright © 2016, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
@@ -1260,21 +1260,24 @@ delivery.")
 (define-public exim
   (package
     (name "exim")
-    (version "4.92.3")
+    (version "4.93.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (list (string-append "https://ftp.exim.org/pub/exim/exim4/exim-"
                                  version ".tar.bz2")
+                  ;; ‘Fix’ releases (exim-x.y.z.f) are kept separately.
+                  (string-append "https://ftp.exim.org/pub/exim/exim4/fixes/exim-"
+                                 version ".tar.bz2")
+                  ;; After a new release the previous one is moved here.
                   (string-append "https://ftp.exim.org/pub/exim/exim4/old/exim-"
                                  version ".tar.bz2")))
        (sha256
-        (base32
-         "0d0h0j9pl3yf089sc59ia60m3dqnkb3qh1qaz6vxfg2ja2mnm5i9"))))
+        (base32 "1ng4flyv2jqjbw66dbdgma7kfnnph9h3s1yyc0q27n7q0sx3cwxn"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb-5.3) ; ‘#error Version 6 and later BDB API is not supported’
-       ("gnutls" ,gnutls)
+       ("gnutls" ,gnutls/dane)
        ("gzip" ,gzip)
        ("bzip2" ,bzip2)
        ("xz" ,xz)
@@ -1284,7 +1287,8 @@ delivery.")
        ("libxaw" ,libxaw)))
     (native-inputs
      `(("pcre" ,pcre "bin")
-       ("perl" ,perl)))
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -1313,9 +1317,11 @@ delivery.")
                  (("(COMPRESS_COMMAND=).*" all var)
                   (string-append var gzip "/bin/gzip\n"))
                  (("(ZCAT_COMMAND=).*" all var)
-                  (string-append var gzip "/bin/zcat\n")))
-               ;; This file has hardcoded names for tools despite the zcat
-               ;; configuration above.
+                  (string-append var gzip "/bin/zcat\n"))
+                 (("# (USE_GNUTLS(|_PC)=.*)" all line)
+                  (string-append line "\n")))
+               ;; This file has hard-coded relative file names for tools despite
+               ;; the zcat configuration above.
                (substitute* '("src/exigrep.src")
                  (("'zcat'") (string-append "'" gzip "/bin/zcat'"))
                  (("'bzcat'") (string-append "'" bzip2 "/bin/bzcat'"))
@@ -1332,8 +1338,11 @@ delivery.")
                (substitute* '("scripts/Configure-eximon")
                  (("#!/bin/sh") (string-append "#!" bash "/bin/sh"))))
              #t)))
-       #:make-flags '("INSTALL_ARG=-no_chown")
-       ;; No 'check' target.
+       #:make-flags
+       (list "CC=gcc"
+             "INSTALL_ARG=-no_chown")
+       ;; No 'check' target.  There is a test suite in test/, which assumes that
+       ;; certain build options were (not) used and that it can freely ‘sudo’.
        #:tests? #f))
     (home-page "https://www.exim.org/")
     (synopsis
