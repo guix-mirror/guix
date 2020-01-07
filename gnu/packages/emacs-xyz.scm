@@ -46,7 +46,7 @@
 ;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
 ;;; Copyright © 2019 mikadoZero <mikadozero@yandex.com>
 ;;; Copyright © 2019 Gabriel Hondet <gabrielhondet@gmail.com>
-;;; Copyright © 2019 LaFreniere, Joseph <joseph@lafreniere.xyz>
+;;; Copyright © 2019, 2020 Joseph LaFreniere <joseph@lafreniere.xyz>
 ;;; Copyright © 2019 Amar Singh <nly@disroot.org>
 ;;; Copyright © 2019 Baptiste Strazzulla <bstrazzull@hotmail.fr>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
@@ -105,6 +105,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages telephony)
+  #:use-module (gnu packages terminals)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tcl)
@@ -17398,6 +17399,73 @@ flexible, powerful, server-side application for playing music.")
 next, volume) and display and control the current playlist as well as your
 stored playlists.")
     (license license:gpl3+)))
+
+(define-public emacs-vterm
+  (let ((version "0")
+        (revision "1")
+        (commit "7d7381fa8104b55b70148cf147523d9ab7f01fcd"))
+    (package
+      (name "emacs-vterm")
+      (version (git-version version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/akermu/emacs-libvterm.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "04a2jlhmr20ipgzpnba3yryw3ly7qdxjgaw10dwn9wxy1yqmapz1"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:modules ((guix build emacs-build-system)
+                    ((guix build cmake-build-system) #:prefix cmake:)
+                    (guix build emacs-utils)
+                    (guix build utils))
+         #:imported-modules (,@%emacs-build-system-modules
+                             (guix build cmake-build-system))
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'add-source-to-load-path 'remove-vterm-module-make
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Remove the Emacs Lisp file.
+               (delete-file "vterm-module-make.el")
+               ;; Remove references to the removed file.
+               (make-file-writable "vterm.el")
+               (emacs-substitute-sexps "vterm.el"
+                 ("(or (require 'vterm-module nil t)"
+                  `(module-load
+                    ,(string-append (assoc-ref outputs "out")
+                                    "/lib/vterm-module.so"))))
+               #t))
+           (add-after 'build 'configure
+             ;; Run cmake.
+             (lambda* (#:key outputs #:allow-other-keys)
+               ((assoc-ref cmake:%standard-phases 'configure)
+                #:outputs outputs
+                #:out-of-source? #f
+                #:configure-flags '("-DUSE_SYSTEM_LIBVTERM=ON"))
+               #t))
+           (add-after 'configure 'make
+             ;; Run make.
+             (lambda* (#:key (make-flags '()) outputs #:allow-other-keys)
+               ;; Compile the shared object file.
+               (apply invoke "make" "all" make-flags)
+               ;; Move the file into /lib.
+               (install-file
+                "vterm-module.so"
+                (string-append (assoc-ref outputs "out") "/lib"))
+               #t)))
+         #:tests? #f))
+      (native-inputs
+       `(("cmake" ,cmake-minimal)
+         ("libtool" ,libtool)
+         ("libvterm" ,libvterm)))
+      (home-page "https://github.com/akermu/emacs-libvterm")
+      (synopsis "Emacs libvterm integration")
+      (description "This package implements a bridge to @code{libvterm} to
+display a terminal in an Emacs buffer.")
+      (license license:gpl3+))))
 
 (define-public emacs-simple-mpc
   ;; There have been no releases.
