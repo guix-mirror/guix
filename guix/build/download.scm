@@ -158,7 +158,8 @@ out if the connection could not be established in less than TIMEOUT seconds."
 (define (load-gnutls)
   ;; XXX: Use this hack instead of #:autoload to avoid compilation errors.
   ;; See <http://bugs.gnu.org/12202>.
-  (module-use! (current-module) (resolve-interface '(gnutls)))
+  (module-use! (resolve-module '(guix build download))
+               (resolve-interface '(gnutls)))
   (set! load-gnutls (const #t)))
 
 (define %x509-certificate-directory

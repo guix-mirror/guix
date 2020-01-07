@@ -203,7 +203,7 @@ Return true on success, false on failure."
      (set! load-git-submodules (const #f))
      #f)
     (iface
-     (module-use! (current-module) iface)
+     (module-use! (resolve-module '(guix git)) iface)
      (set! load-git-submodules (const #t))
      #t)))
 
