@@ -11,6 +11,7 @@
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -252,8 +253,10 @@ and driving.")
     (inputs
      `(("libjpeg-turbo" ,libjpeg-turbo)
        ("libtiff" ,libtiff)
-       ("proj" ,proj)
        ("zlib" ,zlib)))
+    (propagated-inputs
+     `(;; libgeotiff headers include proj headers, so ensure those are available.
+       ("proj" ,proj)))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-zlib")
