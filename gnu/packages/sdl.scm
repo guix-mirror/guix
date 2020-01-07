@@ -270,7 +270,18 @@ WEBP, XCF, XPM, and XV.")
          "--disable-music-flac-shared"
          "--disable-music-fluidsynth-shared"
          "--disable-music-mod-shared"
-         "--disable-music-ogg-shared")))
+         "--disable-music-ogg-shared")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-fluidsynth
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "configure"
+              (("EXTRA_LDFLAGS -lfluidsynth")
+               (string-append "EXTRA_LDFLAGS "
+                              "-L"
+                              (assoc-ref inputs "fluidsynth")
+                              "/lib -lfluidsynth")))
+             #t)))))
     (inputs
      `(("fluidsynth" ,fluidsynth)
        ("libflac" ,flac)
