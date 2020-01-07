@@ -69,6 +69,8 @@
              (base32
               "1zlk33vxvxr0l9lhkbhkdwvylw96d2n0fnd3d8dl031hph9bqqy1"))))
    (build-system gnu-build-system)
+   (arguments
+    '(#:configure-flags '("--disable-static")))
    (synopsis "Library for manipulating the ogg multimedia format")
    (description
     "The libogg library allows to manipulate the ogg multimedia container
@@ -93,7 +95,8 @@ periodic timestamps for seeking.")
               "05dlzjkdpv46zb837wysxqyn8l636x3dw8v8ymlrwz2fg1dbn05g"))))
    (build-system gnu-build-system)
    (propagated-inputs `(("libogg" ,libogg)))
-   (arguments `(#:configure-flags '("LDFLAGS=-lm")
+   (arguments `(#:configure-flags '("LDFLAGS=-lm"
+                                    "--disable-static")
                 #:parallel-tests? #f))
    (synopsis "Library implementing the vorbis audio format")
    (description
@@ -119,6 +122,8 @@ polyphonic) audio and music at fixed and variable bitrates from 16 to
                "0q8wark9ribij57dciym5vdikg2464p8q2mgqvfb78ksjh4s8vgk"))
              (patches (search-patches "libtheora-config-guess.patch"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (inputs `(("libvorbis" ,libvorbis)))
     ;; The .pc files refer to libogg.
     (propagated-inputs `(("libogg" ,libogg)))
@@ -174,7 +179,8 @@ stereo encoding, and voice activity detection.")
                 "0wa7sqpk3x61zz99m7lwkgr6yv62ml6lfgs5xja65vlvdzy44838"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '(,@(if (string=? "aarch64-linux"
+     `(#:configure-flags '("--disable-static"
+                           ,@(if (string=? "aarch64-linux"
                                            (%current-system))
                                '("--enable-neon=no") ; neon defaults to armv7-a
                                '()))))
@@ -352,6 +358,8 @@ ogginfo, to obtain information (tags, bitrate, length, etc.) about
                (base32
                 "17gz8kxs4i7icsc1gj713gadiapyklynlwqlf0ai98dj4lg8xdb5"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (synopsis "Versatile audio codec")
     (description
      "Opus is a totally open, royalty-free, highly versatile audio codec.  Opus

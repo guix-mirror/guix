@@ -687,7 +687,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.1.41")
+    (version "10.1.43")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.com/MariaDB"
@@ -695,7 +695,7 @@ Language.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1wh0073lqw3d9xs150bf2q3qvjwa6886mfi9khmsn7p8vapw6irb"))
+                "1pxyq37q4p7515by7k8hs3l3css68f3bm3akx99vw4m1rxwwbm63"))
               (patches (search-patches "mariadb-client-test-32bit.patch"))
               (modules '((guix build utils)))
               (snippet
@@ -816,6 +816,12 @@ Language.")
                          disabled-tests)
                (close-port unstable-tests)
 
+               ;; XXX: This test fails because it expects a latin1 charset and
+               ;; collation.  See <https://jira.mariadb.org/browse/MDEV-21264>.
+               (substitute* "mysql-test/r/gis_notembedded.result"
+                 (("latin1_swedish_ci") "utf8_general_ci")
+                 (("\tlatin1") "\tutf8"))
+
                (substitute* "mysql-test/mysql-test-run.pl"
                  (("/bin/ls") (which "ls"))
                  (("/bin/sh") (which "sh")))
@@ -846,10 +852,11 @@ Language.")
              #t))
          (add-after
           'install 'post-install
-          (lambda* (#:key outputs #:allow-other-keys)
+          (lambda* (#:key inputs outputs #:allow-other-keys)
             (let* ((out     (assoc-ref outputs "out"))
                    (dev     (assoc-ref outputs "dev"))
-                   (lib     (assoc-ref outputs "lib")))
+                   (lib     (assoc-ref outputs "lib"))
+                   (openssl (assoc-ref inputs "openssl")))
               (substitute* (string-append out "/bin/mysql_install_db")
                 (("basedir=\"\"")
                  (string-append "basedir=\"" out "\"")))
@@ -871,6 +878,14 @@ Language.")
                            (string-append dev "/share/pkgconfig"))
               (rename-file (string-append out "/bin/mysql_config")
                            (string-append dev "/bin/mysql_config"))
+
+              ;; Embed an absolute reference to OpenSSL in mysql_config
+              ;; and the pkg-config file to avoid propagation.
+              (substitute* (list (string-append dev "/bin/mysql_config")
+                                 (string-append dev "/share/pkgconfig/mariadb.pc"))
+                (("-lssl -lcrypto" all)
+                 (string-append "-L" openssl "/lib " all)))
+
               #t))))))
     (native-inputs
      `(("bison" ,bison)
@@ -884,12 +899,11 @@ Language.")
        ("libaio" ,libaio)
        ("libxml2" ,libxml2)
        ("ncurses" ,ncurses)
+       ("openssl" ,openssl-1.0)
+       ("pam" ,linux-pam)
        ("pcre" ,pcre)
        ("xz" ,xz)
        ("zlib" ,zlib)))
-    (propagated-inputs
-     ;; mariadb.pc says -lssl -lcrypto, so propagate it.
-     `(("openssl" ,openssl-1.0)))
     ;; The test suite is very resource intensive and can take more than three
     ;; hours on a x86_64 system.  Give slow and busy machines some leeway.
     (properties '((timeout . 64800)))        ;18 hours
@@ -931,14 +945,14 @@ as a drop-in replacement of MySQL.")
 (define-public postgresql
   (package
     (name "postgresql")
-    (version "10.10")
+    (version "10.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "0lzj46dwd9cw94gnqm36bxd7jlhfdyqjrfzr3c4xd3prfn2rnkxd"))
+                "02fcmvbh0mhplj3s2jd24s642ysx7bggnf0h8bs5amh7dgzi8p8d"))
               (patches (search-patches "postgresql-disable-resolve_symlinks.patch"))))
     (build-system gnu-build-system)
     (arguments

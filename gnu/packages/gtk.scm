@@ -89,7 +89,7 @@
 (define-public atk
   (package
    (name "atk")
-   (version "2.32.0")
+   (version "2.34.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -97,7 +97,7 @@
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1k4i817bd2w5b9z394f2yyx95591l2746wa40am0vvz4gzdgwhfb"))))
+              "1jwp16r6p5z66k4b2v8zlzhyshhwlmyi27ippkrgqr8jsary7w6l"))))
    (build-system meson-build-system)
    (propagated-inputs `(("glib" ,glib))) ; required by atk.pc
    (native-inputs
@@ -552,7 +552,7 @@ in the GNOME project.")
 (define-public at-spi2-core
   (package
    (name "at-spi2-core")
-   (version "2.32.1")
+   (version "2.34.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -560,7 +560,7 @@ in the GNOME project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0lqd7gsl471v6538iighkvb21gjglcb9pklvas32rjpsxcvsjaiw"))))
+              "1ihixwhh3c16q6253qj9gf69741rb2pi51822a4rylsfcyywsafn"))))
    (build-system meson-build-system)
    (outputs '("out" "doc"))
    (arguments
@@ -621,7 +621,7 @@ is part of the GNOME accessibility project.")
 (define-public at-spi2-atk
   (package
    (name "at-spi2-atk")
-   (version "2.32.0")
+   (version "2.34.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -629,7 +629,7 @@ is part of the GNOME accessibility project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0p54wx6f6q7s8w0b1j0sgw87pikllp79q5g3lfiwqazs779ycl8b"))))
+              "05ncp7s5nddjinffs26mcvpbd63vk1m3cv5y530p3plgfhqgjvbp"))))
    (build-system meson-build-system)
    (arguments
     '(#:phases
@@ -722,7 +722,7 @@ application suites.")
 (define-public gtk+
   (package (inherit gtk+-2)
    (name "gtk+")
-   (version "3.24.12")
+   (version "3.24.13")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -730,7 +730,7 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "10xyyhlfb0yk4hglngxh2zsv9xrxkqv343df8h01dvagc6jyp10k"))
+              "1a9hi7k59q0kqx0n3xhsk1ly23w9g9ncllnay1756g0yrww5qxsc"))
             (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
                                      "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
    (outputs '("out" "bin" "doc"))

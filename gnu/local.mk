@@ -1164,7 +1164,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/mcrypt-CVE-2012-4527.patch			\
   %D%/packages/patches/mes-remove-store-name.patch		\
   %D%/packages/patches/mesa-skip-disk-cache-test.patch		\
-  %D%/packages/patches/mesa-timespec-test-32bit.patch		\
   %D%/packages/patches/mescc-tools-boot.patch			\
   %D%/packages/patches/meson-for-build-rpath.patch		\
   %D%/packages/patches/metabat-fix-compilation.patch		\
@@ -1206,7 +1205,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ngircd-handle-zombies.patch		\
   %D%/packages/patches/nm-plugin-path.patch			\
   %D%/packages/patches/nsis-env-passthru.patch			\
-  %D%/packages/patches/nss-CVE-2019-11745.patch			\
   %D%/packages/patches/nss-freebl-stubs.patch			\
   %D%/packages/patches/nss-increase-test-timeout.patch		\
   %D%/packages/patches/nss-pkgconfig.patch			\
@@ -1240,7 +1238,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/openssl-c-rehash-in.patch		\
   %D%/packages/patches/openssl-CVE-2019-1559.patch		\
   %D%/packages/patches/open-zwave-hidapi.patch			\
-  %D%/packages/patches/orc-typedef-enum.patch			\
   %D%/packages/patches/orpheus-cast-errors-and-includes.patch	\
   %D%/packages/patches/osip-CVE-2017-7853.patch			\
   %D%/packages/patches/ots-no-include-missing-file.patch	\
@@ -1251,7 +1248,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/pam-mount-luks2-support.patch		\
   %D%/packages/patches/patchutils-test-perms.patch		\
   %D%/packages/patches/patch-hurd-path-max.patch		\
-  %D%/packages/patches/pcre2-fix-jit_match-crash.patch		\
   %D%/packages/patches/perl-autosplit-default-time.patch	\
   %D%/packages/patches/perl-deterministic-ordering.patch	\
   %D%/packages/patches/perl-finance-quote-unuse-mozilla-ca.patch \

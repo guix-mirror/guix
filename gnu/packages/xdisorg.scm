@@ -302,28 +302,31 @@ avoiding password prompts when X11 forwarding has already been setup.")
 (define-public libxkbcommon
   (package
     (name "libxkbcommon")
-    (version "0.8.4")
+    (version "0.9.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://xkbcommon.org/download/libxkbcommon-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "12vc91ydhphd5sddz15560r41l7k0i7mq6nma8kkbzdp6bwwzpb0"))))
-    (build-system gnu-build-system)
+               "1q4v378sr9ad8fy9znl7k8xpf0wch655r9m6z0bcc7sw1azsminl"))))
+    (build-system meson-build-system)
     (inputs
      `(("libx11" ,libx11)
        ("libxcb" ,libxcb)
+       ("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)
        ("xkeyboard-config" ,xkeyboard-config)))
     (native-inputs
      `(("bison" ,bison)
+       ("doxygen" ,doxygen)
        ("pkg-config" ,pkg-config)))
     (arguments
      `(#:configure-flags
-       (list (string-append "--with-xkb-config-root="
+       (list (string-append "-Dxkb-config-root="
                             (assoc-ref %build-inputs "xkeyboard-config")
                             "/share/X11/xkb")
-             (string-append "--with-x-locale-root="
+             (string-append "-Dx-locale-root="
                             (assoc-ref %build-inputs "libx11")
                             "/share/X11/locale"))))
     (home-page "https://xkbcommon.org/")
@@ -462,7 +465,7 @@ rasterisation.")
 (define-public libdrm
   (package
     (name "libdrm")
-    (version "2.4.99")
+    (version "2.4.100")
     (source
       (origin
         (method url-fetch)
@@ -472,7 +475,7 @@ rasterisation.")
                ".tar.bz2"))
         (sha256
          (base32
-          "0pnsw4bmajzdbz8pk4wswdmw93shhympf2q9alhbnpfjgsf57gsd"))
+          "0p8a1l3a3s40i81mawm8nhrbk7p97ss05qkawp1yx73c30lchz67"))
         (patches (search-patches "libdrm-symbol-check.patch"))))
     (build-system meson-build-system)
     (arguments
