@@ -5243,3 +5243,33 @@ library FFTW.")
 LAPACK-library (Linear Algebra routines).  It also contains many additional
 convenience functions for vectors and matrices.")
     (license license:lgpl2.1)))
+
+(define-public ocaml-cairo2
+  (package
+    (name "ocaml-cairo2")
+    (version "0.6.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Chris00/ocaml-cairo.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0wzysis9fa850s68qh8vrvqc6svgllhwra3kzll2ibv0wmdqrich"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:test-target "tests"))
+    (inputs
+     `(("cairo" ,cairo)
+       ("gtk+-2" ,gtk+-2)
+       ("lablgtk" ,lablgtk)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/Chris00/ocaml-cairo")
+    (synopsis "Binding to Cairo, a 2D Vector Graphics Library")
+    (description "Ocaml-cairo2 is a binding to Cairo, a 2D graphics library
+with support for multiple output devices.  Currently supported output targets
+include the X Window System, Quartz, Win32, image buffers, PostScript, PDF,
+and SVG file output.")
+    (license license:lgpl3+)))
