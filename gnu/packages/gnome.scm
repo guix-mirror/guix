@@ -1264,15 +1264,15 @@ database is translated at Transifex.")
   (package
     (name "system-config-printer")
     (version "1.5.11")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "https://github.com/zdohnal/system-config-printer/releases/"
-                   "download/" version
-                   "/system-config-printer-" version ".tar.xz"))
-             (sha256
-              (base32
-               "1lq0q51bhanirpjjvvh4xiafi8hgpk8r32h0dj6dn3f32z8pib9q"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/OpenPrinting/system-config-printer/releases/"
+             "download/" version
+             "/system-config-printer-" version ".tar.xz"))
+       (sha256
+        (base32 "1lq0q51bhanirpjjvvh4xiafi8hgpk8r32h0dj6dn3f32z8pib9q"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:imported-modules ((guix build python-build-system)
