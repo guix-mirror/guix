@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
@@ -213,7 +213,7 @@ COCOMO model or user-provided parameters.")
 (define-public cloc
   (package
     (name "cloc")
-    (version "1.82")
+    (version "1.84")
     (source
      (origin
        (method git-fetch)
@@ -222,7 +222,7 @@ COCOMO model or user-provided parameters.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0fsz07z0slfg58512fmnlj8pnxkc360bgf7fclg60v9clvcjbjsw"))))
+        (base32 "14xikdwcr6pcnkk2i43zrsj88z8b3mrv0svbnbvxvarw1id83pnn"))))
     (build-system gnu-build-system)
     (inputs
      `(("coreutils" ,coreutils)
