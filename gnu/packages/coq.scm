@@ -589,7 +589,7 @@ kernel.")
 (define-public coq-stdpp
   (package
     (name "coq-stdpp")
-    (version "1.2.0")
+    (version "1.2.1")
     (synopsis "Alternative Coq standard library std++")
     (source (origin
               (method git-fetch)
@@ -598,7 +598,8 @@ kernel.")
                     (commit (string-append "coq-stdpp-" version))))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "11m7kqxsbxygk41v2wsi3npdzwin9fcnzc1gn0gq0rd57wnqk83i"))))
+               (base32
+                "1lczybg1jq9drbi8nzrlb0k199x4n07aawjwfzrl3qqc0w8kmvdz"))))
     (build-system gnu-build-system)
     (inputs
      `(("coq" ,coq)))
@@ -609,7 +610,6 @@ kernel.")
          (delete 'configure)
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (setenv "COQLIB" (string-append (assoc-ref outputs "out") "/lib/coq/"))
              (invoke "make"
                      (string-append "COQLIB=" (assoc-ref outputs "out")
                                     "/lib/coq/")
