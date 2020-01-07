@@ -8659,6 +8659,31 @@ dependencies
 @end itemize")
     (license license:bsd-3)))
 
+(define-public ghc-pointedlist
+  (package
+    (name "ghc-pointedlist")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/pointedlist/"
+             "pointedlist-" version ".tar.gz"))
+       (sha256
+        (base32
+         "16xsrzqql7i4z6a3xy07sqnbyqdmcar1jiacla58y4mvkkwb0g3l"))))
+    (build-system haskell-build-system)
+    (home-page
+     "http://hackage.haskell.org/package/pointedlist")
+    (synopsis
+     "Zipper-like comonad which works as a list, tracking a position")
+    (description
+     "A PointedList tracks the position in a non-empty list which works
+similarly to a zipper.  A current item is always required, and therefore
+the list may never be empty.  A circular PointedList wraps around to the
+other end when progressing past the actual edge.")
+    (license license:bsd-3)))
+
 (define-public ghc-polyparse
   (package
     (name "ghc-polyparse")
