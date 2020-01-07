@@ -259,8 +259,8 @@ and driving.")
        ("proj" ,proj)))
     (arguments
      `(#:configure-flags
-       (list (string-append "--with-zlib")
-             (string-append "--with-jpeg")
+       (list "--disable-static"
+             "--with-zlib" "--with-jpeg"
              (string-append "--with-libtiff=" (assoc-ref %build-inputs "libtiff")))))
     (synopsis "Library for handling GeoTIFF (geographic enabled TIFF)")
     (description "libgeotiff is a library on top of libtiff for reading and
