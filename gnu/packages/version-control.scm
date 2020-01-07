@@ -25,6 +25,7 @@
 ;;; Copyright © 2019 Jovany Leandro G.C <bit4bit@riseup.net>
 ;;; Copyright © 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1230,22 +1231,43 @@ control to Git repositories.")
 (define-public mercurial
   (package
     (name "mercurial")
-    (version "5.0.2")
+    (version "5.2.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.mercurial-scm.org/"
                                  "release/mercurial-" version ".tar.gz"))
              (sha256
               (base32
-               "1y60hfc8gh4ha9sw650qs7hndqmvbn0qxpmqwpn4q18z5xwm1f19"))))
+               "1pxkd37b0a1mi2zakk1hi122lgz1ffy2fxdnbs8acwlqpw55bc8q"))))
     (build-system python-build-system)
     (arguments
-     `(;; Restrict to Python 2, as Python 3 would require
-       ;; the argument --c2to3.
-       #:python ,python-2
-       ;; FIXME: Disabled tests because they require the nose unit
-       ;; testing framework: https://nose.readthedocs.org/en/latest/ .
-       #:tests? #f))
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; The following tests are known to fail.
+             (for-each (lambda (file)
+                         (delete-file (string-append "tests/" file)))
+                       '("test-extdiff.t"
+                         "test-hghave.t"
+                         "test-hgwebdir.t"
+                         "test-http-branchmap.t"
+                         "test-logtoprocess.t"
+                         "test-merge-combination.t"
+                         "test-nointerrupt.t"
+                         "test-patchbomb.t"
+                         "test-pull-bundle.t"
+                         "test-push-http.t"
+                         "test-run-tests.t"
+                         "test-serve.t"
+                         "test-subrepo-deep-nested-change.t"
+                         "test-subrepo-recursion.t"
+                         "test-transplant.t"))
+             (invoke "make" "check"))))))
+    ;; The following inputs are only needed to run the tests.
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("unzip" ,unzip)))
     (home-page "https://www.mercurial-scm.org/")
     (synopsis "Decentralized version control system")
     (description
