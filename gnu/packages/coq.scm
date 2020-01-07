@@ -420,7 +420,7 @@ theorems between the two libraries.")
 (define-public coq-bignums
   (package
     (name "coq-bignums")
-    (version "8.9.0")
+    (version "8.10.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -429,7 +429,7 @@ theorems between the two libraries.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "03qz1w2xb2j5p06liz5yyafl0fl9vprcqm6j0iwi7rxwghl00p01"))))
+                "0bpb4flckn4nqxbs3wjiznyx1k7r8k93qdigp3qwmikp2lxvcbw5"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
