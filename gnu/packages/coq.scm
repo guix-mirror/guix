@@ -604,7 +604,7 @@ kernel.")
     (inputs
      `(("coq" ,coq)))
     (arguments
-     `(#:tests? #f ;; the tests are being run automaticlly as part of `make all`
+     `(#:tests? #f ; Tests are executed during build phase.
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
