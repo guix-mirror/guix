@@ -1338,7 +1338,14 @@ delivery.")
              (let ((bash (assoc-ref inputs "bash")))
                (substitute* '("scripts/Configure-eximon")
                  (("#!/bin/sh") (string-append "#!" bash "/bin/sh"))))
-             #t)))
+             #t))
+         (add-before 'build 'build-reproducibly
+           (lambda _
+             ;; The ‘compilation number’ is incremented for every build from the
+             ;; same source tree.  It appears to vary over different (parallel?)
+             ;; builds.  Make it a ‘constant number’ instead.
+             (substitute* "src/version.c"
+               (("#include \"cnumber.h\"") "1")))))
        #:make-flags
        (list "CC=gcc"
              "INSTALL_ARG=-no_chown")
