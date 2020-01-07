@@ -437,7 +437,7 @@ theorems between the two libraries.")
     (inputs
      `(("camlp5" ,camlp5)))
     (arguments
-     `(#:tests? #f; No test target
+     `(#:tests? #f ; No test target.
        #:make-flags
        (list (string-append "COQLIBINSTALL=" (assoc-ref %outputs "out")
                             "/lib/coq/user-contrib"))
