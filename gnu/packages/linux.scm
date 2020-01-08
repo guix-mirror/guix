@@ -1182,9 +1182,6 @@ providing the system administrator with some help in common tasks.")
 utilities.  It provides dmesg and includes tools for working with file systems,
 block devices, UUIDs, TTYs, and many other tools.")
 
-    ;; Hide the package so that end users get the udev-enabled variant below.
-    (properties '((hidden? . #t)))
-
     ;; Note that util-linux doesn't use the same license for all the
     ;; code.  GPLv2+ is the default license for a code without an
     ;; explicitly defined license.
@@ -1197,10 +1194,10 @@ block devices, UUIDs, TTYs, and many other tools.")
 (define-public util-linux+udev
   (package/inherit
    util-linux
+   (name "util-linux-with-udev")
    (inputs
     `(("udev" ,eudev)
-      ,@(package-inputs util-linux)))
-   (properties (alist-delete 'hidden? (package-properties util-linux)))))
+      ,@(package-inputs util-linux)))))
 
 (define-public ddate
   (package
