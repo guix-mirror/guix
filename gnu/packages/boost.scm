@@ -12,6 +12,7 @@
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,21 +47,17 @@
 (define-public boost
   (package
     (name "boost")
-    (version "1.70.0")
+    (version "1.72.0")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
                           (string-map (lambda (x) (if (eq? x #\.) #\_ x)) version)))
-                     (list (string-append "mirror://sourceforge/boost/boost/" version
-                                          "/boost_" version-with-underscores ".tar.bz2")
-                           (string-append "https://dl.bintray.com/boostorg/release/"
-                                          version "/source/boost_"
-                                          version-with-underscores ".tar.bz2"))))
-              (patches
-               (search-patches "boost-dumpversion.patch"))
+                     (string-append "https://dl.bintray.com/boostorg/release/"
+                                    version "/source/boost_"
+                                    version-with-underscores ".tar.bz2")))
               (sha256
                (base32
-                "0y47nc7w0arwgj4x1phadxbvl7wyfcgknbz5kv8lzpl98wsyh2j3"))))
+                "08h7cv61fd0lzb4z50xanfqn0pdgvizjrpd1kcdgj725pisb5jar"))))
     (build-system gnu-build-system)
     (inputs `(("icu4c" ,icu4c)
               ("zlib" ,zlib)))
@@ -74,11 +71,6 @@
      `(#:tests? #f
        #:make-flags
        (list "threading=multi" "link=shared"
-
-             ;; XXX: Disable installation of Boosts modular CMake config scripts
-             ;; which conflicts in 1.70.0 with the ones provided by CMake.
-             ;; See <https://bugs.gnu.org/36721>.
-             "--no-cmake-config"
 
              ;; Set the RUNPATH to $libdir so that the libs find each other.
              (string-append "linkflags=-Wl,-rpath="
@@ -109,9 +101,8 @@
                    (out (assoc-ref outputs "out")))
                (substitute* '("libs/config/configure"
                               "libs/spirit/classic/phoenix/test/runtest.sh"
-                              "tools/build/src/engine/execunix.c"
-                              "tools/build/src/engine/Jambase"
-                              "tools/build/src/engine/jambase.c")
+                              "tools/build/src/engine/execunix.cpp"
+                              "tools/build/src/engine/Jambase")
                  (("/bin/sh") (which "sh")))
 
                (setenv "SHELL" (which "sh"))
