@@ -1487,15 +1487,14 @@ is hereby granted."))))
 (define-public libjpeg-turbo
   (package
     (name "libjpeg-turbo")
-    (version "2.0.3")
+    (version "2.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/libjpeg-turbo/"
                                   version "/libjpeg-turbo-" version ".tar.gz"))
-              (patches (search-patches "libjpeg-turbo-CVE-2019-2201.patch"))
               (sha256
                (base32
-                "1ds16bnj17v6hzd43w8pzijz3imd9am4hw75ir0fxm240m8dwij2"))))
+                "01ill8bgjyk582wipx7sh7gj2nidylpbzvwhx0wkcm6mxx3qbp9k"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("nasm" ,nasm)))
