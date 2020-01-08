@@ -33,6 +33,7 @@
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Evan Straw <evan.straw99@gmail.com>
+;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1421,6 +1422,30 @@ than Python’s urllib2 library.")
 
 (define-public python2-requests
   (package-with-python2 python-requests))
+
+(define-public python-requests_ntlm
+  (package
+    (name "python-requests_ntlm")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "requests_ntlm" version))
+       (sha256
+        (base32
+         "0wgbqzaq9w7bas16b7brdb75f91bh3275fb459093bk1ihpck2ci"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-cryptography" ,python-cryptography)
+       ("python-ntlm-auth" ,python-ntlm-auth)
+       ("python-requests" ,python-requests)))
+    (home-page "https://github.com/requests/requests-ntlm")
+    (synopsis
+     "NTLM authentication support for Requests")
+    (description
+     "This package allows for HTTP NTLM authentication using the requests
+library.")
+    (license license:isc)))
 
 (define-public python-requests-mock
   (package
