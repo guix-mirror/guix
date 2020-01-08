@@ -8860,6 +8860,49 @@ system dependencies.")
 functions for the ghc-persistent package.")
     (license license:expat)))
 
+(define-public ghc-persistent-test
+  (package
+    (name "ghc-persistent-test")
+    (version "2.0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/persistent-test/"
+             "persistent-test-" version ".tar.gz"))
+       (sha256
+        (base32
+         "11aq5cy0n43jamf6mg4sr4300bc2zdbjxsczzxwjkb4hzs0ijsdv"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-blaze-html" ,ghc-blaze-html)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-monad-logger" ,ghc-monad-logger)
+       ("ghc-path-pieces" ,ghc-path-pieces)
+       ("ghc-persistent" ,ghc-persistent)
+       ("ghc-persistent-template" ,ghc-persistent-template)
+       ("ghc-random" ,ghc-random)
+       ("ghc-resourcet" ,ghc-resourcet)
+       ("ghc-transformers-base" ,ghc-transformers-base)
+       ("ghc-unliftio" ,ghc-unliftio)
+       ("ghc-unliftio-core" ,ghc-unliftio-core)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-hspec-expectations" ,ghc-hspec-expectations)
+       ("ghc-hunit" ,ghc-hunit)))
+    (home-page "https://www.yesodweb.com/book/persistent")
+    (synopsis "Tests for the Persistent database library")
+    (description
+     "This is only for use in developing libraries that should conform to
+the persistent interface, not for users of the persistent suite of database
+libraries.")
+    (license license:expat)))
+
 (define-public ghc-pipes
   (package
     (name "ghc-pipes")
