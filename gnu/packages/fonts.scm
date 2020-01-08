@@ -98,7 +98,7 @@ well as other mediums.")
        (sha256
         (base32 "1wavvv86nwsqm5sbmnkv1bprj7l7zdrkxpvjy6w8yag93k6hrlx1"))))
     (build-system font-build-system)
-    (home-page "http://levien.com/type/myfonts/inconsolata.html")
+    (home-page "https://levien.com/type/myfonts/inconsolata.html")
     (synopsis "Monospace font")
     (description "A monospace font, designed for code listings and the like,
 in print.  With attention to detail for high resolution rendering.")
