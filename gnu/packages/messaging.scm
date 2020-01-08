@@ -1435,7 +1435,7 @@ including psyced.")
        #:make-flags (list "install-all")))
     (inputs
      `(("zlib" ,zlib)
-       ("openssl" ,openssl)
+       ("openssl" ,openssl-1.0)
        ("pcre" ,pcre)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
