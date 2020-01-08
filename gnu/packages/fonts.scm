@@ -89,13 +89,14 @@ well as other mediums.")
 (define-public font-inconsolata
   (package
     (name "font-inconsolata")
-    (version "0.80")
-    (source (origin
-              (method url-fetch)
-              (uri "http://www.levien.com/type/myfonts/Inconsolata.otf")
-              (sha256
-               (base32
-                "06js6znbcf7swn8y3b8ki416bz96ay7d3yvddqnvi88lqhbfcq8m"))))
+    (version "3.000")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/googlefonts/Inconsolata/"
+                           "releases/download/v" version "/fonts_otf.zip"))
+       (sha256
+        (base32 "1wavvv86nwsqm5sbmnkv1bprj7l7zdrkxpvjy6w8yag93k6hrlx1"))))
     (build-system font-build-system)
     (home-page "http://levien.com/type/myfonts/inconsolata.html")
     (synopsis "Monospace font")
