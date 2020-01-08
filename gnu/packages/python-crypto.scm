@@ -21,6 +21,7 @@
 ;;; Copyright © 2018 Nam Nguyen <namn@berkeley.edu>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +46,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages check)
   #:use-module (gnu packages crypto)
+  #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages password-utils)
@@ -308,6 +310,31 @@ etc.).  The package is structured to make adding new modules easy.")
          ,@(alist-delete
             "python"
             (package-inputs pycrypto)))))))
+
+(define-public python-kerberos
+  (package
+    (name "python-kerberos")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "kerberos" version))
+       (sha256
+        (base32
+         "19663qxmma0i8bfbjc2iwy5hgq0g4pfb75r023v5dps68zfvffgh"))))
+    (build-system python-build-system)
+    (inputs
+     `(("mit-krb5" ,mit-krb5)))
+    (home-page "https://github.com/apple/ccs-pykerberos")
+    (synopsis
+     "Python Kerberos library used by CalendarServer")
+    (description
+     "This Python package is a high-level wrapper for Kerberos (GSSAPI)
+operations.  The goal is to avoid having to build a module that wraps the
+entire Kerberos.framework, and instead offer a limited set of functions that
+do what is needed for client/server Kerberos authentication based on
+<http://www.ietf.org/rfc/rfc4559.txt>.")
+    (license license:asl2.0)))
 
 (define-public python-keyring
   (package
