@@ -1281,6 +1281,35 @@ package provides a tool to securely sign firmware images for booting by
 MCUboot.")
     (license license:expat)))
 
+(define-public python-ntlm-auth
+  (package
+    (name "python-ntlm-auth")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ntlm-auth" version))
+       (sha256
+        (base32
+         "16mavidki4ma5ip8srqalr19gz4f5yn3cnmmgps1fmgfr24j63rm"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-cryptography" ,python-cryptography)))
+    (home-page "https://github.com/jborean93/ntlm-auth")
+    (synopsis
+     "Calculates NTLM Authentication codes")
+    (description
+     "This library handles the low-level details of NTLM authentication for
+use in authenticating with a service that uses NTLM.  It will create and parse
+the 3 different message types in the order required and produce a base64
+encoded value that can be attached to the HTTP header.
+
+The goal of this library is to offer full NTLM support including signing and
+sealing of messages as well as supporting MIC for message integrity and the
+ability to customise and set limits on the messages sent.  Please see Features
+and Backlog for a list of what is and is not currently supported.")
+    (license license:expat)))
+
 (define-public python-secretstorage
   (package
     (name "python-secretstorage")
