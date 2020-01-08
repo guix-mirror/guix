@@ -23,7 +23,7 @@
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
+;;; Copyright © 2019, 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2019 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 ;;; Copyright © 2019 Hartmt Goebel <h.goebel@crazy-compilers.com>
@@ -54,6 +54,7 @@
   #:use-module (guix build-system waf)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
@@ -4009,3 +4010,33 @@ in the package.")
     ;; (see the file 'COPYING.LGPL'). This allows writing ECI applications
     ;; that are not licensed under GPL.
     (license (list license:gpl2 license:lgpl2.1))))
+
+(define-public libaudec
+  (package
+    (name "libaudec")
+    (version "0.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://git.zrythm.org/git/libaudec")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "0lfydvs92b0hr72z71ci3yi356rjzi162pgms8dphgg18bz8dazv"))))
+   (build-system meson-build-system)
+   (arguments
+    `(#:configure-flags `("-Denable_tests=true -Denable_ffmpeg=true")))
+   (inputs
+    `(("libsamplerate" ,libsamplerate)
+      ("libsndfile" ,libsndfile)
+      ("ffmpeg" ,ffmpeg)))
+   (native-inputs
+     `(("pkg-config", pkg-config)))
+   (synopsis "Library for reading and resampling audio files")
+   (description "libaudec is a wrapper library over ffmpeg, sndfile and
+libsamplerate for reading and resampling audio files, based on Robin Gareus'
+@code{audio_decoder} code.")
+   (home-page "https://git.zrythm.org/cgit/libaudec")
+   (license license:agpl3+)))
