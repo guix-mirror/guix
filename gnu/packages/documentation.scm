@@ -125,7 +125,7 @@ markup) can be customized and extended by the user.")
 (define-public doxygen
   (package
     (name "doxygen")
-    (version "1.8.16")
+    (version "1.8.17")
     (home-page "http://www.doxygen.nl/")
     (source (origin
              (method url-fetch)
@@ -136,8 +136,9 @@ markup) can be customized and extended by the user.")
                                        ".src.tar.gz")))
              (sha256
               (base32
-               "10iwv8bcz5b5cd85gg8pgn0bmyg04n9hs36xn7ggjjnvynv1z67z"))
-             (patches (search-patches "doxygen-test.patch"))))
+               "16dmv0gm1x8rvbm82fmjvi213q8fxqxinm75pcf595flya59ific"))
+             (patches (search-patches "doxygen-test.patch"
+                                      "doxygen-1.8.17-runtests.patch"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -157,13 +158,6 @@ markup) can be customized and extended by the user.")
              '())
        #:test-target "tests"
        #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'remove-git-requirement
-                    (lambda _
-                      ;; TODO: Remove this for > 1.8.16.
-                      (substitute* "cmake/git_watcher.cmake"
-                        (("Git QUIET REQUIRED")
-                         "Git QUIET"))
-                      #t))
                   (add-before 'configure 'patch-sh
                               (lambda* (#:key inputs #:allow-other-keys)
                                 (substitute* "src/portable.cpp"

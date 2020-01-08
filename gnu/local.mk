@@ -814,6 +814,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/docker-use-fewer-modprobes.patch		\
   %D%/packages/patches/dovecot-trees-support-dovecot-2.3.patch	\
   %D%/packages/patches/doxygen-test.patch			\
+  %D%/packages/patches/doxygen-1.8.17-runtests.patch		\
   %D%/packages/patches/dstat-fix-crash-when-specifying-delay.patch	\
   %D%/packages/patches/dstat-skip-devices-without-io.patch	\
   %D%/packages/patches/dvd+rw-tools-add-include.patch 		\

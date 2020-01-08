@@ -52,9 +52,9 @@ diff -u -r doxygen-1.8.7.orig/testing/012/indexpage.xml doxygen-1.8.7/testing/01
      </briefdescription>
      <detaileddescription>
 -      <para>See <ref refid="citelist_1CITEREF_knuth79" kindref="member">[3]</ref> for more info.</para>
--      <para>Oter references with crosreference see <ref refid="citelist_1CITEREF_Be09" kindref="member">[1]</ref> and <ref refid="citelist_1CITEREF_BertholdHeinzVigerske2009" kindref="member">[2]</ref> for more info. </para>
+-      <para>Other references with cross references see <ref refid="citelist_1CITEREF_Be09" kindref="member">[1]</ref> and <ref refid="citelist_1CITEREF_BertholdHeinzVigerske2009" kindref="member">[2]</ref> for more info. </para>
 +      <para>See knuth79 for more info.</para>
-+      <para>Oter references with crosreference see Be09 and BertholdHeinzVigerske2009 for more info. </para>
++      <para>Other references with cross references see Be09 and BertholdHeinzVigerske2009 for more info. </para>
      </detaileddescription>
    </compounddef>
  </doxygen>
