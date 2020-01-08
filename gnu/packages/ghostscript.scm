@@ -90,7 +90,8 @@ Consortium standard (ICC), approved as ISO 15076-1.")
    (native-inputs
     `(("automake" ,automake))) ; For up to date 'config.guess' and 'config.sub'.
    (arguments
-    `(#:phases
+    `(#:configure-flags '("--disable-static")
+      #:phases
       (modify-phases %standard-phases
         (add-after 'unpack 'fix-configure
           (lambda* (#:key inputs native-inputs #:allow-other-keys)
