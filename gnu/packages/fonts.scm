@@ -1140,7 +1140,7 @@ typeface, by mimicking Comic Sans while fixing its most obvious shortcomings.")
 (define-public font-iosevka
   (package
     (name "font-iosevka")
-    (version "2.2.0")
+    (version "2.3.3")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -1148,7 +1148,7 @@ typeface, by mimicking Comic Sans while fixing its most obvious shortcomings.")
                            "/releases/download/v" version
                            "/ttc-iosevka-" version ".zip"))
        (sha256
-        (base32 "14jfv6pkh1w44m89z2fn44kgmmqaf0057lk71advwfbm3q313y0x"))))
+        (base32 "0jkv5rkg5hi0avhwyhcjiqzjslp6zjj77f09vxx2gj9l93byz731"))))
     (build-system font-build-system)
     (home-page "https://be5invis.github.io/Iosevka/")
     (synopsis "Coders' typeface, built from code")
