@@ -200,18 +200,18 @@ backups (called chunks) to allow easy burning to CD/DVD.")
 (define-public libarchive
   (package
     (name "libarchive")
-    (version "3.4.0")
+    (version "3.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (list (string-append "https://libarchive.org/downloads/libarchive-"
-                                 version ".tar.gz")
+                                 version ".tar.xz")
                   (string-append "https://github.com/libarchive/libarchive"
                                  "/releases/download/v" version "/libarchive-"
-                                 version ".tar.gz")))
+                                 version ".tar.xz")))
        (sha256
         (base32
-         "0pl25mmz1b1cnwf35kxmygyy9g7z7hslxbx329a9yx8csh7dahw6"))))
+         "1xs2c3fsss1g2a6yzip98j9bl93pxd3gqwr4ivh2fc6c10py115v"))))
     (build-system gnu-build-system)
     (inputs
      `(("bzip2" ,bzip2)
