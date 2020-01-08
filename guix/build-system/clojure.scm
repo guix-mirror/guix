@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,11 +44,17 @@
 ;; Code:
 
 (define-with-docs %clojure-build-system-modules
-  "Build-side modules imported and used by default."
+  "Build-side modules imported by default."
   `((guix build clojure-build-system)
     (guix build clojure-utils)
     (guix build guile-build-system)
     ,@%ant-build-system-modules))
+
+(define %default-modules
+  ;; Modules in scope in the build-side environment.
+  '((guix build clojure-build-system)
+    (guix build clojure-utils)
+    (guix build utils)))
 
 (define-with-docs %default-clojure
   "The default Clojure package."
@@ -133,15 +140,14 @@
                         (test-include `',%test-include)
                         (test-exclude `',%test-exclude)
 
-                        (phases '(@ (guix build clojure-build-system)
-                                    %standard-phases))
+                        (phases '%standard-phases)
                         (outputs '("out"))
                         (search-paths '())
                         (system (%current-system))
                         (guile #f)
 
                         (imported-modules %clojure-build-system-modules)
-                        (modules %clojure-build-system-modules))
+                        (modules %default-modules))
   "Build SOURCE with INPUTS."
   (let ((builder `(begin
                     (use-modules ,@modules)
