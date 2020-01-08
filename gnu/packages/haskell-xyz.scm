@@ -8830,28 +8830,30 @@ system dependencies.")
 (define-public ghc-persistent-template
   (package
     (name "ghc-persistent-template")
-    (version "2.6.0")
+    (version "2.8.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://hackage.haskell.org/package/"
-                           "persistent-template-" version "/"
-                           "persistent-template-" version ".tar.gz"))
+       (uri (string-append
+             "https://hackage.haskell.org/package/persistent-template/"
+             "persistent-template-" version ".tar.gz"))
        (sha256
         (base32
-         "0wr1z2nfrl6jv1lprxb0d2jw4izqfcbcwvkdrhryzg95gjz8ryjv"))))
+         "16yjrl0gh4jbs4skr7iv6a55lny59bqhd6hjmvch1cl9j5d0c0g3"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-persistent" ,ghc-persistent)
-              ("ghc-monad-control" ,ghc-monad-control)
-              ("ghc-aeson" ,ghc-aeson)
-              ("ghc-aeson-compat" ,ghc-aeson-compat)
-              ("ghc-monad-logger" ,ghc-monad-logger)
-              ("ghc-unordered-containers" ,ghc-unordered-containers)
-              ("ghc-tagged" ,ghc-tagged)
-              ("ghc-path-pieces" ,ghc-path-pieces)
-              ("ghc-http-api-data" ,ghc-http-api-data)))
-    (native-inputs `(("ghc-hspec" ,ghc-hspec)
-                     ("ghc-quickcheck" ,ghc-quickcheck)))
+    (inputs
+     `(("ghc-persistent" ,ghc-persistent)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-http-api-data" ,ghc-http-api-data)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-monad-logger" ,ghc-monad-logger)
+       ("ghc-path-pieces" ,ghc-path-pieces)
+       ("ghc-th-lift-instances" ,ghc-th-lift-instances)
+       ("ghc-unordered-containers"
+        ,ghc-unordered-containers)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
     (home-page "https://www.yesodweb.com/book/persistent")
     (synopsis "Type-safe, non-relational, multi-backend persistence")
     (description "This Haskell package provides interfaces and helper
