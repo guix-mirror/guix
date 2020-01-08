@@ -14869,7 +14869,7 @@ mutations from scRNA-Seq data.")
 (define-public tabixpp
   (package
    (name "tabixpp")
-   (version "1.0.0")
+   (version "1.1.0")
    (source (origin
      (method git-fetch)
      (uri (git-reference
@@ -14877,7 +14877,11 @@ mutations from scRNA-Seq data.")
            (commit (string-append "v" version))))
      (file-name (git-file-name name version))
      (sha256
-      (base32 "08vx6nsipk971cyr8z53rnzwkvlld63kcn1fw0pwddynz91xfny8"))))
+      (base32 "1k2a3vbq96ic4lw72iwp5s3mwwc4xhdffjj584yn6l9637q9j1yd"))
+     (modules '((guix build utils)))
+     (snippet
+      `(begin
+         (delete-file-recursively "htslib") #t))))
    (build-system gnu-build-system)
    (inputs
     `(("htslib" ,htslib)
@@ -14893,6 +14897,7 @@ mutations from scRNA-Seq data.")
             (let ((htslib-ref (assoc-ref inputs "htslib")))
               (invoke "make"
                       (string-append "HTS_LIB=" htslib-ref "/lib/libhts.a")
+                      (string-append "INCLUDES= -I" htslib-ref "/include/htslib")
                       "HTS_HEADERS="    ; No need to check for headers here.
                       (string-append "LIBPATH=-L. -L" htslib-ref "/include")))))
         (replace 'install
