@@ -1446,12 +1446,12 @@ treat it as part of their software base when porting.")
     (arguments
      '(#:configure-flags '("--disable-static")))
     (inputs
-      `(("gettext" ,gettext-minimal)
-        ("libxt" ,libxt)
+      `(("libxt" ,libxt)
         ("xorgproto" ,xorgproto)
         ("libxext" ,libxext)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XPM library")
     (description "XPM (X Pixmap) image file format library.")
