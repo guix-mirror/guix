@@ -7937,6 +7937,36 @@ class, and a lazy number type for non-negative numbers (a generalization
 of Peano numbers).")
     (license license:gpl3+)))
 
+(define-public ghc-nonce
+  (package
+    (name "ghc-nonce")
+    (version "1.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/nonce/"
+             "nonce-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1q9ph0aq51mvdvydnriqd12sfin36pfb8f588zgac1ybn8r64ksb"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-entropy" ,ghc-entropy)
+       ("ghc-unliftio" ,ghc-unliftio)
+       ("ghc-unliftio-core" ,ghc-unliftio-core)))
+    (home-page "https://github.com/prowdsponsor/nonce")
+    (synopsis "Generate cryptographic nonces in Haskell")
+    (description
+     "A nonce is an arbitrary number used only once in a cryptographic
+communication.  This package contain helper functions for generating nonces.
+There are many kinds of nonces used in different situations.  It's not
+guaranteed that by using the nonces from this package you won't have any
+security issues.  Please make sure that the nonces generated via this
+package are usable on your design.")
+    (license license:bsd-3)))
+
 (define-public ghc-numeric-extras
   (package
     (name "ghc-numeric-extras")
