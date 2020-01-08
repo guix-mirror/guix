@@ -58,6 +58,8 @@
             (sha256 (base32
                      "083xisy6z01zhm7p7rgk4bx9d6zlr8l20qkfv1g29ylnhgwzvij8"))))
    (build-system gnu-build-system)
+   (arguments
+    `(#:configure-flags '("--disable-static")))
    (inputs `(("libjpeg" ,libjpeg)
              ("libtiff" ,libtiff)
              ("zlib" ,zlib)))
