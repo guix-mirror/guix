@@ -699,7 +699,7 @@ BLAKE.")
 (define-public rhash
   (package
     (name "rhash")
-    (version "1.3.8")
+    (version "1.3.9")
     (source
      (origin
        (method git-fetch)
@@ -709,7 +709,7 @@ BLAKE.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0i00wl63hn80g0s9gdi772gchbghwgkvn4nbb5227y2wwy30yyi2"))))
+         "06i49x1l21h2q7pfnf4crbmjyg8b9ad0qs10ywyyn5sjpi0c21wq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -724,6 +724,11 @@ BLAKE.")
            (lambda* (#:key outputs #:allow-other-keys)
              (invoke "./configure"
                      (string-append "--prefix=" (assoc-ref outputs "out")))))
+         (add-before 'check 'patch-/bin/sh
+           (lambda _
+             (substitute* "Makefile"
+               (("/bin/sh") (which "sh")))
+             #t))
          (add-after 'install 'install-library-extras
            (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke
