@@ -24,7 +24,7 @@
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Vasile Dumitrascu <va511e@yahoo.com>
@@ -1498,14 +1498,14 @@ that block port 22.")
 (define-public iperf
   (package
     (name "iperf")
-    (version "3.1.7")
+    (version "3.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://downloads.es.net/pub/iperf"
                                   "/iperf-" version ".tar.gz"))
               (sha256
                 (base32
-                 "0kvk8d0a3dcxc8fisyprbn01y8akxj4sx8ld5dh508p9dx077vx4"))))
+                 "033is7b5grfbiil98jxlz4ixp9shm44x6hy8flpsyz1i4h108inq"))))
     (build-system gnu-build-system)
     (synopsis "TCP, UDP and SCTP bandwidth measurement tool")
     (description
