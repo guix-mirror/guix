@@ -907,6 +907,45 @@ stand for certain ASCII character sequences, i.e. → instead of @code{->},
 ∀ instead of @code{forall} and many others.")
     (license license:bsd-3)))
 
+(define-public ghc-basic-prelude
+  (package
+    (name "ghc-basic-prelude")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/basic-prelude/"
+             "basic-prelude-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0yckmnvm6i4vw0mykj4fzl4ldsf67v8d2h0vp1bakyj84n4myx8h"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-hashable" ,ghc-hashable)
+       ("ghc-unordered-containers"
+        ,ghc-unordered-containers)
+       ("ghc-vector" ,ghc-vector)))
+    (home-page "https://github.com/snoyberg/basic-prelude#readme")
+    (synopsis "Enhanced core prelude; a common foundation for alternate preludes")
+    (description
+     "The premise of basic-prelude is that there are a lot of very commonly
+desired features missing from the standard Prelude, such as commonly used
+operators (<$> and >=>, for instance) and imports for common datatypes
+(e.g., ByteString and Vector).  At the same time, there are lots of other
+components which are more debatable, such as providing polymorphic versions
+of common functions.
+
+So basic-prelude is intended to give a common foundation for a number of
+alternate preludes.  The package provides two modules: CorePrelude provides
+the common ground for other preludes to build on top of, while BasicPrelude
+exports CorePrelude together with commonly used list functions to provide a
+drop-in replacement for the standard Prelude.
+
+Users wishing to have an improved Prelude can use BasicPrelude.  Developers
+wishing to create a new prelude should use CorePrelude.")
+    (license license:expat)))
+
 (define-public ghc-bifunctors
   (package
     (name "ghc-bifunctors")
