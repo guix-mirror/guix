@@ -68,7 +68,7 @@
 (define-public font-ibm-plex
   (package
     (name "font-ibm-plex")
-    (version "2.0.0")
+    (version "4.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -76,7 +76,7 @@
                     "v" version "/OpenType.zip"))
               (sha256
                (base32
-                "1lv65z3qnqgh2w36daf5wyz0ma9rg1qj9s9lzlnva8l7q3h8c9b8"))))
+                "17bd84ic7z9hkcjy4bwnh4z51bnkh2vrjzwvs9g6lwzmxjswa5b6"))))
     (build-system font-build-system)
     (home-page "https://github.com/IBM/plex")
     (synopsis "IBM Plex typeface")
