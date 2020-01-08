@@ -13,24 +13,6 @@ casted.
  }
  
  /*
-@@ -161,7 +161,7 @@ bool UT_JPEG_getDimensions(const UT_ByteBuf* pBB, UT_sint32& iImageWidth,
- 	/* set the data source */
- 	_JPEG_ByteBufSrc (&cinfo, pBB);
- 
--	jpeg_read_header(&cinfo, TRUE);
-+	jpeg_read_header(&cinfo, (boolean)TRUE);
- 	jpeg_start_decompress(&cinfo);
-     iImageWidth = cinfo.output_width;
-     iImageHeight = cinfo.output_height;
-@@ -189,7 +189,7 @@ bool UT_JPEG_getRGBData(const UT_ByteBuf* pBB, UT_Byte* pDest, UT_sint32 iDestRo
- 	/* set the data source */
- 	_JPEG_ByteBufSrc (&cinfo, pBB);
- 
--	jpeg_read_header(&cinfo, TRUE);
-+	jpeg_read_header(&cinfo, (boolean)TRUE);
- 	jpeg_start_decompress(&cinfo);
-     
- 	int row_stride = cinfo.output_width * cinfo.output_components;
 
 
 In the following file, we also need to reverse header include order: JPEG needs

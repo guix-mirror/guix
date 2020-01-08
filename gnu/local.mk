@@ -17,7 +17,7 @@
 # Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 # Copyright © 2017, 2018, 2019 Gábor Boskovits <boskovits@gmail.com>
 # Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
-# Copyright © 2018, 2019 Oleg Pykhalov <go.wigust@gmail.com>
+# Copyright © 2018, 2019, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 # Copyright © 2018 Stefan Stefanović <stefanx2ovic@gmail.com>
 # Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 # Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
@@ -694,7 +694,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/a2ps-CVE-2015-8107.patch	\
   %D%/packages/patches/abcl-fix-build-xml.patch	\
   %D%/packages/patches/abiword-explictly-cast-bools.patch	\
-  %D%/packages/patches/abiword-black-drawing-with-gtk322.patch	\
   %D%/packages/patches/adb-add-libraries.patch			\
   %D%/packages/patches/aegis-constness-error.patch         	\
   %D%/packages/patches/aegis-perl-tempdir1.patch           	\
