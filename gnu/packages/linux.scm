@@ -15,7 +15,7 @@
 ;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
@@ -1182,11 +1182,25 @@ providing the system administrator with some help in common tasks.")
 utilities.  It provides dmesg and includes tools for working with file systems,
 block devices, UUIDs, TTYs, and many other tools.")
 
+    ;; Hide the package so that end users get the udev-enabled variant below.
+    (properties '((hidden? . #t)))
+
     ;; Note that util-linux doesn't use the same license for all the
     ;; code.  GPLv2+ is the default license for a code without an
     ;; explicitly defined license.
     (license (list license:gpl3+ license:gpl2+ license:gpl2 license:lgpl2.0+
                    license:bsd-4 license:public-domain))))
+
+;; util-linux optionally supports udev, which allows lsblk to read file system
+;; metadata without special privileges.  Add it as a separate package to avoid
+;; a circular dependency, and to keep the size small.
+(define-public util-linux+udev
+  (package/inherit
+   util-linux
+   (inputs
+    `(("udev" ,eudev)
+      ,@(package-inputs util-linux)))
+   (properties (alist-delete 'hidden? (package-properties util-linux)))))
 
 (define-public ddate
   (package
