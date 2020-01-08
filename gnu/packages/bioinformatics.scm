@@ -14942,11 +14942,10 @@ some of the details of opening and jumping in tabix-indexed files.")
    (license license:expat)))
 
 (define-public smithwaterman
-  ;; TODO: Upgrading smithwaterman breaks FreeBayes.
-  (let ((commit "203218b47d45ac56ef234716f1bd4c741b289be1"))
+  (let ((commit "2610e259611ae4cde8f03c72499d28f03f6d38a7"))
     (package
       (name "smithwaterman")
-      (version (string-append "0-1." (string-take commit 7)))
+      (version (git-version "0.0.0" "2" commit))
       (source (origin
         (method git-fetch)
         (uri (git-reference
@@ -14954,17 +14953,21 @@ some of the details of opening and jumping in tabix-indexed files.")
               (commit commit)))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "0z9xsmsv452kgdfbbwydyc6nymg3fwyv8zswls8qjin3r4ia4415"))))
+         (base32 "0i9d8zrxpiracw3mxzd9siybpy62p06rqz9mc2w93arajgbk45bs"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f ; There are no tests to run.
+         #:make-flags '("libsw.a" "all")
          #:phases
          (modify-phases %standard-phases
            (delete 'configure) ; There is no configure phase.
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
-               (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
-                 (install-file "smithwaterman" bin))
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (lib (string-append out "/lib")))
+                 (install-file "smithwaterman" bin)
+                 (install-file "libsw.a" lib))
                #t)))))
       (home-page "https://github.com/ekg/smithwaterman")
       (synopsis "Implementation of the Smith-Waterman algorithm")
