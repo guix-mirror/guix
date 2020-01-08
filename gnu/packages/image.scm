@@ -19,7 +19,7 @@
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
@@ -76,6 +76,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system meson)
@@ -1007,6 +1008,7 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
       (uri (string-append "https://github.com/ukoethe/vigra/releases/download/"
                           "Version-" (string-join (string-split version #\.) "-")
                           "/vigra-" version "-src.tar.gz"))
+      (patches (search-patches "vigra-python-compat.patch"))
       (sha256 (base32
                 "1bqs8vx5i1bzamvv563i24gx2xxdidqyxh9iaj46mbznhc84wmm5"))))
    (build-system cmake-build-system)
@@ -1021,12 +1023,12 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
       ("libpng" ,libpng)
       ("libtiff" ,libtiff)
       ("openexr" ,openexr)
-      ("python" ,python-2) ; print syntax
-      ("python2-numpy" ,python2-numpy)
+      ("python" ,python)
+      ("python-numpy" ,python-numpy)
       ("zlib" ,zlib)))
    (native-inputs
     `(("doxygen" ,doxygen)
-      ("python2-nose" ,python2-nose)
+      ("python-nose" ,python-nose)
       ("sphinx" ,python-sphinx)))
    (arguments
     `(#:test-target "check"
@@ -1046,7 +1048,9 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
         (list "-Wno-dev" ; suppress developer mode with lots of warnings
               (string-append "-DVIGRANUMPY_INSTALL_DIR="
                              (assoc-ref %outputs "out")
-                             "/lib/python2.7/site-packages")
+                             "/lib/python"
+                             ,(version-major+minor (package-version python))
+                             "/site-packages")
               ;; OpenEXR is not enabled by default.
               "-DWITH_OPENEXR=1"
               ;; Fix rounding error on 32-bit machines
