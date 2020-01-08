@@ -50,7 +50,7 @@
 (define-public mit-krb5
   (package
     (name "mit-krb5")
-    (version "1.17")
+    (version "1.17.1")
     (source (origin
               (method url-fetch)
               (uri (list
@@ -62,7 +62,7 @@
                                    "/krb5-" version ".tar.gz")))
               (sha256
                (base32
-                "1xc1ly09697b7g2vngvx76szjqy9769kpgn27lnp1r9xln224vjs"))))
+                "10dimzcdzk9s79291qb4s3kwmbpb8bvppa6k6873wxxa5vndf1ip"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
