@@ -72,6 +72,7 @@
 ;;; Copyright © 2020 Sebastian Schott <sschott@mailbox.org>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Josh Marshall <joshua.r.marshall.1991@gmail.com>
+;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -112,6 +113,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages graphics)
+  #:use-module (gnu packages gsasl)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
@@ -5048,6 +5050,35 @@ localized only in frequency instead of in time and frequency.")
 
 (define-public python2-pywavelets
   (package-with-python2 python-pywavelets))
+
+(define-public python-pywinrm
+  (package
+    (name "python-pywinrm")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pywinrm" version))
+       (sha256
+        (base32
+         "10gabhhg3rgacd5ahmi2r128z99fzbrbx6mz1nnq0dxmhmn5rpjf"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-requests_ntlm" ,python-requests_ntlm)
+       ("python-xmltodict" ,python-xmltodict)
+       ("python-kerberos" ,python-kerberos)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/diyan/pywinrm/")
+    (synopsis
+     "Python library for Windows Remote Management (WinRM)")
+    (description
+     "pywinrm is a Python client for the Windows Remote Management (WinRM)
+service.  It allows you to invoke commands on target Windows machines from
+any machine that can run Python.")
+    (license license:expat)))
 
 (define-public python-xcffib
   (package
