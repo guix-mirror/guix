@@ -63,6 +63,7 @@
       ;; As recommended by github.com/libgd/libgd/issues/278 to fix rounding
       ;; issues on aarch64 and other architectures.
      `(#:make-flags '("CFLAGS=-ffp-contract=off")
+       #:configure-flags '("--disable-static")
        #:phases
        (modify-phases %standard-phases
          ;; This test is known to fail on i686-linux:
