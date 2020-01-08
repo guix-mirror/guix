@@ -14,7 +14,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Toni Reina <areina@riseup.net>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
@@ -209,7 +209,7 @@ sans-serif designed for on-screen reading.  It is used by GNOME@tie{}3.")
 (define-public font-lato
   (package
     (name "font-lato")
-    (version "2.010")                   ; also update description
+    (version "2.015")                   ; also update description
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append "https://www.latofonts.com/download/Lato2OFL.zip"))
