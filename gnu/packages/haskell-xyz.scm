@@ -9261,6 +9261,36 @@ Typical applications of Priority Search Queues include:
 @end itemize")
     (license license:bsd-3)))
 
+(define-public ghc-pwstore-fast
+  (package
+    (name "ghc-pwstore-fast")
+    (version "2.4.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/pwstore-fast/"
+             "pwstore-fast-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1cpvlwzg3qznhygrr78f75p65mnljd9v5cvnagfxjqppnrkay6bj"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-cryptohash" ,ghc-cryptohash)
+       ("ghc-random" ,ghc-random)
+       ("ghc-byteable" ,ghc-byteable)))
+    (home-page "https://github.com/PeterScott/pwstore")
+    (synopsis "Secure password storage")
+    (description
+     "To store passwords securely, they should be salted, then hashed with
+a slow hash function.  This library uses PBKDF1-SHA256, and handles all the
+details.  It uses the cryptohash package for speed; if you need a pure
+Haskell library, pwstore-purehaskell has the exact same API, but uses only
+pure Haskell.  It is about 25 times slower than this package, but still quite
+usable.")
+    (license license:bsd-3)))
+
 (define-public ghc-random
   (package
     (name "ghc-random")
