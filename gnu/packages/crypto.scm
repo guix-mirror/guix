@@ -702,13 +702,14 @@ BLAKE.")
     (version "1.3.8")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/rhash/RHash/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rhash/RHash")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0k60ywyhwqwqxa2q2l85vwgf884hcgy31nxir3dqgz7ymib6llxy"))))
+         "0i00wl63hn80g0s9gdi772gchbghwgkvn4nbb5227y2wwy30yyi2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
