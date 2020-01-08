@@ -1431,7 +1431,7 @@ treat it as part of their software base when porting.")
 (define-public libxpm
   (package
     (name "libxpm")
-    (version "3.5.12")
+    (version "3.5.13")
     (source
       (origin
         (method url-fetch)
@@ -1441,7 +1441,7 @@ treat it as part of their software base when porting.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1v5xaiw4zlhxspvx76y3hq4wpxv7mpj6parqnwdqvpj8vbinsspx"))))
+            "09dc6nwlb2122h02vl64k9x56mxnyqz2gwpga0abfv4bb1bxmlcw"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
