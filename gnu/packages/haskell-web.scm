@@ -752,6 +752,41 @@ Haskell.")
 documents.")
     (license license:bsd-3)))
 
+(define-public ghc-html-conduit
+  (package
+    (name "ghc-html-conduit")
+    (version "1.3.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/html-conduit/"
+             "html-conduit-" version ".tar.gz"))
+       (sha256
+        (base32
+         "196c8zcnjp1pc5qvqxd8arx3xkw0a90rvg9mmiw2l4zwnx65709n"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-resourcet" ,ghc-resourcet)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-xml-conduit" ,ghc-xml-conduit)
+       ("ghc-xml-types" ,ghc-xml-types)
+       ("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-conduit-extra" ,ghc-conduit-extra)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-hunit" ,ghc-hunit)))
+    (home-page "https://github.com/snoyberg/xml")
+    (synopsis "Parse HTML documents using xml-conduit datatypes")
+    (description
+     "This package provides a parser for HTML documents that uses
+tagstream-conduit.  It automatically balances mismatched tags, so that
+there shouldn't be any parse failures.  It does not handle a full HTML
+document rendering, such as adding missing html and head tags.  Note that,
+since version 1.3.1, it uses an inlined copy of tagstream-conduit with
+entity decoding bugfixes applied.")
+    (license license:expat)))
+
 (define-public ghc-blaze-html
   (package
     (name "ghc-blaze-html")
