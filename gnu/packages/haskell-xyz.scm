@@ -8795,30 +8795,40 @@ way.")
 (define-public ghc-persistent-sqlite
   (package
     (name "ghc-persistent-sqlite")
-    (version "2.9.3")
+    (version "2.10.5.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://hackage.haskell.org/package/"
-                           "persistent-sqlite-" version "/"
-                           "persistent-sqlite-" version ".tar.gz"))
+       (uri (string-append
+             "https://hackage.haskell.org/package/persistent-sqlite/"
+             "persistent-sqlite-" version ".tar.gz"))
        (sha256
         (base32
-         "13wbn88ixv4d4dfjl1gabm1q60fbcnygbmixz57pi3z84drrynwq"))))
+         "0agag3cgivl6mk38pqzr0qw5lxps9p2bgdwvi5658l46hs7bixxn"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-persistent" ,ghc-persistent)
-              ("ghc-unliftio-core" ,ghc-unliftio-core)
-              ("ghc-aeson" ,ghc-aeson)
-              ("ghc-conduit" ,ghc-conduit)
-              ("ghc-monad-logger" ,ghc-monad-logger)
-              ("ghc-microlens-th" ,ghc-microlens-th)
-              ("ghc-resourcet" ,ghc-resourcet)
-              ("ghc-old-locale" ,ghc-old-locale)
-              ("ghc-resource-pool" ,ghc-resource-pool)
-              ("ghc-unordered-containers" ,ghc-unordered-containers)))
-    (native-inputs `(("ghc-hspec" ,ghc-hspec)
-                     ("ghc-persistent-template" ,ghc-persistent-template)
-                     ("ghc-temporary" ,ghc-temporary)))
+    (inputs
+     `(("ghc-persistent" ,ghc-persistent)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-microlens-th" ,ghc-microlens-th)
+       ("ghc-monad-logger" ,ghc-monad-logger)
+       ("ghc-resource-pool" ,ghc-resource-pool)
+       ("ghc-resourcet" ,ghc-resourcet)
+       ("ghc-unliftio-core" ,ghc-unliftio-core)
+       ("ghc-unordered-containers"
+        ,ghc-unordered-containers)))
+    (native-inputs
+     `(("ghc-persistent-template"
+        ,ghc-persistent-template)
+       ("ghc-persistent-test" ,ghc-persistent-test)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-fast-logger" ,ghc-fast-logger)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-system-fileio" ,ghc-system-fileio)
+       ("ghc-system-filepath" ,ghc-system-filepath)
+       ("ghc-temporary" ,ghc-temporary)))
     (home-page
      "https://www.yesodweb.com/book/persistent")
     (synopsis "Backend for the persistent library using sqlite3")
