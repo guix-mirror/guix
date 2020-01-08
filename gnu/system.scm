@@ -565,7 +565,7 @@ of PROVENANCE-SERVICE-TYPE to its services."
   ;; required for basic administrator tasks.
   (cons* procps psmisc which less zile nano
          pciutils usbutils
-         util-linux
+         util-linux+udev
          inetutils isc-dhcp
          (@ (gnu packages admin) shadow)          ;for 'passwd'
 
