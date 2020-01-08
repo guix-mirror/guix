@@ -403,6 +403,8 @@ X11-system or any other graphical user interface.")
        (sha256
         (base32 "0gbxyip4wdibirdg2pvzayzyy927vxyd6dfyfiflx8zg88qzn8v8"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (inputs
      `(("zlib" ,zlib)
        ("expat" ,expat)))
