@@ -17847,13 +17847,13 @@ processes for Emacs")
              #t))
          (add-after 'install 'install-data
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((images (string-append (assoc-ref outputs "out")
-                                          "/share/" ,name "/images")))
+             (let ((out (assoc-ref outputs "out")))
                (with-directory-excursion "../.." ;treemacs root
-                 (copy-recursively "icons/default" images)
-                 (copy-recursively "src/scripts"
-                                   (string-append (assoc-ref outputs "out")
-                                                  "/share/" ,name "/scripts"))
+                 (copy-recursively "icons/default"
+                  (string-append out "/share/" ,name "/images"))
+                 (copy-recursively
+                  "src/scripts"
+                  (string-append out "/share/" ,name "/scripts"))
                  #t)))))))
     (home-page "https://github.com/Alexander-Miller/treemacs")
     (synopsis "Emacs tree style file explorer")
