@@ -79,7 +79,7 @@ valid."
   (let ((source (getcwd))
         (target (source-directory out name))
         (system-path (string-append out %system-install-prefix)))
-    (copy-recursively source target)
+    (copy-recursively source target #:keep-mtime? #t)
     (mkdir-p system-path)
     (for-each
      (lambda (file)
