@@ -14682,7 +14682,7 @@ scroll up to read the function name and then scroll down to original position.")
 (define-public emacs-git-auto-commit-mode
   (package
     (name "emacs-git-auto-commit-mode")
-    (version "4.4.0")
+    (version "4.5.0")
     (source
      (origin
        (method git-fetch)
@@ -14691,7 +14691,7 @@ scroll up to read the function name and then scroll down to original position.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0psmr7749nzxln4b500sl3vrf24x3qijp12ir0i5z4x25k72hrlh"))))
+        (base32 "1w3v9pmlmdxl4pglsb6j0igp13lbzg5bhbr1rv2vll93m6zxmyma"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/ryuslash/git-auto-commit-mode")
     (synopsis "Emacs Minor mode to automatically commit and push")
