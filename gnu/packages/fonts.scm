@@ -352,14 +352,14 @@ Biolinum is available in both Regular and Bold weights.")
 (define-public font-terminus
   (package
     (name "font-terminus")
-    (version "4.47")
+    (version "4.48")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/terminus-font/terminus-font-"
                            version "/terminus-font-" version ".tar.gz"))
        (sha256
-        (base32 "15qjcpalcxjiwsjgjg5k88vkwp56cs2nnx4ghya6mqp4i1c206qg"))))
+        (base32 "1bwlkj39rqbyq57v5yssayav6hzv1n11b9ml2s0dpiyfsn6rqy9l"))))
     (build-system gnu-build-system)
     (outputs (list "out" "pcf-8bit"))
     (arguments
