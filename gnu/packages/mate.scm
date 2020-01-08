@@ -301,15 +301,14 @@ the MATE desktop environment.")
 (define-public mate-terminal
   (package
     (name "mate-terminal")
-    (version "1.22.0")
+    (version "1.23.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            "mate-terminal-" version ".tar.xz"))
        (sha256
-        (base32
-         "16r492s34la2fs2cj1xr0r93wkjglwy77jyrc66i2ahs9gnivj4g"))))
+        (base32 "1jkw8i2j45p80i7wmm0j0gkbd44nr2qj8bf79jrh5z8kn01b1ibd"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
