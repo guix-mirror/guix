@@ -13384,6 +13384,36 @@ reference transcripts provided in a annotation file (also in GTF/GFF3 format).
         license:expat                   ;license for gffcompare
         license:artistic2.0)))))        ;license for gclib
 
+(define-public intervaltree
+  (let ((commit "b90527f9e6d51cd36ecbb50429e4524d3a418ea5"))
+    (package
+      (name "intervaltree")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/ekg/intervaltree/")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32 "0rgv6q5fl4x5d74n6p5wvdna6zmbdbqpb4jqqh6vq3670gn08xad"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:tests? #f ; No tests.
+         #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                            "DESTDIR=\"\"")
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)))) ; There is no configure phase.
+      (home-page "https://github.com/ekg/intervaltree")
+      (synopsis "Minimal C++ interval tree implementation")
+      (description "An interval tree can be used to efficiently find a set of
+numeric intervals overlapping or containing another interval.  This library
+provides a basic implementation of an interval tree using C++ templates,
+allowing the insertion of arbitrary types into the tree.")
+      (license license:expat))))
+
 (define-public python-intervaltree
   (package
     (name "python-intervaltree")
@@ -15086,15 +15116,7 @@ library automatically handles index file generation and use.")
          ("fsom-src" ,(package-source fsom))
          ("filevercmp-src" ,(package-source filevercmp))
          ("fastahack-src" ,(package-source fastahack))
-         ("intervaltree-src"
-          ,(origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://github.com/ekg/intervaltree/")
-                   (commit "dbb4c513d1ad3baac516fc1484c995daf9b42838")))
-             (file-name "intervaltree-src-checkout")
-             (sha256
-              (base32 "1fy5qbj4bg8d2bjysvaa9wfnqn2rj2sk5yra2h4l5pzvy53f23fj"))))))
+         ("intervaltree-src" ,(package-source intervaltree))))
       (arguments
        `(#:tests? #f ; no tests
          #:phases
@@ -15181,15 +15203,7 @@ manipulations on VCF files.")
          ("fsom-src" ,(package-source fsom))
          ("filevercmp-src" ,(package-source filevercmp))
          ("fastahack-src" ,(package-source fastahack))
-         ("intervaltree-src"
-          ,(origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://github.com/ekg/intervaltree/")
-                   (commit "dbb4c513d1ad3baac516fc1484c995daf9b42838")))
-             (file-name "intervaltree-src-checkout")
-             (sha256
-              (base32 "1fy5qbj4bg8d2bjysvaa9wfnqn2rj2sk5yra2h4l5pzvy53f23fj"))))
+         ("intervaltree-src" ,(package-source intervaltree))
          ;; These submodules are needed to run the tests.
          ("bash-tap-src" ,(package-source bash-tap))
          ("test-simple-bash-src"
