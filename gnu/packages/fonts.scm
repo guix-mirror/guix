@@ -781,7 +781,7 @@ It contains the following fonts and styles:
 (define-public font-fantasque-sans
   (package
     (name "font-fantasque-sans")
-    (version "1.7.2")
+    (version "1.8.0")
     (source
      (origin
        (method git-fetch)
@@ -790,26 +790,27 @@ It contains the following fonts and styles:
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1gjranq7qf20rfxnpxsckv1hl35nzsal0rjs475nhfbpqy5wmly6"))))
+        (base32 "17l18488qyl9gdj80r8pcym3gp3jkgsdikwalnrp5rgvwidqx507"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ttfautohint" ,ttfautohint)
        ("woff-tools" ,woff-tools)
        ("fontforge" ,fontforge)
        ("woff2" ,woff2)
-       ("ttf2eot" ,ttf2eot)
        ("zip" ,zip)))
     (arguments
      `(#:tests? #f                 ;test target intended for visual inspection
        #:phases (modify-phases %standard-phases
                   (delete 'configure)   ;no configuration
-                  (add-before 'build 'xrange->range
-                    ;; Rather than use a python2 fontforge, just replace the
-                    ;; offending function.
+                  (add-before 'build 'support-python@3
+                    ;; Rather than use a Python 2 fontforge, replace Python-2-
+                    ;; specific code with a passable Python 3 equivalent.
                     (lambda _
                       (substitute* "Scripts/fontbuilder.py"
                         (("xrange") "range"))
+                      (substitute* "Scripts/features.py"
+                        (("f\\.write\\(fea_code\\)")
+                         "f.write(str.encode(fea_code))"))
                       #t))
                   (replace 'install
                     ;; 'make install' wants to install to ~/.fonts, install to
