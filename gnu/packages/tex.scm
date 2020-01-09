@@ -314,7 +314,8 @@ copied to their outputs; otherwise the TEXLIVE-BUILD-SYSTEM is used."
    (arguments
     `(#:out-of-source? #t
       #:configure-flags
-       `("--disable-native-texlive-build"
+       '("--disable-static"
+         "--disable-native-texlive-build"
          "--with-system-cairo"
          "--with-system-freetype2"
          "--with-system-gd"
