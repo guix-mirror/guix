@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Todor Kondić <tk.code@protonmail.com>
+;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,7 +40,7 @@
 (define-public tigervnc-client
   (package
     (name "tigervnc-client")
-    (version "1.9.0")
+    (version "1.10.1")
     (source
      (origin
        (method git-fetch)
@@ -50,7 +51,7 @@
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0b47fg3741qs3zdpl2zr0s6jz46dypp2j6gqrappbzm3ywnnmm1x"))))
+         "001n189d2f3psn7nxgl8188ml6f7jbk26cxn2835y3mnlk5lmhgr"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; Tests that do exists are not automated.
@@ -97,7 +98,7 @@ application which is needed to connect to VNC servers.")
   (package
     (inherit xorg-server)
     (name "tigervnc-server")
-    (version "1.9.0")
+    (version "1.10.1")
     (native-inputs
      `(("tigervnc-src" ,(origin
                           (method git-fetch)
