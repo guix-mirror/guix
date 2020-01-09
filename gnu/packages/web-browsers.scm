@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
@@ -84,7 +84,7 @@
               ("libxft" ,libxft)
               ("libxi" ,libxi)
               ("libxinerama" ,libxinerama)
-              ("openssl" ,openssl)
+              ("openssl" ,openssl-1.0) ;XXX try latest openssl for dillo > 3.0.5
               ("perl" ,perl)
               ("zlib" ,zlib)))
     (synopsis "Very small and fast graphical web browser")
