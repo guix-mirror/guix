@@ -537,6 +537,13 @@ should only be used as part of the Guix cups-pk-helper service.")
                                  "/lib/systemd/system"))
                  (("/etc/sane.d")
                   (string-append out "/etc/sane.d"))))))
+         (add-after 'install 'install-models-dat
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (models-dir (string-append out
+                                               "/share/hplip/data/models")))
+               (install-file "data/models/models.dat" models-dir))
+             #t))
          (add-after 'install 'wrap-binaries
            ;; Scripts in /bin are all symlinks to .py files in /share/hplip.
            ;; Symlinks are immune to the Python build system's 'WRAP phase,
