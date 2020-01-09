@@ -247,6 +247,41 @@ Desktop.  It is designed to be as simple as possible and has some unique
 features to enable users to create their discs easily and quickly.")
     (license license:gpl2+)))
 
+(define-public gnome-online-miners
+  (package
+    (name "gnome-online-miners")
+    (version "3.30.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0pjamwwzn5wqgihyss357dyl2q70r0bngnqmwsqawchx5f9aja9c"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gtk+:bin" ,gtk+ "bin")
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gnome-online-accounts" ,gnome-online-accounts)
+       ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
+       ("gobject-introspection" ,gobject-introspection)
+       ("grilo" ,grilo)
+       ("libgdata" ,libgdata)
+       ("libgfbgraph" ,gfbgraph)
+       ("libzapojit" ,libzapojit)
+       ("rest" ,rest)
+       ("tracker" ,tracker)))
+    (synopsis "Web Crawlers for GNOME")
+    (description "GNOME Online Miners provides a set of crawlers that
+go through your online content and index them locally in Tracker.
+It has miners for Facebook, Flickr, Google, ownCloud and SkyDrive.")
+    (home-page "https://wiki.gnome.org/Projects/GnomeOnlineMiners")
+    (license license:gpl2)))
+
 (define-public gnome-menus
   (package
     (name "gnome-menus")
