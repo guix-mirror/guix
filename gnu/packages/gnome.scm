@@ -247,6 +247,59 @@ Desktop.  It is designed to be as simple as possible and has some unique
 features to enable users to create their discs easily and quickly.")
     (license license:gpl2+)))
 
+(define-public gnome-color-manager
+  (package
+   (name "gnome-color-manager")
+   (version "3.32.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/" name "/"
+                                (version-major+minor version) "/"
+                                name "-" version ".tar.xz"))
+            (sha256
+             (base32
+              "1vpxa2zjz3lkq9ldjg0fl65db9s6b4kcs8nyaqfz3jygma7ifg3w"))))
+   (build-system meson-build-system)
+   (arguments
+    `(#:glib-or-gtk? #t
+      #:phases
+       (modify-phases %standard-phases
+        (add-before
+         'check 'pre-check
+         (lambda _
+           ;; Tests require a running X server.
+           (system "Xvfb :1 &")
+           (setenv "DISPLAY" ":1")
+           #t)))))
+   (native-inputs
+    `(("desktop-file-utils" ,desktop-file-utils)
+      ("gettext" ,gettext-minimal)
+      ("glib:bin" ,glib "bin")
+      ("gtk+:bin" ,gtk+ "bin")
+      ("itstool" ,itstool)
+      ("pkg-config" ,pkg-config)
+      ("xorg-server" ,xorg-server-for-tests)))
+   (inputs
+    `(("adwaita-icon-theme" ,adwaita-icon-theme)
+      ("appstream-glib" ,appstream-glib)
+      ("colord-gtk" ,colord-gtk)
+      ("exiv2" ,exiv2)
+      ("gnome-desktop" ,gnome-desktop)
+      ("libcanberra" ,libcanberra)
+      ("libexif" ,libexif)
+      ("libtiff" ,libtiff)
+      ("libxrandr" ,libxrandr)
+      ("libxtst" ,libxtst)
+      ("libxxf86vm" ,libxxf86vm)
+      ("vte" ,vte)
+      ("xorgproto" ,xorgproto)))
+   (synopsis "Color profile manager for the GNOME desktop")
+   (description "GNOME Color Manager is a session framework that makes
+it easy to manage, install and generate color profiles
+in the GNOME desktop.")
+   (home-page "https://gitlab.gnome.org/GNOME/gnome-color-manager")
+   (license license:gpl2)))
+
 (define-public gnome-online-miners
   (package
     (name "gnome-online-miners")
@@ -263,12 +316,12 @@ features to enable users to create their discs easily and quickly.")
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
        ("gtk+:bin" ,gtk+ "bin")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("gnome-online-accounts" ,gnome-online-accounts)
        ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
-       ("gobject-introspection" ,gobject-introspection)
        ("grilo" ,grilo)
        ("libgdata" ,libgdata)
        ("libgfbgraph" ,gfbgraph)
