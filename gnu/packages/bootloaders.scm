@@ -430,19 +430,6 @@ tree binary files.  These are board description files used by Linux and BSD.")
 also initializes the boards (RAM etc).")
     (license license:gpl2+)))
 
-(define u-boot-2019.10
-  (package
-    (inherit u-boot)
-    (version "2019.10")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "ftp://ftp.denx.de/pub/u-boot/"
-                    "u-boot-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "053hcrwwlacqh2niisn0zas95zkbffw5aw5sdhixs8lmfdq60vcd"))))))
-
 (define-public u-boot-tools
   (package
     (inherit u-boot)
@@ -768,8 +755,6 @@ to Novena upstream, does not load u-boot.img from the first partition.")
   (let ((base (make-u-boot-package "rock64-rk3328" "aarch64-linux-gnu")))
     (package
       (inherit base)
-      (version (package-version u-boot-2019.10))
-      (source (package-source u-boot-2019.10))
       (arguments
        (substitute-keyword-arguments (package-arguments base)
          ((#:phases phases)
@@ -779,12 +764,6 @@ to Novena upstream, does not load u-boot.img from the first partition.")
                  (let ((bl31 (string-append (assoc-ref inputs "firmware")
                                             "/bl31.elf")))
                    (setenv "BL31" bl31))
-                 #t))
-             (add-after 'unpack 'add-u-boot-itb
-               (lambda _
-                 (substitute* "Kconfig"
-                   (("default .u-boot.itb. if SPL_LOAD_FIT && .ROCKCHIP_RK3399")
-                    "default \"u-boot.itb\" if SPL_LOAD_FIT && (ARCH_ROCKCHIP"))
                  #t))))))
       (native-inputs
        `(("firmware" ,arm-trusted-firmware-rk3328)
@@ -794,8 +773,6 @@ to Novena upstream, does not load u-boot.img from the first partition.")
   (let ((base (make-u-boot-package "firefly-rk3399" "aarch64-linux-gnu")))
     (package
       (inherit base)
-      (version (package-version u-boot-2019.10))
-      (source (package-source u-boot-2019.10))
       (arguments
         (substitute-keyword-arguments (package-arguments base)
           ((#:phases phases)
@@ -816,8 +793,6 @@ to Novena upstream, does not load u-boot.img from the first partition.")
   (let ((base (make-u-boot-package "rockpro64-rk3399" "aarch64-linux-gnu")))
     (package
       (inherit base)
-      (version (package-version u-boot-2019.10))
-      (source (package-source u-boot-2019.10))
       (arguments
         (substitute-keyword-arguments (package-arguments base)
           ((#:phases phases)
