@@ -145,6 +145,7 @@
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
+  #:use-module (gnu packages php)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages popt)
@@ -3718,8 +3719,7 @@ libxml to ease remote use of the RESTful API.")
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)
        ("vala" ,vala)
-       ;; These are needed for the tests.
-       ;; FIXME: Add PHP once available.
+       ("php" ,php)
        ("curl" ,curl)
        ("gnutls" ,gnutls)                         ;for 'certtool'
        ("httpd" ,httpd)))
