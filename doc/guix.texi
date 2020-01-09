@@ -14154,8 +14154,8 @@ Package object of the Open vSwitch.
 @defvr {Scheme Variable} pagekite-service-type
 This is the service type for the @uref{https://pagekite.net, PageKite} service,
 a tunneling solution for making localhost servers publicly visible, even from
-behind NAT or restrictive firewalls.  The value for this service type is a
-@code{pagekite-configuration} record.
+behind restrictive firewalls or NAT without forwarded ports.  The value for
+this service type is a @code{pagekite-configuration} record.
 
 Here's an example exposing the local HTTP and SSH daemons:
 
