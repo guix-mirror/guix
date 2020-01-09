@@ -8119,7 +8119,7 @@ Flx has support for ido (interactively do things) through flx-ido.")
 (define-public emacs-cyberpunk-theme
   (package
     (name "emacs-cyberpunk-theme")
-    (version "1.19")
+    (version "1.21")
     (source
      (origin
        (method git-fetch)
@@ -8128,13 +8128,13 @@ Flx has support for ido (interactively do things) through flx-ido.")
               (commit version)))
        (sha256
         (base32
-         "1npwrw3pgdmvqhihcqcfi2yrs178iiip5fcj8zhpp6cr9yqsvvgi"))
+         "05mfgr9aj7knn7niadv9p6z3qrfpq2lbbi2wxxx62xywim9maw2y"))
        (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (home-page "https://github.com/n3mo/cyberpunk-theme.el")
-    (synopsis "Cyberpunk theme for emacs built-in color theme support")
+    (synopsis "Cyberpunk theme for Emacs built-in color theme support")
     (description
-     "Cyberpunk color theme for the emacs 24+ built-in color theme support
+     "Cyberpunk color theme for the Emacs 24+ built-in color theme support
 known loosely as deftheme.  Many mode-specific customizations are included.")
     (license license:gpl3+)))
 
