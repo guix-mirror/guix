@@ -286,11 +286,24 @@ of a package, and INPUT-NAMES, a list of package specifications such as
   (let ((inputs (package-inputs package))
         (input-names
          '("pkg-config"
+            "autoconf"
+            "automake"
+            "bison"
             "cmake"
+            "dejagnu"
+            "desktop-file-utils"
+            "doxygen"
             "extra-cmake-modules"
+            "flex"
+            "gettext"
             "glib:bin"
+            "gobject-introspection"
+            "googletest-source"
+            "groff"
+            "help2man"
             "intltool"
             "itstool"
+            "libtool"
             "qttools"
             "yasm" "nasm" "fasm"
             "python-coverage" "python2-coverage"
@@ -302,7 +315,13 @@ of a package, and INPUT-NAMES, a list of package specifications such as
             "python-pytest" "python2-pytest"
             "python-pytest-cov" "python2-pytest-cov"
             "python-setuptools-scm" "python2-setuptools-scm"
-            "python-sphinx" "python2-sphinx")))
+            "python-sphinx" "python2-sphinx"
+            "swig"
+            "qmake"
+            "qttools"
+            "texinfo"
+            "xorg-server-for-tests"
+            "yelp-tools")))
     (map (lambda (input)
            (make-warning
             package
