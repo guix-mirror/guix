@@ -24,6 +24,7 @@
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -648,6 +649,24 @@ in the GNOME project.")
 is part of the GNOME accessibility project.")
    (license license:lgpl2.0+)
    (home-page "https://projects.gnome.org/accessibility/")))
+
+;;; A minimal variant used to prevent a cycle with Inkscape.
+(define at-spi2-core-minimal
+  (package
+    (inherit at-spi2-core)
+    (name "at-spi2-core-minimal")
+    (outputs (delete "doc" (package-outputs at-spi2-core)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments at-spi2-core)
+       ((#:configure-flags configure-flags)
+        `(delete "-Ddocs=true" ,configure-flags))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (delete 'set-documentation-path)
+           (delete 'prepare-doc-directory)
+           (delete 'move-documentation)))))
+    (native-inputs
+     (alist-delete "gtk-doc" (package-native-inputs at-spi2-core)))))
 
 (define-public at-spi2-atk
   (package
