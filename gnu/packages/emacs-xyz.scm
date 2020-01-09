@@ -6996,8 +6996,8 @@ not tied in the trap of backward compatibility.")
     (license license:gpl3+)))
 
 (define-public emacs-helm-org
-  (let ((commit "b9a1167b0716a22a69670f4c35e0ac59d2e0b220")
-        (revision "2"))
+  (let ((commit "8457e1e46227bf87726e05c42cec5a4b51c2ef7b")
+        (revision "3"))
     (package
       (name "emacs-helm-org")
       (version (git-version "1.0" revision commit))
@@ -7009,7 +7009,7 @@ not tied in the trap of backward compatibility.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1gc27i4azqpgijva1f4ckfdp4s52mc9pnfcmzhkwhknr6pd6jlcr"))))
+          (base32 "0kcjhwwi492n9m2w894hvdavfvhj45zygy7bwvx103wvpay5h6h6"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-helm" ,emacs-helm)))
