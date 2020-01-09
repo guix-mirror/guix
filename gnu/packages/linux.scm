@@ -38,6 +38,7 @@
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2019 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4993,14 +4994,14 @@ running boot option, and more.")
 (define-public sysstat
   (package
     (name "sysstat")
-    (version "12.2.0")
+    (version "12.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://pagesperso-orange.fr/sebastien.godard/"
                                   "sysstat-" version ".tar.xz"))
               (sha256
                (base32
-                "0xc3983ccr0dwab1px2jhbgj86pfmmr29k7ggnwjwm1qigmriak1"))))
+                "1hf1sy7akribmgavadqccxpy49yv0zfb3m81d2bj6jf8pyzwcrbq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; No test suite.
