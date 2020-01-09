@@ -183,6 +183,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu artwork)
+  #:use-module ((guix build utils) #:select (modify-phases))
   #:use-module (guix build-system cargo)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
@@ -3740,6 +3741,22 @@ libxml to ease remote use of the RESTful API.")
      "LibSoup is an HTTP client/server library for GNOME.  It uses GObjects
 and the GLib main loop, to integrate well with GNOME applications.")
     (license license:lgpl2.0+)))
+
+
+;;; A minimal version of libsoup used to prevent a cycle with Inkscape.
+(define-public libsoup-minimal
+  (package
+    (inherit libsoup)
+    (name "libsoup-minimal")
+    (outputs (delete "doc" (package-outputs libsoup)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments libsoup)
+       ((#:configure-flags configure-flags)
+        `(delete "-Dgtk_doc=true" ,configure-flags))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (delete 'move-doc)))))
+    (native-inputs (alist-delete "gtk-doc" (package-native-inputs libsoup)))))
 
 (define-public libsecret
   (package
