@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
@@ -36,7 +36,8 @@
   #:use-module (guix i18n)
   #:use-module ((guix utils)
                 #:select (source-properties->location
-                          &error-location))
+                          &error-location
+                          &fix-hint))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-2)
   #:use-module (srfi srfi-9)
@@ -457,6 +458,9 @@ INSTANCES."
       (raise (apply make-compound-condition
                     (condition
                      (&message (message "'guix' channel is lacking")))
+                    (condition
+                     (&fix-hint (hint (G_ "Make sure your list of channels
+contains one channel named @code{guix} providing the core of Guix."))))
                     (if loc
                         (list (condition (&error-location (location loc))))
                         '())))))
