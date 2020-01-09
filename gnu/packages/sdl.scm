@@ -12,6 +12,7 @@
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
+;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -404,7 +405,7 @@ directory.")
 (define-public sdl2-image
   (package (inherit sdl-image)
     (name "sdl2-image")
-    (version "2.0.4")
+    (version "2.0.5")
     (source
      (origin
        (method url-fetch)
@@ -412,7 +413,7 @@ directory.")
         (string-append "https://www.libsdl.org/projects/SDL_image/release/"
                        "SDL2_image-" version ".tar.gz"))
        (sha256
-        (base32 "1b6f7002bm007y3zpyxb5r6ag0lml51jyvx1pwpj9sq24jfc8kp7"))))
+        (base32 "1l0864kas9cwpp2d32yxl81g98lx40dhbdp03dz7sbv84vhgdmdx"))))
     (propagated-inputs
      (propagated-inputs-with-sdl2 sdl-image))))
 
