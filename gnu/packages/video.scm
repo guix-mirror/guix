@@ -35,6 +35,7 @@
 ;;; Copyright © 2019 Timo Eisenmann <eisenmann@fn.de>
 ;;; Copyright © 2019 Arne Babenhauserheide <arne_bab@web.de>
 ;;; Copyright © 2019 Riku Viitanen <riku.viitanen@protonmail.com>
+;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2168,15 +2169,14 @@ and custom quantization matrices.")
 (define-public streamlink
   (package
     (name "streamlink")
-    (version "0.14.2")
+    (version "1.3.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "streamlink" version))
         (sha256
          (base32
-          "0l2145fd60i76afjisfxd48cwhwyir07i7s3bnimdq5db2kzkix8"))
-        (patches (search-patches "streamlink-update-test.patch"))))
+          "0593ffjpz82jrljnzxfafkcmcqad3r1ijjan0hm04xjcnxc9cr00"))))
     (build-system python-build-system)
     (home-page "https://github.com/streamlink/streamlink")
     (native-inputs
