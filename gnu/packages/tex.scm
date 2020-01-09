@@ -266,7 +266,22 @@ copied to their outputs; otherwise the TEXLIVE-BUILD-SYSTEM is used."
                       "03vc88dz37mjjyaspzv0fik2fp5gp8qv82114869akd1dhszbaax")
           (search-patch "texlive-bin-poppler-0.83.patch")
           (arch-patch "texlive-poppler-0.84.patch" arch-revision
-                      "1ia6cr99krk4ipx4hdi2qdb98bh2h26mckjlpxdzrjnfhlnghksa"))))))
+                      "1ia6cr99krk4ipx4hdi2qdb98bh2h26mckjlpxdzrjnfhlnghksa"))))
+      (modules '((guix build utils)
+                 (ice-9 ftw)))
+      (snippet
+       '(begin
+          (with-directory-excursion "libs"
+            (let ((preserved-directories '("." ".." "lua53" "luajit")))
+              ;; Delete bundled software, except Lua which cannot easily be
+              ;; used as an external dependency.
+              (for-each delete-file-recursively
+                        (scandir "."
+                                 (lambda (file)
+                                   (and (not (member file preserved-directories))
+                                        (eq? 'directory (stat:type (stat file)))))))))
+          ;; TODO: Unbundle stuff in texk/dvisvgm/dvisvgm-src/libs too.
+          #t))))
    (build-system gnu-build-system)
    (inputs
     `(("texlive-extra-src" ,texlive-extra-src)
