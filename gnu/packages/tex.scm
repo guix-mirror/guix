@@ -227,9 +227,9 @@ copied to their outputs; otherwise the TEXLIVE-BUILD-SYSTEM is used."
 (define texlive-extra-src
   (origin
     (method url-fetch)
-    (uri "ftp://tug.org/historic/systems/texlive/2018/texlive-20180414-extra.tar.xz")
+    (uri "ftp://tug.org/historic/systems/texlive/2019/texlive-20190410-extra.tar.xz")
     (sha256 (base32
-             "0a83kymxc8zmlxjb0y1gf6mx7qnf0hxffwkivwh5yh138y2rfhsv"))))
+             "13ncf2an4nlqv18lki6y2p6pcsgs1i54zqkhfwprax5j53bk70j8"))))
 
 (define texlive-texmf-src
   (origin
@@ -241,15 +241,15 @@ copied to their outputs; otherwise the TEXLIVE-BUILD-SYSTEM is used."
 (define-public texlive-bin
   (package
    (name "texlive-bin")
-   (version "20180414")
+   (version "20190410")
    (source
     (origin
       (method url-fetch)
-      (uri (string-append "ftp://tug.org/historic/systems/texlive/2018/"
+      (uri (string-append "ftp://tug.org/historic/systems/texlive/2019/"
                           "texlive-" version "-source.tar.xz"))
       (sha256
        (base32
-        "0khyi6h015r2zfqgg0a44a2j7vmr1cy42knw7jbss237yvakc07y"))
+        "1dfps39q6bdr1zsbp9p74mvalmy3bycihv19sb9c6kg30kprz8nj"))
       (patches
        (let ((arch-patch
               (lambda (name revision hash)
@@ -260,14 +260,13 @@ copied to their outputs; otherwise the TEXLIVE-BUILD-SYSTEM is used."
                                       "&id=" revision))
                   (file-name (string-append "texlive-bin-" name))
                   (sha256 (base32 hash)))))
-             (arch-revision "c4b99aba97213ea554b6592a4916d3c7394a6d7b"))
-         (append (search-patches  "texlive-bin-CVE-2018-17407.patch"
-                                  "texlive-bin-luatex-poppler-compat.patch")
-                 (list
-                  (arch-patch "pdftex-poppler0.76.patch" arch-revision
-                              "15ypbh21amfsdxy7ca825x28lkmmkklxk1w660gpgvzdi7s70h0b")
-                  (arch-patch "xetex-poppler-fixes.patch" arch-revision
-                              "1jj1p5zkjljb7id9pjv29cw0cf8mwrgrh4ackgzz9c200vaqpsvx")))))))
+             (arch-revision "49d7fe25e5ea63f136ebc20270c1d8fc9b00041c"))
+         (list
+          (arch-patch "pdftex-poppler0.76.patch" arch-revision
+                      "03vc88dz37mjjyaspzv0fik2fp5gp8qv82114869akd1dhszbaax")
+          (search-patch "texlive-bin-poppler-0.83.patch")
+          (arch-patch "texlive-poppler-0.84.patch" arch-revision
+                      "1ia6cr99krk4ipx4hdi2qdb98bh2h26mckjlpxdzrjnfhlnghksa"))))))
    (build-system gnu-build-system)
    (inputs
     `(("texlive-extra-src" ,texlive-extra-src)
@@ -284,7 +283,7 @@ copied to their outputs; otherwise the TEXLIVE-BUILD-SYSTEM is used."
                                     "-checkout"))
           (sha256
            (base32
-            "0wrjls1y9b4k1z10l9l8w2l3yjcw7v7by2y16kchdpkiyldlkry6"))))
+            "1cj04svl8bpfwjr4gqfcc04rmklz3aggrxvgj7q5bxrh7c7g18xh"))))
       ("cairo" ,cairo)
       ("fontconfig" ,fontconfig)
       ("fontforge" ,fontforge)
@@ -362,18 +361,13 @@ copied to their outputs; otherwise the TEXLIVE-BUILD-SYSTEM is used."
             (copy-file "texk/web2c/pdftexdir/pdftosrc-poppler0.76.0.cc"
                        "texk/web2c/pdftexdir/pdftosrc.cc")
             #t))
-        (add-after 'use-code-for-new-poppler 'use-code-for-even-newer-poppler
+        (add-after 'unpack 'patch-dvisvgm-build-files
           (lambda _
-            ;; Adjust for deprecated types in Poppler 0.73 and later.
-            (substitute* (append
-                          (find-files "texk/web2c/luatexdir/" "\\.(cc|w)$")
-                          '("texk/web2c/pdftexdir/pdftosrc.cc"))
-              (("GBool") "bool")
-              (("gFalse") "false")
-              (("gTrue") "true")
-              (("getCString") "c_str")
-              (("Guint") "unsigned int")
-              (("Guchar") "unsigned char"))
+            ;; XXX: Ghostscript is detected, but HAVE_LIBGS is never set, so
+            ;; the appropriate linker flags are not added.
+            (substitute* "texk/dvisvgm/configure"
+              (("^have_libgs=yes" all)
+               (string-append all "\nHAVE_LIBGS=1")))
             #t))
         (add-after 'unpack 'disable-failing-test
           (lambda _
