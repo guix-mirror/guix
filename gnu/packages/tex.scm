@@ -1959,6 +1959,19 @@ It ranges from the Val d'Aran within Catalunya, to the South Western Italian
 Alps encompassing the southern half of the French pentagon.")
     (license license:lppl1.0+)))
 
+(define-public texlive-hyphen-pali
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-pali" "pi"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-pi.tex")
+              (base32
+               "1fak853s4ijdqgrnhwymaq1lh8jab3qfyxapdmf6qpg6bqd20kxq")))
+    (synopsis "Panjabi hyphenation patterns")
+    (description "This package provides hyphenation patterns for Panjabi in
+T1/EC encoding.")
+    ;; Can be used with either license.
+    (license (list license:expat license:lgpl3+ license:gpl3+))))
+
 (define-public texlive-hyphen-piedmontese
   (package
     (inherit (texlive-hyphen-package
