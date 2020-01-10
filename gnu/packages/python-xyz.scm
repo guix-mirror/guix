@@ -11353,14 +11353,13 @@ command @command{natsort} that exposes this functionality in the command line.")
 (define-public python-glances
   (package
   (name "python-glances")
-  (version "3.1.1")
+  (version "3.1.2")
   (source
     (origin
       (method url-fetch)
       (uri (pypi-uri "Glances" version))
       (sha256
-        (base32
-          "07j1ggzsqiskyz1i4mrnyr9i95v0dqi0i0hibnv1l188km8shmi8"))
+        (base32 "15384pbvw9wj4sb8zgvd9v1812vrypbyjg0acicjf1hdb3p30fkk"))
       (modules '((guix build utils)))
       (snippet
        '(begin
@@ -11376,8 +11375,7 @@ command @command{natsort} that exposes this functionality in the command line.")
   (propagated-inputs
    `(("python-future" ,python-future)
      ("python-psutil" ,python-psutil)))
-  (home-page
-    "https://github.com/nicolargo/glances")
+  (home-page "https://github.com/nicolargo/glances")
   (synopsis "Cross-platform curses-based monitoring tool")
   (description
     "Glances is a curses-based monitoring tool for a wide variety of platforms.
