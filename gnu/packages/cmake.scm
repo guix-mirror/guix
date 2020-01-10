@@ -30,6 +30,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
+  #:use-module (guix deprecation)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system emacs)
   #:use-module (gnu packages)
@@ -207,22 +208,13 @@ and workspaces that can be used in the compiler environment of your choice.")
     (outputs '("out" "doc"))
     (properties (alist-delete 'hidden? (package-properties cmake-minimal)))))
 
-(define-public cmake/fixed
-  ;; This is a variant of CMake that fixes X.509 certificate lookup:
-  ;; <https://issues.guix.gnu.org/issue/37371>.
-  (package
-    (inherit cmake)
-    (version (string-append (package-version cmake) "-1"))
-    (source (origin
-              (inherit (package-source cmake))
-              (patches
-               (append (search-patches "cmake-curl-certificates.patch")
-                       (origin-patches (package-source cmake))))))))
-
 (define-public cmake-3.15.5
   ;; CMake 3.15.5 fixes some issues, but declare another version to
   ;; avoid triggering the rebuild of all CMake-based packages.
   ;; See <https://issues.guix.gnu.org/issue/38060>.
+  ;;
+  ;; Furthermore, this variant fixes X.509 certificate lookup:
+  ;; <https://issues.guix.gnu.org/issue/37371>.
   (package
     (inherit cmake)
     (version "3.15.5")
@@ -233,7 +225,14 @@ and workspaces that can be used in the compiler environment of your choice.")
                                   "/cmake-" version ".tar.gz"))
               (sha256
                (base32
-                "1d5y8d92axcc6rfqlsxamayfs3fc1vdby91hn5mx1kn02ppprpgv"))))))
+                "1d5y8d92axcc6rfqlsxamayfs3fc1vdby91hn5mx1kn02ppprpgv"))
+              (patches
+               (append (search-patches "cmake-curl-certificates.patch")
+                       (origin-patches (package-source cmake))))))))
+
+;; This was cmake@3.15.1 plus "cmake-curl-certificates.patch".
+(define-deprecated cmake/fixed cmake-3.15.5)
+(export cmake/fixed)
 
 (define-public emacs-cmake-mode
   (package
