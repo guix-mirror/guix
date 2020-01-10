@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
@@ -289,7 +289,7 @@ utilities.")
         ;; never runs.  See <https://bugs.debian.org/792687>.
         `(cons "ac_cv_path_MSGMERGE=true" ,flags))
        ((#:phases phases '%standard-phases)
-        `(modify-phases ,phases
+        `(modify-phases %standard-phases
            (add-before 'bootstrap 'prepare
              (lambda _
                ;; Some of the scripts there are invoked by autogen.sh.
