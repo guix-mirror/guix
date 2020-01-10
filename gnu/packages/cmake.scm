@@ -228,7 +228,21 @@ and workspaces that can be used in the compiler environment of your choice.")
                 "1d5y8d92axcc6rfqlsxamayfs3fc1vdby91hn5mx1kn02ppprpgv"))
               (patches
                (append (search-patches "cmake-curl-certificates.patch")
-                       (origin-patches (package-source cmake))))))))
+                       (origin-patches (package-source cmake))))))
+
+    (native-search-paths
+     ;; "cmake-curl-certificates.patch" changes CMake to honor 'SSL_CERT_DIR'
+     ;; and 'SSL_CERT_FILE', hence these search path entries.
+     (append (list (search-path-specification
+                    (variable "SSL_CERT_DIR")
+                    (separator #f)                ;single entry
+                    (files '("etc/ssl/certs")))
+                   (search-path-specification
+                    (variable "SSL_CERT_FILE")
+                    (file-type 'regular)
+                    (separator #f)                ;single entry
+                    (files '("etc/ssl/certs/ca-certificates.crt"))))
+             (package-native-search-paths cmake)))))
 
 ;; This was cmake@3.15.1 plus "cmake-curl-certificates.patch".
 (define-deprecated cmake/fixed cmake-3.15.5)
