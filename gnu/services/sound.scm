@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018, 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +35,7 @@
   #:export (alsa-configuration
             alsa-service-type
 
+            pulseaudio-configuration
             pulseaudio-service-type))
 
 ;;; Commentary:
@@ -106,19 +108,59 @@ ctl.!default {
 ;;; PulseAudio
 ;;;
 
+(define-record-type* <pulseaudio-configuration>
+  pulseaudio-configuration make-pulseaudio-configuration
+  pulseaudio-configuration?
+  (client-conf pulseaudio-client-conf
+               (default '()))
+  (daemon-conf pulseaudio-daemon-conf
+               (default '()))
+  (script-file pulseaudio-script-file
+               (default (file-append pulseaudio "/etc/pulse/default.pa")))
+  (system-script-file pulseaudio-system-script-file
+                      (default
+                        (file-append pulseaudio "/etc/pulse/system.pa"))))
+
 (define (pulseaudio-environment config)
   ;; Define this variable in the global environment such that
   ;; pulseaudio swh-plugins works.
-  `(("LADSPA_PATH"
-     . ,(file-append swh-plugins "/lib/ladspa"))))
+  `(("LADSPA_PATH" . ,(file-append swh-plugins "/lib/ladspa"))
+    ;; Define these variables, so that pulseaudio honors /etc.
+    ("PULSE_CONFIG" . "/etc/pulse/daemon.conf")
+    ("PULSE_CLIENTCONFIG" . "/etc/pulse/client.conf")))
+
+(define (pulseaudio-conf-entry arg)
+  (match arg
+    ((key . value)
+     (format #f "~a = ~s~%" key value))
+    ((? string? _)
+     (string-append arg "\n"))))
+
+(define pulseaudio-etc
+  (match-lambda
+    (($ <pulseaudio-configuration> client-conf daemon-conf
+                                   default-script-file system-script-file)
+     `(("pulse"
+        ,(file-union
+          "pulse"
+          `(("client.conf"
+             ,(apply mixed-text-file "client.conf"
+                     (map pulseaudio-conf-entry client-conf)))
+            ("daemon.conf"
+             ,(apply mixed-text-file "daemon.conf"
+                     "default-script-file = " default-script-file "\n"
+                     (map pulseaudio-conf-entry daemon-conf)))
+            ("default.pa" ,default-script-file)
+            ("system.pa" ,system-script-file))))))))
 
 (define pulseaudio-service-type
   (service-type
    (name 'pulseaudio)
    (extensions
     (list (service-extension session-environment-service-type
-                             pulseaudio-environment)))
-   (default-value #f)
+                             pulseaudio-environment)
+          (service-extension etc-service-type pulseaudio-etc)))
+   (default-value (pulseaudio-configuration))
    (description "Configure PulseAudio sound support.")))
 
 ;;; sound.scm ends here
