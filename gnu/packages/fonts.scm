@@ -1140,6 +1140,7 @@ typeface, by mimicking Comic Sans while fixing its most obvious shortcomings.")
 (define-public font-iosevka
   (package
     (name "font-iosevka")
+    ;; When updating, also update the hash of the Iosevka variant(s) below.
     (version "2.3.3")
     (source
      (origin
@@ -1171,7 +1172,7 @@ programming.  Iosevka is completely generated from its source code.")
                            "/releases/download/v" version
                            "/ttc-iosevka-slab-" version ".zip"))
        (sha256
-        (base32 "186d0pl13znysll3hvzm1ixn7ad616g6dhla55sbh6ki2j04b8ml"))))))
+        (base32 "1rkmgi08kknc1fg54zpa6w92m3b3v7pc8cpwygz22kgd2h0mdrr8"))))))
 
 (define-public font-go
   (let ((commit "f03a046406d4d7fbfd4ed29f554da8f6114049fc")
