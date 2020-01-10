@@ -69,6 +69,7 @@ Copyright @copyright{} 2019 Jakob L. Kreuze@*
 Copyright @copyright{} 2019 Kyle Andrews@*
 Copyright @copyright{} 2019 Alex Griffin@*
 Copyright @copyright{} 2019 Guillaume Le Vaillant@*
+Copyright @copyright{} 2020 Leo Prikler@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -15950,6 +15951,42 @@ pcm.!default @{
 
 See @uref{https://www.alsa-project.org/main/index.php/Asoundrc} for the
 details.
+
+@deffn {Scheme Variable} pulseaudio-service-type
+This is the type for the  @uref{http://www.pulseaudio.org/, PulseAudio}
+sound server.  It exists to allow system overrides of the default settings
+via @code{pulseaudio-configuration}, see below.
+
+@quotation Warning
+This service on its own does not ensure, that the @code{pulseaudio} package
+exists on your machine.  It merely adds configuration files for it, as
+detailed below.  In the (admittedly unlikely) case, that you find yourself
+without a @code{pulseaudio} package, consider enabling it through the
+@code{alsa-service-type} above.
+@end quotation
+@end deffn
+
+@deftp {Data Type} pulseaudio-configuration
+Data type representing the configuration for @code{pulseaudio-service}.
+
+@table @asis
+@item @var{client-conf} (default: @code{'()})
+List of settings to set in @file{client.conf}.
+Accepts a list of strings or a symbol-value pairs.  A string will be
+inserted as-is with a newline added.  A pair will be formatted as
+``key = value'', again with a newline added.
+
+@item @var{daemon-conf} (default: @code{'((flat-volumes . no))})
+List of settings to set in @file{daemon.conf}, formatted just like
+@var{client-conf}.
+
+@item @var{script-file} (default: @code{(file-append pulseaudio "/etc/pulse/default.pa")})
+Script file to use as as @file{default.pa}.
+
+@item @var{system-script-file} (default: @code{(file-append pulseaudio "/etc/pulse/system.pa")})
+Script file to use as as @file{system.pa}.
+@end table
+@end deftp
 
 @deffn {Scheme Variable} ladspa-service-type
 This service sets the @var{LADSPA_PATH} variable, so that programs, which
