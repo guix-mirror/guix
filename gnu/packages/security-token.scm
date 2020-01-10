@@ -254,13 +254,7 @@ website for more information about Yubico and the YubiKey.")
                  (("DEFAULT_PCSC_PROVIDER=\"libpcsclite\\.so\\.1\"")
                   (string-append
                    "DEFAULT_PCSC_PROVIDER=\"" libpcsclite "\"")))
-               #t)))
-         (add-before 'check 'disable-broken-test
-           (lambda _
-             ;; XXX: This test is fixed in git, remove this phase for >= 0.19.
-             (substitute* "doc/tools/Makefile"
-               (("TESTS = test-manpage.sh") "TESTS = "))
-             #t)))))
+               #t))))))
     (inputs
      `(("readline" ,readline)
        ("openssl" ,openssl)
