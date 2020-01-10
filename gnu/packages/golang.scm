@@ -14,7 +14,7 @@
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright @ 2018, 2019 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright @ 2019 Giovanni Biscuolo <g@xelera.eu>
-;;; Copyright @ 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright @ 2019, 2020 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;;
@@ -1166,7 +1166,7 @@ GNU extensions} to the POSIX recommendations for command-line options.")
         (base32
          "0g5z7al7kky11ai2dhac6gkp3b5pxsvx72yj3xg4wg3265gbn7yz"))))
     (build-system go-build-system)
-    (native-inputs
+    (propagated-inputs
      `(("go-golang-org-x-crypto"
         ,go-golang-org-x-crypto)
        ("go-github-com-stretchr-testify"
