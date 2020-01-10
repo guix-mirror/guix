@@ -173,9 +173,8 @@ the low-level development kit for the Yubico YubiKey authentication device.")
     (version "1.8.25")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://pcsclite.apdu.fr/files/"
-                    name "-" version ".tar.bz2"))
+              (uri (string-append "https://pcsclite.apdu.fr/files/"
+                                  "pcsc-lite-" version ".tar.bz2"))
               (sha256
                (base32
                 "14l7irs1nsh8b036ag4cfy8wryyysch78scz5dw6xxqwqgnpjvfp"))))
