@@ -32,7 +32,7 @@
 ;;; Copyright © 2016, 2017, 2019 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017, 2018 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
@@ -5757,14 +5757,13 @@ the GObject Introspection bindings to libnotify for non-GTK applications.")
 (define-public python-lxml
   (package
     (name "python-lxml")
-    (version "4.4.1")
+    (version "4.4.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "lxml" version))
         (sha256
-         (base32
-          "14jnpfcpgqr9sx8ppd286jzcbk0b36hbqsvd8jkvffipzw5v8768"))))
+         (base32 "01nvb5j8vs9nk4z5s3250b1m22b4d08kffa36if3g1mdygdrvxpg"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -5775,8 +5774,7 @@ the GObject Introspection bindings to libnotify for non-GTK applications.")
       `(("libxml2" ,libxml2)
         ("libxslt" ,libxslt)))
     (home-page "http://lxml.de/")
-    (synopsis
-      "Python XML processing library")
+    (synopsis "Python XML processing library")
     (description
       "The lxml XML toolkit is a Pythonic binding for the C libraries
 libxml2 and libxslt.")
