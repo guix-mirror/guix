@@ -1501,6 +1501,53 @@ accessing key stores.  It also provides the viewer for crypto files on the
 GNOME Desktop.")
     (license license:lgpl2.1+)))
 
+(define-public gdl
+  (package
+    (name "gdl")
+    (version "3.34.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.gnome.org/GNOME/gdl.git")
+                    (commit (string-append "GDL_" (string-map (match-lambda
+                                                                (#\. #\_)
+                                                                (c c))
+                                                              version)))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "154qcr0x6f68f4q526y87imv0rscmp34n47nk1pp82rsq52h2zna"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'bootstrap
+           (lambda _
+             ;; The autogen.sh script in gnome-common will run ./configure
+             ;; by default, which is problematic because source shebangs
+             ;; have not yet been patched.
+             (setenv "NOCONFIGURE" "t")
+             (invoke "sh" "autogen.sh"))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
+       ("gnome-common" ,gnome-common)
+       ("gtk-doc" ,gtk-doc)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("libtool" ,libtool)
+       ("which" ,which)))
+    (inputs
+     `(("libxml2" ,libxml2)))
+    (propagated-inputs
+     ;; The gdl-3.0.pc file 'Requires' GTK+.
+     `(("gtk+" ,gtk+)))
+    (home-page "https://gitlab.gnome.org/GNOME/gdl/")
+    (synopsis "GNOME docking library")
+    (description "This library provides docking features for gtk+.")
+    (license license:lgpl2.1+)))
+
 (define-public libgnome-keyring
   (package
     (name "libgnome-keyring")
