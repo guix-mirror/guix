@@ -171,13 +171,10 @@ belonging to various licenses.")
     (version "0.7.0")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://git.fsfe.org/reuse/tool.git")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (pypi-uri "reuse" version))
        (sha256
-        (base32 "04i8zd66cs152h28k9085nqg937wp31pz2yqywaldx1gywijyd8h"))))
+        (base32 "16wn28xxjcm5qlb7bs6jmdkfrkr5v97s59nmi9cn85qcg4gmj7lk"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
