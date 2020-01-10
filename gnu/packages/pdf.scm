@@ -13,7 +13,7 @@
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Ben Sturmfels <ben@sturm.com.au>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -784,7 +784,7 @@ vector formats.")
 (define-public impressive
   (package
     (name "impressive")
-    (version "0.12.0")
+    (version "0.12.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -792,7 +792,7 @@ vector formats.")
                     version "/Impressive-" version ".tar.gz"))
               (sha256
                (base32
-                "0zaqq3yvd296mfr5bxpj2hqlk7vrb0rsbgd4dc1l5ag46giqvivx"))))
+                "1r7ihv41awnlnlry1kymb8fka053wdhzibfwcarn78rr3vs338vl"))))
     (build-system python-build-system)
 
     ;; TODO: Add dependency on pdftk.
