@@ -1183,6 +1183,7 @@ or setting its password with passwd.")))
 
          x11-socket-directory-service
 
+         (service pulseaudio-service-type)
          (service alsa-service-type)
 
          %base-services))
