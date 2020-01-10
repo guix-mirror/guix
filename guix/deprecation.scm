@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,6 +44,7 @@
     "Define a deprecated variable or procedure, along these lines:
 
   (define-deprecated foo bar 42)
+  (define-deprecated old new)
   (define-deprecated (baz x y) qux (qux y x))
 
 This will write a deprecation warning to GUIX-WARNING-PORT."
@@ -73,7 +74,10 @@ This will write a deprecation warning to GUIX-WARNING-PORT."
                     #'(real args (... ...)))
                    (id
                     (identifier? #'id)
-                    #'real))))))))))
+                    #'real)))))))
+      ((_ variable alias)
+       (identifier? #'alias)
+       #'(define-deprecated variable alias alias)))))
 
 (define-syntax-rule (define-deprecated/alias deprecated replacement)
   "Define as an alias a deprecated variable, procedure, or macro, along
