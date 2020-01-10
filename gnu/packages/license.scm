@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -168,7 +168,7 @@ belonging to various licenses.")
 (define-public reuse
   (package
     (name "reuse")
-    (version "0.5.0")
+    (version "0.7.0")
     (source
      (origin
        (method git-fetch)
@@ -177,7 +177,7 @@ belonging to various licenses.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1w17g6jvs715rjc93nnnqnfdphijq4ymj9jjkr3ccc286ywvn3ih"))))
+        (base32 "04i8zd66cs152h28k9085nqg937wp31pz2yqywaldx1gywijyd8h"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
