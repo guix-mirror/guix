@@ -5773,7 +5773,7 @@ the GObject Introspection bindings to libnotify for non-GTK applications.")
     (inputs
       `(("libxml2" ,libxml2)
         ("libxslt" ,libxslt)))
-    (home-page "http://lxml.de/")
+    (home-page "https://lxml.de/")
     (synopsis "Python XML processing library")
     (description
       "The lxml XML toolkit is a Pythonic binding for the C libraries
