@@ -114,7 +114,10 @@ ctl.!default {
   (client-conf pulseaudio-client-conf
                (default '()))
   (daemon-conf pulseaudio-daemon-conf
-               (default '()))
+               ;; Flat volumes may cause unpleasant experiences to users
+               ;; when applications inadvertently max out the system volume
+               ;; (see e.g. <https://bugs.gnu.org/38172>).
+               (default '((flat-volumes . no))))
   (script-file pulseaudio-script-file
                (default (file-append pulseaudio "/etc/pulse/default.pa")))
   (system-script-file pulseaudio-system-script-file
