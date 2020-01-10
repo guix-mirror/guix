@@ -1548,6 +1548,27 @@ GNOME Desktop.")
     (description "This library provides docking features for gtk+.")
     (license license:lgpl2.1+)))
 
+;;; A minimal variant used to break a cycle with Inkscape.
+(define-public gdl-minimal
+  (package
+    (inherit gdl)
+    (name "gdl-minimal")
+    (arguments
+     (substitute-keyword-arguments (package-arguments gdl)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'disable-doc-generation
+             ;; XXX: There is no easy way to disable generating the
+             ;; documentation.
+             (lambda _
+               (substitute* "configure.in"
+                 (("GTK_DOC_CHECK.*") "")
+                 (("docs/.*") ""))
+               (substitute* "Makefile.am"
+                 (("gdl docs po") "gdl po"))
+               #t))))))
+    (native-inputs (alist-delete "gtk-doc" (package-native-inputs gdl)))))
+
 (define-public libgnome-keyring
   (package
     (name "libgnome-keyring")
