@@ -13671,14 +13671,13 @@ many of the popular cloud service providers using a unified API.")
 (define-public python-smmap2
   (package
     (name "python-smmap2")
-    (version "2.0.3")
+    (version "2.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "smmap2" version))
        (sha256
-        (base32
-         "1hvn28p3zvxa98sbi9lrqvv2ps4q284j4jq9a619zw0m7yv0sly7"))))
+        (base32 "16k03pcnxd3lgzwgbd7nl4jwzm1wmahirvd09kljnzvy96hgza99"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nosexcover" ,python-nosexcover)))
