@@ -36,7 +36,10 @@
             alsa-service-type
 
             pulseaudio-configuration
-            pulseaudio-service-type))
+            pulseaudio-service-type
+
+            ladspa-configuration
+            ladspa-service-type))
 
 ;;; Commentary:
 ;;;
@@ -125,10 +128,7 @@ ctl.!default {
                         (file-append pulseaudio "/etc/pulse/system.pa"))))
 
 (define (pulseaudio-environment config)
-  ;; Define this variable in the global environment such that
-  ;; pulseaudio swh-plugins works.
-  `(("LADSPA_PATH" . ,(file-append swh-plugins "/lib/ladspa"))
-    ;; Define these variables, so that pulseaudio honors /etc.
+  `(;; Define these variables, so that pulseaudio honors /etc.
     ("PULSE_CONFIG" . "/etc/pulse/daemon.conf")
     ("PULSE_CLIENTCONFIG" . "/etc/pulse/client.conf")))
 
@@ -165,5 +165,33 @@ ctl.!default {
           (service-extension etc-service-type pulseaudio-etc)))
    (default-value (pulseaudio-configuration))
    (description "Configure PulseAudio sound support.")))
+
+
+;;;
+;;; LADSPA
+;;;
+
+(define-record-type* <ladspa-configuration>
+  ladspa-configuration make-ladspa-configuration
+  ladspa-configuration?
+  (plugins ladspa-plugins (default '())))
+
+(define (ladspa-environment config)
+  ;; Define this variable in the global environment such that
+  ;; pulseaudio swh-plugins (and similar LADSPA plugins) work.
+  `(("LADSPA_PATH" .
+     (string-join
+      ',(map (lambda (package) (file-append package "/lib/ladspa"))
+             (ladspa-plugins config))
+      ":"))))
+
+(define ladspa-service-type
+  (service-type
+   (name 'ladspa)
+   (extensions
+    (list (service-extension session-environment-service-type
+                             ladspa-environment)))
+   (default-value (ladspa-configuration))
+   (description "Configure LADSPA plugins.")))
 
 ;;; sound.scm ends here

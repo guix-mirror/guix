@@ -15951,19 +15951,21 @@ pcm.!default @{
 See @uref{https://www.alsa-project.org/main/index.php/Asoundrc} for the
 details.
 
-@deffn {Scheme Variable} pulseaudio-service-type
-This is the type for the @uref{http://www.pulseaudio.org/, PulseAudio
-sound server}, which sets the @var{LADSPA_PATH} environment variable to
-allow PulseAudio load modules from @code{swh-plugins} package.
+@deffn {Scheme Variable} ladspa-service-type
+This service sets the @var{LADSPA_PATH} variable, so that programs, which
+respect it, e.g. PulseAudio, can load LADSPA plugins.
+
+The following example will setup the service to enable modules from the
+@code{swh-plugins} package:
+
+@lisp
+(service ladspa-service-type
+         (ladspa-configuration (plugins (list swh-plugins))))
+@end lisp
 
 See @uref{http://plugin.org.uk/ladspa-swh/docs/ladspa-swh.html} for the
 details.
 
-The following example will setup the service:
-
-@lisp
-(service pulseaudio-service-type)
-@end lisp
 @end deffn
 
 @node Database Services
