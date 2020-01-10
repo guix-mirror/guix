@@ -7,7 +7,7 @@
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -297,7 +297,7 @@ for some KDevelop language plugins (Ruby, PHP, CSS...).")
     (license license:lgpl2.0+)))
 
 ;; kdevplatform was merged into kdevelop as of 5.2.x
-(define-deprecated kdevplatform kdevelop kdevelop)
+(define-deprecated kdevplatform kdevelop)
 
 (define-public krita
   (package
