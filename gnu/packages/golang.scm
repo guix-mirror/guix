@@ -3374,3 +3374,25 @@ test results.")
 data serialization format.")
     (home-page "https://github.com/golang/protobuf")
     (license license:bsd-3)))
+
+(define-public go-github-com-mattn-go-zglob
+  (package
+    (name "go-github-com-mattn-go-zglob")
+    (version "0.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/mattn/go-zglob.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1sncdyq5fbd42al4amyy91h7vlzm3wm6c9vl8za2pjgfgsd581fz"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/mattn/go-zglob"))
+    (home-page "https://github.com/mattn/go-zglob")
+    (synopsis "Glob library that descends into other directories")
+    (description " A glob library that implements descending into other
+directories.  It is optimized for filewalking. ")
+    (license license:expat)))
