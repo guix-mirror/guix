@@ -62,7 +62,8 @@
          ,(string-append "--with-krb5=" (assoc-ref %build-inputs "mit-krb5"))
          ,(string-append "--with-pluginpath="
                          (assoc-ref %outputs "out")
-                         "/lib/libnfsidmap"))
+                         "/lib/libnfsidmap")
+         "--enable-svcgss")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'adjust-command-file-names
