@@ -85,6 +85,7 @@
             silofl1.1
             sleepycat
             tcl/tk
+            unicode
             unlicense
             vim
             w3c
@@ -583,6 +584,11 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "Vim"
            "http://directory.fsf.org/wiki/License:Vim7.2"
            "http://www.gnu.org/licenses/license-list.html#Vim"))
+
+(define unicode
+  (license "Unicode"
+           "https://directory.fsf.org/wiki/License:Unicode"
+           "http://www.gnu.org/licenses/license-list.html#Unicode"))
 
 (define unlicense
   (license "Unlicense"
