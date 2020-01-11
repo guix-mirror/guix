@@ -1135,3 +1135,26 @@ storing and retrieving sensitive information in your programs.")
 package provides a tool to securely sign firmware images for booting by
 MCUboot.")
     (license license:expat)))
+
+(define-public python-jeepney
+  (package
+    (name "python-jeepney")
+    (version "0.4.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "jeepney" version))
+        (sha256
+         (base32
+          "1fz9lb5fl831sijg2j0sbki698j2z6awbblas7mz3gp9jz2xi9hb"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-testpath" ,python-testpath)
+       ("python-tornado" ,python-tornado)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://gitlab.com/takluyver/jeepney")
+    (synopsis "Low-level, pure Python DBus protocol wrapper")
+    (description
+     "This is a low-level, pure Python DBus protocol client.  It has an
+I/O-free core, and integration modules for different event loops.")
+    (license license:expat)))
