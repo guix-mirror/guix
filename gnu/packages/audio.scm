@@ -332,7 +332,7 @@ engineers, musicians, soundtrack editors and composers.")
 (define-public audacity
   (package
     (name "audacity")
-    (version "2.3.2")
+    (version "2.3.3")
     (source
      (origin
        (method git-fetch)
@@ -342,7 +342,7 @@ engineers, musicians, soundtrack editors and composers.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "08w96124vv8k4myd4vifq73ningq6404x889wvg2sk016kc4dfv1"))
+         "0707fsnrl4vjalsi21w4blwgz024qhd0w8rdd5j5vpxf5lyk2rbk"))
        (patches (search-patches "audacity-build-with-system-portaudio.patch"))
        (modules '((guix build utils)))
        (snippet
@@ -351,7 +351,7 @@ engineers, musicians, soundtrack editors and composers.")
            (for-each
             (lambda (dir)
               (delete-file-recursively (string-append "lib-src/" dir)))
-            '("expat" "ffmpeg" "libflac" "libid3tag" "libmad" "libogg"
+            '("expat" "ffmpeg" "lame" "libflac" "libid3tag" "libmad" "libogg"
               "libsndfile" "libsoxr" "libvamp" "libvorbis" "lv2"
               "portaudio-v19" "portmidi" "soundtouch" "twolame"
               ;; FIXME: these libraries have not been packaged yet:
@@ -451,7 +451,8 @@ engineers, musicians, soundtrack editors and composers.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* '("src/NoteTrack.cpp"
                             "src/AudioIO.cpp"
-                            "src/AudioIO.h")
+                            "src/AudioIO.h"
+                            "src/AudioIOBase.cpp")
                (("../lib-src/portmidi/pm_common/portmidi.h") "portmidi.h")
                (("../lib-src/portmidi/porttime/porttime.h") "porttime.h"))
              (substitute* "src/prefs/MidiIOPrefs.cpp"
