@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
-;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
@@ -1952,6 +1952,40 @@ immutable queue or stack).")
 two hashes.")
     (home-page "https://github.com/liufengyun/hashdiff")
     (license license:expat)))
+
+(define-public ruby-hydra
+  ;; No releases yet.
+  (let ((commit "5abfa378743756ae4d9306cc134bcc482f5c9525")
+        (revision "0"))
+    (package
+      (name "ruby-hydra")
+      (version (git-version "0.0" revision commit))
+      (home-page "https://github.com/hyphenation/hydra")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1cik398l2765y3d9sdhjzki3303hkry58ac6jlkiy7iy62nm529f"))))
+      (build-system ruby-build-system)
+      (arguments
+       '(#:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'make-files-writable
+                      (lambda _
+                        (for-each make-file-writable (find-files "."))
+                        #t))
+                    (replace 'check
+                      (lambda _
+                        (invoke "rspec"))))))
+      (native-inputs
+       `(("ruby-rspec" ,ruby-rspec)))
+      (propagated-inputs
+       `(("ruby-byebug" ,ruby-byebug)))
+      (synopsis "Ruby hyphenation patterns")
+      (description
+       "ruby-hydra is a Ruby library for working with hyphenation patterns.")
+      (license license:expat))))
 
 (define-public ruby-shindo
   (package
