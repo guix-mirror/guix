@@ -21008,3 +21008,30 @@ pattern.  Searching starts with minimal 3 characters entered.
 pattern guessed from thing under current cursor position.
 @end itemize\n")
       (license license:gpl3+))))
+
+(define-public emacs-metal-mercury-mode
+  (let ((commit "99e2d8fb7177cae3bfa2dec2910fc28216d5f5a8")
+	(revision "1")
+	(version "0.0.0"))
+    (package
+      (name "emacs-metal-mercury-mode")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ahungry/metal-mercury-mode.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "0iil5k3rgifz2vqwsy12rbv5rzyvidq4sgwazsb2hzys8xynmfn5"))
+         (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)))
+      (synopsis "Major mode for editing Mercury files")
+      (description
+       "Major mode for editing Mercury files.  This is a rewrite of the original
+mercury-mode provided by Emacs as a wrapper around prolog-mode.")
+      (home-page "https://github.com/ahungry/metal-mercury-mode")
+      (license license:gpl3+))))
