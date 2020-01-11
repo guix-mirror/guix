@@ -927,7 +927,7 @@ and should be used with caution, especially on untested models.")
 (define-public vhba-module
   (package
     (name "vhba-module")
-    (version "20190831")
+    (version "20200106")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -935,7 +935,7 @@ and should be used with caution, especially on untested models.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "1ybbk6l06n0y11n5wnfmvdz0baizmq55l458ywimghdyz0n7g0ws"))))
+                "10rlvsfj0fw6n0qmwcnvhimqnsnhi7n55lyl7fq1pkwggf5218sr"))))
     (build-system linux-module-build-system)
     (arguments
      ;; TODO: No tests?
