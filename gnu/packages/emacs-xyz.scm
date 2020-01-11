@@ -2294,16 +2294,16 @@ in the center.")
 (define-public emacs-undo-tree
   (package
     (name "emacs-undo-tree")
-    (version "0.7")
+    (version "0.7.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "http://dr-qubit.org/git/undo-tree.git")
-                    (commit (string-append "release-" version))))
+                    (commit (string-append "release/" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1m02v7qhcbqv5gb0vdmf44vhqisf2pv6419dzjfpxcmwlmdm0z7a"))))
+                "1nr0149y2nvrxj56gc12jqnfl01g6z9ypfsgl6pfg85cw73hnggk"))))
     (build-system emacs-build-system)
     (home-page "http://www.dr-qubit.org/emacs.php")
     (synopsis "Treat undo history as a tree")
