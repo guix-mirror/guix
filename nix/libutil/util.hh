@@ -94,10 +94,12 @@ void writeLine(int fd, string s);
 
 /* Delete a path; i.e., in the case of a directory, it is deleted
    recursively.  Don't use this at home, kids.  The second variant
-   returns the number of bytes and blocks freed. */
+   returns the number of bytes and blocks freed, and 'linkThreshold' denotes
+   the number of links under which a file is accounted for in 'bytesFreed'.  */
 void deletePath(const Path & path);
 
-void deletePath(const Path & path, unsigned long long & bytesFreed);
+void deletePath(const Path & path, unsigned long long & bytesFreed,
+    size_t linkThreshold = 1);
 
 /* Create a temporary directory. */
 Path createTempDir(const Path & tmpRoot = "", const Path & prefix = "nix",

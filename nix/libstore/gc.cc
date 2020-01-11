@@ -392,7 +392,14 @@ bool LocalStore::isActiveTempFile(const GCState & state,
 void LocalStore::deleteGarbage(GCState & state, const Path & path)
 {
     unsigned long long bytesFreed;
-    deletePath(path, bytesFreed);
+
+    /* When deduplication is on, store items always have at least two links:
+       the one at PATH, and one in /gnu/store/.links.  In that case, increase
+       bytesFreed when PATH has two or fewer links.  */
+    size_t linkThreshold =
+	(settings.autoOptimiseStore && isStorePath(path)) ? 2 : 1;
+
+    deletePath(path, bytesFreed, linkThreshold);
     state.results.bytesFreed += bytesFreed;
 }
 
