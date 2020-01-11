@@ -7,7 +7,7 @@
 ;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
 ;;; Copyright © 2019 L  p R n  d n <guix@lprndn.info>
 ;;; Copyright © 2019 Ingo Ruhnke <grumbel@gmail.com>
@@ -645,7 +645,7 @@ like appearance, display, keyboard and mouse settings.")
 (define-public thunar
   (package
     (name "thunar")
-    (version "1.8.10")
+    (version "1.8.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/xfce/"
@@ -653,7 +653,7 @@ like appearance, display, keyboard and mouse settings.")
                                   "thunar-" version ".tar.bz2"))
               (sha256
                (base32
-                "02g72bpbb8dkwspay9qii8bi99l87jn39gz6bamgp7p4q20qsi1x"))))
+                "0f5jw61z1dbvyyf1nks5dagnbs6sxxw7spybgwvpb3hfljrlvphq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
