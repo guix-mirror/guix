@@ -914,8 +914,8 @@ the data stored in various image formats.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://downloads.sourceforge.net/cdemu/cdemu-daemon/cdemu-daemon-"
-                    version ".tar.bz2"))
+                    "https://downloads.sourceforge.net/cdemu/cdemu-daemon/"
+                    "cdemu-daemon-" version ".tar.bz2"))
               (sha256
                (base32
                 "02yyj8sr7d5briamhzrqh8zdsiiggxmx5y05kx25y7k3g15jvcx6"))))
