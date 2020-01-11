@@ -14,7 +14,7 @@
 ;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright © 2019 Jesse Gildersleve <jessejohngildersleve@protonmail.com>
-;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,6 +71,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages tex)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages xorg)
@@ -783,3 +784,161 @@ command line, to data scanning and extracting scripts, to full application
 development in a wide-range of areas.")
     (home-page "https://nongnu.org/txr/")
     (license license:bsd-2)))
+
+(define picolisp32
+  (package
+    (name "picolisp32")
+    (version "19.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://software-lab.de/picoLisp-" version ".tgz"))
+       (sha256
+        (base32 "10np0mhihr47r3201617zccrvzpkhdl1jwvz7zimk8kxpriydq2j"))
+       (modules '((guix build utils)))
+       (snippet '(begin
+                   ;; Delete the pre-compiled jar file.
+                   (delete-file "ersatz/picolisp.jar")
+                   #t))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("openssl" ,openssl)))
+    (arguments
+     `(#:system ,(match (%current-system)
+                   ((or "armhf-linux" "aarch64-linux")
+                    "armhf-linux")
+                   (_
+                    "i686-linux"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (shebang-line (string-append
+                                   "#!" out "/bin/picolisp "
+                                   out "/lib/picolisp/lib.l")))
+               (substitute* '("bin/pil"
+                              "bin/pilIndent"
+                              "bin/pilPretty"
+                              "bin/psh"
+                              "bin/replica"
+                              "bin/vip"
+                              "bin/watchdog"
+                              "games/xchess"
+                              "misc/bigtest"
+                              "misc/calc"
+                              "misc/chat"
+                              "misc/mailing"
+                              "src/mkVers")
+                 (("#\\!bin/picolisp lib.l")
+                  shebang-line)
+                 (("#\\!\\.\\./bin/picolisp \\.\\./lib.l")
+                  shebang-line)
+                 (("#\\!/usr/bin/picolisp /usr/lib/picolisp/lib.l")
+                  shebang-line)))
+             #t))
+         (add-after 'fix-paths 'make-build-reproducible
+           (lambda _
+             (substitute* "src64/lib/asm.l"
+               (("\\(prinl \"/\\* \" \\(datSym \\(date\\)\\) \" \\*/\\)")
+                ""))
+             #t))
+         (add-after 'make-build-reproducible 'fix-permissions
+           (lambda _
+             (for-each make-file-writable
+                       '("doc/family.tgz"
+                         "doc/family64.tgz"
+                         "lib/map"
+                         "src64/tags"))
+             #t))
+         (replace 'build
+           (lambda _
+             (invoke "make" "-C" "src" "picolisp" "tools" "gate")))
+         (add-before 'check 'set-home-for-tests
+           (lambda _
+             (setenv "HOME" "/tmp")
+             #t))
+         (replace 'check
+           (lambda _
+             (invoke "./pil" "test/lib.l" "-bye" "+")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man (string-append out "/share/man"))
+                    (picolisp (string-append out "/lib/picolisp")))
+               (copy-recursively "man" man)
+               (copy-recursively "." picolisp)
+               (for-each (lambda (name)
+                           (let ((path (string-append picolisp "/" name)))
+                             (delete-file-recursively path)))
+                         '("CHANGES" "COPYING" "CREDITS" "cygwin"
+                           "INSTALL" "man" "pil" "README" "src" "src64"
+                           "test"))
+               (mkdir-p bin)
+               (symlink (string-append picolisp "/bin/picolisp")
+                        (string-append bin "/picolisp"))
+               (symlink (string-append picolisp "/bin/pil")
+                        (string-append bin "/pil")))
+             #t)))))
+    (synopsis "Interpreter for the PicoLisp programming language")
+    (description
+     "PicoLisp is a programming language, or really a programming system,
+including a built-in database engine and a GUI system.")
+    (home-page "https://picolisp.com/wiki/?home")
+    (license license:expat)))
+
+(define-public picolisp
+  (match (%current-system)
+    ((or "aarch64-linux" "x86_64-linux")
+     (package
+       ;; Use the 32-bit picolisp to generate the assembly files required by
+       ;; the 64-bit picolisp.
+       (inherit picolisp32)
+       (name "picolisp")
+       (native-inputs
+        `(("picolisp32" ,picolisp32)
+          ("which" ,which)))
+       (arguments
+        (substitute-keyword-arguments (package-arguments picolisp32)
+          ((#:system _ "") (%current-system))
+          ((#:phases phases)
+           `(modify-phases ,phases
+              (delete 'fix-paths)
+              (add-before 'build 'fix-paths
+                ;; This must run after the other shebang-patching phases,
+                ;; or they will override our changes.
+                (lambda* (#:key inputs outputs #:allow-other-keys)
+                  (let* ((picolisp32 (assoc-ref inputs "picolisp32"))
+                         (out (assoc-ref outputs "out"))
+                         (shebang-line (string-append
+                                        "#!" out "/bin/picolisp "
+                                        out "/lib/picolisp/lib.l")))
+                    (substitute* '("bin/pil"
+                                   "bin/pilIndent"
+                                   "bin/pilPretty"
+                                   "bin/psh"
+                                   "bin/replica"
+                                   "bin/vip"
+                                   "bin/watchdog"
+                                   "games/xchess"
+                                   "misc/bigtest"
+                                   "misc/calc"
+                                   "misc/chat"
+                                   "misc/mailing"
+                                   "src/mkVers")
+                      (("#\\!.*picolisp32.*/bin/picolisp .*lib\\.l")
+                       shebang-line))
+                    (substitute* "src64/mkAsm"
+                      (("/usr/bin/")
+                       (string-append picolisp32 "/bin/"))))
+                  #t))
+              (replace 'build
+                (lambda _
+                  (invoke "make" "-C" "src" "tools" "gate")
+                  (invoke "make" "-C" "src64" "CC=gcc" "picolisp")))))))))
+    (_
+     (package
+       (inherit picolisp32)
+       (name "picolisp")))))
