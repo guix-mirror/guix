@@ -1023,7 +1023,7 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
       ("libpng" ,libpng)
       ("libtiff" ,libtiff)
       ("openexr" ,openexr)
-      ("python" ,python)
+      ("python" ,python-wrapper)
       ("python-numpy" ,python-numpy)
       ("zlib" ,zlib)))
    (native-inputs
