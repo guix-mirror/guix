@@ -45,17 +45,32 @@
   #:use-module (gnu packages shells)
   #:use-module (srfi srfi-1))
 
+(define (version-with-underscores version)
+  (string-map (lambda (x) (if (eq? x #\.) #\_ x)) version))
+
+(define (boost-patch name version hash)
+  (origin
+    (method url-fetch)
+    (uri (string-append "https://www.boost.org/patches/"
+                        (version-with-underscores version) "/" name))
+    (file-name (string-append "boost-" name))
+    (sha256 (base32 hash))))
+
 (define-public boost
   (package
     (name "boost")
     (version "1.72.0")
     (source (origin
               (method url-fetch)
-              (uri (let ((version-with-underscores
-                          (string-map (lambda (x) (if (eq? x #\.) #\_ x)) version)))
-                     (string-append "https://dl.bintray.com/boostorg/release/"
-                                    version "/source/boost_"
-                                    version-with-underscores ".tar.bz2")))
+              (uri (string-append "https://dl.bintray.com/boostorg/release/"
+                                  version "/source/boost_"
+                                  (version-with-underscores version) ".tar.bz2"))
+              (patches
+               (list (boost-patch
+                      ;; 1.72.0 was released with a faulty coroutine submodule:
+                      ;; <https://github.com/boostorg/coroutine/issues/46>.
+                      "0001-revert-cease-dependence-on-range.patch" version
+                      "1zcqxzh56m1s635wqwk15j3zcs2gmjvjy2f0hid7i78s4pgm0yfs")))
               (sha256
                (base32
                 "08h7cv61fd0lzb4z50xanfqn0pdgvizjrpd1kcdgj725pisb5jar"))))
