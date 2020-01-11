@@ -231,10 +231,13 @@ latest version of CRATE-NAME."
                                             string->license))
           (append cargo-inputs cargo-development-inputs)))))
 
-(define (crate-recursive-import crate-name)
+(define* (crate-recursive-import crate-name #:optional version)
   (recursive-import crate-name #f
-                    #:repo->guix-package (lambda (name repo)
-                                           (crate->guix-package name))
+                    #:repo->guix-package
+                    (lambda (name repo)
+                      (let ((version (and (string=? name crate-name)
+                                          version)))
+                        (crate->guix-package name version)))
                     #:guix-name crate-name->package-name))
 
 (define (guix-package->crate-name package)

@@ -22,7 +22,7 @@
 ;;; Copyright © 2016, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
@@ -1087,7 +1087,7 @@ useful features.")
 (define-public libetpan
   (package
     (name "libetpan")
-    (version "1.9.4")
+    (version "1.9.3")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -1095,7 +1095,7 @@ useful features.")
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256
-              (base32 "0g7an003simfdn7ihg9yjv7hl2czsmjsndjrp39i7cad8icixscn"))))
+               (base32 "19g4qskg71jv7sxfxsdkjmrxk9mk5kf9b6fhw06g6wvm3205n95f"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf-wrapper)
                      ("automake" ,automake)
@@ -1260,21 +1260,25 @@ delivery.")
 (define-public exim
   (package
     (name "exim")
-    (version "4.92.3")
+    (version "4.93.0.4")
     (source
      (origin
        (method url-fetch)
-       (uri (list (string-append "https://ftp.exim.org/pub/exim/exim4/exim-"
-                                 version ".tar.bz2")
-                  (string-append "https://ftp.exim.org/pub/exim/exim4/old/exim-"
-                                 version ".tar.bz2")))
+       (uri (let ((file-name (string-append "exim-" version ".tar.xz")))
+              (list (string-append "https://ftp.exim.org/pub/exim/exim4/"
+                                   file-name)
+                    ;; ‘Fix’ releases (exim-x.y.z.f) are kept separately.
+                    (string-append "https://ftp.exim.org/pub/exim/exim4/fixes/"
+                                   file-name)
+                    ;; After a new non-fix release, the old one is moved here.
+                    (string-append "https://ftp.exim.org/pub/exim/exim4/old/"
+                                   file-name))))
        (sha256
-        (base32
-         "0d0h0j9pl3yf089sc59ia60m3dqnkb3qh1qaz6vxfg2ja2mnm5i9"))))
+        (base32 "01g4sfycv13glnmfrapwhjbdw6z1z7w5bwjldxjmglwfw5p3czak"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb-5.3) ; ‘#error Version 6 and later BDB API is not supported’
-       ("gnutls" ,gnutls)
+       ("gnutls" ,gnutls/dane)
        ("gzip" ,gzip)
        ("bzip2" ,bzip2)
        ("xz" ,xz)
@@ -1284,7 +1288,8 @@ delivery.")
        ("libxaw" ,libxaw)))
     (native-inputs
      `(("pcre" ,pcre "bin")
-       ("perl" ,perl)))
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -1313,9 +1318,11 @@ delivery.")
                  (("(COMPRESS_COMMAND=).*" all var)
                   (string-append var gzip "/bin/gzip\n"))
                  (("(ZCAT_COMMAND=).*" all var)
-                  (string-append var gzip "/bin/zcat\n")))
-               ;; This file has hardcoded names for tools despite the zcat
-               ;; configuration above.
+                  (string-append var gzip "/bin/zcat\n"))
+                 (("# (USE_GNUTLS(|_PC)=.*)" all line)
+                  (string-append line "\n")))
+               ;; This file has hard-coded relative file names for tools despite
+               ;; the zcat configuration above.
                (substitute* '("src/exigrep.src")
                  (("'zcat'") (string-append "'" gzip "/bin/zcat'"))
                  (("'bzcat'") (string-append "'" bzip2 "/bin/bzcat'"))
@@ -1331,9 +1338,19 @@ delivery.")
              (let ((bash (assoc-ref inputs "bash")))
                (substitute* '("scripts/Configure-eximon")
                  (("#!/bin/sh") (string-append "#!" bash "/bin/sh"))))
-             #t)))
-       #:make-flags '("INSTALL_ARG=-no_chown")
-       ;; No 'check' target.
+             #t))
+         (add-before 'build 'build-reproducibly
+           (lambda _
+             ;; The ‘compilation number’ is incremented for every build from the
+             ;; same source tree.  It appears to vary over different (parallel?)
+             ;; builds.  Make it a ‘constant number’ instead.
+             (substitute* "src/version.c"
+               (("#include \"cnumber.h\"") "1")))))
+       #:make-flags
+       (list "CC=gcc"
+             "INSTALL_ARG=-no_chown")
+       ;; No 'check' target.  There is a test suite in test/, which assumes that
+       ;; certain build options were (not) used and that it can freely ‘sudo’.
        #:tests? #f))
     (home-page "https://www.exim.org/")
     (synopsis

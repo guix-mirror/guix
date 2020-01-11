@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
@@ -84,7 +84,7 @@
               ("libxft" ,libxft)
               ("libxi" ,libxi)
               ("libxinerama" ,libxinerama)
-              ("openssl" ,openssl)
+              ("openssl" ,openssl-1.0) ;XXX try latest openssl for dillo > 3.0.5
               ("perl" ,perl)
               ("zlib" ,zlib)))
     (synopsis "Very small and fast graphical web browser")
@@ -341,7 +341,7 @@ GUI.  It is based on PyQt5 and QtWebKit.")
 (define-public vimb
   (package
     (name "vimb")
-    (version "3.5.0")
+    (version "3.6.0")
     (source
      (origin
        (method git-fetch)
@@ -349,7 +349,7 @@ GUI.  It is based on PyQt5 and QtWebKit.")
              (url "https://github.com/fanglingsu/vimb/")
              (commit version)))
        (sha256
-        (base32 "13q7mk1hhjri0s30a98r8ncy0skf6m6lrnbqaf0jimf6sbwgiirf"))
+        (base32 "0228khh3lqbal046k6akqah7s5igq9s0wjfjbdjam75kjj42pbhj"))
        (file-name (git-file-name name version))))
     (build-system glib-or-gtk-build-system)
     (arguments
@@ -377,7 +377,7 @@ driven and does not detract you from your daily work.")
 (define next-gtk-webkit
   (package
     (name "next-gtk-webkit")
-    (version "1.3.4")
+    (version "1.4.0")
     (source
      (origin
        (method git-fetch)
@@ -388,7 +388,7 @@ driven and does not detract you from your daily work.")
              (commit version)))
        (sha256
         (base32
-         "00iqv4xarabl98gdl1rzqkc5v0vfljx1nawsxqsx9x3a9mnxmgxi"))
+         "1gkmr746rqqg94698a051gv79fblc8n9dq0zg04llba44adhpmjl"))
        (file-name (git-file-name "next" version))))
     (build-system glib-or-gtk-build-system)
     (arguments
@@ -485,6 +485,24 @@ features for productive professionals.")
        ("prove-asdf" ,sbcl-prove-asdf)))
     (synopsis "Infinitely extensible web-browser (password manager)")))
 
+(define sbcl-next-hooks
+  (package
+    (inherit next-gtk-webkit)
+    (name "sbcl-next-hooks")
+    (build-system asdf-build-system/sbcl)
+    (arguments
+     `(#:tests? #t
+       #:asd-file "next.asd"
+       #:asd-system-name "next/hooks"))
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("serapeum" ,sbcl-serapeum)
+       ("fare-quasiquote-extras" ,cl-fare-quasiquote-extras)))
+    (native-inputs
+     `(("trivial-features" ,sbcl-trivial-features)
+       ("prove-asdf" ,sbcl-prove-asdf)))
+    (synopsis "Infinitely extensible web-browser (hooks)")))
+
 (define-public next
   (let ((version (package-version next-gtk-webkit)))
     (package
@@ -551,7 +569,6 @@ features for productive professionals.")
          ("cl-annot" ,sbcl-cl-annot)
          ("cl-ansi-text" ,sbcl-cl-ansi-text)
          ("cl-css" ,sbcl-cl-css)
-         ("cl-hooks" ,sbcl-cl-hooks)
          ("cl-json" ,sbcl-cl-json)
          ("cl-markup" ,sbcl-cl-markup)
          ("cl-ppcre" ,sbcl-cl-ppcre)
@@ -560,16 +577,19 @@ features for productive professionals.")
          ("closer-mop" ,sbcl-closer-mop)
          ("dbus" ,cl-dbus)
          ("dexador" ,sbcl-dexador)
+         ("fare-quasiquote-extras" ,cl-fare-quasiquote-extras) ; For serapeum.  Guix bug?
          ("ironclad" ,sbcl-ironclad)
          ("local-time" ,sbcl-local-time)
          ("log4cl" ,sbcl-log4cl)
          ("lparallel" ,sbcl-lparallel)
          ("mk-string-metrics" ,sbcl-mk-string-metrics)
          ("parenscript" ,sbcl-parenscript)
+         ("plump" ,sbcl-plump)
          ("quri" ,sbcl-quri)
+         ("serapeum" ,sbcl-serapeum)
          ("sqlite" ,sbcl-cl-sqlite)
          ("str" ,sbcl-cl-str)
-         ("swank" ,cl-slime-swank)
+         ("swank" ,sbcl-slime-swank)
          ("trivia" ,sbcl-trivia)
          ("trivial-clipboard" ,sbcl-trivial-clipboard)
          ("unix-opts" ,sbcl-unix-opts)
@@ -578,9 +598,11 @@ features for productive professionals.")
          ("next-download-manager" ,sbcl-next-download-manager)
          ("next-ring" ,sbcl-next-ring)
          ("next-history-tree" ,sbcl-next-history-tree)
-         ("next-password-manager" ,sbcl-next-password-manager)))
+         ("next-password-manager" ,sbcl-next-password-manager)
+         ("next-hooks" ,sbcl-next-hooks)))
       (native-inputs
        `(("trivial-features" ,sbcl-trivial-features)
+         ("trivial-types" ,sbcl-trivial-types)
          ("prove-asdf" ,sbcl-prove-asdf)))
       (synopsis "Infinitely extensible web-browser (with Lisp development files)"))))
 

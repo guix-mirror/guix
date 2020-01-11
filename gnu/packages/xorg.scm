@@ -21,6 +21,7 @@
 ;;; Copyright © 2019 nee <nee@cock.li>
 ;;; Copyright © 2019 Yoshinori Arai <kumagusu08@gmail.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6536,3 +6537,29 @@ Thai).")
     ;; by simple permissive licenses.  See the 'COPYRIGHT' file.
     (license (list license:gpl2+
                    license:expat))))
+
+(define-public xcur2png
+  (package
+    (name "xcur2png")
+    (version "0.7.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/eworm-de/xcur2png.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0858wn2p14bxpv9lvaz2bz1rk6zk0g8zgxf8iy595m8fqv4q2fya"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libpng" ,libpng)
+       ("libxcursor" ,libxcursor)))
+    (synopsis "Decode X cursors")
+    (description
+     "xcur2png is a program decomposes an X cursor into a set of PNG images and
+a configuration file reusable by xcursorgen.")
+    (home-page "https://github.com/eworm-de/xcur2png")
+    (license license:gpl3+)))

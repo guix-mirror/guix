@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
-;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
@@ -30,6 +30,7 @@
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1204,7 +1205,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.29")
+    (version "1.8.30")
     (source (origin
               (method url-fetch)
               (uri
@@ -1214,7 +1215,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "0z4wyadh9cks17gdpfgx4kvbrlnyb6nai2sd6chk7qh4jsngylyf"))
+                "1rvrqlqrrjsd06dczgj9cwjdkpkqil5zzlwh87h06ms6qzfx6nm3"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1834,7 +1835,7 @@ various ways that may be running with too much privilege.")
 (define-public smartmontools
   (package
     (name "smartmontools")
-    (version "7.0")
+    (version "7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1842,7 +1843,7 @@ various ways that may be running with too much privilege.")
                     version "/smartmontools-" version ".tar.gz"))
               (sha256
                (base32
-                "077nx2rn9szrg6isdh0938zbp7vr3dsyxl4jdyyzv1xwhqksrqg5"))))
+                "0imqb7ka4ia5573w8rnpck571pjjc9698pdjcapy9cfyk4n4swrz"))))
     (build-system gnu-build-system)
     (inputs `(("libcap-ng" ,libcap-ng)))
     (home-page "https://www.smartmontools.org/")
@@ -2908,34 +2909,35 @@ tool for remote execution and deployment.")
     (license license:bsd-2)))
 
 (define-public neofetch
-  (package
-    (name "neofetch")
-    (version "6.1.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/dylanaraps/neofetch")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "022xzn9jk18k2f4b6011d8jk5nbl84i3mw3inlz4q52p2hvk8fch"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f                      ; there are no tests
-       #:make-flags
-       (list (string-append "PREFIX=" %output))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure))))         ; no configure script
-    (home-page "https://github.com/dylanaraps/neofetch")
-    (synopsis "System information script")
-    (description "Neofetch is a command-line system information tool written in
+  (let ((commit "501d6b7594296d9eac8943140f8581daf555873d"))
+    (package
+      (name "neofetch")
+      (version (git-version "6.1.0" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/dylanaraps/neofetch")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1h5md9jimyc6z4d7w66j27hn8qghzyxgpkh5h9dclzxpp5cs8whb"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                      ; there are no tests
+         #:make-flags
+         (list (string-append "PREFIX=" %output))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure))))         ; no configure script
+      (home-page "https://github.com/dylanaraps/neofetch")
+      (synopsis "System information script")
+      (description "Neofetch is a command-line system information tool written in
 Bash.  Neofetch displays information about your system next to an image, your OS
 logo, or any ASCII file of your choice.  The main purpose of Neofetch is to be
 used in screenshots to show other users what operating system or distribution
 you are running, what theme or icon set you are using, etc.")
-    (license license:expat)))
+      (license license:expat))))
 
 (define-public screenfetch
   (package
@@ -3205,7 +3207,7 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.0.34-1")
+      (version "3.0.37-1")
       (source
        (origin
          (method git-fetch)
@@ -3214,7 +3216,7 @@ Python loading in HPC environments.")
                (commit version)))
          (file-name (git-file-name real-name version))
          (sha256
-          (base32 "0x2s40lwsan2pk292nspjgyw00f9f5fdfmwfvl50924pxhyxn2fh"))))
+          (base32 "15wvj9w601ci3bavd1hk5qlm8dfm7a7cjglczk29yir5yw2jww3f"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash-minimal)

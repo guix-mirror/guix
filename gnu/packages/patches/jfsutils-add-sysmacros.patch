@@ -1,0 +1,26 @@
+From: Tobias Geerinckx-Rice <me@tobias.gr>
+Date: Thu, 12 Dec 2019 02:15:37 +0100
+Subject: gnu: jfsutils: Include sys/sysmacros.h.
+
+Copied verbatim[0] from the Debian package.
+
+[0]: https://sources.debian.org/patches/jfsutils/1.1.15-4/add_sysmacros.patch
+
+Description: Include sys/sysmacros.h
+ Mentioned header needed for major() definition.
+Author: Laszlo Boszormenyi (GCS) <gcs@debian.org>
+Last-Update: 2018-12-11
+
+---
+
+--- jfsutils-1.1.15.orig/libfs/devices.c
++++ jfsutils-1.1.15/libfs/devices.c
+@@ -49,6 +49,8 @@
+ #include <sys/disklabel.h>
+ #endif
+ 
++#include <sys/sysmacros.h>
++
+ #include "jfs_types.h"
+ #include "jfs_filsys.h"
+ #include "devices.h"

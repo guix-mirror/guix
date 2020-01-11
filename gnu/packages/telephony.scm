@@ -14,6 +14,7 @@
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 ;;; Copyright © 2019 Ivan Vilata i Balaguer <ivan@selidor.net>
+;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -927,3 +928,35 @@ This package provides the Jami client for the GNOME desktop.")
 
 (define-public jami-client-gnome
   (deprecated-package "jami-client-gnome" jami))
+
+(define-public libtgvoip
+  (package
+    (name "libtgvoip")
+    (version "2.4.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/grishka/libtgvoip.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       ;; Fix compilation on i686-linux architecture.
+       ;; NOTE: Applying these patches is order-dependent!
+       ;; The patch for WebRTC /must/ precede the patch for SSE2.
+       (patches
+        (search-patches "libtgvoip-disable-webrtc.patch"
+                        "libtgvoip-disable-sse2.patch"))
+       (sha256
+        (base32
+         "122kn3jx6v0kkldlzlpzvlwqxgp6pmzxsjhrhcxw12bx9c08sar5"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("libopusenc" ,libopusenc)
+       ("openssl" ,openssl)
+       ("pulseaudio" ,pulseaudio)))
+    (synopsis "VoIP library for Telegram clients")
+    (description "A collection of libraries and header files for implementing
+telephony functionality into custom Telegram clients.")
+    (home-page "https://github.com/zevlg/libtgvoip")
+    (license license:unlicense)))

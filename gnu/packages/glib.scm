@@ -903,6 +903,7 @@ programming language.  It also contains the utility
               (uri (string-append "https://people.freedesktop.org/~hughsient/"
                                   "appstream-glib/releases/"
                                   "appstream-glib-" version ".tar.xz"))
+              (patches (search-patches "appstream-glib-2020.patch"))
               (sha256
                (base32
                 "14jr1psx5kxywdprgbqn79w309yz8lrqlsq7288hfrf87gbr1wh4"))))

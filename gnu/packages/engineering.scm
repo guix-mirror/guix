@@ -1,12 +1,12 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
-;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018, 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
@@ -289,7 +289,7 @@ utilities.")
         ;; never runs.  See <https://bugs.debian.org/792687>.
         `(cons "ac_cv_path_MSGMERGE=true" ,flags))
        ((#:phases phases '%standard-phases)
-        `(modify-phases ,phases
+        `(modify-phases %standard-phases
            (add-before 'bootstrap 'prepare
              (lambda _
                ;; Some of the scripts there are invoked by autogen.sh.
@@ -795,7 +795,7 @@ language.")
 (define-public kicad
     (package
       (name "kicad")
-      (version "5.1.4")
+      (version "5.1.5")
       (source
        (origin
          (method url-fetch)
@@ -804,7 +804,7 @@ language.")
                 "https://launchpad.net/kicad/" (version-major version)
                 ".0/" version "/+download/kicad-" version ".tar.xz"))
          (sha256
-          (base32 "1r60dgh6aalbpq1wsmpyxkz0nn4ck8ydfdjcrblpl69k5rks5k2j"))))
+          (base32 "0x3417f2pa7p65s9f7l49rqbnrzy8gz6i0n07mlbxqbnm0fmlql0"))))
       (build-system cmake-build-system)
       (arguments
        `(#:out-of-source? #t
@@ -855,7 +855,7 @@ language.")
          ("python" ,python)
          ("wxwidgets" ,wxwidgets)
          ("wxpython" ,python-wxpython)))
-      (home-page "http://kicad-pcb.org/")
+      (home-page "https://kicad-pcb.org/")
       (synopsis "Electronics Design Automation Suite")
       (description "Kicad is a program for the formation of printed circuit
 boards and electrical circuits.  The software has a number of programs that
@@ -919,7 +919,7 @@ electrical diagrams), gerbview (viewing Gerber files) and others.")
              (sha256
               (base32
                "08qrz5zzsb5127jlnv24j0sgiryd5nqwg3lfnwi8j9a25agqk13j"))))))
-      (home-page "http://kicad-pcb.org/")
+      (home-page "https://kicad-pcb.org/")
       (synopsis "Libraries for kicad")
       (description "This package provides Kicad component, footprint and 3D
 render model libraries.")
@@ -928,7 +928,7 @@ render model libraries.")
 (define-public kicad-symbols
   (package
     (name "kicad-symbols")
-    (version "5.1.4")
+    (version "5.1.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -937,15 +937,19 @@ render model libraries.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1lna4xlvzrxif3569pkp6mrg7fj62z3a3ri5j97lnmnnzhiddnh3"))))
+                "048b07ffsaav1ssrchw2p870lvb4rsyb5vnniy670k7q9p16qq6h"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f)) ; No tests exist
-    (home-page "http://kicad-pcb.org/")
+     `(#:tests? #f))                    ; no tests exist
+    (home-page "https://kicad-pcb.org/")
     (synopsis "Official KiCad schematic symbol libraries for KiCad 5")
     (description "This package contains the official KiCad schematic symbol
 libraries for KiCad 5.")
-    ;; TODO: Exception: "To the extent that the creation of electronic designs that use 'Licensed Material' can be considered to be 'Adapted Material', then the copyright holder waives article 3 of the license with respect to these designs and any generated files which use data provided as part of the 'Licensed Material'."
+    ;; TODO: Exception: "To the extent that the creation of electronic designs
+    ;; that use 'Licensed Material' can be considered to be 'Adapted Material',
+    ;; then the copyright holder waives article 3 of the license with respect to
+    ;; these designs and any generated files which use data provided as part of
+    ;; the 'Licensed Material'."
     ;; See <https://github.com/KiCad/kicad-symbols/blob/master/LICENSE.md>.
     (license license:cc-by-sa4.0)))
 
@@ -1205,13 +1209,14 @@ language, ADMS transforms Verilog-AMS code into other target languages.")
     (name "capstone")
     (version "3.0.5")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/aquynh/capstone/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/aquynh/capstone")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1wbd1g3r32ni6zd9vwrq3kn7fdp9y8qwn9zllrrbk8n5wyaxcgci"))))
+                "0dgf82kxj4rs45d6s8sr984c38sll1n5scpypjlyh21gh2yl4qfw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +32,7 @@
   #:use-module (gnu packages connman)
   #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages disk)
+  #:use-module (gnu packages file-systems)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
   #:autoload   (gnu packages gnupg) (guile-gcrypt)
@@ -295,7 +296,8 @@ selected keymap."
                                cryptsetup
                                dosfstools ;mkfs.fat
                                e2fsprogs ;mkfs.ext4
-                               btrfs-progs
+                               btrfs-progs ;mkfs.btrfs
+                               jfsutils ;jfs_mkfs
                                kbd ;chvt
                                guix ;guix system init call
                                util-linux ;mkwap

@@ -4,6 +4,7 @@
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,7 +48,7 @@
 (define-public abiword
   (package
     (name "abiword")
-    (version "3.0.2")
+    (version "3.0.4")
     (source
       (origin
         (method url-fetch)
@@ -55,10 +56,9 @@
           (string-append "https://www.abisource.com/downloads/abiword/" version
                          "/source/abiword-" version ".tar.gz"))
         (sha256
-         (base32 "08imry821g81apdwym3gcs4nss0l9j5blqk31j5rv602zmcd9gxg"))
+         (base32 "1mx5l716n0z5788i19qmad30cck4v9ggr071cafw2nrf375rcc79"))
         (patches
-         (search-patches "abiword-explictly-cast-bools.patch"
-                         "abiword-black-drawing-with-gtk322.patch"))))
+         (search-patches "abiword-explictly-cast-bools.patch"))))
 
     (build-system glib-or-gtk-build-system)
     (arguments                   ;; NOTE: rsvg is disabled, since Abiword

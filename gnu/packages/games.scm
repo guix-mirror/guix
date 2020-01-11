@@ -24,7 +24,7 @@
 ;;; Copyright © 2016 Steve Webber <webber.sl@gmail.com>
 ;;; Copyright © 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@hyperbola.info>
 ;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2019 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
@@ -37,7 +37,7 @@
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2019 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2019, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Jesse Gibbons <jgibbons2357+guix@gmail.com>
@@ -3747,7 +3747,7 @@ with the \"Stamp\" tool within Tux Paint.")
 (define-public supertux
   (package
    (name "supertux")
-   (version "0.6.0")
+   (version "0.6.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://github.com/SuperTux/supertux/"
@@ -3756,7 +3756,7 @@ with the \"Stamp\" tool within Tux Paint.")
             (file-name (string-append name "-" version ".tar.gz"))
             (sha256
              (base32
-              "1h1s4abirkdv4ag22zvyk6zkk64skqbjmcnnba67ps4hdzxfbhy4"))
+              "0lqch5gcq6ccnspy93z9r13bp8w2j1vrd8jhvk5kp4qhrd1f069s"))
             (patches
              (search-patches "supertux-unbundle-squirrel.patch"))))
    (arguments
@@ -3789,11 +3789,11 @@ with the \"Stamp\" tool within Tux Paint.")
              ("boost" ,boost)
              ("freetype" ,freetype)
              ("squirrel" ,squirrel)))
-   (native-inputs `(("pkg-config" ,pkg-config)))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
    (synopsis "2D platformer game")
-   (description "SuperTux is a free classic 2D jump'n run sidescroller game
-in a style similar to the original Super Mario games covered under
-the GNU GPL.")
+   (description "SuperTux is a classic 2D jump'n run sidescroller game in
+a style similar to the original Super Mario games.")
    (home-page "https://supertux.org/")
    (license license:gpl3+)))
 
@@ -4144,7 +4144,7 @@ for Un*x systems with X11.")
 (define-public freeciv
   (package
    (name "freeciv")
-   (version "2.6.0")
+   (version "2.6.1")
    (source
     (origin
      (method url-fetch)
@@ -4156,8 +4156,7 @@ for Un*x systems with X11.")
                   (version-major+minor version) "/" version
                   "/freeciv-" version ".tar.bz2")))
      (sha256
-      (base32
-       "16f9wsnn7073s6chzbm3819swd0iw019p9nrzr3diiynk28kj83w"))))
+      (base32 "1qmrhrwm0ryvsh1zsxcxj128lhyvaxap7k39sam3hh8rl0fq9rnc"))))
    (build-system gnu-build-system)
    (inputs
     `(("curl" ,curl)
@@ -4168,11 +4167,11 @@ for Un*x systems with X11.")
    (native-inputs
     `(("pkg-config" ,pkg-config)))
    (home-page "http://www.freeciv.org/")
-   (synopsis "Turn based empire building strategy game")
-   (description "Freeciv is a turn based empire building strategy game
+   (synopsis "Turn-based empire building strategy game")
+   (description "Freeciv is a turn-based empire building strategy game
 inspired by the history of human civilization.  The game commences in
 prehistory and your mission is to lead your tribe from the Stone Age
-to the Space Age.")
+into the Space Age.")
    (license license:gpl2+)))
 
 (define-public no-more-secrets
@@ -4581,7 +4580,9 @@ settings.link.libs:Add(\"wavpack\")")
              (let* ((arch ,(system->linux-architecture
                             (or (%current-target-system)
                                 (%current-system))))
-                    (build (string-append "build/" arch "/release/"))
+                    (build (string-append "build/" (if (string=? arch "i386")
+                                                       "x86" arch)
+                                          "/release/"))
                     (data-built (string-append build "data/"))
                     (out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin/"))
@@ -5182,7 +5183,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
 (define-public tome4
   (package
     (name "tome4")
-    (version "1.6.4")
+    (version "1.6.6")
     (synopsis "Single-player, RPG roguelike game set in the world of Eyal")
     (source
      (origin
@@ -5191,7 +5192,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
                            version ".tar.bz2"))
        (sha256
         (base32
-         "1hrh79aqmvwwd7idlr3lzpdpc9dgm1k5p7w2462chcjvd8vhfhb7"))
+         "1amx0y49scy9hq71wjvkdzvgclwa2g54vkv4bf40mxyp4pl0bq7m"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -5250,11 +5251,11 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
                              (wrapper (string-append bin "/" ,name)))
                         ;; icon
                         (mkdir-p pixmaps)
-                        (system* unzip "-j"
-                                 (string-append
-                                  "game/engines/te4-" ,version ".teae")
-                                 (string-append
-                                  "data/gfx/" icon) "-d" pixmaps)
+                        (invoke unzip "-j"
+                                (string-append
+                                 "game/engines/te4-" ,version ".teae")
+                                (string-append
+                                 "data/gfx/" icon) "-d" pixmaps)
                         ;; game executable
                         (install-file "t-engine" data)
                         (mkdir-p bin)
@@ -7465,7 +7466,7 @@ and bring the war to your enemy.")
 (define-public harmonist
   (package
     (name "harmonist")
-    (version "0.2")
+    (version "0.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7474,7 +7475,7 @@ and bring the war to your enemy.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0hqy9kqwgirwkq1v3vj1hp9m93hjvdj4nxcfbjfvvwk2bbzri3s2"))))
+                "146wiyanag0zqj6fhyll2sw6sydnnll8mgxhhqf9sjqsl2rx4s5r"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "git.tuxfamily.org/harmonist/harmonist"))

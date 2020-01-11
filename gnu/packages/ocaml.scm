@@ -13,6 +13,7 @@
 ;;; Copyright © 2018, 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +32,7 @@
 
 (define-module (gnu packages ocaml)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
@@ -3070,7 +3072,7 @@ instead of bindings to a C library.")
 (define-public ocaml-utop
   (package
     (name "ocaml-utop")
-    (version "2.4.2")
+    (version "2.4.3")
     (source
      (origin
        (method git-fetch)
@@ -3079,7 +3081,7 @@ instead of bindings to a C library.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0z8klqwqmq5i111p4awzvlvirhm1dxp0mbfagwfiwq1wg72v6zdm"))))
+        (base32 "1bl4943qpi3qy152dbdm5glhx19zsiylmn4rcxi8l66g58hikyjp"))))
     (build-system dune-build-system)
     (arguments
      `(#:jbuild? #t
@@ -3092,7 +3094,7 @@ instead of bindings to a C library.")
        ("react" ,ocaml-react)
        ("camomile" ,ocaml-camomile)
        ("zed" ,ocaml-zed)))
-    (home-page "https://github.com/diml/utop")
+    (home-page "https://github.com/ocaml-community/utop")
     (synopsis "Improved interface to the OCaml toplevel")
     (description "UTop is an improved toplevel for OCaml.  It can run in a
 terminal or in Emacs.  It supports line editing, history, real-time and context
@@ -5177,3 +5179,142 @@ Text inside doc comments is marked up in ocamldoc syntax.  Odoc's main
 advantage over ocamldoc is an accurate cross-referencer, which handles the
 complexity of the OCaml module system.")
     (license license:isc)))
+
+(define-public ocaml-fftw3
+  (package
+    (name "ocaml-fftw3")
+    (version "0.8.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Chris00/fftw-ocaml.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0l66yagjkwdcib6q55wd8wiap50vi23qiahkghlvm28z7nvbclfk"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-target "tests"))
+    (propagated-inputs
+     `(("fftw" ,fftw)
+       ("fftwf" ,fftwf)))
+    (native-inputs
+     `(("ocaml-cppo" ,ocaml-cppo)
+       ("ocaml-lacaml" ,ocaml-lacaml)))
+    (home-page
+     "https://github.com/Chris00/fftw-ocaml")
+    (synopsis
+     "Bindings to FFTW3")
+    (description
+     "Bindings providing OCaml support for the seminal Fast Fourier Transform
+library FFTW.")
+    (license license:lgpl2.1))) ; with static linking exception.
+
+(define-public ocaml-lacaml
+  (package
+    (name "ocaml-lacaml")
+    (version "11.0.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mmottl/lacaml.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "180yb79a3qgx067qcpm50q12hrimjygf06rgkzbish9d1zfm670c"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:tests? #f)) ; No test target.
+    (native-inputs
+     `(("openblas" ,openblas)
+       ("lapack" ,lapack)
+       ("ocaml-base" ,ocaml-base)
+       ("ocaml-stdio" ,ocaml-stdio)))
+    (home-page "https://mmottl.github.io/lacaml/")
+    (synopsis
+     "OCaml-bindings to BLAS and LAPACK")
+    (description
+     "Lacaml interfaces the BLAS-library (Basic Linear Algebra Subroutines) and
+LAPACK-library (Linear Algebra routines).  It also contains many additional
+convenience functions for vectors and matrices.")
+    (license license:lgpl2.1)))
+
+(define-public ocaml-cairo2
+  (package
+    (name "ocaml-cairo2")
+    (version "0.6.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Chris00/ocaml-cairo.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0wzysis9fa850s68qh8vrvqc6svgllhwra3kzll2ibv0wmdqrich"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:test-target "tests"))
+    (inputs
+     `(("cairo" ,cairo)
+       ("gtk+-2" ,gtk+-2)
+       ("lablgtk" ,lablgtk)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/Chris00/ocaml-cairo")
+    (synopsis "Binding to Cairo, a 2D Vector Graphics Library")
+    (description "Ocaml-cairo2 is a binding to Cairo, a 2D graphics library
+with support for multiple output devices.  Currently supported output targets
+include the X Window System, Quartz, Win32, image buffers, PostScript, PDF,
+and SVG file output.")
+    (license license:lgpl3+)))
+
+(define-public lablgtk3
+  (package
+    (name "lablgtk")
+    (version "3.0.beta8")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/garrigue/lablgtk.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "08pgwnia240i2rw1rbgiahg673kwa7b6bvhsg3z4b47xr5sh9pvz"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-target "."
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'make-writable
+           (lambda _
+             (for-each (lambda (file)
+                         (chmod file #o644))
+                       (find-files "." "."))
+             #t)))))
+    (propagated-inputs
+     `(("ocaml-cairo2" ,ocaml-cairo2)))
+    (inputs
+     `(("camlp5" ,camlp5)
+       ("gtk+" ,gtk+)
+       ("gtksourceview-3" ,gtksourceview-3)
+       ("gtkspell3" ,gtkspell3)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/garrigue/lablgtk")
+    (synopsis "OCaml interface to GTK+3")
+    (description "LablGtk is an OCaml interface to GTK+ 1.2, 2.x and 3.x.  It
+provides a strongly-typed object-oriented interface that is compatible with the
+dynamic typing of GTK+.  Most widgets and methods are available.  LablGtk
+also provides bindings to gdk-pixbuf, the GLArea widget (in combination with
+LablGL), gnomecanvas, gnomeui, gtksourceview, gtkspell, libglade (and it can
+generate OCaml code from .glade files), libpanel, librsvg and quartz.")
+    ;; Version 2 only, with linking exception.
+    (license license:lgpl2.0)))

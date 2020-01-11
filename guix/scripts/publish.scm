@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,7 +51,9 @@
   #:use-module (guix store)
   #:use-module ((guix serialization) #:select (write-file))
   #:use-module (guix zlib)
-  #:autoload   (guix lzlib) (lzlib-available?)
+  #:autoload   (guix lzlib) (lzlib-available?
+                             call-with-lzip-output-port
+                             make-lzip-output-port)
   #:use-module (guix cache)
   #:use-module (guix ui)
   #:use-module (guix scripts)

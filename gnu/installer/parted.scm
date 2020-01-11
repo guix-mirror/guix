@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -221,6 +222,7 @@ inferior to MAX-SIZE, #f otherwise."
     ((btrfs) "btrfs")
     ((fat16) "fat16")
     ((fat32) "fat32")
+    ((jfs) "jfs")
     ((swap)  "linux-swap")))
 
 (define (user-fs-type->mount-type fs-type)
@@ -229,7 +231,8 @@ inferior to MAX-SIZE, #f otherwise."
     ((ext4)  "ext4")
     ((btrfs) "btrfs")
     ((fat16) "fat")
-    ((fat32) "vfat")))
+    ((fat32) "vfat")
+    ((jfs) "jfs")))
 
 (define (partition-filesystem-user-type partition)
   "Return the filesystem type of PARTITION, to be stored in the FS-TYPE field
@@ -242,6 +245,7 @@ of <user-partition> record."
             ((string=? name "btrfs") 'btrfs)
             ((string=? name "fat16") 'fat16)
             ((string=? name "fat32") 'fat32)
+            ((string=? name "jfs") 'jfs)
             ((or (string=? name "swsusp")
                  (string=? name "linux-swap(v0)")
                  (string=? name "linux-swap(v1)"))
@@ -1012,7 +1016,7 @@ bit bucket."
         (lambda () exp ...)))))
 
 (define (create-btrfs-file-system partition)
-  "Create an btrfs file-system for PARTITION file-name."
+  "Create a btrfs file-system for PARTITION file-name."
   (with-null-output-ports
    (invoke "mkfs.btrfs" "-f" partition)))
 
@@ -1030,6 +1034,11 @@ bit bucket."
   "Create a fat32 file-system for PARTITION file-name."
   (with-null-output-ports
    (invoke "mkfs.fat" "-F32" partition)))
+
+(define (create-jfs-file-system partition)
+  "Create a JFS file-system for PARTITION file-name."
+  (with-null-output-ports
+   (invoke "jfs_mkfs" "-f" partition)))
 
 (define (create-swap-partition partition)
   "Set up swap area on PARTITION file-name."
@@ -1101,6 +1110,10 @@ NEED-FORMATING? field set to #t."
           (and need-formatting?
                (not (eq? type 'extended))
                (create-fat32-file-system file-name)))
+         ((jfs)
+          (and need-formatting?
+               (not (eq? type 'extended))
+               (create-jfs-file-system file-name)))
          ((swap)
           (create-swap-partition file-name))
          (else

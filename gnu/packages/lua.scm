@@ -3,7 +3,7 @@
 ;;; Copyright © 2014 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016, 2017, 2019 Clément Lassieur <clement@lassieur.org>
@@ -196,14 +196,14 @@ language.")
     (name name)
     (version "3.0-rc1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/diegonehab/luasocket/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/diegonehab/luasocket")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0j8jx8bjicvp9khs26xjya8c495wrpb7parxfnabdqa5nnsxjrwb"))))
+                "1chs7z7a3i3lck4x7rz60ziwbf793gw169hpjdfca8y4yf1hzsxk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -248,16 +248,18 @@ handy.")
 (define (make-lua-filesystem name lua)
   (package
     (name name)
-    (version "1.6.3")
+    (version "1.7.0.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/keplerproject/"
-                                  "luafilesystem/archive/v_"
-                                  "1_6_3" ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/keplerproject/luafilesystem")
+                     (commit (string-append "v"
+                                            (string-join
+                                              (string-split version #\.) "_")))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0s10ckxin0bysd6gaywqhxkpw3ybjhprr8m655b8cx3pxjwd49am"))))
+                "0zmprgkm9zawdf9wnw0v3w6ibaj442wlc6alp39hmw610fl4vghi"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -291,14 +293,16 @@ directory structure and file attributes.")
 (define (make-lua-sec name lua)
   (package
     (name name)
-    (version "0.7")
+    (version "0.9")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/brunoos/luasec/archive/"
-                                  "luasec-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/brunoos/luasec")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0c9sdz3gvrsbvvdqzpnsappgwl40hfljlpfybqis6wia3mdyjxi1"))))
+                "0ssncgkggyr8i3z6zbvgrgsqj2q8676rnsikhpfwnk9n7sx4gwbl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -340,14 +344,14 @@ secure session between the peers.")
     (version "0.9.2")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append
-              "https://github.com/pavouk/lgi/archive/"
-              version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/pavouk/lgi")
+               (commit version)))
+        (file-name (git-file-name name version))
         (sha256
-          (base32
-            "0kwcaj3ahi9gxfyp0lr5zgr6vi1mgsg9sz0980x0nwxlh9a11i6g"))))
+         (base32
+          "03rbydnj411xpjvwsyvhwy4plm96481d7jax544mvk7apd8sd5jj"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "CC=gcc"
@@ -454,7 +458,7 @@ Grammars (PEGs).")
 (define (make-lua-luv name lua)
   (package
     (name name)
-    (version "1.30.1-1")
+    (version "1.32.0-0")
     (source (origin
               ;; The release tarball includes the sources of libuv but does
               ;; not include the pkg-config files.
@@ -465,7 +469,7 @@ Grammars (PEGs).")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0b2zxrsjxzhzwfp28lchplrp272v6zkbpq1ddz7a0rf20l7dbls1"))))
+                "0c65c1lhbl0axnyks3910gjs0z0hw7w6jvl07g8kbpnbvfl4qajh"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; there are none

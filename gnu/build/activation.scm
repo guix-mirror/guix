@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -247,7 +247,19 @@ they already exist."
                          string<?))
       (mkdir-p %setuid-directory))
 
-  (for-each make-setuid-program programs))
+  (for-each (lambda (program)
+              (catch 'system-error
+                (lambda ()
+                  (make-setuid-program program))
+                (lambda args
+                  ;; If we fail to create a setuid program, better keep going
+                  ;; so that we don't leave %SETUID-DIRECTORY empty or
+                  ;; half-populated.  This can happen if PROGRAMS contains
+                  ;; incorrect file names: <https://bugs.gnu.org/38800>.
+                  (format (current-error-port)
+                          "warning: failed to make '~a' setuid-root: ~a~%"
+                          program (strerror (system-error-errno args))))))
+            programs))
 
 (define (activate-special-files special-files)
   "Install the files listed in SPECIAL-FILES.  Each element of SPECIAL-FILES
@@ -269,9 +281,13 @@ second element is the name it should appear at, such as:
 
 (define (activate-modprobe modprobe)
   "Tell the kernel to use MODPROBE to load modules."
-  (call-with-output-file "/proc/sys/kernel/modprobe"
-    (lambda (port)
-      (display modprobe port))))
+
+  ;; If the kernel was built without loadable module support, this file is
+  ;; unavailable, so check for its existence first.
+  (when (file-exists? "/proc/sys/kernel/modprobe")
+    (call-with-output-file "/proc/sys/kernel/modprobe"
+      (lambda (port)
+        (display modprobe port)))))
 
 (define (activate-firmware directory)
   "Tell the kernel to look for device firmware under DIRECTORY.  This

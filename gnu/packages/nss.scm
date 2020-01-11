@@ -34,7 +34,7 @@
 (define-public nspr
   (package
     (name "nspr")
-    (version "4.22")
+    (version "4.24")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -42,7 +42,7 @@
                    version "/src/nspr-" version ".tar.gz"))
              (sha256
               (base32
-               "0c6ljv3bdqhc169srbpjy0cs52xk715p04zy08rcjvl54k6bdr69"))))
+               "1l0ksiny032jijgk0g76wf0kiq673i01izj7jrs2h5d1yq6rm9ch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))
@@ -70,7 +70,7 @@ in the Mozilla clients.")
 (define-public nss
   (package
     (name "nss")
-    (version "3.46.1")
+    (version "3.48")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -81,10 +81,9 @@ in the Mozilla clients.")
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "0l9ns44rlkp1bpblplspfbqmyhb8rhvc89y56kqh725rgpny1xrv"))
+                "1b7qs1q7jqhw9dvkdznanzhc5dyq4bwx0biywszy3qx4hqm8571z"))
               ;; Create nss.pc and nss-config.
-              (patches (search-patches "nss-CVE-2019-11745.patch"
-                                       "nss-pkgconfig.patch"
+              (patches (search-patches "nss-pkgconfig.patch"
                                        "nss-freebl-stubs.patch"
                                        "nss-increase-test-timeout.patch"))))
     (build-system gnu-build-system)
@@ -131,7 +130,7 @@ in the Mozilla clients.")
              ;; leading to test failures:
              ;; <https://bugzilla.mozilla.org/show_bug.cgi?id=609734>.  To
              ;; work around that, set the time to roughly the release date.
-             (invoke "faketime" "2019-10-01" "./nss/tests/all.sh")))
+             (invoke "faketime" "2019-12-01" "./nss/tests/all.sh")))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))

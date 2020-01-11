@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -26,7 +26,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix lint)
-  #:use-module ((guix store) #:hide (close-connection))
+  #:use-module (guix store)
   #:use-module (guix base32)
   #:use-module (guix diagnostics)
   #:use-module (guix download)
@@ -45,7 +45,8 @@
   #:use-module (guix gnu-maintenance)
   #:use-module (guix cve)
   #:use-module ((guix swh) #:hide (origin?))
-  #:autoload   (guix git-download) (git-reference?)
+  #:autoload   (guix git-download) (git-reference?
+                                    git-reference-url git-reference-commit)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 format)
@@ -54,8 +55,7 @@
   #:use-module ((guix build download)
                 #:select (maybe-expand-mirrors
                           (open-connection-for-uri
-                           . guix:open-connection-for-uri)
-                          close-connection))
+                           . guix:open-connection-for-uri)))
   #:use-module (web request)
   #:use-module (web response)
   #:use-module (srfi srfi-1)
@@ -286,11 +286,24 @@ of a package, and INPUT-NAMES, a list of package specifications such as
   (let ((inputs (package-inputs package))
         (input-names
          '("pkg-config"
+            "autoconf"
+            "automake"
+            "bison"
             "cmake"
+            "dejagnu"
+            "desktop-file-utils"
+            "doxygen"
             "extra-cmake-modules"
+            "flex"
+            "gettext"
             "glib:bin"
+            "gobject-introspection"
+            "googletest-source"
+            "groff"
+            "help2man"
             "intltool"
             "itstool"
+            "libtool"
             "qttools"
             "yasm" "nasm" "fasm"
             "python-coverage" "python2-coverage"
@@ -302,7 +315,13 @@ of a package, and INPUT-NAMES, a list of package specifications such as
             "python-pytest" "python2-pytest"
             "python-pytest-cov" "python2-pytest-cov"
             "python-setuptools-scm" "python2-setuptools-scm"
-            "python-sphinx" "python2-sphinx")))
+            "python-sphinx" "python2-sphinx"
+            "swig"
+            "qmake"
+            "qttools"
+            "texinfo"
+            "xorg-server-for-tests"
+            "yelp-tools")))
     (map (lambda (input)
            (make-warning
             package
@@ -453,7 +472,7 @@ for connections to complete; when TIMEOUT is #f, wait as long as needed."
                    (force-output port)
                    (read-response port))
                  (lambda ()
-                   (close-connection port))))
+                   (close-port port))))
 
              (case (response-code response)
                ((302                    ; found (redirection)

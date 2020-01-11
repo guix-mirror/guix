@@ -14,7 +14,7 @@
 ;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright © 2019 Jesse Gildersleve <jessejohngildersleve@protonmail.com>
-;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,10 +71,10 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages tex)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages xorg)
-  #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
 
 (define (asdf-substitutions lisp)
@@ -319,17 +319,17 @@ high-level, object-oriented functional programming language.  CLISP includes
 an interpreter, a compiler, a debugger, and much more.")
     (license license:gpl2+)))
 
-(define sbcl-boot0
+(define-public sbcl
   (package
-    (name "sbcl-boot0")
-    (version "1.5.8")
+    (name "sbcl")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/sbcl/sbcl/" version "/sbcl-"
                            version "-source.tar.bz2"))
        (sha256
-        (base32 "0k7zjrky8r2krkd8780cph214hiihg9nh5rxn4nrhg6i6f8jymw4"))
+        (base32 "1krgd69cirp4ili2pfsh1a0mfvq722jbknlvmf17qhsxh1b94dlh"))
        (modules '((guix build utils)))
        (snippet
         ;; Add sbcl-bundle-systems to 'default-system-source-registry'.
@@ -358,8 +358,13 @@ an interpreter, a compiler, a debugger, and much more.")
      ;; 2019-09-05, ECL was last updated in 2016 while CLISP was last updated
      ;; in 2010.
      ;;
-     ;; For now we stick to CLISP for all systems.
-     `(("clisp" ,clisp)
+     ;; For now we stick to CLISP for all systems.  We keep the `match' here to
+     ;; make it easier to change the host compiler for various architectures.
+     `(,@(match (%current-system)
+           ((or "x86_64-linux" "i686-linux")
+            `(("clisp" ,clisp)))
+           (_
+            `(("clisp" ,clisp))))
        ("which" ,which)
        ("inetutils" ,inetutils)         ;for hostname(1)
        ("ed" ,ed)
@@ -427,7 +432,11 @@ an interpreter, a compiler, a debugger, and much more.")
          (replace 'build
            (lambda* (#:key outputs #:allow-other-keys)
              (setenv "CC" "gcc")
-             (invoke "sh" "make.sh" "clisp"
+             (invoke "sh" "make.sh" ,@(match (%current-system)
+                                        ((or "x86_64-linux" "i686-linux")
+                                         `("clisp"))
+                                        (_
+                                         `("clisp")))
                      (string-append "--prefix="
                                     (assoc-ref outputs "out"))
                      "--with-sb-core-compression"
@@ -484,46 +493,6 @@ statistical profiler, a code coverage tool, and many other extensions.")
     ;; loop macro has its own license.  See COPYING file for further notes.
     (license (list license:public-domain license:bsd-2
                    (license:x11-style "file://src/code/loop.lisp")))))
-
-(define-public sbcl
-  ;; Since 1.5.9, SBCL requires itself to build.
-  ;; See https://bugs.launchpad.net/sbcl/+bug/1855272.
-  (package
-    (inherit sbcl-boot0)
-    (name "sbcl")
-    (version "1.5.9")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://sourceforge/sbcl/sbcl/" version "/sbcl-"
-                           version "-source.tar.bz2"))
-       (sha256
-        (base32 "1dmrlklil7x3j68mwmjfpd71vkphr24s4rx6d61jpc54x0jhvnyb"))
-       (modules '((guix build utils)))
-       (snippet
-        ;; Add sbcl-bundle-systems to 'default-system-source-registry'.
-        `(begin
-           (substitute* "contrib/asdf/asdf.lisp"
-             ,@(asdf-substitutions name))
-           #t))))
-    (build-system gnu-build-system)
-    (outputs '("out" "doc"))
-    (native-inputs
-     `(("sbcl" ,sbcl-boot0)
-       ,@(fold alist-delete (package-native-inputs sbcl-boot0)
-               '("clisp"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-boot0)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (replace 'build
-             (lambda* (#:key outputs #:allow-other-keys)
-               (setenv "CC" "gcc")
-               (invoke "sh" "make.sh" "sbcl"
-                       (string-append "--prefix="
-                                      (assoc-ref outputs "out"))
-                       "--with-sb-core-compression"
-                       "--with-sb-xref-for-internals")))))))))
 
 (define-public ccl
   ;; Warning: according to upstream, CCL is not bootstrappable.
@@ -815,3 +784,161 @@ command line, to data scanning and extracting scripts, to full application
 development in a wide-range of areas.")
     (home-page "https://nongnu.org/txr/")
     (license license:bsd-2)))
+
+(define picolisp32
+  (package
+    (name "picolisp32")
+    (version "19.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://software-lab.de/picoLisp-" version ".tgz"))
+       (sha256
+        (base32 "10np0mhihr47r3201617zccrvzpkhdl1jwvz7zimk8kxpriydq2j"))
+       (modules '((guix build utils)))
+       (snippet '(begin
+                   ;; Delete the pre-compiled jar file.
+                   (delete-file "ersatz/picolisp.jar")
+                   #t))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("openssl" ,openssl)))
+    (arguments
+     `(#:system ,(match (%current-system)
+                   ((or "armhf-linux" "aarch64-linux")
+                    "armhf-linux")
+                   (_
+                    "i686-linux"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (shebang-line (string-append
+                                   "#!" out "/bin/picolisp "
+                                   out "/lib/picolisp/lib.l")))
+               (substitute* '("bin/pil"
+                              "bin/pilIndent"
+                              "bin/pilPretty"
+                              "bin/psh"
+                              "bin/replica"
+                              "bin/vip"
+                              "bin/watchdog"
+                              "games/xchess"
+                              "misc/bigtest"
+                              "misc/calc"
+                              "misc/chat"
+                              "misc/mailing"
+                              "src/mkVers")
+                 (("#\\!bin/picolisp lib.l")
+                  shebang-line)
+                 (("#\\!\\.\\./bin/picolisp \\.\\./lib.l")
+                  shebang-line)
+                 (("#\\!/usr/bin/picolisp /usr/lib/picolisp/lib.l")
+                  shebang-line)))
+             #t))
+         (add-after 'fix-paths 'make-build-reproducible
+           (lambda _
+             (substitute* "src64/lib/asm.l"
+               (("\\(prinl \"/\\* \" \\(datSym \\(date\\)\\) \" \\*/\\)")
+                ""))
+             #t))
+         (add-after 'make-build-reproducible 'fix-permissions
+           (lambda _
+             (for-each make-file-writable
+                       '("doc/family.tgz"
+                         "doc/family64.tgz"
+                         "lib/map"
+                         "src64/tags"))
+             #t))
+         (replace 'build
+           (lambda _
+             (invoke "make" "-C" "src" "picolisp" "tools" "gate")))
+         (add-before 'check 'set-home-for-tests
+           (lambda _
+             (setenv "HOME" "/tmp")
+             #t))
+         (replace 'check
+           (lambda _
+             (invoke "./pil" "test/lib.l" "-bye" "+")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man (string-append out "/share/man"))
+                    (picolisp (string-append out "/lib/picolisp")))
+               (copy-recursively "man" man)
+               (copy-recursively "." picolisp)
+               (for-each (lambda (name)
+                           (let ((path (string-append picolisp "/" name)))
+                             (delete-file-recursively path)))
+                         '("CHANGES" "COPYING" "CREDITS" "cygwin"
+                           "INSTALL" "man" "pil" "README" "src" "src64"
+                           "test"))
+               (mkdir-p bin)
+               (symlink (string-append picolisp "/bin/picolisp")
+                        (string-append bin "/picolisp"))
+               (symlink (string-append picolisp "/bin/pil")
+                        (string-append bin "/pil")))
+             #t)))))
+    (synopsis "Interpreter for the PicoLisp programming language")
+    (description
+     "PicoLisp is a programming language, or really a programming system,
+including a built-in database engine and a GUI system.")
+    (home-page "https://picolisp.com/wiki/?home")
+    (license license:expat)))
+
+(define-public picolisp
+  (match (%current-system)
+    ((or "aarch64-linux" "x86_64-linux")
+     (package
+       ;; Use the 32-bit picolisp to generate the assembly files required by
+       ;; the 64-bit picolisp.
+       (inherit picolisp32)
+       (name "picolisp")
+       (native-inputs
+        `(("picolisp32" ,picolisp32)
+          ("which" ,which)))
+       (arguments
+        (substitute-keyword-arguments (package-arguments picolisp32)
+          ((#:system _ "") (%current-system))
+          ((#:phases phases)
+           `(modify-phases ,phases
+              (delete 'fix-paths)
+              (add-before 'build 'fix-paths
+                ;; This must run after the other shebang-patching phases,
+                ;; or they will override our changes.
+                (lambda* (#:key inputs outputs #:allow-other-keys)
+                  (let* ((picolisp32 (assoc-ref inputs "picolisp32"))
+                         (out (assoc-ref outputs "out"))
+                         (shebang-line (string-append
+                                        "#!" out "/bin/picolisp "
+                                        out "/lib/picolisp/lib.l")))
+                    (substitute* '("bin/pil"
+                                   "bin/pilIndent"
+                                   "bin/pilPretty"
+                                   "bin/psh"
+                                   "bin/replica"
+                                   "bin/vip"
+                                   "bin/watchdog"
+                                   "games/xchess"
+                                   "misc/bigtest"
+                                   "misc/calc"
+                                   "misc/chat"
+                                   "misc/mailing"
+                                   "src/mkVers")
+                      (("#\\!.*picolisp32.*/bin/picolisp .*lib\\.l")
+                       shebang-line))
+                    (substitute* "src64/mkAsm"
+                      (("/usr/bin/")
+                       (string-append picolisp32 "/bin/"))))
+                  #t))
+              (replace 'build
+                (lambda _
+                  (invoke "make" "-C" "src" "tools" "gate")
+                  (invoke "make" "-C" "src64" "CC=gcc" "picolisp")))))))))
+    (_
+     (package
+       (inherit picolisp32)
+       (name "picolisp")))))

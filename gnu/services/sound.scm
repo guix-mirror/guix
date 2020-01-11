@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018, 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,16 +22,24 @@
   #:use-module (gnu services configuration)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services)
+  #:use-module (gnu system pam)
   #:use-module (gnu system shadow)
   #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix records)
   #:use-module (guix store)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pulseaudio)
   #:use-module (ice-9 match)
   #:export (alsa-configuration
-            alsa-service-type))
+            alsa-service-type
+
+            pulseaudio-configuration
+            pulseaudio-service-type
+
+            ladspa-configuration
+            ladspa-service-type))
 
 ;;; Commentary:
 ;;;
@@ -96,5 +105,93 @@ ctl.!default {
     (list (service-extension etc-service-type alsa-etc-service)))
    (default-value (alsa-configuration))
    (description "Configure low-level Linux sound support, ALSA.")))
+
+
+;;;
+;;; PulseAudio
+;;;
+
+(define-record-type* <pulseaudio-configuration>
+  pulseaudio-configuration make-pulseaudio-configuration
+  pulseaudio-configuration?
+  (client-conf pulseaudio-client-conf
+               (default '()))
+  (daemon-conf pulseaudio-daemon-conf
+               ;; Flat volumes may cause unpleasant experiences to users
+               ;; when applications inadvertently max out the system volume
+               ;; (see e.g. <https://bugs.gnu.org/38172>).
+               (default '((flat-volumes . no))))
+  (script-file pulseaudio-script-file
+               (default (file-append pulseaudio "/etc/pulse/default.pa")))
+  (system-script-file pulseaudio-system-script-file
+                      (default
+                        (file-append pulseaudio "/etc/pulse/system.pa"))))
+
+(define (pulseaudio-environment config)
+  `(;; Define these variables, so that pulseaudio honors /etc.
+    ("PULSE_CONFIG" . "/etc/pulse/daemon.conf")
+    ("PULSE_CLIENTCONFIG" . "/etc/pulse/client.conf")))
+
+(define (pulseaudio-conf-entry arg)
+  (match arg
+    ((key . value)
+     (format #f "~a = ~s~%" key value))
+    ((? string? _)
+     (string-append arg "\n"))))
+
+(define pulseaudio-etc
+  (match-lambda
+    (($ <pulseaudio-configuration> client-conf daemon-conf
+                                   default-script-file system-script-file)
+     `(("pulse"
+        ,(file-union
+          "pulse"
+          `(("client.conf"
+             ,(apply mixed-text-file "client.conf"
+                     (map pulseaudio-conf-entry client-conf)))
+            ("daemon.conf"
+             ,(apply mixed-text-file "daemon.conf"
+                     "default-script-file = " default-script-file "\n"
+                     (map pulseaudio-conf-entry daemon-conf)))
+            ("default.pa" ,default-script-file)
+            ("system.pa" ,system-script-file))))))))
+
+(define pulseaudio-service-type
+  (service-type
+   (name 'pulseaudio)
+   (extensions
+    (list (service-extension session-environment-service-type
+                             pulseaudio-environment)
+          (service-extension etc-service-type pulseaudio-etc)))
+   (default-value (pulseaudio-configuration))
+   (description "Configure PulseAudio sound support.")))
+
+
+;;;
+;;; LADSPA
+;;;
+
+(define-record-type* <ladspa-configuration>
+  ladspa-configuration make-ladspa-configuration
+  ladspa-configuration?
+  (plugins ladspa-plugins (default '())))
+
+(define (ladspa-environment config)
+  ;; Define this variable in the global environment such that
+  ;; pulseaudio swh-plugins (and similar LADSPA plugins) work.
+  `(("LADSPA_PATH" .
+     (string-join
+      ',(map (lambda (package) (file-append package "/lib/ladspa"))
+             (ladspa-plugins config))
+      ":"))))
+
+(define ladspa-service-type
+  (service-type
+   (name 'ladspa)
+   (extensions
+    (list (service-extension session-environment-service-type
+                             ladspa-environment)))
+   (default-value (ladspa-configuration))
+   (description "Configure LADSPA plugins.")))
 
 ;;; sound.scm ends here

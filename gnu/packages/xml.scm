@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
-;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
@@ -1154,7 +1154,7 @@ XSLT and EXSLT.")
 (define-public html-xml-utils
  (package
    (name "html-xml-utils")
-   (version "7.7")
+   (version "7.8")
    (source
     (origin
       (method url-fetch)
@@ -1162,8 +1162,7 @@ XSLT and EXSLT.")
             "https://www.w3.org/Tools/HTML-XML-utils/html-xml-utils-"
             version ".tar.gz"))
       (sha256
-       (base32
-        "1vwqp5q276j8di9zql3kygf31z2frp2c59yjqlrvvwcvccvkcdwr"))))
+       (base32 "0p8df3c6mw879vdi8l63kbdqylkf1is10b067mh9kipgfy91rd4s"))))
    (build-system gnu-build-system)
    (home-page "https://www.w3.org/Tools/HTML-XML-utils/")
    (synopsis "Command line utilities to manipulate HTML and XML files")

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Roel Janssen <roel@gnu.org>
@@ -62,6 +62,7 @@
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages java)
   #:use-module (gnu packages javascript)
+  #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
@@ -12574,6 +12575,12 @@ running IRkernel session.")
                        "--name" "ir"
                        "--prefix" out
                        (string-append out "/site-library/IRkernel/kernelspec"))
+               ;; Record the absolute file name of the 'R' executable in
+               ;; 'kernel.json'.
+               (substitute* (string-append out "/share/jupyter"
+                                           "/kernels/ir/kernel.json")
+                 (("\\[\"R\",")
+                  (string-append "[\"" (which "R") "\",")))
                #t))))))
     (inputs
      `(("jupyter" ,jupyter)))
@@ -12583,6 +12590,8 @@ running IRkernel session.")
        ("r-evaluate" ,r-evaluate)
        ("r-irdisplay" ,r-irdisplay)
        ("r-jsonlite" ,r-jsonlite)
+       ;; sets R_LIBS_SITE, so R can actually find this package (IRkernel)
+       ("r-minimal" ,r-minimal)
        ("r-pbdzmq" ,r-pbdzmq)
        ("r-repr" ,r-repr)
        ("r-uuid" ,r-uuid)))
@@ -18988,3 +18997,247 @@ algorithm to identify key players, and Valente's bridging metric.  The
 betweenness, Key Players, and bridging implementations are parallelized with
 OpenMP.")
     (license license:gpl2)))
+
+(define-public r-emplik
+  (package
+    (name "r-emplik")
+    (version "1.0-4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "emplik" version))
+       (sha256
+        (base32
+         "1g4hz85bvw29c77zs0ig487z92jjl682vv457x81l077h0psvk7c"))))
+    (properties `((upstream-name . "emplik")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-quantreg" ,r-quantreg)))
+    (home-page "http://www.ms.uky.edu/~mai/EmpLik.html")
+    (synopsis "Empirical likelihood ratio for censored/truncated data")
+    (description
+     "This package provides empirical likelihood ratio tests for
+means/quantiles/hazards from possibly censored and/or truncated data.  It also
+does regression.")
+    (license license:gpl2+)))
+
+(define-public r-imputeyn
+  (package
+    (name "r-imputeyn")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "imputeYn" version))
+       (sha256
+        (base32
+         "1b21w1aa5f7yiq8k0wa86wvbg4ij7f6ldwn6asfqwb0b90rvsgvs"))))
+    (properties `((upstream-name . "imputeYn")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-boot" ,r-boot)
+       ("r-emplik" ,r-emplik)
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-quadprog" ,r-quadprog)
+       ("r-survival" ,r-survival)))
+    (home-page "https://cran.r-project.org/web/packages/imputeYn/")
+    (synopsis "Impute last largest censored observation under weighted least squares")
+    (description
+     "This package allows for the imputation of the last largest censored
+observantions.  This method brings less bias and more efficient estimates for
+AFT models.")
+    (license license:gpl2)))
+
+(define-public r-adapenetclass
+  (package
+    (name "r-adapenetclass")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "AdapEnetClass" version))
+       (sha256
+        (base32
+         "01k3mj4g1ckbng7wkzzn9h0k9yf01cpnnkly0sjda574c5jhj0rc"))))
+    (properties `((upstream-name . "AdapEnetClass")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-glmnet" ,r-glmnet)
+       ("r-imputeyn" ,r-imputeyn)
+       ("r-lars" ,r-lars)
+       ("r-quadprog" ,r-quadprog)))
+    (home-page "https://cran.r-project.org/web/packages/AdapEnetClass/")
+    (synopsis "Class of adaptive elastic net methods for censored data")
+    (description
+     "This package provides methods for variable selection for AFT models.")
+    (license license:gpl2)))
+
+(define-public r-flock
+  (package
+    (name "r-flock")
+    (version "0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "flock" version))
+       (sha256
+        (base32
+         "1zg93p74icj4bhxnmnssj2xp6vw4yaksyavq03497v33xfpdxss7"))))
+    (properties `((upstream-name . "flock")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://cran.r-project.org/web/packages/flock/")
+    (synopsis "Process synchronization using file locks")
+    (description
+     "This package implements synchronization between R processes (spawned by
+using the @code{parallel} package for instance) using file locks.  It supports
+both exclusive and shared locking.")
+    (license license:asl2.0)))
+
+(define-public r-archivist
+  (package
+    (name "r-archivist")
+    (version "2.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "archivist" version))
+       (sha256
+        (base32
+         "1i11hrcq1910jgd6diw6h3sxx624v57zjianm49pqvb2dvd0b8y7"))))
+    (properties `((upstream-name . "archivist")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dbi" ,r-dbi)
+       ("r-digest" ,r-digest)
+       ("r-flock" ,r-flock)
+       ("r-httr" ,r-httr)
+       ("r-lubridate" ,r-lubridate)
+       ("r-magrittr" ,r-magrittr)
+       ("r-rcurl" ,r-rcurl)
+       ("r-rsqlite" ,r-rsqlite)))
+    (home-page "https://pbiecek.github.io/archivist/")
+    (synopsis "Tools for storing, restoring and searching for R objects")
+    (description
+     "Data exploration and modelling is a process in which a lot of data
+artifacts are produced.  Artifacts like: subsets, data aggregates, plots,
+statistical models, different versions of data sets and different versions of
+results.  Archivist helps to store and manage artifacts created in R.  It
+allows you to store selected artifacts as binary files together with their
+metadata and relations.  Archivist allows sharing artifacts with others.  It
+can look for already created artifacts by using its class, name, date of the
+creation or other properties.  It also makes it easy to restore such
+artifacts.")
+    (license license:gpl2)))
+
+(define-public r-versions
+  (package
+    (name "r-versions")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "versions" version))
+       (sha256
+        (base32
+         "0zm49j785dgv7fyr1yl9q5f0dsk8hhpim5q5bpkgrkzv7pwjribd"))))
+    (properties `((upstream-name . "versions")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/versions/")
+    (synopsis "Query and install specific versions of CRAN packages")
+    (description
+     "This package allows you to install specified versions of R packages
+hosted on CRAN and provides functions to list available versions and the
+versions of currently installed packages.")
+    (license license:bsd-3)))
+
+(define-public r-adapr
+  (package
+    (name "r-adapr")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "adapr" version))
+       (sha256
+        (base32
+         "1s57jdbi5pik56xjz1d4438ax6cywg2yq2s47h5g6wrwvpgr1qfw"))))
+    (properties `((upstream-name . "adapr")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-archivist" ,r-archivist)
+       ("r-devtools" ,r-devtools)
+       ("r-digest" ,r-digest)
+       ("r-doparallel" ,r-doparallel)
+       ("r-gdata" ,r-gdata)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-git2r" ,r-git2r)
+       ("r-igraph" ,r-igraph)
+       ("r-knitr" ,r-knitr)
+       ("r-plotly" ,r-plotly)
+       ("r-plyr" ,r-plyr)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("r-shiny" ,r-shiny)
+       ("r-shinydashboard" ,r-shinydashboard)
+       ("r-versions" ,r-versions)))
+    (home-page "https://cran.r-project.org/web/packages/adapr/")
+    (synopsis "Implementation of an accountable data analysis process")
+    (description
+     "This package tracks reading and writing within R scripts that are
+organized into a directed acyclic graph.  It contains an interactive Shiny
+application @code{adaprApp()}.  It uses Git and file hashes to track version
+histories of inputs and outputs.")
+    (license license:lgpl2.0)))
+
+(define-public r-adapsamp
+  (package
+    (name "r-adapsamp")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "AdapSamp" version))
+       (sha256
+        (base32
+         "1jayjrsiib2ij4rxxj59g71r3xhzl5yqh0lhi8k6cfy03i7dkvis"))))
+    (properties `((upstream-name . "AdapSamp")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-pracma" ,r-pracma)))
+    (home-page "https://cran.r-project.org/web/packages/AdapSamp/")
+    (synopsis "Adaptive sampling algorithms")
+    (description
+     "For distributions whose probability density functions are log-concave,
+the adaptive rejection sampling algorithm can be used to build envelope
+functions for sampling.  For others, the modified adaptive rejection sampling
+algorithm, the concave-convex adaptive rejection sampling algorithm, and the
+adaptive slice sampling algorithm can be used.  This R package mainly includes
+these four functions: @code{rARS()}, @code{rMARS()}, @code{rCCARS()}, and
+@code{rASS()}.  These functions can realize sampling based on the algorithms
+above.")
+    (license license:gpl2)))
+
+(define-public r-adaptalint
+  (package
+    (name "r-adaptalint")
+    (version "0.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "adaptalint" version))
+       (sha256
+        (base32
+         "15qdcvnnbgcps8j5k79354wsc9alswijv8lcafg2i3lghaw536yf"))))
+    (properties `((upstream-name . "adaptalint")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-lintr" ,r-lintr)
+       ("r-purrr" ,r-purrr)))
+    (home-page "https://cran.r-project.org/web/packages/adaptalint/")
+    (synopsis "Check R code style")
+    (description
+     "This package provides tools to infer the code style (which style rules
+are followed and which ones are not) from one package and use it to check
+another.  This makes it easier to find and correct the most important problems
+first.")
+    (license license:gpl3)))

@@ -22,6 +22,7 @@
 ;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2019 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8615,6 +8616,74 @@ system dependencies.")
 functions for the ghc-persistent package.")
     (license license:expat)))
 
+(define-public ghc-pipes
+  (package
+    (name "ghc-pipes")
+    (version "4.3.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/pipes/"
+             "pipes-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ch3xr5f5if0psd3lsyrpkwrgh36synnzqcpimghprys68l4zfkn"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-mmorph" ,ghc-mmorph)
+       ("ghc-void" ,ghc-void)
+       ("ghc-semigroups" ,ghc-semigroups)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-quickcheck2"
+        ,ghc-test-framework-quickcheck2)))
+    (home-page
+     "https://hackage.haskell.org/package/pipes")
+    (synopsis "Compositional pipelines")
+    (description
+     "A clean and powerful stream processing library that lets you build
+and connect reusable streaming components.  Advantages over traditional streaming
+libraries:
+@itemize
+@item Concise API: Use simple commands like @code{for}, (@code{>->}), @code{await},
+and @code{yield}
+@item Blazing fast: Implementation tuned for speed, including shortcut fusion
+@item Lightweight Dependency: pipes is small and compiles very rapidly, including
+dependencies
+@item Elegant semantics: Use practical category theory
+@item ListT: Correct implementation of @code{ListT} that interconverts with pipes
+@item Bidirectionality: Implement duplex channels
+@end itemize")
+    (license license:bsd-3)))
+
+(define-public ghc-pointedlist
+  (package
+    (name "ghc-pointedlist")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/pointedlist/"
+             "pointedlist-" version ".tar.gz"))
+       (sha256
+        (base32
+         "16xsrzqql7i4z6a3xy07sqnbyqdmcar1jiacla58y4mvkkwb0g3l"))))
+    (build-system haskell-build-system)
+    (home-page
+     "http://hackage.haskell.org/package/pointedlist")
+    (synopsis
+     "Zipper-like comonad which works as a list, tracking a position")
+    (description
+     "A PointedList tracks the position in a non-empty list which works
+similarly to a zipper.  A current item is always required, and therefore
+the list may never be empty.  A circular PointedList wraps around to the
+other end when progressing past the actual edge.")
+    (license license:bsd-3)))
+
 (define-public ghc-polyparse
   (package
     (name "ghc-polyparse")
@@ -9689,6 +9758,40 @@ are not exception safe and can be broken by @code{killThread}.")
     (synopsis "Data encoding library")
     (description "Reasonably fast data encoding library.")
     (license license:bsd-3)))
+
+(define-public ghc-say
+  (package
+    (name "ghc-say")
+    (version "0.1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/say/say-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1r5kffjfwpas45g74sip8glrj1m9nygrnxjm7xgw898rq9pnafgn"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)
+       ("ghc-unliftio" ,ghc-unliftio)))
+    (home-page "https://github.com/fpco/say")
+    (synopsis
+     "Send textual messages to a Handle in a thread-friendly way")
+    (description
+     "A thread safe API to write a line of textual data to a Handle, such
+as sending some messages to the terminal - that has the following properties:
+@itemize
+@item Properly handle character encoding settings on the Handle
+@item For reasonably sized messages, ensure that the entire message is written
+ in one chunk to avoid interleaving data with other threads
+@item Avoid unnecessary memory allocations and copies
+@item Minimize locking.
+@end itemize")
+    (license license:expat)))
 
 (define-public ghc-scientific
   (package

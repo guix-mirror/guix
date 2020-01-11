@@ -582,7 +582,7 @@ large scale eigenvalue problems.")
 (define-public lapack
   (package
     (name "lapack")
-    (version "3.7.1")
+    (version "3.9.0")
     (source
      (origin
       (method url-fetch)
@@ -590,26 +590,18 @@ large scale eigenvalue problems.")
                           version ".tgz"))
       (sha256
        (base32
-        "1j51r7n5w4k7r3lrvy7710xrpkg40wf4rqnmngfz6ck9ypckzign"))))
+        "1155qixp26c12yrxc76z9mlfw2h3xxymxxv5znpgzh5gaykpndgj"))))
     (build-system cmake-build-system)
     (home-page "http://www.netlib.org/lapack/")
     (inputs `(("fortran" ,gfortran)
-              ("python" ,python-2)))
+              ("python" ,python-wrapper)))
     (arguments
      `(#:configure-flags (list
                           "-DBUILD_SHARED_LIBS:BOOL=YES"
                           "-DLAPACKE=ON"
-
                           ;; Build the 'LAPACKE_clatms' functions.
-                          "-DLAPACKE_WITH_TMG=ON")
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'patch-python
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((python (assoc-ref inputs "python")))
-               (substitute* "lapack_testing.py"
-                 (("/usr/bin/env python") python)))
-             #t)))))
+                          "-DLAPACKE_WITH_TMG=ON"
+                          "-DBUILD_TESTING=ON")))
     (synopsis "Library for numerical linear algebra")
     (description
      "LAPACK is a Fortran 90 library for solving the most commonly occurring
@@ -924,7 +916,7 @@ extremely large and complex data collections.")
 
 (define-public hdf5-1.10
   (package (inherit hdf5)
-    (version "1.10.5")
+    (version "1.10.6")
     (source
      (origin
       (method url-fetch)
@@ -938,7 +930,7 @@ extremely large and complex data collections.")
                                        (take (string-split version #\.) 2))
                                 "/src/hdf5-" version ".tar.bz2")))
       (sha256
-       (base32 "0i3g6v521vigzbx8wpd32ibsiiw92r65ca3qdbn0d8fj8f4fmmk8"))
+       (base32 "1gf38x51128hn00744358w27xgzjk0ff4wra4yxh2lk804ck1mh9"))
       (patches (search-patches "hdf5-config-date.patch"))))))
 
 (define-public hdf-java

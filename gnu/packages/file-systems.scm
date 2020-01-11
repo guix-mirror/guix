@@ -28,6 +28,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system linux-module)
+  #:use-module (guix build-system trivial)
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
@@ -110,6 +111,81 @@ ISO images when you only need to inspect their contents or extract specific
 files.  Since the HTTP protocol itself has no notion of directories, only a
 single file can be mounted.")
     (license license:gpl2+)))
+
+(define-public jfsutils
+  (package
+    (name "jfsutils")
+    (version "1.1.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://jfs.sourceforge.net/project/pub/jfsutils-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "0kbsy2sk1jv4m82rxyl25gwrlkzvl3hzdga9gshkxkhm83v1aji4"))
+       (patches (search-patches "jfsutils-add-sysmacros.patch"
+                                "jfsutils-include-systypes.patch"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("util-linux" ,util-linux)))
+    (home-page "http://jfs.sourceforge.net/home.html")
+    (synopsis "Utilities for managing JFS file systems")
+    (description
+     "The JFSutils are a collection of utilities for managing the @acronym{JFS,
+Journaled File System}, a 64-bit journaling file system created by IBM and later
+ported to the kernel Linux.  The following commands are available:
+@enumerate
+@item @command{fsck.jfs}: check and repair a JFS file system or replay its
+transaction log.
+@item @command{logdump}: dump the JFS journal log.
+@item @command{logredo}: replay the JFS journal log.
+@item @command{mkfs.jfs}: create a new JFS file system.
+@item @command{xchklog}: save a JFS fsck log to a file.
+@item @command{xchkdmp}: dump the contents of such a log file.
+@item @command{xpeek}: a JFS file system editor with a shell-like interface.
+@end enumerate\n")
+    (license license:gpl3+)))          ; no explicit version given
+
+(define-public jfsutils/static
+  (static-package
+   (package
+     (inherit jfsutils)
+     (name "jfsutils-static")
+     (inputs
+      `(("util-linux:static" ,util-linux "static")
+        ,@(package-inputs jfsutils))))))
+
+(define-public jfs_fsck/static
+  (package
+    (name "jfs_fsck-static")
+    (version (package-version jfsutils))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 ftw)
+                      (srfi srfi-26))
+         (let* ((jfsutils (assoc-ref %build-inputs "jfsutils"))
+                (fsck     "jfs_fsck")
+                (out      (assoc-ref %outputs "out"))
+                (sbin     (string-append out "/sbin")))
+           (mkdir-p sbin)
+           (with-directory-excursion sbin
+             (install-file (string-append jfsutils "/sbin/" fsck)
+                           ".")
+             (remove-store-references fsck)
+             (chmod fsck #o555))
+           #t))))
+    (inputs
+     `(("jfsutils" ,jfsutils/static)))
+    (home-page (package-home-page jfsutils))
+    (synopsis "Statically-linked jfs_fsck command from jfsutils")
+    (description "This package provides statically-linked jfs_fsck command taken
+from the jfsutils package.  It is meant to be used in initrds.")
+    (license (package-license jfsutils))))
 
 (define-public disorderfs
   (package

@@ -4,9 +4,10 @@
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 HiPhish <hiphish@posteo.de>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2019 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,7 +68,7 @@
 (define-public vim
   (package
     (name "vim")
-    (version "8.1.0644")
+    (version "8.2.0069")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -76,7 +77,7 @@
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "1xksb2v8rw1zgrd5fwqvrh44lf277k85sad2y4ia1z17y7i8j2fl"))))
+               "0kxzfcpv96s1lbx97g6451p1i7yanws5bvzl05jh1ywaqv5f4y7g"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -92,26 +93,42 @@
                             "src/testdir/test_terminal.vim")
                (("/bin/sh") (which "sh")))
              #t))
-         (add-before 'check 'patch-failing-tests
+         (add-before 'check 'set-TZDIR
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; One of the tests tests timezone-dependent functions.
+             (setenv "TZDIR"
+                     (string-append (assoc-ref inputs "tzdata")
+                                    "/share/zoneinfo"))
+             #t))
+         (add-before 'check 'skip-failing-tests
            (lambda _
-             ;; XXX A single test fails with “Can't create file /dev/stdout” (at
-             ;; Test_writefile_sync_dev_stdout line 5) while /dev/stdout exists.
-             (substitute* "src/testdir/test_writefile.vim"
-               (("/dev/stdout") "a-regular-file"))
+             ;; This test assumes that PID 1 is run as root and that the user
+             ;; running the test suite does not have permission to kill(1, 0)
+             ;; it.  This is not true in the build container, where both PID 1
+             ;; and the test suite are run as the same user.  Skip the test.
+             ;; An alternative fix would be to patch the PID used to a random
+             ;; 32-bit value and hope it never shows up in the test environment.
+             (substitute* "src/testdir/test_swap.vim"
+               (("if !IsRoot\\(\\)") "if 0"))
 
-             ;; XXX: This test fails when run in the build container:
-             ;; <https://github.com/vim/vim/issues/3348>.
-             (substitute* "src/testdir/test_search.vim"
-               ((".*'Test_incsearch_substitute_03'.*" all)
-                (string-append "\"" all "\n")))
+             ;; This test checks how the terminal looks after executing some
+             ;; actions.  The path of the bash binary is shown, which results in
+             ;; a difference being detected.  Patching the expected result is
+             ;; non-trivial due to the special format used, so skip the test.
+             (substitute* "src/testdir/test_terminal.vim"
+               ((".*Test_terminal_postponed_scrollback.*" line)
+                (string-append line "return\n")))
              #t)))))
     (inputs
      `(("gawk" ,gawk)
        ("ncurses" ,ncurses)
        ("perl" ,perl)
-       ("tcsh" ,tcsh))) ; For runtime/tools/vim32
+       ("tcsh" ,tcsh)))                 ; For runtime/tools/vim32
     (native-inputs
-     `(("libtool" ,libtool)))
+     `(("libtool" ,libtool)
+
+       ;; For tests.
+       ("tzdata" ,tzdata-for-tests)))
     (home-page "https://www.vim.org/")
     (synopsis "Text editor based on vi")
     (description

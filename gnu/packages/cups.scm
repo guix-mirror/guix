@@ -58,7 +58,7 @@
 (define-public cups-filters
   (package
     (name "cups-filters")
-    (version "1.25.11")
+    (version "1.25.13")
     (source(origin
               (method url-fetch)
               (uri
@@ -66,7 +66,7 @@
                               "cups-filters-" version ".tar.xz"))
               (sha256
                (base32
-                "0ni8krr4rf5833livn9401cd41gspjvxj0iiqnc1rfg3x90i0fxh"))
+                "1z3b7p6pp6yzvzl2nip9q0gn4fr5k9qwpnnhqqkiaaf3b1nfswjj"))
               (modules '((guix build utils)))
               (snippet
                ;; install backends, banners and filters to cups-filters output
@@ -537,6 +537,13 @@ should only be used as part of the Guix cups-pk-helper service.")
                                  "/lib/systemd/system"))
                  (("/etc/sane.d")
                   (string-append out "/etc/sane.d"))))))
+         (add-after 'install 'install-models-dat
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (models-dir (string-append out
+                                               "/share/hplip/data/models")))
+               (install-file "data/models/models.dat" models-dir))
+             #t))
          (add-after 'install 'wrap-binaries
            ;; Scripts in /bin are all symlinks to .py files in /share/hplip.
            ;; Symlinks are immune to the Python build system's 'WRAP phase,

@@ -1,15 +1,15 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
 ;;; Copyright © 2017, 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2018, 2019 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -110,8 +110,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.0.1")
-        (commit "41b4b713f4892918a9a1950acdd89f33b977d143")
-        (revision 10))
+        (commit "f38eabe952608478230895e380ef441d65ea625e")
+        (revision 11))
     (package
       (name "guix")
 
@@ -127,7 +127,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "08sblj4xy78va6zlxmxdq2id58pjr8rjqxxycd77hiacsqbjh9g6"))
+                  "1wnm1wqa38dpd5bk6avyfm0rgx72vlx36a06scyg8d57kl47mzjf"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -176,16 +176,27 @@
                         ;; Copy the bootstrap guile tarball in the store used
                         ;; by the test suite.
                         (define (intern file recursive?)
-                          (let ((base (strip-store-file-name file)))
-                            ;; Note: don't use 'guix download' here because we
-                            ;; need to set the 'recursive?' argument.
-                            (invoke "./test-env" "guile" "-c"
-                                    (object->string
-                                     `(begin
-                                        (use-modules (guix))
-                                        (with-store store
-                                          (add-to-store store ,base ,recursive?
-                                                        "sha256" ,file)))))))
+                          ;; Note: don't use 'guix download' here because we
+                          ;; need to set the 'recursive?' argument.
+                          (define base
+                            (strip-store-file-name file))
+
+                          (define code
+                            `(begin
+                               (use-modules (guix))
+                               (with-store store
+                                 (let* ((item (add-to-store store ,base
+                                                            ,recursive?
+                                                            "sha256" ,file))
+                                        (root (string-append "/tmp/gc-root-"
+                                                             (basename item))))
+                                   ;; Register a root so that the GC tests
+                                   ;; don't delete those.
+                                   (symlink item root)
+                                   (add-indirect-root store root)))))
+
+                          (invoke "./test-env" "guile" "-c"
+                                  (object->string code)))
 
                         (intern (assoc-ref inputs "boot-guile") #f)
 
@@ -566,13 +577,14 @@ transactions from C or Python.")
     (version "1.6.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/Anaconda-Platform/"
-                           "anaconda-client/archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/Anaconda-Platform/anaconda-client")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1wv4wi6k5jz7rlwfgvgfdizv77x3cr1wa2aj0k1595g7fbhkjhz2"))))
+         "0w1bfxnydjl9qp53r2gcvr6vlpdqqilcrzqxrll9sgg6vwdyiyyp"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pyyaml" ,python-pyyaml)
@@ -621,13 +633,14 @@ environments.")
     (version "4.3.16")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/conda/conda/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/conda/conda")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1jq8hyrc5npb5sf4vw6s6by4602yj8f79vzpbwdfgpkn02nfk1dv"))))
+         "1qwy0awx4qf2pbk8z2b7q6wdcq7mvwpxxjhg27mbirdvs5hw7hb2"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -663,6 +676,8 @@ environments.")
                  ;; directory left when you build with the --keep-failed
                  ;; option
                  (delete-file "gateways/disk/test_delete.py")
+                 ;; This file is no longer writable after downloading with 'git-fetch'
+                 (make-file-writable "conda_env/support/saved-env/environment.yml")
                  #t))))
          (replace 'check
            (lambda _

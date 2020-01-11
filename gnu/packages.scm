@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
@@ -30,12 +30,12 @@
                 #:select ((package-name->name+version
                            . hyphen-separated-name->name+version)
                           mkdir-p))
-  #:autoload   (guix profiles) (packages->manifest)
+  #:use-module (guix profiles)
   #:use-module (guix describe)
   #:use-module (guix deprecation)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 match)
-  #:autoload   (ice-9 binary-ports) (put-bytevector)
+  #:use-module (ice-9 binary-ports)
   #:autoload   (system base compile) (compile)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)

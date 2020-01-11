@@ -5,7 +5,7 @@
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2014 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.org>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -249,7 +249,7 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
 (define-public mg
   (package
     (name "mg")
-    (version "20180408")
+    (version "20180927")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -258,7 +258,7 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "06w86xk7sjl2x2h3z6msn8kpmwj05qdimcym77wzhz5s94dzh1bl"))
+                "14vrm8lvwksf697sqks7xfd1xaqjlqjc9afjk33sksq5p27wr203"))
               (modules '((guix build utils)))
               (snippet '(begin
                           (substitute* "GNUmakefile"
@@ -297,9 +297,9 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
     (home-page "https://homepage.boetes.org/software/mg/")
     (synopsis "Microscopic GNU Emacs clone")
     (description
-     "Mg (mg) is a GNU Emacs style editor, with which it is \"broadly\"
-compatible.  This is a portable version of the mg maintained by the OpenBSD
-team.")
+     "Mg (@command{mg}) is a GNU Emacs style editor, with which it is
+\"broadly\" compatible.  This is a portable version of the mg maintained by the
+OpenBSD team.")
     (license license:public-domain)))
 
 (define-public ghostwriter
@@ -444,7 +444,7 @@ and Octave.  TeXmacs is completely extensible via Guile.")
 (define-public scintilla
   (package
     (name "scintilla")
-    (version "4.2.1")
+    (version "4.2.2")
     (source (origin
               (method url-fetch)
               (uri (let ((v (apply string-append (string-split version #\.))))
@@ -452,7 +452,7 @@ and Octave.  TeXmacs is completely extensible via Guile.")
                       "https://www.scintilla.org/scintilla" v ".tgz")))
               (sha256
                (base32
-                "0l52s39zg8l3fcj86nqm3hzh0sa4i981dasil54a40dvz3d3cvrx"))))
+                "01gq31ggvasw4sy9xs544h7v1dmxrlxs5bzxpasqb9yi3ps3nl0f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "GTK3=1" "CC=gcc" "-Cgtk")

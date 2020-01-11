@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2018 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -85,10 +85,10 @@
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages java)
   #:use-module (gnu packages java-compression)
-  #:use-module (gnu packages javascript)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages dlang)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages man)
@@ -1682,13 +1682,13 @@ splice junctions between exons.")
        (modify-phases %standard-phases
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((bin (string-append
-                         (assoc-ref outputs "out") "/bin"))
-                   (doc (string-append
-                         (assoc-ref outputs "out") "/share/doc/bwa"))
-                   (man (string-append
-                         (assoc-ref outputs "out") "/share/man/man1")))
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (lib (string-append out "/lib"))
+                    (doc (string-append out "/share/doc/bwa"))
+                    (man (string-append out "/share/man/man1")))
                (install-file "bwa" bin)
+               (install-file "libbwa.a" lib)
                (install-file "README.md" doc)
                (install-file "bwa.1" man))
              #t))
@@ -13384,6 +13384,36 @@ reference transcripts provided in a annotation file (also in GTF/GFF3 format).
         license:expat                   ;license for gffcompare
         license:artistic2.0)))))        ;license for gclib
 
+(define-public intervaltree
+  (let ((commit "b90527f9e6d51cd36ecbb50429e4524d3a418ea5"))
+    (package
+      (name "intervaltree")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/ekg/intervaltree/")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32 "0rgv6q5fl4x5d74n6p5wvdna6zmbdbqpb4jqqh6vq3670gn08xad"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:tests? #f ; No tests.
+         #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                            "DESTDIR=\"\"")
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)))) ; There is no configure phase.
+      (home-page "https://github.com/ekg/intervaltree")
+      (synopsis "Minimal C++ interval tree implementation")
+      (description "An interval tree can be used to efficiently find a set of
+numeric intervals overlapping or containing another interval.  This library
+provides a basic implementation of an interval tree using C++ templates,
+allowing the insertion of arbitrary types into the tree.")
+      (license license:expat))))
+
 (define-public python-intervaltree
   (package
     (name "python-intervaltree")
@@ -14869,7 +14899,7 @@ mutations from scRNA-Seq data.")
 (define-public tabixpp
   (package
    (name "tabixpp")
-   (version "1.0.0")
+   (version "1.1.0")
    (source (origin
      (method git-fetch)
      (uri (git-reference
@@ -14877,7 +14907,11 @@ mutations from scRNA-Seq data.")
            (commit (string-append "v" version))))
      (file-name (git-file-name name version))
      (sha256
-      (base32 "08vx6nsipk971cyr8z53rnzwkvlld63kcn1fw0pwddynz91xfny8"))))
+      (base32 "1k2a3vbq96ic4lw72iwp5s3mwwc4xhdffjj584yn6l9637q9j1yd"))
+     (modules '((guix build utils)))
+     (snippet
+      `(begin
+         (delete-file-recursively "htslib") #t))))
    (build-system gnu-build-system)
    (inputs
     `(("htslib" ,htslib)
@@ -14893,6 +14927,7 @@ mutations from scRNA-Seq data.")
             (let ((htslib-ref (assoc-ref inputs "htslib")))
               (invoke "make"
                       (string-append "HTS_LIB=" htslib-ref "/lib/libhts.a")
+                      (string-append "INCLUDES= -I" htslib-ref "/include/htslib")
                       "HTS_HEADERS="    ; No need to check for headers here.
                       (string-append "LIBPATH=-L. -L" htslib-ref "/include")))))
         (replace 'install
@@ -14906,30 +14941,11 @@ mutations from scRNA-Seq data.")
 some of the details of opening and jumping in tabix-indexed files.")
    (license license:expat)))
 
-(define tabixpp-freebayes
-  ;; This version works with FreeBayes while the released
-  ;; version doesn't. The released creates a variable with the name \"vcf\"
-  ;; somewhere, which is also the name of a namespace in vcflib.
-  (let ((commit "bbc63a49acc52212199f92e9e3b8fba0a593e3f7"))
-    (package
-      (inherit tabixpp)
-      (name "tabixpp-freebayes")
-      (version (git-version "0.0.0" "1" commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/ekg/tabixpp/")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32 "017qsmsc2kyiyzqr9nl8cc6pfldxf16dbn8flx5i59mbqr9ydi7g")))))))
-
 (define-public smithwaterman
-  ;; TODO: Upgrading smithwaterman breaks FreeBayes.
-  (let ((commit "203218b47d45ac56ef234716f1bd4c741b289be1"))
+  (let ((commit "2610e259611ae4cde8f03c72499d28f03f6d38a7"))
     (package
       (name "smithwaterman")
-      (version (string-append "0-1." (string-take commit 7)))
+      (version (git-version "0.0.0" "2" commit))
       (source (origin
         (method git-fetch)
         (uri (git-reference
@@ -14937,17 +14953,21 @@ some of the details of opening and jumping in tabix-indexed files.")
               (commit commit)))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "0z9xsmsv452kgdfbbwydyc6nymg3fwyv8zswls8qjin3r4ia4415"))))
+         (base32 "0i9d8zrxpiracw3mxzd9siybpy62p06rqz9mc2w93arajgbk45bs"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f ; There are no tests to run.
+         #:make-flags '("libsw.a" "all")
          #:phases
          (modify-phases %standard-phases
            (delete 'configure) ; There is no configure phase.
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
-               (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
-                 (install-file "smithwaterman" bin))
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (lib (string-append out "/lib")))
+                 (install-file "smithwaterman" bin)
+                 (install-file "libsw.a" lib))
                #t)))))
       (home-page "https://github.com/ekg/smithwaterman")
       (synopsis "Implementation of the Smith-Waterman algorithm")
@@ -15020,125 +15040,135 @@ neural networks.")
       (license license:gpl3))))
 
 (define-public fastahack
-  (let ((commit "c68cebb4f2e5d5d2b70cf08fbdf1944e9ab2c2dd"))
-    (package
-      (name "fastahack")
-      (version (git-version "0.0.0" "1" commit))
-      (source (origin
-        (method git-fetch)
-        (uri (git-reference
-              (url "https://github.com/ekg/fastahack/")
-              (commit commit)))
-        (file-name (git-file-name name version))
-        (sha256
-         (base32 "0hfdv67l9g611i2ck4l92pd6ygmsp9g1ph4zx1ni7qkpsikf0l19"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:tests? #f ; Unclear how to run tests: https://github.com/ekg/fastahack/issues/15
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure) ; There is no configure phase.
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
-                 (install-file "fastahack" bin))
-               #t)))))
-      (home-page "https://github.com/ekg/fastahack")
-      (synopsis "Indexing and sequence extraction from FASTA files")
-      (description "Fastahack is a small application for indexing and
+  (package
+    (name "fastahack")
+    (version "1.0.0")
+    (source (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/ekg/fastahack/")
+            (commit (string-append "v" version))))
+      (file-name (git-file-name name version))
+      (sha256
+       (base32 "0rp1blskhzxf7vbh253ibpxbgl9wwgyzf1wbkxndi08d3j4vcss9"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; Unclear how to run tests: https://github.com/ekg/fastahack/issues/15
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; There is no configure phase.
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+               (install-file "fastahack" bin))
+             #t)))))
+    (home-page "https://github.com/ekg/fastahack")
+    (synopsis "Indexing and sequence extraction from FASTA files")
+    (description "Fastahack is a small application for indexing and
 extracting sequences and subsequences from FASTA files.  The included library
 provides a FASTA reader and indexer that can be embedded into applications
 which would benefit from directly reading subsequences from FASTA files.  The
 library automatically handles index file generation and use.")
-      (license (list license:expat license:gpl2)))))
+    (license (list license:expat license:gpl2))))
 
 (define-public vcflib
-  (let ((commit "5ac091365fdc716cc47cc5410bb97ee5dc2a2c92")
-        (revision "1"))
-    (package
-      (name "vcflib")
-      (version (git-version "0.0.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/vcflib/vcflib/")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "1gijvcz1lcdn5kvgzb671l6iby0379qk00nqmcrszgk67hfwx6kq"))))
-      (build-system gnu-build-system)
-      (inputs
-       `(("zlib" ,zlib)))
-      (native-inputs
-       `(("perl" ,perl)
-         ("python" ,python-2)
-         ;; Submodules.
-         ;; This package builds against the .o files so we need to extract the source.
-         ("tabixpp-src" ,(package-source tabixpp-freebayes))
-         ("smithwaterman-src" ,(package-source smithwaterman))
-         ("multichoose-src" ,(package-source multichoose))
-         ("fsom-src" ,(package-source fsom))
-         ("filevercmp-src" ,(package-source filevercmp))
-         ("fastahack-src" ,(package-source fastahack))
-         ("intervaltree-src"
-          ,(origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://github.com/ekg/intervaltree/")
-                   (commit "dbb4c513d1ad3baac516fc1484c995daf9b42838")))
-             (file-name "intervaltree-src-checkout")
-             (sha256
-              (base32 "1fy5qbj4bg8d2bjysvaa9wfnqn2rj2sk5yra2h4l5pzvy53f23fj"))))))
-      (arguments
-       `(#:tests? #f ; no tests
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (delete 'check)
-           (add-after 'unpack 'unpack-submodule-sources
-             (lambda* (#:key inputs #:allow-other-keys)
-               (let ((unpack (lambda (source target)
-                               (with-directory-excursion target
-                                 (if (file-is-directory? (assoc-ref inputs source))
-                                     (copy-recursively (assoc-ref inputs source) ".")
-                                     (invoke "tar" "xvf"
-                                             (assoc-ref inputs source)
-                                             "--strip-components=1"))))))
-                 (and
-                  (unpack "intervaltree-src" "intervaltree")
-                  (unpack "fastahack-src" "fastahack")
-                  (unpack "filevercmp-src" "filevercmp")
-                  (unpack "fsom-src" "fsom")
-                  (unpack "multichoose-src" "multichoose")
-                  (unpack "smithwaterman-src" "smithwaterman")
-                  (unpack "tabixpp-src" "tabixpp")))))
-           (replace 'build
-             (lambda* (#:key inputs make-flags #:allow-other-keys)
+  (package
+    (name "vcflib")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/vcflib/vcflib/releases/"
+                           "download/v" version
+                           "/vcflib-" version "-src.tar.gz"))
+       (sha256
+        (base32 "14zzrg8hg8cq9cvq2wdvp21j7nmxxkjrbagw2apd2yqv2kyx42lm"))
+       (modules '((guix build utils)))
+       (snippet
+        `(begin
+           (for-each delete-file-recursively
+                     '("fastahack" "filevercmp" "fsom" "googletest" "intervaltree"
+                       "libVCFH" "multichoose" "smithwaterman" "tabixpp"))
+           #t))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("htslib" ,htslib)
+       ("perl" ,perl)
+       ("python" ,python)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(;; Submodules.
+       ;; This package builds against the .o files so we need to extract the source.
+       ("fastahack-src" ,(package-source fastahack))
+       ("filevercmp-src" ,(package-source filevercmp))
+       ("fsom-src" ,(package-source fsom))
+       ("intervaltree-src" ,(package-source intervaltree))
+       ("multichoose-src" ,(package-source multichoose))
+       ("smithwaterman-src" ,(package-source smithwaterman))
+       ("tabixpp-src" ,(package-source tabixpp))))
+    (arguments
+     `(#:tests? #f ; no tests
+       #:make-flags (list (string-append "HTS_LIB="
+                                         (assoc-ref %build-inputs "htslib")
+                                         "/lib/libhts.a")
+                          (string-append "HTS_INCLUDES= -I"
+                                         (assoc-ref %build-inputs "htslib")
+                                         "/include/htslib")
+                          (string-append "HTS_LDFLAGS= -L"
+                                         (assoc-ref %build-inputs "htslib")
+                                         "/include/htslib" " -lhts"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'check)
+         (add-after 'unpack 'unpack-submodule-sources
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((unpack (lambda (source target)
+                             (mkdir target)
+                             (with-directory-excursion target
+                               (if (file-is-directory? (assoc-ref inputs source))
+                                   (copy-recursively (assoc-ref inputs source) ".")
+                                   (invoke "tar" "xvf"
+                                           (assoc-ref inputs source)
+                                           "--strip-components=1"))))))
+               (and
+                (unpack "fastahack-src" "fastahack")
+                (unpack "filevercmp-src" "filevercmp")
+                (unpack "fsom-src" "fsom")
+                (unpack "intervaltree-src" "intervaltree")
+                (unpack "multichoose-src" "multichoose")
+                (unpack "smithwaterman-src" "smithwaterman")
+                (unpack "tabixpp-src" "tabixpp")))))
+         (replace 'build
+           (lambda* (#:key inputs make-flags #:allow-other-keys)
+             (let ((htslib (assoc-ref inputs "htslib")))
                (with-directory-excursion "tabixpp"
-                 (invoke "make"))
-               (invoke "make" "CC=gcc"
-                       (string-append "CFLAGS=\"" "-Itabixpp " "\"")
-                       "all")))
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((bin (string-append (assoc-ref outputs "out") "/bin"))
-                     (lib (string-append (assoc-ref outputs "out") "/lib")))
-                 (for-each (lambda (file)
-                             (install-file file bin))
-                           (find-files "bin" ".*"))
-                 ;; The header files in src/ do not interface libvcflib,
-                 ;; therefore they are left out.
-                 (install-file "libvcflib.a" lib))
-               #t)))))
-      (home-page "https://github.com/vcflib/vcflib/")
-      (synopsis "Library for parsing and manipulating VCF files")
-      (description "Vcflib provides methods to manipulate and interpret
+                 (substitute* "Makefile"
+                   (("-Ihtslib") (string-append "-I" htslib "/include/htslib"))
+                   (("-Lhtslib") (string-append "-L" htslib "/lib/htslib"))
+                   (("htslib/htslib") (string-append htslib "/include/htslib")))
+                 (invoke "make"
+                         (string-append "HTS_LIB=" htslib "/lib/libhts.a")))
+               (apply invoke "make" "CC=gcc" "CFLAGS=-Itabixpp" make-flags))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin"))
+                   (lib (string-append (assoc-ref outputs "out") "/lib")))
+               (for-each (lambda (file)
+                           (install-file file bin))
+                         (find-files "bin" ".*"))
+               ;; The header files in src/ do not interface libvcflib,
+               ;; therefore they are left out.
+               (install-file "libvcflib.a" lib))
+             #t)))))
+    (home-page "https://github.com/vcflib/vcflib/")
+    (synopsis "Library for parsing and manipulating VCF files")
+    (description "Vcflib provides methods to manipulate and interpret
 sequence variation as it can be described by VCF.  It is both an API for parsing
 and operating on records of genomic variation as it can be described by the VCF
 format, and a collection of command-line utilities for executing complex
 manipulations on VCF files.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public freebayes
   (let ((commit "3ce827d8ebf89bb3bdc097ee0fe7f46f9f30d5fb")
@@ -15170,21 +15200,13 @@ manipulations on VCF files.")
          ("vcflib-src" ,(package-source vcflib))
          ;; These are submodules for the vcflib version used in freebayes.
          ;; This package builds against the .o files so we need to extract the source.
-         ("tabixpp-src" ,(package-source tabixpp-freebayes))
+         ("tabixpp-src" ,(package-source tabixpp))
          ("smithwaterman-src" ,(package-source smithwaterman))
          ("multichoose-src" ,(package-source multichoose))
          ("fsom-src" ,(package-source fsom))
          ("filevercmp-src" ,(package-source filevercmp))
          ("fastahack-src" ,(package-source fastahack))
-         ("intervaltree-src"
-          ,(origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://github.com/ekg/intervaltree/")
-                   (commit "dbb4c513d1ad3baac516fc1484c995daf9b42838")))
-             (file-name "intervaltree-src-checkout")
-             (sha256
-              (base32 "1fy5qbj4bg8d2bjysvaa9wfnqn2rj2sk5yra2h4l5pzvy53f23fj"))))
+         ("intervaltree-src" ,(package-source intervaltree))
          ;; These submodules are needed to run the tests.
          ("bash-tap-src" ,(package-source bash-tap))
          ("test-simple-bash-src"

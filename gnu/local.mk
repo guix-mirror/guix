@@ -7,7 +7,7 @@
 # Copyright © 2016, 2017, 2018 Kei Kebreau <kkebreau@posteo.net>
 # Copyright © 2016, 2017 Rene Saavedra <rennes@openmailbox.org>
 # Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
-# Copyright © 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+# Copyright © 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 # Copyright © 2016, 2017, 2018, 2019 Alex Vong <alexvong1995@gmail.com>
 # Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
@@ -17,7 +17,7 @@
 # Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 # Copyright © 2017, 2018, 2019 Gábor Boskovits <boskovits@gmail.com>
 # Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
-# Copyright © 2018, 2019 Oleg Pykhalov <go.wigust@gmail.com>
+# Copyright © 2018, 2019, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 # Copyright © 2018 Stefan Stefanović <stefanx2ovic@gmail.com>
 # Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 # Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
@@ -25,6 +25,7 @@
 # Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 # Copyright © 2019 Evan Straw <evan.straw99@gmail.com>
 # Copyright © 2019 Brett Gilio <brettg@gnu.org>
+# Copyright © 2019 Amin Bandali <bandali@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -228,7 +229,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/golang.scm			\
   %D%/packages/gperf.scm			\
   %D%/packages/gpodder.scm			\
-  %D%/packages/gprolog.scm			\
   %D%/packages/gps.scm				\
   %D%/packages/graph.scm			\
   %D%/packages/graphics.scm			\
@@ -290,6 +290,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/key-mon.scm			\
   %D%/packages/kodi.scm				\
   %D%/packages/language.scm			\
+  %D%/packages/lean.scm				\
   %D%/packages/lego.scm				\
   %D%/packages/less.scm				\
   %D%/packages/lesstif.scm			\
@@ -376,6 +377,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/onc-rpc.scm			\
   %D%/packages/opencl.scm			\
   %D%/packages/openbox.scm			\
+  %D%/packages/opencog.scm			\
   %D%/packages/openldap.scm			\
   %D%/packages/openstack.scm			\
   %D%/packages/orpheus.scm			\
@@ -403,6 +405,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/popt.scm				\
   %D%/packages/printers.scm			\
   %D%/packages/profiling.scm			\
+  %D%/packages/prolog.scm			\
   %D%/packages/pth.scm				\
   %D%/packages/pulseaudio.scm			\
   %D%/packages/pumpio.scm			\
@@ -435,7 +438,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/ruby.scm				\
   %D%/packages/rush.scm				\
   %D%/packages/rust.scm				\
-  %D%/packages/rust-cbindgen.scm		\
+  %D%/packages/rust-apps.scm			\
   %D%/packages/samba.scm			\
   %D%/packages/sagemath.scm			\
   %D%/packages/sawfish.scm			\
@@ -691,7 +694,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/a2ps-CVE-2015-8107.patch	\
   %D%/packages/patches/abcl-fix-build-xml.patch	\
   %D%/packages/patches/abiword-explictly-cast-bools.patch	\
-  %D%/packages/patches/abiword-black-drawing-with-gtk322.patch	\
   %D%/packages/patches/adb-add-libraries.patch			\
   %D%/packages/patches/aegis-constness-error.patch         	\
   %D%/packages/patches/aegis-perl-tempdir1.patch           	\
@@ -706,10 +708,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/antiword-CVE-2014-8123.patch			\
   %D%/packages/patches/antlr3-3_1-fix-java8-compilation.patch	\
   %D%/packages/patches/antlr3-3_3-fix-java8-compilation.patch	\
+  %D%/packages/patches/appstream-glib-2020.patch		\
   %D%/packages/patches/apr-skip-getservbyname-test.patch	\
   %D%/packages/patches/arm-trusted-firmware-disable-hdcp.patch	\
-  %D%/packages/patches/arm-trusted-firmware-optional-bin-generation.patch	\
-  %D%/packages/patches/arm-trusted-firmware-rockchip-disable-binary.patch	\
   %D%/packages/patches/aspell-default-dict-dir.patch		\
   %D%/packages/patches/ath9k-htc-firmware-binutils.patch	\
   %D%/packages/patches/ath9k-htc-firmware-gcc.patch		\
@@ -759,10 +760,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/catdoc-CVE-2017-11110.patch		\
   %D%/packages/patches/cdparanoia-fpic.patch			\
   %D%/packages/patches/cdrtools-3.01-mkisofs-isoinfo.patch 	\
-  %D%/packages/patches/ceph-detect-rocksdb.patch		\
+  %D%/packages/patches/ceph-boost-compat.patch			\
   %D%/packages/patches/ceph-disable-cpu-optimizations.patch	\
-  %D%/packages/patches/ceph-skip-collect-sys-info-test.patch	\
-  %D%/packages/patches/ceph-skip-unittest_blockdev.patch	\
   %D%/packages/patches/ceph-volume-respect-PATH.patch		\
   %D%/packages/patches/chmlib-inttypes.patch			\
   %D%/packages/patches/clamav-config-llvm-libs.patch		\
@@ -997,7 +996,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/hdf-eos5-remove-gctp.patch		\
   %D%/packages/patches/hdf-eos5-fix-szip.patch			\
   %D%/packages/patches/hdf-eos5-fortrantests.patch		\
-  %D%/packages/patches/hexchat-crash-exit.patch			\
   %D%/packages/patches/higan-remove-march-native-flag.patch	\
   %D%/packages/patches/hubbub-sort-entities.patch		\
   %D%/packages/patches/hurd-fix-eth-multiplexer-dependency.patch        \
@@ -1030,6 +1028,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/java-xerces-build_dont_unzip.patch	\
   %D%/packages/patches/java-xerces-xjavac_taskdef.patch	\
   %D%/packages/patches/jbig2dec-ignore-testtest.patch		\
+  %D%/packages/patches/jfsutils-add-sysmacros.patch		\
+  %D%/packages/patches/jfsutils-include-systypes.patch		\
   %D%/packages/patches/kdbusaddons-kinit-file-name.patch	\
   %D%/packages/patches/libnftnl-dont-check-NFTNL_FLOWTABLE_SIZE.patch	\
   %D%/packages/patches/libvirt-create-machine-cgroup.patch	\
@@ -1107,6 +1107,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/libsndfile-CVE-2017-8362.patch		\
   %D%/packages/patches/libsndfile-CVE-2017-12562.patch		\
   %D%/packages/patches/libtar-CVE-2013-4420.patch 		\
+  %D%/packages/patches/libtgvoip-disable-sse2.patch 		\
+  %D%/packages/patches/libtgvoip-disable-webrtc.patch 		\
   %D%/packages/patches/libtheora-config-guess.patch		\
   %D%/packages/patches/libtommath-fix-linkage.patch		\
   %D%/packages/patches/libtool-skip-tests2.patch		\
@@ -1156,7 +1158,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/mcrypt-CVE-2012-4527.patch			\
   %D%/packages/patches/mes-remove-store-name.patch		\
   %D%/packages/patches/mesa-skip-disk-cache-test.patch		\
-  %D%/packages/patches/mesa-timespec-test-32bit.patch		\
   %D%/packages/patches/mescc-tools-boot.patch			\
   %D%/packages/patches/meson-for-build-rpath.patch		\
   %D%/packages/patches/metabat-fix-compilation.patch		\
@@ -1195,11 +1196,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/netsurf-system-utf8proc.patch		\
   %D%/packages/patches/netsurf-y2038-tests.patch		\
   %D%/packages/patches/netsurf-longer-test-timeout.patch	\
-  %D%/packages/patches/nfs-utils-missing-headers.patch		\
   %D%/packages/patches/ngircd-handle-zombies.patch		\
   %D%/packages/patches/nm-plugin-path.patch			\
   %D%/packages/patches/nsis-env-passthru.patch			\
-  %D%/packages/patches/nss-CVE-2019-11745.patch			\
   %D%/packages/patches/nss-freebl-stubs.patch			\
   %D%/packages/patches/nss-increase-test-timeout.patch		\
   %D%/packages/patches/nss-pkgconfig.patch			\
@@ -1233,7 +1232,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/openssl-c-rehash-in.patch		\
   %D%/packages/patches/openssl-CVE-2019-1559.patch		\
   %D%/packages/patches/open-zwave-hidapi.patch			\
-  %D%/packages/patches/orc-typedef-enum.patch			\
   %D%/packages/patches/orpheus-cast-errors-and-includes.patch	\
   %D%/packages/patches/osip-CVE-2017-7853.patch			\
   %D%/packages/patches/ots-no-include-missing-file.patch	\
@@ -1245,7 +1243,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/pango-skip-libthai-test.patch		\
   %D%/packages/patches/patchutils-test-perms.patch		\
   %D%/packages/patches/patch-hurd-path-max.patch		\
-  %D%/packages/patches/pcre2-fix-jit_match-crash.patch		\
   %D%/packages/patches/perl-autosplit-default-time.patch	\
   %D%/packages/patches/perl-deterministic-ordering.patch	\
   %D%/packages/patches/perl-finance-quote-unuse-mozilla-ca.patch \
@@ -1385,7 +1382,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/sooperlooper-build-with-wx-30.patch 	\
   %D%/packages/patches/soundconverter-remove-gconf-dependency.patch	\
   %D%/packages/patches/steghide-fixes.patch			\
-  %D%/packages/patches/streamlink-update-test.patch		\
   %D%/packages/patches/supercollider-boost-1.70-build-fix.patch	\
   %D%/packages/patches/superlu-dist-awpm-grid.patch		\
   %D%/packages/patches/superlu-dist-fix-mpi-deprecations.patch	\
@@ -1425,7 +1421,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/tomb-fix-errors-on-open.patch		\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
   %D%/packages/patches/txr-shell.patch				\
-  %D%/packages/patches/u-boot-fix-mkimage-header-verification.patch	\
   %D%/packages/patches/ucx-tcp-iface-ioctl.patch		\
   %D%/packages/patches/udiskie-no-appindicator.patch		\
   %D%/packages/patches/unzip-CVE-2014-8139.patch		\

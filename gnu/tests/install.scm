@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,7 +43,8 @@
             %test-separate-home-os
             %test-raid-root-os
             %test-encrypted-root-os
-            %test-btrfs-root-os))
+            %test-btrfs-root-os
+            %test-jfs-root-os))
 
 ;;; Commentary:
 ;;;
@@ -809,5 +810,78 @@ build (current-guix) and then store a couple of full system images.")
                                                %btrfs-root-installation-script))
                          (command (qemu-command/writable-image image)))
       (run-basic-test %btrfs-root-os command "btrfs-root-os")))))
+
+
+;;;
+;;; JFS root file system.
+;;;
+
+(define-os-with-source (%jfs-root-os %jfs-root-os-source)
+  ;; The OS we want to install.
+  (use-modules (gnu) (gnu tests) (srfi srfi-1))
+
+  (operating-system
+    (host-name "liberigilo")
+    (timezone "Europe/Paris")
+    (locale "en_US.UTF-8")
+
+    (bootloader (bootloader-configuration
+                 (bootloader grub-bootloader)
+                 (target "/dev/vdb")))
+    (kernel-arguments '("console=ttyS0"))
+    (file-systems (cons (file-system
+                          (device (file-system-label "my-root"))
+                          (mount-point "/")
+                          (type "jfs"))
+                        %base-file-systems))
+    (users (cons (user-account
+                  (name "charlie")
+                  (group "users")
+                  (supplementary-groups '("wheel" "audio" "video")))
+                 %base-user-accounts))
+    (services (cons (service marionette-service-type
+                             (marionette-configuration
+                              (imported-modules '((gnu services herd)
+                                                  (guix combinators)))))
+                    %base-services))))
+
+(define %jfs-root-installation-script
+  ;; Shell script of a simple installation.
+  "\
+. /etc/profile
+set -e -x
+guix --version
+
+export GUIX_BUILD_OPTIONS=--no-grafts
+ls -l /run/current-system/gc-roots
+parted --script /dev/vdb mklabel gpt \\
+  mkpart primary ext2 1M 3M \\
+  mkpart primary ext2 3M 2G \\
+  set 1 boot on \\
+  set 1 bios_grub on
+jfs_mkfs -L my-root -q /dev/vdb2
+mount /dev/vdb2 /mnt
+herd start cow-store /mnt
+mkdir /mnt/etc
+cp /etc/target-config.scm /mnt/etc/config.scm
+guix system build /mnt/etc/config.scm
+guix system init /mnt/etc/config.scm /mnt --no-substitutes
+sync
+reboot\n")
+
+(define %test-jfs-root-os
+  (system-test
+   (name "jfs-root-os")
+   (description
+    "Test basic functionality of an OS installed like one would do by hand.
+This test is expensive in terms of CPU and storage usage since we need to
+build (current-guix) and then store a couple of full system images.")
+   (value
+    (mlet* %store-monad ((image   (run-install %jfs-root-os
+                                               %jfs-root-os-source
+                                               #:script
+                                               %jfs-root-installation-script))
+                         (command (qemu-command/writable-image image)))
+      (run-basic-test %jfs-root-os command "jfs-root-os")))))
 
 ;;; install.scm ends here

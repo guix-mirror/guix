@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -29,21 +29,19 @@
   #:use-module (gnu packages authentication)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages boost)
-  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages disk)
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages openldap)
-  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
@@ -55,18 +53,16 @@
 (define-public ceph
   (package
     (name "ceph")
-    (version "13.2.6")
+    (version "14.2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.ceph.com/tarballs/ceph-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "13f5qs7jpxprplk4irwlx90mc9gvm48fvd3q471xcqc3n6z1qywz"))
+                "0wbkdplxs8higmlj57a7rydmx9rq08h0arjrmxmp0s80bn0v5x2c"))
               (patches
-               (search-patches "ceph-skip-unittest_blockdev.patch"
-                               "ceph-skip-collect-sys-info-test.patch"
-                               "ceph-detect-rocksdb.patch"
+               (search-patches "ceph-boost-compat.patch"
                                "ceph-volume-respect-PATH.patch"
                                "ceph-disable-cpu-optimizations.patch"))
               (modules '((guix build utils)))
@@ -76,11 +72,13 @@
                             '(;; TODO: Unbundle these:
                               ;"src/isa-l"
                               ;"src/lua"
-                              ;"src/googletest"
                               ;"src/xxHash"
                               ;"src/zstd"
                               ;"src/civetweb"
+                              "src/seastar/fmt"
                               "src/test/downloads"
+                              "src/c-ares"
+                              "src/googletest"
                               "src/rapidjson"
                               "src/spdk"
                               "src/rocksdb"
@@ -100,6 +98,7 @@
                (string-append "-DCMAKE_INSTALL_RPATH="
                               libdir ";" libdir "/ceph")
                (string-append "-DCMAKE_INSTALL_SYSCONFDIR=" out "/etc")
+               (string-append "-DCMAKE_INSTALL_DATADIR=" lib "/share")
                (string-append "-DCMAKE_INSTALL_MANDIR=" out "/share/man")
                (string-append "-DCMAKE_INSTALL_DOCDIR=" out "/share/ceph/doc")
                (string-append "-DCMAKE_INSTALL_LIBEXECDIR=" out "/libexec")
@@ -117,9 +116,14 @@
                "-DWITH_BABELTRACE=OFF"
                "-DWITH_LTTNG=OFF"
                "-DWITH_SPDK=OFF"
-               "-DWITH_XIO=OFF"
+               "-DWITH_RADOSGW_AMQP_ENDPOINT=OFF"
+
                ;; Use jemalloc instead of tcmalloc.
-               "-DALLOCATOR=jemalloc"))
+               "-DALLOCATOR=jemalloc"
+
+               ;; Do not bother building the tests; we are not currently running
+               ;; them, and they do not build with system googletest as of 14.2.5.
+               "-DWITH_TESTS=OFF"))
        ;; FIXME: Some of the tests leak Btrfs subvolumes on Btrfs. See
        ;; <https://bugs.gnu.org/29674> for details. Disable tests until
        ;; resolved.
@@ -144,111 +148,19 @@
                                  indent "extra_link_args=['-Wl,-rpath="
                                  lib "/lib'],\n")))
 
-               (substitute* "src/ceph-disk/tox.ini"
-                 ;; Disable flake8 test since it complains about too long lines.
-                 (("envlist = flake8,py27") "envlist = py27"))
-
-               (substitute* "src/ceph-detect-init/tox.ini"
-                 ;; Disable python3 tests until we at least get py2 working.
-                 (("envlist = pep8,py27,py3") "envlist = pep8,py27"))
-
-               (substitute* "src/key_value_store/kv_flat_btree_async.cc"
-                 (("/usr/include/") ""))
-
-               (substitute* "src/test/test_subprocess.cc"
-                 (("/bin/sh") (which "sh")))
-               (substitute* "qa/standalone/special/ceph_objectstore_tool.py"
-                 (("/bin/rm") (which "rm")))
-               (substitute* "src/ceph-disk/ceph_disk/main.py"
-                 (("/bin/mount") "mount")
-                 (("/bin/umount") "umount")
-                 (("/sbin/blkid") (which "blkid"))
-                 (("'cryptsetup'") (string-append "'" (which "cryptsetup") "'"))
-                 (("'sgdisk'") (string-append "'" (which "sgdisk") "'"))
-                 (("'parted'") (string-append "'" (which "parted") "'"))
-                 (("'udevadm'") (string-append "'" (which "udevadm") "'")))
+               ;; Statically link libcrc32 because it does not get installed,
+               ;; yet several libraries end up referring to it.
+               (substitute* "src/common/CMakeLists.txt"
+                 (("add_library\\(crc32")
+                  "add_library(crc32 STATIC"))
 
                (substitute* "udev/50-rbd.rules"
                  (("/usr/bin/ceph-rbdnamer")
                   (string-append out "/bin/ceph-rbdnamer")))
-               (substitute* "udev/60-ceph-by-parttypeuuid.rules"
-                 (("/sbin/blkid") (which "blkid")))
-               (substitute* "udev/95-ceph-osd.rules"
-                 (("/usr/sbin/ceph-disk")
-                  (string-append out "/bin/ceph-disk")))
-
-               (substitute* "src/test/run-cli-tests"
-                 ;; Use our python-cram instead of the (un)bundled one.
-                 (("CRAM_BIN=.*$")
-                  (string-append "CRAM_BIN=" (which "cram") "\n")))
-
-               ;; Disable tests that are known to fail.
-               ;; TODO: The majority of these fail because
-               ;; 'qa/workunits/ceph-helpers.sh' expects to find
-               ;; /tmp/ceph-disk-virtualenv/bin/ceph-disk, but somehow
-               ;; src/ceph-disk/CMakeLists.txt fails to create it.
-               (substitute* "src/test/CMakeLists.txt"
-                 ;; FIXME: These tests fails because `ceph-disk'
-                 ;; is not available.
-                 (("^add_ceph_test\\(test-ceph-helpers\\.sh.*$") "\n")
-                 (("^add_ceph_test\\(test_pidfile\\.sh.*$") "\n")
-                 ;; XXX Why does this fail.
-                 (("^add_ceph_test\\(cephtool-test-mon\\.sh.*$") "\n")
-                 ;; This fails due to missing '/etc/fstab'.
-                 (("^add_ceph_test\\(cephtool-test-rados\\.sh.*$") "\n")
-                 ;; `Bad messages to stderr: OSD has the store locked'
-                 (("^add_ceph_test\\(ceph_objectstore_tool\\.py.*$") "\n")
-                 ;; The bundled python-cram fork needs patching to work on
-                 ;; guix, and the system version does not support --error-dir.
-                 ;; https://bitbucket.org/brodie/cram/issues/9
-                 (("^add_ceph_test\\(run-cli-tests.*$") "\n")
-                 ;; FIXME: tox/virtualenv/pip does not discover the
-                 ;; required packages and tries to go online.
-                 (("^add_test\\(NAME run-tox-ceph-disk.*$") "\n")
-                 (("^add_test\\(NAME run-tox-ceph-detect-init.*$") "\n")
-                 ;; Also remove from the set_property block.
-                 (("run-tox-ceph-disk") "")
-                 (("run-tox-ceph-detect-init") ""))
-               ;; TODO: This also seems to fail because of /etc/os-release.
-               ;; How to make src/common/util.cc behave without it.
-               (substitute* "src/test/crush/CMakeLists.txt"
-                 (("^add_ceph_test\\(crush-classes\\.sh.*$") "\n"))
-               ;; More 'ceph-disk' issues here.. :-(
-               (substitute* "src/test/erasure-code/CMakeLists.txt"
-                 (("^add_ceph_test\\(test-erasure-code-plugins\\.sh.*$") "\n")
-                 (("^add_ceph_test\\(test-erasure-code\\.sh.*$") "\n")
-                 (("^add_ceph_test\\(test-erasure-eio\\.sh.*$") "\n"))
-               (substitute* "src/test/libradosstriper/CMakeLists.txt"
-                 (("^add_ceph_test\\(rados-striper\\.sh.*$") "\n"))
-               (substitute* "src/test/mon/CMakeLists.txt"
-                 (("^add_ceph_test\\(osd-crush\\.sh.*$") "\n")
-                 (("^add_ceph_test\\(test_pool_quota\\.sh.*$") "\n")
-                 (("^add_ceph_test\\(osd-pool-create\\.sh.*$") "\n"))
-               (substitute* "src/test/osd/CMakeLists.txt"
-                 (("^add_ceph_test\\(osd-bench\\.sh.*$") "\n")
-                 (("^add_ceph_test\\(osd-config\\.sh.*$") "\n")
-                 (("add_ceph_test\\(osd-dup\\.sh.*$") "\n")
-                 (("^add_ceph_test\\(osd-markdown\\.sh.*$") "\n")
-                 (("^add_ceph_test\\(osd-reactivate\\.sh.*$") "\n")
-                 (("^add_ceph_test\\(osd-reuse-id\\.sh.*$") "\n")
-                 (("^add_ceph_test\\(osd-scrub-repair\\.sh.*$") "\n")
-                 (("^add_ceph_test\\(osd-scrub-snaps\\.sh.*$") "\n")
-                 (("^add_ceph_test\\(osd-copy-from\\.sh.*$") "\n")
-                 (("^add_ceph_test\\(osd-fast-mark-down\\.sh.*$") "\n"))
                #t)))
-         (add-before 'check 'set-check-environment
-           (lambda _
-             ;; Run tests in parallel.
-             (setenv "CTEST_PARALLEL_LEVEL"
-                     (number->string (parallel-job-count)))
-             ;; `pip' requires write access in $HOME.
-             (setenv "HOME" "/tmp")
-             #t))
          (add-before 'install 'set-install-environment
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (py2sitedir
-                     (string-append out "/lib/python2.7/site-packages"))
                     (py3sitedir
                      (string-append out "/lib/python"
                                     ,(version-major+minor
@@ -257,20 +169,21 @@
                ;; The Python install scripts refuses to function if
                ;; the install directory is not on PYTHONPATH.
                (setenv "PYTHONPATH"
-                       (string-append py2sitedir ":" py3sitedir ":"
+                       (string-append py3sitedir ":"
                                       (getenv "PYTHONPATH")))
                #t)))
          (add-after 'install 'wrap-python-scripts
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (scripts '("ceph" "ceph-mgr" "ceph-volume"
-                               "ceph-detect-init"
-                               "ceph-disk")) ;deprecated
-                    (prettytable (assoc-ref inputs "python2-prettytable"))
-                    (six (assoc-ref inputs "python2-six"))
+                    (scripts '("ceph" "ceph-mgr" "ceph-volume"))
+                    (prettytable (assoc-ref inputs "python-prettytable"))
+                    (six (assoc-ref inputs "python-six"))
                     (sitedir (lambda (package)
                                (string-append package
-                                              "/lib/python2.7/site-packages")))
+                                              "/lib/python"
+                                              ,(version-major+minor
+                                                (package-version python))
+                                              "/site-packages")))
                     (PYTHONPATH (string-append
                                  (sitedir out) ":"
                                  (sitedir six) ":"
@@ -279,17 +192,6 @@
                            (wrap-program (string-append out "/bin/" executable)
                              `("PYTHONPATH" ":" prefix (,PYTHONPATH))))
                          scripts)
-               #t)))
-         (add-before 'validate-runpath 'remove-test-executables
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               ;; FIXME: The BUILD_SHARED_LIBS CMake flag causes the test executables
-               ;; to link the bundled googletest dynamically, which in turn causes
-               ;; RUNPATH validation failures because 'libgtest.so' and friends do
-               ;; not get absolute RUNPATH entries.  The next version of Ceph can use
-               ;; an external googletest; for now just remove the test executables.
-               (for-each delete-file (find-files (string-append out "/bin")
-                                                 "ceph_(test|perf)"))
                #t))))))
     (outputs
      '("out" "lib"))
@@ -298,33 +200,7 @@
        ("pkg-config" ,pkg-config)
        ("python-cython" ,python-cython)
        ("python-sphinx" ,python-sphinx)
-       ("yasm" ,yasm)
-
-       ;; For tests.
-       ("inetutils" ,inetutils)
-       ("jq" ,jq)
-       ("perl" ,perl)
-       ("xmlstarlet" ,xmlstarlet)
-       ("python2-cram" ,python2-cram)
-       ("python2-virtualenv" ,python2-virtualenv)
-
-       ;; These dependencies are taken from test-requirements.txt
-       ;; of ceph-disk and ceph-detect-init. The latter can also
-       ;; test against python3, but let's try to get python2 tests
-       ;; working first since that is the default.
-       ("python2-configobj" ,python2-configobj)
-       ("python2-coverage" ,python2-coverage)
-       ("python2-discover" ,python2-discover)
-       ("python2-fixtures" ,python2-fixtures)
-       ("python2-flake8" ,python2-flake8)
-       ("python2-mock" ,python2-mock)
-       ("python2-nose" ,python2-nose)
-       ("python2-pip" ,python2-pip)
-       ("python2-pytest" ,python2-pytest)
-       ("python2-subunit" ,python2-subunit)
-       ("python2-testrepository" ,python2-testrepository)
-       ("python2-testtools" ,python2-testtools)
-       ("python2-tox" ,python2-tox)))
+       ("yasm" ,yasm)))
     (inputs
      `(("boost" ,boost)
        ("curl" ,curl)
@@ -332,24 +208,25 @@
        ("expat" ,expat)
        ("fcgi" ,fcgi)
        ("fuse" ,fuse)
-       ("gptfdisk" ,gptfdisk)
        ("jemalloc" ,jemalloc)
        ("keyutils" ,keyutils)
        ("leveldb" ,leveldb)
        ("libaio" ,libaio)
        ("libatomic-ops" ,libatomic-ops)
+       ("libcap-ng" ,libcap-ng)
+       ("libnl" ,libnl)
        ("lua" ,lua)
        ("lz4" ,lz4)
        ("oath-toolkit" ,oath-toolkit)
        ("openldap" ,openldap)
        ("openssl" ,openssl)
+       ("ncurses" ,ncurses)
        ("nss" ,nss)
-       ("parted" ,parted)
-       ("python@2" ,python-2)
-       ("python2-prettytable" ,python2-prettytable)      ;used by ceph_daemon.py
-       ("python2-six" ,python2-six)                      ;for ceph-mgr + plugins
-       ("python@3" ,python-3)
+       ("python-prettytable" ,python-prettytable) ;used by ceph_daemon.py
+       ("python-six" ,python-six)                 ;for ceph-mgr + plugins
+       ("python" ,python-wrapper)
        ("rapidjson" ,rapidjson)
+       ("rdma-core" ,rdma-core)
        ("rocksdb" ,rocksdb)
        ("snappy" ,snappy)
        ("udev" ,eudev)

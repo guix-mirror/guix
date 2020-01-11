@@ -37,6 +37,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages glib)
@@ -56,15 +57,15 @@
   ;; directory.
   (package
     (name "gnucash")
-    (version "3.7")
+    (version "3.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/gnucash/gnucash%20%28stable%29/"
-                           version "/gnucash-" version ".tar.bz2"))
+                           version "/gnucash-" version "b" ".tar.bz2"))
        (sha256
         (base32
-         "1d2qi3ny0bxa16ifh3465z1jgn1l0fmqk9dkph4ialw076gv13kb"))))
+         "0dvzm3bib7jcj685sklpzyy9mrak9mxyvih2k9fk4sl3v21wlphg"))))
     (build-system cmake-build-system)
     (inputs
      `(("guile" ,guile-2.2)
@@ -207,7 +208,7 @@ installed as well as Yelp, the Gnome help browser.")
                              version "/gnucash-docs-" version revision ".tar.gz"))
          (sha256
           (base32
-           "1h4hm58ikffbhplx4gm8pzm9blfwqa1sz8yc2fqi21vs5v0ijf9r"))))
+           "19v6kchda724xkkgwlw5rg21jcpirhch12j9sr6ibnv61sd4ql52"))))
       (build-system gnu-build-system)
       ;; These are native-inputs because they are only required for building the
       ;; documentation.
@@ -231,14 +232,14 @@ to be read using the GNOME Yelp program.")
 (define-public gwenhywfar
   (package
     (name "gwenhywfar")
-    (version "4.20.2")
+    (version "4.99.25rc9")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.aquamaniac.de/rdm/attachments/"
-                           "download/108/gwenhywfar-" version ".tar.gz"))
+                           "download/223/gwenhywfar-" version ".tar.gz"))
        (sha256
-        (base32 "0w1j7ppr1247kr3bpn4dqwyxp6cl8mfgr0m4782iz8f8a4ixjkqg"))))
+        (base32 "14ws780zfyv9qg41z42hlk8sh31w80w3v8n5riaslqhvvxqbfgkq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -268,22 +269,19 @@ applications and libraries.  It is used by AqBanking.")
 (define-public aqbanking
   (package
     (name "aqbanking")
-    (version "5.8.1")
+    (version "5.99.44beta")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.aquamaniac.de/rdm/attachments/"
-                           "download/105/aqbanking-" version ".tar.gz"))
+                           "download/224/aqbanking-" version ".tar.gz"))
        (sha256
-        (base32 "0m44n2hyxprxzq7ijkrd7rmhhl0r033s1k21ix9y67a0p9skl1mg"))))
+        (base32 "1cgj8g3wy53galp9pk50a85w0kmwfx3dwl93cbvq6sqb9izxmwdb"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Parallel building fails because aqhbci is required before it's
        ;; built.
-       #:parallel-build? #f
-       #:configure-flags
-       (list (string-append "--with-gwen-dir="
-                            (assoc-ref %build-inputs "gwenhywfar")))))
+       #:parallel-build? #f))
     (propagated-inputs
      `(("gwenhywfar" ,gwenhywfar)))
     (inputs
@@ -292,6 +290,7 @@ applications and libraries.  It is used by AqBanking.")
        ("gnutls" ,gnutls)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("gettext-minimal", gettext-minimal)
        ("libltdl" ,libltdl)))
     (home-page "https://www.aquamaniac.de/sites/aqbanking/index.php")
     (synopsis "Interface for online banking tasks")

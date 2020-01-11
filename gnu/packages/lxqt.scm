@@ -7,7 +7,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Meiyo Peng <meiyo@riseup.net>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2019 Reza Alizadeh Majd <r.majd@pantherx.org>
+;;; Copyright © 2019, 2020 Reza Alizadeh Majd <r.majd@pantherx.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -984,7 +984,8 @@ components to build desktop file managers which belongs to LXDE.")
         (base32 "0x3c25inlxll965xszx37mnl5gp3smm2h7x04f67z0qlh3vsbrjq"))))
     (build-system cmake-build-system)
     (inputs
-     `(("libfm-qt" ,libfm-qt)
+     `(("glib:bin" ,glib "bin")
+       ("libfm-qt" ,libfm-qt)
        ("qtbase" ,qtbase)
        ("qtx11extras" ,qtx11extras)))
     (native-inputs
@@ -1000,7 +1001,17 @@ components to build desktop file managers which belongs to LXDE.")
              (substitute* '("autostart/CMakeLists.txt")
                (("DESTINATION \"\\$\\{LXQT_ETC_XDG_DIR\\}")
                 "DESTINATION \"etc/xdg"))
-             #t)))))
+             #t))
+         (add-after 'install 'wrap-glib
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (glib (assoc-ref inputs "glib:bin"))
+                    (gio-exe-path (string-append glib "/bin/gio-launch-desktop")))
+               (if (file-exists? gio-exe-path)
+                 (wrap-program (string-append out "/bin/pcmanfm-qt")
+                   `("GIO_LAUNCH_DESKTOP" = (,gio-exe-path)))
+                 (error "could not find gio-launch-desktop"))
+               #t))))))
     (home-page "https://lxqt.org/")
     (synopsis "File manager and desktop icon manager")
     (description "PCManFM-Qt is the Qt port of PCManFM, the file manager of

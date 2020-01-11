@@ -10,7 +10,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
-;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
@@ -2089,7 +2089,7 @@ possibly untrusted extraction shell script.")
 (define-public ncompress
   (package
     (name "ncompress")
-    (version "4.2.4.5")
+    (version "4.2.4.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2099,7 +2099,7 @@ possibly untrusted extraction shell script.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0s3ik7k5a5vzcfiayhsxrc87drg3l425aqapspmw5py91b9jhc8r"))))
+                "1a4yir1ilafz0nzxdwigj204j4yy2zljbc501nsaqqm3dxdap8zn"))))
     (arguments
      '(#:make-flags (list "CC=gcc"
                           (string-append "BINDIR=" %output "/bin")

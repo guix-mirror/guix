@@ -10,7 +10,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -687,7 +687,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.1.41")
+    (version "10.1.43")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.com/MariaDB"
@@ -695,7 +695,7 @@ Language.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1wh0073lqw3d9xs150bf2q3qvjwa6886mfi9khmsn7p8vapw6irb"))
+                "1pxyq37q4p7515by7k8hs3l3css68f3bm3akx99vw4m1rxwwbm63"))
               (patches (search-patches "mariadb-client-test-32bit.patch"))
               (modules '((guix build utils)))
               (snippet
@@ -816,6 +816,12 @@ Language.")
                          disabled-tests)
                (close-port unstable-tests)
 
+               ;; XXX: This test fails because it expects a latin1 charset and
+               ;; collation.  See <https://jira.mariadb.org/browse/MDEV-21264>.
+               (substitute* "mysql-test/r/gis_notembedded.result"
+                 (("latin1_swedish_ci") "utf8_general_ci")
+                 (("\tlatin1") "\tutf8"))
+
                (substitute* "mysql-test/mysql-test-run.pl"
                  (("/bin/ls") (which "ls"))
                  (("/bin/sh") (which "sh")))
@@ -846,10 +852,11 @@ Language.")
              #t))
          (add-after
           'install 'post-install
-          (lambda* (#:key outputs #:allow-other-keys)
+          (lambda* (#:key inputs outputs #:allow-other-keys)
             (let* ((out     (assoc-ref outputs "out"))
                    (dev     (assoc-ref outputs "dev"))
-                   (lib     (assoc-ref outputs "lib")))
+                   (lib     (assoc-ref outputs "lib"))
+                   (openssl (assoc-ref inputs "openssl")))
               (substitute* (string-append out "/bin/mysql_install_db")
                 (("basedir=\"\"")
                  (string-append "basedir=\"" out "\"")))
@@ -871,6 +878,14 @@ Language.")
                            (string-append dev "/share/pkgconfig"))
               (rename-file (string-append out "/bin/mysql_config")
                            (string-append dev "/bin/mysql_config"))
+
+              ;; Embed an absolute reference to OpenSSL in mysql_config
+              ;; and the pkg-config file to avoid propagation.
+              (substitute* (list (string-append dev "/bin/mysql_config")
+                                 (string-append dev "/share/pkgconfig/mariadb.pc"))
+                (("-lssl -lcrypto" all)
+                 (string-append "-L" openssl "/lib " all)))
+
               #t))))))
     (native-inputs
      `(("bison" ,bison)
@@ -884,12 +899,11 @@ Language.")
        ("libaio" ,libaio)
        ("libxml2" ,libxml2)
        ("ncurses" ,ncurses)
+       ("openssl" ,openssl-1.0)
+       ("pam" ,linux-pam)
        ("pcre" ,pcre)
        ("xz" ,xz)
        ("zlib" ,zlib)))
-    (propagated-inputs
-     ;; mariadb.pc says -lssl -lcrypto, so propagate it.
-     `(("openssl" ,openssl-1.0)))
     ;; The test suite is very resource intensive and can take more than three
     ;; hours on a x86_64 system.  Give slow and busy machines some leeway.
     (properties '((timeout . 64800)))        ;18 hours
@@ -931,14 +945,14 @@ as a drop-in replacement of MySQL.")
 (define-public postgresql
   (package
     (name "postgresql")
-    (version "10.10")
+    (version "10.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "0lzj46dwd9cw94gnqm36bxd7jlhfdyqjrfzr3c4xd3prfn2rnkxd"))
+                "02fcmvbh0mhplj3s2jd24s642ysx7bggnf0h8bs5amh7dgzi8p8d"))
               (patches (search-patches "postgresql-disable-resolve_symlinks.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -1114,7 +1128,7 @@ including field and record folding.")))
 (define-public rocksdb
   (package
     (name "rocksdb")
-    (version "5.18.3")
+    (version "6.5.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1123,7 +1137,7 @@ including field and record folding.")))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1v2slmmr1dsgf8z0qcfg1y9x1al96859rg48b66p9nsawczd5zv9"))
+                "01f5lcrcr809jhkkvxhv743hwpcxszj4r30hy9qy1i0mvjky02vf"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -2626,17 +2640,18 @@ PickleShare.")
 (define-public python-apsw
   (package
     (name "python-apsw")
-    (version "3.20.1-r1")
+    (version "3.28.0-r1")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "https://github.com/rogerbinns/apsw/archive/"
-                            version ".tar.gz"))
-        (file-name (string-append "apsw-" version ".tar.gz"))
+        (uri (string-append "https://github.com/rogerbinns/apsw/releases"
+                            "/download/" version "/apsw-" version ".zip"))
         (sha256
           (base32
-           "00ai7m2pqi26qaflhz314d8k5i3syw7xzr145fhfl0crhyh6adz2"))))
+           "0x62534l5hcgwrc4k2gxpdzc1sxlhm6m4nwlay74rnmr77qh8wly"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
     (inputs
      `(("sqlite" ,sqlite)))
     (arguments
@@ -2651,8 +2666,7 @@ PickleShare.")
              (invoke "gcc" "-fPIC" "-shared" "-o" "./testextension.sqlext"
                      "-I." "-Isqlite3" "src/testextension.c")
              #t))
-         (delete 'check)
-         (add-after 'install 'check
+         (replace 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
              (invoke "python" "setup.py" "test")

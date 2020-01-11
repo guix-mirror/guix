@@ -11,6 +11,7 @@
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -456,6 +457,52 @@ and Game Boy Color games.")
     ;; Code is mainly MPL 2.0. "blip_buf.c" is LGPL 2.1+ and "inih.c" is
     ;; BSD-3.
     (license (list license:mpl2.0 license:lgpl2.1+ license:bsd-3))))
+
+(define-public sameboy
+  (package
+    (name "sameboy")
+    (version "0.12.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/LIJI32/SameBoy.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0m5rv2x8qck1kr43xq186pp4kaiay7gd1x775n9qrljcd7z4x6fs"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("rgbds" ,rgbds)
+       ("gcc" ,gcc-9)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("sdl2" ,sdl2)))
+    (arguments
+     `(#:tests? #f                      ; There are no tests
+       #:make-flags `("CC=gcc" "CONF=release"
+                      ,(string-append "DATA_DIR="
+                                      (assoc-ref %outputs "out")
+                                      "/share/sameboy/"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (data (string-append out "/share/sameboy/")))
+               (with-directory-excursion "build/bin/SDL"
+                 (install-file "sameboy" bin)
+                 (delete-file "sameboy")
+                 (copy-recursively "." data))))))))
+    (home-page "https://sameboy.github.io/")
+    (synopsis "Accurate Game Boy, Game Boy Color and Super Game Boy emulator")
+    (description "SameBoy is a user friendly Game Boy, Game Boy Color
+and Super Game Boy emulator.  SameBoy is accurate and includes a wide
+range of debugging features.  It has all the features one would expect
+from an emulator---from save states to scaling filters.")
+    (license license:expat)))
 
 (define-public mupen64plus-core
   (package

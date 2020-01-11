@@ -14,7 +14,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Erik Edrosa <erik.edrosa@gmail.com>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2017 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
@@ -32,7 +32,7 @@
 ;;; Copyright © 2016, 2017, 2019 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017, 2018 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
@@ -57,7 +57,7 @@
 ;;; Copyright © 2018, 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Luther Thompson <lutheroto@gmail.com>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
-;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019 Sam <smbaines8@gmail.com>
 ;;; Copyright © 2019 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
@@ -3055,14 +3055,14 @@ Server (PLS).")
 (define-public python-language-server
   (package
     (name "python-language-server")
-    (version "0.31.2")
+    (version "0.31.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-language-server" version))
        (sha256
         (base32
-         "1iq69wc1fyhirfyq25ih41wq9yvr7bchiw0i116adpdgcq6m9idq"))))
+         "1nrs56jpx7dvghaas0kc5k9lxas5vr3awj3k87p4akki43nsblb8"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pluggy" ,python-pluggy)
@@ -3430,13 +3430,14 @@ capabilities.")
     (version "1.8.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/numpy/numpy/archive/v" version ".tar.gz"))
-       (file-name (string-append "python2-numpy-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/numpy/numpy")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name "numpy" version))
        (sha256
         (base32
-         "0sc20gz1b17xnyrkp5frca3ql5qfalpv916hfg2kqxpwr6jg0f1g"))))
+         "0ikgi15rsqwbkfsjjxrwh40lqyal2wvyp3923y6w6ch3dcr82sfk"))))
     (arguments
      (substitute-keyword-arguments (package-arguments python2-numpy)
        ((#:phases phases)
@@ -5620,18 +5621,20 @@ features useful for text console applications.")
     (version "1.0.2")
     (source
       (origin
-        (method url-fetch)
+        (method git-fetch)
         ;; package author intends on distributing via github rather than pypi:
         ;; https://github.com/pazz/alot/issues/877#issuecomment-230173331
-        (uri (string-append "https://github.com/pazz/urwidtrees/archive/"
-                            version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
+        (uri (git-reference
+               (url "https://github.com/pazz/urwidtrees")
+               (commit version)))
+        (file-name (git-file-name name version))
         (sha256
           (base32
-            "0d30lyd3s2a97rhqfax5w9ssqds2z6aydqx3c6j2c2lk3cb4ngvh"))))
+           "1n1kpidvkdnsqyb82vlvk78gmly96kh8351lqxn2pzgwwns6fml2"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f)) ; no tests
+     '(#:use-setuptools? #f
+       #:tests? #f)) ; no tests
     (propagated-inputs `(("python-urwid" ,python-urwid)))
     (home-page "https://github.com/pazz/urwidtrees")
     (synopsis "Tree widgets for urwid")
@@ -5760,8 +5763,7 @@ the GObject Introspection bindings to libnotify for non-GTK applications.")
         (method url-fetch)
         (uri (pypi-uri "lxml" version))
         (sha256
-         (base32
-          "01nvb5j8vs9nk4z5s3250b1m22b4d08kffa36if3g1mdygdrvxpg"))))
+         (base32 "01nvb5j8vs9nk4z5s3250b1m22b4d08kffa36if3g1mdygdrvxpg"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -5771,9 +5773,8 @@ the GObject Introspection bindings to libnotify for non-GTK applications.")
     (inputs
       `(("libxml2" ,libxml2)
         ("libxslt" ,libxslt)))
-    (home-page "http://lxml.de/")
-    (synopsis
-      "Python XML processing library")
+    (home-page "https://lxml.de/")
+    (synopsis "Python XML processing library")
     (description
       "The lxml XML toolkit is a Pythonic binding for the C libraries
 libxml2 and libxslt.")
@@ -8073,15 +8074,15 @@ automatically detect a wide range of file encodings.")
     (version "0.6.2")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; The release on PyPI does not include tests.
-       (uri (string-append
-             "https://github.com/docopt/docopt/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+              (url "https://github.com/docopt/docopt")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "16bf890xbdz3m30rsv2qacklh2rdn1zrfspfnwzx9g7vwz8yw4r1"))))
+         "0aad9gbswnnhssin2q0m5lmpm0ahyf80ahs2zjigbn5y7fvljnd0"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
@@ -9530,15 +9531,16 @@ encoding algorithms to do fuzzy string matching.")
     (name "python2-unicodecsv")
     (version "0.14.1")
     (source (origin
-             (method url-fetch)
+             (method git-fetch)
              ;; The test suite is not included in the PyPi release.
              ;; https://github.com/jdunck/python-unicodecsv/issues/19
-             (uri (string-append "https://github.com/jdunck/python-unicodecsv/"
-                                 "archive/" version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+             (uri (git-reference
+                    (url "https://github.com/jdunck/python-unicodecsv")
+                    (commit version)))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "087nqanfcyp6mlfbbr5lva5f3w6iz1bybls9xlrb8icmc474wh4w"))))
+               "15hx2k41a2lpv4hcml9zp4cvlx1171mnb5s4s13xc1pxkq3vgdjy"))))
     (build-system python-build-system)
     (arguments
      `(;; It supports Python 3, but Python 3 can already do Unicode CSV.
@@ -9918,7 +9920,7 @@ to occurrences in strings and comments.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((file-path (assoc-ref inputs "file")))
                (substitute* "py3status/parse_config.py"
-                 (("\\['file', '-b'")
+                 (("\\[\"file\", \"-b\"")
                   (string-append "['" file-path "/bin/file', '-b'")))
                #t))))
        #:tests? #f)) ; TODO: Requires many libraries not in Guix.
@@ -11361,14 +11363,13 @@ command @command{natsort} that exposes this functionality in the command line.")
 (define-public python-glances
   (package
   (name "python-glances")
-  (version "3.1.1")
+  (version "3.1.2")
   (source
     (origin
       (method url-fetch)
       (uri (pypi-uri "Glances" version))
       (sha256
-        (base32
-          "07j1ggzsqiskyz1i4mrnyr9i95v0dqi0i0hibnv1l188km8shmi8"))
+        (base32 "15384pbvw9wj4sb8zgvd9v1812vrypbyjg0acicjf1hdb3p30fkk"))
       (modules '((guix build utils)))
       (snippet
        '(begin
@@ -11384,8 +11385,7 @@ command @command{natsort} that exposes this functionality in the command line.")
   (propagated-inputs
    `(("python-future" ,python-future)
      ("python-psutil" ,python-psutil)))
-  (home-page
-    "https://github.com/nicolargo/glances")
+  (home-page "https://github.com/nicolargo/glances")
   (synopsis "Cross-platform curses-based monitoring tool")
   (description
     "Glances is a curses-based monitoring tool for a wide variety of platforms.
@@ -12819,29 +12819,27 @@ exception message with a traceback that points to the culprit.")
 (define-public python-mwclient
   (package
     (name "python-mwclient")
-    (version "0.8.4")
+    (version "0.10.0")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; The PyPI version wouldn't contain tests.
-       (uri (string-append "https://github.com/mwclient/mwclient/archive/"
-                           "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+              (url "https://github.com/mwclient/mwclient")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1jj0yhilkjir00719fc7w133x7hdyhkxhk6xblla4asig45klsfv"))))
+         "1c3q6lwmb05yqywc4ya98ca7hsl15niili8rccl4n1yqp77c103v"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-requests" ,python-requests)
-       ("python-requests-oauthlib"
-        ,python-requests-oauthlib)
+     `(("python-requests-oauthlib" ,python-requests-oauthlib)
        ("python-six" ,python-six)))
     (native-inputs
      `(("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)
-       ("python-pytest-pep8" ,python-pytest-pep8)
-       ("python-pytest-cache" ,python-pytest-cache)
        ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-runner" ,python-pytest-runner)
        ("python-responses" ,python-responses)))
     (home-page "https://github.com/btongminh/mwclient")
     (synopsis "MediaWiki API client")
@@ -13326,14 +13324,15 @@ by path in a JSON document (see RFC 6901).")
     (version "1.16")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; pypi version lacks tests.js
-       (uri (string-append "https://github.com/stefankoegl/python-json-patch/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+              (url "https://github.com/stefankoegl/python-json-patch")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "085ykisl8v7mv9h7hvhdy3l2fjzs4214gx32r5k6nx4f76hbv6y5"))))
+         "0k9pff06lxama3nhsc7cdxbp83422bdy8ifs52i6xkas8hpyzfzr"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-jsonpointer" ,python-jsonpointer)))
@@ -13352,13 +13351,14 @@ applying JSON Patches according to RFC 6902.")
     (version "0.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/stefankoegl/python-json-patch/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/stefankoegl/python-json-patch")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0j0cd9z9zyp8kppp464jxrfgrnbgkzl1yi10i5gsv8yz6d95929d"))))))
+         "1fq02y57kinyknxjcav0slcb0k9mwdffqw2hnlhdkpj7palh2mwk"))))))
 
 (define-public python2-jsonpatch-0.4
   (package-with-python2 python-jsonpatch-0.4))
@@ -13679,14 +13679,13 @@ many of the popular cloud service providers using a unified API.")
 (define-public python-smmap2
   (package
     (name "python-smmap2")
-    (version "2.0.3")
+    (version "2.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "smmap2" version))
        (sha256
-        (base32
-         "1hvn28p3zvxa98sbi9lrqvv2ps4q284j4jq9a619zw0m7yv0sly7"))))
+        (base32 "16k03pcnxd3lgzwgbd7nl4jwzm1wmahirvd09kljnzvy96hgza99"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nosexcover" ,python-nosexcover)))
@@ -14621,12 +14620,13 @@ files, and Makefiles.")
     (version "0.6")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/Suor/whatever/archive/" version
-                           ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/Suor/whatever")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1rchg9hrlvw4sn20lq1zspczr4x1pv57c02gv73igiqx1hqpy2nc"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "1q7ajgqjfivxqsqgnhp4lc4p6jxyh4zprcsdbpd6dw54inaf0av5"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -16544,14 +16544,14 @@ time-or-computationally-expensive properties quick and easy and works in Python
 (define-public python-folium
   (package
     (name "python-folium")
-    (version "0.10.0")
+    (version "0.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "folium" version))
        (sha256
         (base32
-         "18fzxijsgrb95r0a8anc9ba5ijyw3nlnv3rpavfbkqa5v878x84f"))))
+         "0gcc267wxwxr57ry86pqpbiyfvl0g48hfvgy0f2mz9s58g87kgzd"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-branca" ,python-branca)

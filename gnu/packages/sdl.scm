@@ -10,6 +10,9 @@
 ;;; Copyright © 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
+;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +37,7 @@
   #:use-module ((guix licenses) #:hide (freetype))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
@@ -46,6 +50,7 @@
   #:use-module (gnu packages ibus)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages mono)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
@@ -258,28 +263,44 @@ WEBP, XCF, XPM, and XV.")
                 "0alrhqgm40p4c92s26mimg9cm1y7rzr6m0p49687jxd9g6130i0n"))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
-    ;; no check target
-    ;; use libmad instead of smpeg
-    ;; explicitly link against shared libraries instead of dlopening them
-    (arguments `(#:tests? #f
-                 #:configure-flags '("--enable-music-mp3-mad-gpl"
-                                     "--disable-music-mod-shared"
-                                     "--disable-music-fluidsynth-shared"
-                                     "--disable-music-ogg-shared"
-                                     "--disable-music-flac-shared"
-                                     "--disable-music-mp3-shared")))
-    (inputs `(("libvorbis" ,libvorbis)
-              ("libflac" ,flac)
-              ("libmad" ,libmad)
-              ("libmikmod" ,libmikmod)
-              ("libmodplug" ,libmodplug)))
-    ;; FIXME: Add libfluidsynth
+    (arguments
+     `(#:tests? #f ; No check target.
+       #:configure-flags
+       '("--enable-music-mp3-mad-gpl" ; Use libmad instead of smpeg.
+         ;; Explicitly link against shared libraries instead of dlopening them.
+         "--disable-music-flac-shared"
+         "--disable-music-fluidsynth-shared"
+         "--disable-music-mod-shared"
+         "--disable-music-ogg-shared")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-fluidsynth
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "configure"
+              (("EXTRA_LDFLAGS -lfluidsynth")
+               (string-append "EXTRA_LDFLAGS "
+                              "-L"
+                              (assoc-ref inputs "fluidsynth")
+                              "/lib -lfluidsynth")))
+             #t)))))
+    (inputs
+     `(("fluidsynth" ,fluidsynth)
+       ("libflac" ,flac)
+       ("libmad" ,libmad)
+       ("libmikmod" ,libmikmod)
+       ("libvorbis" ,libvorbis)))
     (propagated-inputs `(("sdl" ,sdl)))
     (synopsis "SDL multi-channel audio mixer library")
     (description "SDL_mixer is a multi-channel audio mixer library for SDL.
 It supports any number of simultaneously playing channels of 16 bit stereo
-audio, plus a single channel of music.  Supported format include FLAC, MOD,
-MIDI, Ogg Vorbis, and MP3.")
+audio, plus a single channel of music.  Supported formats include FLAC, MOD,
+MIDI, Ogg Vorbis, and MP3.
+
+This package supports two MIDI backends, selectable at runtime.  To use the
+newer @code{fluidsynth} library, install a soundfont such as @code{fluid-3}
+and specify it using the @code{SDL_SOUNDFONTS} environment variable.  For the
+legacy @code{timidity} backend, install a patch set such as @code{freepats}
+and set the path to the configuration file with @code{TIMIDITY_CFG}.")
     (home-page "https://www.libsdl.org/projects/SDL_mixer/")
     (license zlib)))
 
@@ -384,7 +405,7 @@ directory.")
 (define-public sdl2-image
   (package (inherit sdl-image)
     (name "sdl2-image")
-    (version "2.0.4")
+    (version "2.0.5")
     (source
      (origin
        (method url-fetch)
@@ -392,7 +413,7 @@ directory.")
         (string-append "https://www.libsdl.org/projects/SDL_image/release/"
                        "SDL2_image-" version ".tar.gz"))
        (sha256
-        (base32 "1b6f7002bm007y3zpyxb5r6ag0lml51jyvx1pwpj9sq24jfc8kp7"))))
+        (base32 "1l0864kas9cwpp2d32yxl81g98lx40dhbdp03dz7sbv84vhgdmdx"))))
     (propagated-inputs
      (propagated-inputs-with-sdl2 sdl-image))))
 
@@ -413,6 +434,23 @@ directory.")
                    #t))
        (sha256
         (base32 "0694vsz5bjkcdgfdra6x9fq8vpzrl8m6q96gh58df7065hw5mkxl"))))
+    (arguments
+      (substitute-keyword-arguments (package-arguments sdl-mixer)
+         ((#:configure-flags flags)
+          `(cons*
+            "--disable-music-opus-shared"
+            ;; These options were renamed in SDL2 mixer. Keeping the inherited
+            ;; variants produces a harmless warning.
+            "--disable-music-mod-modplug-shared"
+            "--disable-music-midi-fluidsynth-shared"
+            ,flags))))
+    (inputs
+     `(("opusfile" ,opusfile)
+       ;; The default MOD library changed in SDL2 mixer.
+       ("libmodplug" ,libmodplug)
+       ,@(alist-delete "libmikmod" (package-inputs sdl-mixer))))
+    (native-inputs
+     `(("pkgconfig" ,pkg-config))) ; Needed to find the opus library.
     (propagated-inputs
      (propagated-inputs-with-sdl2 sdl-mixer))))
 
@@ -570,3 +608,46 @@ sound and device input (keyboards, joysticks, mice, etc.).")
 The bindings are written in pure Scheme using Guile's foreign function
 interface.")
     (license lgpl3+)))
+
+(define-public sdl2-cs
+  (let ((commit "1a3556441e1394eb0b5d46aeb514b8d1090b93f8"))
+    (package
+      (name "sdl2-cs")
+      (version (git-version "B1" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/flibitijibibo/SDL2-CS")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "007mzkqr9nmvfrvvhs2r6cm36lzgsww24kwshsz9c4fd97f9qk58"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:tests? #f  ; No tests.
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'build
+             (lambda _
+               (invoke "make" "release")))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (install-file "bin/Release/SDL2-CS.dll" (string-append out "/lib"))
+                 #t))))))
+      (native-inputs
+       `(("mono" ,mono)))
+      (inputs
+       `(("sdl2" ,sdl2)
+         ("sdl2-image" ,sdl2-image)
+         ("sdl2-mixer" ,sdl2-mixer)
+         ("sdl2-ttf" ,sdl2-ttf)))
+      (home-page "https://dthompson.us/projects/guile-sdl2.html")
+      (synopsis "C# wrapper for SDL2")
+      (description
+       "SDL2-CS provides C# bindings for the SDL2 C shared library.
+The C# wrapper was written to be used for FNA's platform support.  However, this
+is written in a way that can be used for any general C# application.")
+      (license zlib))))

@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages disk)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages file-systems)
   #:use-module (gnu packages guile)
   #:use-module ((gnu packages xorg)
                 #:select (console-setup xkeyboard-config))
@@ -240,6 +242,9 @@ FILE-SYSTEMS."
           '())
     ,@(if (find (file-system-type-predicate "btrfs") file-systems)
           (list btrfs-progs/static)
+          '())
+    ,@(if (find (file-system-type-predicate "jfs") file-systems)
+          (list jfs_fsck/static)
           '())))
 
 (define-syntax vhash                              ;TODO: factorize
@@ -269,6 +274,7 @@ FILE-SYSTEMS."
                     ("9p" => '("9p" "9pnet_virtio"))
                     ("btrfs" => '("btrfs"))
                     ("iso9660" => '("isofs"))
+                    ("jfs" => '("jfs"))
                     (else '())))
 
 (define (file-system-modules file-systems)

@@ -14,7 +14,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Toni Reina <areina@riseup.net>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
@@ -68,7 +68,7 @@
 (define-public font-ibm-plex
   (package
     (name "font-ibm-plex")
-    (version "2.0.0")
+    (version "4.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -76,7 +76,7 @@
                     "v" version "/OpenType.zip"))
               (sha256
                (base32
-                "1lv65z3qnqgh2w36daf5wyz0ma9rg1qj9s9lzlnva8l7q3h8c9b8"))))
+                "17bd84ic7z9hkcjy4bwnh4z51bnkh2vrjzwvs9g6lwzmxjswa5b6"))))
     (build-system font-build-system)
     (home-page "https://github.com/IBM/plex")
     (synopsis "IBM Plex typeface")
@@ -89,15 +89,16 @@ well as other mediums.")
 (define-public font-inconsolata
   (package
     (name "font-inconsolata")
-    (version "0.80")
-    (source (origin
-              (method url-fetch)
-              (uri "http://www.levien.com/type/myfonts/Inconsolata.otf")
-              (sha256
-               (base32
-                "06js6znbcf7swn8y3b8ki416bz96ay7d3yvddqnvi88lqhbfcq8m"))))
+    (version "3.000")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/googlefonts/Inconsolata/"
+                           "releases/download/v" version "/fonts_otf.zip"))
+       (sha256
+        (base32 "1wavvv86nwsqm5sbmnkv1bprj7l7zdrkxpvjy6w8yag93k6hrlx1"))))
     (build-system font-build-system)
-    (home-page "http://levien.com/type/myfonts/inconsolata.html")
+    (home-page "https://levien.com/type/myfonts/inconsolata.html")
     (synopsis "Monospace font")
     (description "A monospace font, designed for code listings and the like,
 in print.  With attention to detail for high resolution rendering.")
@@ -209,7 +210,7 @@ sans-serif designed for on-screen reading.  It is used by GNOME@tie{}3.")
 (define-public font-lato
   (package
     (name "font-lato")
-    (version "2.010")                   ; also update description
+    (version "2.015")                   ; also update description
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append "https://www.latofonts.com/download/Lato2OFL.zip"))
@@ -352,14 +353,14 @@ Biolinum is available in both Regular and Bold weights.")
 (define-public font-terminus
   (package
     (name "font-terminus")
-    (version "4.47")
+    (version "4.48")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/terminus-font/terminus-font-"
                            version "/terminus-font-" version ".tar.gz"))
        (sha256
-        (base32 "15qjcpalcxjiwsjgjg5k88vkwp56cs2nnx4ghya6mqp4i1c206qg"))))
+        (base32 "1bwlkj39rqbyq57v5yssayav6hzv1n11b9ml2s0dpiyfsn6rqy9l"))))
     (build-system gnu-build-system)
     (outputs (list "out" "pcf-8bit"))
     (arguments
@@ -646,7 +647,7 @@ for use at smaller text sizes")))
 (define-public font-gnu-unifont
   (package
     (name "font-gnu-unifont")
-    (version "12.1.03")
+    (version "12.1.04")
     (source
      (origin
        (method url-fetch)
@@ -656,7 +657,7 @@ for use at smaller text sizes")))
              (string-append "mirror://gnu/unifont/unifont-"
                             version "/unifont-" version ".tar.gz")))
        (sha256
-        (base32 "10mr3ax19v5pa6a791fk2j3k45fpa8n5r36kq9gs8lk95wfnxmf1"))))
+        (base32 "1h5dyhg4j8sh4qpbwnsn34igb8mfapz5b3nf4k71hq1c5z3j0mcv"))))
     (build-system gnu-build-system)
     (outputs '("out"   ; TrueType version
                "pcf"   ; PCF (bitmap) version
@@ -1089,6 +1090,8 @@ later hand-tweaked with the gbdfed(1) editor:
 (define-public font-comic-neue
   (package
     (name "font-comic-neue")
+    ;; The ‘v2.3’ and ‘v2.4’ releases at https://github.com/crozynski/comicneue
+    ;; are equivalent.  The home page hosts 2.3, not 2.4, so we use that here.
     (version "2.3")
     (source (origin
               (method url-fetch/zipbomb)
@@ -1137,7 +1140,8 @@ typeface, by mimicking Comic Sans while fixing its most obvious shortcomings.")
 (define-public font-iosevka
   (package
     (name "font-iosevka")
-    (version "2.2.0")
+    ;; When updating, also update the hash of the Iosevka variant(s) below.
+    (version "2.3.3")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -1145,7 +1149,7 @@ typeface, by mimicking Comic Sans while fixing its most obvious shortcomings.")
                            "/releases/download/v" version
                            "/ttc-iosevka-" version ".zip"))
        (sha256
-        (base32 "14jfv6pkh1w44m89z2fn44kgmmqaf0057lk71advwfbm3q313y0x"))))
+        (base32 "0jkv5rkg5hi0avhwyhcjiqzjslp6zjj77f09vxx2gj9l93byz731"))))
     (build-system font-build-system)
     (home-page "https://be5invis.github.io/Iosevka/")
     (synopsis "Coders' typeface, built from code")
@@ -1168,7 +1172,7 @@ programming.  Iosevka is completely generated from its source code.")
                            "/releases/download/v" version
                            "/ttc-iosevka-slab-" version ".zip"))
        (sha256
-        (base32 "186d0pl13znysll3hvzm1ixn7ad616g6dhla55sbh6ki2j04b8ml"))))))
+        (base32 "1rkmgi08kknc1fg54zpa6w92m3b3v7pc8cpwygz22kgd2h0mdrr8"))))))
 
 (define-public font-go
   (let ((commit "f03a046406d4d7fbfd4ed29f554da8f6114049fc")

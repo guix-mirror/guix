@@ -26,6 +26,8 @@ choice.
 * Packaging Guidelines::        Growing the distribution.
 * Coding Style::                Hygiene of the contributor.
 * Submitting Patches::          Share your work.
+* Tracking Bugs and Patches::   Using Debbugs.
+* Commit Access::               Pushing to the official repository.
 @end menu
 
 @node Building from Git
@@ -826,13 +828,15 @@ Development is done using the Git distributed version control system.
 Thus, access to the repository is not strictly necessary.  We welcome
 contributions in the form of patches as produced by @code{git
 format-patch} sent to the @email{guix-patches@@gnu.org} mailing list.
+Seasoned Guix developers may also want to look at the section on commit
+access (@pxref{Commit Access}).
 
-This mailing list is backed by a Debbugs instance accessible at
-@uref{https://bugs.gnu.org/guix-patches}, which allows us to keep track
-of submissions.  Each message sent to that mailing list gets a new
-tracking number assigned; people can then follow up on the submission by
-sending email to @code{@var{NNN}@@debbugs.gnu.org}, where @var{NNN} is
-the tracking number (@pxref{Sending a Patch Series}).
+This mailing list is backed by a Debbugs instance, which allows us to
+keep track of submissions (@pxref{Tracking Bugs and Patches}).  Each
+message sent to that mailing list gets a new tracking number assigned;
+people can then follow up on the submission by sending email to
+@code{@var{NNN}@@debbugs.gnu.org}, where @var{NNN} is the tracking
+number (@pxref{Sending a Patch Series}).
 
 Please write commit logs in the ChangeLog format (@pxref{Change Logs,,,
 standards, GNU Coding Standards}); you can check the commit history for
@@ -1040,3 +1044,165 @@ they are kept together.  See
 for more information.  You can install @command{git send-email} with
 @command{guix install git:send-email}.
 @c Debbugs bug: https://debbugs.gnu.org/db/15/15361.html
+
+@node Tracking Bugs and Patches
+@section Tracking Bugs and Patches
+
+@cindex bug reports, tracking
+@cindex patch submissions, tracking
+@cindex issue tracking
+@cindex Debbugs, issue tracking system
+Bug reports and patch submissions are currently tracked using the
+Debbugs instance at @uref{https://bugs.gnu.org}.  Bug reports are filed
+against the @code{guix} ``package'' (in Debbugs parlance), by sending
+email to @email{bug-guix@@gnu.org}, while patch submissions are filed
+against the @code{guix-patches} package by sending email to
+@email{guix-patches@@gnu.org} (@pxref{Submitting Patches}).
+
+A web interface (actually @emph{two} web interfaces!) are available to
+browse issues:
+
+@itemize
+@item
+@url{https://bugs.gnu.org/guix} lists bug reports;
+@item
+@url{https://bugs.gnu.org/guix-patches} lists patch submissions.
+@end itemize
+
+You can also access both of these @i{via} the (nicer)
+@url{https://issues.guix.gnu.org} interface@footnote{The web interface
+at @url{https://issues.guix.gnu.org} is powered by Mumi, a nice piece of
+software written in Guile, and you can help!  See
+@url{https://git.elephly.net/gitweb.cgi?p=software/mumi.git}.}.  To view
+discussions related to issue number @var{n}, go to
+@indicateurl{https://issues.guix.gnu.org/issue/@var{n}} or
+@indicateurl{https://bugs.gnu.org/@var{n}}.
+
+If you use Emacs, you may find it more convenient to interact with
+issues using @file{debbugs.el}, which you can install with:
+
+@example
+guix install emacs-debbugs
+@end example
+
+For example, to list all open issues on @code{guix-patches}, hit:
+
+@example
+@kbd{C-u} @kbd{M-x} debbugs-gnu @kbd{RET} @kbd{RET} guix-patches @kbd{RET} n y
+@end example
+
+@xref{Top,,, debbugs-ug, Debbugs User Guide}, for more information on
+this nifty tool!
+
+@node Commit Access
+@section Commit Access
+
+@cindex commit access, for developers
+For frequent contributors, having write access to the repository is
+convenient.  When you deem it necessary, consider applying for commit
+access by following these steps:
+
+@enumerate
+@item
+Find three committers who would vouch for you.  You can view the list of
+committers at
+@url{https://savannah.gnu.org/project/memberlist.php?group=guix}.  Each
+of them should email a statement to @email{guix-maintainers@@gnu.org} (a
+private alias for the collective of maintainers), signed with their
+OpenPGP key.
+
+Committers are expected to have had some interactions with you as a
+contributor and to be able to judge whether you are sufficiently
+familiar with the project's practices.  It is @emph{not} a judgment on
+the value of your work, so a refusal should rather be interpreted as
+``let's try again later''.
+
+@item
+Send @email{guix-maintainers@@gnu.org} a message stating your intent,
+listing the three committers who support your application, signed with
+the OpenPGP key you will use to sign commits, and giving its fingerprint
+(see below).  See @uref{https://emailselfdefense.fsf.org/en/}, for an
+introduction to public-key cryptography with GnuPG.
+
+@item
+Maintainers ultimately decide whether to grant you commit access,
+usually following your referrals' recommendation.
+
+@item
+If and once you've been given access, please send a message to
+@email{guix-devel@@gnu.org} to say so, again signed with the OpenPGP key
+you will use to sign commits (do that before pushing your first commit).
+That way, everyone can notice and ensure you control that OpenPGP key.
+
+@c TODO: Add note about adding the fingerprint to the list of authorized
+@c keys once that has stabilized.
+
+@item
+Make sure to read the rest of this section and... profit!
+@end enumerate
+
+@quotation Note
+Maintainers are happy to give commit access to people who have been
+contributing for some time and have a track record---don't be shy and
+don't underestimate your work!
+
+However, note that the project is working towards a more automated patch
+review and merging system, which, as a consequence, may lead us to have
+fewer people with commit access to the main repository.  Stay tuned!
+@end quotation
+
+If you get commit access, please make sure to follow
+the policy below (discussions of the policy can take place on
+@email{guix-devel@@gnu.org}).
+
+Non-trivial patches should always be posted to
+@email{guix-patches@@gnu.org} (trivial patches include fixing typos,
+etc.).  This mailing list fills the patch-tracking database
+(@pxref{Tracking Bugs and Patches}).
+
+For patches that just add a new package, and a simple one, it's OK to
+commit, if you're confident (which means you successfully built it in a
+chroot setup, and have done a reasonable copyright and license
+auditing).  Likewise for package upgrades, except upgrades that trigger
+a lot of rebuilds (for example, upgrading GnuTLS or GLib).  We have a
+mailing list for commit notifications (@email{guix-commits@@gnu.org}),
+so people can notice.  Before pushing your changes, make sure to run
+@code{git pull --rebase}.
+
+All commits that are pushed to the central repository on Savannah must
+be signed with an OpenPGP key, and the public key should be uploaded to
+your user account on Savannah and to public key servers, such as
+@code{keys.openpgp.org}.  To configure Git to automatically sign
+commits, run:
+
+@example
+git config commit.gpgsign true
+git config user.signingkey CABBA6EA1DC0FF33
+@end example
+
+You can prevent yourself from accidentally pushing unsigned commits to
+Savannah by using the pre-push Git hook called located at
+@file{etc/git/pre-push}:
+
+@example
+cp etc/git/pre-push .git/hooks/pre-push
+@end example
+
+When pushing a commit on behalf of somebody else, please add a
+@code{Signed-off-by} line at the end of the commit log message---e.g.,
+with @command{git am --signoff}.  This improves tracking of who did
+what.
+
+For anything else, please post to @email{guix-patches@@gnu.org} and
+leave time for a review, without committing anything (@pxref{Submitting
+Patches}).  If you didn’t receive any reply after two weeks, and if
+you're confident, it's OK to commit.
+
+That last part is subject to being adjusted, allowing individuals to commit
+directly on non-controversial changes on parts they’re familiar with.
+
+One last thing: the project keeps moving forward because committers not
+only push their own awesome changes, but also offer some of their time
+@emph{reviewing} and pushing other people's changes.  As a committer,
+you're welcome to use your expertise and commit rights to help other
+contributors, too!

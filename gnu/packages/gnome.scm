@@ -21,7 +21,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017, 2018 nee <nee-git@hidamari.blue>
@@ -45,6 +45,7 @@
 ;;; Copyright © 2019 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -246,6 +247,146 @@ Desktop.  It is designed to be as simple as possible and has some unique
 features to enable users to create their discs easily and quickly.")
     (license license:gpl2+)))
 
+(define-public gnome-color-manager
+  (package
+   (name "gnome-color-manager")
+   (version "3.32.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/" name "/"
+                                (version-major+minor version) "/"
+                                name "-" version ".tar.xz"))
+            (sha256
+             (base32
+              "1vpxa2zjz3lkq9ldjg0fl65db9s6b4kcs8nyaqfz3jygma7ifg3w"))))
+   (build-system meson-build-system)
+   (arguments
+    `(#:glib-or-gtk? #t
+      #:phases
+       (modify-phases %standard-phases
+        (add-before
+         'check 'pre-check
+         (lambda _
+           ;; Tests require a running X server.
+           (system "Xvfb :1 &")
+           (setenv "DISPLAY" ":1")
+           #t)))))
+   (native-inputs
+    `(("desktop-file-utils" ,desktop-file-utils)
+      ("gettext" ,gettext-minimal)
+      ("glib:bin" ,glib "bin")
+      ("gtk+:bin" ,gtk+ "bin")
+      ("itstool" ,itstool)
+      ("pkg-config" ,pkg-config)
+      ("xorg-server" ,xorg-server-for-tests)))
+   (inputs
+    `(("adwaita-icon-theme" ,adwaita-icon-theme)
+      ("appstream-glib" ,appstream-glib)
+      ("colord-gtk" ,colord-gtk)
+      ("exiv2" ,exiv2)
+      ("gnome-desktop" ,gnome-desktop)
+      ("libcanberra" ,libcanberra)
+      ("libexif" ,libexif)
+      ("libtiff" ,libtiff)
+      ("libxrandr" ,libxrandr)
+      ("libxtst" ,libxtst)
+      ("libxxf86vm" ,libxxf86vm)
+      ("vte" ,vte)
+      ("xorgproto" ,xorgproto)))
+   (synopsis "Color profile manager for the GNOME desktop")
+   (description "GNOME Color Manager is a session framework that makes
+it easy to manage, install and generate color profiles
+in the GNOME desktop.")
+   (home-page "https://gitlab.gnome.org/GNOME/gnome-color-manager")
+   (license license:gpl2)))
+
+(define-public gnome-online-miners
+  (package
+    (name "gnome-online-miners")
+    (version "3.30.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0pjamwwzn5wqgihyss357dyl2q70r0bngnqmwsqawchx5f9aja9c"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+:bin" ,gtk+ "bin")
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gnome-online-accounts" ,gnome-online-accounts)
+       ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
+       ("grilo" ,grilo)
+       ("libgdata" ,libgdata)
+       ("libgfbgraph" ,gfbgraph)
+       ("libzapojit" ,libzapojit)
+       ("rest" ,rest)
+       ("tracker" ,tracker)))
+    (synopsis "Web Crawlers for GNOME")
+    (description "GNOME Online Miners provides a set of crawlers that
+go through your online content and index them locally in Tracker.
+It has miners for Facebook, Flickr, Google, ownCloud and SkyDrive.")
+    (home-page "https://wiki.gnome.org/Projects/GnomeOnlineMiners")
+    (license license:gpl2)))
+
+(define-public libmediaart
+  (package
+    (name "libmediaart")
+    (version "1.9.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0gc10imyabk57ar54m0qzms0x9dnmkymhkzyk8w1aj3y4lby0yx5"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gdk-pixbuf" ,gdk-pixbuf)
+       ("gettext" ,gettext-minimal)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+:doc", gtk+ "doc")
+       ("vala" ,vala)))
+    (synopsis "Media art library for the GNOME desktop")
+    (description
+     "The libmediaart library is the foundation for media art caching,
+extraction, and lookup for applications on the desktop.")
+    (home-page "https://gitlab.gnome.org/GNOME/libmediaart")
+    (license license:lgpl2.1+)))
+
+(define-public gnome-menus
+  (package
+    (name "gnome-menus")
+    (version "3.32.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/gnome-menus/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0x2blzqrapmbsbfzxjcdcpa3vkw9hq5k96h9kvjmy9kl415wcl68"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib" ,glib)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Menu support for GNOME desktop")
+    (description "GNOME Menus contains the libgnome-menu library, the layout
+configuration files for the GNOME menu, as well as a simple menu editor.")
+    (home-page "https://gitlab.gnome.org/GNOME/gnome-menus")
+    (license license:gpl2)))
+
 (define-public deja-dup
   (package
     (name "deja-dup")
@@ -322,6 +463,60 @@ features to enable users to create their discs easily and quickly.")
 uses duplicity as the backend, which supports incremental backups and storage
 either on a local, or remote machine via a number of methods.")
     (license license:gpl3+)))
+
+(define-public gnome-user-docs
+  (package
+   (name "gnome-user-docs")
+   (version "3.32.3")
+   (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnome/sources/gnome-user-docs/"
+                          (version-major+minor version)
+                          "/gnome-user-docs-" version ".tar.xz"))
+      (sha256
+       (base32 "0dvsl0ldg8rf7yq0r4dv1pn41s7gjgcqp7agkbflkbmhrl6vbhig"))))
+   (build-system gnu-build-system)
+   (native-inputs
+    `(("gettext" ,gettext-minimal)
+      ("itstool" ,itstool)
+      ("pkg-config" ,pkg-config)
+      ("xmllint" ,libxml2)))
+   (synopsis "User documentation for the GNOME desktop")
+   (description
+    "The GNOME User Documentation explains how to use the GNOME desktop and its
+components.  It covers usage and setup of the core GNOME programs by end-users
+and system administrators.")
+   (home-page "https://live.gnome.org/DocumentationProject")
+   (license license:cc-by3.0)))
+
+(define-public gnome-getting-started-docs
+  (package
+   (name "gnome-getting-started-docs")
+   (version "3.32.2")
+   (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnome/sources/gnome-getting-started-docs/"
+                          (version-major+minor version)
+                          "/gnome-getting-started-docs-" version ".tar.xz"))
+      (sha256
+       (base32 "1v4k465mlzrhgcdddzs6bmm0yliyrfx6jg3gh0s17a08i0w5rbwq"))))
+   (build-system gnu-build-system)
+   (native-inputs
+    `(("gettext" ,gettext-minimal)
+      ("itstool" ,itstool)
+      ("pkg-config" ,pkg-config)
+      ("xmllint" ,libxml2)))
+   (synopsis "Help to get new users started with the GNOME desktop")
+   (description
+    "The GNOME Getting Started Documentation contains GNOME's intuitive
+\"Getting Started\" tour, with video guides, that can be viewed with Yelp.
+
+It is normally used together with @command{gnome-initial-setup}, but is also
+useful as a tutorial and users' guide for new or less experienced users.")
+   (home-page "https://live.gnome.org/DocumentationProject")
+   (license license:cc-by-sa3.0)))
 
 (define-public dia
   ;; This version from GNOME's repository includes fixes for compiling with
@@ -471,7 +666,18 @@ to other formats.")
         (base32
          "08cwz39iwgsyyb2wqhb8vfbmh1cwfkgfiy7adp08w7rwqi99x3dp"))))
     (build-system meson-build-system)
-    (arguments '(#:glib-or-gtk? #t))
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'wrap
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; GNOME Characters needs Typelib files from GTK and
+                      ;; gnome-desktop.
+                      (wrap-program (string-append (assoc-ref outputs "out")
+                                                   "/bin/gnome-characters")
+                        `("GI_TYPELIB_PATH" ":" prefix
+                          (,(getenv "GI_TYPELIB_PATH"))))
+                      #t)))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
@@ -481,7 +687,8 @@ to other formats.")
     (inputs
      `(("gjs" ,gjs)
        ("gtk+" ,gtk+)
-       ("libunistring" ,libunistring)))
+       ("libunistring" ,libunistring)
+       ("gnome-desktop" ,gnome-desktop)))
     (home-page "https://wiki.gnome.org/Apps/CharacterMap")
     (synopsis "Find and insert unusual characters")
     (description "Characters is a simple utility application to find
@@ -926,15 +1133,15 @@ forgotten when the session ends.")
 (define-public evince
   (package
     (name "evince")
-    (version "3.34.1")
+    (version "3.34.2")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://gnome/sources/" name "/"
+             (uri (string-append "mirror://gnome/sources/evince/"
                                  (version-major+minor version) "/"
-                                 name "-" version ".tar.xz"))
+                                 "evince-" version ".tar.xz"))
              (sha256
               (base32
-               "1pr6fvbaam1mzxjwyqd53hcxzdjzf73idn10j4j7n54nwg6hgr45"))))
+               "05q6v9lssd21623mnj2p49clj9v9csw9kay7n4nklki025grbh1w"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--disable-nautilus")
@@ -1174,16 +1381,16 @@ database is translated at Transifex.")
 (define-public system-config-printer
   (package
     (name "system-config-printer")
-    (version "1.5.11")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "https://github.com/zdohnal/system-config-printer/releases/"
-                   "download/" version
-                   "/system-config-printer-" version ".tar.xz"))
-             (sha256
-              (base32
-               "1lq0q51bhanirpjjvvh4xiafi8hgpk8r32h0dj6dn3f32z8pib9q"))))
+    (version "1.5.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/OpenPrinting/system-config-printer/releases/"
+             "download/" version
+             "/system-config-printer-" version ".tar.xz"))
+       (sha256
+        (base32 "050yrx1vfh9f001qsn06y1jcidxq0ymxr64kxykasr0zzryp25kb"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:imported-modules ((guix build python-build-system)
@@ -3471,10 +3678,9 @@ keyboard shortcuts.")
                #t))))))
     (native-inputs
      `(("glib:bin" ,glib "bin")         ; for glib-compile-resources, etc.
+       ("gettext" ,gettext-minimal)
        ("gobject-introspection" ,gobject-introspection)
        ("gtk-doc" ,gtk-doc)
-       ("intltool" ,intltool)
-       ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)))
     (propagated-inputs
@@ -3594,15 +3800,14 @@ faster results and to avoid unnecessary server load.")
 (define-public upower
   (package
     (name "upower")
-    (version "0.99.10")
+    (version "0.99.11")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://gitlab.freedesktop.org/upower/upower/"
-                                  "uploads/c438511024b9bc5a904f8775cfc8e4c4/"
+              (uri (string-append "https://upower.freedesktop.org/releases/"
                                   "upower-" version ".tar.xz"))
               (sha256
                (base32
-                "17d2bclv5fgma2y3g8bsn9pdvspn1zrzismzdnzfivc0f2wm28k4"))
+                "1vxxvmz2cxb1qy6ibszaz5bskqdy9nd9fxspj9fv3gfmrjzzzdb4"))
               (patches (search-patches "upower-builddir.patch"))))
     (build-system glib-or-gtk-build-system)
     (arguments
@@ -5200,15 +5405,15 @@ share them with others via social networking and more.")
 (define-public file-roller
   (package
     (name "file-roller")
-    (version "3.32.2")
+    (version "3.32.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/file-roller/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "file-roller-" version ".tar.xz"))
               (sha256
                (base32
-                "0w8s6hakgsvb2nqwbv0lr8ki4cbf1pz5z3qwkb0b2k7ppbh7j2n6"))))
+                "0ap2hxvjljh4p6wsd9ikh2my3vsxp9r2nvjxxj3v87nwfyw1y4dy"))))
     (build-system meson-build-system)
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
@@ -7194,8 +7399,9 @@ associations for GNOME.")
     (propagated-inputs
      ;; TODO: Add or remove packages according to:
      ;;       <https://calc.disroot.org/2nu6mpf88ynq.html>.
+     `(
      ;; GNOME-Core-OS-Services
-     `(("accountsservice" ,accountsservice)
+       ("accountsservice" ,accountsservice)
        ("network-manager" ,network-manager)
        ("packagekit" ,packagekit)
        ("upower" ,upower)
@@ -7207,12 +7413,15 @@ associations for GNOME.")
        ("gnome-bluetooth" ,gnome-bluetooth)
        ("gnome-control-center" ,gnome-control-center)
        ("gnome-desktop" ,gnome-desktop)
+       ("gnome-getting-started-docs" ,gnome-getting-started-docs)
        ("gnome-keyring" ,gnome-keyring)
+       ("gnome-menus" ,gnome-menus)
        ("gnome-session" ,gnome-session)
        ("gnome-settings-daemon" ,gnome-settings-daemon)
        ("gnome-shell-extensions" ,gnome-shell-extensions)
        ("gnome-shell" ,gnome-shell)
        ("gnome-themes-extra" ,gnome-themes-extra)
+       ("gnome-user-docs" ,gnome-user-docs)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gvfs" ,gvfs)
        ("mutter" ,mutter)
@@ -7239,7 +7448,10 @@ associations for GNOME.")
        ("nautilus" ,nautilus)
        ("simple-scan" ,simple-scan)
        ("totem" ,totem)
-       ("yelp" ,yelp)))
+       ("yelp" ,yelp)
+     ;; Others
+       ("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("gnome-online-accounts" ,gnome-online-accounts)))
     (synopsis "The GNU desktop environment")
     (home-page "https://www.gnome.org/")
     (description

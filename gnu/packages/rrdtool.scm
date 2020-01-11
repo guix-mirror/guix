@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,14 +37,14 @@
 (define-public rrdtool
   (package
     (name "rrdtool")
-    (version "1.7.1")
+    (version "1.7.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://oss.oetiker.ch/rrdtool/pub/rrdtool-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1bhsg119j94xwykp2sbp01hhxcg78gzblfn7j98slrv9va77g6wq"))))
+                "1nsqra0g2nja19akmf9x5y9hhgc35ml3w9dcdz2ayz7zgvmzm6d1"))))
     (build-system gnu-build-system)
     (inputs
      `(("cairo" ,cairo)

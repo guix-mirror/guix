@@ -89,15 +89,14 @@ POSIX regular expression API.")
 (define-public pcre2
   (package
     (name "pcre2")
-    (version "10.33")
+    (version "10.34")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/pcre/pcre2/"
                                   version "/pcre2-" version ".tar.bz2"))
-              (patches (search-patches "pcre2-fix-jit_match-crash.patch"))
               (sha256
                (base32
-                "1anqi7vpbfzag7imccrc6di1zl5rl63ab7rfpmajpw6d1kzlsl9m"))))
+                "1jlqnzcz2yi70dm40wyfa9w8is9z2kh4dl8zjnv3vqd9mgzp7i3l"))))
    (build-system gnu-build-system)
    (inputs `(("bzip2" ,bzip2)
              ("readline" ,readline)
@@ -109,7 +108,8 @@ POSIX regular expression API.")
                           "--enable-pcre2test-libreadline"
                           "--enable-pcre2-16"
                           "--enable-pcre2-32"
-                          "--enable-jit")
+                          "--enable-jit"
+                          "--disable-static")
       #:phases
       (modify-phases %standard-phases
         (add-after 'unpack 'patch-paths

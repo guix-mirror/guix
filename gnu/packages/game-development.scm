@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Julian Graham <joolean@gmail.com>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
@@ -17,6 +17,7 @@
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2019 Jethro Cao <jethrocao@gmail.com>
+;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,6 +72,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages m4)
+  #:use-module (gnu packages mono)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages music)
@@ -81,6 +83,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages stb)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
@@ -93,7 +96,7 @@
 (define-public bullet
   (package
     (name "bullet")
-    (version "2.88")
+    (version "2.89")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -102,7 +105,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "00qkif245yj7n2f262bgjaxv1bz3wmmcsfnjgy3qpzvlpzpns5z8"))
+                "10ncf2z474jnv7p5lv01ak2mk2hib3rj5rz1zr8v2v5pnciqbijl"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -112,11 +115,10 @@
                               '("Gwen" "clsocket" "enet" "glad" "imgui"
                                 "lua-5.2.3" "midi" "minizip" "openvr"
                                 "optionalX11" "serial" "zlib")))
-                  ;; These need files from ThirdPartyLibs
+                  ;; These need files from ThirdPartyLibs.
                   (substitute* "Extras/CMakeLists.txt"
-                    (("BulletRobotics") "")
-                    (("obj2sdf") ""))
-                  ;; Tests fail on linking, cannot find -lBussIK
+                    (("BulletRobotics") ""))
+                  ;; Tests fail on linking, cannot find -lBussIK.
                   (substitute* "test/CMakeLists.txt"
                     ((" InverseDynamics")
                      "../examples/ThirdPartyLibs/BussIK InverseDynamics"))
@@ -133,7 +135,7 @@
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'remove-failing-tests
-           ;; These tests fail specifically after removing 3rd party code
+           ;; These tests fail specifically after removing 3rd party code.
            (lambda _
              (substitute* "test/SharedMemory/CMakeLists.txt"
                (("ADD_TEST") "# ADD_TEST"))
@@ -155,7 +157,7 @@ is used in some video games and movies.")
 (define-public deutex
   (package
    (name "deutex")
-   (version "5.2.0")
+   (version "5.2.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://github.com/Doom-Utils/deutex"
@@ -163,7 +165,7 @@ is used in some video games and movies.")
                                 "deutex-" version ".tar.xz"))
             (sha256
              (base32
-              "1d536d3i78k4ch8mjg7lqnamnyfpp2x5x7mzx5smqi9ad8lb6hqz"))))
+              "07w3asqxx89wl2wfv1z3cak8v83h3ys3b39mq9qq4gyf3xdhs76n"))))
    (build-system gnu-build-system)
    (native-inputs `(("asciidoc" ,asciidoc)))
    (home-page "https://github.com/Doom-Utils/deutex")
@@ -1904,3 +1906,126 @@ projects.")
 hardware from multiple vendors without requiring that applications have
 specific knowledge of the hardware they are targeting.")
     (license license:bsd-3)))
+
+(define-public fna
+  (package
+    (name "fna")
+    (version "19.12.01")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/FNA-XNA/FNA.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1vdyi9hac24fqcs8kpj6yk36bf5rrl4dvlvdd9fc701fawcf6lrr"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ; No tests.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'link-dep-src
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((sdl2 (assoc-ref inputs "sdl2-cs-src"))
+                   (mojoshader (assoc-ref inputs "mojoshader-src"))
+                   (faudio (assoc-ref inputs "faudio-src"))
+                   (theorafile (assoc-ref inputs "theorafile-src")))
+               (symlink (string-append sdl2 "/src") "lib/SDL2-CS/src")
+               (symlink (string-append mojoshader "/csharp") "lib/MojoShader/csharp")
+               (symlink (string-append faudio "/csharp") "lib/FAudio/csharp")
+               (symlink (string-append theorafile "/csharp") "lib/Theorafile/csharp"))))
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (invoke "make" "release")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "bin/Release/FNA.dll" (string-append out "/lib"))
+               #t))))))
+    (native-inputs
+     `(("mono" ,mono)))
+    (inputs `(("sdl2-cs-src" ,(package-source sdl2-cs))
+              ("mojoshader-src" ,(package-source mojoshader-cs))
+              ("faudio-src" ,(package-source faudio))
+              ("theorafile-src" ,(package-source theorafile))))
+    (home-page "https://fna-xna.github.io/")
+    (synopsis "Accuracy-focused XNA4 reimplementation")
+    (description "FNA is a Microsoft XNA Game Studio 4.0 reimplementation that
+focuses solely on developing a fully accurate XNA4 runtime for the desktop.")
+    (license (list license:ms-pl        ; FNA
+                   license:lgpl2.1      ; LzxDecoder.cs
+                   ;; Mono.Xna:
+                   license:expat))))
+
+(define-public libccd
+  (package
+    (name "libccd")
+    (version "2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/danfis/libccd.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0sfmn5pd7k5kyhbxnd689xmsa5v843r7sska96dlysqpljd691jc"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DBUILD_DOCUMENTATION=ON"
+                           "-DBUILD_TESTING=ON"
+                           "-DENABLE_DOUBLE_PRECISION=ON")))
+    (native-inputs
+     `(("python-sphinx" ,python-sphinx)))
+    (home-page "https://github.com/danfis/libccd")
+    (synopsis "Library for collision detection between two convex shapes")
+    (description "@code{libccd} is library for a collision detection
+between two convex shapes.  @code{libccd} implements variation on
+Gilbert–Johnson–Keerthi algorithm plus Expand Polytope Algorithm (EPA)
+and also implements algorithm Minkowski Portal Refinement (MPR,
+a.k.a. XenoCollide) as described in Game Programming Gems 7.")
+    (license license:expat)))
+
+(define-public ode
+  (package
+    (name "ode")
+    (version "0.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://bitbucket.org/odedevs/ode/downloads/"
+                           "ode-" version ".tar.gz"))
+       (sha256
+        (base32 "09xzrarxwxcf6rdv5jsjfjh454jnn29dpcw3wh6ic50kkipvg8sb"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "libccd")
+           #t))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DODE_WITH_LIBCCD_SYSTEM=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unbundle-libccd
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("configure_file\\(libccd/.*") ""))
+             #t)))))
+    (inputs
+     `(("glu" ,glu)
+       ("libccd" ,libccd)
+       ("mesa" ,mesa)))
+    (home-page "http://www.ode.org/")
+    (synopsis "High performance library for simulating rigid body dynamics")
+    (description "ODE is a high performance library for simulating
+rigid body dynamics.  It is fully featured, stable, mature and
+platform independent with an easy to use C/C++ API.  It has advanced
+joint types and integrated collision detection with friction.  ODE is
+useful for simulating vehicles, objects in virtual reality
+environments and virtual creatures.  It is currently used in many
+computer games, 3D authoring tools and simulation tools.")
+    ;; Software is dual-licensed.
+    (license (list license:lgpl2.1+ license:expat))))

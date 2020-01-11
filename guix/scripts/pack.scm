@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
@@ -29,7 +29,9 @@
   #:use-module ((guix status) #:select (with-status-verbosity))
   #:use-module ((guix self) #:select (make-config.scm))
   #:use-module (guix grafts)
-  #:autoload   (guix inferior) (inferior-package?)
+  #:autoload   (guix inferior) (inferior-package?
+                                inferior-package-name
+                                inferior-package-version)
   #:use-module (guix monads)
   #:use-module (guix modules)
   #:use-module (guix packages)

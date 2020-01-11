@@ -18,7 +18,7 @@
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marek Benc <dusxmt@gmx.com>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2018 Thomas Sigurdsen <tonton@riseup.net>
@@ -29,6 +29,7 @@
 ;;; Copyright © 2019 Kyle Andrews <kyle.c.andrews@gmail.com>
 ;;; Copyright © 2019 Josh Holland <josh@inv.alid.pw>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -72,6 +73,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
@@ -115,20 +117,28 @@
                   #t))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2     ;incompatible with python 3
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'build 'configure
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "screenlayout/xrandr.py"
                (("\"xrandr\"") (string-append "\"" (assoc-ref inputs "xrandr")
                                               "/bin/xrandr\"")))
+             #t))
+         (add-after 'install 'wrap-gi-typelib
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out               (assoc-ref outputs "out"))
+                   (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
+               (wrap-program (string-append out "/bin/arandr")
+                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
              #t)))
        #:tests? #f)) ;no tests
-    (inputs `(("pygtk" ,python2-pygtk)
+    (inputs `(("gtk+" ,gtk+)
+              ("pycairo" ,python-pycairo)
+              ("pygobject" ,python-pygobject)
               ("xrandr" ,xrandr)))
     (native-inputs `(("gettext"           ,gettext-minimal)
-                     ("python-docutils"   ,python2-docutils)))
+                     ("python-docutils"   ,python-docutils)))
     (home-page "https://christian.amsuess.com/tools/arandr/")
     (synopsis "Another RandR graphical user interface")
     ;; TRANSLATORS: "X11 resize-and-rotate" should not be translated.
@@ -292,28 +302,31 @@ avoiding password prompts when X11 forwarding has already been setup.")
 (define-public libxkbcommon
   (package
     (name "libxkbcommon")
-    (version "0.8.4")
+    (version "0.9.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://xkbcommon.org/download/libxkbcommon-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "12vc91ydhphd5sddz15560r41l7k0i7mq6nma8kkbzdp6bwwzpb0"))))
-    (build-system gnu-build-system)
+               "1q4v378sr9ad8fy9znl7k8xpf0wch655r9m6z0bcc7sw1azsminl"))))
+    (build-system meson-build-system)
     (inputs
      `(("libx11" ,libx11)
        ("libxcb" ,libxcb)
+       ("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)
        ("xkeyboard-config" ,xkeyboard-config)))
     (native-inputs
      `(("bison" ,bison)
+       ("doxygen" ,doxygen)
        ("pkg-config" ,pkg-config)))
     (arguments
      `(#:configure-flags
-       (list (string-append "--with-xkb-config-root="
+       (list (string-append "-Dxkb-config-root="
                             (assoc-ref %build-inputs "xkeyboard-config")
                             "/share/X11/xkb")
-             (string-append "--with-x-locale-root="
+             (string-append "-Dx-locale-root="
                             (assoc-ref %build-inputs "libx11")
                             "/share/X11/locale"))))
     (home-page "https://xkbcommon.org/")
@@ -454,7 +467,7 @@ rasterisation.")
 (define-public libdrm
   (package
     (name "libdrm")
-    (version "2.4.99")
+    (version "2.4.100")
     (source
       (origin
         (method url-fetch)
@@ -464,7 +477,7 @@ rasterisation.")
                ".tar.bz2"))
         (sha256
          (base32
-          "0pnsw4bmajzdbz8pk4wswdmw93shhympf2q9alhbnpfjgsf57gsd"))
+          "0p8a1l3a3s40i81mawm8nhrbk7p97ss05qkawp1yx73c30lchz67"))
         (patches (search-patches "libdrm-symbol-check.patch"))))
     (build-system meson-build-system)
     (arguments
@@ -1038,7 +1051,7 @@ Escape key when Left Control is pressed and released on its own.")
 (define-public libwacom
   (package
     (name "libwacom")
-    (version "1.1")
+    (version "1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1046,7 +1059,7 @@ Escape key when Left Control is pressed and released on its own.")
                     "libwacom-" version "/libwacom-" version ".tar.bz2"))
               (sha256
                (base32
-                "00lyv419ijyng6ak5vpw0swnn4qg6lbfh7zysf92wcvn6rcq7d4c"))))
+                "1hv3z2qkvycqcyv99zfpbbgrlbyppdq8kk2y9x51578mwbgcy162"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")))
@@ -1073,7 +1086,7 @@ Wacom tablet applet.")
 (define-public xf86-input-wacom
   (package
     (name "xf86-input-wacom")
-    (version "0.38.0")
+    (version "0.39.0")
     (source
      (origin
        (method url-fetch)
@@ -1082,7 +1095,7 @@ Wacom tablet applet.")
              "xf86-input-wacom-" version "/"
              "xf86-input-wacom-" version ".tar.bz2"))
        (sha256
-        (base32 "0w53hv3g7d5vv328x04wb57sa1lyv2h631c37csp1drfp7ghikd1"))))
+        (base32 "11qk58az6qwii774ga45h5yqzipwn56f0d74kdbajqdv45p85gqj"))))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-sdkdir="
@@ -1850,6 +1863,52 @@ colors on all monitors attached to an XRandR-capable X11 display server.")
 temperature of the screen.")
     (license (license:non-copyleft "file://sct.c")))) ; "OpenBSD" license
 
+(define-public xsecurelock
+  (package
+    (name "xsecurelock")
+    (version "1.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/google/xsecurelock/releases"
+                    "/download/v" version "/xsecurelock-" version ".tar.gz"))
+              (sha256
+               (base32 "070gknyv0s5hz9hkc6v73m2v7ssyjwgl93b5hd4glayfqxqjbmdp"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       '("--with-pam-service-name=login"
+         "--with-xkb"
+         "--with-default-authproto-module=/run/setuid-programs/authproto_pam")))
+    (native-inputs
+     `(("pandoc" ,ghc-pandoc)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fontconfig" ,fontconfig)
+       ("libX11" ,libx11)
+       ("libxcomposite" ,libxcomposite)
+       ("libxext" ,libxext)
+       ("libxfixes" ,libxfixes)
+       ("libxft" ,libxft)
+       ("libxmu" ,libxmu)
+       ("libxrandr" ,libxrandr)
+       ("libxscrnsaver" ,libxscrnsaver)
+       ("linux-pam" ,linux-pam)))
+    (home-page "https://github.com/google/xsecurelock")
+    (synopsis "X11 screen lock utility with the primary goal of security")
+    (description "@code{xsecurelock} is an X11 screen locker which uses
+a modular design to avoid the usual pitfalls�of screen locking utility design.
+
+As a consequence of the modular design, the usual screen locker service
+shouldn't be used with @code{xsecurelock}.  Instead, you need to add a helper
+binary to setuid-binaries:
+@example
+(setuid-programs (cons*
+                   (file-append xsecurelock \"/libexec/xsecurelock/authproto_pam\")
+                   %setuid-programs))
+@end example")
+    (license license:asl2.0)))
+
 (define-public wl-clipboard
   (package
     (name "wl-clipboard")
@@ -1899,3 +1958,51 @@ and clipboard selection.  When the clipboard is changed, it updates the
 cutbuffer.  When the cutbuffer is changed, it owns the clipboard selection.
 The cutbuffer and clipboard selection are always synchronized.")
     (license license:gpl2+)))
+
+(define-public jgmenu
+  (package
+    (name "jgmenu")
+    (version "3.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/johanmalm/jgmenu.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0q0m3sskgmjv28gzvjkphgg3yhwzc9w9fj9i342pibb50impjazy"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("librsvg" ,librsvg)
+       ("libx11" ,libx11)
+       ("libxml2" ,libxml2)
+       ("libxrandr" ,libxrandr)
+       ("pango" ,pango)
+       ("python" ,python)))
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'fix-paths
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((python (assoc-ref inputs "python")))
+                        (substitute* "src/jgmenu-pmenu.py"
+                          (("#!/usr/bin/env python3")
+                           (string-append "#!" python "/bin/python3")))
+                        #t)))
+                  (replace 'configure
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (setenv "prefix" out)
+                        (setenv "CC" "gcc")
+                        #t))))))
+    (synopsis "Simple X11 menu")
+    (description
+     "This is a simple menu for X11 designed for scripting and tweaking.  It
+can optionally use some appearance settings from XSettings, tint2 and GTK.")
+    (home-page "https://jgmenu.github.io/")
+    (license license:gpl2)))

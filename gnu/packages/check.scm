@@ -16,7 +16,7 @@
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -25,7 +25,7 @@
 ;;; Copyright © 2017, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
@@ -78,7 +78,7 @@
 (define-public check
   (package
     (name "check")
-    (version "0.12.0")
+    (version "0.13.0")
     (source
      (origin
       (method url-fetch)
@@ -86,7 +86,7 @@
                           version "/check-" version ".tar.gz"))
       (sha256
        (base32
-        "0d22h8xshmbpl9hba9ch3xj8vb9ybm5akpsbbh7yj07fic4h2hj6"))))
+        "02crar51gniijrrl9p8f9maibnwc33n76kw5cqr7xk3s8hqnncy4"))))
     (build-system gnu-build-system)
     (home-page "https://libcheck.github.io/check/")
     (synopsis "Unit test framework for C")
@@ -310,7 +310,7 @@ format.")
 (define-public cppcheck
   (package
     (name "cppcheck")
-    (version "1.89")
+    (version "1.90")
     (source (origin
       (method git-fetch)
       (uri (git-reference
@@ -318,7 +318,7 @@ format.")
              (commit version)))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "07yn1zycsb7sn1v7fprihbl0ih4n2zkd7l9jvmkjcskvwn4n21h0"))))
+       (base32 "0h7ir2x0k005fm586dxmaphgv5cyz25k3k4sh02p7zb78gzx398h"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DBUILD_TESTS=ON")))
@@ -379,7 +379,7 @@ and it supports a very flexible form of test discovery.")
 (define-public doctest
   (package
     (name "doctest")
-    (version "2.3.5")
+    (version "2.3.6")
     (home-page "https://github.com/onqtam/doctest")
     (source (origin
               (method git-fetch)
@@ -387,7 +387,7 @@ and it supports a very flexible form of test discovery.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0rddlzhnv0f5036q0m0p019pismka7sx6x8cnzk65sk77b1dsbhg"))))
+                "070gkwffi73i2p0azga9yxj8km32bp8bw4jvkvz1vzlpavyii5kn"))))
     (build-system cmake-build-system)
     (synopsis "C++ test framework")
     (description
@@ -505,7 +505,7 @@ test coverage and has a web user interface that will refresh automatically.")
 (define-public googletest
   (package
     (name "googletest")
-    (version "1.8.1")
+    (version "1.10.0")
     (source
      (origin
        (method git-fetch)
@@ -514,7 +514,7 @@ test coverage and has a web user interface that will refresh automatically.")
              (commit (string-append "release-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0270msj6n7mggh4xqqjp54kswbl7mkcc8px1p5dqdpmw5ngh9fzk"))))
+        (base32 "1zbmab9295scgg4z2vclgfgjchfjailjnvzc6f5x9jvlsdi3dpwz"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
@@ -526,6 +526,20 @@ test coverage and has a web user interface that will refresh automatically.")
 discovery, death tests, assertions, parameterized tests and XML test report
 generation.")
     (license license:bsd-3)))
+
+(define-public googletest-1.8
+  (package/inherit
+   googletest
+   (version "1.8.1")
+   (source (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/google/googletest.git")
+                   (commit (string-append "release-" version))))
+             (file-name (git-file-name "googletest" version))
+             (sha256
+              (base32
+               "0270msj6n7mggh4xqqjp54kswbl7mkcc8px1p5dqdpmw5ngh9fzk"))))))
 
 (define-public cpputest
   (package

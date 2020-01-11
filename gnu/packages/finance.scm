@@ -11,7 +11,7 @@
 ;;; Copyright © 2018 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2019 Sebastian Schott <sschott@mailbox.org>
@@ -41,6 +41,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system go)
+  #:use-module (guix build-system qt)
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages aidc)
@@ -288,6 +289,12 @@ in ability, and easy to use.")
          #:tests? #f ; there are none
          #:phases
          (modify-phases %standard-phases
+           (add-after 'unpack 'patch-site-dir
+             (lambda _
+               (substitute* "CMakeLists.txt"
+                 (("DESTINATION share/emacs/site-lisp/ledger-mode")
+                  "DESTINATION share/emacs/site-lisp"))
+               #t))
            (add-before 'build 'patch-path
              (lambda* (#:key inputs #:allow-other-keys)
                (let ((ledger (assoc-ref inputs "ledger")))
@@ -303,17 +310,12 @@ in ability, and easy to use.")
                  (invoke "makeinfo" "-o" target
                          "../source/doc/ledger-mode.texi"))
                #t))
-           (add-after 'install 'relocate-elisp
+           (add-after 'install 'generate-autoload
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((site-dir (string-append (assoc-ref outputs "out")
-                                               "/share/emacs/site-lisp"))
-                      (guix-dir (string-append site-dir "/guix.d"))
-                      (orig-dir (string-append site-dir "/ledger-mode"))
-                      (dest-dir (string-append guix-dir "/ledger-mode")))
-                 (mkdir-p guix-dir)
-                 (rename-file orig-dir dest-dir)
-                 (emacs-generate-autoloads ,name dest-dir)
-                 #t))))))
+                                               "/share/emacs/site-lisp")))
+                 (emacs-generate-autoloads ,name site-dir))
+               #t)))))
       (inputs
        `(("ledger" ,ledger)))
       (native-inputs
@@ -602,7 +604,7 @@ the Monero command line client and daemon.")
 (define-public monero-gui
   (package
     (name "monero-gui")
-    (version "0.15.0.1")
+    (version "0.15.0.3")
     (source
      (origin
        (method git-fetch)
@@ -612,8 +614,8 @@ the Monero command line client and daemon.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "08j8kkncdn57xql0bhmlzjpjkdfhqbpda1p07r797q8qi0nl4w8n"))))
-    (build-system gnu-build-system)
+         "1v2mk6qp7dfdj4j4cilxp0s0phfwwnmjvpvjrz6jzzlpvbnavkr0"))))
+    (build-system qt-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
@@ -633,53 +635,45 @@ the Monero command line client and daemon.")
        ("qtquickcontrols" ,qtquickcontrols)
        ("qtquickcontrols2",qtquickcontrols2)
        ("qtsvg" ,qtsvg)
-       ("qtwebchannel" ,qtwebchannel)
-       ("qtx11extras" ,qtx11extras)
        ("qtxmlpatterns" ,qtxmlpatterns)
        ("unbound" ,unbound)))
     (propagated-inputs
      `(("monero" ,monero)))
     (arguments
-     `(#:modules ((guix build gnu-build-system)
-                  (guix build qt-utils)
-                  (guix build utils))
-       #:imported-modules (,@%gnu-build-system-modules
-                           (guix build qt-utils))
+     `(#:tests? #f ; No tests
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (delete 'check)
-         (add-before 'build 'fix-makefile-vars
+         (add-after 'unpack 'fix-makefile-vars
            (lambda _
              (substitute* "src/zxcvbn-c/makefile"
                (("\\?=") "="))
              #t))
-         (add-after 'fix-makefile-vars 'fix-library-paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "monero-wallet-gui.pro"
-               (("-L/usr/local/lib")
-                "")
-               (("-L/usr/local/opt/openssl/lib")
-                (string-append "-L" (assoc-ref inputs "openssl") "/lib"))
-               (("-L/usr/local/opt/boost/lib")
-                (string-append "-L" (assoc-ref inputs "boost") "/lib")))
-             #t))
-         (add-after 'fix-library-paths 'fix-monerod-path
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "src/daemon/DaemonManager.cpp"
-               (("QApplication::applicationDirPath\\(\\) \\+ \"/monerod")
-                (string-append "\"" (assoc-ref inputs "monero")
-                               "/bin/monerod")))
-             #t))
-         (add-after 'fix-monerod-path 'fix-qt-paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "monero-wallet-gui.pro"
-               (("\\$\\$\\[QT_INSTALL_BINS\\]/lrelease")
-                (string-append (assoc-ref inputs "qttools") "/bin/lrelease"))
-               (("\\$\\$\\[QT_INSTALL_BINS\\]/lupdate")
-                (string-append (assoc-ref inputs "qttools") "/bin/lupdate")))
-             #t))
-         (add-after 'fix-qt-paths 'make-qt-deterministic
+         (add-after 'fix-makefile-vars 'fix-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((boost (assoc-ref inputs "boost"))
+                   (monero (assoc-ref inputs "monero"))
+                   (openssl (assoc-ref inputs "openssl"))
+                   (qttools (assoc-ref inputs "qttools"))
+                   (out (assoc-ref outputs "out")))
+               (substitute* "monero-wallet-gui.pro"
+                 (("-L/usr/local/lib")
+                  "")
+                 (("-L/usr/local/opt/openssl/lib")
+                  (string-append "-L" openssl "/lib"))
+                 (("-L/usr/local/opt/boost/lib")
+                  (string-append "-L" boost "/lib"))
+                 (("\\$\\$\\[QT_INSTALL_BINS\\]/lrelease")
+                  (string-append qttools "/bin/lrelease"))
+                 (("\\$\\$\\[QT_INSTALL_BINS\\]/lupdate")
+                  (string-append qttools "/bin/lupdate")))
+               (substitute* "deployment.pri"
+                 (("/opt/\\$\\$\\{TARGET\\}/bin")
+                  (string-append out "/bin")))
+               (substitute* "src/daemon/DaemonManager.cpp"
+                 (("QApplication::applicationDirPath\\(\\) \\+ \"/monerod")
+                  (string-append "\"" monero "/bin/monerod")))
+               #t)))
+         (add-after 'fix-paths 'make-qt-deterministic
            (lambda _
              (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")
              #t))
@@ -696,24 +690,14 @@ the Monero command line client and daemon.")
                          ,version
                          ,(package-version monero))))
              #t))
-         (replace 'build
+         (replace 'configure
            (lambda _
-             (invoke "./build.sh")))
-         (add-after 'build 'fix-install-path
-           (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "build/Makefile"
-               (("/opt/monero-wallet-gui")
-                (assoc-ref outputs "out")))
-             #t))
-         (add-before 'install 'change-dir
-           (lambda _
+             (mkdir-p "build")
              (chdir "build")
-             #t))
-         (add-after 'install 'wrap-program
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-qt-program out "monero-wallet-gui"))
-             #t)))))
+             (invoke "qmake" "../monero-wallet-gui.pro" "CONFIG+=release")))
+         (add-before 'build 'build-zxcvbn-c
+           (lambda _
+             (invoke "make" "-C" "../src/zxcvbn-c"))))))
     (home-page "https://web.getmonero.org/")
     (synopsis "Graphical user interface for the Monero currency")
     (description

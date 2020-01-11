@@ -100,7 +100,7 @@ Import and convert the crate.io package for PACKAGE-NAME.\n"))
                    `(define-public ,(string->symbol name)
                       ,pkg))
                   (_ #f))
-                (crate-recursive-import name))
+                (crate-recursive-import name version))
            (let ((sexp (crate->guix-package name version)))
              (unless sexp
                (leave (G_ "failed to download meta-data for package '~a'~%")

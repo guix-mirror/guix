@@ -1414,7 +1414,7 @@ users to select LV2 plugins and run them with jalv.")
 (define-public synthv1
   (package
     (name "synthv1")
-    (version "0.9.11")
+    (version "0.9.12")
     (source (origin
               (method url-fetch)
               (uri
@@ -1422,7 +1422,7 @@ users to select LV2 plugins and run them with jalv.")
                               "/synthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "116k2vca9dygvsd684wvxm61p0l1xrrgdph4qrrprlsr6vj0llgm"))))
+                "1amxrl1cqwgncw5437r572frgf6xhss3cfpbgh178i8phlq1q731"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1446,7 +1446,7 @@ oscillators and stereo effects.")
 (define-public drumkv1
   (package
     (name "drumkv1")
-    (version "0.9.11")
+    (version "0.9.12")
     (source (origin
               (method url-fetch)
               (uri
@@ -1454,7 +1454,7 @@ oscillators and stereo effects.")
                               "/drumkv1-" version ".tar.gz"))
               (sha256
                (base32
-                "1wnjn175l0mz51k9pjf3pdzv54c4jlh63saavld9lm6zfgfs13d7"))))
+                "0hmnmk9vvi43wl6say0dg7j088h7mmwmfdwjhsq89c7i7cpg78da"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1479,7 +1479,7 @@ effects.")
 (define-public samplv1
   (package
     (name "samplv1")
-    (version "0.9.11")
+    (version "0.9.12")
     (source (origin
               (method url-fetch)
               (uri
@@ -1487,7 +1487,7 @@ effects.")
                               "/samplv1-" version ".tar.gz"))
               (sha256
                (base32
-                "17zs8kvvwqv00bm4lxpn09a5hxjlbz7k5mkl3k7jspw7rqn3djf2"))))
+                "0xzjxiqzcf1ygabrjsy0iachhnpy85rp9519fmj2f568r6ml6hzg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1512,7 +1512,7 @@ effects.")
 (define-public padthv1
   (package
     (name "padthv1")
-    (version "0.9.11")
+    (version "0.9.12")
     (source (origin
               (method url-fetch)
               (uri
@@ -1520,7 +1520,7 @@ effects.")
                               "/padthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "02yfwyirjqxa075yqdnci9b9k57kdmkjvn9gnpdbnjp887pds76g"))))
+                "1zz3rz990k819q0rlzllqdwvag0x9k63443lb0mp8lwlczxnza6l"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1733,7 +1733,7 @@ is subjective.")
 (define-public tuxguitar
   (package
     (name "tuxguitar")
-    (version "1.5.2")
+    (version "1.5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1741,7 +1741,7 @@ is subjective.")
                     version "/tuxguitar-" version "-src.tar.gz"))
               (sha256
                (base32
-                "10arfpgm2pw7mn922klklzn05lw5ifqx070shdrar81afmkfbbd9"))))
+                "1qy5kjcsl3c86kdlyvsf6dsfmfl1mv8zg0ln6g3qg3i8f35vlpp6"))))
     (build-system ant-build-system)
     (arguments
      `(#:build-target "build"
@@ -2387,14 +2387,14 @@ from the command line.")
 (define-public qtractor
   (package
     (name "qtractor")
-    (version "0.9.11")
+    (version "0.9.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://downloads.sourceforge.net/qtractor/"
                                   "qtractor-" version ".tar.gz"))
               (sha256
                (base32
-                "1482da0lr77i57jby80cnn4bb9ws3v1i1j6m2hbwdnvqab9csvnx"))))
+                "06493sf4hr178jkvric3rmc2phh1ph2jlyh8kl9z248amq3zfnhy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; no "check" target
@@ -4822,7 +4822,7 @@ and debugging of event signal flows inside plugin graphs.")
 (define-public x42-plugins
   (package
     (name "x42-plugins")
-    (version "20191013")
+    (version "20191215")
     (source
      (origin
        (method url-fetch)
@@ -4830,8 +4830,7 @@ and debugging of event signal flows inside plugin graphs.")
         (string-append "http://gareus.org/misc/x42-plugins/x42-plugins-"
                        version ".tar.xz"))
        (sha256
-        (base32
-         "18kn1bmc0s6dp834kc51ibifzzn3bxwya4p8s8yq9f4mpmkghi24"))))
+        (base32 "1mwfvhsvc0qgjyiwd8pmmam1mav43lmv39fljhmj9yri558v5g1c"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no "check" target
@@ -4876,7 +4875,7 @@ audio and MIDI plugins that can also run as standalone JACK applications.")
 (define-public zam-plugins
   (package
     (name "zam-plugins")
-    (version "3.11")
+    (version "3.12")
     (source
      (origin
        (method git-fetch)
@@ -4890,8 +4889,7 @@ audio and MIDI plugins that can also run as standalone JACK applications.")
          (recursive? #t)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0jlbxm0g93plgd3g4r9rsr0c7868ms49bs0ljpqb6kw6132hsapp"))))
+        (base32 "0icsbarc9azcp0kjjydmiqn401v60jmf16zdcp4040q8g7bpfmfa"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ;no "check" target

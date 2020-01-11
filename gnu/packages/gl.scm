@@ -42,6 +42,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages mono)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
@@ -229,7 +230,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "19.2.1")
+    (version "19.2.7")
     (source
       (origin
         (method url-fetch)
@@ -241,10 +242,9 @@ also known as DXTn or DXTC) for Mesa.")
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "1s81kwcjkkahnf5y5mshmd3q9j057hhsai7awpq6yb6im2hkriac"))
+          "17jp8ghipgz62vqqz5llskxypkcmgf8gnlgnj0pyvnbgi6vryyg3"))
         (patches
-         (search-patches "mesa-skip-disk-cache-test.patch"
-                         "mesa-timespec-test-32bit.patch"))))
+         (search-patches "mesa-skip-disk-cache-test.patch"))))
     (build-system meson-build-system)
     (propagated-inputs
       `(;; The following are in the Requires.private field of gl.pc.
@@ -604,7 +604,7 @@ OpenGL graphics API.")
 (define-public libepoxy
   (package
     (name "libepoxy")
-    (version "1.5.3")
+    (version "1.5.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -612,7 +612,7 @@ OpenGL graphics API.")
                     version "/libepoxy-" version ".tar.xz"))
               (sha256
                (base32
-                "0ga3qjv50x37my6pw5xr14g5n6z78hy5s8s06kays8c3ab2mha80"))))
+                "1ll9fach4v30dsyd47s5ial4gaiwihzr2afb77vxxzzy3mlcrlhb"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -888,4 +888,42 @@ the shaders at runtime.")
       (synopsis "Work with Direct3D shaders on alternate 3D APIs (with viewport flip)")
       (description "This is the last version of the mojoshader library with
 the glProgramViewportFlip before it was replaced with glProgramViewportInfo.")
+      (license license:zlib))))
+
+(define-public mojoshader-cs
+  (let ((commit "10d0dba21ff1cfe332eb7de328a2adce01286bd7"))
+    (package
+      (name "mojoshader-cs")
+      (version (git-version "20191205" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/FNA-XNA/MojoShader")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "11mdhf3fmb9rsn2iv753gmb596j4dh5j2iipgw078vg0lj23rml7"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:tests? #f  ; No tests.
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'build
+             (lambda _
+               (invoke "make" "-C" "csharp")))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (install-file "csharp/bin/MojoShader-CS.dll" (string-append out "/lib"))
+                 #t))))))
+      (native-inputs
+       `(("mono" ,mono)))
+      (home-page "https://github.com/FNA-XNA/MojoShader")
+      (synopsis "C# wrapper for MojoShader")
+      (description
+       "Mojoshader-CS provides C# bindings for the Mojoshader library.
+The C# wrapper was written to be used for FNA's platform support.  However, this
+is written in a way that can be used for any general C# application.")
       (license license:zlib))))

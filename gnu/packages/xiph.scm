@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -69,6 +69,8 @@
              (base32
               "1zlk33vxvxr0l9lhkbhkdwvylw96d2n0fnd3d8dl031hph9bqqy1"))))
    (build-system gnu-build-system)
+   (arguments
+    '(#:configure-flags '("--disable-static")))
    (synopsis "Library for manipulating the ogg multimedia format")
    (description
     "The libogg library allows to manipulate the ogg multimedia container
@@ -93,7 +95,8 @@ periodic timestamps for seeking.")
               "05dlzjkdpv46zb837wysxqyn8l636x3dw8v8ymlrwz2fg1dbn05g"))))
    (build-system gnu-build-system)
    (propagated-inputs `(("libogg" ,libogg)))
-   (arguments `(#:configure-flags '("LDFLAGS=-lm")
+   (arguments `(#:configure-flags '("LDFLAGS=-lm"
+                                    "--disable-static")
                 #:parallel-tests? #f))
    (synopsis "Library implementing the vorbis audio format")
    (description
@@ -119,6 +122,8 @@ polyphonic) audio and music at fixed and variable bitrates from 16 to
                "0q8wark9ribij57dciym5vdikg2464p8q2mgqvfb78ksjh4s8vgk"))
              (patches (search-patches "libtheora-config-guess.patch"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (inputs `(("libvorbis" ,libvorbis)))
     ;; The .pc files refer to libogg.
     (propagated-inputs `(("libogg" ,libogg)))
@@ -174,7 +179,8 @@ stereo encoding, and voice activity detection.")
                 "0wa7sqpk3x61zz99m7lwkgr6yv62ml6lfgs5xja65vlvdzy44838"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '(,@(if (string=? "aarch64-linux"
+     `(#:configure-flags '("--disable-static"
+                           ,@(if (string=? "aarch64-linux"
                                            (%current-system))
                                '("--enable-neon=no") ; neon defaults to armv7-a
                                '()))))
@@ -352,6 +358,8 @@ ogginfo, to obtain information (tags, bitrate, length, etc.) about
                (base32
                 "17gz8kxs4i7icsc1gj713gadiapyklynlwqlf0ai98dj4lg8xdb5"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (synopsis "Versatile audio codec")
     (description
      "Opus is a totally open, royalty-free, highly versatile audio codec.  Opus
@@ -483,7 +491,7 @@ things in between.")
 (define-public libshout
   (package
     (name "libshout")
-    (version "2.4.2")
+    (version "2.4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -491,7 +499,7 @@ things in between.")
                     "libshout-" version ".tar.gz"))
               (sha256
                (base32
-                "0qgwarqp2p6jy3zadds6dzj8z1jfb2mbwc3lsdlidf527h0a86ym"))))
+                "1zhdshas539cs8fsz8022ljxnnncr5lafhfd1dqr1gs125fzb2hd"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

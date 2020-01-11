@@ -6,7 +6,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
-;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016, 2018 Roel Janssen <roel@gnu.org>
@@ -23,6 +23,7 @@
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Stephen J. Scheck <sscheck@cpan.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6688,6 +6689,31 @@ cycle.  Functions called in the package itself will still be bound by their
 name, but they won't show up as methods on your class or instances.")
     (license (package-license perl))))
 
+(define-public perl-net-bgp
+  (package
+    (name "perl-net-bgp")
+    (version "0.17")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://cpan/authors/id/S/SS/SSCHECK/Net-BGP-" version ".tar.gz"))
+        (sha256 (base32 "0za8x9cn5n2hasb14p7dr537lggvrcsl23pgldxf5y03wmk6h35y"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Net-BGP")
+    (synopsis "Object-oriented API to the BGP protocol")
+    (description
+      "This module is an implementation of the BGP-4 inter-domain routing protocol.
+It encapsulates all of the functionality needed to establish and maintain a
+BGP peering session and exchange routing update information with the peer.
+It aims to provide a simple API to the BGP protocol for the purposes of
+automation, logging, monitoring, testing, and similar tasks using the
+power and flexibility of perl.  The module does not implement the
+functionality of a RIB (Routing Information Base) nor does it modify the
+kernel routing table of the host system.  However, such operations could be
+implemented using the API provided by the module.")
+  (license perl-license)))
+
 (define-public perl-net-dns-native
   (package
     (name "perl-net-dns-native")
@@ -6847,7 +6873,7 @@ signatures.")
 (define-public perl-ole-storage-lite
   (package
     (name "perl-ole-storage-lite")
-    (version "0.19")
+    (version "0.20")
     (source
      (origin
        (method url-fetch)
@@ -6857,7 +6883,7 @@ signatures.")
              ".tar.gz"))
        (sha256
         (base32
-         "179cxwqxb0f9dpx8954nvwjmggxxi5ndnang41yav1dx6mf0abp7"))))
+         "1fpqhhgb8blj4hhs97fsbnbhk29s9yms057a9s9yl20f3hbsc65b"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/OLE-Storage_Lite")
     (synopsis "Read and write OLE storage files")

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -89,6 +89,8 @@
      "B3C0 DB4D AD73 BA5D 285E  19AE 5143 0234 CEFD 87C3")
     ("davexunit (2nd)"                            ;FIXME: to be confirmed!
      "8CCB A7F5 52B9 CBEA E1FB  2915 8328 C747 0FF1 D807")
+    ("daviwil"
+     "53C4 1E6E 41AA FE55 335A  CA5E 446A 2ED4 D940 BF14")
     ("dvc"
      "6909 6DFD D702 8BED ACC5  884B C5E0 51C7 9C0B ECDB")
     ("dvc (old)"

@@ -8,7 +8,7 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -881,7 +881,7 @@ CD data, and more.  It's mostly compatible with @code{cdrtools}.")
 (define-public libmirage
   (package
     (name "libmirage")
-    (version "3.2.3")
+    (version "3.2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -889,7 +889,7 @@ CD data, and more.  It's mostly compatible with @code{cdrtools}.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "08mfvqyk3833ksfd47i4j3ppmrw5ry219km6h7lywdh9hm9x14yf"))))
+                "0md3f71x2dbgyw5s254vx1s80slh3f25r9pvjihkrmj0rn53nnzw"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -910,15 +910,15 @@ the data stored in various image formats.")
 (define-public cdemu-daemon
   (package
     (name "cdemu-daemon")
-    (version "3.2.3")
+    (version "3.2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://downloads.sourceforge.net/cdemu/cdemu-daemon/cdemu-daemon-"
-                    version ".tar.bz2"))
+                    "https://downloads.sourceforge.net/cdemu/cdemu-daemon/"
+                    "cdemu-daemon-" version ".tar.bz2"))
               (sha256
                (base32
-                "022xzgwmncswb9md71w3ly3mjkdfc93lbij2llp2jamq8grxjjxr"))))
+                "02yyj8sr7d5briamhzrqh8zdsiiggxmx5y05kx25y7k3g15jvcx6"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -939,7 +939,7 @@ drive and disc (including CD-ROMs and DVD-ROMs).")
 (define-public cdemu-client
   (package
     (name "cdemu-client")
-    (version "3.2.3")
+    (version "3.2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -947,7 +947,7 @@ drive and disc (including CD-ROMs and DVD-ROMs).")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "1bvc2m63fx03rbp3ihgl2n7k24lwg5ydwkmr84gsjfcxp46q10zq"))))
+                "1swylaja1p1jfjf3s58c9hsk1cyy20i7mrq32kcg6kzp88grs8my"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
