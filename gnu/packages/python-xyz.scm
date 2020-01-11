@@ -8238,36 +8238,22 @@ be set via config files and/or environment variables.")
 provides utilities for common tasks involving decorators and context
 managers.  It also contains additional features that are not part of
 the standard library.")
+    (properties `((python2-variant . ,(delay python2-contextlib2))))
     (license license:psfl)))
 
 (define-public python2-contextlib2
-  (package
-    (name "python2-contextlib2")
-    (version "0.5.5")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "contextlib2" version))
-       (sha256
-        (base32
-         "0j6ad6lwwyc9kv71skj098v5l7x5biyj2hs4lc5x1kcixqcr97sh"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _ (invoke "python" "test_contextlib2.py" "-v"))))))
-    (native-inputs
-     `(("python2-unittest2" ,python2-unittest2)))
-    (home-page "http://contextlib2.readthedocs.org/")
-    (synopsis "Tools for decorators and context managers")
-    (description "This module is primarily a backport of the Python
-3.2 contextlib to earlier Python versions.  Like contextlib, it
-provides utilities for common tasks involving decorators and context
-managers.  It also contains additional features that are not part of
-the standard library.")
-    (license license:psfl)))
+  (let ((base (package-with-python2
+               (strip-python2-variant python-contextlib2))))
+    (package
+      (inherit base)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:phases phases)
+          `(modify-phases ,phases
+           (replace 'check
+             (lambda _ (invoke "python" "test_contextlib2.py" "-v")))))))
+      (native-inputs
+       `(("python2-unittest2" ,python2-unittest2))))))
 
 (define-public python-texttable
   (package
