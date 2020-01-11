@@ -910,7 +910,7 @@ the data stored in various image formats.")
 (define-public cdemu-daemon
   (package
     (name "cdemu-daemon")
-    (version "3.2.3")
+    (version "3.2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -918,7 +918,7 @@ the data stored in various image formats.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "022xzgwmncswb9md71w3ly3mjkdfc93lbij2llp2jamq8grxjjxr"))))
+                "02yyj8sr7d5briamhzrqh8zdsiiggxmx5y05kx25y7k3g15jvcx6"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
