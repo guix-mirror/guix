@@ -24,6 +24,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages assembly)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -44,6 +45,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages xml)
   #:use-module ((guix utils)
                 #:select (%current-system)))
@@ -299,3 +301,44 @@ package for the Game Boy and Game Boy Color.  It consists of:
 @item rgbgfx (PNG-to-Game Boy graphics converter)
 @end itemize")
     (license license:expat)))
+
+(define-public wla-dx
+  (package
+    (name "wla-dx")
+    (version "9.10")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/vhelin/wla-dx.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "022isf7s9q5i0j4xj69zpp0lgw8p9n37sn7ii25v68r15zaahk2w"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("sphinx" ,python-sphinx)))      ; to generate man pages
+    (arguments
+     `(#:tests? #f)) ; no tests
+    (home-page "https://github.com/vhelin/wla-dx")
+    (synopsis "Assemblers for various processors")
+    (description "WLA DX is a set of tools to assemble assembly files to
+object or library files (@code{wla-ARCH}) and link them together (@code{wlalink}).
+Supported architectures are:
+
+@itemize @bullet
+@item z80
+@item gb (z80-gb)
+@item 6502
+@item 65c02
+@item 6510
+@item 65816
+@item 6800
+@item 6801
+@item 6809
+@item 8008
+@item 8080
+@item huc6280
+@item spc700
+@end itemize")
+    (license license:gpl2)))
