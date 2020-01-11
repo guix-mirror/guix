@@ -1136,6 +1136,34 @@ package provides a tool to securely sign firmware images for booting by
 MCUboot.")
     (license license:expat)))
 
+(define-public python-secretstorage
+  (package
+    (name "python-secretstorage")
+    (version "3.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "SecretStorage" version))
+        (sha256
+         (base32
+          "1xmzr0j3066s220bss4nkgqbiwb5k4kkp2rkpqlqwjb5kfc8mnhm"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; Tests require a running dbus service.
+    (propagated-inputs
+     `(("python-cryptography" ,python-cryptography)
+       ("python-jeepney" ,python-jeepney)))
+    (home-page "https://github.com/mitya57/secretstorage")
+    (synopsis "Python bindings to FreeDesktop.org Secret Service API")
+    (description
+     "@code{python-secretstorage} provides a way for securely storing passwords
+and other secrets.  It uses D-Bus Secret Service API that is supported by GNOME
+Keyring (since version 2.30) and KSecretsService.  SecretStorage supports most
+of the functions provided by Secret Service, including creating and deleting
+items and collections, editing items, locking and unlocking collections
+(asynchronous unlocking is also supported).")
+    (license license:bsd-3)))
+
 (define-public python-jeepney
   (package
     (name "python-jeepney")
