@@ -555,7 +555,7 @@ Python.")
 (define-public wayland
   (package
     (name "wayland")
-    (version "1.18.0")
+    (version "1.17.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://wayland.freedesktop.org/releases/"
