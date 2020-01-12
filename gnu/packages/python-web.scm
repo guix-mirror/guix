@@ -3469,3 +3469,28 @@ and fairly speedy.")
 the source code of a project.  It supports many translation file formats and
 is part of the Weblate translation platform.")
     (license license:gpl3+)))
+
+(define-public python-gitlab
+  (package
+    (name "python-gitlab")
+    (version "1.15.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "python-gitlab" version))
+        (sha256
+         (base32
+          "0zl6kz8v8cg1bcy2r78b2snb0lpw0b573gdx2x1ps0nhsh75l4j5"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-httmock" ,python-httmock)
+       ("python-mock" ,python-mock)))
+    (home-page
+      "https://github.com/python-gitlab/python-gitlab")
+    (synopsis "Interact with GitLab API")
+    (description "This package provides an extended library for interacting
+with GitLab instances through their API.")
+    (license license:lgpl3+)))
