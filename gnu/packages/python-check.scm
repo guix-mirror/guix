@@ -313,3 +313,25 @@ framework.")
 of the code is covered by them.  This tool is part of the Codacy suite for
 analysing code quality.")
     (license license:expat)))
+
+(define-public python-httmock
+  (package
+    (name "python-httmock")
+    (version "1.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "httmock" version))
+        (sha256
+         (base32
+          "1zj1fcm0n6f0wr9mr0hmlqz9430fnr5cdwd5jkcvq9j44bnsrfz0"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)); no tests
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
+    (home-page "https://github.com/patrys/httmock")
+    (synopsis "Mocking library for requests.")
+    (description "This package provides a library for replying fake data to
+Python software under test, when they make an HTTP query.")
+    (license license:asl2.0)))
