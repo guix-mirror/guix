@@ -79,6 +79,15 @@ valid."
   (let ((source (getcwd))
         (target (source-directory out name))
         (system-path (string-append out %system-install-prefix)))
+    ;; SBCL keeps the modification time of the source file in the compiled
+    ;; file, and the source files might just have been patched by a custom
+    ;; phase. Therefore we reset the modification time of all the source
+    ;; files before compiling.
+    (for-each (lambda (file)
+                (let ((s (lstat file)))
+                  (unless (eq? (stat:type s) 'symlink)
+                    (utime file 0 0 0 0))))
+              (find-files source #:directories? #t))
     (copy-recursively source target #:keep-mtime? #t)
     (mkdir-p system-path)
     (for-each
