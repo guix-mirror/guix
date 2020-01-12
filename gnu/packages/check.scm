@@ -99,6 +99,19 @@ faults or other signals.  The output from unit tests can be used within
 source code editors and IDEs.")
     (license license:lgpl2.1+)))
 
+;; Some packages require this older version.  Removed once no longer needed.
+(define-public check-0.12
+  (package/inherit
+   check
+   (version "0.12.0")
+   (source (origin
+             (method url-fetch)
+             (uri (string-append "https://github.com/libcheck/check/releases"
+                                 "/download/" version "/check-" version ".tar.gz"))
+             (sha256
+              (base32
+               "0d22h8xshmbpl9hba9ch3xj8vb9ybm5akpsbbh7yj07fic4h2hj6"))))))
+
 (define-public cunit
   (package
     (name "cunit")
