@@ -197,6 +197,7 @@ which allows users to view a desktop computing environment.")
               (uri (string-append
                 "https://www.spice-space.org/download/releases/"
                 "spice-server/spice-" version ".tar.bz2"))
+              (patches (search-patches "spice-fix-test-armhf.patch"))
               (sha256
                (base32
                 "19r999py9v9c7md2bb8ysj809ag1hh6djl1ik8jcgx065s4b60xj"))))
