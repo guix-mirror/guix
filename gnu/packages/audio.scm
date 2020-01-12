@@ -2684,6 +2684,8 @@ stretching and pitch scaling of audio.  This package contains the library.")
                (base32
                 "1qvpvfx30kvrkw7y1g6r8xj109wszg1z0qmkfm17wf3flb7v3rbp"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (home-page "http://www.wavpack.com/")
     (synopsis "Hybrid lossless audio codec")
     (description
