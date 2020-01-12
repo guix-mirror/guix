@@ -2675,17 +2675,14 @@ stretching and pitch scaling of audio.  This package contains the library.")
 (define-public wavpack
   (package
     (name "wavpack")
-    (version "5.1.0")
+    (version "5.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.wavpack.com/"
-                                  name "-" version ".tar.bz2"))
-              (patches (search-patches "wavpack-CVE-2018-6767.patch"
-                                       "wavpack-CVE-2018-7253.patch"
-                                       "wavpack-CVE-2018-7254.patch"))
+                                  "wavpack-" version ".tar.xz"))
               (sha256
                (base32
-                "0i19c6krc0p9krwrqy9s5xahaafigqzxcn31piidmlaqadyn4f8r"))))
+                "1qvpvfx30kvrkw7y1g6r8xj109wszg1z0qmkfm17wf3flb7v3rbp"))))
     (build-system gnu-build-system)
     (home-page "http://www.wavpack.com/")
     (synopsis "Hybrid lossless audio codec")
