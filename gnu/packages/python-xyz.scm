@@ -97,6 +97,7 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dbm)
+  #:use-module (gnu packages enchant)
   #:use-module (gnu packages file)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
@@ -17453,3 +17454,47 @@ arguments in Python.")
 such as a file modification and trigger an action.  This is similar to inotify,
 but portable.")
     (license license:asl2.0)))
+
+(define-public offlate
+  (package
+    (name "offlate")
+    (version "0.5")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://framagit.org/tyreunom/offlate")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "13pqnbl05wcyldfvl75fp89vjgwsvxyc69vhnb17kkha2rc2k1h7"))))
+    (build-system python-build-system)
+    (arguments
+     ;; No tests
+     `(#:tests? #f))
+    (propagated-inputs
+      `(("python-android-stringslib" ,python-android-stringslib)
+        ("python-dateutil" ,python-dateutil)
+        ("python-gitlab" ,python-gitlab)
+        ("python-lxml" ,python-lxml)
+        ("python-polib" ,python-polib)
+        ("python-pyenchant" ,python-pyenchant)
+        ("python-pygit2" ,python-pygit2)
+        ("python-pygithub" ,python-pygithub)
+        ("python-pyqt" ,python-pyqt)
+        ("python-requests" ,python-requests)
+        ("python-ruamel.yaml" ,python-ruamel.yaml)
+        ("python-translation-finder" ,python-translation-finder)
+        ("python-watchdog" ,python-watchdog)))
+    (native-inputs
+     `(("qttools" ,qttools)))
+    (home-page "https://framagit.org/tyreunom/offlate")
+    (synopsis "Offline translation interface for online translation tools")
+    (description "Offlate offers a unified interface for different translation
+file formats, as well as many different online translation platforms.  You can
+use it to get work from online platforms, specialized such as the Translation
+Project, or not such a gitlab instance when your upstream doesn't use any
+dedicated platform.  The tool proposes a unified interface for any format and
+an upload option to send your work back to the platform.")
+    (license license:gpl3+)))
