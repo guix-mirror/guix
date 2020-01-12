@@ -378,7 +378,9 @@ extraction, and lookup for applications on the desktop.")
               "1gwhp7dalyc8zsb2pa66cmpdrj2d6drbq5p331sq6zp8ds10k9ry"))))
    (build-system meson-build-system)
    (arguments
-    '(#:configure-flags '("-Dcheese=auto" "-Dsystemd=false")))
+    '(#:configure-flags '(;; Enable camera support for user selfie.
+                          "-Dcheese=auto"
+                          "-Dsystemd=false")))
    (native-inputs
     `(("gettext" ,gettext-minimal)
       ("glib:bin" ,glib "bin")
@@ -409,8 +411,9 @@ extraction, and lookup for applications on the desktop.")
       ("upower" ,upower)
       ("webkitgtk" ,webkitgtk)))
    (synopsis "Initial setup wizard for GNOME desktop")
-   (description "GNOME Initial Setup aims to provide a simple, easy,
-and safe way to prepare a new system.")
+   (description "This package provides a set-up wizard when a
+user logs into GNOME for the first time.  It typically provides a
+tour of all gnome components and allows the user to set them up.")
    (home-page "https://gitlab.gnome.org/GNOME/gnome-initial-setup")
    (license license:gpl2)))
 
