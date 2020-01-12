@@ -290,6 +290,7 @@ that implements both the msgpack and msgpack-rpc specifications.")
               (method git-fetch)
               (uri (git-reference (url home-page) (commit version)))
               (file-name (git-file-name name version))
+              (patches (search-patches "jsoncpp-fix-inverted-case.patch"))
               (sha256
                (base32
                 "037d1b1qdmn3rksmn1j71j26bv4hkjv7sn7da261k853xb5899sg"))))
