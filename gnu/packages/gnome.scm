@@ -364,6 +364,56 @@ extraction, and lookup for applications on the desktop.")
     (home-page "https://gitlab.gnome.org/GNOME/libmediaart")
     (license license:lgpl2.1+)))
 
+(define-public gnome-initial-setup
+  (package
+   (name "gnome-initial-setup")
+   (version "3.32.1")
+   (source (origin
+            (method url-fetch)
+           (uri (string-append "mirror://gnome/sources/gnome-initial-setup/"
+                                (version-major+minor version)
+                                "/gnome-initial-setup-" version ".tar.xz"))
+            (sha256
+             (base32
+              "1gwhp7dalyc8zsb2pa66cmpdrj2d6drbq5p331sq6zp8ds10k9ry"))))
+   (build-system meson-build-system)
+   (arguments
+    '(#:configure-flags '("-Dcheese=auto" "-Dsystemd=false")))
+   (native-inputs
+    `(("gettext" ,gettext-minimal)
+      ("glib:bin" ,glib "bin")
+      ("gobject-introspection" ,gobject-introspection)
+      ("gtk+:bin" ,gtk+ "bin")
+      ("pkg-config" ,pkg-config)))
+   (inputs
+    `(("accountsservice" ,accountsservice)
+      ;("adwaita-icon-theme" ,adwaita-icon-theme)
+      ("gdm" ,gdm)
+      ("geoclue" ,geoclue)
+      ("gnome-desktop" ,gnome-desktop)
+      ("gnome-getting-started-docs" ,gnome-getting-started-docs)
+      ("gnome-online-accounts" ,gnome-online-accounts)
+      ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
+      ("gstreamer" ,gstreamer)
+      ("ibus" ,ibus)
+      ("json-glib" ,json-glib)
+      ("krb5" ,mit-krb5)
+      ("libgweather" ,libgweather)
+      ("libsecret" ,libsecret)
+      ("network-manager" ,network-manager)
+      ("network-manager-applet" ,network-manager-applet)
+      ("packagekit" ,packagekit)
+      ("polkit" ,polkit)
+      ("pwquality" ,libpwquality)
+      ("rest" ,rest)
+      ("upower" ,upower)
+      ("webkitgtk" ,webkitgtk)))
+   (synopsis "Initial setup wizard for GNOME desktop")
+   (description "GNOME Initial Setup aims to provide a simple, easy,
+and safe way to prepare a new system.")
+   (home-page "https://gitlab.gnome.org/GNOME/gnome-initial-setup")
+   (license license:gpl2)))
+
 (define-public gnome-menus
   (package
     (name "gnome-menus")
