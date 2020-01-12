@@ -16,6 +16,7 @@
 ;;; Copyright © 2018 Stefan Stefanović <stefanx2ovic@gmail.com>
 ;;; Copyright © 2019 Reza Alizadeh Majd <r.majd@pantherx.org>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,6 +48,7 @@
   #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
@@ -55,6 +57,7 @@
   #:use-module (gnu packages disk)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages gawk)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
@@ -107,12 +110,19 @@
        ("libxslt" ,libxslt)
        ("w3m" ,w3m)
        ("xmlto" ,xmlto)))
-    (propagated-inputs
-     `(("perl-file-mimeinfo" ,perl-file-mimeinfo) ; for mimeopen fallback
+    (inputs
+     `(("awk" ,gawk)
+       ("coreutils" ,coreutils)
+       ("grep" ,grep)
+       ("inetutils" ,inetutils) ; xdg-screensaver uses `hostname'
+       ("perl-file-mimeinfo" ,perl-file-mimeinfo) ; for mimeopen fallback
+       ("sed" ,sed)
        ("xprop" ,xprop) ; for Xfce detecting
        ("xset" ,xset))) ; for xdg-screensaver
     (arguments
      `(#:tests? #f   ; no check target
+       #:modules ((srfi srfi-26)
+                  ,@%gnu-build-system-modules)
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-hardcoded-paths
@@ -144,6 +154,21 @@
                                  "/manpages/docbook.xsl man")))
                (setenv "STYLESHEET"
                        (string-append xsldoc "/html/docbook.xsl"))
+               #t)))
+         (add-after 'install 'wrap-executables
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (with-directory-excursion (string-append out "/bin")
+                 (let ((path-ext
+                        (map (cute string-append <> "/bin")
+                             (cons out
+                                   (map (cute assoc-ref inputs <>)
+                                        '("awk" "coreutils" "grep" "inetutils"
+                                          "perl-file-mimeinfo" "sed" "xprop"
+                                          "xset"))))))
+                   (for-each (cute wrap-program <>
+                                   `("PATH" ":" prefix ,path-ext))
+                             (find-files "."))))
                #t))))))
     (home-page "https://www.freedesktop.org/wiki/Software/xdg-utils/")
     (synopsis "Freedesktop.org scripts for desktop integration")
