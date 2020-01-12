@@ -417,6 +417,46 @@ tour of all gnome components and allows the user to set them up.")
    (home-page "https://gitlab.gnome.org/GNOME/gnome-initial-setup")
    (license license:gpl2)))
 
+(define-public gnome-user-share
+  (package
+   (name "gnome-user-share")
+   (version "3.33.1")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/" name "/"
+                                (version-major+minor version) "/"
+                                name "-" version ".tar.xz"))
+            (sha256
+             (base32
+              "0lf790pyamdyj7180ils8vizjl8brxcg7jsm1iavfp9ay4wa8mz7"))))
+   (build-system meson-build-system)
+   (arguments
+    `(#:glib-or-gtk? #t
+      #:configure-flags
+       `("-Dsystemd=false"
+         ;; Enable nautilus extension for file sharing.
+         "-Dnautilus_extension=true")))
+   (native-inputs
+    `(("gettext" ,gettext-minimal)
+      ("glib:bin" ,glib "bin")
+      ("gobject-introspection" ,gobject-introspection)
+      ("gtk+:bin" ,gtk+ "bin")
+      ("pkg-config" ,pkg-config)
+      ("yelp-tools" ,yelp-tools)))
+   (inputs
+    `(("glib" ,glib)
+      ("gnome-bluetooth" ,gnome-bluetooth)
+      ("gtk+" ,gtk+)
+      ("libcanberra" ,libcanberra)
+      ("libnotify" ,libnotify)
+      ("nautilus" ,nautilus)))      ; For nautilus extension.
+   (synopsis "File sharing for GNOME desktop")
+   (description "GNOME User Share is a small package that binds together
+various free software projects to bring easy to use user-level file
+sharing to the masses.")
+   (home-page "https://gitlab.gnome.org/GNOME/gnome-user-share")
+   (license license:gpl2)))
+
 (define-public gnome-menus
   (package
     (name "gnome-menus")
