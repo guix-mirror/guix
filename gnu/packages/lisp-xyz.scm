@@ -3376,6 +3376,19 @@ client and server.")
      (build-system asdf-build-system/sbcl)
      (inputs
       `(("sbcl-lift" ,sbcl-lift)))
+     (arguments
+      `(#:phases
+        (modify-phases %standard-phases
+          (add-after 'check 'delete-test-results
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let ((test-results (string-append (assoc-ref outputs "out")
+                                                 "/share/common-lisp/"
+                                                 (%lisp-type) "-source"
+                                                 "/trivial-backtrace"
+                                                 "/test-results")))
+                (when (file-exists? test-results)
+                  (delete-file-recursively test-results)))
+              #t)))))
      (home-page "https://common-lisp.net/project/trivial-backtrace/")
      (synopsis "Portable simple API to work with backtraces in Common Lisp")
      (description

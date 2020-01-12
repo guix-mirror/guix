@@ -298,7 +298,7 @@ features to enable users to create their discs easily and quickly.")
 it easy to manage, install and generate color profiles
 in the GNOME desktop.")
    (home-page "https://gitlab.gnome.org/GNOME/gnome-color-manager")
-   (license license:gpl2)))
+   (license license:gpl2+)))
 
 (define-public gnome-online-miners
   (package
@@ -333,7 +333,7 @@ in the GNOME desktop.")
 go through your online content and index them locally in Tracker.
 It has miners for Facebook, Flickr, Google, ownCloud and SkyDrive.")
     (home-page "https://wiki.gnome.org/Projects/GnomeOnlineMiners")
-    (license license:gpl2)))
+    (license license:gpl2+)))
 
 (define-public libmediaart
   (package
@@ -385,7 +385,7 @@ extraction, and lookup for applications on the desktop.")
     (description "GNOME Menus contains the libgnome-menu library, the layout
 configuration files for the GNOME menu, as well as a simple menu editor.")
     (home-page "https://gitlab.gnome.org/GNOME/gnome-menus")
-    (license license:gpl2)))
+    (license license:lgpl2.0+)))
 
 (define-public deja-dup
   (package

@@ -7,7 +7,7 @@
 ;;; Copyright © 2016, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -168,7 +168,14 @@ This package provides the core library and elements.")
     (propagated-inputs
      `(("glib" ,glib)              ;required by gstreamer-sdp-1.0.pc
        ("gstreamer" ,gstreamer)    ;required by gstreamer-plugins-base-1.0.pc
-       ("orc" ,orc)))              ;required by gstreamer-audio-1.0.pc
+
+       ;; XXX: Do not enable Orc optimizations on ARM systems because
+       ;; it leads to two test failures.
+       ;; https://gitlab.freedesktop.org/gstreamer/gst-plugins-base/issues/683
+       ,@(if (string-prefix? "arm" (or (%current-target-system)
+                                       (%current-system)))
+             '()
+             `(("orc" ,orc)))))         ;required by gstreamer-audio-1.0.pc
     (inputs
      `(("cdparanoia" ,cdparanoia)
        ("pango" ,pango)

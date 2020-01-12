@@ -392,7 +392,14 @@ bool LocalStore::isActiveTempFile(const GCState & state,
 void LocalStore::deleteGarbage(GCState & state, const Path & path)
 {
     unsigned long long bytesFreed;
-    deletePath(path, bytesFreed);
+
+    /* When deduplication is on, store items always have at least two links:
+       the one at PATH, and one in /gnu/store/.links.  In that case, increase
+       bytesFreed when PATH has two or fewer links.  */
+    size_t linkThreshold =
+	(settings.autoOptimiseStore && isStorePath(path)) ? 2 : 1;
+
+    deletePath(path, bytesFreed, linkThreshold);
     state.results.bytesFreed += bytesFreed;
 }
 
@@ -419,13 +426,14 @@ void LocalStore::deletePathRecursive(GCState & state, const Path & path)
     }
 
     if (state.options.maxFreed != ULLONG_MAX) {
-	double fraction = state.results.bytesFreed + size
-	    / state.options.maxFreed;
+	auto freed = state.results.bytesFreed + state.bytesInvalidated;
+	double fraction = ((double) freed) / (double) state.options.maxFreed;
 	unsigned int percentage = (fraction > 1. ? 1. : fraction) * 100.;
 	printMsg(lvlInfo, format("[%1%%%] deleting '%2%'") % percentage % path);
     } else {
-	size_t total = (state.results.bytesFreed + size) / (1024 * 1024);
-	printMsg(lvlInfo, format("[%1% MiB] deleting '%2%'") % total % path);
+	auto freed = state.results.bytesFreed + state.bytesInvalidated;
+	freed /=  1024ULL * 1024ULL;
+	printMsg(lvlInfo, format("[%1% MiB] deleting '%2%'") % freed % path);
     }
 
     state.results.paths.insert(path);

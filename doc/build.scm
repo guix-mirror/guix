@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -409,6 +409,11 @@ makeinfo OPTIONS."
 
           (setvbuf (current-output-port) 'line)
           (setvbuf (current-error-port) 'line)
+
+          ;; 'makeinfo' looks for "htmlxref.cnf" in the current directory, so
+          ;; copy it right here.
+          (copy-file (string-append #$manual-source "/htmlxref.cnf")
+                     "htmlxref.cnf")
 
           (for-each (lambda (language)
                       (let* ((texi (language->texi-file-name language))

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2016, 2018 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2017, 2018 Mark H Weaver <mhw@netris.org>
@@ -460,9 +460,7 @@ specification.  These are the main features:
 ;; Deprecate the 'guile-json' alias to force the use 'guile-json-1' or
 ;; 'guile-json-3'.  In the future, we may reuse 'guile-json' as an alias for
 ;; 'guile-json-3'.
-(define-deprecated guile-json
-  guile-json-1
-  guile-json-1)
+(define-deprecated guile-json guile-json-1)
 (export guile-json)
 
 (define-public guile2.0-json

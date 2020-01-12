@@ -1030,6 +1030,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/jbig2dec-ignore-testtest.patch		\
   %D%/packages/patches/jfsutils-add-sysmacros.patch		\
   %D%/packages/patches/jfsutils-include-systypes.patch		\
+  %D%/packages/patches/jsoncpp-fix-inverted-case.patch		\
   %D%/packages/patches/kdbusaddons-kinit-file-name.patch	\
   %D%/packages/patches/libnftnl-dont-check-NFTNL_FLOWTABLE_SIZE.patch	\
   %D%/packages/patches/libvirt-create-machine-cgroup.patch	\
@@ -1456,9 +1457,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/vsearch-unbundle-cityhash.patch		\
   %D%/packages/patches/vte-CVE-2012-2738-pt1.patch			\
   %D%/packages/patches/vte-CVE-2012-2738-pt2.patch			\
-  %D%/packages/patches/wavpack-CVE-2018-6767.patch		\
-  %D%/packages/patches/wavpack-CVE-2018-7253.patch		\
-  %D%/packages/patches/wavpack-CVE-2018-7254.patch		\
   %D%/packages/patches/weasyprint-library-paths.patch		\
   %D%/packages/patches/websocketpp-fix-for-boost-1.70.patch	\
   %D%/packages/patches/wicd-bitrate-none-fix.patch		\

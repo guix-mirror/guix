@@ -10,7 +10,7 @@
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2018 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2018, 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
@@ -1040,3 +1040,30 @@ minisign uses a slightly different format to store secret keys.  Minisign
 signatures include trusted comments in addition to untrusted comments.
 Trusted comments are signed, thus verified, before being displayed.")
     (license license:isc)))
+
+(define-public libolm
+  (package
+    (name "libolm")
+    (version "3.1.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.matrix.org/git/olm")
+                    (commit version)))
+              (sha256
+               (base32
+                "06s7rw4a9vn35wzz7chxn54mp0sjgbpv2bzz9lq0g4hnzw33cjbi"))
+              (file-name (git-file-name name version))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "ctest" "build/tests"))))))
+    (build-system cmake-build-system)
+    (synopsis "Implementation of the olm and megolm cryptographic ratchets")
+    (description "The libolm library implements the Double Ratchet
+cryptographic ratchet.  It is written in C and C++11, and exposed as a C
+API.")
+    (home-page "https://matrix.org/docs/projects/other/olm/")
+    (license license:asl2.0)))
