@@ -31,7 +31,7 @@
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016, 2017, 2019 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2016, 2017, 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2016, 2017, 2018, 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
@@ -17312,3 +17312,25 @@ tests.")
 GSSAPI C libraries.  While it focuses on the Kerberos mechanism, it should
 also be useable with other GSSAPI mechanisms.")
     (license license:isc)))
+
+(define-public python-check-manifest
+  (package
+    (name "python-check-manifest")
+    (version "0.37")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "check-manifest" version))
+        (sha256
+         (base32
+          "0lk45ifdv2cpkl6ayfyix7jwmnxa1rha7xvb0ih5999k115wzqs4"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("git" ,git)))
+    (home-page "https://github.com/mgedmin/check-manifest")
+    (synopsis "Check MANIFEST.in in a Python source package for completeness")
+    (description "Python package can include a MANIFEST.in file to help with
+sending package files to the Python Package Index.  This package checks that
+file to ensure it completely and accurately describes your project.")
+    (license license:expat)))
