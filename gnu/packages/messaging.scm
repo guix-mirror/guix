@@ -173,13 +173,13 @@ end-to-end encryption.")
 (define-public bitlbee
   (package
     (name "bitlbee")
-    (version "3.5.1")
+    (version "3.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://get.bitlbee.org/src/bitlbee-"
                                   version ".tar.gz"))
               (sha256
-               (base32 "0sgsn0fv41rga46mih3fyv65cvfa6rvki8x92dn7bczbi7yxfdln"))))
+               (base32 "0zhhcbcr59sx9h4maf8zamzv2waya7sbsl7w74gbyilvy93dw5cz"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ;; Note: Change to 'check' for versions > 3.6.
