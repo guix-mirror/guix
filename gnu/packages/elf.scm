@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Mark Wielaard <mark@klomp.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,9 +55,10 @@
     (build-system gnu-build-system)
 
     ;; Separate programs because that's usually not what elfutils users want,
-    ;; and because they duplicate what Binutils provides.
+    ;; and because they duplicate what Binutils provides (but are named
+    ;; differently, using the eu- prefix and can be installed in parallel).
     (outputs '("out"                           ; libelf.so, elfutils/*.h, etc.
-               "bin"))                         ; ld, nm, objdump, etc.
+               "bin"))                         ; eu-nm, eu-objdump, etc.
 
     (arguments
      ;; Programs don't have libelf.so in their RUNPATH and libraries don't
@@ -84,11 +86,21 @@
     (native-inputs `(("m4" ,m4)))
     (inputs `(("zlib" ,zlib)))
     (home-page "https://sourceware.org/elfutils/")
-    (synopsis "Linker and ELF manipulation tools")
+    (synopsis "Collection of utilities and libraries to handle ELF files and
+DWARF data")
     (description
-     "This package provides command-line tools to manipulate binaries in the
-Executable and Linkable Format (@dfn{ELF}).  This includes @command{ld},
-@command{ar}, @command{objdump}, @command{addr2line}, and more.")
+     "Elfutils is a collection of utilities and libraries to read, create and
+modify Executable and Linkable Format (@dfn{ELF}) binary files, find and
+handle Debugging With Arbitrary Record Formats (@dfn{DWARF}) debug data,
+symbols, thread state and stacktraces for processes and core files on
+GNU/Linux.  Elfutils includes @file{libelf} for manipulating ELF files,
+@file{libdw} for inspecting DWARF data and process state and utilities like
+@command{eu-stack} (to show backtraces), @command{eu-nm} (for listing symbols
+from object files), @command{eu-size} (for listing the section sizes of an
+object or archive file), @command{eu-strip} (for discarding symbols),
+@command{eu-readelf} (to see the raw ELF file structures),
+@command{eu-elflint} (to check for well-formed ELF files),
+@command{eu-elfcompress} (to compress or decompress ELF sections), and more.")
 
     ;; Libraries are dual-licensed LGPLv3.0+ | GPLv2, and programs are GPLv3+.
     (license lgpl3+)))
