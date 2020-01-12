@@ -582,6 +582,44 @@ sharing to the masses.")
    (home-page "https://gitlab.gnome.org/GNOME/gnome-user-share")
    (license license:gpl2+)))
 
+(define-public libnma
+  (package
+   (name "libnma")
+   (version "1.8.26")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/" name "/"
+                                (version-major+minor version) "/"
+                                name "-" version ".tar.xz"))
+            (sha256
+             (base32
+              "1w9lld38risnk1krknfwln24kabdxnj274pyz4jhndphwigrshaf"))))
+   (build-system meson-build-system)
+   (arguments
+    `(#:glib-or-gtk? #t))
+   (native-inputs
+    `(("gettext" ,gettext-minimal)
+      ("glib:bin" ,glib "bin")
+      ("gtk-doc" ,gtk-doc)
+      ("gobject-introspection" ,gobject-introspection)
+      ("pkg-config" ,pkg-config)))
+   (inputs
+    `(("adwaita-icon-theme" ,adwaita-icon-theme)
+      ("gcr" ,gcr)
+      ("gtk+" ,gtk+)
+      ("iso-codes" ,iso-codes)
+      ("mobile-broadband-provider-info" ,mobile-broadband-provider-info)
+      ("network-manager" ,network-manager)))
+   (synopsis "Network Manager's applet library")
+   (description "Libnma is an applet library for Network Manager.  It was
+initially part of network-manager-applet and has now become a separate
+project.")
+   (home-page "https://gitlab.gnome.org/GNOME/libnma")
+
+   ;; Some files carry the "GPL-2.0+" SPDX identifier while others say
+   ;; "LGPL-2.1+".
+   (license license:gpl2+)))
+
 (define-public gnome-menus
   (package
     (name "gnome-menus")
