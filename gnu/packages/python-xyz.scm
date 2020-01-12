@@ -17375,3 +17375,25 @@ files.  These files are used to translate strings in android apps.")
     (description "This package provides pattern matching and various utilities
 for file systems paths.")
     (license license:expat)))
+
+(define-public python-iocapture
+  (package
+    (name "python-iocapture")
+    (version "0.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "iocapture" version))
+        (sha256
+         (base32
+          "1s3ywdr0l3kfrrqi079iv16g0rp75akkvx0j07vx9p5w10c0wrw6"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-flexmock" ,python-flexmock)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/oinume/iocapture")
+    (synopsis "stdout and stderr capture in Python")
+    (description "This package allows Python developpers to capture their standard
+output and standard error.")
+    (license license:expat)))
