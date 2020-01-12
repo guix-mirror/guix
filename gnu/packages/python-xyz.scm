@@ -17334,3 +17334,26 @@ also be useable with other GSSAPI mechanisms.")
 sending package files to the Python Package Index.  This package checks that
 file to ensure it completely and accurately describes your project.")
     (license license:expat)))
+
+(define-public python-android-stringslib
+  (package
+    (name "python-android-stringslib")
+    (version "0.1.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://framagit.org/tyreunom/python-android-strings-lib")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0gij55qzzq1h83kfpvhai1vf78kkhyvxa6l17m2nl24454lhfin4"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))
+    (home-page "https://framagit.org/tyreunom/python-android-strings-lib")
+    (synopsis "Android strings.xml support")
+    (description "Android Strings Lib provides support for android's strings.xml
+files.  These files are used to translate strings in android apps.")
+    (license license:expat)))
