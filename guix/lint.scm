@@ -300,6 +300,7 @@ of a package, and INPUT-NAMES, a list of package specifications such as
             "gobject-introspection"
             "googletest-source"
             "groff"
+            "gtk-doc"
             "help2man"
             "intltool"
             "itstool"
