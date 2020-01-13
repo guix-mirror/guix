@@ -335,6 +335,37 @@ It has miners for Facebook, Flickr, Google, ownCloud and SkyDrive.")
     (home-page "https://wiki.gnome.org/Projects/GnomeOnlineMiners")
     (license license:gpl2+)))
 
+(define-public gssdp
+  (package
+   (name "gssdp")
+   (version "1.2.2")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/" name "/"
+                                (version-major+minor version) "/"
+                                name "-" version ".tar.xz"))
+            (sha256
+             (base32
+              "195hi10vrsvh6i927mm6rm1ld5sxah3h5sr3bsjm90vb8lxrxfya"))))
+   (build-system meson-build-system)
+   (native-inputs
+    `(("gettext" ,gettext-minimal)
+      ("glib:bin" ,glib "bin")
+      ("gobject-introspection" ,gobject-introspection)
+      ("gtk-doc" ,gtk-doc)
+      ("pkg-config" ,pkg-config)
+      ("vala" ,vala)))
+   (inputs
+    `(("gtk+" ,gtk+)
+      ("libsoup" ,libsoup)))
+   (synopsis "GObject-based API over @acronym{SSDP, Simple Service Discovery
+Protocol} for GNOME")
+   (description "This package provides a library to handle resource discovery
+and announcement over @acronym{SSDP, Simple Service Discovery Protocol} and
+a debugging tool, @command{gssdp-device-sniffer}.")
+   (home-page "https://gitlab.gnome.org/GNOME/gssdp")
+   (license license:lgpl2.0+)))
+
 (define-public libmediaart
   (package
     (name "libmediaart")
