@@ -14,6 +14,7 @@
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Mike Rosset <mike.rosset@gmail.com>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -363,6 +364,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
     (build-system gnu-build-system)
     (propagated-inputs
      `(("mesa" ,mesa)
+       ;; Use which the package, not the function
        ("which" ,(@ (gnu packages base) which))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -407,6 +409,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ("xcb-util-keysyms" ,xcb-util-keysyms)
        ("xcb-util-renderutil" ,xcb-util-renderutil)
        ("xcb-util-wm" ,xcb-util-wm)
+       ("xdg-utils" ,xdg-utils)
        ("zlib" ,zlib)))
     (native-inputs
      `(("bison" ,bison)
@@ -427,6 +430,14 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                             "mkspecs/features/qt_functions.prf"
                             "qmake/library/qmakebuiltins.cpp")
                           (("/bin/sh") (which "sh")))
+             #t))
+         (add-after 'configure 'patch-xdg-open
+           (lambda _
+             (substitute* '("src/platformsupport/services/genericunix/qgenericunixservices.cpp")
+                          (("^.*const char \\*browsers.*$" all)
+                           (string-append "*browser = QStringLiteral(\""
+                                          (which "xdg-open")
+                                          "\"); return true; \n" all)))
              #t))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
