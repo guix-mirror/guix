@@ -78,7 +78,7 @@
 (define-public ruby
   (package
     (name "ruby")
-    (version "2.5.3")
+    (version "2.6.5")
     (source
      (origin
        (method url-fetch)
@@ -87,7 +87,7 @@
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "0vrhrw7kcz9mg0jkqnihkcxqy5k05v8k1j0y2735z8wfk8sx1j8w"))
+         "0qhsw2mr04f3lqinkh557msr35pb5rdaqy4vdxcj91flgxqxmmnm"))
        (modules '((guix build utils)))
        (snippet `(begin
                    ;; Remove bundled libffi
@@ -118,8 +118,9 @@
      `(("readline" ,readline)
        ("openssl" ,openssl)
        ("libffi" ,libffi)
-       ("gdbm" ,gdbm)
-       ("zlib" ,zlib)))
+       ("gdbm" ,gdbm)))
+    (propagated-inputs
+     `(("zlib" ,zlib)))
     (native-search-paths
      (list (search-path-specification
             (variable "GEM_PATH")
