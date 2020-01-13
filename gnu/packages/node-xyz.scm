@@ -22,6 +22,27 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system node))
 
+(define-public node-color-name
+  (package
+    (name "node-color-name")
+    (version "1.1.3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/colorjs/color-name")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "09rbmj16nfwcwkhrybqxyy66bkrs50vpw6hkdqqb14l3gsyxpr74"))))
+    (build-system node-build-system)
+    (home-page "https://github.com/colorjs/color-name")
+    (synopsis "JSON with CSS color names")
+    (description
+     "This package provides a JSON list with color names and their values.")
+    (license license:expat)))
+
 (define-public node-env-variable
   (package
     (name "node-env-variable")
