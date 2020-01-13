@@ -288,14 +288,14 @@ without requiring the source code to be rewritten.")
   (package
     (inherit guile-2.2)
     (name "guile-next")
-    (version "2.9.8")
+    (version "2.9.9")
     (source (origin
               (inherit (package-source guile-2.2))
               (uri (string-append "ftp://alpha.gnu.org/gnu/guile/guile-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "09icv9ymdb7hchn34c32s7x8ycilqj74mirmi4b3bm5zp1izd32a"))))
+                "0s99zzdzj29fb42q5fwn7vqg9k7y9ppq9vkv4p39zr93z8694wdz"))))
     (native-search-paths
      (list (search-path-specification
             (variable "GUILE_LOAD_PATH")
