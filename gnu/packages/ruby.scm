@@ -133,7 +133,7 @@ a focus on simplicity and productivity.")
 (define-public ruby-2.4
   (package
     (inherit ruby)
-    (version "2.4.3")
+    (version "2.4.9")
     (source
      (origin
        (method url-fetch)
@@ -142,8 +142,7 @@ a focus on simplicity and productivity.")
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "0l9bv67dgsphk42lmiskhrnh47hbyj6rfg2rcjx22xivpx07srr3"))
-       (patches (search-patches "ruby-rubygems-276-for-ruby24.patch"))
+         "0546ymj2h3iai679fvx17bb2hksrqyhh22llxgz8fwggac100khc"))
        (modules '((guix build utils)))
        (snippet `(begin
                    ;; Remove bundled libffi
