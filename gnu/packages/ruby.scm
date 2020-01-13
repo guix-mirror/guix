@@ -2292,14 +2292,16 @@ using Net::HTTP, supporting reconnection and retry according to RFC 2616.")
 (define-public ruby-power-assert
   (package
     (name "ruby-power-assert")
-    (version "0.2.7")
+    (version "1.1.5")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "power_assert" version))
               (sha256
                (base32
-                "0ka6w71lcan4wgf111xi3pcn9ma9lhakv31jg8w007nwzi0xfjbi"))))
+                "1dii0wkfa0jm8sk9b20zl1z4980dmrjh0zqnii058485pp3ws10s"))))
     (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f))                    ; No included tests
     (native-inputs
      `(("bundler" ,bundler)))
     (synopsis "Assert library with descriptive assertion messages")
