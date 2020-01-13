@@ -7460,17 +7460,17 @@ in standard Ruby syntax.")
     (home-page "https://github.com/ruby/rake")
     (license license:expat)))
 
-(define-public ruby-childprocess-0.6
+(define-public ruby-childprocess
   (package
     (name "ruby-childprocess")
-    (version "0.6.3")
+    (version "0.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "childprocess" version))
        (sha256
         (base32
-         "1p3f43scdzx9zxmy2kw5zsc3az6v46nq4brwcxmnscjy4w4racbv"))))
+         "0a61922kmvcxyj5l70fycapr87gz1dzzlkfpq85rfqk5vdh3d28p"))))
     (build-system ruby-build-system)
     (arguments
      `(#:tests? #f))
@@ -7484,19 +7484,6 @@ in standard Ruby syntax.")
 programs running in the background, in Ruby.")
     (home-page "http://github.com/enkessler/childprocess")
     (license license:expat)))
-
-(define-public ruby-childprocess
-  (package
-    (inherit ruby-childprocess-0.6)
-    (name "ruby-childprocess")
-    (version "0.9.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (rubygems-uri "childprocess" version))
-       (sha256
-        (base32
-         "0a61922kmvcxyj5l70fycapr87gz1dzzlkfpq85rfqk5vdh3d28p"))))))
 
 (define-public ruby-public-suffix
   (package
