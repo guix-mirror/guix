@@ -4584,7 +4584,7 @@ a native C extension.")
 (define-public ruby-listen
   (package
     (name "ruby-listen")
-    (version "3.1.5")
+    (version "3.2.0")
     (source
      (origin
        ;; The gem does not include a Rakefile, so fetch from the Git
@@ -4596,7 +4596,7 @@ a native C extension.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1hqmkfa9f2xb5jlvqbafdxjd5ax75jm8gqj5nh3k22xq0kacsvgg"))))
+         "1hkp1g6hk5clsmbd001gkc12ma6s459x820piajyasv61m87if24"))))
     (build-system ruby-build-system)
     (arguments
      `(#:test-target "spec"
