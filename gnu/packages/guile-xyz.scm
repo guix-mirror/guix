@@ -783,6 +783,12 @@ convenient nested tree operations.")
 messaging library.")
       (license license:gpl3+))))
 
+(define-public guile3.0-simple-zmq
+  (package
+    (inherit guile-simple-zmq)
+    (name "guile3.0-simple-zmq")
+    (native-inputs `(("guile" ,guile-next)))))
+
 (define-public jupyter-guile-kernel
   (let ((commit "a7db9245a886e104138474df46c3e88b95cff629")
         (revision "1"))
