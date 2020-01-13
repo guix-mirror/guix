@@ -90,3 +90,25 @@ user-land JavaScript.")
     (description "Thix package provides a node.js port of the Mersenne Twister
 random number generator.")
     (license license:bsd-3)))
+
+(define-public node-statsd-parser
+  (package
+    (name "node-statsd-parser")
+    (version "0.0.4")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/dscape/statsd-parser")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "049rnczsd6pv6bk282q4w72bhqc5cs562djgr7yncy7lk0wzq5j3"))))
+    (build-system node-build-system)
+    (arguments '(#:tests? #f)) ; No tests.
+    (home-page "https://github.com/dscape/statsd-parser")
+    (synopsis "Streaming parser for the statsd protocol")
+    (description "This package provides a streaming parser for the statsd
+protocol used in @code{node-lynx}.")
+    (license license:asl2.0)))
