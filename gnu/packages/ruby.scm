@@ -7463,14 +7463,14 @@ in standard Ruby syntax.")
 (define-public ruby-childprocess
   (package
     (name "ruby-childprocess")
-    (version "0.9.0")
+    (version "3.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "childprocess" version))
        (sha256
         (base32
-         "0a61922kmvcxyj5l70fycapr87gz1dzzlkfpq85rfqk5vdh3d28p"))))
+         "1ic028k8xgm2dds9mqnvwwx3ibaz32j8455zxr9f4bcnviyahya5"))))
     (build-system ruby-build-system)
     (arguments
      `(#:tests? #f))
@@ -7482,7 +7482,7 @@ in standard Ruby syntax.")
     (synopsis "Control external programs running in the background, in Ruby")
     (description "@code{childprocess} provides a gem to control external
 programs running in the background, in Ruby.")
-    (home-page "http://github.com/enkessler/childprocess")
+    (home-page "https://github.com/enkessler/childprocess")
     (license license:expat)))
 
 (define-public ruby-public-suffix
