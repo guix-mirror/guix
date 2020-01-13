@@ -67,3 +67,26 @@
     (description "This package provides long stacktraces for V8 implemented in
 user-land JavaScript.")
     (license license:expat))) ; in README
+
+(define-public node-mersenne
+  (package
+    (name "node-mersenne")
+    (version "0.0.4")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/jwatte/node-mersenne")
+               ;; The actual release lacks a git tag.
+               (commit "f9fa01694ee49d6ae6ff9d90cfda594bddd3ccef")))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "034iaiq2pdqn342p2404cpz364g282d2hkp9375hysnh9i968wbb"))))
+    (build-system node-build-system)
+    (arguments '(#:tests? #f)) ; No tests.
+    (home-page "http://www.enchantedage.com/node-mersenne")
+    (synopsis "Node.js module for generating Mersenne Twister random numbers")
+    (description "Thix package provides a node.js port of the Mersenne Twister
+random number generator.")
+    (license license:bsd-3)))
