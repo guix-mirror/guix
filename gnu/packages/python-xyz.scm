@@ -17172,3 +17172,32 @@ and cuts down boilerplate code when testing libraries for asyncio.")
     (description
      "@code{aionotify} is a simple, asyncio-based inotify library.")
     (license license:bsd-3)))
+
+(define-public python-forbiddenfruit
+  (package
+    (name "python-forbiddenfruit")
+    (version "0.1.3")
+    (source
+     (origin
+       ;; Source tarball on PyPi lacks Makefile that builds and runs tests
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/clarete/forbiddenfruit")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1fp2xvdqpi910j9r3q68x38phpxbm700gjdi2m2j5gs91xdnyyh2"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "make" "SKIP_DEPS=1"))))))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-coverage" ,python-coverage)))
+    (home-page "https://github.com/clarete/forbiddenfruit")
+    (synopsis "Patch python built-in objects")
+    (description "This project allows Python code to extend built-in types.")
+    (license (list license:gpl3+ license:expat))))
