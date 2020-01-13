@@ -643,6 +643,12 @@ using Guile's foreign function interface.")
      "Guile-colorized provides you with a colorized REPL for GNU Guile.")
     (license license:gpl3+)))
 
+(define-public guile3.0-colorized
+  (package
+    (inherit guile-colorized)
+    (name "guile3.0-colorized")
+    (native-inputs `(("guile" ,guile-next)))))
+
 (define-public guile-pfds
   (package
     (name "guile-pfds")
