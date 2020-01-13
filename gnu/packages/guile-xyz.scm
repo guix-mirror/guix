@@ -996,7 +996,20 @@ format.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1w7qy4dw1f4bx622l6hw8mv49sf1ha8kch8j4nganyk8fj0wn695"))))
+                "1w7qy4dw1f4bx622l6hw8mv49sf1ha8kch8j4nganyk8fj0wn695"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Allow builds with Guile 3.0.
+                  (substitute* "configure.ac"
+                    (("^GUILE_PKG.*")
+                     "GUILE_PKG([3.0 2.2 2.0])\n"))
+
+                  ;; Remove "guile.m4" since it contains an obsolete version
+                  ;; of 'GUILE_PKG' that doesn't work with development
+                  ;; versions such as 2.9.
+                  (delete-file "m4/guile.m4")
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
@@ -1015,6 +1028,13 @@ color text mode, widget based user interfaces.  The bindings are written in pure
 Scheme by using Guile’s foreign function interface.")
     (home-page "https://gitlab.com/mothacehe/guile-newt")
     (license license:gpl3+)))
+
+(define-public guile3.0-newt
+  (package
+    (inherit guile-newt)
+    (name "guile3.0-newt")
+    (inputs `(("guile" ,guile-next)
+              ,@(alist-delete "guile" (package-inputs guile-newt))))))
 
 (define-public guile-mastodon
   (package
