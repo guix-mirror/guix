@@ -4690,7 +4690,7 @@ for application developers.")
 (define-public grilo-plugins
   (package
     (name "grilo-plugins")
-    (version "0.3.3")
+    (version "0.3.10")
     (source
      (origin
        (method url-fetch)
@@ -4699,44 +4699,41 @@ for application developers.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "172vr1y98d2mzlmg5akjn4ibrcj3gh22cwnb3cv9rvvzhj3yhrpy"))))
-    (build-system gnu-build-system)
+         "0jldaixc4kzycn5v8ixkjld1n0z3dp0l1p3vchgdwpvdvc7kcfw0"))))
+    (build-system meson-build-system)
     (native-inputs
-     `(("glib:bin" ,glib "bin")     ; for glib-mkenums and glib-genmarshal
-       ("intltool" ,intltool)
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gtk+:bin" ,gtk+ "bin")
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)))
+    ;; TODO: ahavi, gstreamer
     (inputs
      `(("grilo" ,grilo)
-       ("glib" ,glib)
-       ("libxml2" ,libxml2)
-       ("sqlite" ,sqlite)
+       ;("gmime" ,gmime) ; unused
+       ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
        ("gom" ,gom)
-       ;; XXX TODO: Add oauth
-       ;; XXX TODO: Add goa
-       ;; XXX TODO: Add gdata (e.g. needed for youtube plugin)
-       ;; XXX TODO: Add lua (needs help finding it)
+       ;("gssdp" ,gssdp) ; unused
+       ;("gupnp" ,gupnp) ; unused
+       ;("gupnp-av" ,gupnp-av) ; unused
        ("json-glib" ,json-glib)
        ("avahi" ,avahi)
-       ("gmime" ,gmime)
+       ("libgdata" ,libgdata)
+       ("libmediaart" ,libmediaart)
+       ;("librest" ,rest) ; unused
        ("libsoup" ,libsoup)
-       ("libarchive" ,libarchive)
-       ("totem-pl-parser" ,totem-pl-parser)))
+       ("totam-pl-parser" ,totem-pl-parser)
+       ("tracker" ,tracker))) ; unused because it's too old
     (arguments
-     `(#:make-flags (list (string-append "GRL_PLUGINS_DIR="
-                                         %output
-                                         "/lib/grilo-"
-                                         ,(version-major+minor version)))
-       ;; XXX FIXME: Try to get the test suite working.  It appears to require
-       ;; a working system dbus.  Inside the build container, all tests fail
-       ;; with: "assertion failed: (source)".  Outside of the build container,
-       ;; most tests succeed.
-       #:tests? #f))
+     `(#:glib-or-gtk? #t
+       ;;Disable lua-factory as it needs missing dependencies
+       #:configure-flags '("-Denable-lua-factory=no")))
     (home-page "https://live.gnome.org/Grilo")
     (synopsis "Plugins for the Grilo media discovery library")
     (description
      "Grilo is a framework focused on making media discovery and browsing easy
-for application developers.")
+for application developers.  This package provides plugins for common media
+discovery protocols.")
     (license license:lgpl2.1+)))
 
 (define-public totem
