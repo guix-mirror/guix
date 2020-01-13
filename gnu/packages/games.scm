@@ -3189,45 +3189,8 @@ http://lavachat.symlynx.com/unix/")
     (license license:gpl2+)))
 
 (define-public red-eclipse
-  (let ((release "1.6.0")
-        (revision 0)
-        (data-sources
-         '(("acerspyro" "12b0bngl7hlxw4iwdbn99jp081yl6z1ic0s788nm349drbr2pck8")
-           ("actors" "0x7qqx67679q6ark9zz02skwhzgabid69kwi6zmhfpfgicn4927r")
-           ("appleflap" "08xslwqfqz3j4m03pv5ry2gdzj5k2ns51z8n6sln3sa94i9x8qkm")
-           ("blendbrush" "18zf5i2ax4p14x4c9nhk9fq6l1xgbxw62gm72vx59vbfdpjrw3cg")
-           ("caustics" "172fxwx7kbz5nmbjq98kr52ips505wb99fibgnpg8cj02syrya8k")
-           ("crosshairs" "14w8ysqzdsx9bzpfbl700jzngbh14rdghhjdf6zd6jlkvrl6754r")
-           ("dziq" "056imqszvp90j7cgz52ly0f31px64gsrmvm9k2c78ldbx87jnhc3")
-           ("elyvisions" "1bsgr0gr7njydj8fqclh0a27lrsyic3xfd5a4vwggw7g54azpgk2")
-           ("fonts" "00ibisza1qci0ghf2rynyf28l6r3nqhfzjf80k6gg76q4v7p1myx")
-           ("freezurbern" "07l9ldk9b82f12c13wcg5xxdf15bw0yjxk3vvk8v3ygrl2mwksyr")
-           ("john" "1jdmwkrdi5b9pivkm22rxhmkk1db9dx6l54wzcc23cvdz04ij93k")
-           ("jojo" "0f7kjy43fbk9kw8fip6bbw4gn3pryh0fndlahjfkaysrx98krdj3")
-           ("jwin" "0nc8dndnpqk2ad6316a8k6kgzsrkpwvk8s4gyh7aqfi4axfclril")
-           ("luckystrike" "04jiipqahphmvz5cd74dygr62dlvv6l4iglb8hzh4pp8frhls8bq")
-           ("maps" "0an46ipjvw4h0nxvb6qvnzp1cdkzlkiinqz4zh9lmxy1ds0gclim")
-           ("mayhem" "15k10imm2wr6c6fq35n4r99k7kz7n9zdnjlw6dmdq6fba67i6sbc")
-           ("mikeplus64" "0v4wiiivm3829j4phlavy22n4c6k6ib9ixxpdz7r6ysg5cdkaw33")
-           ("misc" "13rfgwrlfhflz6inbkg3fypyf8im0m49sw112b17qrw2zgp8i1rz")
-           ("nieb" "0z0h9jdn2gkkjil3vsvwidb1p2k09pi5n3wjxza12hhvqmcs7q8f")
-           ("nobiax" "08bfp4q6gbfis18bp1h4d0hqssk79jc4fhyjxnv21dbam4v4mnkn")
-           ("particles" "1vsx3fgg19xggxfhz3vlrh6nqhmw7kl9kmxrvb2j84blp00vd6z2")
-           ("philipk" "14irscg80607i5k5l2ci0n9nwibvda2f3xsykgv96d0vldrp5n5a")
-           ("projectiles" "09bnfsrywirwgjm6d7ff5nicx6w6b7w9568x9pb5q0ncaps3l85s")
-           ("props" "1dlabbprlkif8af3daf9nbgcwgxiymvj0yiphqhlri8ylfy2vpz4")
-           ("skyboxes" "14bi3md5y47cvb9ybipdvksz40gqsqw2r0lh3zzqb4acq367w18y")
-           ("snipergoth" "0m8rvvy5n8n9pm0b5cqvzsxsw51mqk8m7s1h3qc849b38isliwq2")
-           ("sounds" "0ivf3w5bphz5pzzx6kwcb67vbly1l19cgv3s0cyp8n87afiqj5rd")
-           ("textures" "0qdmgx7zbcqnb9rrga2izr93p5inirczhddfxs504rsnv0v8vyxm")
-           ("torley" "05ppyhghq859cbbxzj3dnl9fcx3ghy04ds1pylypwg2hsxzbjwcd")
-           ("trak" "0g3vq86q91a3syli38lwc8ca4ychfwsmmqf85kqzfzyd627ybclm")
-           ("ulukai" "0asa5fz400impklcg6dy2f7jiaqfc1sn1c36fpg8jd01gw66lw93")
-           ("unnamed" "0rz5683j7sfwkcycfypbv4b0ihp0qwn9rzskfsabwc1s5g324917")
-           ("vanities" "13f18783rc8cjf22p61zr8m5g1migzlx05fzl8xnbjdkqq4cdyix")
-           ("vegetation" "1y5d97nfmvax7y4fr0y5v0c8zb1ajkqwx76kjd4qc9n4spdsi5sc")
-           ("weapons" "103g1dhxv5ffz4ddg2xcbshbgv9606chsbas3pzk6h9ybqsyjrqh")
-           ("wicked" "1884rk34a2dj83gz82rc4zh3ch0dyj5221hvsr0a5h60578i7yj6"))))
+  (let ((release "2.0.0")
+        (revision 0))
     (package
       (name "red-eclipse")
       (version (if (zero? revision)
@@ -3238,13 +3201,12 @@ http://lavachat.symlynx.com/unix/")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/red-eclipse/base.git")
-               (commit (string-append "v" release))))
+               (url "https://github.com/redeclipse/base.git")
+               (commit (string-append "v" release))
+               (recursive? #t))) ; for game data
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0qy9kmq21wc4bdhwifasxc5dv1y5c53sn7dfmyc5y3zyz8wjyij4"))
-         (patches
-          (search-patches "red-eclipse-remove-gamma-name-hack.patch"))))
+          (base32 "0sz0mqhwx8r9n4mk3qrxw420nlsm3y0n48gd0lazgd64lfqjh3ab"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f            ; no check target
@@ -3255,34 +3217,13 @@ http://lavachat.symlynx.com/unix/")
                                            (assoc-ref %outputs "out")))
          #:phases
          (modify-phases %standard-phases
-           (add-after 'unpack 'unpack-data
-             (lambda* (#:key inputs #:allow-other-keys)
-               (delete-file-recursively "data")
-               (mkdir "data")
-               (with-directory-excursion "data"
-                 (for-each (lambda (name)
-                             (copy-recursively (assoc-ref inputs name) name))
-                           (list ,@(map car data-sources))))
-               #t))
-           (add-after 'unpack-data 'add-store-data-package-path-as-default
+           (add-after 'unpack 'add-store-data-package-path-as-default
              (lambda* (#:key outputs #:allow-other-keys)
                (substitute* "src/engine/server.cpp"
-                 (("(else[[:space:]]*)((addpackagedir\\()\"data\"(\\);))"
-                   _
-                   else_part
-                   addpackagedir_original
-                   addpackagedir_open
-                   addpackagedir_close)
-                  (string-append else_part
-                                 "{ "
-                                 addpackagedir_open
-                                 "\""
+                 (("data = \"data\"")
+                  (string-append "data = \""
                                  (assoc-ref outputs "out")
-                                 "/share/redeclipse/data\""
-                                 addpackagedir_close
-                                 " "
-                                 addpackagedir_original
-                                 " }")))
+                                 "/share/redeclipse/data\"")))
                #t))
            (delete 'configure)  ; no configure script
            (add-after 'set-paths 'set-sdl-paths
@@ -3339,24 +3280,11 @@ exec -a \"$0\" ~a/.redeclipse_server_linux-real~%"
        `(("pkg-config" ,pkg-config)))
       (inputs
        `(("curl" ,curl)
+         ("freetype" ,freetype)
          ("glu" ,glu)
          ("sdl-union" ,(sdl-union (list sdl2
                                         sdl2-image
-                                        sdl2-mixer)))
-         ;; Create origin records for the many separate data packages.
-         ,@(map (match-lambda
-                  ((name hash)
-                   (list name
-                         (origin
-                           (method git-fetch)
-                           (uri
-                            (git-reference
-                             (url (string-append "https://github.com/"
-                                                 "red-eclipse/" name ".git"))
-                             (commit (string-append "v" release))))
-                           (sha256 (base32 hash))
-                           (file-name (git-file-name name version))))))
-                data-sources)))
+                                        sdl2-mixer)))))
       (home-page "http://redeclipse.net/")
       (synopsis "Arena shooter derived from the Cube 2 engine")
       (description
