@@ -397,6 +397,40 @@ for creating UPnP devices and control points, written in C using
    (home-page "https://gitlab.gnome.org/GNOME/gupnp")
    (license license:lgpl2.0+)))
 
+(define-public gupnp-dlna
+  (package
+   (name "gupnp-dlna")
+   (version "0.10.5")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/" name "/"
+                                (version-major+minor version) "/"
+                                name "-" version ".tar.xz"))
+            (sha256
+             (base32
+              "0spzd2saax7w776p5laixdam6d7smyynr9qszhbmq7f14y13cghj"))))
+   (build-system gnu-build-system)
+   (native-inputs
+    `(("gettext" ,gettext-minimal)
+      ("glib:bin" ,glib "bin")
+      ("gobject-introspection" ,gobject-introspection)
+      ("gtk-doc" ,gtk-doc)
+      ("libxml" ,libxml2)
+      ("pkg-config" ,pkg-config)
+      ("vala" ,vala)))
+   (inputs
+    `(("gstreamer" ,gstreamer)
+      ("gupnp" ,gupnp)))
+   (propagated-inputs
+    `(("gst-plugins-base" ,gst-plugins-base)
+      ("gst-plugins-good" ,gst-plugins-good)))
+   (synopsis "GUPnP DLNA for GNOME")
+   (description "This package provides a small utility library to
+support DLNA-related tasks such as media profile guessing, transcoding to a
+given profile, etc.  DLNA is a subset of UPnP A/V.")
+   (home-page "https://gitlab.gnome.org/GNOME/gupnp-dlna")
+   (license license:lgpl2.0+)))
+
 (define-public gupnp-av
   (package
    (name "gupnp-av")
