@@ -5783,7 +5783,7 @@ A modified copy of yajl is used, and included in the package.")
 (define-public ruby-yard
   (package
     (name "ruby-yard")
-    (version "0.9.16")
+    (version "0.9.20")
     (source
      (origin
        (method git-fetch)
@@ -5794,20 +5794,24 @@ A modified copy of yajl is used, and included in the package.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0a4r1pfs0ms4vlccsf1x2jckx35lqm8b8lh6rdjxqfr5fia5izpf"))))
+         "1v48zz8hzazrg79jksj9siys21d2axvzijvkxw2j42zh86syi1wi"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
+             ;; Delete the Gemfile to avoid errors relating to it
+             (delete-file "Gemfile")
              ;; $HOME needs to be set to somewhere writeable for tests to run
              (setenv "HOME" "/tmp")
              ;; Run tests without using 'rake' to avoid dependencies.
              (invoke "rspec"))))))
     (native-inputs
      `(("ruby-rspec" ,ruby-rspec)
-       ("ruby-rack" ,ruby-rack)))
+       ("ruby-rack" ,ruby-rack)
+       ("ruby-redcloth" ,ruby-redcloth)
+       ("ruby-asciidoc" ,ruby-asciidoctor)))
     (synopsis "Documentation generation tool for Ruby")
     (description
      "YARD is a documentation generation tool for the Ruby programming
