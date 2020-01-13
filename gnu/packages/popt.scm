@@ -62,8 +62,13 @@ line syntax.")
     (version "1.16")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://rpm5.org/files/popt/popt-"
-                                 version ".tar.gz"))
+             ;; The rpm5.org domain does not resolve since 2019-06-13, so we
+             ;; borrow Debians infrastructure for the source download.
+             (uri (list (string-append "https://deb.debian.org/debian/pool/main"
+                                       "/p/popt/popt_" version ".orig.tar.gz")
+                        ;; Keep the old URL around in case it reappears.
+                        (string-append "http://rpm5.org/files/popt/popt-"
+                                       version ".tar.gz")))
              (sha256
               (base32
                "1j2c61nn2n351nhj4d25mnf3vpiddcykq005w2h6kw79dwlysa77"))))
