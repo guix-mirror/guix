@@ -5441,14 +5441,14 @@ It is intended be used by all Cucumber implementations to parse
 (define-public ruby-aruba
   (package
     (name "ruby-aruba")
-    (version "0.14.8")
+    (version "0.14.14")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "aruba" version))
        (sha256
         (base32
-         "0zdd81l1lp0x78sxa6kkfqclpj5il3xl70nz05wqv2sfzzhqydxh"))))
+         "0l2mfpdxc03gdrbwc2hv4vdhjhqhfcdp6d02j05j64ncpi9srlqn"))))
     (build-system ruby-build-system)
     (arguments
      '(#:test-target "spec"
@@ -5480,11 +5480,7 @@ It is intended be used by all Cucumber implementations to parse
                ((".*cucumber.*") "\n")
                ((".*license_finder.*") "\n")
                ((".*rake.*") "gem 'rake'\n")
-               ((".*simplecov.*") "\n")
                ((".*relish.*") "\n"))
-             (substitute* "spec/spec_helper.rb"
-               ((".*simplecov.*") "")
-               (("^SimpleCov.*") ""))
              (substitute* "aruba.gemspec"
                (("spec\\.add\\_runtime\\_dependency 'cucumber'.*")
                 "spec.add_runtime_dependency 'cucumber'"))
@@ -5494,7 +5490,8 @@ It is intended be used by all Cucumber implementations to parse
     (native-inputs
      `(("bundler" ,bundler)
        ("ruby-rspec" ,ruby-rspec)
-       ("ruby-fuubar" ,ruby-fuubar)))
+       ("ruby-fuubar" ,ruby-fuubar)
+       ("ruby-simplecov" ,ruby-simplecov)))
     (propagated-inputs
      `(("ruby-childprocess" ,ruby-childprocess)
        ("ruby-contracts" ,ruby-contracts)
