@@ -7640,6 +7640,40 @@ associations for GNOME.")
    (home-page "https://gitlab.gnome.org/GNOME/libgovirt")
    (license license:gpl2+)))
 
+(define-public gnome-weather
+  (package
+   (name "gnome-weather")
+   (version "3.34.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/" name "/"
+                                (version-major+minor version) "/"
+                                name "-" version ".tar.xz"))
+            (sha256
+             (base32
+              "1g63xzs17i36if923b36k9fwbk0nqa5vz6zh1k6q2axrzhhpx1i4"))))
+   (build-system meson-build-system)
+   (native-inputs
+    `(("gettext" ,gettext-minimal)
+      ("glib:bin" ,glib "bin")
+      ("gobject-introspection" ,gobject-introspection)
+      ("gtk+:bin" ,gtk+ "bin")
+      ("pkg-config" ,pkg-config)))
+   (inputs
+    `( ;("adwaita-icon-theme" ,adwaita-icon-theme)
+      ("appstream-glib" ,appstream-glib)
+      ("geoclue" ,geoclue)
+      ("gdk-pixbuf" ,gdk-pixbuf)
+      ("gjs" ,gjs)
+      ("gnome-desktop" ,gnome-desktop)
+      ("libgweather" ,libgweather)))
+   (synopsis "Weather monitoring for GNOME desktop")
+   (description "GNOME Weather is a small application that allows you to
+monitor the current weather conditions for your city, or anywhere in the
+world.")
+   (home-page "https://wiki.gnome.org/Apps/Weather")
+   (license license:gpl2+)))
+
 (define-public gnome
   (package
     (name "gnome")
