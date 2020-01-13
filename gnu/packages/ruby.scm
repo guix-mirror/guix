@@ -4108,6 +4108,16 @@ utilities for Ruby.")
         (base32
          "09dpbrih054mn42flbbcdpzk2727mzfvjrgqb12zdafhx7p9rrzp"))))
     (build-system ruby-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-safe-tests
+           (lambda _
+             (substitute* "test/test_utils.rb"
+               (("def safe_test\\(options = \\{\\}\\)")
+                 "def safe_test(options = {})
+      skip('The Guix build environment has an unsafe load path')"))
+             #t)))))
     (propagated-inputs
      `(("ruby-thread-safe" ,ruby-thread-safe)))
     (synopsis "Time zone library for Ruby")
