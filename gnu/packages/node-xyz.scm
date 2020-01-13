@@ -44,3 +44,26 @@
 @code{process.env}, @code{window.name}, @code{location.hash} and
 @code{localStorage} fallbacks.")
     (license license:expat)))
+
+
+(define-public node-long-stack-traces
+  (package
+    (name "node-long-stack-traces")
+    (version "0.1.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/tlrobinson/long-stack-traces")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0famwsyc6xawi30v25zi65d8fhbvlvh976bqydf1dqn5gz200cl3"))))
+    (build-system node-build-system)
+    (arguments '(#:tests? #f)) ; No tests.
+    (home-page "https://github.com/tlrobinson/long-stack-traces")
+    (synopsis "Long stacktraces implemented in user-land JavaScript")
+    (description "This package provides long stacktraces for V8 implemented in
+user-land JavaScript.")
+    (license license:expat))) ; in README
