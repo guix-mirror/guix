@@ -17201,3 +17201,25 @@ and cuts down boilerplate code when testing libraries for asyncio.")
     (synopsis "Patch python built-in objects")
     (description "This project allows Python code to extend built-in types.")
     (license (list license:gpl3+ license:expat))))
+
+(define-public python-shouldbe
+  (package
+    (name "python-shouldbe")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "shouldbe" version))
+       (sha256
+        (base32
+         "16zbvjxf71dl4yfbgcr6idyim3mdrfvix1dv8b95p0s9z07372pj"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-forbiddenfruit" ,python-forbiddenfruit)))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/directxman12/should_be")
+    (synopsis "Python Assertion Helpers inspired by Shouldly")
+    (description
+     "Python Assertion Helpers inspired by Shouldly.")
+    (license license:isc)))
