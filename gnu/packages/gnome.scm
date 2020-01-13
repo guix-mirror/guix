@@ -580,7 +580,7 @@ tour of all gnome components and allows the user to set them up.")
 various free software projects to bring easy to use user-level file
 sharing to the masses.")
    (home-page "https://gitlab.gnome.org/GNOME/gnome-user-share")
-   (license license:gpl2)))
+   (license license:gpl2+)))
 
 (define-public gnome-menus
   (package
