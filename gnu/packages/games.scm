@@ -3828,16 +3828,16 @@ a style similar to the original Super Mario games.")
 (define-public tintin++
   (package
     (name "tintin++")
-    (version "2.01.7")
+    (version "2.02.00")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/tintin/TinTin++ Source Code/"
-                           (version-major+minor version)
+                           (string-drop-right version 1)
                            "/tintin-" version ".tar.gz"))
        (sha256
         (base32
-         "033n84pyxml3n3gd4dq0497n9w331bnrr1gppwipz9ashmq8jz7v"))))
+         "02qmbhzhh2sdy5b37v54gihs9k4bxmlz3j96gyx7icvx2grkbg5i"))))
     (inputs
      `(("gnutls" ,gnutls)
        ("pcre" ,pcre)
@@ -3853,14 +3853,14 @@ a style similar to the original Super Mario games.")
              (chdir "src")
              #t)))))
     (build-system gnu-build-system)
-    (home-page "http://tintin.sourceforge.net/")
+    (home-page "https://tintin.mudhalla.net/")
     (synopsis "MUD client")
     (description
      "TinTin++ is a MUD client which supports MCCP (Mud Client Compression
 Protocol), MMCP (Mud Master Chat Protocol), xterm 256 colors, most TELNET
 options used by MUDs, as well as those required to login via telnet on
 Linux / Mac OS X servers, and an auto mapper with a VT100 map display.")
-    (license license:gpl2+)))
+    (license license:gpl3+)))
 
 (define-public laby
   (package
