@@ -7615,6 +7615,34 @@ associations for GNOME.")
     (license license:gpl3+)
     (home-page #f)))
 
+(define-public libgovirt
+  (package
+   (name "libgovirt")
+   (version "0.3.6")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/" name "/"
+                                (version-major+minor version) "/"
+                                name "-" version ".tar.xz"))
+            (sha256
+             (base32
+              "19pb71pag3vsi83kbv8h08kimwym4hpw36kjl6a5ik5nk50mc8sg"))))
+   (build-system glib-or-gtk-build-system)
+   (native-inputs
+    `(("gettext" ,gettext-minimal)
+      ("glib:bin" ,glib "bin")
+      ("gobject-introspection" ,gobject-introspection)
+      ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+      ("gtk+:bin" ,gtk+ "bin")
+      ("pkg-config" ,pkg-config)))
+   (inputs
+    `(("glib-networking" ,glib-networking) ; GIO plugin--for the tests
+      ("librest" ,rest)))
+   (synopsis "GoVirt Library")
+   (description "GoVirt is a GObject wrapper for the oVirt REST API.")
+   (home-page "https://gitlab.gnome.org/GNOME/libgovirt")
+   (license license:gpl2+)))
+
 (define-public gnome
   (package
     (name "gnome")
