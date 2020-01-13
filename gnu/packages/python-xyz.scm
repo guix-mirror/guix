@@ -17258,3 +17258,34 @@ environments, and running Python unit tests inside those environments.  It is
 based on the file of the same name found alongside the MIT Kerberos 5 unit
 tests.")
     (license license:isc)))
+
+(define-public python-gssapi
+  (package
+    (name "python-gssapi")
+    (version "1.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "gssapi" version))
+       (sha256
+        (base32
+         "1gymg4asvwrz7y13qpwp2s5g8qwq179d72gkj09q6bfcgs82l5wr"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-decorator" ,python-decorator)
+       ("python-six" ,python-six)))
+    (inputs
+     `(("mit-krb5" ,mit-krb5)))
+    ;; for tests
+    (native-inputs
+     `(("python-shouldbe" ,python-shouldbe)
+       ("python-parameterized" ,python-parameterized)
+       ("python-k5test" ,python-k5test)
+       ("python-nose" ,python-nose)))
+    (home-page "https://github.com/pythongssapi/python-gssapi")
+    (synopsis "Python GSSAPI Wrapper")
+    (description
+     "Python-GSSAPI provides both low-level and high level wrappers around the
+GSSAPI C libraries.  While it focuses on the Kerberos mechanism, it should
+also be useable with other GSSAPI mechanisms.")
+    (license license:isc)))
