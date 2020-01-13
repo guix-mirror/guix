@@ -112,6 +112,7 @@
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
@@ -17222,4 +17223,38 @@ and cuts down boilerplate code when testing libraries for asyncio.")
     (synopsis "Python Assertion Helpers inspired by Shouldly")
     (description
      "Python Assertion Helpers inspired by Shouldly.")
+    (license license:isc)))
+
+(define-public python-k5test
+  (package
+    (name "python-k5test")
+    (version "0.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "k5test" version))
+       (sha256
+        (base32
+         "1lqp3jgfngyhaxjgj3n230hn90wsylwilh120yjf62h7b1s02mh8"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ;; `which`, `kadmin.local` binaries called inside library
+       ("which" ,which)
+       ("mit-krb5" ,mit-krb5)))
+    (native-inputs `(("mit-krb5" ,mit-krb5)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-paths
+           (lambda* _
+             (substitute* "k5test/realm.py"
+               (("'kadmin_local'") "'kadmin.local'")))))))
+    (home-page "https://github.com/pythongssapi/k5test")
+    (synopsis "Library for setting up self-contained Kerberos 5 environments")
+    (description
+     "@code{k5test} is a library for setting up self-contained Kerberos 5
+environments, and running Python unit tests inside those environments.  It is
+based on the file of the same name found alongside the MIT Kerberos 5 unit
+tests.")
     (license license:isc)))
