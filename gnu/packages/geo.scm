@@ -36,6 +36,7 @@
   #:use-module (guix build-system go)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system qt)
   #:use-module (guix build-system scons)
   #:use-module (guix build-system r)
   #:use-module (guix download)
@@ -1379,3 +1380,82 @@ using the dataset of topographical information collected by
 @url{https://www.OpenStreetMap.org}.")
    (home-page "https://www.routino.org/")
    (license license:agpl3+)))
+
+(define-public qmapshack
+  (package
+    (name "qmapshack")
+    (version "1.14.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Maproom/qmapshack.git")
+             (commit (string-append "V_" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "07c2hrq9sn456w7l3gdr599rmjfv2k6mh159zza7p1py8r7ywksa"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("gdal" ,gdal)
+       ("libjpeg-turbo" ,libjpeg-turbo)
+       ("proj" ,proj)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtlocation" ,qtlocation)
+       ("qtwebchannel" ,qtwebchannel)
+       ("qtwebengine" ,qtwebengine)
+       ("quazip" ,quazip)
+       ("routino" ,routino)
+       ("sqlite" ,sqlite-with-column-metadata) ; See wrap phase
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-cmake-modules
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+               (("find_package\\(Qt5PrintSupport        REQUIRED\\)" all)
+                (string-append all "\nfind_package(Qt5Positioning REQUIRED)")))
+             (substitute* "cmake/Modules/FindROUTINO.cmake"
+               (("/usr/local")
+                (assoc-ref inputs "routino")))
+             ;; The following fixes are included as patches in the sources
+             ;; of QMapShack, but they are not applied by default, for
+             ;; some reason...
+             (invoke "patch" "-p1" "-i" "FindPROJ4.patch")
+             (invoke "patch" "-p1" "-i" "FindQuaZip5.patch")
+             #t))
+         (add-after 'install 'wrap
+           ;; The program fails to run with the error:
+           ;;   undefined symbol: sqlite3_column_table_name16
+           ;; Forcing the program to use sqlite-with-column-metadata instead
+           ;; of sqlite using LD_LIBRARY_PATH solves the problem.
+           ;;
+           ;; The program also fails to find the QtWebEngineProcess program,
+           ;; so we set QTWEBENGINEPROCESS_PATH to help it.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin"))
+                   (qtwebengineprocess (string-append
+                                        (assoc-ref inputs "qtwebengine")
+                                        "/lib/qt5/libexec/QtWebEngineProcess"))
+                   (sqlite-lib (string-append (assoc-ref inputs "sqlite")
+                                              "/lib")))
+               (for-each (lambda (program)
+                           (wrap-program program
+                             `("LD_LIBRARY_PATH" ":" prefix (,sqlite-lib))
+                             `("QTWEBENGINEPROCESS_PATH" =
+                               (,qtwebengineprocess))))
+                         (find-files bin ".*")))
+             #t)))))
+    (synopsis "GPS mapping application")
+    (description
+     "QMapShack can be used to plan your next outdoor trip or to visualize and
+archive all the GPS recordings of your past trips.  It is the successor of the
+QLandkarte GT application.")
+    (home-page "https://github.com/Maproom/qmapshack/wiki")
+    (license license:gpl3+)))
