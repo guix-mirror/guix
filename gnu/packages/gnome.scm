@@ -366,6 +366,37 @@ a debugging tool, @command{gssdp-device-sniffer}.")
    (home-page "https://gitlab.gnome.org/GNOME/gssdp")
    (license license:lgpl2.0+)))
 
+(define-public gupnp
+  (package
+   (name "gupnp")
+   (version "1.2.2")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/" name "/"
+                                (version-major+minor version) "/"
+                                name "-" version ".tar.xz"))
+            (sha256
+             (base32
+              "12cr3isww4zl0d4himpd2fhl2wmy3jh8sbxp4snp51sw7savv04s"))))
+   (build-system meson-build-system)
+   (native-inputs
+    `(("gettext" ,gettext-minimal)
+      ("glib:bin" ,glib "bin")
+      ("gobject-introspection" ,gobject-introspection)
+      ("gtk-doc" ,gtk-doc)
+      ("pkg-config" ,pkg-config)
+      ("vala" ,vala)))
+   (inputs
+    `(("gssdp" ,gssdp)
+      ("gtk+" ,gtk+)
+      ("libsoup" ,libsoup)))
+   (synopsis "PnP API for GNOME")
+   (description "This package provides GUPnP, an object-oriented framework
+for creating UPnP devices and control points, written in C using
+@code{GObject} and @code{libsoup}.")
+   (home-page "https://gitlab.gnome.org/GNOME/gupnp")
+   (license license:lgpl2.0+)))
+
 (define-public libmediaart
   (package
     (name "libmediaart")
