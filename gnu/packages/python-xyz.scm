@@ -2638,19 +2638,19 @@ reStructuredText.")
 (define-public python-pygments
   (package
     (name "python-pygments")
-    (version "2.4.2")
+    (version "2.5.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Pygments" version))
        (sha256
         (base32
-         "15v2sqm5g12bqa0c7wikfh9ck2nl97ayizy1hpqhmws5gqalq748"))))
+         "1zmhnswy0wxfn0xprs9aqsvx2c3kmzfn2wx14q8cv3vpkxdamj4q"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: Tests require sphinx, which depends on this.
      '(#:tests? #f))
-    (home-page "http://pygments.org/")
+    (home-page "https://pygments.org/")
     (synopsis "Syntax highlighting")
     (description
      "Pygments is a syntax highlighting package written in Python.")
