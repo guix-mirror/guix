@@ -91,6 +91,31 @@ user-land JavaScript.")
 random number generator.")
     (license license:bsd-3)))
 
+(define-public node-oop
+  ;; No releases, last commit was February 2013.
+  (let ((commit "f9d87cda0958886955c14a0a716e57021ed295dc")
+        (revision "1"))
+    (package
+      (name "node-oop")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/felixge/node-oop")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32
+            "0mqrcf0xi2jbwffwkk00cljpqfsri1jk8s6kz8jny45apn7zjds1"))))
+      (build-system node-build-system)
+      (arguments '(#:tests? #f)) ; Tests run during build phase.
+      (home-page "https://github.com/felixge/node-oop")
+      (synopsis "Simple, light-weight oop module for Node")
+      (description "This library tries to bring basic oop features to JavaScript
+while being as light-weight and simple as possible.")
+      (license license:expat))))
+
 (define-public node-statsd-parser
   (package
     (name "node-statsd-parser")
