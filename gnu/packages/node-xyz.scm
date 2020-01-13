@@ -146,6 +146,40 @@ random number generator.")
 while being as light-weight and simple as possible.")
       (license license:expat))))
 
+(define-public node-stack-trace
+  ;; There have been improvements since the last release.
+  (let ((commit "4fd379ee78965ce7ce8820b436f1b1b590d5dbcf")
+        (revision "1"))
+    (package
+      (name "node-stack-trace")
+      (version (git-version "0.0.10" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/felixge/node-stack-trace")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32
+            "1pk19wcpy8i95z5jr77fybd57qj7xmzmniap4dy47vjlmpkqia4i"))))
+      (build-system node-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+         (add-before 'check 'skip-intentionally-failing-test
+           (lambda _
+             (substitute* "test/run.js"
+               (("far.include") "far.exclude(/test-parse.js/)\nfar.include"))
+             #t)))))
+      (native-inputs
+       `(("node-far" ,node-far)
+         ("node-long-stack-traces" ,node-long-stack-traces)))
+      (home-page "https://github.com/felixge/node-stack-trace")
+      (synopsis "Get v8 stack traces as an array of CallSite objects")
+      (description "Get v8 stack traces as an array of CallSite objects.")
+      (license license:expat))))
+
 (define-public node-statsd-parser
   (package
     (name "node-statsd-parser")
