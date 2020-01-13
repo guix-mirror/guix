@@ -595,8 +595,16 @@ Guile's foreign function interface.")
                 "0q0habjiy3h9cigb7q1br9kz6z212dn2ab31f6dgd3rrmsfn5rvb"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags
-       '("GUILE_AUTO_COMPILE=0"))) ;to prevent guild warnings
+     `(#:make-flags '("GUILE_AUTO_COMPILE=0")     ;to prevent guild warnings
+
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'install-doc
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (package ,(package-full-name this-package "-"))
+                             (doc (string-append out "/share/doc/" package)))
+                        (install-file "README.md" doc)
+                        #t))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
