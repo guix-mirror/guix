@@ -45,6 +45,36 @@
 @code{localStorage} fallbacks.")
     (license license:expat)))
 
+(define-public node-far
+  (package
+    (name "node-far")
+    (version "0.0.7")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/felixge/node-far")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "083rv1rszjn0i91zcpaghlid0kwhk0angmpj4hiflrlyhd6cmjzw"))))
+    (build-system node-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; We skip the two tests which are supposed to fail.
+             (invoke "bin/node-far" "-v" "test/" "-e" "test.*fail.js"))))))
+    (inputs
+     `(("node-oop" ,node-oop)))
+    (home-page "https://github.com/felixge/node-far")
+    (synopsis "Node.js test runner")
+    (description "This package provides a simple test runner that finds and runs
+multiple node.js files, while providing useful information about output and exit
+codes.")
+    (license license:expat)))
 
 (define-public node-long-stack-traces
   (package
