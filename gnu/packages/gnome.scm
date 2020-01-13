@@ -1362,7 +1362,7 @@ forgotten when the session ends.")
                "05q6v9lssd21623mnj2p49clj9v9csw9kay7n4nklki025grbh1w"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     `(#:configure-flags '("--disable-nautilus")
+     `(#:configure-flags '("--disable-nautilus" "--enable-introspection")
        #:phases
        (modify-phases %standard-phases
          (add-before 'install 'skip-gtk-update-icon-cache
@@ -1406,6 +1406,7 @@ forgotten when the session ends.")
      `(("itstool" ,itstool)
        ("intltool" ,intltool)
        ("glib" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)
        ("xmllint" ,libxml2)))
     (home-page
