@@ -310,14 +310,14 @@ other HTTP libraries.")
 (define-public httpie
   (package
     (name "httpie")
-    (version "1.0.3")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "httpie" version))
        (sha256
         (base32
-         "103fcigpxf4nqmrdqjnyz7d9n4n16906slwmmqqc0gkxv8hnw6vd"))))
+         "02bw20cwv3a1lzrn919dk25dq4v81x6q786zlrqsqzhsdxszj14c"))))
     (build-system python-build-system)
     (arguments
      ;; The tests attempt to access external web servers, so we cannot run them.
