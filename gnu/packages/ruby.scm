@@ -299,14 +299,32 @@ a menu system for providing multiple options to the user.")
 (define-public ruby-hoe
   (package
     (name "ruby-hoe")
-    (version "3.16.2")
+    (version "3.21.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "hoe" version))
               (sha256
                (base32
-                "12q6dn2irsfamdbjpqvs0dwl4i1vl7wflxrcg972h9jw0ds38f3a"))))
+                "0qid0n56mgsjvq5ksxajv0gb92akky8imwgvw22ajms5g4fd6nf4"))))
     (build-system ruby-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; One of the tests fails if the SOURCE_DATE_EPOCH environment
+         ;; variable is set, so unset it for the duration of the tests.
+         ;;
+         ;; TestHoe#test_possibly_better
+         ;; [/tmp/guix-build-ruby-hoe-3.20.0.drv-0/gem/test/test_hoe.rb:250]:
+         ;; Expected: 2019-11-12 00:00:00 UTC
+         ;; Actual: 1970-01-01 00:00:00 UTC
+         (add-before 'check 'unset-SOURCE-DATE-EPOCH
+           (lambda _
+             (unsetenv "SOURCE_DATE_EPOCH")
+             #t))
+         (add-after 'check 'set-SOURCE-DATE-EPOCH-again
+           (lambda _
+             (setenv "SOURCE_DATE_EPOCH" "1")
+             #t)))))
     (synopsis "Ruby project management helper")
     (description
      "Hoe is a rake/rubygems helper for project Rakefiles.  It helps manage,
