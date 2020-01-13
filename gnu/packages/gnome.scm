@@ -397,6 +397,35 @@ for creating UPnP devices and control points, written in C using
    (home-page "https://gitlab.gnome.org/GNOME/gupnp")
    (license license:lgpl2.0+)))
 
+(define-public gupnp-av
+  (package
+   (name "gupnp-av")
+   (version "0.12.11")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/" name "/"
+                                (version-major+minor version) "/"
+                                name "-" version ".tar.xz"))
+            (sha256
+             (base32
+              "1p3grslwqm9bc8rmpn4l48d7v9s84nina4r9xbd932dbj8acz7b8"))))
+   (build-system gnu-build-system)
+   (native-inputs
+    `(("gettext" ,gettext-minimal)
+      ("glib:bin" ,glib "bin")
+      ("gobject-introspection" ,gobject-introspection)
+      ("gtk-doc" ,gtk-doc)
+      ("libxml" ,libxml2)
+      ("pkg-config" ,pkg-config)))
+   (inputs
+    `(("gtk+" ,gtk+)
+      ("gupnp" ,gupnp)))
+   (synopsis "GUPnP A/V for GNOME")
+   (description "This package provides a small library for handling
+and implementation of UPnP A/V profiles.")
+   (home-page "https://gitlab.gnome.org/GNOME/gupnp-av")
+   (license license:lgpl2.0+)))
+
 (define-public libmediaart
   (package
     (name "libmediaart")
