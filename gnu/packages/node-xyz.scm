@@ -112,3 +112,25 @@ random number generator.")
     (description "This package provides a streaming parser for the statsd
 protocol used in @code{node-lynx}.")
     (license license:asl2.0)))
+
+(define-public node-util-deprecate
+  (package
+    (name "node-util-deprecate")
+    (version "1.0.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/TooTallNate/util-deprecate")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1rk94nl3qc7znsk8400bnga30v0m7j2mmvz9ldwjinxv1d3n11xc"))))
+    (build-system node-build-system)
+    (arguments '(#:tests? #f)) ; No test suite.
+    (home-page "https://github.com/TooTallNate/util-deprecate")
+    (synopsis "Node.js `util.deprecate()` function with browser support")
+    (description "This package provides the Node.js @code{util.deprecate()}
+function with browser support.")
+    (license license:expat)))
