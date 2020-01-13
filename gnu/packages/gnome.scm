@@ -11,7 +11,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
 ;;; Copyright © 2016, 2017, 2019 Kei Kebreau <kkebreau@posteo.net>
@@ -2030,77 +2030,76 @@ from forcing GEXP-PROMISE."
                   (lambda (crate)
                     (delete-file-recursively (string-append "vendor/" (car crate)))
                     (invoke "tar" "xvf" (cdr crate) "-C" "vendor"))
-                  '(
-;; aho-corasick 0.7
+                  '(;("aho-corasick" . #+(package-source rust-aho-corasick-0.7))
 ;; alga 0.9
-;; approx 0.3
-;; arrayvec 0.4
+                    ("approx" . #+(package-source rust-approx-0.3))
+                    ("arrayvec" . #+(package-source rust-arrayvec-0.4))
                     ("atty" . #+(package-source rust-atty-0.2))
                     ("autocfg" . #+(package-source rust-autocfg-0.1))
                     ("bitflags" . #+(package-source rust-bitflags-1))
 ;; block 0.1
-;; bstr 0.2
-;; byteorder 1.3
+                    ("bstr" . #+(package-source rust-bstr-0.2))
+                    ("byteorder" . #+(package-source rust-byteorder-1.3))
 ;; cairo-rs 0.7
 ;; cairo-sys-rs 0.9
-;; cast 0.2
+                    ("cast" . #+(package-source rust-cast-0.2))
                     ("cfg-if" . #+(package-source rust-cfg-if-0.1))
                     ("clap" . #+(package-source rust-clap-2))
-                    ;("cloudabi" . #+(package-source rust-cloudabi-0.0))
-;; criterion 0.2
-;; criterion-plot 0.3
-;; crossbeam-deque 0.7
-;; crossbeam-epoch 0.7
-;; crossbeam-queue 0.1
-;; crossbeam-utils 0.6
+                    ("cloudabi" . #+(package-source rust-cloudabi-0.0))
+                    ("criterion" . #+(package-source rust-criterion-0.2))
+                    ("criterion-plot" . #+(package-source rust-criterion-plot-0.3))
+                    ("crossbeam-deque" . #+(package-source rust-crossbeam-deque-0.7))
+                    ;("crossbeam-epoch" . #+(package-source rust-crossbeam-epoch-0.7))
+                    ("crossbeam-queue" . #+(package-source rust-crossbeam-queue-0.1))
+                    ("crossbeam-utils" . #+(package-source rust-crossbeam-utils-0.6))
 ;; cssparser 0.25
 ;; cssparser-macros 0.3
-;; csv 1.1
-;; csv-core 0.1
+                    ("csv" . #+(package-source rust-csv-1.1))
+                    ("csv-core" . #+(package-source rust-csv-core-0.1))
 ;; data-url 0.1
 ;; downcast-rs 1.0
                     ("dtoa" . #+(package-source rust-dtoa-0.4))
 ;; dtoa-short 0.3
-;; either 1.5
-;; encoding 0.2
-;; encoding-index-japanese 1.20141219.5
-;; encoding-index-korean 1.20141219.5
-;; encoding-index-simpchinese 1.20141219.5
-;; encoding-index-singlebyte 1.20141219.5
-;; encoding-index-tradchinese 1.20141219.5
-;; encoding_index_tests 0.1
+                    ("either" . #+(package-source rust-either-1.5))
+                    ("encoding" . #+(package-source rust-encoding-0.2))
+                    ("encoding-index-japanese" . #+(package-source rust-encoding-index-japanese-1.20141219))
+                    ("encoding-index-korean" . #+(package-source rust-encoding-index-korean-1.20141219))
+                    ("encoding-index-simpchinese" . #+(package-source rust-encoding-index-simpchinese-1.20141219))
+                    ("encoding-index-singlebyte" . #+(package-source rust-encoding-index-singlebyte-1.20141219))
+                    ("encoding-index-tradchinese" . #+(package-source rust-encoding-index-tradchinese-1.20141219))
+                    ("encoding_index_tests" . #+(package-source rust-encoding-index-tests-0.1))
 ;; float-cmp 0.5
 ;; fragile 0.3
-                    ;("fuchsia-cprng" . #+(package-source rust-fuchsia-cprng-0.1))
-;; futf 0.1
+                    ("fuchsia-cprng" . #+(package-source rust-fuchsia-cprng-0.1))
+                    ("futf" . #+(package-source rust-futf-0.1))
 ;; gdk-pixbuf 0.7
 ;; gdk-pixbuf-sys 0.9
-;; generic-array 0.12
+                    ("generic-array" . #+(package-source rust-generic-array-0.12))
 ;; gio 0.7
 ;; gio-sys 0.9
 ;; glib 0.8
 ;; glib-sys 0.9
 ;; gobject-sys 0.9
 ;; idna 0.2
-;; itertools 0.8
+                    ("itertools" . #+(package-source rust-itertools-0.8))
                     ("itoa" . #+(package-source rust-itoa-0.4))
-                    ;("language-tags" . #+(package-source rust-language-tags-0.2))
+                    ("language-tags" . #+(package-source rust-language-tags-0.2))
                     ("lazy_static" . #+(package-source rust-lazy-static-1.3))
                     ("libc" . #+(package-source rust-libc-0.2))
 ;; libm 0.1
 ;; locale_config 0.3
                     ("log" . #+(package-source rust-log-0.4))
-;; mac 0.1
+                    ("mac" . #+(package-source rust-mac-0.1))
 ;; malloc_buf 0.0
 ;; markup5ever 0.9
-                    ;("matches" . #+(package-source rust-matches-0.1))
+                    ("matches" . #+(package-source rust-matches-0.1))
 ;; matrixmultiply 0.2
-;; memchr 2.2
+                    ;("memchr" . #+(package-source rust-memchr-2.2))
 ;; memoffset 0.5
 ;; nalgebra 0.18
-;; new_debug_unreachable 1.0
+                    ("new_debug_unreachable" . #+(package-source rust-new-debug-unreachable-1.0))
                     ("nodrop" . #+(package-source rust-nodrop-0.1))
-;; num-complex 0.2
+                    ("num-complex" . #+(package-source rust-num-complex-0.2))
                     ("num-integer" . #+(package-source rust-num-integer-0.1))
 ;; num-rational 0.2
                     ("num-traits" . #+(package-source rust-num-traits-0.2))
@@ -2113,16 +2112,16 @@ from forcing GEXP-PROMISE."
 ;; pangocairo 0.8
 ;; pangocairo-sys 0.10
                     ("percent-encoding" . #+(package-source rust-percent-encoding-2.1))
-;; phf 0.7.24
-;; phf_codegen 0.7.24
-;; phf_generator 0.7.24
-;; phf_shared 0.7.24
-                    ;("pkg-config" . #+(package-source rust-pkg-config-0.3))
-;; precomputed-hash 0.1
+                    ("phf" . #+(package-source rust-phf-0.7))
+                    ("phf_codegen" . #+(package-source rust-phf-codegen-0.7))
+                    ("phf_generator" . #+(package-source rust-phf-generator-0.7))
+                    ("phf_shared" . #+(package-source rust-phf-shared-0.7))
+                    ("pkg-config" . #+(package-source rust-pkg-config-0.3))
+                    ("precomputed-hash" . #+(package-source rust-precomputed-hash-0.1))
                     ("proc-macro2" . #+(package-source rust-proc-macro2-1.0))
 ;; procedural-masquerade 0.1
                     ("quote" . #+(package-source rust-quote-1.0))
-                    ;("rand" . #+(package-source rust-rand-0.6))
+                    ("rand" . #+(package-source rust-rand-0.6))
                     ("rand_chacha" . #+(package-source rust-rand-chacha-0.1))
                     ("rand_core-0.3.1" . #+(package-source rust-rand-core-0.3))
                     ("rand_core" . #+(package-source rust-rand-core-0.4))
@@ -2133,45 +2132,45 @@ from forcing GEXP-PROMISE."
                     ("rand_pcg" . #+(package-source rust-rand-pcg-0.1))
                     ("rand_xorshift" . #+(package-source rust-rand-xorshift-0.1))
 ;; rand_xoshiro 0.1
-                    ;("rawpointer" . #+(package-source rust-rawpointer-0.1))
+;; rawpointer 0.2
 ;; rayon 1.2
 ;; rayon-core 1.6
 ;; rctree 0.3
                     ("rdrand" . #+(package-source rust-rdrand-0.4))
 ;; regex 1.3
-;; regex-automata 0.1
+                    ("regex-automata" . #+(package-source rust-regex-automata-0.1))
                     ;("regex-syntax" . #+(package-source rust-regex-syntax-0.6))
-;; rustc_version 0.2
+                    ("rustc_version" . #+(package-source rust-rustc-version-0.2))
                     ("ryu" . #+(package-source rust-ryu-1.0))
                     ("same-file" . #+(package-source rust-same-file-1.0))
                     ("scopeguard" . #+(package-source rust-scopeguard-1.0))
-;; semver 0.9
-                    ;("semver-parser" . #+(package-source rust-semver-parser-0.7))
+                    ("semver" . #+(package-source rust-semver-0.9))
+                    ("semver-parser" . #+(package-source rust-semver-parser-0.7))
                     ("serde" . #+(package-source rust-serde-1.0))
                     ("serde_derive" . #+(package-source rust-serde-derive-1.0))
                     ("serde_json" . #+(package-source rust-serde-json-1.0))
-;; siphasher 0.2
-;; smallvec 0.6
-;; string_cache 0.7
-;; string_cache_codegen 0.4
-;; string_cache_shared 0.3
+                    ("siphasher" . #+(package-source rust-siphasher-0.2))
+                    ("smallvec" . #+(package-source rust-smallvec-0.6))
+                    ("string_cache" . #+(package-source rust-string-cache-0.7))
+                    ;("string_cache_codegen" . #+(package-source rust-string-cache-codegen-0.4))
+                    ("string_cache_shared" . #+(package-source rust-string-cache-shared-0.3))
                     ("syn" . #+(package-source rust-syn-1.0))
-;; tendril 0.4
+                    ("tendril" . #+(package-source rust-tendril-0.4))
                     ("textwrap" . #+(package-source rust-textwrap-0.11))
-                    ;("thread_local" . #+(package-source rust-thread-local-0.3))
-;; tinytemplate 1.0
-                    ;("typenum" . #+(package-source rust-typenum-1.10))
-;; unicode-bidi 0.3
-;; unicode-normalization 0.1
+                    ("thread_local" . #+(package-source rust-thread-local-0.3))
+                    ("tinytemplate" . #+(package-source rust-tinytemplate-1.0))
+                    ("typenum" . #+(package-source rust-typenum-1.10))
+                    ("unicode-bidi" . #+(package-source rust-unicode-bidi-0.3))
+                    ("unicode-normalization" . #+(package-source rust-unicode-normalization-0.1))
                     ("unicode-width" . #+(package-source rust-unicode-width-0.1))
                     ("unicode-xid" . #+(package-source rust-unicode-xid-0.2))
 ;; url 2.1
-;; utf-8 0.7
+                    ("utf-8" . #+(package-source rust-utf-8-0.7))
                     ("walkdir" . #+(package-source rust-walkdir-2.2))
                     ("winapi" . #+(package-source rust-winapi-0.3))
-                    ;("winapi-i686-pc-windows-gnu" . #+(package-source rust-winapi-i686-pc-windows-gnu-0.4))
+                    ("winapi-i686-pc-windows-gnu" . #+(package-source rust-winapi-i686-pc-windows-gnu-0.4))
                     ("winapi-util" . #+(package-source rust-winapi-util-0.1))
-                    ;("winapi-x86_64-pc-windows-gnu" . #+(package-source rust-winapi-x86-64-pc-windows-gnu-0.4))
+                    ("winapi-x86_64-pc-windows-gnu" . #+(package-source rust-winapi-x86-64-pc-windows-gnu-0.4))
 ;; xml-rs 0.8
                     )))
               (format #t "Replacing vendored crates in the tarball and repacking ...~%")
