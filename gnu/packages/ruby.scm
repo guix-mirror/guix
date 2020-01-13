@@ -4498,13 +4498,13 @@ a native C extension.")
 (define-public ruby-json-pure
   (package
     (name "ruby-json-pure")
-    (version "2.1.0")
+    (version "2.2.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "json_pure" version))
               (sha256
                (base32
-                "12yf9fmhr4c2jm3xl20vf1qyz5i63vc8a6ngz9j0f86nqwhmi2as"))))
+                "0m0j1mfwv0mvw72kzqisb26xjl236ivqypw1741dkis7s63b8439"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -4538,7 +4538,7 @@ a native C extension.")
     (synopsis "JSON implementation in pure Ruby")
     (description
      "This package provides a JSON implementation written in pure Ruby.")
-    (home-page "https://flori.github.com/json")
+    (home-page "https://flori.github.com/json/")
     (license license:ruby)))
 
 (define-public ruby-jwt
