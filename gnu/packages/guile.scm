@@ -307,9 +307,9 @@ without requiring the source code to be rewritten.")
     (properties '((ftp-server . "alpha.gnu.org")
                   (upstream-name . "guile")))))
 
-(define (make-guile-readline guile)
+(define* (make-guile-readline guile #:optional (name "guile-readline"))
   (package
-    (name "guile-readline")
+    (name name)
     (version (package-version guile))
     (source (package-source guile))
     (build-system gnu-build-system)
@@ -365,6 +365,9 @@ GNU@tie{}Guile.  Use the @code{(ice-9 readline)} module and call its
 
 (define-public guile-readline
   (make-guile-readline guile-2.2))
+
+(define-public guile3.0-readline
+  (make-guile-readline guile-next "guile3.0-readline"))
 
 (define (guile-variant-package-name prefix)
   (lambda (name)
