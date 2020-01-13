@@ -131,6 +131,25 @@ a focus on simplicity and productivity.")
     (home-page "https://www.ruby-lang.org")
     (license license:ruby)))
 
+(define-public ruby-2.5
+  (package
+    (inherit ruby)
+    (version "2.5.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://cache.ruby-lang.org/pub/ruby/"
+                           (version-major+minor version)
+                           "/ruby-" version ".tar.xz"))
+       (sha256
+        (base32
+         "159zka4sbx1p4ayxqi7a5ybbzxvn3n5mivrz4d1damw9ypl70610"))
+       (modules '((guix build utils)))
+       (snippet `(begin
+                   ;; Remove bundled libffi
+                   (delete-file-recursively "ext/fiddle/libffi-3.2.1")
+                   #t))))))
+
 (define-public ruby-2.4
   (package
     (inherit ruby)
