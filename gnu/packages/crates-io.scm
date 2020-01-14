@@ -8009,12 +8009,15 @@ accessors.")
          (base32
           "1cjq0kwx1bk7jx3kzyciiish5gqsj7620dm43dc52sr8fzmm9037"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-rand-core" ,rust-rand-core-0.3))))
     (home-page "https://github.com/nagisa/rust_rdrand/")
     (synopsis "Random number generator")
     (description
      "This package is an implementation of random number generator based on
-@code{rdrand} and @cpde{rdseed} instructions")
-    (properties '((hidden? . #t)))
+@code{rdrand} and @code{rdseed} instructions")
     (license license:isc)))
 
 ;; This package requires features which are unavailable
