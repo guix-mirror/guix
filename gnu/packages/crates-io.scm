@@ -1392,7 +1392,7 @@ CMAKE environmental variable is set.")
 (define-public rust-compiler-builtins-0.1
   (package
     (name "rust-compiler-builtins")
-    (version "0.1.19")
+    (version "0.1.23")
     (source
       (origin
         (method url-fetch)
@@ -1400,7 +1400,7 @@ CMAKE environmental variable is set.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1fpabpmg8paj4r5a37vmidh1jx1b7a6ilxm4s3xsxczx27ybjcjf"))))
+          "0m8rfikg08av2plyp32drjfsv7i10nf2kwzajjjkvl13yhj9s5fn"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
