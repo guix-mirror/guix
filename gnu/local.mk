@@ -852,7 +852,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/fbreader-curl-7.62.patch		\
   %D%/packages/patches/fifo-map-fix-flags-for-gcc.patch		\
   %D%/packages/patches/fifo-map-remove-catch.hpp.patch		\
-  %D%/packages/patches/file-CVE-2019-18218.patch		\
   %D%/packages/patches/findutils-localstatedir.patch		\
   %D%/packages/patches/findutils-test-rwlock-threads.patch	\
   %D%/packages/patches/flann-cmake-3.11.patch			\
