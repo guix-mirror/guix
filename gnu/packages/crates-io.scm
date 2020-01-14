@@ -8527,7 +8527,7 @@ using a fork-like interface.")
 (define-public rust-safemem-0.3
   (package
     (name "rust-safemem")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
       (origin
         (method url-fetch)
@@ -8535,7 +8535,7 @@ using a fork-like interface.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1l1ljkm4lpyryrv2ndaxi1f7z1f3v9bwy1rzl9f9mbhx04iq9c6j"))))
+          "0wp0d2b2284lw11xhybhaszsczpbq1jbdklkxgifldcknmy3nw7g"))))
     (build-system cargo-build-system)
     (arguments '(#:skip-build? #t))
     (home-page "https://github.com/abonander/safemem")
