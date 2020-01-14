@@ -4,7 +4,7 @@
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
+;;; Copyright © 2019, 2020 John Soo <jsoo1@asu.edu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1847,8 +1847,40 @@ intrinsics.")
         (base32
          "04rcpgjs6ns57vag8a3dzx26190dhbvy2l0p9n22b9p1yf64pr05"))))))
 
+(define-public rust-crossbeam-epoch-0.8
+  (package
+    (name "rust-crossbeam-epoch")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crossbeam-epoch" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1b2mgc2gxxvyzyxgd5wvn9k42gr6f9phi2swwjawpqswy3dynr2h"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-autocfg" ,rust-autocfg-0.1)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
+        ("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-memoffset" ,rust-memoffset-0.5)
+        ("rust-scopeguard" ,rust-scopeguard-1.0))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.6))))
+    (home-page
+     "https://github.com/crossbeam-rs/crossbeam/tree/master/crossbeam-epoch")
+    (synopsis "Epoch-based garbage collection")
+    (description "Epoch-based garbage collection.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-crossbeam-epoch-0.7
   (package
+    (inherit rust-crossbeam-epoch-0.8)
     (name "rust-crossbeam-epoch")
     (version "0.7.1")
     (source
@@ -1860,7 +1892,6 @@ intrinsics.")
        (sha256
         (base32
          "1d408b9x82mdbnb405gw58v5mmdbj2rl28a1h7b9rmn25h8f7j84"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -1871,12 +1902,7 @@ intrinsics.")
         ("rust-memoffset" ,rust-memoffset-0.2)
         ("rust-scopeguard" ,rust-scopeguard-0.3))
        #:cargo-development-inputs
-       (("rust-rand" ,rust-rand-0.4))))
-    (home-page
-     "https://github.com/crossbeam-rs/crossbeam/tree/master/crossbeam-epoch")
-    (synopsis "Epoch-based garbage collection")
-    (description "Epoch-based garbage collection.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-rand" ,rust-rand-0.4))))))
 
 (define-public rust-crossbeam-queue-0.1
   (package
