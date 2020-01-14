@@ -7793,8 +7793,33 @@ useful types and distributions, and some randomness-related algorithms.")
      `(#:skip-build? #t
        #:cargo-inputs (("rand-core" ,rust-rand-core-0.4))))))
 
+(define-public rust-rand-hc-0.2
+  (package
+    (name "rust-rand-hc")
+    (version "0.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand_hc" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "0g31sqwpmsirdlwr0svnacr4dbqyz339im4ssl9738cjgfpjjcfa"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-rand-hc" ,rust-rand-core-0.5))))
+    (home-page "https://crates.io/crates/rand_hc")
+    (synopsis "HC128 random number generator")
+    (description "This package provides a cryptographically secure random number
+generator that uses the HC-128 algorithm.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-rand-hc-0.1
   (package
+    (inherit rust-rand-hc-0.2)
     (name "rust-rand-hc")
     (version "0.1.0")
     (source
@@ -7807,13 +7832,7 @@ useful types and distributions, and some randomness-related algorithms.")
           "1i0vl8q5ddvvy0x8hf1zxny393miyzxkwqnw31ifg6p0gdy6fh3v"))))
     (arguments
      `(#:skip-build? #t
-       #:cargo-inputs (("rust-rand-core" ,rust-rand-core-0.3))))
-    (build-system cargo-build-system)
-    (home-page "https://crates.io/crates/rand_hc")
-    (synopsis "HC128 random number generator")
-    (description "HC128 random number generator")
-    (license (list license:asl2.0
-                   license:expat))))
+       #:cargo-inputs (("rust-rand-core" ,rust-rand-core-0.3))))))
 
 (define-public rust-rand-isaac-0.1
   (package
