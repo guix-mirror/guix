@@ -8585,12 +8585,16 @@ paths point to the same file.")
          (base32
           "0f9k4pm8yc3z0n1n8hazvnrvg52f0sfxjc91bhf3r76rb3rapxpj"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-winapi" ,rust-winapi-0.3))))
     (home-page "https://github.com/steffengy/schannel-rs")
     (synopsis "Rust bindings to the Windows SChannel APIs")
     (description
      "Rust bindings to the Windows SChannel APIs providing TLS client and
 server functionality.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-scoped-threadpool-0.1
