@@ -186,12 +186,12 @@ text or blue underlined text, on ANSI terminals.")
          (base32
           "19g2sw2qa2ibnh4x7j1snk46593jgx6y7rnvva496ynq61af5z9l"))))
     (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/sfackler/rust-antidote")
     (synopsis "Poison-free Mutex and RwLock types")
     (description
-    "These types expose identical APIs to the standard library @code{Mutex} and
+     "These types expose identical APIs to the standard library @code{Mutex} and
 @code{RwLock} except that they do not return @code{PoisonError}s.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
