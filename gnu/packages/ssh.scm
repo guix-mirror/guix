@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
@@ -675,16 +675,15 @@ monitor it, restarting it as necessary should it die or stop passing traffic.")
 (define-public pdsh
   (package
     (name "pdsh")
-    (version "2.33")
+    (version "2.34")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/chaos/pdsh/"
                            "releases/download/pdsh-" version
                            "/pdsh-" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0bwlkl9inj66iwvafg00pi3sk9n673phdi0kcc59y9nn55s0hs3k"))))
+        (base32 "1s91hmhrz7rfb6h3l5k97s393rcm1ww3svp8dx5z8vkkc933wyxl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
