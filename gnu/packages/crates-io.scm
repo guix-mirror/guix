@@ -2038,10 +2038,10 @@ hexadecimal, base32, and base64.")
          (base32
           "01ff3jdmcc5waffkwllndnx5hsn414r7x1rq4ib73n7awsyzxkxv"))))
     (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/bluss/defmac")
     (synopsis "Macro to define lambda-like macros inline")
     (description "A macro to define lambda-like macros inline.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
@@ -2057,7 +2057,9 @@ hexadecimal, base32, and base64.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "17giv0n0n1r64z0dahfvkjy3ys517jxyhs8sd9lmgvcljpjyryxa"))))))
+          "17giv0n0n1r64z0dahfvkjy3ys517jxyhs8sd9lmgvcljpjyryxa"))))
+    (arguments '())
+    (properties '((hidden? . #t)))))
 
 (define-public rust-cpp-demangle-0.2
   (package
