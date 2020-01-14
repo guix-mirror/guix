@@ -2343,7 +2343,9 @@ floating-point primitives to an @code{io::Write}.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0g96cap6si1g6wi62hsdk2fnj3sf5vd4i97zj6163j8hhnsl3n0d"))))))
+          "0g96cap6si1g6wi62hsdk2fnj3sf5vd4i97zj6163j8hhnsl3n0d"))))
+    (arguments '(#:skip-build? #t))
+    (properties '())))
 
 (define-public rust-duct-0.13
   (package
