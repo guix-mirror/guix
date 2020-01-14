@@ -1904,8 +1904,39 @@ intrinsics.")
        #:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.4))))))
 
+(define-public rust-crossbeam-queue-0.2
+  (package
+    (name "rust-crossbeam-queue")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crossbeam-queue" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1nwkjh185bdwjrv1zj2g7an9lglv8sp4459268m4fwvi3v5fx5f6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.6))))
+    (home-page
+     "https://github.com/crossbeam-rs/crossbeam/tree/master/crossbeam-utils")
+    (synopsis "Concurrent queues in Rust")
+    (description
+     "This crate provides concurrent queues that can be shared among threads.")
+    (license (list license:expat
+                   license:asl2.0
+                   license:bsd-2))))
+
 (define-public rust-crossbeam-queue-0.1
   (package
+    (inherit rust-crossbeam-queue-0.2)
     (name "rust-crossbeam-queue")
     (version "0.1.2")
     (source
@@ -1917,20 +1948,12 @@ intrinsics.")
        (sha256
         (base32
          "0jsa9dbxnwqcxfws09vaschf92d4imlbbikmcn4ka8z7rzb9r5vw"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6))
        #:cargo-development-inputs
-       (("rust-rand" ,rust-rand-0.4))))
-    (home-page
-     "https://github.com/crossbeam-rs/crossbeam/tree/master/crossbeam-utils")
-    (synopsis "Concurrent queues")
-    (description "Concurrent queues.")
-    (license (list license:expat
-                   license:asl2.0
-                   license:bsd-2))))
+       (("rust-rand" ,rust-rand-0.4))))))
 
 (define-public rust-crossbeam-utils-0.6
   (package
