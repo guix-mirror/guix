@@ -667,11 +667,11 @@ libraries.")
          (base32
           "1zc1qb1hwsnl2d8rhzicsv9kqd5b2hwbrscrcfw5as4sfr35659x"))))
     (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/bitflags/bitflags")
     (synopsis "Macro to generate structures which behave like bitflags")
     (description "This package provides a macro to generate structures which
 behave like a set of bitflags.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
