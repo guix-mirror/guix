@@ -7857,6 +7857,29 @@ useful types and distributions, and some randomness-related algorithms.")
      "Xoshiro, xoroshiro and splitmix64 random number generators.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-rand-xoshiro-0.1
+  (package
+    (inherit rust-rand-xoshiro-0.3)
+    (name "rust-rand-xoshiro")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rand_xoshiro" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ac9ha6ll8b6l1930bd99k29jrjpsbpddvr6ycrnbi5rkwb1id03"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-rand-core" ,rust-rand-core-0.3))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.6))))))
+
 (define-public rust-rawpointer-0.1
   (package
     (name "rust-rawpointer")
