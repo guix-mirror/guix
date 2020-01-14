@@ -86,9 +86,7 @@ gitignore rules.")
         ("serde-json" ,rust-serde-json-1.0)
         ("syn" ,rust-syn-1.0)
         ("tempfile" ,rust-tempfile-3.0)
-        ("toml" ,rust-toml-0.5))
-       #:cargo-development-inputs
-       (("autocfg" ,rust-autocfg-0.1))))
+        ("toml" ,rust-toml-0.5))))
     (home-page "https://github.com/eqrion/cbindgen/")
     (synopsis "Tool for generating C bindings to Rust code")
     (description
