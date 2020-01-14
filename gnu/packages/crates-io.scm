@@ -2028,7 +2028,7 @@ hexadecimal, base32, and base64.")
 (define-public rust-defmac-0.2
   (package
     (name "rust-defmac")
-    (version "0.2.0")
+    (version "0.2.1")
     (source
       (origin
         (method url-fetch)
@@ -2036,7 +2036,7 @@ hexadecimal, base32, and base64.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "01ff3jdmcc5waffkwllndnx5hsn414r7x1rq4ib73n7awsyzxkxv"))))
+          "14cqfvc0f1pkd6gdhjxa2wv3iibqprc0n203ims8lvg96752ynfm"))))
     (build-system cargo-build-system)
     (arguments '(#:skip-build? #t))
     (home-page "https://github.com/bluss/defmac")
