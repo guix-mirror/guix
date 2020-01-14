@@ -8247,11 +8247,15 @@ uses finite automata and guarantees linear time matching on all inputs.")
          (base32
           "1jvdsmksdf6yiipm3aqahyv8n1cjd7wqc8sa0p0gzsax3fmb8qxj"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-quick-error" ,rust-quick-error-1.2)
+        ("rust-hostname", rust-hostname-0.1))))
     (home-page "https://github.com/tailhook/resolv-conf")
-    (synopsis "/etc/resolv.conf parser")
+    (synopsis "Parser for /etc/resolv.conf")
     (description
      "An /etc/resolv.conf parser crate for Rust.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
