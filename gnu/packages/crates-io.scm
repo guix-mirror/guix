@@ -7950,8 +7950,31 @@ generator that uses the HC-128 algorithm.")
         ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
         ("rust-winapi" ,rust-winapi-0.3))))))
 
+(define-public rust-rand-pcg-0.2
+  (package
+    (name "rust-rand-pcg")
+    (version "0.2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand_pcg" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "0ab4h6s6x3py833jk61lwadq83qd1c8bih2hgi6yps9rnv0x1aqn"))))
+    (build-system cargo-build-system)
+    (home-page "https://crates.io/crates/rand_pcg")
+    (synopsis
+     "Selected PCG random number generators")
+    (description
+     "Implements a selection of PCG random number generators.")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-rand-pcg-0.1
   (package
+    (inherit rust-rand-pcg-0.2)
     (name "rust-rand-pcg")
     (version "0.1.2")
     (source
@@ -7961,16 +7984,7 @@ generator that uses the HC-128 algorithm.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0i0bdla18a8x4jn1w0fxsbs3jg7ajllz6azmch1zw33r06dv1ydb"))))
-    (build-system cargo-build-system)
-    (home-page "https://crates.io/crates/rand_pcg")
-    (synopsis
-      "Selected PCG random number generators")
-    (description
-      "Selected PCG random number generators")
-    (properties '((hidden? . #t)))
-    (license (list license:asl2.0
-                   license:expat))))
+          "0i0bdla18a8x4jn1w0fxsbs3jg7ajllz6azmch1zw33r06dv1ydb"))))))
 
 (define-public rust-rand-xorshift-0.2
   (package
