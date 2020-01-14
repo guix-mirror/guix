@@ -1402,13 +1402,18 @@ CMAKE environmental variable is set.")
          (base32
           "1fpabpmg8paj4r5a37vmidh1jx1b7a6ilxm4s3xsxczx27ybjcjf"))))
     (build-system cargo-build-system)
-    (home-page "https://github.com/rust-lang-nursery/compiler-builtins")
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1.0))
+       #:cargo-development-inputs
+       (("rust-cc" ,rust-cc-1.0))))
+    (home-page "https://github.com/rust-lang/compiler-builtins")
     (synopsis "Compiler intrinsics used by the Rust compiler")
     (description
      "This package provides compiler intrinsics used by the Rust compiler.  This
 package is primarily useful when building the @code{core} crate yourself and you
 need compiler-rt intrinsics.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
