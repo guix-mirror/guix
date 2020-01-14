@@ -323,11 +323,15 @@ ArrayVec and ArrayString.")
          (base32
           "140sswp1bwqwc4zk80bxkbnfb3g936hgrb77g9g0k1zcld3wc0qq"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-winapi" ,rust-winapi-0.3))))
     (home-page "https://github.com/softprops/atty")
-    (synopsis "A simple interface for querying atty")
+    (synopsis "Simple interface for querying atty")
     (description
      "This package provides a simple interface for querying atty.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-autocfg-0.1
