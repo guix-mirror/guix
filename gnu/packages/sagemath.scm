@@ -275,7 +275,7 @@ on numerical types, while GiNaC depends on CLN for this purpose.")
 (define-public zn-poly
   (package
     (name "zn-poly")
-    (version "0.9.1")
+    (version "0.9.2")
     (source
      (origin
        (method git-fetch)
@@ -285,8 +285,7 @@ on numerical types, while GiNaC depends on CLN for this purpose.")
               (commit version)))
        (file-name (git-file-name "zn_poly" version))
        (sha256
-        (base32
-         "0ra5vy585bqq7g3317iw6fp44iqgqvds3j0l1va6mswimypq4vxb"))))
+        (base32 "1wbc3apxcldxfcw1dnwnn7fvlfb6bwvlr8glvgv6hf79p9r2s4j0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))
