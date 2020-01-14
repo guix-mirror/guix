@@ -23,6 +23,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages libidn)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages tls)
@@ -77,30 +78,23 @@ the underlying security implementation.")
 (define-public gsasl
   (package
    (name "gsasl")
-   (version "1.8.0")
+   (version "1.8.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/gsasl/gsasl-" version
                                 ".tar.gz"))
-            (sha256 (base32
-                     "1rci64cxvcfr8xcjpqc4inpfq7aw4snnsbf5xz7d30nhvv8n40ii"))
-            (modules '((guix build utils)))
-            (snippet
-             '(begin
-                ;; The gnulib test-lock test is prone to writer starvation
-                ;; with our glibc@2.25, which prefers readers, so disable it.
-                ;; The gnulib commit b20e8afb0b2 should fix this once
-                ;; incorporated here.
-                (substitute* "tests/Makefile.in"
-                  (("test-lock\\$\\(EXEEXT\\) ") ""))
-                #t))))
+            (sha256
+             (base32
+              "1lnqfbaajkj1r2fx1db1qgcxy69pfgbyq7xd2kpvyxhra4m1dnjd"))))
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags '("--with-gssapi-impl=mit")))
-   (inputs `(("libidn" ,libidn)
-             ("libntlm" ,libntlm)
-             ("mit-krb5" ,mit-krb5)
-             ("zlib" ,zlib)))
+   (inputs
+    `(("libgcrypt" ,libgcrypt)
+      ("libidn" ,libidn)
+      ("libntlm" ,libntlm)
+      ("mit-krb5" ,mit-krb5)
+      ("zlib" ,zlib)))
    (propagated-inputs
     ;; Propagate GnuTLS because libgnutls.la reads `-lnettle', and Nettle is a
     ;; propagated input of GnuTLS.
