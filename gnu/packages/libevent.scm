@@ -111,7 +111,8 @@ limited support for fork events.")
                 "1kwgl7j9snmjicrszhynfyp4njckqaw6l90y71a0b0alp2m8asbn"))))
     (build-system gnu-build-system)
     (arguments
-     '(;; XXX: Some tests want /dev/tty, attempt to make connections, etc.
+     '(#:configure-flags '("--disable-static")
+       ;; XXX: Some tests want /dev/tty, attempt to make connections, etc.
        #:tests? #f))
     (native-inputs `(("autoconf" ,autoconf-wrapper)
                      ("automake" ,automake)
