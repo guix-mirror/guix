@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +21,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages entr)
+  #:use-module (gnu packages ncurses)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -52,11 +54,13 @@
                (invoke "./configure"))))
          (add-before 'build 'remove-fhs-file-names
            (lambda _
-             ;; Use the tools available in $PATH.
              (substitute* "entr.c"
-               (("/bin/cat") "cat")
-               (("/usr/bin/clear") "clear"))
+               (("/bin/sh") (which "sh"))
+               (("/bin/cat") (which "cat"))
+               (("/usr/bin/clear") (which "clear")))
              #t)))))
+    ;; ncurses provides the `clear' binary
+    (inputs `(("ncurses" ,ncurses)))
     (home-page "http://entrproject.org/")
     (synopsis "Run arbitrary commands when files change")
     (description

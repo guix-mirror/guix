@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2016, 2018 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2017, 2018 Mark H Weaver <mhw@netris.org>
@@ -277,14 +277,14 @@ without requiring the source code to be rewritten.")
   (package
     (inherit guile-2.2)
     (name "guile-next")
-    (version "2.9.8")
+    (version "2.9.9")
     (source (origin
               (inherit (package-source guile-2.2))
               (uri (string-append "ftp://alpha.gnu.org/gnu/guile/guile-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "09icv9ymdb7hchn34c32s7x8ycilqj74mirmi4b3bm5zp1izd32a"))))
+                "0s99zzdzj29fb42q5fwn7vqg9k7y9ppq9vkv4p39zr93z8694wdz"))))
     (native-search-paths
      (list (search-path-specification
             (variable "GUILE_LOAD_PATH")
@@ -296,9 +296,9 @@ without requiring the source code to be rewritten.")
     (properties '((ftp-server . "alpha.gnu.org")
                   (upstream-name . "guile")))))
 
-(define (make-guile-readline guile)
+(define* (make-guile-readline guile #:optional (name "guile-readline"))
   (package
-    (name "guile-readline")
+    (name name)
     (version (package-version guile))
     (source (package-source guile))
     (build-system gnu-build-system)
@@ -354,6 +354,9 @@ GNU@tie{}Guile.  Use the @code{(ice-9 readline)} module and call its
 
 (define-public guile-readline
   (make-guile-readline guile-2.2))
+
+(define-public guile3.0-readline
+  (make-guile-readline guile-next "guile3.0-readline"))
 
 (define (guile-variant-package-name prefix)
   (lambda (name)
@@ -449,9 +452,7 @@ specification.  These are the main features:
 ;; Deprecate the 'guile-json' alias to force the use 'guile-json-1' or
 ;; 'guile-json-3'.  In the future, we may reuse 'guile-json' as an alias for
 ;; 'guile-json-3'.
-(define-deprecated guile-json
-  guile-json-1
-  guile-json-1)
+(define-deprecated guile-json guile-json-1)
 (export guile-json)
 
 (define-public guile2.0-json
@@ -589,8 +590,16 @@ Guile's foreign function interface.")
                 "0q0habjiy3h9cigb7q1br9kz6z212dn2ab31f6dgd3rrmsfn5rvb"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags
-       '("GUILE_AUTO_COMPILE=0"))) ;to prevent guild warnings
+     `(#:make-flags '("GUILE_AUTO_COMPILE=0")     ;to prevent guild warnings
+
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'install-doc
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (package ,(package-full-name this-package "-"))
+                             (doc (string-append out "/share/doc/" package)))
+                        (install-file "README.md" doc)
+                        #t))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)

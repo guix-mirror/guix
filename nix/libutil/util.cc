@@ -305,7 +305,7 @@ void writeLine(int fd, string s)
 }
 
 
-static void _deletePath(const Path & path, unsigned long long & bytesFreed)
+static void _deletePath(const Path & path, unsigned long long & bytesFreed, size_t linkThreshold)
 {
     checkInterrupt();
 
@@ -324,7 +324,7 @@ static void _deletePath(const Path & path, unsigned long long & bytesFreed)
     struct stat st = lstat(path);
 #endif
 
-    if (!S_ISDIR(st.st_mode) && st.st_nlink == 1)
+    if (!S_ISDIR(st.st_mode) && st.st_nlink <= linkThreshold)
 	bytesFreed += st.st_size;
 
     if (S_ISDIR(st.st_mode)) {
@@ -335,7 +335,7 @@ static void _deletePath(const Path & path, unsigned long long & bytesFreed)
         }
 
         for (auto & i : readDirectory(path))
-            _deletePath(path + "/" + i.name, bytesFreed);
+            _deletePath(path + "/" + i.name, bytesFreed, linkThreshold);
     }
 #undef st_mode
 #undef st_size
@@ -353,12 +353,12 @@ void deletePath(const Path & path)
 }
 
 
-void deletePath(const Path & path, unsigned long long & bytesFreed)
+void deletePath(const Path & path, unsigned long long & bytesFreed, size_t linkThreshold)
 {
     startNest(nest, lvlDebug,
         format("recursively deleting path `%1%'") % path);
     bytesFreed = 0;
-    _deletePath(path, bytesFreed);
+    _deletePath(path, bytesFreed, linkThreshold);
 }
 
 

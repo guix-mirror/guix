@@ -643,6 +643,12 @@ using Guile's foreign function interface.")
      "Guile-colorized provides you with a colorized REPL for GNU Guile.")
     (license license:gpl3+)))
 
+(define-public guile3.0-colorized
+  (package
+    (inherit guile-colorized)
+    (name "guile3.0-colorized")
+    (native-inputs `(("guile" ,guile-next)))))
+
 (define-public guile-pfds
   (package
     (name "guile-pfds")
@@ -776,6 +782,12 @@ convenient nested tree operations.")
        "This package provides a Guile programming interface to the ZeroMQ
 messaging library.")
       (license license:gpl3+))))
+
+(define-public guile3.0-simple-zmq
+  (package
+    (inherit guile-simple-zmq)
+    (name "guile3.0-simple-zmq")
+    (native-inputs `(("guile" ,guile-next)))))
 
 (define-public jupyter-guile-kernel
   (let ((commit "a7db9245a886e104138474df46c3e88b95cff629")
@@ -984,7 +996,20 @@ format.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1w7qy4dw1f4bx622l6hw8mv49sf1ha8kch8j4nganyk8fj0wn695"))))
+                "1w7qy4dw1f4bx622l6hw8mv49sf1ha8kch8j4nganyk8fj0wn695"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Allow builds with Guile 3.0.
+                  (substitute* "configure.ac"
+                    (("^GUILE_PKG.*")
+                     "GUILE_PKG([3.0 2.2 2.0])\n"))
+
+                  ;; Remove "guile.m4" since it contains an obsolete version
+                  ;; of 'GUILE_PKG' that doesn't work with development
+                  ;; versions such as 2.9.
+                  (delete-file "m4/guile.m4")
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
@@ -1003,6 +1028,13 @@ color text mode, widget based user interfaces.  The bindings are written in pure
 Scheme by using Guile’s foreign function interface.")
     (home-page "https://gitlab.com/mothacehe/guile-newt")
     (license license:gpl3+)))
+
+(define-public guile3.0-newt
+  (package
+    (inherit guile-newt)
+    (name "guile3.0-newt")
+    (inputs `(("guile" ,guile-next)
+              ,@(alist-delete "guile" (package-inputs guile-newt))))))
 
 (define-public guile-mastodon
   (package
@@ -1045,7 +1077,20 @@ microblogging service.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "01qmv6xnbbq3wih0dl9bscvca2d7zx7bjiqf35y6dkaqsp8nvdxf"))))
+                "01qmv6xnbbq3wih0dl9bscvca2d7zx7bjiqf35y6dkaqsp8nvdxf"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Allow builds with Guile 3.0.
+                  (substitute* "configure.ac"
+                    (("^GUILE_PKG.*")
+                     "GUILE_PKG([3.0 2.2 2.0])\n"))
+
+                  ;; Remove "guile.m4" since it contains an obsolete version
+                  ;; of 'GUILE_PKG' that doesn't work with development
+                  ;; versions such as 2.9.
+                  (delete-file "m4/guile.m4")
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
@@ -1066,6 +1111,15 @@ allowing disk partition tables creation and manipulation.  The bindings are
 written in pure Scheme by using Guile's foreign function interface.")
     (home-page "https://gitlab.com/mothacehe/guile-parted")
     (license license:gpl3+)))
+
+(define-public guile3.0-parted
+  (package
+    (inherit guile-parted)
+    (name "guile3.0-parted")
+    (inputs `(("guile" ,guile-next)
+              ,@(alist-delete "guile" (package-inputs guile-parted))))
+    (propagated-inputs
+     `(("guile-bytestructures" ,guile3.0-bytestructures)))))
 
 (define-public guile-xosd
   (package

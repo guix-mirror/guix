@@ -15,7 +15,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017, 2018, 2019 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2017, 2018, 2019, 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
@@ -1993,14 +1993,14 @@ scientific applications modeled by partial differential equations.")
 (define-public python-petsc4py
   (package
     (name "python-petsc4py")
-    (version "3.10.1")
+    (version "3.11.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "petsc4py" version))
         (sha256
           (base32
-            "094hcnran0r2z1wlvmjswsz3ski1m9kqrl5l0ax8jjhnk55x0flh"))))
+            "1rm1qj5wlkhxl39by9n78lh3gbmii31wsnb8j1rr5hvfr5xgbx2q"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -2163,14 +2163,14 @@ arising after the discretization of partial differential equations.")
 (define-public python-slepc4py
   (package
     (name "python-slepc4py")
-    (version "3.10.0")
+    (version "3.11.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "slepc4py" version))
         (sha256
           (base32
-            "0x049dyc8frgh79fvvavf4vlbqp4mgm61nsaivzdav4316vvlv1j"))))
+            "1ksp08kxf4wg408b9nn39z3qfhy643j22d4rfbl30vzxk2rxh4lq"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

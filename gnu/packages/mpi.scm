@@ -159,8 +159,7 @@ bind processes, and much more.")
                   "-1"))
                #t))))))))
 
-(define-deprecated hwloc-2.0 'hwloc-2
-  hwloc-2)
+(define-deprecated hwloc-2.0 hwloc-2)
 
 (define-public hwloc
   ;; The latest stable series of hwloc.

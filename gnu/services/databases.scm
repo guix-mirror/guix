@@ -524,7 +524,7 @@ port=" (number->string port) "
                   (for-each
                    (lambda (sql)
                      (call-with-input-file
-                         (string-append #$mysql "/share/mysql/" sql)
+                         (string-append #$mysql:lib "/share/mysql/" sql)
                        (lambda (in) (dump-port in p))))
                    '("mysql_system_tables.sql"
                      "mysql_performance_tables.sql"

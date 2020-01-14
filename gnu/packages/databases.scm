@@ -992,27 +992,27 @@ pictures, sounds, or video.")
   (package
     (inherit postgresql)
     (name "postgresql")
-    (version "11.5")
+    (version "11.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "106ikalvrilihlvhq7xj7snq98hgbgq6qsgjrd252wgw1c327pvz"))))))
+                "0w1iq488kpzfgfnlw4k32lz5by695mpnkq461jrgsr99z5zlz4j9"))))))
 
 (define-public postgresql-9.6
   (package
     (inherit postgresql)
     (name "postgresql")
-    (version "9.6.15")
+    (version "9.6.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "02hp69h2p02asfblkaahblzdz2zmawd2r11h6237y5j7yadgxn9w"))))))
+                "1rr2dgv4ams8r2lp13w85c77rkmzpb88fjlc28mvlw6zq2fblv2w"))))))
 
 (define-public python-pymysql
   (package
@@ -1858,14 +1858,14 @@ similar to BerkeleyDB, LevelDB, etc.")
 (define-public redis
   (package
     (name "redis")
-    (version "4.0.10")
+    (version "5.0.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.redis.io/releases/redis-"
                                   version".tar.gz"))
               (sha256
                (base32
-                "194cydhv3hf4v95ifvjvsqrs4jn3ffrkg5lvxj5d3y04lwsp9dhx"))))
+                "0ax8sf3vw0yadr41kzc04917scrg5wir1d94zmbz00b8pzm79nv1"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; tests related to master/slave and replication fail

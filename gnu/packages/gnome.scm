@@ -11,7 +11,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
 ;;; Copyright © 2016, 2017, 2019 Kei Kebreau <kkebreau@posteo.net>
@@ -298,7 +298,7 @@ features to enable users to create their discs easily and quickly.")
 it easy to manage, install and generate color profiles
 in the GNOME desktop.")
    (home-page "https://gitlab.gnome.org/GNOME/gnome-color-manager")
-   (license license:gpl2)))
+   (license license:gpl2+)))
 
 (define-public gnome-online-miners
   (package
@@ -333,7 +333,132 @@ in the GNOME desktop.")
 go through your online content and index them locally in Tracker.
 It has miners for Facebook, Flickr, Google, ownCloud and SkyDrive.")
     (home-page "https://wiki.gnome.org/Projects/GnomeOnlineMiners")
-    (license license:gpl2)))
+    (license license:gpl2+)))
+
+(define-public gssdp
+  (package
+   (name "gssdp")
+   (version "1.2.2")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/" name "/"
+                                (version-major+minor version) "/"
+                                name "-" version ".tar.xz"))
+            (sha256
+             (base32
+              "195hi10vrsvh6i927mm6rm1ld5sxah3h5sr3bsjm90vb8lxrxfya"))))
+   (build-system meson-build-system)
+   (native-inputs
+    `(("gettext" ,gettext-minimal)
+      ("glib:bin" ,glib "bin")
+      ("gobject-introspection" ,gobject-introspection)
+      ("gtk-doc" ,gtk-doc)
+      ("pkg-config" ,pkg-config)
+      ("vala" ,vala)))
+   (inputs
+    `(("gtk+" ,gtk+)
+      ("libsoup" ,libsoup)))
+   (synopsis "GObject-based API over @acronym{SSDP, Simple Service Discovery
+Protocol} for GNOME")
+   (description "This package provides a library to handle resource discovery
+and announcement over @acronym{SSDP, Simple Service Discovery Protocol} and
+a debugging tool, @command{gssdp-device-sniffer}.")
+   (home-page "https://gitlab.gnome.org/GNOME/gssdp")
+   (license license:lgpl2.0+)))
+
+(define-public gupnp
+  (package
+   (name "gupnp")
+   (version "1.2.2")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/" name "/"
+                                (version-major+minor version) "/"
+                                name "-" version ".tar.xz"))
+            (sha256
+             (base32
+              "12cr3isww4zl0d4himpd2fhl2wmy3jh8sbxp4snp51sw7savv04s"))))
+   (build-system meson-build-system)
+   (native-inputs
+    `(("gettext" ,gettext-minimal)
+      ("glib:bin" ,glib "bin")
+      ("gobject-introspection" ,gobject-introspection)
+      ("gtk-doc" ,gtk-doc)
+      ("pkg-config" ,pkg-config)
+      ("vala" ,vala)))
+   (inputs
+    `(("gssdp" ,gssdp)
+      ("gtk+" ,gtk+)
+      ("libsoup" ,libsoup)))
+   (synopsis "PnP API for GNOME")
+   (description "This package provides GUPnP, an object-oriented framework
+for creating UPnP devices and control points, written in C using
+@code{GObject} and @code{libsoup}.")
+   (home-page "https://gitlab.gnome.org/GNOME/gupnp")
+   (license license:lgpl2.0+)))
+
+(define-public gupnp-dlna
+  (package
+   (name "gupnp-dlna")
+   (version "0.10.5")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/" name "/"
+                                (version-major+minor version) "/"
+                                name "-" version ".tar.xz"))
+            (sha256
+             (base32
+              "0spzd2saax7w776p5laixdam6d7smyynr9qszhbmq7f14y13cghj"))))
+   (build-system gnu-build-system)
+   (native-inputs
+    `(("gettext" ,gettext-minimal)
+      ("glib:bin" ,glib "bin")
+      ("gobject-introspection" ,gobject-introspection)
+      ("gtk-doc" ,gtk-doc)
+      ("libxml" ,libxml2)
+      ("pkg-config" ,pkg-config)
+      ("vala" ,vala)))
+   (inputs
+    `(("gstreamer" ,gstreamer)
+      ("gupnp" ,gupnp)))
+   (propagated-inputs
+    `(("gst-plugins-base" ,gst-plugins-base)
+      ("gst-plugins-good" ,gst-plugins-good)))
+   (synopsis "GUPnP DLNA for GNOME")
+   (description "This package provides a small utility library to
+support DLNA-related tasks such as media profile guessing, transcoding to a
+given profile, etc.  DLNA is a subset of UPnP A/V.")
+   (home-page "https://gitlab.gnome.org/GNOME/gupnp-dlna")
+   (license license:lgpl2.0+)))
+
+(define-public gupnp-av
+  (package
+   (name "gupnp-av")
+   (version "0.12.11")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/" name "/"
+                                (version-major+minor version) "/"
+                                name "-" version ".tar.xz"))
+            (sha256
+             (base32
+              "1p3grslwqm9bc8rmpn4l48d7v9s84nina4r9xbd932dbj8acz7b8"))))
+   (build-system gnu-build-system)
+   (native-inputs
+    `(("gettext" ,gettext-minimal)
+      ("glib:bin" ,glib "bin")
+      ("gobject-introspection" ,gobject-introspection)
+      ("gtk-doc" ,gtk-doc)
+      ("libxml" ,libxml2)
+      ("pkg-config" ,pkg-config)))
+   (inputs
+    `(("gtk+" ,gtk+)
+      ("gupnp" ,gupnp)))
+   (synopsis "GUPnP A/V for GNOME")
+   (description "This package provides a small library for handling
+and implementation of UPnP A/V profiles.")
+   (home-page "https://gitlab.gnome.org/GNOME/gupnp-av")
+   (license license:lgpl2.0+)))
 
 (define-public libmediaart
   (package
@@ -364,6 +489,99 @@ extraction, and lookup for applications on the desktop.")
     (home-page "https://gitlab.gnome.org/GNOME/libmediaart")
     (license license:lgpl2.1+)))
 
+(define-public gnome-initial-setup
+  (package
+   (name "gnome-initial-setup")
+   (version "3.32.1")
+   (source (origin
+            (method url-fetch)
+           (uri (string-append "mirror://gnome/sources/gnome-initial-setup/"
+                                (version-major+minor version)
+                                "/gnome-initial-setup-" version ".tar.xz"))
+            (sha256
+             (base32
+              "1gwhp7dalyc8zsb2pa66cmpdrj2d6drbq5p331sq6zp8ds10k9ry"))))
+   (build-system meson-build-system)
+   (arguments
+    '(#:configure-flags '(;; Enable camera support for user selfie.
+                          "-Dcheese=auto"
+                          "-Dsystemd=false")))
+   (native-inputs
+    `(("gettext" ,gettext-minimal)
+      ("glib:bin" ,glib "bin")
+      ("gobject-introspection" ,gobject-introspection)
+      ("gtk+:bin" ,gtk+ "bin")
+      ("pkg-config" ,pkg-config)))
+   (inputs
+    `(("accountsservice" ,accountsservice)
+      ;("adwaita-icon-theme" ,adwaita-icon-theme)
+      ("gdm" ,gdm)
+      ("geoclue" ,geoclue)
+      ("gnome-desktop" ,gnome-desktop)
+      ("gnome-getting-started-docs" ,gnome-getting-started-docs)
+      ("gnome-online-accounts" ,gnome-online-accounts)
+      ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
+      ("gstreamer" ,gstreamer)
+      ("ibus" ,ibus)
+      ("json-glib" ,json-glib)
+      ("krb5" ,mit-krb5)
+      ("libgweather" ,libgweather)
+      ("libsecret" ,libsecret)
+      ("network-manager" ,network-manager)
+      ("network-manager-applet" ,network-manager-applet)
+      ("packagekit" ,packagekit)
+      ("polkit" ,polkit)
+      ("pwquality" ,libpwquality)
+      ("rest" ,rest)
+      ("upower" ,upower)
+      ("webkitgtk" ,webkitgtk)))
+   (synopsis "Initial setup wizard for GNOME desktop")
+   (description "This package provides a set-up wizard when a
+user logs into GNOME for the first time.  It typically provides a
+tour of all gnome components and allows the user to set them up.")
+   (home-page "https://gitlab.gnome.org/GNOME/gnome-initial-setup")
+   (license license:gpl2)))
+
+(define-public gnome-user-share
+  (package
+   (name "gnome-user-share")
+   (version "3.33.1")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/" name "/"
+                                (version-major+minor version) "/"
+                                name "-" version ".tar.xz"))
+            (sha256
+             (base32
+              "0lf790pyamdyj7180ils8vizjl8brxcg7jsm1iavfp9ay4wa8mz7"))))
+   (build-system meson-build-system)
+   (arguments
+    `(#:glib-or-gtk? #t
+      #:configure-flags
+       `("-Dsystemd=false"
+         ;; Enable nautilus extension for file sharing.
+         "-Dnautilus_extension=true")))
+   (native-inputs
+    `(("gettext" ,gettext-minimal)
+      ("glib:bin" ,glib "bin")
+      ("gobject-introspection" ,gobject-introspection)
+      ("gtk+:bin" ,gtk+ "bin")
+      ("pkg-config" ,pkg-config)
+      ("yelp-tools" ,yelp-tools)))
+   (inputs
+    `(("glib" ,glib)
+      ("gnome-bluetooth" ,gnome-bluetooth)
+      ("gtk+" ,gtk+)
+      ("libcanberra" ,libcanberra)
+      ("libnotify" ,libnotify)
+      ("nautilus" ,nautilus)))      ; For nautilus extension.
+   (synopsis "File sharing for GNOME desktop")
+   (description "GNOME User Share is a small package that binds together
+various free software projects to bring easy to use user-level file
+sharing to the masses.")
+   (home-page "https://gitlab.gnome.org/GNOME/gnome-user-share")
+   (license license:gpl2+)))
+
 (define-public gnome-menus
   (package
     (name "gnome-menus")
@@ -385,7 +603,7 @@ extraction, and lookup for applications on the desktop.")
     (description "GNOME Menus contains the libgnome-menu library, the layout
 configuration files for the GNOME menu, as well as a simple menu editor.")
     (home-page "https://gitlab.gnome.org/GNOME/gnome-menus")
-    (license license:gpl2)))
+    (license license:lgpl2.0+)))
 
 (define-public deja-dup
   (package
@@ -1144,7 +1362,7 @@ forgotten when the session ends.")
                "05q6v9lssd21623mnj2p49clj9v9csw9kay7n4nklki025grbh1w"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     `(#:configure-flags '("--disable-nautilus")
+     `(#:configure-flags '("--disable-nautilus" "--enable-introspection")
        #:phases
        (modify-phases %standard-phases
          (add-before 'install 'skip-gtk-update-icon-cache
@@ -1188,6 +1406,7 @@ forgotten when the session ends.")
      `(("itstool" ,itstool)
        ("intltool" ,intltool)
        ("glib" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)
        ("xmllint" ,libxml2)))
     (home-page
@@ -1813,77 +2032,76 @@ from forcing GEXP-PROMISE."
                   (lambda (crate)
                     (delete-file-recursively (string-append "vendor/" (car crate)))
                     (invoke "tar" "xvf" (cdr crate) "-C" "vendor"))
-                  '(
-;; aho-corasick 0.7
+                  '(;("aho-corasick" . #+(package-source rust-aho-corasick-0.7))
 ;; alga 0.9
-;; approx 0.3
-;; arrayvec 0.4
+                    ("approx" . #+(package-source rust-approx-0.3))
+                    ("arrayvec" . #+(package-source rust-arrayvec-0.4))
                     ("atty" . #+(package-source rust-atty-0.2))
                     ("autocfg" . #+(package-source rust-autocfg-0.1))
                     ("bitflags" . #+(package-source rust-bitflags-1))
 ;; block 0.1
-;; bstr 0.2
-;; byteorder 1.3
+                    ("bstr" . #+(package-source rust-bstr-0.2))
+                    ("byteorder" . #+(package-source rust-byteorder-1.3))
 ;; cairo-rs 0.7
 ;; cairo-sys-rs 0.9
-;; cast 0.2
+                    ("cast" . #+(package-source rust-cast-0.2))
                     ("cfg-if" . #+(package-source rust-cfg-if-0.1))
                     ("clap" . #+(package-source rust-clap-2))
-                    ;("cloudabi" . #+(package-source rust-cloudabi-0.0))
-;; criterion 0.2
-;; criterion-plot 0.3
-;; crossbeam-deque 0.7
-;; crossbeam-epoch 0.7
-;; crossbeam-queue 0.1
-;; crossbeam-utils 0.6
+                    ("cloudabi" . #+(package-source rust-cloudabi-0.0))
+                    ("criterion" . #+(package-source rust-criterion-0.2))
+                    ("criterion-plot" . #+(package-source rust-criterion-plot-0.3))
+                    ("crossbeam-deque" . #+(package-source rust-crossbeam-deque-0.7))
+                    ;("crossbeam-epoch" . #+(package-source rust-crossbeam-epoch-0.7))
+                    ("crossbeam-queue" . #+(package-source rust-crossbeam-queue-0.1))
+                    ("crossbeam-utils" . #+(package-source rust-crossbeam-utils-0.6))
 ;; cssparser 0.25
 ;; cssparser-macros 0.3
-;; csv 1.1
-;; csv-core 0.1
+                    ("csv" . #+(package-source rust-csv-1.1))
+                    ("csv-core" . #+(package-source rust-csv-core-0.1))
 ;; data-url 0.1
 ;; downcast-rs 1.0
                     ("dtoa" . #+(package-source rust-dtoa-0.4))
 ;; dtoa-short 0.3
-;; either 1.5
-;; encoding 0.2
-;; encoding-index-japanese 1.20141219.5
-;; encoding-index-korean 1.20141219.5
-;; encoding-index-simpchinese 1.20141219.5
-;; encoding-index-singlebyte 1.20141219.5
-;; encoding-index-tradchinese 1.20141219.5
-;; encoding_index_tests 0.1
+                    ("either" . #+(package-source rust-either-1.5))
+                    ("encoding" . #+(package-source rust-encoding-0.2))
+                    ("encoding-index-japanese" . #+(package-source rust-encoding-index-japanese-1.20141219))
+                    ("encoding-index-korean" . #+(package-source rust-encoding-index-korean-1.20141219))
+                    ("encoding-index-simpchinese" . #+(package-source rust-encoding-index-simpchinese-1.20141219))
+                    ("encoding-index-singlebyte" . #+(package-source rust-encoding-index-singlebyte-1.20141219))
+                    ("encoding-index-tradchinese" . #+(package-source rust-encoding-index-tradchinese-1.20141219))
+                    ("encoding_index_tests" . #+(package-source rust-encoding-index-tests-0.1))
 ;; float-cmp 0.5
 ;; fragile 0.3
-                    ;("fuchsia-cprng" . #+(package-source rust-fuchsia-cprng-0.1))
-;; futf 0.1
+                    ("fuchsia-cprng" . #+(package-source rust-fuchsia-cprng-0.1))
+                    ("futf" . #+(package-source rust-futf-0.1))
 ;; gdk-pixbuf 0.7
 ;; gdk-pixbuf-sys 0.9
-;; generic-array 0.12
+                    ("generic-array" . #+(package-source rust-generic-array-0.12))
 ;; gio 0.7
 ;; gio-sys 0.9
 ;; glib 0.8
 ;; glib-sys 0.9
 ;; gobject-sys 0.9
 ;; idna 0.2
-;; itertools 0.8
+                    ("itertools" . #+(package-source rust-itertools-0.8))
                     ("itoa" . #+(package-source rust-itoa-0.4))
-                    ;("language-tags" . #+(package-source rust-language-tags-0.2))
+                    ("language-tags" . #+(package-source rust-language-tags-0.2))
                     ("lazy_static" . #+(package-source rust-lazy-static-1.3))
                     ("libc" . #+(package-source rust-libc-0.2))
 ;; libm 0.1
 ;; locale_config 0.3
                     ("log" . #+(package-source rust-log-0.4))
-;; mac 0.1
+                    ("mac" . #+(package-source rust-mac-0.1))
 ;; malloc_buf 0.0
 ;; markup5ever 0.9
-                    ;("matches" . #+(package-source rust-matches-0.1))
+                    ("matches" . #+(package-source rust-matches-0.1))
 ;; matrixmultiply 0.2
-;; memchr 2.2
+                    ;("memchr" . #+(package-source rust-memchr-2.2))
 ;; memoffset 0.5
 ;; nalgebra 0.18
-;; new_debug_unreachable 1.0
+                    ("new_debug_unreachable" . #+(package-source rust-new-debug-unreachable-1.0))
                     ("nodrop" . #+(package-source rust-nodrop-0.1))
-;; num-complex 0.2
+                    ("num-complex" . #+(package-source rust-num-complex-0.2))
                     ("num-integer" . #+(package-source rust-num-integer-0.1))
 ;; num-rational 0.2
                     ("num-traits" . #+(package-source rust-num-traits-0.2))
@@ -1896,16 +2114,16 @@ from forcing GEXP-PROMISE."
 ;; pangocairo 0.8
 ;; pangocairo-sys 0.10
                     ("percent-encoding" . #+(package-source rust-percent-encoding-2.1))
-;; phf 0.7.24
-;; phf_codegen 0.7.24
-;; phf_generator 0.7.24
-;; phf_shared 0.7.24
-                    ;("pkg-config" . #+(package-source rust-pkg-config-0.3))
-;; precomputed-hash 0.1
+                    ("phf" . #+(package-source rust-phf-0.7))
+                    ("phf_codegen" . #+(package-source rust-phf-codegen-0.7))
+                    ("phf_generator" . #+(package-source rust-phf-generator-0.7))
+                    ("phf_shared" . #+(package-source rust-phf-shared-0.7))
+                    ("pkg-config" . #+(package-source rust-pkg-config-0.3))
+                    ("precomputed-hash" . #+(package-source rust-precomputed-hash-0.1))
                     ("proc-macro2" . #+(package-source rust-proc-macro2-1.0))
 ;; procedural-masquerade 0.1
                     ("quote" . #+(package-source rust-quote-1.0))
-                    ;("rand" . #+(package-source rust-rand-0.6))
+                    ("rand" . #+(package-source rust-rand-0.6))
                     ("rand_chacha" . #+(package-source rust-rand-chacha-0.1))
                     ("rand_core-0.3.1" . #+(package-source rust-rand-core-0.3))
                     ("rand_core" . #+(package-source rust-rand-core-0.4))
@@ -1916,45 +2134,45 @@ from forcing GEXP-PROMISE."
                     ("rand_pcg" . #+(package-source rust-rand-pcg-0.1))
                     ("rand_xorshift" . #+(package-source rust-rand-xorshift-0.1))
 ;; rand_xoshiro 0.1
-                    ;("rawpointer" . #+(package-source rust-rawpointer-0.1))
+;; rawpointer 0.2
 ;; rayon 1.2
 ;; rayon-core 1.6
 ;; rctree 0.3
                     ("rdrand" . #+(package-source rust-rdrand-0.4))
 ;; regex 1.3
-;; regex-automata 0.1
+                    ("regex-automata" . #+(package-source rust-regex-automata-0.1))
                     ;("regex-syntax" . #+(package-source rust-regex-syntax-0.6))
-;; rustc_version 0.2
+                    ("rustc_version" . #+(package-source rust-rustc-version-0.2))
                     ("ryu" . #+(package-source rust-ryu-1.0))
                     ("same-file" . #+(package-source rust-same-file-1.0))
                     ("scopeguard" . #+(package-source rust-scopeguard-1.0))
-;; semver 0.9
-                    ;("semver-parser" . #+(package-source rust-semver-parser-0.7))
+                    ("semver" . #+(package-source rust-semver-0.9))
+                    ("semver-parser" . #+(package-source rust-semver-parser-0.7))
                     ("serde" . #+(package-source rust-serde-1.0))
                     ("serde_derive" . #+(package-source rust-serde-derive-1.0))
                     ("serde_json" . #+(package-source rust-serde-json-1.0))
-;; siphasher 0.2
-;; smallvec 0.6
-;; string_cache 0.7
-;; string_cache_codegen 0.4
-;; string_cache_shared 0.3
+                    ("siphasher" . #+(package-source rust-siphasher-0.2))
+                    ("smallvec" . #+(package-source rust-smallvec-0.6))
+                    ("string_cache" . #+(package-source rust-string-cache-0.7))
+                    ;("string_cache_codegen" . #+(package-source rust-string-cache-codegen-0.4))
+                    ("string_cache_shared" . #+(package-source rust-string-cache-shared-0.3))
                     ("syn" . #+(package-source rust-syn-1.0))
-;; tendril 0.4
+                    ("tendril" . #+(package-source rust-tendril-0.4))
                     ("textwrap" . #+(package-source rust-textwrap-0.11))
-                    ;("thread_local" . #+(package-source rust-thread-local-0.3))
-;; tinytemplate 1.0
-                    ;("typenum" . #+(package-source rust-typenum-1.10))
-;; unicode-bidi 0.3
-;; unicode-normalization 0.1
+                    ("thread_local" . #+(package-source rust-thread-local-0.3))
+                    ("tinytemplate" . #+(package-source rust-tinytemplate-1.0))
+                    ("typenum" . #+(package-source rust-typenum-1.10))
+                    ("unicode-bidi" . #+(package-source rust-unicode-bidi-0.3))
+                    ("unicode-normalization" . #+(package-source rust-unicode-normalization-0.1))
                     ("unicode-width" . #+(package-source rust-unicode-width-0.1))
                     ("unicode-xid" . #+(package-source rust-unicode-xid-0.2))
 ;; url 2.1
-;; utf-8 0.7
+                    ("utf-8" . #+(package-source rust-utf-8-0.7))
                     ("walkdir" . #+(package-source rust-walkdir-2.2))
                     ("winapi" . #+(package-source rust-winapi-0.3))
-                    ;("winapi-i686-pc-windows-gnu" . #+(package-source rust-winapi-i686-pc-windows-gnu-0.4))
+                    ("winapi-i686-pc-windows-gnu" . #+(package-source rust-winapi-i686-pc-windows-gnu-0.4))
                     ("winapi-util" . #+(package-source rust-winapi-util-0.1))
-                    ;("winapi-x86_64-pc-windows-gnu" . #+(package-source rust-winapi-x86-64-pc-windows-gnu-0.4))
+                    ("winapi-x86_64-pc-windows-gnu" . #+(package-source rust-winapi-x86-64-pc-windows-gnu-0.4))
 ;; xml-rs 0.8
                     )))
               (format #t "Replacing vendored crates in the tarball and repacking ...~%")
@@ -4475,7 +4693,7 @@ for application developers.")
 (define-public grilo-plugins
   (package
     (name "grilo-plugins")
-    (version "0.3.3")
+    (version "0.3.10")
     (source
      (origin
        (method url-fetch)
@@ -4484,44 +4702,41 @@ for application developers.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "172vr1y98d2mzlmg5akjn4ibrcj3gh22cwnb3cv9rvvzhj3yhrpy"))))
-    (build-system gnu-build-system)
+         "0jldaixc4kzycn5v8ixkjld1n0z3dp0l1p3vchgdwpvdvc7kcfw0"))))
+    (build-system meson-build-system)
     (native-inputs
-     `(("glib:bin" ,glib "bin")     ; for glib-mkenums and glib-genmarshal
-       ("intltool" ,intltool)
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gtk+:bin" ,gtk+ "bin")
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)))
+    ;; TODO: ahavi, gstreamer
     (inputs
      `(("grilo" ,grilo)
-       ("glib" ,glib)
-       ("libxml2" ,libxml2)
-       ("sqlite" ,sqlite)
+       ;("gmime" ,gmime) ; unused
+       ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
        ("gom" ,gom)
-       ;; XXX TODO: Add oauth
-       ;; XXX TODO: Add goa
-       ;; XXX TODO: Add gdata (e.g. needed for youtube plugin)
-       ;; XXX TODO: Add lua (needs help finding it)
+       ;("gssdp" ,gssdp) ; unused
+       ;("gupnp" ,gupnp) ; unused
+       ;("gupnp-av" ,gupnp-av) ; unused
        ("json-glib" ,json-glib)
        ("avahi" ,avahi)
-       ("gmime" ,gmime)
+       ("libgdata" ,libgdata)
+       ("libmediaart" ,libmediaart)
+       ;("librest" ,rest) ; unused
        ("libsoup" ,libsoup)
-       ("libarchive" ,libarchive)
-       ("totem-pl-parser" ,totem-pl-parser)))
+       ("totam-pl-parser" ,totem-pl-parser)
+       ("tracker" ,tracker))) ; unused because it's too old
     (arguments
-     `(#:make-flags (list (string-append "GRL_PLUGINS_DIR="
-                                         %output
-                                         "/lib/grilo-"
-                                         ,(version-major+minor version)))
-       ;; XXX FIXME: Try to get the test suite working.  It appears to require
-       ;; a working system dbus.  Inside the build container, all tests fail
-       ;; with: "assertion failed: (source)".  Outside of the build container,
-       ;; most tests succeed.
-       #:tests? #f))
+     `(#:glib-or-gtk? #t
+       ;;Disable lua-factory as it needs missing dependencies
+       #:configure-flags '("-Denable-lua-factory=no")))
     (home-page "https://live.gnome.org/Grilo")
     (synopsis "Plugins for the Grilo media discovery library")
     (description
      "Grilo is a framework focused on making media discovery and browsing easy
-for application developers.")
+for application developers.  This package provides plugins for common media
+discovery protocols.")
     (license license:lgpl2.1+)))
 
 (define-public totem
@@ -7388,6 +7603,68 @@ disk usage analyzer.  This package establishes that set of default MIME type
 associations for GNOME.")
     (license license:gpl3+)
     (home-page #f)))
+
+(define-public libgovirt
+  (package
+   (name "libgovirt")
+   (version "0.3.6")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/" name "/"
+                                (version-major+minor version) "/"
+                                name "-" version ".tar.xz"))
+            (sha256
+             (base32
+              "19pb71pag3vsi83kbv8h08kimwym4hpw36kjl6a5ik5nk50mc8sg"))))
+   (build-system glib-or-gtk-build-system)
+   (native-inputs
+    `(("gettext" ,gettext-minimal)
+      ("glib:bin" ,glib "bin")
+      ("gobject-introspection" ,gobject-introspection)
+      ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+      ("gtk+:bin" ,gtk+ "bin")
+      ("pkg-config" ,pkg-config)))
+   (inputs
+    `(("glib-networking" ,glib-networking) ; GIO plugin--for the tests
+      ("librest" ,rest)))
+   (synopsis "GoVirt Library")
+   (description "GoVirt is a GObject wrapper for the oVirt REST API.")
+   (home-page "https://gitlab.gnome.org/GNOME/libgovirt")
+   (license license:gpl2+)))
+
+(define-public gnome-weather
+  (package
+   (name "gnome-weather")
+   (version "3.34.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/" name "/"
+                                (version-major+minor version) "/"
+                                name "-" version ".tar.xz"))
+            (sha256
+             (base32
+              "1g63xzs17i36if923b36k9fwbk0nqa5vz6zh1k6q2axrzhhpx1i4"))))
+   (build-system meson-build-system)
+   (native-inputs
+    `(("gettext" ,gettext-minimal)
+      ("glib:bin" ,glib "bin")
+      ("gobject-introspection" ,gobject-introspection)
+      ("gtk+:bin" ,gtk+ "bin")
+      ("pkg-config" ,pkg-config)))
+   (inputs
+    `( ;("adwaita-icon-theme" ,adwaita-icon-theme)
+      ("appstream-glib" ,appstream-glib)
+      ("geoclue" ,geoclue)
+      ("gdk-pixbuf" ,gdk-pixbuf)
+      ("gjs" ,gjs)
+      ("gnome-desktop" ,gnome-desktop)
+      ("libgweather" ,libgweather)))
+   (synopsis "Weather monitoring for GNOME desktop")
+   (description "GNOME Weather is a small application that allows you to
+monitor the current weather conditions for your city, or anywhere in the
+world.")
+   (home-page "https://wiki.gnome.org/Apps/Weather")
+   (license license:gpl2+)))
 
 (define-public gnome
   (package

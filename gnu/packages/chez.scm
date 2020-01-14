@@ -73,17 +73,11 @@
              (commit (string-append "v" version))))
        (sha256
         (base32 "1hagrqdp649n2g0wq2a9gfnz7mjcjakkw7ziplbj3db412bb7kx5"))
-       (file-name (git-file-name name version))
-       (modules '((guix build utils)))
-       (snippet
-        ;; Fix compilation with glibc >= 2.26, which removed xlocale.h.
-        '(begin
-           (substitute* "c/expeditor.c"
-             (("xlocale\\.h") "locale.h"))
-           #t))))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)
+       ("libuuid" ,util-linux)
        ("libx11" ,libx11)
        ("xorg-rgb" ,xorg-rgb)
        ("nanopass" ,nanopass)
@@ -94,8 +88,7 @@
      `(("texlive" ,(texlive-union (list texlive-latex-oberdiek
                                         texlive-generic-epsf)))
        ("ghostscript" ,ghostscript)
-       ("netpbm" ,netpbm)
-       ("util-linux" ,util-linux)))
+       ("netpbm" ,netpbm)))
     (native-search-paths
      (list (search-path-specification
             (variable "CHEZSCHEMELIBDIRS")

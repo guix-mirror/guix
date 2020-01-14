@@ -330,13 +330,13 @@ graphs in Graphviz's DOT language, written in pure Python.")
 (define-public dot2tex
   (package
     (name "dot2tex")
-    (version "2.9.0")
+    (version "2.11.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "dot2tex" version))
               (sha256
                (base32
-                "0jhdwp0wv2h0xb7j2s5xiv7i8yaqgfpwwqcyrjvaxkfwsynm8gkx"))))
+                "1kp77wiv7b5qib82i3y3sn9r49rym43aaqm5aw1bwnzfbbq2m6i9"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2))

@@ -357,42 +357,42 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-(define-public linux-libre-5.4-version "5.4.10")
+(define-public linux-libre-5.4-version "5.4.11")
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "1p9f0h9fl1xy13dag1x7j2ic8kdv0zsp42c8baxn7cz3llc04g7j")))
+        (hash (base32 "0b6pamnhyzf4n6sl8lxcnllrn41xmbldipfca23j1n71spjkdgb2")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.94")
+(define-public linux-libre-4.19-version "4.19.95")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "0rvlz94mjl7ygpmhz0yn2whx9dq9fmy0w1472bj16hkwbaki0an6")))
+        (hash (base32 "1c2g5wcf4zgy5q51qrf0s4hf3pr1j8gi8gn27w8cafn1xqrcmvaa")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.163")
+(define-public linux-libre-4.14-version "4.14.164")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "0jdh54rqdsb3b908v2q4xjn8y45b7rdnwgab0s4qf5alznfcqagb")))
+        (hash (base32 "0jzbgpxlfy64q7zaqix87k8ci1fr9lkx1xr9m5zjniziydhi00x2")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.208")
+(define-public linux-libre-4.9-version "4.9.209")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "0njjw1i8dilihn1hz62zra4b9y05fb3r2k2sqlkd0wfn86c1rbdp")))
+        (hash (base32 "1qarm90l1r4y68v5swhf81z6v6gspa8sw9jab3fxrz8mz6zdan02")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.208")
+(define-public linux-libre-4.4-version "4.4.209")
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "03jj91z5dc0ybpjy9w6aanb3k53gcj7gsjc32h3ldf72hlmgz6aq")))
+        (hash (base32 "0m94795grq3sbj7jlmwc0ncq3vap9lf1z00sdiys17kjs3bcfbnh")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -927,7 +927,7 @@ and should be used with caution, especially on untested models.")
 (define-public vhba-module
   (package
     (name "vhba-module")
-    (version "20190831")
+    (version "20200106")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -935,7 +935,7 @@ and should be used with caution, especially on untested models.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "1ybbk6l06n0y11n5wnfmvdz0baizmq55l458ywimghdyz0n7g0ws"))))
+                "10rlvsfj0fw6n0qmwcnvhimqnsnhi7n55lyl7fq1pkwggf5218sr"))))
     (build-system linux-module-build-system)
     (arguments
      ;; TODO: No tests?
@@ -6030,10 +6030,10 @@ IP addresses and routes, and configure IPsec.")
            (lambda _
              (invoke "make" "install-dev"))))))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("util-linux" ,util-linux)))
+     `(("gettext" ,gettext-minimal)))
     (inputs
-     `(("python" ,python-wrapper)))
+     `(("libuuid" ,util-linux)
+       ("python" ,python-wrapper)))
     (home-page "https://xfs.wiki.kernel.org/")
     (synopsis "XFS file system tools")
     (description "This package provides commands to create and check XFS

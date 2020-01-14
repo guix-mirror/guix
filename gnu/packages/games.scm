@@ -43,7 +43,7 @@
 ;;; Copyright © 2019 Jesse Gibbons <jgibbons2357+guix@gmail.com>
 ;;; Copyright © 2019 Dan Frumin <dfrumin@cs.ru.nl>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
-;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
+;;; Copyright © 2019, 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2019 Josh Holland <josh@inv.alid.pw>
 ;;; Copyright © 2017, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
@@ -738,6 +738,34 @@ automata.  The following features are available:
 @item Auto fit option to keep patterns within the view.
 @end enumerate")
     (license license:gpl2+)))
+
+(define-public julius
+  (package
+    (name "julius")
+    (version "1.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bvschaik/julius.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0kgyzfjii4dhpy2h05977alwdmxyxb4jxznnrhlgb21m0ybncmvp"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("sdl2" ,sdl2)
+       ("sdl2-mixer" ,sdl2-mixer)))
+    (home-page "https://github.com/bvschaik/julius")
+    (synopsis "Re-implementation of Caesar III game engine")
+    (description
+     "Engine for Caesar III, a city-building real-time strategy game.
+Julius includes some UI enhancements while preserving the logic (including
+bugs) of the original game, so that saved games are compatible.  This package
+does not include game data.")
+    (license (list license:agpl3
+                   license:expat        ; ext/dirent
+                   license:zlib))))     ; ext/tinyfiledialogs
 
 (define-public meandmyshadow
   (package
@@ -3800,16 +3828,16 @@ a style similar to the original Super Mario games.")
 (define-public tintin++
   (package
     (name "tintin++")
-    (version "2.01.7")
+    (version "2.02.00")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/tintin/TinTin++ Source Code/"
-                           (version-major+minor version)
+                           (string-drop-right version 1)
                            "/tintin-" version ".tar.gz"))
        (sha256
         (base32
-         "033n84pyxml3n3gd4dq0497n9w331bnrr1gppwipz9ashmq8jz7v"))))
+         "02qmbhzhh2sdy5b37v54gihs9k4bxmlz3j96gyx7icvx2grkbg5i"))))
     (inputs
      `(("gnutls" ,gnutls)
        ("pcre" ,pcre)
@@ -3825,14 +3853,14 @@ a style similar to the original Super Mario games.")
              (chdir "src")
              #t)))))
     (build-system gnu-build-system)
-    (home-page "http://tintin.sourceforge.net/")
+    (home-page "https://tintin.mudhalla.net/")
     (synopsis "MUD client")
     (description
      "TinTin++ is a MUD client which supports MCCP (Mud Client Compression
 Protocol), MMCP (Mud Master Chat Protocol), xterm 256 colors, most TELNET
 options used by MUDs, as well as those required to login via telnet on
 Linux / Mac OS X servers, and an auto mapper with a VT100 map display.")
-    (license license:gpl2+)))
+    (license license:gpl3+)))
 
 (define-public laby
   (package

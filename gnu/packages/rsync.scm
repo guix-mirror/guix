@@ -41,7 +41,7 @@
    (version "3.1.3")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://rsync.samba.org/ftp/rsync/src/rsync-"
+            (uri (string-append "https://rsync.samba.org/ftp/rsync/src/rsync-"
                                 version ".tar.gz"))
             (sha256
              (base32
@@ -57,7 +57,7 @@ Its delta-transfer algorithm reduces the amount of data sent over the network
 by sending only the differences between the source files and the existing
 files in the destination.")
    (license license:gpl3+)
-   (home-page "http://rsync.samba.org/")))
+   (home-page "https://rsync.samba.org/")))
 
 (define-public librsync
   (package

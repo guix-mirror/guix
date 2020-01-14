@@ -20419,8 +20419,8 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
   ;; This package has versions newer than indicated on MELPA.
   ;; Get the current version from `telega-version` in telega.el.
   ;; or by running M-x telega-version.
-  (let ((commit "9bfb637b2e71f5f293debd35abd627a064faf8ef")
-	(revision "2")
+  (let ((commit "4497a3c19d9806eb9edfe13d326d6d9cbb895f64")
+	(revision "3")
 	(version "0.5.4"))
     (package
       (name "emacs-telega")
@@ -20433,7 +20433,7 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
                (commit commit)))
          (sha256
           (base32
-           "06v8i3862n5kf2lnxii8vp9g8cq5ql51kr8yxh7l1wccsidri67a"))
+           "1g0gbbgs8rbcip6kqjxdmnsjlq0ixgknb0qcda7siaha9gd7fjh2"))
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
@@ -21004,4 +21004,31 @@ pattern.  Searching starts with minimal 3 characters entered.
 @item @command{helm-clojuredocs-at-point}: opens a Helm session with initial
 pattern guessed from thing under current cursor position.
 @end itemize\n")
+      (license license:gpl3+))))
+
+(define-public emacs-metal-mercury-mode
+  (let ((commit "99e2d8fb7177cae3bfa2dec2910fc28216d5f5a8")
+	(revision "1")
+	(version "0.0.0"))
+    (package
+      (name "emacs-metal-mercury-mode")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ahungry/metal-mercury-mode.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "0iil5k3rgifz2vqwsy12rbv5rzyvidq4sgwazsb2hzys8xynmfn5"))
+         (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)))
+      (synopsis "Major mode for editing Mercury files")
+      (description
+       "Major mode for editing Mercury files.  This is a rewrite of the original
+mercury-mode provided by Emacs as a wrapper around prolog-mode.")
+      (home-page "https://github.com/ahungry/metal-mercury-mode")
       (license license:gpl3+))))

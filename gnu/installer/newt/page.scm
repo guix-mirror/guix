@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -541,6 +541,17 @@ ITEMS when 'Ok' is pressed."
         (lambda ()
           (destroy-form-and-pop form))))))
 
+(define* (edit-file file #:key locale)
+  "Spawn an editor for FILE."
+  (clear-screen)
+  (newt-suspend)
+  ;; Use Nano because it syntax-highlights Scheme by default.
+  ;; TODO: Add a menu to choose an editor?
+  (run-shell-command (string-append "/run/current-system/profile/bin/nano "
+                                    file)
+                     #:locale locale)
+  (newt-resume))
+
 (define* (run-file-textbox-page #:key
                                 info-text
                                 title
@@ -549,6 +560,8 @@ ITEMS when 'Ok' is pressed."
                                 (file-textbox-width 50)
                                 (file-textbox-height 30)
                                 (exit-button? #t)
+                                (edit-button? #f)
+                                (editor-locale #f)
                                 (ok-button-callback-procedure
                                  (const #t))
                                 (exit-button-callback-procedure
@@ -557,7 +570,6 @@ ITEMS when 'Ok' is pressed."
           (make-reflowed-textbox -1 -1 info-text
                                  info-textbox-width
                                  #:flags FLAG-BORDER))
-         (file-text (read-all file))
          (file-textbox
           (make-textbox -1 -1
                         file-textbox-width
@@ -565,6 +577,8 @@ ITEMS when 'Ok' is pressed."
                         (logior FLAG-SCROLL FLAG-BORDER)))
          (ok-button (make-button -1 -1 (G_ "OK")))
          (exit-button (make-button -1 -1 (G_ "Exit")))
+         (edit-button (and edit-button?
+                           (make-button -1 -1 (G_ "Edit"))))
          (grid (vertically-stacked-grid
                 GRID-ELEMENT-COMPONENT info-textbox
                 GRID-ELEMENT-COMPONENT file-textbox
@@ -572,32 +586,42 @@ ITEMS when 'Ok' is pressed."
                 (apply
                  horizontal-stacked-grid
                  GRID-ELEMENT-COMPONENT ok-button
-                 `(,@(if exit-button?
+                 `(,@(if edit-button?
+                         (list GRID-ELEMENT-COMPONENT edit-button)
+                         '())
+                   ,@(if exit-button?
                          (list GRID-ELEMENT-COMPONENT exit-button)
                          '())))))
          (form (make-form)))
 
-    (set-textbox-text file-textbox
-                      (receive (_w _h text)
-                          (reflow-text file-text
-                                       file-textbox-width
-                                       0 0)
-                        text))
-    (add-form-to-grid grid form #t)
-    (make-wrapped-grid-window grid title)
+    (let loop ()
+      (set-textbox-text file-textbox
+                        (receive (_w _h text)
+                            (reflow-text (read-all file)
+                                         file-textbox-width
+                                         0 0)
+                          text))
 
-    (receive (exit-reason argument)
-        (run-form form)
-      (dynamic-wind
-        (const #t)
-        (lambda ()
-          (case exit-reason
-            ((exit-component)
-             (cond
-              ((components=? argument ok-button)
-               (ok-button-callback-procedure))
-              ((and exit-button?
-                    (components=? argument exit-button))
-               (exit-button-callback-procedure))))))
-        (lambda ()
-          (destroy-form-and-pop form))))))
+      (add-form-to-grid grid form #t)
+      (make-wrapped-grid-window grid title)
+
+      (receive (exit-reason argument)
+          (run-form form)
+        (dynamic-wind
+          (const #t)
+          (lambda ()
+            (case exit-reason
+              ((exit-component)
+               (cond
+                ((components=? argument ok-button)
+                 (ok-button-callback-procedure))
+                ((and exit-button?
+                      (components=? argument exit-button))
+                 (exit-button-callback-procedure))
+                ((and edit-button?
+                      (components=? argument edit-button))
+                 (edit-file file))))))
+          (lambda ()
+            (if (components=? argument edit-button)
+                (loop)
+                (destroy-form-and-pop form))))))))
