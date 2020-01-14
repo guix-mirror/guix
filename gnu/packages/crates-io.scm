@@ -2228,6 +2228,11 @@ hexadecimal, base32, and base64.")
          (base32
           "02vigc566z5i6n9wr2x8sch39qp4arn89xhhrh18fhpm3jfc0ygn"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-winapi" ,rust-winapi-0.3))))
     (home-page "https://github.com/soc/dirs-rs")
     (synopsis "Abstractions for standard locations for various platforms")
     (description
@@ -2236,7 +2241,6 @@ platform-specific standard locations of directories for config, cache and other
 data on Linux, Windows, macOS and Redox by leveraging the mechanisms defined by
 the XDG base/user directory specifications on Linux, the Known Folder API on
 Windows, and the Standard Directory guidelines on macOS.")
-    (properties '((hidden? . #t)))
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-discard-1.0
