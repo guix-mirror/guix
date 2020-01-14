@@ -344,27 +344,28 @@ data types.")
     (name "python")
     (properties `((superseded . ,python-2)))))
 
-(define-public python-3.7
+(define-public python-3.8
   (package (inherit python-2)
     (name "python")
-    (version "3.7.4")
+    (version "3.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
                                   version "/Python-" version ".tar.xz"))
               (patches (search-patches
                         "python-3-fix-tests.patch"
+                        "python-3.8-fix-tests.patch"
                         "python-3-deterministic-build-info.patch"
                         "python-3-search-paths.patch"))
               (sha256
                (base32
-                "0gxiv5617zd7dnqm5k9r4q2188lk327nf9jznwq9j6b8p0s92ygv"))
+                "1s4lwn5vzsajlc88m6hkghsvnjw4d00l2dsgng0m2w6vyqbl32bm"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   ;; Delete the bundled copy of libexpat.
                   (delete-file-recursively "Modules/expat")
-                  (substitute* "Modules/Setup.dist"
+                  (substitute* "Modules/Setup"
                     ;; Link Expat instead of embedding the bundled one.
                     (("^#pyexpat.*") "pyexpat pyexpat.c -lexpat\n"))
                   #t))))
@@ -432,33 +433,8 @@ data types.")
                                         (version-major+minor version)
                                         "/site-packages"))))))))
 
-(define-public python-3.8
-  (package
-    (inherit python-3.7)
-    (name "python-next")
-    (version "3.8.0")
-    (source
-     (origin
-       (inherit (package-source python-3.7))
-       (uri (string-append "https://www.python.org/ftp/python/"
-                           version "/Python-" version ".tar.xz"))
-       (sha256 (base32 "110d0did9rxn7rg85kf2fwli5hqq44xv2d8bi7d92m7v2d728mmk"))
-       (patches (search-patches
-                 "python-3.8-search-paths.patch"
-                 "python-3-fix-tests.patch"
-                 "python-3.8-fix-tests.patch"
-                 "python-3-deterministic-build-info.patch"))
-       (snippet
-        '(begin
-           ;; Delete the bundled copy of libexpat.
-           (delete-file-recursively "Modules/expat")
-           (substitute* "Modules/Setup"
-             ;; Link Expat instead of embedding the bundled one.
-             (("^#pyexpat.*") "pyexpat pyexpat.c -lexpat\n"))
-           #t))))))
-
 ;; Current 3.x version.
-(define-public python-3 python-3.7)
+(define-public python-3 python-3.8)
 
 ;; Current major version.
 (define-public python python-3)
