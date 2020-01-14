@@ -5508,8 +5508,36 @@ file IO.")
          (base32
           "1zy6s0ni0lx9rjzq3gq2zz9r8zgjmbp02332g3gsj4fyhv4s5zz2"))))))
 
+(define-public rust-memoffset-0.5
+  (package
+    (name "rust-memoffset")
+    (version "0.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "memoffset" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1fblqzc25hfaym8m0pj112s66pqq87avvaqm5hp5rskib2w9w63m"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-rustc-version" ,rust-rustc-version-0.2))
+       #:cargo-development-inputs
+       (("rust-doc-comment" ,rust-doc-comment-0.3))))
+    (home-page "https://github.com/Gilnaa/memoffset")
+    (synopsis
+     "C-like offset_of functionality for Rust structs")
+    (description "This package provides C-like @code{offset_of} functionality
+for Rust structs.")
+    (license license:expat)))
+
 (define-public rust-memoffset-0.2
   (package
+    (inherit rust-memoffset-0.5)
     (name "rust-memoffset")
     (version "0.2.1")
     (source
@@ -5521,14 +5549,7 @@ file IO.")
        (sha256
         (base32
          "1cvm2z7dy138s302ii7wlzcxbka5a8yfl5pl5di7lbdnw9hw578g"))))
-    (build-system cargo-build-system)
-    (arguments `(#:skip-build? #t))
-    (home-page "https://github.com/Gilnaa/memoffset")
-    (synopsis
-     "offset_of functionality for Rust structs")
-    (description
-     "@code{offset_of} functionality for Rust structs.")
-    (license license:expat)))
+    (arguments `(#:skip-build? #t))))
 
 (define-public rust-mime-0.3
   (package
