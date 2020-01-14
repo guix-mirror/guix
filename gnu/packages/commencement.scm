@@ -1885,13 +1885,21 @@ the bootstrap environment."
     (version "3.5.7")
     (source (bootstrap-origin
              (origin
-               (inherit (package-source python))
+               (method url-fetch)
                (uri (string-append "https://www.python.org/ftp/python/"
                                    version "/Python-" version ".tar.xz"))
-               (patches '())
                (sha256
                 (base32
-                 "1p67pnp2ca5przx2s45r8m55dcn6f5hsm0l4s1zp7mglkf4r4n18")))))
+                 "1p67pnp2ca5przx2s45r8m55dcn6f5hsm0l4s1zp7mglkf4r4n18"))
+               (modules '((guix build utils)))
+               (snippet
+                '(begin
+                   ;; Delete the bundled copy of libexpat.
+                   (delete-file-recursively "Modules/expat")
+                   (substitute* "Modules/Setup.dist"
+                     ;; Link Expat instead of embedding the bundled one.
+                     (("^#pyexpat.*") "pyexpat pyexpat.c -lexpat\n"))
+                   #t)))))
     (inputs
      `(,@(%boot0-inputs)
        ("expat" ,expat-sans-tests)))              ;remove OpenSSL, zlib, etc.
