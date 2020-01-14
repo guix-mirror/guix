@@ -1882,7 +1882,7 @@ the bootstrap environment."
     ;; pthreads, which is missing on non-x86 platforms at this stage.
     ;; Python 3.6 technically supports being built without threading
     ;; support, but requires additional patches.
-    (version "3.5.7")
+    (version "3.5.9")
     (source (bootstrap-origin
              (origin
                (method url-fetch)
@@ -1890,7 +1890,7 @@ the bootstrap environment."
                                    version "/Python-" version ".tar.xz"))
                (sha256
                 (base32
-                 "1p67pnp2ca5przx2s45r8m55dcn6f5hsm0l4s1zp7mglkf4r4n18"))
+                 "0jdh9pvx6m6lfz2liwvvhn7vks7qrysqgwn517fkpxb77b33fjn2"))
                (modules '((guix build utils)))
                (snippet
                 '(begin
