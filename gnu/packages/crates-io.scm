@@ -1955,8 +1955,38 @@ intrinsics.")
        #:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.4))))))
 
+(define-public rust-crossbeam-utils-0.7
+  (package
+    (name "rust-crossbeam-utils")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crossbeam-utils" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1x1rn35q2v05qif14ijfg7800d3rf3ji2cg79awnacfw5jq6si6f"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-autocfg" ,rust-autocfg-0.1)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-lazy-static" ,rust-lazy-static-1.3))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.6))))
+    (home-page
+     "https://github.com/crossbeam-rs/crossbeam/tree/master/crossbeam-utils")
+    (synopsis "Utilities for concurrent programming")
+    (description
+     "Utilities for concurrent programming.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-crossbeam-utils-0.6
   (package
+    (inherit rust-crossbeam-utils-0.7)
     (name "rust-crossbeam-utils")
     (version "0.6.5")
     (source
@@ -1968,20 +1998,13 @@ intrinsics.")
        (sha256
         (base32
          "0p5aa8k3wpsn17md4rx038ac2azm9354knbxdfvn7dd7yk76yc7q"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-lazy-static" ,rust-lazy-static-1.3))
        #:cargo-development-inputs
-       (("rust-rand" ,rust-rand-0.4))))
-    (home-page
-     "https://github.com/crossbeam-rs/crossbeam/tree/master/crossbeam-utils")
-    (synopsis "Utilities for concurrent programming")
-    (description
-     "Utilities for concurrent programming.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-rand" ,rust-rand-0.4))))))
 
 (define-public rust-csv-1.1
   (package
