@@ -8326,11 +8326,11 @@ uses finite automata and guarantees linear time matching on all inputs.")
          (base32
           "114bf72466bl63i5hh8fgqfnhihs0w1m9c9jz505095agfixnvg0"))))
     (build-system cargo-build-system)
-    (home-page "https://github.com/rust-lang-nursery/rustc-hash")
+    (arguments '(#:skip-build? #t))
+    (home-page "https://github.com/rust-lang/rustc-hash")
     (synopsis "Speedy, non-cryptographic hash used in rustc")
     (description
      "This package provides a speedy, non-cryptographic hash used in rustc.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
