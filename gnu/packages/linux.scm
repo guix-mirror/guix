@@ -5974,10 +5974,10 @@ IP addresses and routes, and configure IPsec.")
            (lambda _
              (invoke "make" "install-dev"))))))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("util-linux" ,util-linux)))
+     `(("gettext" ,gettext-minimal)))
     (inputs
-     `(("python" ,python-wrapper)))
+     `(("libuuid" ,util-linux)
+       ("python" ,python-wrapper)))
     (home-page "https://xfs.wiki.kernel.org/")
     (synopsis "XFS file system tools")
     (description "This package provides commands to create and check XFS
