@@ -1808,7 +1808,7 @@ intrinsics.")
 (define-public rust-crossbeam-deque-0.7
   (package
     (name "rust-crossbeam-deque")
-    (version "0.7.1")
+    (version "0.7.2")
     (source
      (origin
        (method url-fetch)
@@ -1817,15 +1817,15 @@ intrinsics.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0was9x71cz5g1y3670cyy6jdmsdfg6k9mbf0ddz2k1mdd7hx535i"))))
+         "1jm3rqb3qfpfywrakyy81f61xnl4jsim7lam9digw6w6cdfr9an3"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-crossbeam-epoch" ,rust-crossbeam-epoch-0.7)
-        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6))
+       (("rust-crossbeam-epoch" ,rust-crossbeam-epoch-0.8)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7))
        #:cargo-development-inputs
-       (("rust-rand" ,rust-rand-0.4))))
+       (("rust-rand" ,rust-rand-0.6))))
     (home-page
      "https://github.com/crossbeam-rs/crossbeam/tree/master/crossbeam-deque")
     (synopsis "Concurrent work-stealing deque")

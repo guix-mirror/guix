@@ -2200,7 +2200,7 @@ from forcing GEXP-PROMISE."
                     ("cloudabi" . #+(package-source rust-cloudabi-0.0))
                     ("criterion" . #+(package-source rust-criterion-0.2))
                     ("criterion-plot" . #+(package-source rust-criterion-plot-0.3))
-                    ("crossbeam-deque" . #+(package-source rust-crossbeam-deque-0.7))
+                    ;("crossbeam-deque" . #+(package-source rust-crossbeam-deque-0.7))
                     ;("crossbeam-epoch" . #+(package-source rust-crossbeam-epoch-0.7))
                     ("crossbeam-queue" . #+(package-source rust-crossbeam-queue-0.1))
                     ("crossbeam-utils" . #+(package-source rust-crossbeam-utils-0.6))
