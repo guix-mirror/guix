@@ -2256,12 +2256,12 @@ Windows, and the Standard Directory guidelines on macOS.")
          (base32
           "1h67ni5bxvg95s91wgicily4ix7lcw7cq0a5gy9njrybaibhyb91"))))
     (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/Pauan/rust-discard")
     (synopsis "Allow for intentionally leaking memory")
     (description "There are situations where you need to intentionally leak some
 memory but not other memory.  This package provides a discard trait which allows
 for intentionally leaking memory")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-doc-comment-0.3
