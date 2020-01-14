@@ -1947,6 +1947,17 @@ module provides support functions to the automatically generated code.")
                   ,@%gnu-build-system-modules)
        #:phases
        (modify-phases %standard-phases
+         ;; When building python-pyqtwebengine, <qprinter.h> can not be
+         ;; included.  Here we substitute the full path to the header in the
+         ;; store.
+         (add-before 'configure 'substitute-source
+           (lambda* (#:key inputs  #:allow-other-keys)
+             (let* ((qtbase (assoc-ref inputs "qtbase"))
+                    (qtprinter.h (string-append "\"" qtbase "/include/qt5/QtPrintSupport/qprinter.h\"")))
+               (substitute* "sip/QtPrintSupport/qprinter.sip"
+                 (("<qprinter.h>")
+                  qtprinter.h))
+               #t)))
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
