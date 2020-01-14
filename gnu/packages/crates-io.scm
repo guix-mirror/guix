@@ -8575,7 +8575,7 @@ paths point to the same file.")
 (define-public rust-schannel-0.1
   (package
     (name "rust-schannel")
-    (version "0.1.15")
+    (version "0.1.16")
     (source
       (origin
         (method url-fetch)
@@ -8583,7 +8583,7 @@ paths point to the same file.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0f9k4pm8yc3z0n1n8hazvnrvg52f0sfxjc91bhf3r76rb3rapxpj"))))
+          "08d0p5iy574vdrax4l3laazic0crj7rp7vp3if5rrfkcdfq51xc7"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
