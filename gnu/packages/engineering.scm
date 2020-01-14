@@ -2149,7 +2149,7 @@ engineers for reverse engineers.")
     (native-inputs
      `(("googletest-source" ,(package-source googletest))))
     (inputs
-     `(("libuuid" ,util-linux)))
+     `(("libuuid" ,util-linux "lib")))
     (arguments
      `(#:phases
        (modify-phases %standard-phases

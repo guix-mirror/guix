@@ -835,7 +835,7 @@ script that you can put anywhere in your path.")
               (install-file "abootimg" bin)
               #t))))))
     (inputs
-     `(("libblkid" ,util-linux)))
+     `(("libblkid" ,util-linux "lib")))
     (home-page "https://ac100.grandou.net/abootimg")
     (synopsis "Tool for manipulating Android Boot Images")
     (description "This package provides a tool for manipulating old Android

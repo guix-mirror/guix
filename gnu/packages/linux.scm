@@ -1118,19 +1118,33 @@ providing the system administrator with some help in common tasks.")
                     (("build_kill=yes") "build_kill=no"))
                   #t))))
     (build-system gnu-build-system)
-    (outputs '("out"
-               "static"))               ;>2 MiB of static .a libraries
+    (outputs '("out"            ;6.4 MiB executables and documentation
+               "lib"            ;8.8 MiB shared libraries, headers and locales
+               "static"))       ;2.9 MiB static .a libraries
     (arguments
      `(#:configure-flags (list "--disable-use-tty-group"
                                "--enable-fs-paths-default=/run/current-system/profile/sbin"
                                ;; Don't try to chown root:root mount and umount
                                "--disable-makeinstall-chown"
+                               "--localstatedir=/var"
+                               (string-append "--localedir="
+                                              (assoc-ref %outputs "lib")
+                                              "/share/locale")
                                ;; Install completions where our
                                ;; bash-completion package expects them.
                                (string-append "--with-bashcompletiondir="
                                               (assoc-ref %outputs "out")
                                               "/etc/bash_completion.d"))
        #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'patch-build-scripts
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (substitute* "configure"
+                        ;; The build system assumes that we want to install
+                        ;; libraries below $exec_prefix when $libdir does not
+                        ;; match any of the "usual" locations.  Fix that.
+                        (("usrlib_execdir='\\$\\{exec_prefix\\}'\\$libdir")
+                         "usrlib_execdir=$libdir"))
+                      #t))
                   (add-before 'build 'set-umount-file-name
                     (lambda* (#:key outputs #:allow-other-keys)
                       ;; Tell 'eject' the right file name of 'umount'.
@@ -1150,10 +1164,12 @@ providing the system administrator with some help in common tasks.")
                         #t)))
                   (add-after 'install 'move-static-libraries
                     (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((out    (assoc-ref outputs "out"))
+                      (let ((lib    (assoc-ref outputs "lib"))
                             (static (assoc-ref outputs "static")))
+
+                        ;; Move static libraries to the "static" output.
                         (mkdir-p (string-append static "/lib"))
-                        (with-directory-excursion out
+                        (with-directory-excursion lib
                           (for-each (lambda (file)
                                       (rename-file file
                                                    (string-append static "/"
@@ -1166,7 +1182,16 @@ providing the system administrator with some help in common tasks.")
                           (substitute* (find-files "lib" "\\.la$")
                             (("old_library=.*") "old_library=''\n")))
 
-                        #t))))))
+                        #t)))
+                  (add-after 'install 'adjust-pkg-config-files
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((lib (assoc-ref outputs "lib")))
+                        ;; Drop the unused "prefix=" and "exec_prefix=" variables from
+                        ;; the pkg-config files to avoid a cyclic reference on "out".
+                        (substitute* (find-files (string-append lib "/lib/pkgconfig")
+                                                 "\\.pc$")
+                          (("^(exec_)?prefix=.*") "")))
+                        #t)))))
     (inputs `(("zlib" ,zlib)
               ("ncurses" ,ncurses)
 
@@ -1333,7 +1358,7 @@ slabtop, and skill.")
               (base32
                "00nwl1ppjalxbnx40dsm895r3q793p8nni6n81saj7faj2szdyk5"))))
     (build-system gnu-build-system)
-    (inputs `(("util-linux" ,util-linux)))
+    (inputs `(("util-linux" ,util-linux "lib")))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("texinfo" ,texinfo)       ;for the libext2fs Info manual
 
@@ -2746,7 +2771,7 @@ from the module-init-tools project.")
      ;; When linked against libblkid, eudev can populate /dev/disk/by-label
      ;; and similar; it also installs the '60-persistent-storage.rules' file,
      ;; which contains the rules to do that.
-     `(("util-linux" ,util-linux)                 ;for blkid
+     `(("util-linux" ,util-linux "lib")           ;for blkid
        ("kmod" ,kmod)))
     (home-page "https://wiki.gentoo.org/wiki/Project:Eudev")
     (synopsis "Userspace device management")
@@ -4048,11 +4073,9 @@ and copy/paste text in the console and in xterm.")
        #:test-target "test"
        #:parallel-tests? #f)) ; tests fail when run in parallel
     (inputs `(("e2fsprogs" ,e2fsprogs)
-              ("libblkid" ,util-linux)
-              ("libblkid:static" ,util-linux "static")
-              ("libuuid" ,util-linux)
-              ("libuuid:static" ,util-linux "static")
               ("lzo" ,lzo)
+              ("util-linux:lib" ,util-linux "lib")       ;for libblkid and libuuid
+              ("util-linux:static" ,util-linux "static") ;ditto
               ("zlib" ,zlib)
               ("zlib:static" ,zlib "static")
               ("zstd" ,zstd "lib")
@@ -4182,7 +4205,7 @@ obviously it can be shared with files outside our set).")
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("libuuid" ,util-linux)
+     `(("libuuid" ,util-linux "lib")
        ("libselinux" ,libselinux)))
     (home-page "https://f2fs.wiki.kernel.org/")
     (synopsis "Userland tools for f2fs")
@@ -4208,7 +4231,7 @@ disks and SD cards.  This package provides the userland utilities.")
                (base32
                 "0z9c0y3qq75iyqknl5k0v7v46l8c3pcifpqb0yqalrs24blkm7dk"))))
     (inputs
-     `(("libuuid" ,util-linux)))))
+     `(("libuuid" ,util-linux "lib")))))
 
 (define-public freefall
   (package
@@ -4877,7 +4900,7 @@ are exceeded.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("acl" ,acl)                     ; extended attributes (xattr)
-       ("libuuid" ,util-linux)
+       ("libuuid" ,util-linux "lib")
        ("lzo" ,lzo)
        ("openssl" ,openssl)             ; optional crypto support
        ("zlib" ,zlib)
@@ -5655,7 +5678,7 @@ libraries, which are often integrated directly into libfabric.")
                  "psm-disable-memory-stats.patch"))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
-    (inputs `(("libuuid" ,util-linux)))
+    (inputs `(("libuuid" ,util-linux "lib")))
     (arguments
      '(#:make-flags `("PSM_USE_SYS_UUID=1" "CC=gcc" "WERROR="
                       ,(string-append "INSTALL_PREFIX=" %output)
@@ -6032,7 +6055,7 @@ IP addresses and routes, and configure IPsec.")
     (native-inputs
      `(("gettext" ,gettext-minimal)))
     (inputs
-     `(("libuuid" ,util-linux)
+     `(("libuuid" ,util-linux "lib")
        ("python" ,python-wrapper)))
     (home-page "https://xfs.wiki.kernel.org/")
     (synopsis "XFS file system tools")

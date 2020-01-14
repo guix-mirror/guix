@@ -1584,7 +1584,7 @@ especially for creating reverb effects.  It supports impulse responses with 1,
     ;; uuid.h is included in the JACK type headers
     ;; db.h is included in the libjack metadata headers
     (propagated-inputs
-     `(("libuuid" ,util-linux)
+     `(("libuuid" ,util-linux "lib")
        ("bdb" ,bdb)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))

@@ -121,7 +121,7 @@
                                (string-append out "/lib"))
                  #t))))))
       (inputs
-       `(("util-linux" ,util-linux)))
+       `(("libuuid" ,util-linux "lib")))
       (synopsis "Lightweight universal identifier library")
       (description "CrossGuid is a minimal GUID/UUID
 generator library for C++.")

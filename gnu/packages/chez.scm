@@ -77,7 +77,7 @@
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)
-       ("libuuid" ,util-linux)
+       ("libuuid" ,util-linux "lib")
        ("libx11" ,libx11)
        ("xorg-rgb" ,xorg-rgb)
        ("nanopass" ,nanopass)

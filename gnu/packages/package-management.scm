@@ -939,7 +939,7 @@ Microsoft cabinet (.@dfn{CAB}) files.")
        ("glib" ,glib)
        ("libgsf" ,libgsf)
        ("libxml2" ,libxml2)
-       ("uuid" ,util-linux)))
+       ("uuid" ,util-linux "lib")))
     (home-page "https://wiki.gnome.org/msitools")
     (synopsis "Windows Installer file manipulation tool")
     (description

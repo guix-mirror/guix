@@ -1233,7 +1233,7 @@ hit when running single-threaded.")
       `(("libice" ,libice))) ; SMlib.h includes ICElib.h
     (inputs
       `(("xtrans" ,xtrans)
-        ("util-linux" ,util-linux)))
+        ("libuuid" ,util-linux "lib")))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")

@@ -171,7 +171,7 @@ Messaging Protocol}.")
        ("cppzmq" ,cppzmq)
        ("zeromq" ,zeromq)
        ("openssl" ,openssl)
-       ("util-linux" ,util-linux)))               ;libuuid
+       ("util-linux" ,util-linux "lib")))         ;libuuid
     (home-page "https://quantstack.net/xeus")
     (synopsis "C++ implementation of the Jupyter Kernel protocol")
     (description

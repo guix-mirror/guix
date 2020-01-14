@@ -253,7 +253,7 @@ coreboot.")
        ("gcc" ,gcc-5)
        ("nasm" ,nasm)
        ("python-2" ,python-2)
-       ("util-linux" ,util-linux)))
+       ("util-linux" ,util-linux "lib")))
     (arguments
      `(#:tests? #f ; No check target.
        #:phases

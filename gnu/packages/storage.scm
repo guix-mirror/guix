@@ -231,6 +231,7 @@
        ("snappy" ,snappy)
        ("udev" ,eudev)
        ("util-linux" ,util-linux)
+       ("util-linux:lib" ,util-linux "lib")
        ("xfsprogs" ,xfsprogs)
        ("zlib" ,zlib)))
     (home-page "https://ceph.com/")

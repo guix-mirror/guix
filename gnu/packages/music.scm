@@ -2252,7 +2252,7 @@ improves on support for JACK features, such as JACK MIDI.")
                 "1zs5yy124bymfyapsnljr6rv2lnn5inwchm0xnwiw44b2d39l8hn"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libuuid" ,util-linux)
+     `(("libuuid" ,util-linux "lib")
        ("libsndfile" ,libsndfile)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))

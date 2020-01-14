@@ -165,7 +165,7 @@
        ("avahi" ,avahi)
        ("cyrus-sasl" ,cyrus-sasl)
        ("openssl" ,openssl)
-       ("util-linux" ,util-linux)))
+       ("util-linux" ,util-linux "lib")))
     ;; http://www.4store.org has been down for a while now.
     (home-page "https://github.com/4store/4store")
     (synopsis "Clustered RDF storage and query engine")
@@ -974,7 +974,7 @@ as a drop-in replacement of MySQL.")
              (invoke "make" "-C" "contrib" "install"))))))
     (inputs
      `(("readline" ,readline)
-       ("libuuid" ,util-linux)
+       ("libuuid" ,util-linux "lib")
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (home-page "https://www.postgresql.org/")

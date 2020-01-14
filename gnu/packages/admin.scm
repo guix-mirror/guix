@@ -1717,7 +1717,7 @@ characters can be replaced as well, as can UTF-8 characters.")
     (build-system gnu-build-system)
     (inputs
      `(("ntfs-3g" ,ntfs-3g)
-       ("util-linux" ,util-linux)
+       ("util-linux" ,util-linux "lib")
        ("openssl" ,openssl)
        ;; FIXME: add reiserfs.
        ("zlib" ,zlib)
@@ -3561,6 +3561,7 @@ tcpdump and snoop.")
        ("lvm2" ,lvm2)
        ("openssl" ,openssl)
        ("pcre" ,pcre)
+       ("libmount" ,util-linux "lib")
        ("util-linux" ,util-linux)))
     (arguments
      `(#:configure-flags

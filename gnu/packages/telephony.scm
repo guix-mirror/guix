@@ -624,7 +624,7 @@ calls and messages")
        ("libsrtp" ,libsrtp)
        ("gnutls" ,gnutls)
        ("resample", resample)
-       ("util-linux" ,util-linux)))
+       ("util-linux" ,util-linux "lib")))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)

@@ -100,13 +100,15 @@
     (inputs
      `(("lvm2" ,lvm2)
        ("readline" ,readline)
-       ("util-linux" ,util-linux)))
+       ("util-linux" ,util-linux "lib")))
     (native-inputs
      `(("gettext" ,gettext-minimal)
+
        ;; For the tests.
        ("e2fsprogs" ,e2fsprogs)
        ("perl" ,perl)
-       ("python" ,python-2)))
+       ("python" ,python-2)
+       ("util-linux" ,util-linux)))
     (home-page "https://www.gnu.org/software/parted/")
     (synopsis "Disk partition editor")
     (description
@@ -130,7 +132,7 @@ tables.  It includes a library and command-line utility.")
     (inputs
      `(("gettext" ,gettext-minimal)
        ("guile" ,guile-1.8)
-       ("util-linux" ,util-linux)
+       ("util-linux" ,util-linux "lib")
        ("parted" ,parted)))
     ;; The build neglects to look for its own headers in its own tree.  A next
     ;; release should fix this, but may never come: GNU fdisk looks abandoned.
@@ -171,7 +173,7 @@ tables, and it understands a variety of different formats.")
      `(("gettext" ,gettext-minimal)
        ("ncurses" ,ncurses)
        ("popt" ,popt)
-       ("util-linux" ,util-linux))) ; libuuid
+       ("util-linux" ,util-linux "lib"))) ;libuuid
     (arguments
      `(#:test-target "test"
        #:phases
@@ -359,7 +361,7 @@ and can dramatically shorten the lifespan of the drive if left unchecked.")
       ;; as '/dev/disk/by-id'
      `(#:tests? #f))
     (inputs
-     `(("util-linux" ,util-linux)
+     `(("util-linux" ,util-linux "lib")
        ("parted" ,parted)
        ("glib" ,glib)
        ("gtkmm" ,gtkmm)
@@ -587,7 +589,7 @@ automatically finding out which program to use for what file type.")
     (inputs
      `(("cryptsetup" ,cryptsetup)
        ("nss" ,nss)
-       ("libblkid" ,util-linux)
+       ("libblkid" ,util-linux "lib")
        ("lvm2" ,lvm2)                   ; for "-ldevmapper"
        ("glib" ,glib)
        ("gpgme" ,gpgme)))
@@ -640,7 +642,7 @@ passphrases.")
        ("json-c" ,json-c)
        ("keyutils" ,keyutils)
        ("kmod" ,kmod)
-       ("util-linux" ,util-linux)))
+       ("util-linux" ,util-linux "lib")))
     (arguments
      `(#:configure-flags
        (list "--disable-asciidoctor"    ; use docbook-xsl instead
@@ -809,7 +811,7 @@ LVM D-Bus API).")
        ("libelf" ,libelf)
        ("elfutils" ,elfutils)
        ("json-glib" ,json-glib)
-       ("libblkid" ,util-linux)))
+       ("libblkid" ,util-linux "lib")))
     (home-page "https://rmlint.rtfd.org")
     (synopsis "Remove duplicates and other lint from the file system")
     (description "@command{rmlint} finds space waste and other broken things

@@ -188,7 +188,7 @@ shared NFS home directories.")
     `(("pcre" ,pcre)  ; in the Requires.private field of glib-2.0.pc
       ("libffi" ,libffi) ; in the Requires.private field of gobject-2.0.pc
       ;; These are in the Requires.private field of gio-2.0.pc
-      ("util-linux" ,util-linux)  ; for libmount
+      ("util-linux" ,util-linux "lib")  ;for libmount
       ("libselinux" ,libselinux)
       ("zlib" ,zlib)))
    (inputs
@@ -931,7 +931,7 @@ programming language.  It also contains the utility
     (propagated-inputs
      `(("gcab" ,gcab) ; for .pc file
        ("gdk-pixbuf" ,gdk-pixbuf) ; for .pc file
-       ("util-linux" ,util-linux))) ; for .pc file
+       ("libuuid" ,util-linux "lib"))) ; for .pc file
     (inputs
      `(("glib" ,glib)
        ("gperf" ,gperf)

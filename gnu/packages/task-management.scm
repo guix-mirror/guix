@@ -40,7 +40,7 @@
     (inputs
      `(("gnutls" ,gnutls)
        ("lua" ,lua)
-       ("util-linux" ,util-linux)))
+       ("util-linux" ,util-linux "lib")))
     (arguments
      `(#:tests? #f ; No tests implemented.
        #:phases

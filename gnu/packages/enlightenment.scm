@@ -134,7 +134,7 @@
        ("lz4" ,lz4)
        ("openssl" ,openssl)
        ("pulseaudio" ,pulseaudio)
-       ("util-linux" ,util-linux)
+       ("util-linux" ,util-linux "lib")
        ("wayland" ,wayland)
        ("zlib" ,zlib)))
     (arguments

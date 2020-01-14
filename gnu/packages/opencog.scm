@@ -235,7 +235,7 @@ tasks.")
          ("cogutil" ,cogutil)
          ("gmp" ,gmp)
          ("guile" ,guile-2.2)
-         ("libuuid" ,util-linux)
+         ("libuuid" ,util-linux "lib")
          ("link-grammar" ,link-grammar)))
       (native-inputs
        `(("cxxtest" ,cxxtest)

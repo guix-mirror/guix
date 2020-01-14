@@ -308,7 +308,7 @@ fonts to/from the WOFF2 format.")
    ;; In Requires or Requires.private of fontconfig.pc.
    (propagated-inputs `(("expat" ,expat)
                         ("freetype" ,freetype)
-                        ("libuuid" ,util-linux)))
+                        ("libuuid" ,util-linux "lib")))
    (inputs `(("gs-fonts" ,gs-fonts)))
    (native-inputs
     `(("gperf" ,gperf)

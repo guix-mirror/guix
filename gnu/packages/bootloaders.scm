@@ -306,7 +306,7 @@ menu to select one of the installed operating systems.")
          ("perl" ,perl)
          ("python-2" ,python-2)))
       (inputs
-       `(("libuuid" ,util-linux)
+       `(("libuuid" ,util-linux "lib")
          ("mtools" ,mtools)))
       (arguments
        `(#:parallel-build? #f
@@ -887,7 +887,7 @@ to Novena upstream, does not load u-boot.img from the first partition.")
        ("libyaml" ,libyaml)
        ("openssl" ,openssl)
        ("openssl:static" ,openssl "static")
-       ("util-linux" ,util-linux)))
+       ("util-linux" ,util-linux "lib")))
     (home-page
      "https://dev.chromium.org/chromium-os/chromiumos-design-docs/verified-boot")
     (synopsis "ChromiumOS verified boot utilities")

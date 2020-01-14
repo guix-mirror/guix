@@ -480,7 +480,7 @@ manage system or application containers.")
        ("libpcap" ,libpcap)
        ("libnl" ,libnl)
        ("libtirpc" ,libtirpc)           ;for <rpc/rpc.h>
-       ("libuuid" ,util-linux)
+       ("libuuid" ,util-linux "lib")
        ("lvm2" ,lvm2)                   ;for libdevmapper
        ("curl" ,curl)
        ("openssl" ,openssl)
@@ -1336,7 +1336,7 @@ override CC = " (assoc-ref inputs "cross-gcc") "/bin/i686-linux-gnu-gcc"))
        ("pixman" ,pixman)
        ("qemu" ,qemu-minimal)
        ("seabios" ,seabios)
-       ("util-linux" ,util-linux) ; uuid
+       ("util-linux" ,util-linux "lib") ; uuid
        ; TODO: ocaml-findlib, ocaml-nox.
        ("xz" ,xz) ; for liblzma
        ("zlib" ,zlib)))

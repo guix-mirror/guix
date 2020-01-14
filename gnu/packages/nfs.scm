@@ -113,7 +113,7 @@
        ("rpcsvc-proto" ,rpcsvc-proto) ;for 'rpcgen'
        ("sqlite" ,sqlite)
        ("lvm2" ,lvm2)
-       ("util-linux" ,util-linux)
+       ("util-linux" ,util-linux "lib")
        ("mit-krb5" ,mit-krb5)
        ("libtirpc" ,libtirpc)))
     (native-inputs
