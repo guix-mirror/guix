@@ -8301,11 +8301,15 @@ uses finite automata and guarantees linear time matching on all inputs.")
          (base32
           "10qp42sl1wrdbgbbh8rnay2grm976z7hqgz32c4y09l1c071qsac"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
+        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1.0))))
     (home-page "https://github.com/alexcrichton/rustc-demangle")
     (synopsis "Rust compiler symbol demangling")
     (description
      "This package demanges the symbols from the Rust compiler.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
