@@ -8151,8 +8151,42 @@ For example creation from raw pointers and start, end pointer
 accessors.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-rayon-1.3
+  (package
+    (name "rust-rayon")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rayon" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1650g13bxlmywhdlw65q3g1zyyb7l0wcm35v45kf31cwgwly6v6v"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-crossbeam-deque" ,rust-crossbeam-deque-0.7)
+        ("rust-either" ,rust-either-1.5)
+        ("rust-rayon-core" ,rust-rayon-core-1.7))
+       #:cargo-development-inputs
+       (("rust-doc-comment" ,rust-doc-comment-0.3)
+        ("rust-docopt" ,rust-docopt-1.1)
+        ("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-rand-xorshift" ,rust-rand-xorshift-0.2)
+        ("rust-serde" ,rust-serde-1.0))))
+    (home-page "https://github.com/rayon-rs/rayon")
+    (synopsis "Simple work-stealing parallelism for Rust")
+    (description
+     "Simple work-stealing parallelism for Rust.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-rayon-1.1
   (package
+    (inherit rust-rayon-1.3)
     (name "rust-rayon")
     (version "1.1.0")
     (source
@@ -8164,7 +8198,6 @@ accessors.")
        (sha256
         (base32
          "190hkbcdfvcphyyzkdg52zdia2y9d9yanpm072bmnzbn49p1ic54"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -8178,12 +8211,7 @@ accessors.")
         ("rust-rand" ,rust-rand-0.4)
         ("rust-rand-xorshift" ,rust-rand-xorshift-0.2)
         ("rust-serde" ,rust-serde-1.0)
-        ("rust-serde-derive" ,rust-serde-derive-1.0))))
-    (home-page "https://github.com/rayon-rs/rayon")
-    (synopsis "Simple work-stealing parallelism for Rust")
-    (description
-     "Simple work-stealing parallelism for Rust.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-serde-derive" ,rust-serde-derive-1.0))))))
 
 (define-public rust-rayon-core-1.7
   (package
