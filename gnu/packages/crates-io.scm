@@ -7482,10 +7482,10 @@ to write.")
         ("rust-rand-os" ,rust-rand-os-0.1)
         ("rust-rand-pcg" ,rust-rand-pcg-0.1)
         ("rust-rand-xorshift" ,rust-rand-xorshift-0.1)
-        ("rust-winapi" ,rust-winapi-0.3))
+        ("rust-winapi" ,rust-winapi-0.3)
+        ("rust-autocfg" ,rust-autocfg-0.1)) ; build-dependency
        #:cargo-development-inputs
-       (("rust-autocfg" ,rust-autocfg-0.1)
-        ("rust-rand-xoshiro" ,rust-rand-xoshiro-0.3))))
+       (("rust-rand-xoshiro" ,rust-rand-xoshiro-0.1))))
     (home-page "https://crates.io/crates/rand")
     (synopsis "Random number generators and other randomness functionality")
     (description
