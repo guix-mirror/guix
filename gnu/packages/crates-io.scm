@@ -8610,16 +8610,19 @@ server functionality.")
          (base32
           "1a26d3lk40s9mrf4imhbik7caahmw2jryhhb6vqv6fplbbgzal8x"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-development-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1.3))))
     (home-page "https://github.com/Kimundi/scoped-threadpool-rs")
-    (synopsis "library for scoped and cached threadpools")
+    (synopsis "Library for scoped and cached threadpools")
     (description
      "This crate provides a stable, safe and scoped threadpool.  It can be used
 to execute a number of short-lived jobs in parallel without the need to respawn
 the underlying threads.  Jobs are runnable by borrowing the pool for a given
-scope, during which an arbitrary number of them can be executed. These jobs can
+scope, during which an arbitrary number of them can be executed.  These jobs can
 access data of any lifetime outside of the pools scope, which allows working on
 non-'static references in parallel.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
