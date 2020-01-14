@@ -8558,12 +8558,15 @@ using a fork-like interface.")
          (base32
           "08a4zy10pjindf2rah320s6shgswk13mqw7s61m8i1y1xpf8spjq"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-winapi-util" ,rust-winapi-util-0.1))))
     (home-page "https://github.com/BurntSushi/same-file")
     (synopsis "Determine whether two file paths point to the same file")
     (description
      "This package provides a simple crate for determining whether two file
 paths point to the same file.")
-    (properties '((hidden? . #t)))
     (license (list license:unlicense
                    license:expat))))
 
