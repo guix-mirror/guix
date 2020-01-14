@@ -42,14 +42,14 @@
 (define-public texinfo
   (package
     (name "texinfo")
-    (version "6.6")
+    (version "6.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/texinfo/texinfo-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0rixv4c301djr0d0cnsxs8c1wjndi6bf9vi5axz6mwjkv80cmfcv"))))
+                "1aicn1v3czqii08wc91jw089n1x3gfchkf808q2as59dak0h714q"))))
     (build-system gnu-build-system)
     (arguments
      ;; When cross-compiling, the package is configured twice: once with the
@@ -90,18 +90,6 @@ package includes both the tools necessary to produce Info documents from
 their source and the command-line Info reader.  The emphasis of the language
 is on expressing the content semantically, avoiding physical markup commands.")
     (license gpl3+)))
-
-(define-public texinfo-6.7
-  (package
-    (inherit texinfo)
-    (version "6.7")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/texinfo/texinfo-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "1aicn1v3czqii08wc91jw089n1x3gfchkf808q2as59dak0h714q"))))))
 
 (define-public texinfo-5
   (package (inherit texinfo)
