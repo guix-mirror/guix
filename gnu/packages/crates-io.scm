@@ -2057,9 +2057,7 @@ hexadecimal, base32, and base64.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "17giv0n0n1r64z0dahfvkjy3ys517jxyhs8sd9lmgvcljpjyryxa"))))
-    (arguments '())
-    (properties '((hidden? . #t)))))
+          "17giv0n0n1r64z0dahfvkjy3ys517jxyhs8sd9lmgvcljpjyryxa"))))))
 
 (define-public rust-cpp-demangle-0.2
   (package
