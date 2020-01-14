@@ -582,6 +582,56 @@ sharing to the masses.")
    (home-page "https://gitlab.gnome.org/GNOME/gnome-user-share")
    (license license:gpl2+)))
 
+(define-public rygel
+  (package
+    (name "rygel")
+    (version "0.38.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "003xficqb08r1dgid20i7cn889lbfwrglpx78rjd5nkvgxbimhh8"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (inputs
+     `(("gdk-pixbuf" ,gdk-pixbuf)
+       ("gssdp" ,gssdp)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gtk+" ,gtk+)
+       ("gupnp" ,gupnp)
+       ("gupnp-av" ,gupnp-av)
+       ("gupnp-dlna" ,gupnp-dlna)
+       ("libgee" ,libgee)
+       ("libmediaart" ,libmediaart)
+       ("libsoup" ,libsoup)
+       ("libxslt" ,libxslt)
+       ("libunistring" ,libunistring)
+       ("tracker" ,tracker)))
+    (synopsis "Share audio, video, and pictures with other devices")
+    (description
+     "Rygel is a home media solution (@dfn{UPnP AV MediaServer and
+MediaRenderer}) for GNOME that allows you to easily share audio, video, and
+pictures, and to control a media player on your home network.
+
+Rygel achieves interoperability with other devices by trying to conform to the
+strict requirements of DLNA and by converting media on-the-fly to formats that
+client devices can handle.")
+    (home-page "https://wiki.gnome.org/Projects/Rygel")
+    (license (list
+              ;; For logo (data/icons/*).
+              license:cc-by-sa3.0
+              ;; For all others.
+              license:lgpl2.1+))))
+
 (define-public libnma
   (package
    (name "libnma")
