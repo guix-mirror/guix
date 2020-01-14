@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -332,7 +332,7 @@ coefficients of which are modular integers.")
 (define-public brial
   (package
     (name "brial")
-    (version "1.2.5")
+    (version "1.2.6")
     (source
     (origin
       (method git-fetch)
@@ -341,8 +341,7 @@ coefficients of which are modular integers.")
              (commit version)))
       (file-name (git-file-name name version))
       (sha256
-       (base32
-        "1nv56fp3brpzanxj7vwvxqdafqfsfhdgq5imr3m94psw5gdfqwja"))))
+       (base32 "1mc1zjr3mxcx6bg0js5k9jx65japg7644b0aj1al75m4nwh2ygab"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
