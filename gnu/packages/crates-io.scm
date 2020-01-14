@@ -1517,7 +1517,7 @@ that logs panics to @code{console.error}.")
 (define-public rust-constant-time-eq-0.1
   (package
     (name "rust-constant-time-eq")
-    (version "0.1.4")
+    (version "0.1.5")
     (source
      (origin
        (method url-fetch)
@@ -1525,7 +1525,7 @@ that logs panics to @code{console.error}.")
        (file-name (string-append name "-" version ".crate"))
        (sha256
         (base32
-         "083icpr9xb72rrdxw3p4068dcspn6ai22jy7rhl2a8grfz448nlr"))))
+         "1g3vp04qzmk6cpzrd19yci6a95m7ap6wy7wkwgiy2pjklklrfl14"))))
     (build-system cargo-build-system)
     (arguments '(#:skip-build? #t))
     (home-page "https://github.com/cesarb/constant_time_eq")
