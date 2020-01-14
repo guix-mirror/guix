@@ -7893,12 +7893,12 @@ useful types and distributions, and some randomness-related algorithms.")
          (base32
           "06ghpm9y7gacks78s3maakha07kbnwrxif5q37r2l7z1sali3b7b"))))
     (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/bluss/rawpointer/")
     (synopsis "Extra methods for raw pointers")
     (description "Extra methods for raw pointers.  For example
 @code{.post_inc()} and @code{.pre_dec()} (c.f. @code{ptr++} and @code{--ptr})
 and @code{ptrdistance}.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
