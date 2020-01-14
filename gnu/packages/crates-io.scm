@@ -2277,11 +2277,11 @@ for intentionally leaking memory")
          (base32
           "15rsqxgarfpb1yim9sbp9yfgj7p2dq6v51c6bq1a62paii9ylgcj"))))
     (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/GuillaumeGomez/doc-comment")
     (synopsis "Macro to generate doc comments")
     (description "This package provides a way to generate doc comments
 from macros.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-docopt-1.1
