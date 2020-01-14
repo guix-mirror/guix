@@ -9,6 +9,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,7 +58,8 @@
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0nh3j90w6b97wqcgxjfq55qhkz9s38955fbhwzv2fsi7483j895p"))))
+              "0nh3j90w6b97wqcgxjfq55qhkz9s38955fbhwzv2fsi7483j895p"))
+            (patches (search-patches "curl-use-ssl-cert-env.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ;1.2 MiB of man3 pages
@@ -74,10 +76,20 @@
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)))
    (native-search-paths
-    ;; Note: This search path is respected by the `curl` command-line tool only.
-    ;; Ideally we would bake this into libcurl itself so other users can benefit,
-    ;; but it's not supported upstream due to thread safety concerns.
+    ;; These variables are introduced by libcurl-use-ssl-cert-env.patch.
     (list (search-path-specification
+           (variable "SSL_CERT_DIR")
+           (separator #f)                        ;single entry
+           (files '("etc/ssl/certs")))
+          (search-path-specification
+           (variable "SSL_CERT_FILE")
+           (file-type 'regular)
+           (separator #f)                        ;single entry
+           (files '("etc/ssl/certs/ca-certificates.crt")))
+          ;; Note: This search path is respected by the `curl` command-line
+          ;; tool only.  Patching libcurl to read it too would bring no
+          ;; advantages and require maintaining a more complex patch.
+          (search-path-specification
            (variable "CURL_CA_BUNDLE")
            (file-type 'regular)
            (separator #f)                         ;single entry
