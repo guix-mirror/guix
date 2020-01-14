@@ -1527,13 +1527,13 @@ that logs panics to @code{console.error}.")
         (base32
          "083icpr9xb72rrdxw3p4068dcspn6ai22jy7rhl2a8grfz448nlr"))))
     (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/cesarb/constant_time_eq")
     (synopsis
      "Compares two equal-sized byte strings in constant time")
     (description
      "This package compares two equal-sized byte strings in constant time.
 It is inspired by the Linux kernel's @code{crypto_memneq}.")
-    (properties '((hidden? . #t)))
     (license license:cc0)))
 
 (define-public rust-core-arch-0.1
