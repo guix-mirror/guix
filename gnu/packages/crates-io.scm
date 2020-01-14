@@ -2017,12 +2017,12 @@ intrinsics.")
          (base32
           "15xd6afhsjl08285piwczrafmckpp8i29padj8v12xhahshprx7l"))))
     (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/ia0/data-encoding")
     (synopsis "Efficient and customizable data-encoding functions")
     (description
      "This library provides encodings for many different common cases, including
 hexadecimal, base32, and base64.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-defmac-0.2
