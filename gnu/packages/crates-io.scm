@@ -454,7 +454,7 @@ trace (backtrace) at runtime in a Rust program.")
 (define-public rust-base-x-0.2
   (package
     (name "rust-base-x")
-    (version "0.2.5")
+    (version "0.2.6")
     (source
       (origin
         (method url-fetch)
@@ -462,7 +462,7 @@ trace (backtrace) at runtime in a Rust program.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0hv4y5cdhv6bk0ghk2434clw8v4mmk5cc9lsh6qrpri92zlfmx3n"))))
+          "1hfy0wv7j5ynd73yk1vyr32pqa77rp15lkrc54f8ky9c6hcbc80v"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
