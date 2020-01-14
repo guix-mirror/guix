@@ -1575,11 +1575,11 @@ intrinsics.")
          (base32
           "0fzsw1j9g1x598yhwklg59l15hwzc0pyvs01w9fg2kin4598mjp7"))))
     (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/servo/core-foundation-rs")
     (synopsis "Bindings to Core Foundation for OS X")
     (description
      "Bindings to Core Foundation for OS X.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
