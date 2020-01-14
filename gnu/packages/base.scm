@@ -261,7 +261,8 @@ interactive means to merge two files.")
             (sha256
              (base32
               "16kqz9yz98dasmj70jwf5py7jk558w96w0vgp3zf9xsqk3gzpzn5"))
-            (patches (search-patches "findutils-localstatedir.patch"))))
+            (patches (search-patches "findutils-localstatedir.patch"
+                                     "findutils-test-rwlock-threads.patch"))))
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags (list
