@@ -347,13 +347,13 @@ ArrayVec and ArrayString.")
          (base32
           "1chwgimpx5z7xbag7krr9d8asxfqbh683qhgl9kn3hxk2l0djj8x"))))
     (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/cuviper/autocfg")
     (synopsis "Automatic cfg for Rust compiler features")
     (description "Rust library for build scripts to automatically configure
 code based on compiler support.  Code snippets are dynamically tested to see
 if the @code{rustc} will accept them, rather than hard-coding specific version
 support.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
