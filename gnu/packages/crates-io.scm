@@ -464,10 +464,15 @@ trace (backtrace) at runtime in a Rust program.")
          (base32
           "0hv4y5cdhv6bk0ghk2434clw8v4mmk5cc9lsh6qrpri92zlfmx3n"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-development-inputs
+       (("rust-bencher" ,rust-bencher-0.1)
+        ("rust-json" ,rust-json-0.11)
+        ("rust-rand" ,rust-rand-0.3))))
     (home-page "https://github.com/OrKoN/base-x-rs")
     (synopsis "Encode/decode any base")
     (description "This library provides for encoding and decoding any base.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-bencher-0.1
