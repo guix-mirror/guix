@@ -42,15 +42,18 @@
         (file-name
           (string-append name "-" version ".crate"))
         (sha256
-          (base32
-            "0p7fxlnks9l7p7rwfqi7aqgnk2bps5zc0rjiw00mdw19nnbjjlky"))))
+         (base32
+          "0p7fxlnks9l7p7rwfqi7aqgnk2bps5zc0rjiw00mdw19nnbjjlky"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.4))))
     (home-page "https://github.com/remram44/adler32-rs")
     (synopsis "Implementation of the Adler32 rolling hash algorithm")
     (description
      "This library is an implementation of the Adler32 rolling hash algorithm in
 the Rust programming language.")
-    (properties '((hidden? . #t)))
     (license (list license:bsd-3
                    license:zlib))))
 
