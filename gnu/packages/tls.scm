@@ -320,8 +320,7 @@ required structures.")
               "static"))    ;6.4 MiB of .a files
    (native-inputs `(("perl" ,perl)))
    (arguments
-    `(#:disallowed-references (,perl)
-      #:parallel-build? #f
+    `(#:parallel-build? #f
       #:parallel-tests? #f
       #:test-target "test"
 
