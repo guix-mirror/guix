@@ -364,7 +364,7 @@ for the underlying polynomial rings and subsets of the powerset of the
 Boolean variables.  As a unique approach, binary decision diagrams are
 used as internal storage type for polynomial structures.")
     (license license:gpl2+)
-    (home-page "https://gitlab.com/sagemath/zn_poly")))
+    (home-page "https://github.com/BRiAl/BRiAl/")))
 
 (define-public lcalc
   (package
