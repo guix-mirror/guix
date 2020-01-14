@@ -8548,7 +8548,7 @@ using a fork-like interface.")
 (define-public rust-same-file-1.0
   (package
     (name "rust-same-file")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
       (origin
         (method url-fetch)
@@ -8556,12 +8556,14 @@ using a fork-like interface.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "08a4zy10pjindf2rah320s6shgswk13mqw7s61m8i1y1xpf8spjq"))))
+          "00h5j1w87dmhnvbv9l8bic3y7xxsnjmssvifw2ayvgx9mb1ivz4k"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-winapi-util" ,rust-winapi-util-0.1))))
+       (("rust-winapi-util" ,rust-winapi-util-0.1))
+       #:cargo-development-inputs
+       (("rust-doc-comment" ,rust-doc-comment-0.3))))
     (home-page "https://github.com/BurntSushi/same-file")
     (synopsis "Determine whether two file paths point to the same file")
     (description
