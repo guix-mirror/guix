@@ -8537,11 +8537,11 @@ using a fork-like interface.")
          (base32
           "1l1ljkm4lpyryrv2ndaxi1f7z1f3v9bwy1rzl9f9mbhx04iq9c6j"))))
     (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/abonander/safemem")
     (synopsis "Safe wrappers for memory-accessing functions")
     (description
      "Safe wrappers for memory-accessing functions, like @code{std::ptr::copy()}.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
