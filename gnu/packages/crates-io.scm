@@ -657,7 +657,7 @@ libraries.")
 (define-public rust-bitflags-1
   (package
     (name "rust-bitflags")
-    (version "1.1.0")
+    (version "1.2.1")
     (source
       (origin
         (method url-fetch)
@@ -665,7 +665,7 @@ libraries.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1zc1qb1hwsnl2d8rhzicsv9kqd5b2hwbrscrcfw5as4sfr35659x"))))
+          "14qnd5nq8p2almk79m4m8ydqhd413yaxsyjp5xd19g3mikzf47fg"))))
     (build-system cargo-build-system)
     (arguments '(#:skip-build? #t))
     (home-page "https://github.com/bitflags/bitflags")
