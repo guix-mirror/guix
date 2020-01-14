@@ -7733,7 +7733,7 @@ useful types and distributions, and some randomness-related algorithms.")
 (define-public rust-rand-core-0.5
   (package
     (name "rust-rand-core")
-    (version "0.5.0")
+    (version "0.5.1")
     (source
      (origin
        (method url-fetch)
@@ -7742,14 +7742,13 @@ useful types and distributions, and some randomness-related algorithms.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1jis94x9ri8xlxki2w2w5k29sjpfwgzkjylg7paganp74hrnhpk1"))))
+         "06bdvx08v3rkz451cm7z59xwwqn1rkfh6v9ay77b14f8dwlybgch"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-getrandom" ,rust-getrandom-0.1)
-        ("rust-serde" ,rust-serde-1.0)
-        ("rust-serde-derive" ,rust-serde-derive-1.0))))
+        ("rust-serde" ,rust-serde-1.0))))
     (home-page "https://crates.io/crates/rand-core")
     (synopsis
      "Core random number generator traits and tools for implementation")
