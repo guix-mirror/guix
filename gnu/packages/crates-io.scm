@@ -2323,11 +2323,11 @@ from macros.")
          (base32
           "0phbm7i0dpn44gzi07683zxaicjap5064w62pidci4fhhciv8mza"))))
     (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/dtolnay/dtoa")
     (synopsis "Fast functions for printing floating-point primitives")
     (description "This crate provides fast functions for printing
 floating-point primitives to an @code{io::Write}.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
@@ -2343,9 +2343,7 @@ floating-point primitives to an @code{io::Write}.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0g96cap6si1g6wi62hsdk2fnj3sf5vd4i97zj6163j8hhnsl3n0d"))))
-    (arguments '(#:skip-build? #t))
-    (properties '())))
+          "0g96cap6si1g6wi62hsdk2fnj3sf5vd4i97zj6163j8hhnsl3n0d"))))))
 
 (define-public rust-duct-0.13
   (package
