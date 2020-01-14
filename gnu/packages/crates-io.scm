@@ -8220,12 +8220,17 @@ uses finite automata and guarantees linear time matching on all inputs.")
          (base32
           "0bkrlyg26mgizpiy1yb2hhpgscxcag8r5fnckqsvk25608vzm0sa"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-doc-comment" ,rust-doc-comment-0.3))))
     (home-page "https://github.com/XAMPPRocky/remove_dir_all")
     (synopsis "Implementation of remove_dir_all for Windows")
     (description
      "This package provides a safe, reliable implementation of
 @code{remove_dir_all} for Windows")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
