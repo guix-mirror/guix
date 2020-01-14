@@ -85,6 +85,8 @@ loop.")
                (base32
                 "0nkfqv69wfyy2bpga4d53iqydycpik8jp8x6q70353hia8mmv1gd"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (home-page "http://software.schmorp.de/pkg/libev.html")
     (synopsis "Event loop loosely modelled after libevent")
     (description
