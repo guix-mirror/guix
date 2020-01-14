@@ -34,7 +34,7 @@
 (define-public rust-adler32-1.0
   (package
     (name "rust-adler32")
-    (version "1.0.3")
+    (version "1.0.4")
     (source
       (origin
         (method url-fetch)
@@ -43,7 +43,7 @@
           (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0p7fxlnks9l7p7rwfqi7aqgnk2bps5zc0rjiw00mdw19nnbjjlky"))))
+          "1hnan4fgmnidgn2k84hh2i67c3wp2c5iwd5hs61yi7gwwx1p6bjx"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
