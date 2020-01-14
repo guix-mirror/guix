@@ -276,7 +276,7 @@ access.")
 (define-public qutebrowser
   (package
     (name "qutebrowser")
-    (version "1.8.3")
+    (version "1.9.0")
     (source
      (origin
        (method url-fetch)
@@ -285,11 +285,10 @@ access.")
                            "qutebrowser-" version ".tar.gz"))
        (sha256
         (base32
-         "055zmzk3q0m3hx1742nfy2mdawfllrkvijnbzp1hiv01dj1bxaf8"))))
+         "1y0yq1qfr6g1s7kf3w2crd0b025dv2dfknhlz3v0001ns3rgwj17"))))
     (build-system python-build-system)
     (native-inputs
-     `(("asciidoc" ,asciidoc)
-       ("python-attrs" ,python-attrs))) ; for tests
+     `(("python-attrs" ,python-attrs))) ; for tests
     (inputs
      `(("python-colorama" ,python-colorama)
        ("python-cssutils" ,python-cssutils)
@@ -298,23 +297,29 @@ access.")
        ("python-pygments" ,python-pygments)
        ("python-pypeg2" ,python-pypeg2)
        ("python-pyyaml" ,python-pyyaml)
+       ;; FIXME: python-pyqtwebengine needs to come before python-pyqt so
+       ;; that it's __init__.py is used first.
+       ("python-pyqtwebengine" ,python-pyqtwebengine)
        ("python-pyqt" ,python-pyqt)
-       ("qtwebkit" ,qtwebkit)))
+       ;; While qtwebengine is provided by python-pyqtwebengine, it's
+       ;; included here so we can wrap QTWEBENGINEPROCESS_PATH.
+       ("qtwebengine" ,qtwebengine)))
     (arguments
-     `(;; FIXME: Tests have been added to Qutebrowser. But they currently fail on
-       ;; trying to locate QtWebEngine, and run it on a specific display.
-       ;; There does not seem to be a trivial way to suppress this test.
-       ;; Either fix this, or wait for a liberated QtWebEngine to make into GNU Guix.
-       ;; Change this according to <https://bugs.gnu.org/35866>.
+     `(;; FIXME: With the existance of qtwebengine, tests can now run.  But
+       ;; they are still disabled because test phase hangs.  It's not readily
+       ;; apparent as to why.
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
+         (add-before 'check 'set-env-offscreen
+           (lambda _
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t))
          (add-after 'install 'install-more
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (app (string-append out "/share/applications"))
                     (hicolor (string-append out "/share/icons/hicolor")))
-               (invoke "a2x" "-f" "manpage" "doc/qutebrowser.1.asciidoc")
                (install-file "doc/qutebrowser.1"
                              (string-append out "/share/man/man1"))
                (for-each
@@ -331,11 +336,21 @@ access.")
                  (("Exec=qutebrowser")
                   (string-append "Exec=" out "/bin/qutebrowser")))
                (install-file "misc/org.qutebrowser.qutebrowser.desktop" app)
+               #t)))
+         (add-after 'wrap 'wrap-qt-process-path
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/qutebrowser"))
+                    (qt-process-path (string-append
+                                      (assoc-ref inputs "qtwebengine")
+                                      "/lib/qt5/libexec/QtWebEngineProcess")))
+               (wrap-program bin
+                 `("QTWEBENGINEPROCESS_PATH" ":" prefix (,qt-process-path)))
                #t))))))
     (home-page "https://qutebrowser.org/")
     (synopsis "Minimal, keyboard-focused, vim-like web browser")
     (description "qutebrowser is a keyboard-focused browser with a minimal
-GUI.  It is based on PyQt5 and QtWebKit.")
+GUI.  It is based on PyQt5 and QtWebEngine.")
     (license license:gpl3+)))
 
 (define-public vimb
