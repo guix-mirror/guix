@@ -8035,11 +8035,11 @@ accessors.")
          (base32
           "110y7dyfm2vci4x5vk7gr0q551dvp31npl99fnsx2fb17wzwcf94"))))
     (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
     (home-page "https://gitlab.redox-os.org/redox-os/syscall")
     (synopsis "Rust library to access raw Redox system calls")
     (description "This package provides a Rust library to access raw Redox
 system calls.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-redox-termios-0.1
