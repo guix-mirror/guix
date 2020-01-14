@@ -8350,6 +8350,10 @@ uses finite automata and guarantees linear time matching on all inputs.")
          (base32
           "1nkg3vasg7nk80ffkazizgiyv3hb1l9g3d8h17cajbkx538jiwfw"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-rand" ,rust-rand-0.3))))
     (home-page "https://github.com/rust-lang-deprecated/rustc-serialize")
     (synopsis "Generic serialization/deserialization support")
     (description
@@ -8357,7 +8361,6 @@ uses finite automata and guarantees linear time matching on all inputs.")
 corresponding to the @code{derive(RustcEncodable, RustcDecodable)} mode in the
 compiler.  Also includes support for hex, base64, and json encoding and
 decoding.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
