@@ -1354,11 +1354,14 @@ pitfalls in Rust.")
          (base32
           "0kxcg83jlihy0phnd2g8c2c303px3l2p3pkjz357ll6llnd5pz6x"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1))))
     (home-page "https://nuxi.nl/cloudabi/")
     (synopsis "Low level interface to CloudABI")
     (description
      "Low level interface to CloudABI.  Contains all syscalls and related types.")
-    (properties '((hidden? . #t)))
     (license license:bsd-2)))
 
 (define-public rust-cmake-0.1
