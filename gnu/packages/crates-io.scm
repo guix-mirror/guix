@@ -690,11 +690,13 @@ behave like a set of bitflags.")
          (base32
           "0h14zjycwc76v15h8qll9z1xiryvmpvsb5gam97pqpdjrrwv5c8k"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs (("rust-libc" ,rust-libc-0.2))))
     (home-page "https://github.com/blas-lapack-rs/blas-sys")
     (synopsis "Bindings to BLAS (Fortran)")
     (description
      "Ths package provides bindings to BLAS (Fortran).")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
