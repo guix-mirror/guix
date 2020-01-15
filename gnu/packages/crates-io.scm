@@ -1695,6 +1695,29 @@ Command Line Argument Parser.")
 colorization.")
     (license license:expat)))
 
+(define-public rust-clipboard-win-2.1
+  (package
+    (name "rust-clipboard-win")
+    (version "2.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "clipboard-win" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0431sg4jhabrqf2dliiwhbx9hinb9z4qfcm6914lm5mb17ya5798"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f  ; Tests are for Windows.
+       #:cargo-inputs (("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/DoumanAsh/clipboard-win")
+    (synopsis "Interact with Windows clipboard")
+    (description
+     "This package provides simple way to interact with Windows clipboard.")
+    (license license:expat)))
+
 (define-public rust-clippy-0.0
   (package
     (name "rust-clippy")
