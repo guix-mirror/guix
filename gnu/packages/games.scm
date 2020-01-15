@@ -866,6 +866,26 @@ destroying an ancient book using a special wand.")
               ("libcanberra" ,libcanberra)))
     (native-inputs `(("python-2" ,python-2)
                      ("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-desktop-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (apps (string-append out "/share/applications")))
+               (mkdir-p apps)
+               (with-output-to-file (string-append apps "/gnubg.desktop")
+                 (lambda _
+                   (format #t
+                           "[Desktop Entry]~@
+                            Name=GNU Backgammon~@
+                            Exec=~a/bin/gnubg -w~@
+                            Icon=gnubg~@
+                            Categories=Game;~@
+                            Terminal=false~@
+                            Type=Application~%"
+                           out))))
+             #t)))))
     (home-page "https://www.gnu.org/software/gnubg/")
     (synopsis "Backgammon game")
     (description "The GNU backgammon application (also known as \"gnubg\") can
