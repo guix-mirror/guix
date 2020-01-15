@@ -5010,6 +5010,19 @@ its top-level name.  This functionality intends to replace most uses of
 need to use the older and less efficient @code{pkg_resources} package.")
     (license license:asl2.0)))
 
+(define-public python2-importlib-metadata
+  (let ((base (package-with-python2 (strip-python2-variant
+                                     python-importlib-metadata))))
+    (package/inherit
+     base
+     (name "python2-importlib-metadata")
+     (propagated-inputs
+      `(("python-configparser" ,python2-configparser)
+        ("python-contextlib2" ,python2-contextlib2)
+        ("python-importlib-resources" ,python2-importlib-resources)
+        ("python-pathlib2" ,python2-pathlib2)
+        ,@(package-propagated-inputs base))))))
+
 (define-public python-jaraco-packaging
   (package
     (name "python-jaraco-packaging")
