@@ -8806,6 +8806,22 @@ to write.")
      `(#:cargo-inputs (("rust-proc-macro2" ,rust-proc-macro2-0.4))))
     (properties '())))
 
+(define-public rust-quote-0.3
+  (package
+    (inherit rust-quote-0.6)
+    (name "rust-quote")
+    (version "0.3.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "quote" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0yhnnix4dzsv8y4wwz4csbnqjfh73al33j35msr10py6cl5r4vks"))))
+    (arguments '())))
+
 (define-public rust-rand-0.7
   (package
     (name "rust-rand")
