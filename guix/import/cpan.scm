@@ -61,7 +61,9 @@
             cpan-fetch
             cpan->guix-package
             metacpan-url->mirror-url
-            %cpan-updater))
+            %cpan-updater
+
+            %metacpan-base-url))
 
 ;;; Commentary:
 ;;;
@@ -69,6 +71,10 @@
 ;;; module, using meta-data from metacpan.org.
 ;;;
 ;;; Code:
+
+(define %metacpan-base-url
+  ;; Base URL of the MetaCPAN API.
+  (make-parameter "https://fastapi.metacpan.org/v1/"))
 
 ;; Dependency of a "release".
 (define-json-mapping <cpan-dependency> make-cpan-dependency cpan-dependency?
@@ -149,7 +155,7 @@
 module is distributed with 'Test::Simple', so (module->dist-name \"ok\") would
 return \"Test-Simple\""
   (assoc-ref (json-fetch (string-append
-                          "https://fastapi.metacpan.org/v1/module/"
+                          (%metacpan-base-url) "/module/"
                           module
                           "?fields=distribution"))
              "distribution"))
@@ -176,7 +182,7 @@ or #f on failure.  MODULE should be the distribution name, such as
 \"Test-Script\" for the \"Test::Script\" module."
   ;; This API always returns the latest release of the module.
   (json->cpan-release
-   (json-fetch (string-append "https://fastapi.metacpan.org/v1/release/"
+   (json-fetch (string-append (%metacpan-base-url) "/release/"
                               name))))
 
 (define (cpan-home name)
