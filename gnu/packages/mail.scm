@@ -2171,9 +2171,9 @@ converts them to maildir format directories.")
 fetchmail replacement.
 
 mpop supports multiple accounts, header based mail filtering, delivery
-to mbox files, maildir folders or a Mail Delivery Agent (MDA),
-TLS/SSL, several authentication methods, Internationalized Domain
-Names (IDN) and SOCKS proxies.")
+to mbox files, maildir folders or an @acronym{MDA, Mail Delivery Agent},
+TLS/SSL, several authentication methods, @acronym{IDN, Internationalized Domain
+Names} and SOCKS proxies.")
     (license gpl3+)))
 
 (define-public mhonarc
