@@ -12068,7 +12068,7 @@ UTF-32 types are provided, including support for malformed encoding.")
        (("winapi-i686-pc-windows-gnu" ,rust-winapi-i686-pc-windows-gnu-0.4)
         ("winapi-x86-64-pc-windows-gnu" ,rust-winapi-x86-64-pc-windows-gnu-0.4))))
     (home-page "https://github.com/retep998/winapi-rs")
-    (synopsis "Raw FFI bindings for all of Windows API.")
+    (synopsis "Raw FFI bindings for all of Windows API")
     (description
      "Raw FFI bindings for all of Windows API.")
     (license (list license:asl2.0
