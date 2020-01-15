@@ -8783,13 +8783,8 @@ Pytest but stripped of Pytest specific details.")
                                      python-pluggy))))
     (package/inherit
      base
-     (version "0.11.0")
-     (source (origin
-               (method url-fetch)
-               (uri (pypi-uri "pluggy" version))
-               (sha256
-                (base32
-                 "10511a54dvafw1jrk75mrhml53c7b7w4yaw7241696lc2hfvr895")))))))
+     (propagated-inputs
+      `(("python-importlib-metadata" ,python2-importlib-metadata))))))
 
 (define-public python-tox
   (package
