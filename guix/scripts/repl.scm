@@ -66,6 +66,9 @@ Start a Guile REPL in the Guix execution environment.\n"))
   (display (G_ "
   -t, --type=TYPE        start a REPL of the given TYPE"))
   (display (G_ "
+      --listen=ENDPOINT  listen ENDPOINT instead of standard I/O"))
+  (newline)
+  (display (G_ "
   -L, --load-path=DIR    prepend DIR to the package module search path"))
   (newline)
   (display (G_ "
