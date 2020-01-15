@@ -4983,9 +4983,17 @@ older Python versions.")
                 "0y3hg12iby1qyaspnbisz4s4vxax7syikk3skznwqizqyv89y9yk"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2))
-    (native-inputs
-     `(("python-wheel" ,python2-wheel)))
+     `(#:python ,python-2
+       #:phases (modify-phases %standard-phases
+                  ;; The build system tests for python-wheel, but it is
+                  ;; not required for Guix nor the test suite.  Just drop
+                  ;; it to make bootstrapping pytest easier.
+                  (add-after 'unpack 'drop-wheel-dependency
+                    (lambda _
+                      (substitute* "setup.cfg"
+                        (("^[[:blank:]]+wheel")
+                         ""))
+                      #t)))))
     (propagated-inputs
      `(("python-pathlib2" ,python2-pathlib2)
        ("python-typing" ,python2-typing)))
