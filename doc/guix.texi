@@ -8706,6 +8706,10 @@ have created your own packages on @code{GUIX_PACKAGE_PATH}
 recipes.  In other cases, you will be able to examine the read-only recipes
 for packages currently in the store.
 
+Instead of @code{GUIX_PACKAGE_PATH}, the command-line option
+@code{--load-path=@var{directory}} (or in short @code{-L
+@var{directory}}) allows you to add @var{directory} to the front of the
+package module search path and so make your own packages visible.
 
 @node Invoking guix download
 @section Invoking @command{guix download}
