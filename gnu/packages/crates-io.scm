@@ -4490,8 +4490,38 @@ SystemTime}}.")
      "Get hostname for Rust.")
     (license license:expat)))
 
+(define-public rust-idna-0.2
+  (package
+    (name "rust-idna")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "idna" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1a9066imqpdrm1aavfasdyb1zahqaz8jmdcwdawvb1pf60y6gqh2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-matches" ,rust-matches-0.1)
+        ("rust-unicode-bidi" ,rust-unicode-bidi-0.3)
+        ("rust-unicode-normalization" ,rust-unicode-normalization-0.1))
+       #:cargo-development-inputs
+       (("rust-rustc-test" ,rust-rustc-test-0.3)
+        ("rust-serde-json" ,rust-serde-json-1.0))))
+    (home-page "https://github.com/servo/rust-url/")
+    (synopsis "Internationalizing Domain Names in Applications and Punycode")
+    (description
+     "IDNA (Internationalizing Domain Names in Applications) and Punycode.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-idna-0.1
   (package
+    (inherit rust-idna-0.2)
     (name "rust-idna")
     (version "0.1.5")
     (source
@@ -4503,7 +4533,6 @@ SystemTime}}.")
        (sha256
         (base32
          "0kl4gs5kaydn4v07c6ka33spm9qdh2np0x7iw7g5zd8z1c7rxw1q"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -4512,12 +4541,7 @@ SystemTime}}.")
         ("rust-unicode-normalization" ,rust-unicode-normalization-0.1))
        #:cargo-development-inputs
        (("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
-        ("rust-rustc-test" ,rust-rustc-test-0.3))))
-    (home-page "https://github.com/servo/rust-url/")
-    (synopsis "Internationalizing Domain Names in Applications and Punycode")
-    (description
-     "IDNA (Internationalizing Domain Names in Applications) and Punycode.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-rustc-test" ,rust-rustc-test-0.3))))))
 
 (define-public rust-ignore-0.4
   (package
