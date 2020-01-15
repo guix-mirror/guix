@@ -15811,8 +15811,10 @@ that is accessible to other projects developed in Cython.")
         (base32
          "0fm0w5id2yhqld95hg2m636vjgkz377rvgdfqaxc25vbylr9lklp"))))
     (build-system python-build-system)
-    (native-inputs
-     `(("python-tox" ,python-tox)))
+    (arguments
+     ;; FIXME: Tests require many extra dependencies, and would introduce
+     ;; a circular dependency on hypothesis, which uses this package.
+     '(#:tests? #f))
     (home-page "http://www.grantjenks.com/docs/sortedcontainers/")
     (synopsis "Sorted List, Sorted Dict, Sorted Set")
     (description
