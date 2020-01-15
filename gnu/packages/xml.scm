@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
@@ -2104,6 +2104,44 @@ libxml2 and libxslt.")
 
 (define-public python2-lxml
   (package-with-python2 python-lxml))
+
+(define-public python-xmlschema
+  (package
+    (name "python-xmlschema")
+    (version "1.0.18")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "xmlschema" version))
+              (sha256
+               (base32
+                "1inwqwr7d3qah9xf9rfzkpva433jpr4n7n43zybf2gdpz4q1g0ry"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key (tests? #t) #:allow-other-keys)
+             (if tests?
+                 (begin
+                   (setenv "PYTHONPATH"
+                           (string-append "./build/lib:"
+                                          (getenv "PYTHONPATH")))
+                   (invoke "python" "xmlschema/tests/test_all.py"))
+                 (format #t "test suite not run~%"))
+             #t)))))
+    (native-inputs
+     `(("python-lxml" ,python-lxml)))   ;for tests
+    (propagated-inputs
+     `(("python-elementpath" ,python-elementpath)))
+    (home-page "https://github.com/sissaschool/xmlschema")
+    (synopsis "XML Schema validator and data conversion library")
+    (description
+     "The @code{xmlschema} library is an implementation of
+@url{https://www.w3.org/2001/XMLSchema, XML Schema} for Python.  It has
+full support for the XSD 1.0 and 1.1 standards, an XPath-based API for
+finding schema's elements and attributes; and can encode and decode
+XML data to JSON and other formats.")
+    (license license:expat)))
 
 (define-public python-xmltodict
   (package
