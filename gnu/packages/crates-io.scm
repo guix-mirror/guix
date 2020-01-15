@@ -2332,8 +2332,38 @@ hexadecimal, base32, and base64.")
      "Traits for cryptographic hash functions.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-dirs-2.0
+  (package
+    (name "rust-dirs")
+    (version "2.0.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "dirs" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1qymhyq7w7wlf1dirq6gsnabdyzg6yi2yyxkx6c4ldlkbjdaibhk"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-dirs-sys" ,rust-dirs-sys-0.3))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/soc/dirs-rs")
+    (synopsis "Abstractions for standard locations for various platforms")
+    (description
+     "This package provides a tiny low-level library that provides
+platform-specific standard locations of directories for config, cache and other
+data on Linux, Windows, macOS and Redox by leveraging the mechanisms defined by
+the XDG base/user directory specifications on Linux, the Known Folder API on
+Windows, and the Standard Directory guidelines on macOS.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-dirs-1.0
   (package
+    (inherit rust-dirs-2.0)
     (name "rust-dirs")
     (version "1.0.3")
     (source
@@ -2344,21 +2374,11 @@ hexadecimal, base32, and base64.")
         (sha256
          (base32
           "02vigc566z5i6n9wr2x8sch39qp4arn89xhhrh18fhpm3jfc0ygn"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
-        ("rust-winapi" ,rust-winapi-0.3))))
-    (home-page "https://github.com/soc/dirs-rs")
-    (synopsis "Abstractions for standard locations for various platforms")
-    (description
-     "This package provides a tiny low-level library that provides
-platform-specific standard locations of directories for config, cache and other
-data on Linux, Windows, macOS and Redox by leveraging the mechanisms defined by
-the XDG base/user directory specifications on Linux, the Known Folder API on
-Windows, and the Standard Directory guidelines on macOS.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-winapi" ,rust-winapi-0.3))))))
 
 (define-public rust-discard-1.0
   (package
