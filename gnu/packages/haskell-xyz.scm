@@ -55,6 +55,7 @@
   #:use-module (gnu packages haskell-web)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages ncurses)
@@ -6732,6 +6733,43 @@ can handle infinite lists.")
 for interacting with LLVM.  It includes an algebraic datatype (ADT) to represent
 LLVM IR.  The llvm-hs package builds on this one with FFI bindings to LLVM, but
 llvm-hs-pure does not require LLVM to be available.")
+    (license license:bsd-3)))
+
+(define-public ghc-llvm-hs
+  (package
+    (name "ghc-llvm-hs")
+    (version "9.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/llvm-hs/llvm-hs-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0723xgh45h9cyxmmjsvxnsp8bpn1ljy4qgh7a7vqq3sj9d6wzq00"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-llvm-hs-pure" ,ghc-llvm-hs-pure)
+       ("llvm" ,llvm-9)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-temporary" ,ghc-temporary)
+       ("ghc-pretty-show" ,ghc-pretty-show)
+       ("ghc-temporary" ,ghc-temporary)))
+    (home-page "https://github.com/llvm-hs/llvm-hs/")
+    (synopsis "General purpose LLVM bindings for Haskell")
+    (description "llvm-hs is a set of Haskell bindings for LLVM.  Unlike other
+current Haskell bindings, it uses an algebraic datatype (ADT) to represent LLVM
+IR, and so offers two advantages: it handles almost all of the stateful
+complexities of using the LLVM API to build IR; and it supports moving IR not
+only from Haskell into LLVM C++ objects, but the other direction - from LLVM C++
+into Haskell.")
     (license license:bsd-3)))
 
 (define-public ghc-logging-facade
