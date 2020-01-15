@@ -1244,26 +1244,35 @@ control to Git repositories.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             ;; The following tests are known to fail.
-             (for-each (lambda (file)
-                         (delete-file (string-append "tests/" file)))
-                       '("test-extdiff.t"
-                         "test-hghave.t"
-                         "test-hgwebdir.t"
-                         "test-http-branchmap.t"
-                         "test-logtoprocess.t"
-                         "test-merge-combination.t"
-                         "test-nointerrupt.t"
-                         "test-patchbomb.t"
-                         "test-pull-bundle.t"
-                         "test-push-http.t"
-                         "test-run-tests.t"
-                         "test-serve.t"
-                         "test-subrepo-deep-nested-change.t"
-                         "test-subrepo-recursion.t"
-                         "test-transplant.t"))
-             (invoke "make" "check"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (with-directory-excursion "tests"
+               ;; The following tests are known to fail.
+               (for-each (lambda (file)
+                           (delete-file file))
+                         '("test-extdiff.t"
+                           "test-hghave.t"
+                           "test-hgwebdir.t"
+                           "test-http-branchmap.t"
+                           "test-logtoprocess.t"
+                           "test-merge-combination.t"
+                           "test-nointerrupt.t"
+                           "test-patchbomb.t"
+                           "test-pull-bundle.t"
+                           "test-push-http.t"
+                           "test-run-tests.t"
+                           "test-serve.t"
+                           "test-subrepo-deep-nested-change.t"
+                           "test-subrepo-recursion.t"
+                           "test-transplant.t"))
+               (when tests?
+                 (invoke "./run-tests.py"
+                         ;; ‘make check’ does not respect ‘-j’.
+                         (string-append "-j" (number->string
+                                              (parallel-job-count)))
+                         ;; The test suite takes a long time and produces little
+                         ;; output by default.  Prevent timeouts due to silence.
+                         "-v"))
+               #t))))))
     ;; The following inputs are only needed to run the tests.
     (native-inputs
      `(("python-nose" ,python-nose)
