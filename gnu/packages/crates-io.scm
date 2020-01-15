@@ -1639,6 +1639,26 @@ need compiler-rt intrinsics.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-compiler-error-0.1
+  (package
+    (name "rust-compiler-error")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "compiler_error" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0irh7c0gznk2k6mj3cmqw7x4pg59lppmy1y8d6k5xc926rnmz5zg"))))
+    (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
+    (home-page "https://github.com/lu-zero/compiler_error")
+    (synopsis "Triggerable compiler error")
+    (description "This package provides a triggerable compiler error for Rust.")
+    (license license:expat)))
+
 (define-public rust-compiletest-rs-0.3
   (package
     (name "rust-compiletest-rs")
