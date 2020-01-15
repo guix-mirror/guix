@@ -254,6 +254,33 @@ text or blue underlined text, on ANSI terminals.")
     (description "This package provides an atomically swappable Arc.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-argon2rs-0.2
+  (package
+    (name "rust-argon2rs")
+    (version "0.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "argon2rs" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "14mkgkrjd4b4zy92pflz6yb4j1wn2chbd8jczxknxbkdm2vb0rrz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-blake2-rfc" ,rust-blake2-rfc-0.2)
+        ("rust-scoped-threadpool" ,rust-scoped-threadpool-0.1))
+       #:cargo-development-inputs
+       (("rust-cargon" ,rust-cargon-0.0))))
+    (home-page "https://github.com/bryant/argon2rs")
+    (synopsis "Rust password hashing library that runs on Argon2")
+    (description "This package provides a pure Rust password hashing library
+that runs on Argon2.")
+    (license license:expat)))
+
 (define-public rust-arrayvec-0.4
   (package
     (name "rust-arrayvec")
