@@ -33,6 +33,7 @@
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages xml)
   #:use-module (guix build-system python)
   #:use-module (guix download)
   #:use-module ((guix licenses)

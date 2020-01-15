@@ -2076,6 +2076,35 @@ For lxml.etree this package can be useful for providing XPath 2.0 selectors,
 because lxml.etree already has it's own implementation of XPath 1.0.")
     (license license:expat)))
 
+(define-public python-lxml
+  (package
+    (name "python-lxml")
+    (version "4.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "lxml" version))
+       (sha256
+        (base32 "01nvb5j8vs9nk4z5s3250b1m22b4d08kffa36if3g1mdygdrvxpg"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "make" "test"))))))
+    (inputs
+     `(("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)))
+    (home-page "https://lxml.de/")
+    (synopsis "Python XML processing library")
+    (description
+     "The lxml XML toolkit is a Pythonic binding for the C libraries
+libxml2 and libxslt.")
+    (license license:bsd-3))) ; and a few more, see LICENSES.txt
+
+(define-public python2-lxml
+  (package-with-python2 python-lxml))
+
 (define-public python-xmltodict
   (package
     (name "python-xmltodict")

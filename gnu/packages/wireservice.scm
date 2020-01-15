@@ -28,7 +28,8 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sphinx)
-  #:use-module (gnu packages time))
+  #:use-module (gnu packages time)
+  #:use-module (gnu packages xml))
 
 ;; Common package definition for packages from https://github.com/wireservice.
 (define-syntax-rule (wireservice-package extra-fields ...)

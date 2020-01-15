@@ -5784,35 +5784,6 @@ the GObject Introspection bindings to libnotify for non-GTK applications.")
 (define-public python2-notify2
   (package-with-python2 python-notify2))
 
-(define-public python-lxml
-  (package
-    (name "python-lxml")
-    (version "4.4.2")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "lxml" version))
-        (sha256
-         (base32 "01nvb5j8vs9nk4z5s3250b1m22b4d08kffa36if3g1mdygdrvxpg"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (replace 'check
-                    (lambda _
-                      (invoke "make" "test"))))))
-    (inputs
-      `(("libxml2" ,libxml2)
-        ("libxslt" ,libxslt)))
-    (home-page "https://lxml.de/")
-    (synopsis "Python XML processing library")
-    (description
-      "The lxml XML toolkit is a Pythonic binding for the C libraries
-libxml2 and libxslt.")
-    (license license:bsd-3))) ; and a few more, see LICENSES.txt
-
-(define-public python2-lxml
-  (package-with-python2 python-lxml))
-
 ;; beautifulsoup4 has a totally different namespace than 3.x,
 ;; and pypi seems to put it under its own name, so I guess we should too
 (define-public python-beautifulsoup4
