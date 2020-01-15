@@ -1091,14 +1091,14 @@ from the Python interpreter, or as a small part of a larger application.")
 (define-public python-six
   (package
     (name "python-six")
-    (version "1.12.0")
+    (version "1.13.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "six" version))
       (sha256
        (base32
-        "0wxs1q74v07ssjywbbm7x6h5v9qx209ld2yfsif4060sxi0h2sni"))))
+        "0rkby0kxlxj0kk2m6q5mh73ka5rk608p886vnv57h9cbkqki1xih"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1107,8 +1107,7 @@ from the Python interpreter, or as a small part of a larger application.")
            (lambda _
              (invoke "py.test" "-v"))))))
     (native-inputs
-     `(("python-py" ,python-py)
-       ("python-pytest" ,python-pytest-bootstrap)))
+     `(("python-pytest" ,python-pytest-bootstrap)))
     (home-page "https://pypi.python.org/pypi/six/")
     (synopsis "Python 2 and 3 compatibility utilities")
     (description
