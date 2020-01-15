@@ -1077,11 +1077,13 @@ used in argon2rs' bench suite.")
          (base32
           "0rgsn3klhhh09d8qf3b87zl4rwk93l2g0qzh9hhb0lff5kcfrzmn"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs (("rust-libc" ,rust-libc-0.2))))
     (home-page "https://github.com/blas-lapack-rs/cblas-sys")
     (synopsis "Bindings to CBLAS (C)")
     (description
      "The package provides bindings to CBLAS (C).")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
