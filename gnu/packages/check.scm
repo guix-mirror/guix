@@ -642,26 +642,20 @@ doctest.")
 (define-public python-mock
   (package
     (name "python-mock")
-    (version "2.0.0")
+    (version "3.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "mock" version))
        (sha256
         (base32
-         "1flbpksir5sqrvq2z0dp8sl4bzbadg21sj4d42w3klpdfvgvcn5i"))))
+         "1hrp6j0yrx2xzylfv02qa8kph661m6yq4p0mc8fnimch9j4psrc3"))))
     (propagated-inputs
-     `(("python-pbr" ,python-pbr-minimal)
-       ("python-six" ,python-six)))
+     `(("python-six" ,python-six)))
     (build-system python-build-system)
-    (native-inputs
-     `(("python-unittest2" ,python-unittest2)))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _
-             (zero? (system* "unit2")))))))
+     ;; FIXME: Tests require "pytest", which depends on this package.
+     '(#:tests? #f))
     (home-page "https://github.com/testing-cabal/mock")
     (synopsis "Python mocking and patching library for testing")
     (description
