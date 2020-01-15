@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,6 +20,7 @@
 (define-module (guix scripts repl)
   #:use-module (guix ui)
   #:use-module (guix scripts)
+  #:use-module ((guix scripts build) #:select (%standard-build-options))
   #:use-module (guix repl)
   #:use-module (guix utils)
   #:use-module (guix packages)
@@ -52,7 +54,10 @@
                   (alist-cons 'type (string->symbol arg) result)))
         (option '("listen") #t #f
                 (lambda (opt name arg result)
-                  (alist-cons 'listen arg result)))))
+                  (alist-cons 'listen arg result)))
+        (find (lambda (option)
+                (member "load-path" (option-names option)))
+              %standard-build-options)))
 
 
 (define (show-help)
@@ -60,6 +65,8 @@
 Start a Guile REPL in the Guix execution environment.\n"))
   (display (G_ "
   -t, --type=TYPE        start a REPL of the given TYPE"))
+  (display (G_ "
+  -L, --load-path=DIR    prepend DIR to the package module search path"))
   (newline)
   (display (G_ "
   -h, --help             display this help and exit"))

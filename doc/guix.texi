@@ -7996,6 +7996,14 @@ Accept connections on localhost on port 37146.
 @item --listen=unix:/tmp/socket
 Accept connections on the Unix-domain socket @file{/tmp/socket}.
 @end table
+
+@item --load-path=@var{directory}
+@itemx -L @var{directory}
+Add @var{directory} to the front of the package module search path
+(@pxref{Package Modules}).
+
+This allows users to define their own packages and make them visible to
+the command-line tool.
 @end table
 
 @c *********************************************************************
