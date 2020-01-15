@@ -4285,6 +4285,26 @@ futures-rs library.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-futures-task-0.3
+  (package
+    (name "rust-futures-task")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "futures-task" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1yg5d7b3z58mhqbrax5a0qdsfvzfclwyqvw5k3i41x4wnbb55bhb"))))
+    (build-system cargo-build-system)
+    (arguments '(#:tests? #f))
+    (home-page "https://rust-lang-nursery.github.io/futures-rs")
+    (synopsis "Tools for working with tasks")
+    (description "Tools for working with tasks.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-futures-util-preview-0.3
   (package
     (name "rust-futures-util-preview")
