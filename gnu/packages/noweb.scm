@@ -82,7 +82,7 @@
                             (string-append "TEXINPUTS=" out
                                            "/share/texmf/tex/latex")))
        #:tests? #f))                              ; no tests
-    (home-page "http://www.cs.tufts.edu/~nr/noweb/")
+    (home-page "https://www.cs.tufts.edu/~nr/noweb/")
     (synopsis "Literate programming tool")
     (description
      "Noweb is designed to meet the needs of literate programmers while
@@ -92,4 +92,4 @@ with other literate-programming tools.  noweb uses 5 control sequences to
 WEB's 27.  The noweb manual is only 4 pages; an additional page explains how
 to customize its LaTeX output.  noweb works “out of the box” with any
 programming language, and supports TeX, LaTeX, HTML, and troff back ends.")
-    (license (fsf-free "http://www.cs.tufts.edu/~nr/noweb/#copyright"))))
+    (license (fsf-free "https://www.cs.tufts.edu/~nr/noweb/#copyright"))))
