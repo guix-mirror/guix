@@ -15822,6 +15822,9 @@ that is accessible to other projects developed in Cython.")
 pure-Python.")
     (license license:asl2.0)))
 
+(define-public python2-sortedcontainers
+  (package-with-python2 python-sortedcontainers))
+
 (define-public python-cloudpickle
   (package
     (name "python-cloudpickle")
