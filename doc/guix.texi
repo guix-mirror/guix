@@ -9838,6 +9838,13 @@ the case, @command{guix size} fails as it tries to load it.
 @itemx -s @var{system}
 Consider packages for @var{system}---e.g., @code{x86_64-linux}.
 
+@item --load-path=@var{directory}
+@itemx -L @var{directory}
+Add @var{directory} to the front of the package module search path
+(@pxref{Package Modules}).
+
+This allows users to define their own packages and make them visible to
+the command-line tools.
 @end table
 
 @node Invoking guix graph
