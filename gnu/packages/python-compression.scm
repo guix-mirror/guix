@@ -223,20 +223,25 @@ install: libbitshuffle.so
     (propagated-inputs
      `(("python-more-itertools" ,python-more-itertools)))
     (native-inputs
-     `(("python-contextlib2" ,python-contextlib2)
-       ("python-pathlib2" ,python-pathlib2)
-       ("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-unittest2" ,python-unittest2)))
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://github.com/jaraco/zipp")
     (synopsis
      "Backport of pathlib-compatible object wrapper for zip files")
     (description
      "This package provides a @code{pathlib}-compatible @code{Zipfile} object
 wrapper.  It provides a backport of the @code{Path} object.")
+    (properties `((python2-variant . ,(delay python2-zipp))))
     (license license:expat)))
 
 (define-public python2-zipp
-  (package-with-python2 python-zipp))
+  (let ((base (package-with-python2 (strip-python2-variant python-zipp))))
+    (package/inherit
+     base
+     (native-inputs
+      `(("python-contextlib2" ,python2-contextlib2)
+        ("python-pathlib2" ,python2-pathlib2)
+        ("python-unittest2" ,python2-unittest2)
+        ,@(package-native-inputs base))))))
 
 (define-public python-zstandard
   (package
