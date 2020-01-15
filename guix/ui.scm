@@ -55,7 +55,9 @@
                 ;; in 5d669883ecc104403c5d3ba7d172e9c02234577c, #:hide
                 ;; unwanted bindings instead of #:select'ing the needed
                 ;; bindings.
-                #:hide (package-name->name+version))
+                #:hide (package-name->name+version
+                        ;; Avoid "overrides core binding" warning.
+                        delete))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)

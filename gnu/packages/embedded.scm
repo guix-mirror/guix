@@ -32,7 +32,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
-  #:use-module (guix build utils)
+  #:use-module ((guix build utils) #:select (alist-replace))
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module ((gnu packages base) #:prefix base:)
