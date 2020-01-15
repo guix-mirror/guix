@@ -8850,7 +8850,7 @@ uses finite automata and guarantees linear time matching on all inputs.")
 (define-public rust-regex-syntax-0.6
   (package
     (name "rust-regex-syntax")
-    (version "0.6.10")
+    (version "0.6.13")
     (source
       (origin
         (method url-fetch)
@@ -8858,12 +8858,9 @@ uses finite automata and guarantees linear time matching on all inputs.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0p47lf38yj2g2fnmvnraccqlxwk35zr76hlnqi8yva932nzqam6d"))))
+          "141xi6yiji0bc04c4skamd4ny9vnd1jrwc7qzfga425lyn8yhd77"))))
     (build-system cargo-build-system)
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-ucd-util" ,rust-ucd-util-0.1))))
+    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/rust-lang/regex")
     (synopsis "Regular expression parser")
     (description
