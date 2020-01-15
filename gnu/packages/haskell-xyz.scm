@@ -23,6 +23,7 @@
 ;;; Copyright © 2019 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2020 JoJo <jo@jo.zone>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6702,6 +6703,35 @@ Custom types can easily be made ListLike instances as well.
 ListLike also provides for String-like types, such as String and
 ByteString, for types that support input and output, and for types that
 can handle infinite lists.")
+    (license license:bsd-3)))
+
+(define-public ghc-llvm-hs-pure
+  (package
+    (name "ghc-llvm-hs-pure")
+    (version "9.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/llvm-hs-pure/"
+                           "llvm-hs-pure-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0pxb5ah8r5pzpz2ibqw3g9g1isigb4z7pbzfrwr8kmcjn74ab3kf"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-fail" ,ghc-fail)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+    (home-page "https://github.com/llvm-hs/llvm-hs/")
+    (synopsis "Pure Haskell LLVM functionality (no FFI)")
+    (description "llvm-hs-pure is a set of pure Haskell types and functions
+for interacting with LLVM.  It includes an algebraic datatype (ADT) to represent
+LLVM IR.  The llvm-hs package builds on this one with FFI bindings to LLVM, but
+llvm-hs-pure does not require LLVM to be available.")
     (license license:bsd-3)))
 
 (define-public ghc-logging-facade
