@@ -12502,6 +12502,26 @@ memory all at once.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-takeable-option-0.4
+  (package
+    (name "rust-takeable-option")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "takeable-option" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hvd6vk4ksgg2y99498jw52ric4lxm0i6ygpzqm95gdrhvsxyynp"))))
+    (build-system cargo-build-system)
+    (home-page "https://docs.rs/takeable-option/")
+    (synopsis "A small wrapper around option.")
+    (description
+     "This package provides a small wrapper around option.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-tempdir-0.3
   (package
     (name "rust-tempdir")
