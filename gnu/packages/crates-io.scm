@@ -12293,6 +12293,28 @@ and Jaro-Winkler.")
      "Parse command line argument by defining a struct, derive crate.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-subtle-1.0
+  (package
+    (name "rust-subtle")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "subtle" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vm80mxbwfj334izwm8x8l65v1xl9hr0kwrg36r1rq565fkaarrd"))))
+    (build-system cargo-build-system)
+    (home-page "https://dalek.rs/")
+    (synopsis
+     "Pure-Rust traits and utilities for cryptographic implementations")
+    (description
+     "This package provides Pure-Rust traits and utilities for constant-time
+cryptographic implementations.")
+    (license license:bsd-3)))
+
 (define-public rust-syn-1.0
   (package
     (name "rust-syn")
