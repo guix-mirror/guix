@@ -2162,8 +2162,7 @@ converts them to maildir format directories.")
         (base32 "0q4ifzvl1gcndvqqqk7n9mc599r4s2knxjc7alflwb366fql58gv"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gnutls" ,gnutls)
-       ("libidn" ,libidn)))
+     `(("gnutls" ,gnutls)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://marlam.de/mpop/")
