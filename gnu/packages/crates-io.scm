@@ -10476,7 +10476,13 @@ directories.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1wbh8ngqkqr3f6wz902yplf60bd5yapnckvrkgmzp5nffi7n8qzs"))))))
+          "1wbh8ngqkqr3f6wz902yplf60bd5yapnckvrkgmzp5nffi7n8qzs"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-kernel32-sys" ,rust-kernel32-sys-0.2)
+        ("rust-winapi" ,rust-winapi-0.2))))
+    (properties '())))
 
 (define-public rust-termcolor-1.0
   (package
