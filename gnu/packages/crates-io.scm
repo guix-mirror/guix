@@ -15215,6 +15215,34 @@ extended attributes.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-xcb-0.9
+  (package
+    (name "rust-xcb")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "xcb" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "19i2pm8alpn2f0m4jg8bsw6ckw8irj1wjh55h9pi2fcb2diny1b2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-x11" ,rust-x11-2))
+       #:cargo-development-inputs
+       (("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/rtbo/rust-xcb")
+    (synopsis "Rust bindings and wrappers for XCB")
+    (description
+     "Rust bindings and wrappers for XCB")
+    (license license:expat)))
+
 (define-public rust-xdg-2.2
   (package
     (name "rust-xdg")
