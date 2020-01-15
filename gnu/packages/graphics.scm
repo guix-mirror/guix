@@ -21,6 +21,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,6 +62,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages jemalloc)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
@@ -327,6 +329,81 @@ abstraction.  Imath implements 2D and 3D vectors, 3x3 and 4x4 matrices,
 quaternions and other useful 2D and 3D math functions.  Iex is an
 exception-handling library.")
     (license license:bsd-3)))
+
+(define-public lib2geom
+  ;; Use the latest master commit, as the 1.0 release suffer build problems.
+  (let ((revision "1")
+        (commit "42e119d94934a9514c61571cfb6b4af503ece082"))
+    (package
+      (name "lib2geom")
+      (version (git-version "1.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/inkscape/lib2geom.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "195rs0kdbs8w62irha1nwy83bccz04wglmk578qrj1mky7fc4rjv"))
+                (patches
+                 ;; Patch submitted to upstream (see:
+                 ;; https://gitlab.com/inkscape/lib2geom/merge_requests/17).
+                 (search-patches "lib2geom-enable-assertions.patch"))
+                (modules '((guix build utils)))
+                (snippet
+                 '(begin
+                    ;; Fix py2geom module initialization (see:
+                    ;; https://gitlab.com/inkscape/lib2geom/merge_requests/18).
+                    (substitute* "src/py2geom/__init__.py"
+                      (("_py2geom") "py2geom._py2geom"))
+                    #t))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:imported-modules ((guix build python-build-system)
+                             ,@%cmake-build-system-modules)
+         #:configure-flags '("-D2GEOM_BUILD_SHARED=ON"
+                             "-D2GEOM_BOOST_PYTHON=ON"
+                             ;; Compiling the Cython bindings fail (see:
+                             ;; https://gitlab.com/inkscape/lib2geom/issues/21).
+                             "-D2GEOM_CYTHON_BINDINGS=OFF")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-python-lib-install-path
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((python-version (@ (guix build python-build-system)
+                                         python-version))
+                      (python-maj-min-version (python-version
+                                               (assoc-ref inputs "python")))
+                      (site-package (string-append
+                                     (assoc-ref outputs "out")
+                                     "/lib/python" python-maj-min-version
+                                     "/site-packages")))
+                 (substitute* '("src/cython/CMakeLists.txt"
+                                "src/py2geom/CMakeLists.txt")
+                   (("PYTHON_LIB_INSTALL \"[^\"]*\"")
+                    (format #f "PYTHON_LIB_INSTALL ~s" site-package))))
+               #t)))))
+      (native-inputs `(("python" ,python-wrapper)
+                       ("googletest" ,googletest)
+                       ("pkg-config" ,pkg-config)))
+      (inputs `(("cairo" ,cairo)
+                ("pycairo" ,python-pycairo)
+                ("double-conversion" ,double-conversion)
+                ("glib" ,glib)
+                ("gsl" ,gsl)))
+      (propagated-inputs
+       `(("boost" ,boost)))             ;referred to in 2geom/pathvector.h.
+      (home-page "https://gitlab.com/inkscape/lib2geom/")
+      (synopsis "C++ 2D graphics library")
+      (description "2geom is a C++ library of mathematics for paths, curves,
+and other geometric calculations.  Designed for vector graphics, it tackles
+Bézier curves, conic sections, paths, intersections, transformations, and
+basic geometries.")
+      ;; Because the library is linked with the GNU Scientific Library
+      ;; (GPLv3+), the combined work must be licensed as GPLv3+ (see:
+      ;; https://gitlab.com/inkscape/inkscape/issues/784).
+      (license license:gpl3+))))
 
 (define-public ogre
   (package
