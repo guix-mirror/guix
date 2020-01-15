@@ -4154,12 +4154,14 @@ heap.")
          (base32
           "1i72isf699q9jl167g2kg4xd6h3cd05rc79zaph58aqjy0g0m9y9"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs (("rust-heapsize" ,rust-heapsize-0.3))))
     (home-page "https://github.com/servo/heapsize")
     (synopsis "Measure runtime size of an object on the heap")
     (description
      "This package automatically generates infrastructure for measuring the
 total runtime size of an object on the heap")
-    (properties `((hidden? . #t)))
     (license license:mpl2.0)))
 
 (define-public rust-hex-0.3
