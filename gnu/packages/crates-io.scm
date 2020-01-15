@@ -186,6 +186,25 @@ Rust, using gimli.")
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0))))))
 
+(define-public rust-android-glue-0.2
+  (package
+    (name "rust-android-glue")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "android-glue" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "01y495x4i9vqkwmklwn2xk7sqg666az2axjcpkr4iwngdwi48100"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/tomaka/android-rs-glue")
+    (synopsis "Glue for the Android JNI")
+    (description "This package provides the glue for the Android JNI.")
+    (license license:expat)))
+
 (define-public rust-ansi-term-0.12
   (package
     (name "rust-ansi-term")
