@@ -1269,6 +1269,10 @@ control to Git repositories.")
                          ;; ‘make check’ does not respect ‘-j’.
                          (string-append "-j" (number->string
                                               (parallel-job-count)))
+                         ;; The default time-outs are too low for many systems.
+                         ;; Raise them generously: Guix enforces its own.
+                         "--timeout" "86400"
+                         "--slowtimeout" "86400"
                          ;; The test suite takes a long time and produces little
                          ;; output by default.  Prevent timeouts due to silence.
                          "-v"))
