@@ -1100,13 +1100,18 @@ used in argon2rs' bench suite.")
          (base32
           "1zxzd559dbbf1iwdzmkj7czapzccs17kqqmsj9ayijpdix5rrbld"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-rayon" ,rust-rayon-1.1))
+       #:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir-0.3))))
     (home-page "https://github.com/alexcrichton/cc-rs")
     (synopsis "Invoke the native C compiler")
     (description
      "This package provides a build-time dependency for Cargo build scripts to
 assist in invoking the native C compiler to compile native C code into a static
 archive to be linked into Rustcode.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
