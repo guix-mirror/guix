@@ -68,6 +68,8 @@ line syntax.")
                         ;; so fallback to Debians copy.
                         (string-append "https://deb.debian.org/debian/pool/main"
                                        "/p/popt/popt_" version ".orig.tar.gz")))
+             ;; Ensure the file name stays the same.
+             (file-name (string-append "popt-" version ".tar.gz"))
              (sha256
               (base32
                "1j2c61nn2n351nhj4d25mnf3vpiddcykq005w2h6kw79dwlysa77"))))
