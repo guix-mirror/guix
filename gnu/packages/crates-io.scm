@@ -4779,11 +4779,15 @@ friction with idiomatic Rust structs to ease interopability.")
          (base32
           "1389av0601a9yz8dvx5zha9vmkd6ik7ax0idpb032d28555n41vm"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs (("rust-winapi" ,rust-winapi-0.2))
+       #:cargo-development-inputs
+       (("rust-winapi-build" ,rust-winapi-build-0.1))))
     (home-page "https://github.com/retep998/winapi-rs")
     (synopsis "Function definitions for the Windows API library kernel32")
     (description "Contains function definitions for the Windows API library
 kernel32.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-language-tags-0.2
