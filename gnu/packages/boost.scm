@@ -137,11 +137,6 @@
                                     ,(%current-target-system)))))
                      '())
 
-               (when (which "python3")
-                 (substitute* "tools/build/src/tools/python.jam"
-                   (("include/python\\$\\(version\\)")
-                    "include/python$(version)m")))
-
                (invoke "./bootstrap.sh"
                        (string-append "--prefix=" out)
                        ;; Auto-detection looks for ICU only in traditional
