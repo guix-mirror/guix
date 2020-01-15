@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -242,6 +243,17 @@ wrapper.  It provides a backport of the @code{Path} object.")
         ("python-pathlib2" ,python2-pathlib2)
         ("python-unittest2" ,python2-unittest2)
         ,@(package-native-inputs base))))))
+
+;; This package is used to bootstrap pytest, via importlib-metadata.
+(define-public python2-zipp-bootstrap
+  (hidden-package
+   (package/inherit
+    python2-zipp
+    (arguments
+     `(#:tests? #f
+       ,@(package-arguments python2-zipp)))
+    (native-inputs
+     `(("python-setuptools-scm" ,python2-setuptools-scm))))))
 
 (define-public python-zstandard
   (package

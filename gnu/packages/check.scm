@@ -821,13 +821,13 @@ and many external plugins.")
   (package
     (inherit (strip-python2-variant python-pytest))
     (name "python2-pytest")
-    (version "4.4.2")
+    (version "4.6.9")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pytest" version))
               (sha256
                (base32
-                "18w38kjnffdcrlbw6ny6dksgxai6x9bxpjs2m6klqmb8hfzjkcb2"))))
+                "0fgkmpc31nzy97fxfrkqbzycigdwxwwmninx3qhkzp81migggs0r"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
@@ -836,11 +836,14 @@ and many external plugins.")
      `(("python-atomicwrites" ,python2-atomicwrites)
        ("python-attrs" ,python2-attrs-bootstrap)
        ("python-funcsigs" ,python2-funcsigs)
+       ("python-importlib-metadata" ,python2-importlib-metadata-bootstrap)
        ("python-more-itertools" ,python2-more-itertools)
+       ("python-packaging" ,python2-packaging-bootstrap)
        ("python-pathlib2" ,python2-pathlib2)
        ("python-pluggy" ,python2-pluggy)
        ("python-py" ,python2-py)
-       ("python-six" ,python2-six-bootstrap)))
+       ("python-six" ,python2-six-bootstrap)
+       ("python-wcwidth" ,python2-wcwidth)))
     (native-inputs
      `(("bash" ,bash)                   ;tests require 'compgen'
        ("python-hypothesis" ,python2-hypothesis)
@@ -871,10 +874,13 @@ and many external plugins.")
       `(("python-atomicwrites" ,python2-atomicwrites)
         ("python-attrs" ,python2-attrs-bootstrap)
         ("python-funcsigs" ,python2-funcsigs-bootstrap)
+        ("python-importlib-metadata" ,python2-importlib-metadata-bootstrap)
         ("python-more-itertools" ,python2-more-itertools)
+        ("python-packaging" ,python2-packaging-bootstrap)
         ("python-pathlib2" ,python2-pathlib2-bootstrap)
-        ("python-pluggy" ,python2-pluggy)
-        ("python-py" ,python2-py))))))
+        ("python-pluggy" ,python2-pluggy-bootstrap)
+        ("python-py" ,python2-py)
+        ("python-wcwidth" ,python2-wcwidth))))))
 
 (define-public python-pytest-cov
   (package

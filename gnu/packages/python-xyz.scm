@@ -5004,6 +5004,16 @@ older Python versions.")
 for older versions of Python.")
     (license license:asl2.0)))
 
+;; For importlib-metadata-bootstrap below.
+(define-public python2-importlib-resources-bootstrap
+  (hidden-package
+   (package/inherit
+    python2-importlib-resources
+    (name "python2-importlib-resources-bootstrap")
+    (propagated-inputs
+     `(("python-pathlib2-bootstrap" ,python2-pathlib2-bootstrap)
+       ("python-typing" ,python2-typing))))))
+
 (define-public python-importlib-metadata
   (package
     (name "python-importlib-metadata")
@@ -5019,7 +5029,7 @@ for older versions of Python.")
      `(("python-zipp" ,python-zipp)))
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-packaging" ,python-packaging)))
+       ("python-packaging" ,python-packaging-bootstrap)))
     (home-page "https://importlib-metadata.readthedocs.io/")
     (synopsis "Read metadata from Python packages")
     (description
@@ -5044,6 +5054,22 @@ need to use the older and less efficient @code{pkg_resources} package.")
         ("python-importlib-resources" ,python2-importlib-resources)
         ("python-pathlib2" ,python2-pathlib2)
         ,@(package-propagated-inputs base))))))
+
+;; This package is used by python2-pytest, and thus must not depend on it.
+(define-public python2-importlib-metadata-bootstrap
+  (hidden-package
+   (package/inherit
+    python2-importlib-metadata
+    (name "python2-importlib-metadata-bootstrap")
+    (arguments
+     `(#:tests? #f
+       ,@(package-arguments python2-importlib-metadata)))
+    (propagated-inputs
+     `(("python-zipp" ,python2-zipp-bootstrap)
+       ("python-pathlib2" ,python2-pathlib2-bootstrap)
+       ("python-configparser" ,python2-configparser)
+       ("python-contextlib2" ,python2-contextlib2-bootstrap)
+       ("python-importlib-resources" ,python2-importlib-resources-bootstrap))))))
 
 (define-public python-jaraco-packaging
   (package
@@ -8288,6 +8314,18 @@ the standard library.")
       (native-inputs
        `(("python2-unittest2" ,python2-unittest2))))))
 
+;; This package is used by python2-pytest via python2-importlib-metadata,
+;; and thus can not depend on python-unittest2 (which depends on pytest).
+(define-public python2-contextlib2-bootstrap
+  (hidden-package
+   (package/inherit
+    python2-contextlib2
+    (name "python2-contextlib2-bootstrap")
+    (arguments
+     `(#:tests? #f
+       ,@(package-arguments python2-contextlib2)))
+    (native-inputs '()))))
+
 (define-public python-texttable
   (package
     (name "python-texttable")
@@ -8785,6 +8823,20 @@ Pytest but stripped of Pytest specific details.")
      base
      (propagated-inputs
       `(("python-importlib-metadata" ,python2-importlib-metadata))))))
+
+;; This package requires python2-importlib-metadata, but that package
+;; ends up needing python2-pluggy via python2-pytest, so we need this
+;; variant to solve the circular dependency.
+(define-public python2-pluggy-bootstrap
+  (hidden-package
+   (package/inherit
+    python2-pluggy
+    (name "python2-pluggy-bootstrap")
+    (arguments
+     `(#:tests? #f
+       ,@(package-arguments python2-pluggy)))
+    (propagated-inputs
+     `(("python-importlib-metadata" ,python2-importlib-metadata-bootstrap))))))
 
 (define-public python-tox
   (package
@@ -13107,7 +13159,11 @@ several utilities, as well as an API for building localization tools.")
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (replace 'check
-                    (lambda _ (invoke "py.test" "-vv"))))))
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          (invoke "py.test" "-vv")
+                          (format #t "test suite not run~%"))
+                      #t)))))
     (native-inputs
      `(("python-pretend" ,python-pretend)
        ("python-pytest" ,python-pytest)))
@@ -13125,7 +13181,10 @@ information.")
     ;; licenses.
     (license (list license:asl2.0 license:bsd-2))))
 
-;; A variant with minimal dependencies, for bootstrapping Pytest.
+(define-public python2-packaging
+  (package-with-python2 python-packaging))
+
+;; Variants with minimal dependencies, for bootstrapping Pytest.
 (define-public python-packaging-bootstrap
   (hidden-package
    (package/inherit
@@ -13136,8 +13195,17 @@ information.")
      `(("python-pyparsing" ,python-pyparsing)))
     (arguments '(#:tests? #f)))))
 
-(define-public python2-packaging
-  (package-with-python2 python-packaging))
+(define-public python2-packaging-bootstrap
+  (hidden-package
+   (package/inherit
+    python2-packaging
+    (name "python2-packaging-bootstrap")
+    (native-inputs '())
+    (propagated-inputs
+     `(("python-pyparsing" ,python2-pyparsing)))
+    (arguments
+     `(#:tests? #f
+       ,@(package-arguments python2-packaging))))))
 
 (define-public python-relatorio
   (package
