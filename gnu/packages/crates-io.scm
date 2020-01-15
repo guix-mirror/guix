@@ -6819,6 +6819,22 @@ parallelize and optimize.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-md5-0.3
+  (package
+    (inherit rust-md5-0.6)
+    (name "rust-md5")
+    (version "0.3.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "md5" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0j2s8aqdkhwhy7awga2bmv5n8qq8bgy8672iha9f3y871dm6vibr"))))
+    (arguments '())))
+
 (define-public rust-memchr-2.2
   (package
     (name "rust-memchr")
