@@ -5009,10 +5009,10 @@ currently supports parsing (fully conformant parser), formatting and comparing
 language tags.")
     (license license:expat)))
 
-(define-public rust-lazy-static-1.3
+(define-public rust-lazy-static-1.4
   (package
     (name "rust-lazy-static")
-    (version "1.3.0")
+    (version "1.4.0")
     (source
       (origin
         (method url-fetch)
@@ -5020,11 +5020,13 @@ language tags.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "052ac27w189hrf1j3hz7sga46rp84zl2hqnzyihxv78mgzr2jmxw"))))
+          "0in6ikhw8mgl33wjv6q6xfrb5b9jr16q8ygjy803fay4zcisvaz2"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
-       #:cargo-inputs (("rust-spin" ,rust-spin-0.5))))
+       #:cargo-inputs (("rust-spin" ,rust-spin-0.5))
+       #:cargo-development-inputs
+       (("rust-doc-comment" ,rust-doc-comment-0.3))))
     (home-page  "https://github.com/rust-lang-nursery/lazy-static.rs")
     (synopsis "Macro for declaring lazily evaluated statics in Rust")
     (description
@@ -5035,6 +5037,23 @@ requiring heap allocations, like vectors or hash maps, as well as anything that
 requires non-const function calls to be computed.")
     (license (list license:asl2.0
                    license:expat))))
+
+(define-public rust-lazy-static-1.3
+  (package
+    (inherit rust-lazy-static-1.4)
+    (name "rust-lazy-static")
+    (version "1.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "lazy_static" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "052ac27w189hrf1j3hz7sga46rp84zl2hqnzyihxv78mgzr2jmxw"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs (("rust-spin" ,rust-spin-0.5))))))
 
 (define-public rust-lazycell-1.2
   (package
