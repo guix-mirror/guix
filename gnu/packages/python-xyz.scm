@@ -26,7 +26,7 @@
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016, 2017, 2019 Alex Vong <alexvong1995@gmail.com>
@@ -4957,6 +4957,31 @@ standard @code{pathlib} module which tracks the standard library module, so
 all the newest features of the standard @code{pathlib} can be used also on
 older Python versions.")
     (license license:expat)))
+
+(define-public python2-importlib-resources
+  (package
+    (name "python2-importlib-resources")
+    (version "1.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "importlib_resources" version))
+              (sha256
+               (base32
+                "0y3hg12iby1qyaspnbisz4s4vxax7syikk3skznwqizqyv89y9yk"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (native-inputs
+     `(("python-wheel" ,python2-wheel)))
+    (propagated-inputs
+     `(("python-pathlib2" ,python2-pathlib2)
+       ("python-typing" ,python2-typing)))
+    (home-page "https://gitlab.com/python-devs/importlib_resources")
+    (synopsis "Backport of @code{importlib.resources} from Python 3.7")
+    (description
+     "This package provides an implementation of @code{importlib.resources}
+for older versions of Python.")
+    (license license:asl2.0)))
 
 (define-public python-importlib-metadata
   (package
