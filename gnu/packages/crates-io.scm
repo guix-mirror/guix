@@ -6648,6 +6648,26 @@ parallelize and optimize.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-maybe-uninit-2.0
+  (package
+    (name "rust-maybe-uninit")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "maybe-uninit" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "004y0nzmpfdrhz251278341z6ql34iv1k6dp1h6af7d6nd6jwc30"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/est31/maybe-uninit")
+    (synopsis "MaybeUninit for friends of backwards compatibility")
+    (description
+     "This package provides MaybeUninit for friends of backwards compatibility.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-md5-0.6
   (package
     (name "rust-md5")
