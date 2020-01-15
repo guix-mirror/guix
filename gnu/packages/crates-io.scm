@@ -8743,10 +8743,9 @@ rust-lang/rust integration.")
        (("rust-getopts" ,rust-getopts-0.2)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
-        ("rust-term" ,rust-term-0.5)
-        ("rust-time" ,rust-time-0.1))
-       #:cargo-development-inputs
-       (("rust-rustc-version" ,rust-rustc-version-0.2))))
+        ("rust-term" ,rust-term-0.4)
+        ("rust-time" ,rust-time-0.1)
+        ("rust-rustc-version" ,rust-rustc-version-0.2))))
     (home-page "https://github.com/servo/rustc-test")
     (synopsis "Fork of Rust's test crate")
     (description
