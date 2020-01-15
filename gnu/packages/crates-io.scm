@@ -12264,12 +12264,17 @@ color in a Windows console.")
          (base32
           "0k556fb6f5jc907975j9c8iynl2fqz3rf0w6fiig83i4yi0kfk14"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2))
+       #:cargo-development-inputs
+       (("rust-tempfile" ,rust-tempfile-3.0))))
     (home-page "https://github.com/Stebalien/xattr")
     (synopsis "Unix extended filesystem attributes")
     (description
      "This package provide a small library for setting, getting, and listing
 extended attributes.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
