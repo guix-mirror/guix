@@ -211,22 +211,21 @@ install: libbitshuffle.so
 (define-public python-zipp
   (package
     (name "python-zipp")
-    (version "0.5.1")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zipp" version))
        (sha256
         (base32
-         "1hsv4zwy1pwnbrr63wjjkpwrmnk36ngbkkqw01bj5hcwh1z3m56a"))))
+         "0v3qayhqv7vyzydpydwcp51bqciw8p2ajddw68x5k8zppc0vx3yk"))))
     (build-system python-build-system)
     (propagated-inputs
+     `(("python-more-itertools" ,python-more-itertools)))
+    (native-inputs
      `(("python-contextlib2" ,python-contextlib2)
        ("python-pathlib2" ,python-pathlib2)
-       ("python-rst.linker" ,python-rst.linker)))
-    (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-sphinx" ,python-sphinx)
+       ("python-setuptools-scm" ,python-setuptools-scm)
        ("python-unittest2" ,python-unittest2)))
     (home-page "https://github.com/jaraco/zipp")
     (synopsis
