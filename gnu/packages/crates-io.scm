@@ -4748,7 +4748,7 @@ wasm-bindgen crate.")
 (define-public rust-json-0.11
   (package
     (name "rust-json")
-    (version "0.11.14")
+    (version "0.11.15")
     (source
       (origin
         (method url-fetch)
@@ -4756,7 +4756,7 @@ wasm-bindgen crate.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1hj8c6xj5c2aqqszi8naaflmcdbya1i9byyjrq4iybxjb4q91mq1"))))
+          "1rg9jxf6bpbwis3ixd5ak8rp37him7n4z8awz4ssrxl6hyplbhlj"))))
     (build-system cargo-build-system)
     (arguments '(#:skip-build? #t))
     (home-page "https://github.com/maciejhirsz/json-rust")
