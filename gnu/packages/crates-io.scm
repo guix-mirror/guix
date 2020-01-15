@@ -730,6 +730,28 @@ and no more (caveat: black_box is still missing!).")
 that uses Serde for transforming structs into bytes and vice versa!")
     (license license:expat)))
 
+(define-public rust-bresenham-0.1
+  (package
+    (name "rust-bresenham")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bresenham" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1mvg3zcyll0m3z79jwbg183ha4kb7bw06rd286ijwvgn4mi13hdz"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/mbr/bresenham-rs")
+    (synopsis
+     "Iterator-based integer-only implementation of Bresenham's line algorithm")
+    (description
+     "This package provides a fast, iterator-based integer-only implementation of
+Bresenham's line algorithm.")
+    (license license:expat)))
+
 (define-public rust-generator-0.6
   (package
     (name "rust-generator")
