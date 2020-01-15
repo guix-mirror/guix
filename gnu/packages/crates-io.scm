@@ -8619,8 +8619,42 @@ system calls.")
      "Derive implementation for ref_cast::RefCast.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-regex-1.3
+  (package
+    (name "rust-regex")
+    (version "1.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "regex" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "11syqmfvbsah805z6ih8vxf8p6jssdsz1gjsjqcwprz484cqql5m"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-aho-corasick" ,rust-aho-corasick-0.7)
+        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-regex-syntax" ,rust-regex-syntax-0.6)
+        ("rust-thread-local" ,rust-thread-local-1.0))
+       #:cargo-development-inputs
+       (("rust-doc-comment" ,rust-doc-comment-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-quickcheck" ,rust-quickcheck-0.8)
+        ("rust-rand" ,rust-rand-0.6))))
+    (home-page "https://github.com/rust-lang/regex")
+    (synopsis "Regular expressions for Rust")
+    (description
+     "An implementation of regular expressions for Rust.  This implementation
+uses finite automata and guarantees linear time matching on all inputs.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-regex-1.1
   (package
+    (inherit rust-regex-1.3)
     (name "rust-regex")
     (version "1.1.7")
     (source
@@ -8632,7 +8666,6 @@ system calls.")
        (sha256
         (base32
          "1pabajpp0wzb7dm2x32gy8w7k0mwykr6zsvzn0fgpr6pww40hbqb"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -8645,13 +8678,7 @@ system calls.")
        (("rust-doc-comment" ,rust-doc-comment-0.3)
         ("rust-lazy-static" ,rust-lazy-static-1.3)
         ("rust-quickcheck" ,rust-quickcheck-0.8)
-        ("rust-rand" ,rust-rand-0.4))))
-    (home-page "https://github.com/rust-lang/regex")
-    (synopsis "Regular expressions for Rust")
-    (description
-     "An implementation of regular expressions for Rust.  This implementation
-uses finite automata and guarantees linear time matching on all inputs.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-rand" ,rust-rand-0.4))))))
 
 (define-public rust-regex-automata-0.1
   (package
