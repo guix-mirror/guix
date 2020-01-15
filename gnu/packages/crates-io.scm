@@ -9007,7 +9007,7 @@ proven statistical guarantees.")
         ("rust-serde-derive" ,rust-serde-derive-1.0)
         ("rust-trybuild" ,rust-trybuild-1.0))))
     (home-page "https://github.com/serde-rs/json")
-    (synopsis "A JSON serialization file format")
+    (synopsis "JSON serialization file format")
     (description
      "This package provides a JSON serialization file format.")
     (license (list license:expat license:asl2.0))))
