@@ -12213,6 +12213,21 @@ and Jaro-Winkler.")
          (base32
           "0sjsm7hrvjdifz661pjxq5w4hf190hx53fra8dfvamacvff139cf"))))))
 
+(define-public rust-strsim-0.6
+  (package
+    (inherit rust-strsim-0.9)
+    (name "rust-strsim")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "strsim" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "151ngha649cyybr3j50qg331b206zrinxqz7fzw1ra8r0n0mrldl"))))))
+
 (define-public rust-structopt-0.2
   (package
     (name "rust-structopt")
