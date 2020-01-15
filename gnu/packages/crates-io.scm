@@ -9498,7 +9498,7 @@ proven statistical guarantees.")
 (define-public rust-serde-cbor-0.10
   (package
     (name "rust-serde-cbor")
-    (version "0.10.1")
+    (version "0.10.2")
     (source
      (origin
        (method url-fetch)
@@ -9507,7 +9507,7 @@ proven statistical guarantees.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0jcb4j637vdlqk2z38jixaqmp6f92h36r17kclv5brjay32911ii"))))
+         "0kyizacjabsa78p9f7qvj31zirpnsgsr4zpfv1p6lwpcb3biw27p"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
