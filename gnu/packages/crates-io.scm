@@ -14150,6 +14150,21 @@ or XID_Continue properties according to Unicode Standard Annex #31.")
          (base32
           "1z57lqh4s18rr4x0j4fw4fmp9hf9346h0kmdgqsqx0fhjr3k0wpw"))))))
 
+(define-public rust-unicode-xid-0.0
+  (package
+    (inherit rust-unicode-xid-0.2)
+    (name "rust-unicode-xid")
+    (version "0.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "unicode-xid" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1p5l9h3n3i53cp95fb65p8q3vbwib79ryd9z5z5h5kr9gl6qc7wc"))))))
+
 (define-public rust-unindent-0.1
   (package
     (name "rust-unindent")
