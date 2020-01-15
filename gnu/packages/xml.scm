@@ -21,6 +21,7 @@
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Jack Hill <jackhill@jackhill.us>
+;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2049,6 +2050,31 @@ It converts the procedure call into an XML document, sends it to a remote
 server using HTTP, and gets back the response as XML.  This library provides a
 modular implementation of XML-RPC for C and C++.")
     (license (list license:psfl license:expat))))
+
+(define-public python-elementpath
+  (package
+    (name "python-elementpath")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "elementpath" version))
+       (sha256
+        (base32
+         "1syn2z543brab23dskh3fjd9pqvz6npqbcicrs2d88dbg26xl08p"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/sissaschool/elementpath")
+    (synopsis
+     "XPath 1.0/2.0 parsers and selectors for ElementTree and lxml")
+    (description
+     "The proposal of this package is to provide XPath 1.0 and 2.0 selectors
+for Python's ElementTree XML data structures, both for the standard
+ElementTree library and for the @uref{http://lxml.de, lxml.etree} library.
+
+For lxml.etree this package can be useful for providing XPath 2.0 selectors,
+because lxml.etree already has it's own implementation of XPath 1.0.")
+    (license license:expat)))
 
 (define-public python-xmltodict
   (package
