@@ -15771,14 +15771,14 @@ that is accessible to other projects developed in Cython.")
 (define-public python-sortedcontainers
   (package
     (name "python-sortedcontainers")
-    (version "2.0.4")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "sortedcontainers" version))
        (sha256
         (base32
-         "10hrk2k0hbf9x78vd3f0lj277m1yzfhzzxr0hja718liwb398wk0"))))
+         "0fm0w5id2yhqld95hg2m636vjgkz377rvgdfqaxc25vbylr9lklp"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-tox" ,python-tox)))
