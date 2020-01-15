@@ -1612,20 +1612,20 @@ instantly.")
 (define-public python-hypothesis
   (package
     (name "python-hypothesis")
-    (version "4.18.3")
+    (version "5.1.5")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "hypothesis" version))
               (sha256
                (base32
-                "0a35nwqyjnm4cphi43xracqpkws0ip61mndvqb1iqq7gkva83lb1"))))
+                "1ady8cjwpwsicpkhpjd6qwnipjr1lf488sv23psksbxsbgffg7sz"))))
     (build-system python-build-system)
-    (native-inputs
-     `(("python-flake8" ,python-flake8)
-       ("python-pytest" ,python-pytest-bootstrap)))
+    (arguments
+     ;; XXX: Tests are not distributed with the PyPI archive.
+     '(#:tests? #f))
     (propagated-inputs
      `(("python-attrs" ,python-attrs-bootstrap)
-       ("python-coverage" ,python-coverage)))
+       ("python-sortedcontainers" ,python-sortedcontainers)))
     (synopsis "Library for property based testing")
     (description "Hypothesis is a library for testing your Python code against a
 much larger range of examples than you would ever want to write by hand.  It’s
@@ -1635,10 +1635,18 @@ seamlessly into your existing Python unit testing work flow.")
     (license license:mpl2.0)
     (properties `((python2-variant . ,(delay python2-hypothesis))))))
 
+;; This is the last version of Hypothesis that supports Python 2.
 (define-public python2-hypothesis
   (let ((hypothesis (package-with-python2
                      (strip-python2-variant python-hypothesis))))
     (package (inherit hypothesis)
+      (version "4.57.1")
+      (source (origin
+                (method url-fetch)
+                (uri (pypi-uri "hypothesis" version))
+                (sha256
+                 (base32
+                  "183gpxbfcdhdqzlahkji5a71n6lmvgqsbkcb0ihqad51n2j6jhrw"))))
       (propagated-inputs
        `(("python2-enum34" ,python2-enum34)
          ,@(package-propagated-inputs hypothesis))))))
