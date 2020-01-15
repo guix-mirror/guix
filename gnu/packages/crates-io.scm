@@ -4482,8 +4482,39 @@ requests and responses.")
      "This package provides a tiny, safe, speedy, zero-copy HTTP/1.x parser.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-humantime-1.3
+  (package
+    (name "rust-humantime")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "humantime" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0krwgbf35pd46xvkqg14j070vircsndabahahlv3rwhflpy4q06z"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-quick-error" ,rust-quick-error-1.2))
+       #:cargo-development-inputs
+       (("rust-chrono" ,rust-chrono-0.4)
+        ("rust-rand" ,rust-rand-0.4)
+        ("rust-time" ,rust-time-0.1))))
+    (home-page "https://github.com/tailhook/humantime")
+    (synopsis
+     "Parser and formatter for Duration and SystemTime")
+    (description
+     "A parser and formatter for @code{std::time::{Duration,
+SystemTime}}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-humantime-1.2
   (package
+    (inherit rust-humantime-1.3)
     (name "rust-humantime")
     (version "1.2.0")
     (source
@@ -4494,24 +4525,7 @@ requests and responses.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "057ilhy6vc9iqhhby5ymh45m051pgxwq2z437gwkbnqhw7rfb9rw"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-quick-error" ,rust-quick-error-1.2))
-       #:cargo-development-inputs
-       (("rust-chrono" ,rust-chrono-0.4)
-        ("rust-rand" ,rust-rand-0.4)
-        ("rust-time" ,rust-time-0.1))))
-    (home-page
-     "https://github.com/tailhook/humantime")
-    (synopsis
-     "Parser and formatter for Duration and SystemTime")
-    (description
-     "A parser and formatter for @code{std::time::{Duration,
-SystemTime}}.")
-    (license (list license:expat license:asl2.0))))
+         "057ilhy6vc9iqhhby5ymh45m051pgxwq2z437gwkbnqhw7rfb9rw"))))))
 
 (define-public rust-hostname-0.1
   (package
