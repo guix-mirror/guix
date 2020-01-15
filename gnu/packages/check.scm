@@ -64,6 +64,7 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages time)
+  #:use-module (gnu packages xml)
   #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -763,35 +764,40 @@ standard library.")
 (define-public python-pytest
   (package
     (name "python-pytest")
-    (version "4.4.2")
+    (version "5.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest" version))
        (sha256
         (base32
-         "18w38kjnffdcrlbw6ny6dksgxai6x9bxpjs2m6klqmb8hfzjkcb2"))))
+         "1yi51ckkiywszz0qp67jisxzcp54acf57wqr3ysgk457nlai4mvb"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (invoke "pytest" "-vv" "-k"
-                     (string-append
-                      ;; These tests involve the /usr directory, and fails.
-                      "not test_remove_dir_prefix"
-                      " and not test_argcomplete"
-                      ;; This test tries to override PYTHONPATH, and
-                      ;; subsequently fails to locate the test libraries.
-                      " and not test_collection")))))))
+           (lambda* (#:key (tests? #t) #:allow-other-keys)
+             (if tests?
+                 (invoke "pytest" "-vv" "-k"
+                         (string-append
+                          ;; These tests involve the /usr directory, and fails.
+                          "not test_remove_dir_prefix"
+                          " and not test_argcomplete"
+                          ;; This test tries to override PYTHONPATH, and
+                          ;; subsequently fails to locate the test libraries.
+                          " and not test_collection"))
+                 (format #t "test suite not run~%"))
+             #t)))))
     (propagated-inputs
      `(("python-atomicwrites" ,python-atomicwrites)
        ("python-attrs" ,python-attrs-bootstrap)
        ("python-more-itertools" ,python-more-itertools)
+       ("python-packaging" ,python-packaging-bootstrap)
        ("python-pluggy" ,python-pluggy)
        ("python-py" ,python-py)
-       ("python-six" ,python-six-bootstrap)))
+       ("python-six" ,python-six-bootstrap)
+       ("python-wcwidth" ,python-wcwidth)))
     (native-inputs
      `(;; Tests need the "regular" bash since 'bash-final' lacks `compgen`.
        ("bash" ,bash)
@@ -799,7 +805,8 @@ standard library.")
        ("python-nose" ,python-nose)
        ("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest-bootstrap)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-xmlschema" ,python-xmlschema)))
     (home-page "https://docs.pytest.org/en/latest/")
     (synopsis "Python testing library")
     (description
@@ -809,15 +816,38 @@ and many external plugins.")
     (license license:expat)
     (properties `((python2-variant . ,(delay python2-pytest))))))
 
+;; Pytest 4.x are the last versions that support Python 2.
 (define-public python2-pytest
-  (let ((pytest (package-with-python2
-                 (strip-python2-variant python-pytest))))
-    (package
-      (inherit pytest)
-      (propagated-inputs
-       `(("python2-funcsigs" ,python2-funcsigs)
-         ("python2-pathlib2" ,python2-pathlib2)
-         ,@(package-propagated-inputs pytest))))))
+  (package
+    (inherit (strip-python2-variant python-pytest))
+    (name "python2-pytest")
+    (version "4.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pytest" version))
+              (sha256
+               (base32
+                "18w38kjnffdcrlbw6ny6dksgxai6x9bxpjs2m6klqmb8hfzjkcb2"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       ,@(package-arguments python-pytest)))
+    (propagated-inputs
+     `(("python-atomicwrites" ,python2-atomicwrites)
+       ("python-attrs" ,python2-attrs-bootstrap)
+       ("python-funcsigs" ,python2-funcsigs)
+       ("python-more-itertools" ,python2-more-itertools)
+       ("python-pathlib2" ,python2-pathlib2)
+       ("python-pluggy" ,python2-pluggy)
+       ("python-py" ,python2-py)
+       ("python-six" ,python2-six-bootstrap)))
+    (native-inputs
+     `(("bash" ,bash)                   ;tests require 'compgen'
+       ("python-hypothesis" ,python2-hypothesis)
+       ("python-nose" ,python2-nose)
+       ("python-mock" ,python2-mock)
+       ("python-pytest" ,python2-pytest-bootstrap)
+       ("python-setuptools-scm" ,python2-setuptools-scm)))))
 
 (define-public python-pytest-bootstrap
   (package
@@ -828,13 +858,23 @@ and many external plugins.")
     (properties `((python2-variant . ,(delay python2-pytest-bootstrap))))))
 
 (define-public python2-pytest-bootstrap
-  (let ((pytest (package-with-python2
-                 (strip-python2-variant python-pytest-bootstrap))))
-    (package (inherit pytest)
-             (propagated-inputs
-              `(("python2-funcsigs" ,python2-funcsigs-bootstrap)
-                ("python2-pathlib2" ,python2-pathlib2-bootstrap)
-                ,@(package-propagated-inputs pytest))))))
+  (hidden-package
+   (package/inherit
+    python2-pytest
+    (name "python2-pytest-bootstrap")
+    (arguments
+     (substitute-keyword-arguments (package-arguments python2-pytest)
+       ((#:tests? _ #f) #f)))
+    (native-inputs
+     `(("python-setuptools-scm" ,python2-setuptools-scm)))
+     (propagated-inputs
+      `(("python-atomicwrites" ,python2-atomicwrites)
+        ("python-attrs" ,python2-attrs-bootstrap)
+        ("python-funcsigs" ,python2-funcsigs-bootstrap)
+        ("python-more-itertools" ,python2-more-itertools)
+        ("python-pathlib2" ,python2-pathlib2-bootstrap)
+        ("python-pluggy" ,python2-pluggy)
+        ("python-py" ,python2-py))))))
 
 (define-public python-pytest-cov
   (package

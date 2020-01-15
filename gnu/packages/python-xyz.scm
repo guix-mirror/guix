@@ -13121,6 +13121,17 @@ information.")
     ;; licenses.
     (license (list license:asl2.0 license:bsd-2))))
 
+;; A variant with minimal dependencies, for bootstrapping Pytest.
+(define-public python-packaging-bootstrap
+  (hidden-package
+   (package/inherit
+    python-packaging
+    (name "python-packaging-bootstrap")
+    (native-inputs '())
+    (propagated-inputs
+     `(("python-pyparsing" ,python-pyparsing)))
+    (arguments '(#:tests? #f)))))
+
 (define-public python2-packaging
   (package-with-python2 python-packaging))
 
