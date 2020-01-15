@@ -4282,6 +4282,44 @@ standard printing of search results, similar to grep itself.")
 IEEE 754-2008 binary16 type.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-handlebars-2.0
+  (package
+    (name "rust-handlebars")
+    (version "2.0.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "handlebars" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "1m99gwjd7q7q79bk4f716wsdvcyhsrcsq4vbzcavbkmc48d194mg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+        (("rust-hashbrown" ,rust-hashbrown-0.5)
+         ("rust-log" ,rust-log-0.4)
+         ("rust-pest" ,rust-pest-2.1)
+         ("rust-pest-derive" ,rust-pest-derive-2.1)
+         ("rust-quick-error" ,rust-quick-error-1.2)
+         ("rust-serde" ,rust-serde-1.0)
+         ("rust-serde-json" ,rust-serde-json-1.0)
+         ("rust-walkdir" ,rust-walkdir-2.2))
+        #:cargo-development-inputs
+        (("rust-criterion" ,rust-criterion-0.2)
+         ("rust-env-logger" ,rust-env-logger-0.6)
+         ("rust-maplit" ,rust-maplit-1.0)
+         ("rust-serde-derive" ,rust-serde-derive-1.0)
+         ("rust-tempfile" ,rust-tempfile-3.0))))
+    (home-page "https://github.com/sunng87/handlebars-rust")
+    (synopsis "Handlebars templating implemented in Rust")
+    (description
+     "This package provides handlebars templating implemented in Rust.  It is
+the template engine that renders the official Rust website")
+    (license license:expat)))
+
 (define-public rust-heapsize-0.4
   (package
     (name "rust-heapsize")
