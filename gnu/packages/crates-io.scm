@@ -10437,10 +10437,10 @@ deleting all contents when it's dropped.")
     (license (list license:asl2.0
                    license:expat))))
 
-(define-public rust-tempfile-3.0
+(define-public rust-tempfile-3.1
   (package
     (name "rust-tempfile")
-    (version "3.0.8")
+    (version "3.1.0")
     (source
       (origin
         (method url-fetch)
@@ -10448,14 +10448,14 @@ deleting all contents when it's dropped.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1vqk7aq2l04my2r3jiyyxirnf8f90nzcvjasvrajivb85s7p7i3x"))))
+          "1a9cfdqw70n7bcnkx05aih9xdba8lqazmqlkjpkmn2la6gcj8vks"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-rand" ,rust-rand-0.6)
+        ("rust-rand" ,rust-rand-0.7)
         ("rust-redox-syscall" ,rust-redox-syscall-0.1)
         ("rust-remove-dir-all" ,rust-remove-dir-all-0.5)
         ("rust-winapi" ,rust-winapi-0.3))))
@@ -10466,6 +10466,29 @@ deleting all contents when it's dropped.")
 directories.")
     (license (list license:asl2.0
                    license:expat))))
+
+(define-public rust-tempfile-3.0
+  (package
+    (inherit rust-tempfile-3.1)
+    (name "rust-tempfile")
+    (version "3.0.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "tempfile" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1vqk7aq2l04my2r3jiyyxirnf8f90nzcvjasvrajivb85s7p7i3x"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-rand" ,rust-rand-0.6)
+        ("rust-redox-syscall" ,rust-redox-syscall-0.1)
+        ("rust-remove-dir-all" ,rust-remove-dir-all-0.5)
+        ("rust-winapi" ,rust-winapi-0.3))))))
 
 (define-public rust-tendril-0.4
   (package
