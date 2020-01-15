@@ -10456,11 +10456,16 @@ directories.")
         (base32
          "0hkgjrfisj6zjwz525639pmsvzhlc48a0h65nw87qrdp6jihdlgd"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-dirs" ,rust-dirs-1.0)
+        ("rust-winapi" ,rust-winapi-0.3))))
     (home-page "https://github.com/Stebalien/term")
     (synopsis "Terminal formatting library")
     (description
      "This package provides a terminal formatting library in rust.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
@@ -10481,8 +10486,7 @@ directories.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-kernel32-sys" ,rust-kernel32-sys-0.2)
-        ("rust-winapi" ,rust-winapi-0.2))))
-    (properties '())))
+        ("rust-winapi" ,rust-winapi-0.2))))))
 
 (define-public rust-termcolor-1.0
   (package
