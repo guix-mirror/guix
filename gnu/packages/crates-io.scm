@@ -4803,6 +4803,11 @@ kernel32.")
          (base32
           "16hrjdpa827carq5x4b8zhas24d8kg4s16m6nmmn1kb7cr5qh7d9"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-heapsize" ,rust-heapsize-0.3)
+        ("rust-heapsize-plugin" ,rust-heapsize-plugin-0.1))))
     (home-page "https://github.com/pyfisch/rust-language-tags")
     (synopsis "Language tags for Rust")
     (description
@@ -4811,7 +4816,6 @@ script, countries and other regions.  They are commonly used in HTML and HTTP
 @code{Content-Language} and @code{Accept-Language} header fields.  This package
 currently supports parsing (fully conformant parser), formatting and comparing
 language tags.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-lazy-static-1.3
