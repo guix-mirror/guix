@@ -299,6 +299,22 @@ text or blue underlined text, on ANSI terminals.")
      "Approximate floating point equality comparisons and assertions.")
     (license license:asl2.0)))
 
+(define-public rust-approx-0.1
+  (package
+    (inherit rust-approx-0.3)
+    (name "rust-approx")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "approx" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "153awzwywmb61xg857b80l63b1x6hifx2pha7lxf6fck9qxwraq8"))))
+    (arguments '())))
+
 (define-public rust-arc-swap-0.3
   (package
     (name "rust-arc-swap")
