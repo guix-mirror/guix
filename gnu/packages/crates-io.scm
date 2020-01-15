@@ -4095,6 +4095,27 @@ featuring zero allocations, composability, and iterator-like interfaces.")
      "Channels for asynchronous communication using futures-rs.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-futures-core-0.3
+  (package
+    (name "rust-futures-core")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "futures-core" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0rh8q6pg08dizk5hwksvjgvkw26s3sr3b199nggv3ypyg914qmkr"))))
+    (build-system cargo-build-system)
+    (arguments '(#:tests? #f))
+    (home-page "https://rust-lang-nursery.github.io/futures-rs")
+    (synopsis "Core traits and types in for the `futures` library")
+    (description "This package provides the core traits and types in for the
+@code{futures} library.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-futures-core-preview-0.3
   (package
     (name "rust-futures-core-preview")
