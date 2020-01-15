@@ -10566,6 +10566,29 @@ rust-lang/rust integration.")
 require unstable language features.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-rustc-tools-util-0.2
+  (package
+    (name "rust-rustc-tools-util")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc_tools_util" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vj4ymv29igs7n52m12k138zbsn5k5d7ya4sys6lig7sx7ddl9dp"))))
+    (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
+    (home-page
+     "https://github.com/rust-lang/rust-clippy")
+    (synopsis
+     "small helper to generate version information for git packages")
+    (description
+     "small helper to generate version information for git packages")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rustc-version-0.2
   (package
     (name "rust-rustc-version")
