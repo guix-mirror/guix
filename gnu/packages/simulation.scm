@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2017, 2018, 2019, 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -241,14 +241,14 @@ problems for efficient solution on parallel systems.")
 (define-public python-fenics-dijitso
   (package
     (name "python-fenics-dijitso")
-    (version "2018.1.0")
+    (version "2019.1.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "fenics-dijitso" version))
         (sha256
           (base32
-            "1qax2f52qsjbd1h5lk5i5shp448qlakxabjjybrfc1w823p0yql9"))))
+            "0lhqsq8ypdak0ahr2jnyvg07yrqp6wicjxi6k56zx24wp3qg60sc"))))
     (build-system python-build-system)
     (inputs
      `(("openmpi" ,openmpi)
