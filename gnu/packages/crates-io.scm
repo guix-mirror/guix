@@ -4805,6 +4805,25 @@ the process of matching one or more glob patterns against a single candidate
 path simultaneously, and returning all of the globs that matched.")
     (license (list license:expat license:unlicense))))
 
+(define-public rust-glutin-emscripten-sys-0.1
+  (package
+    (name "rust-glutin-emscripten-sys")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "glutin_emscripten_sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ix0jmm8p5if4qarzdfl5mz9rbq4hhgqarakb3bzwvyz13dkynr4"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/tomaka/glutin")
+    (synopsis "Emscripten bindings for glutin")
+    (description "The emscripten bindings for glutin.")
+    (license license:asl2.0)))
+
 (define-public rust-goblin-0.0
   (package
     (name "rust-goblin")
