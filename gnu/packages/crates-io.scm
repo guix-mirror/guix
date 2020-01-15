@@ -4171,6 +4171,28 @@ the computation on the threads themselves.")
 library.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-futures-io-0.3
+  (package
+    (name "rust-futures-io")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "futures-io" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1zxm41fmkrb0r39ajk3rr9invcd5bdwlafazn8m9aw4y49ymfxp6"))))
+    (build-system cargo-build-system)
+    (home-page "https://rust-lang-nursery.github.io/futures-rs")
+    (synopsis
+     "`AsyncRead` and `AsyncWrite` traits for the futures-rs library")
+    (description
+     "This package provides the @code{AsyncRead} and @code{AsyncWrite} traits
+for the futures-rs library.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-futures-io-preview-0.3
   (package
     (name "rust-futures-io-preview")
