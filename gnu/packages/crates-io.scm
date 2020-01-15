@@ -3151,7 +3151,7 @@ APIs.")
         ("rust-quote" ,rust-quote-1.0)
         ("rust-syn" ,rust-syn-0.15))))
     (home-page "https://github.com/sfackler/foreign-types")
-    (synopsis "An internal crate used by foreign-types")
+    (synopsis "Internal crate used by foreign-types")
     (description
      "An internal crate used by foreign-types.")
     (license (list license:expat license:asl2.0))))
