@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,7 +44,8 @@
   #:use-module (guix derivations)
   #:use-module (guix base32)
   #:use-module (gcrypt hash)
-  #:autoload   (guix cache) (maybe-remove-expired-cache-entries)
+  #:autoload   (guix cache) (maybe-remove-expired-cache-entries
+                             file-expiration-time)
   #:autoload   (guix ui) (show-what-to-build*)
   #:autoload   (guix build utils) (mkdir-p)
   #:use-module (srfi srfi-1)

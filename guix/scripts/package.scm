@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2016 Alex Kost <alezost@gmail.com>
@@ -39,7 +39,7 @@
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
   #:use-module (guix describe)
-  #:autoload   (guix store roots) (gc-roots)
+  #:autoload   (guix store roots) (gc-roots user-owned?)
   #:use-module ((guix build utils)
                 #:select (directory-exists? mkdir-p))
   #:use-module ((guix build syscalls)
