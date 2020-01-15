@@ -11829,8 +11829,40 @@ untrusted inputs in Rust.")
     (properties '((hidden? . #t)))
     (license license:isc)))
 
+(define-public rust-url-2.1
+  (package
+    (name "rust-url")
+    (version "2.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "url" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jw7cw8br4xvjb92ddrrh1r7jvqhyhiknnnfpgq9np63fs24m7c2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-idna" ,rust-idna-0.2)
+        ("rust-matches" ,rust-matches-0.1)
+        ("rust-percent-encoding" ,rust-percent-encoding-2.1)
+        ("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-bencher" ,rust-bencher-0.1)
+        ("rust-rustc-test" ,rust-rustc-test-0.3)
+        ("rust-serde-json" ,rust-serde-json-1.0))))
+    (home-page "https://github.com/servo/rust-url")
+    (synopsis "URL library for Rust, based on the WHATWG URL Standard")
+    (description
+     "URL library for Rust, based on the WHATWG URL Standard.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-url-1.7
   (package
+    (inherit rust-url-2.1)
     (name "rust-url")
     (version "1.7.2")
     (source
@@ -11842,7 +11874,6 @@ untrusted inputs in Rust.")
        (sha256
         (base32
          "0nim1c90mxpi9wgdw2xh8dqd72vlklwlzam436akcrhjac6pqknx"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -11857,12 +11888,7 @@ untrusted inputs in Rust.")
        (("rust-bencher" ,rust-bencher-0.1)
         ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
         ("rust-rustc-test" ,rust-rustc-test-0.3)
-        ("rust-serde-json" ,rust-serde-json-1.0))))
-    (home-page "https://github.com/servo/rust-url")
-    (synopsis "URL library for Rust, based on the WHATWG URL Standard")
-    (description
-     "URL library for Rust, based on the WHATWG URL Standard.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-serde-json" ,rust-serde-json-1.0))))))
 
 (define-public rust-utf-8-0.7
   (package
