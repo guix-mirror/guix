@@ -8731,6 +8731,27 @@ used in Cargo build scripts.")
 applications.")
     (license license:expat)))
 
+(define-public rust-podio-0.1
+  (package
+    (name "rust-podio")
+    (version "0.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "podio" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ga5arhwakj5rwrqzf9410zrbwnf24jd59af8kr9rgwbd6vb83vq"))))
+    (build-system cargo-build-system)
+    ;(arguments '(#:skip-build? #t))
+    (home-page "https://github.com/mvdnes/podio.git")
+    (synopsis "Additional trait to read and write Plain Old Data")
+    (description
+     "Additional trait for Read and Write to read and write Plain Old Data.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-ppv-lite86-0.2
   (package
     (name "rust-ppv-lite86")
