@@ -10855,6 +10855,28 @@ directories.")
      "Functions for determining terminal sizes and dimensions")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-term-size-0.3
+  (package
+    (inherit rust-term-size-1.0)
+    (name "rust-term-size")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "term_size" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "09wk3173ngmb710qs9rwgibq4w250q8lgnwjvb9cypc1vdk9lnwy"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-clippy" ,rust-clippy-0.0)
+        ("rust-kernel32-sys" ,rust-kernel32-sys-0.2)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-winapi" ,rust-winapi-0.2))))))
+
 (define-public rust-termcolor-1.0
   (package
     (name "rust-termcolor")
