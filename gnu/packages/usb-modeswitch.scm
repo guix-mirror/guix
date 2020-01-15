@@ -32,15 +32,15 @@
 (define-public usb-modeswitch-data
   (package
     (name "usb-modeswitch-data")
-    (version "20170806")
+    (version "20191128")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.draisberghof.de/usb_modeswitch/"
+                    "https://www.draisberghof.de/usb_modeswitch/"
                     "usb-modeswitch-data-" version ".tar.bz2"))
               (sha256
                (base32
-                "0b1wari3aza6qjggqd0hk2zsh93k1q8scgmwh6f8wr0flpr3whff"))))
+                "1ygahl3r26r38ai8yyblq9nhf3v5i6n6r6672p5wf88wg5h9n0rz"))))
     (build-system trivial-build-system)
     (native-inputs `(("tar" ,tar)
                      ("bzip2" ,bzip2)))
@@ -67,7 +67,7 @@
            (install-file (string-append files "/40-usb_modeswitch.rules")
                          udev-dir)
            (install-file (string-append files "/COPYING") license-dir)))))
-    (home-page "http://www.draisberghof.de/usb_modeswitch/")
+    (home-page "https://www.draisberghof.de/usb_modeswitch/")
     (synopsis "Data package for USB_ModeSwitch")
     (description "This package contains data about devices and a UDEV rules
 file for use with USB_ModeSwitch.")
