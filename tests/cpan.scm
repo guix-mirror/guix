@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
+;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,13 +33,6 @@
 (define test-json
   "{
   \"metadata\" : {
-    \"prereqs\" : {
-      \"runtime\" : {
-        \"requires\" : {
-          \"Test::Script\" : \"1.05\",
-        }
-      }
-    }
     \"name\" : \"Foo-Bar\",
     \"version\" : \"0.1\"
   }
@@ -46,6 +40,13 @@
   \"distribution\" : \"Foo-Bar\",
   \"license\" : [
     \"perl_5\"
+  ],
+  \"dependency\": [
+     { \"relationship\": \"requires\",
+       \"phase\": \"runtime\",
+       \"version\": \"1.05\",
+       \"module\": \"Test::Script\"
+     }
   ],
   \"abstract\" : \"Fizzle Fuzz\",
   \"download_url\" : \"http://example.com/Foo-Bar-0.1.tar.gz\",
@@ -107,16 +108,14 @@
                 (x
                  (pk 'fail x #f))))))
 
-(test-equal "source-url-http"
-  ((@@ (guix import cpan) cpan-source-url)
-   `(("download_url" .
-      "http://cpan.metacpan.org/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz")))
-  "mirror://cpan/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz")
+(test-equal "metacpan-url->mirror-url, http"
+  "mirror://cpan/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz"
+  (metacpan-url->mirror-url
+   "http://cpan.metacpan.org/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz"))
 
-(test-equal "source-url-https"
-  ((@@ (guix import cpan) cpan-source-url)
-   `(("download_url" .
-      "https://cpan.metacpan.org/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz")))
-  "mirror://cpan/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz")
+(test-equal "metacpan-url->mirror-url, https"
+  "mirror://cpan/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz"
+  (metacpan-url->mirror-url
+   "https://cpan.metacpan.org/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz"))
 
 (test-end "cpan")
