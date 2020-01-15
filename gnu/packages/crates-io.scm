@@ -9553,7 +9553,7 @@ proven statistical guarantees.")
 (define-public rust-serde-json-1.0
   (package
     (name "rust-serde-json")
-    (version "1.0.41")
+    (version "1.0.44")
     (source
       (origin
         (method url-fetch)
@@ -9561,7 +9561,7 @@ proven statistical guarantees.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1hipk84x40454mf599752mi7l08wb8qakz8vd6d3zp57d0mfnwig"))))
+          "1mysl675nqhzzkbcrqy4x63cbbsrrx3gcc7k8ydx1gajrkh7bia8"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
