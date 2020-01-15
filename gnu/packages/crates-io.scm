@@ -5525,7 +5525,7 @@ whether an expression matches a pattern.")
 (define-public rust-memchr-2.2
   (package
     (name "rust-memchr")
-    (version "2.2.0")
+    (version "2.2.1")
     (source
      (origin
        (method url-fetch)
@@ -5534,7 +5534,7 @@ whether an expression matches a pattern.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0f8wdra7yaggsr4jzlrvpd8yknnqhd990iijdr6llgc8gk2ppz1f"))))
+         "13j6ji9x9ydpi9grbss106gqqr3xn3bcfp28aydqfa4751qrfmw8"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
