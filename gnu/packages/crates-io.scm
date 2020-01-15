@@ -5054,10 +5054,10 @@ values of all the exported APIs match the platform that libc is compiled for.")
     (license (list license:expat
                    license:asl2.0))))
 
-(define-public rust-libgit2-sys-0.8
+(define-public rust-libgit2-sys-0.10
   (package
     (name "rust-libgit2-sys")
-    (version "0.8.2")
+    (version "0.10.0")
     (source
       (origin
         (method url-fetch)
@@ -5065,7 +5065,7 @@ values of all the exported APIs match the platform that libc is compiled for.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0y2mibmx7wy91s2kmb2gfb29mrqlqaxpy5wcwr8s1lwws7b9w5sc")) ))
+          "0l9fvki7qxsl97vgzqwlv75nl213a5vxw7b1jaik97ala356pv6r"))))
     (build-system cargo-build-system)
     ;(arguments
     ; `(#:phases
@@ -5092,6 +5092,20 @@ values of all the exported APIs match the platform that libc is compiled for.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-libgit2-sys-0.8
+  (package
+    (inherit rust-libgit2-sys-0.10)
+    (name "rust-libgit2-sys")
+    (version "0.8.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "libgit2-sys" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "0y2mibmx7wy91s2kmb2gfb29mrqlqaxpy5wcwr8s1lwws7b9w5sc"))))))
+
 (define-public rust-libgit2-sys-0.7
   (package
     (inherit rust-libgit2-sys-0.8)
@@ -5104,8 +5118,7 @@ values of all the exported APIs match the platform that libc is compiled for.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1wcvg2qqra2aviasvqcscl8gb2rnjnd6h998wy5dlmf2bnriqi28"))))
-    (build-system cargo-build-system)))
+          "1wcvg2qqra2aviasvqcscl8gb2rnjnd6h998wy5dlmf2bnriqi28"))))))
 
 (define-public rust-libloading-0.5
   (package
