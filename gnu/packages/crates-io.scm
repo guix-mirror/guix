@@ -3171,7 +3171,7 @@ APIs.")
     (build-system cargo-build-system)
     (arguments `(#:skip-build? #t))
     (home-page "https://github.com/sfackler/foreign-types")
-    (synopsis "An internal crate used by foreign-types")
+    (synopsis "Internal crate used by foreign-types")
     (description
      "An internal crate used by foreign-types.")
     (license (list license:asl2.0
