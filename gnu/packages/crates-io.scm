@@ -1773,8 +1773,41 @@ intrinsics.")
     (description "Tools for concurrent programming.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-crossbeam-channel-0.4
+  (package
+    (name "rust-crossbeam-channel")
+    (version "0.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "crossbeam-channel" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "135ncx9680afs8jkjz8g3iq3naay9rn7942gxrdg2n9m1cxrmv5c"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+        (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7))
+        #:cargo-development-inputs
+        (("rust-num-cpus" ,rust-num-cpus-1.10)
+         ("rust-rand" ,rust-rand-0.6)
+         ("rust-signal-hook" ,rust-signal-hook-0.1))))
+    (home-page
+     "https://github.com/crossbeam-rs/crossbeam/tree/master/crossbeam-channel")
+    (synopsis
+     "Multi-producer multi-consumer channels for message passing")
+    (description
+     "Multi-producer multi-consumer channels for message passing.")
+    (license (list license:expat
+                   license:asl2.0
+                   license:bsd-2))))
+
 (define-public rust-crossbeam-channel-0.3
   (package
+    (inherit rust-crossbeam-channel-0.4)
     (name "rust-crossbeam-channel")
     (version "0.3.8")
     (source
@@ -1786,7 +1819,6 @@ intrinsics.")
        (sha256
         (base32
          "0azpymyk0ld4akrjfy69ck5pzfgz1f2gb3smm2ywld92vsjd23hg"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -1794,16 +1826,7 @@ intrinsics.")
         ("rust-smallvec" ,rust-smallvec-0.6))
        #:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.4)
-        ("rust-signal-hook" ,rust-signal-hook-0.1))))
-    (home-page
-     "https://github.com/crossbeam-rs/crossbeam/tree/master/crossbeam-channel")
-    (synopsis
-     "Multi-producer multi-consumer channels for message passing")
-    (description
-     "Multi-producer multi-consumer channels for message passing.")
-    (license (list license:expat
-                   license:asl2.0
-                   license:bsd-2))))
+        ("rust-signal-hook" ,rust-signal-hook-0.1))))))
 
 (define-public rust-crossbeam-deque-0.7
   (package
