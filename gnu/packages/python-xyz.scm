@@ -6535,13 +6535,13 @@ complexity of Python source code.")
 (define-public python-flake8
   (package
     (name "python-flake8")
-    (version "3.7.7")
+    (version "3.7.9")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "flake8" version))
               (sha256
                (base32
-                "0qg6zggqigrd4k3gv88shd1a27d0cwgfql8vfiq2c7rl7w3rd6c5"))))
+                "1yscj6avirm6m12bjh4fn2lfgxaamqsjh9pirdqfi0fcgq8ils25"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -6559,8 +6559,7 @@ complexity of Python source code.")
        ("python-mccabe" ,python-mccabe)))
     (native-inputs
      `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest-bootstrap)
-       ("python-pytest-runner" ,python-pytest-runner)))
+       ("python-pytest" ,python-pytest-bootstrap)))
     (home-page "https://gitlab.com/pycqa/flake8")
     (synopsis
       "The modular source code checker: pep8, pyflakes and co")
