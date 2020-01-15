@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,7 +21,8 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (guix licenses))
+  #:use-module (guix licenses)
+  #:use-module (gnu packages perl))
 
 (define-public noweb
   (package
@@ -37,6 +39,18 @@
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'bind-early
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (substitute* (list "src/lib/nwmtime"
+                                  "src/shell/htmltoc")
+                 (("exec perl ")
+                  (format #f "exec ~a " (which "perl"))))
+               (substitute* "src/shell/noweb"
+                 ((" cpif ")
+                  (format #f " ~a/cpif " bin)))
+               #t)))
          (add-before 'install 'pre-install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -82,6 +96,8 @@
                             (string-append "TEXINPUTS=" out
                                            "/share/texmf/tex/latex")))
        #:tests? #f))                              ; no tests
+    (inputs
+     `(("perl" ,perl)))
     (home-page "https://www.cs.tufts.edu/~nr/noweb/")
     (synopsis "Literate programming tool")
     (description
