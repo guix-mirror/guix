@@ -15190,6 +15190,30 @@ color in a Windows console.")
     (description "X11 library bindings for Rust.")
     (license license:cc0)))
 
+(define-public rust-x11-clipboard-0.4
+  (package
+    (name "rust-x11-clipboard")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "x11-clipboard" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0nqdnswiyj28b1izjp5rzbc67cxpb5c8p4vh1xyndkirzs84vqqk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f  ; Tests require display server.
+       #:cargo-inputs (("rust-xcb" ,rust-xcb-0.9))))
+    (native-inputs
+     `(("python" ,python)))
+    (home-page "https://github.com/quininer/x11-clipboard")
+    (synopsis "x11 clipboard support for Rust")
+    (description "This package provides x11 clipboard support for Rust.")
+    (license license:expat)))
+
 (define-public rust-xattr-0.2
   (package
     (name "rust-xattr")
