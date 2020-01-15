@@ -10828,6 +10828,33 @@ directories.")
        (("rust-kernel32-sys" ,rust-kernel32-sys-0.2)
         ("rust-winapi" ,rust-winapi-0.2))))))
 
+(define-public rust-term-size-1.0
+  (package
+    (name "rust-term-size")
+    (version "1.0.0-beta1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "term_size" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "13w9cqjhzh3mmx6zami8lxyf42xx53yy866zxhxqcm71k637v8d8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-clippy" ,rust-clippy-0.0)
+        ("rust-kernel32-sys" ,rust-kernel32-sys-0.2)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/clap-rs/term_size-rs")
+    (synopsis "Determine terminal sizes and dimensions")
+    (description
+     "Functions for determining terminal sizes and dimensions")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-termcolor-1.0
   (package
     (name "rust-termcolor")
