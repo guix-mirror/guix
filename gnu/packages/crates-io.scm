@@ -478,6 +478,26 @@ ArrayVec and ArrayString.")
      "ASCII-only equivalents to @code{char}, @code{str} and @code{String}.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-assert-matches-1.3
+  (package
+    (name "rust-assert-matches")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "assert_matches" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1rar61v00gz2aniid0mylxcr4q98s6l77c3hvbszmg57kj10msvx"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/murarth/assert_matches")
+    (synopsis "Asserts that a value matches a pattern")
+    (description
+     "This package asserts that a value matches a pattern in Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-atty-0.2
   (package
     (name "rust-atty")
