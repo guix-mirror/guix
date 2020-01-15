@@ -6061,6 +6061,26 @@ friction with idiomatic Rust structs to ease interopability.")
 kernel32.")
     (license license:expat)))
 
+(define-public rust-khronos-api-3
+  (package
+    (name "rust-khronos-api")
+    (version "3.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "khronos-api" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1p0xj5mlbagqyvvnv8wmv3cr7l9y1m153888pxqwg3vk3mg5inz2"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/brendanzab/gl-rs/")
+    (synopsis "Khronos XML API Registry")
+    (description
+     "The Khronos XML API Registry, exposed as byte string constants.")
+    (license license:asl2.0)))
+
 (define-public rust-language-tags-0.2
   (package
     (name "rust-language-tags")
