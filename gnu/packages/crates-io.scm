@@ -4205,7 +4205,7 @@ standard printing of search results, similar to grep itself.")
 (define-public rust-grep-searcher-0.1
   (package
     (name "rust-grep-searcher")
-    (version "0.1.5")
+    (version "0.1.6")
     (source
      (origin
        (method url-fetch)
@@ -4214,7 +4214,7 @@ standard printing of search results, similar to grep itself.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0pj85m7q6k6jpl3q57v1gwq5jxmqnza2xg7jjcxky3q325z8lcjy"))))
+         "09ag16im12v6k0lzkyvbvamn1iw15kfx1jbfldb7z5xa7208l04a"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
