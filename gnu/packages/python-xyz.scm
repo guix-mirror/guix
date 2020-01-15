@@ -4964,24 +4964,19 @@ older Python versions.")
 (define-public python-importlib-metadata
   (package
     (name "python-importlib-metadata")
-    (version "0.23")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "importlib_metadata" version))
        (sha256
-        (base32 "09mdqdfv5rdrwz80jh9m379gxmvk2vhjfz0fg53hid00icvxf65a"))))
+        (base32 "1n76444v7zn910xrhh8954jdn4byxbn9f1jck6b85a716mbh2z7i"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-configparser" ,python-configparser)
-       ("python-contextlib2" ,python-contextlib2)
-       ("python-docutils" ,python-docutils)
-       ("python-pathlib2" ,python-pathlib2)
-       ("python-rst.linker" ,python-rst.linker)
-       ("python-zipp" ,python-zipp)))
+     `(("python-zipp" ,python-zipp)))
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-sphinx" ,python-sphinx)))
+       ("python-packaging" ,python-packaging)))
     (home-page "https://importlib-metadata.readthedocs.io/")
     (synopsis "Read metadata from Python packages")
     (description
