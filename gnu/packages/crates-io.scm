@@ -11339,7 +11339,7 @@ pool.")
 (define-public rust-toml-0.5
   (package
     (name "rust-toml")
-    (version "0.5.3")
+    (version "0.5.6")
     (source
       (origin
         (method url-fetch)
@@ -11347,8 +11347,16 @@ pool.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "093p48vpqm4bb8q3514xsij0dkljxlr3jp9ypxr4p48xjisvxan7"))))
+          "06n7j8z63hj6g0kj2x6sqwxnm4q3s0q5d873bdk41vqy1cb2vjgz"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+        (("rust-indexmap" ,rust-indexmap-1.0)
+         ("rust-serde" ,rust-serde-1.0))
+        #:cargo-development-inputs
+        (("rust-serde-derive" ,rust-serde-derive-1.0)
+         ("rust-serde-json" ,rust-serde-json-1.0))))
     (home-page "https://github.com/alexcrichton/toml-rs")
     (synopsis "Rust encoder and decoder of TOML-formatted files and streams")
     (description
@@ -11356,7 +11364,6 @@ pool.")
 files and streams.  Provides implementations of the standard
 Serialize/Deserialize traits for TOML data to facilitate deserializing and
 serializing Rust structures.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
