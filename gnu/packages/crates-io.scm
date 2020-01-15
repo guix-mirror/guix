@@ -2380,6 +2380,35 @@ Windows, and the Standard Directory guidelines on macOS.")
        (("rust-libc" ,rust-libc-0.2)
         ("rust-winapi" ,rust-winapi-0.3))))))
 
+(define-public rust-dirs-sys-0.3
+  (package
+    (name "rust-dirs-sys")
+    (version "0.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "dirs-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0yyykdcmbc476z1v9m4z5jb8y91dw6kgzpkiqi2ig07xx0yv585g"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-redox-users" ,rust-redox-users-0.3)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/soc/dirs-sys-rs")
+    (synopsis
+     "System-level helper functions for the dirs and directories crates")
+    (description
+     "This package provides system-level helper functions for the @code{dirs}
+and @code{directories} crates.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-discard-1.0
   (package
     (name "rust-discard")
