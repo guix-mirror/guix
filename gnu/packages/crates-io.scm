@@ -4112,12 +4112,14 @@ IEEE 754-2008 binary16 type.")
          (base32
           "0q94q9ppqjgrw71swiyia4hgby2cz6dldp7ij57nkvhd6zmfcy8n"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs (("rust-winapi" ,rust-winapi-0.3))))
     (home-page "https://github.com/servo/heapsize")
     (synopsis "Measure the total runtime size of an object on the heap")
     (description
      "Infrastructure for measuring the total runtime size of an object on the
 heap.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
@@ -4136,8 +4138,7 @@ heap.")
           "0dmwc37vgsdjzk10443dj4f23439i9gch28jcwzmry3chrwx8v2m"))))
     (arguments
      `(#:skip-build? #t
-       #:cargo-inputs (("rust-kernel32-sys" ,rust-kernel32-sys-0.2))))
-    (properties '())))
+       #:cargo-inputs (("rust-kernel32-sys" ,rust-kernel32-sys-0.2))))))
 
 ;; This package makes use of removed features
 (define-public rust-heapsize-plugin-0.1
