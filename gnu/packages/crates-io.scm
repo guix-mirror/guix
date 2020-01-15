@@ -14355,6 +14355,26 @@ to XDG Base Directory specification")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-xml-rs-0.8
+  (package
+    (name "rust-xml-rs")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "xml-rs" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1db4v716rbpgjiasaim2s17rmvsfcq1qzwg6nji6mdf5k34i46sl"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/netvl/xml-rs")
+    (synopsis "XML library in pure Rust")
+    (description "An XML library in pure Rust.")
+    (license license:expat)))
+
 (define-public rust-yaml-rust-0.4
   (package
     (name "rust-yaml-rust")
