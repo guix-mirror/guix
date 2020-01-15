@@ -4177,11 +4177,11 @@ total runtime size of an object on the heap")
          (base32
           "0xsdcjiik5j750j67zk42qdnmm4ahirk3gmkmcqgq7qls2jjcl40"))))
     (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/KokaKiwi/rust-hex")
     (synopsis "Encode and decode data to/from hexadecimals")
     (description "This crate allows for encoding and decoding data into/from
 hexadecimal representation.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
