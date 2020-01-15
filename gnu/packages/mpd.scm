@@ -237,7 +237,7 @@ terminal using ncurses.")
      `(("pkg-config" ,pkg-config)))
     (arguments
      '(#:configure-flags
-       '("BOOST_LIB_SUFFIX=" "--with-taglib")))
+       '("BOOST_LIB_SUFFIX=" "--with-taglib" "--enable-clock")))
     (synopsis "Featureful ncurses based MPD client inspired by ncmpc")
     (description "Ncmpcpp is an mpd client with a UI very similar to ncmpc,
 but it provides new useful features such as support for regular expressions
