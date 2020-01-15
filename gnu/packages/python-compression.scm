@@ -235,6 +235,9 @@ install: libbitshuffle.so
 wrapper.  It provides a backport of the @code{Path} object.")
     (license license:expat)))
 
+(define-public python2-zipp
+  (package-with-python2 python-zipp))
+
 (define-public python-zstandard
   (package
     (name "python-zstandard")
