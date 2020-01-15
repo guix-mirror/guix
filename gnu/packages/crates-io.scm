@@ -4758,11 +4758,11 @@ wasm-bindgen crate.")
          (base32
           "1hj8c6xj5c2aqqszi8naaflmcdbya1i9byyjrq4iybxjb4q91mq1"))))
     (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/maciejhirsz/json-rust")
     (synopsis "JSON implementation in Rust")
     (description "This crate provides a JSON implementation in Rust, reducing
 friction with idiomatic Rust structs to ease interopability.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
