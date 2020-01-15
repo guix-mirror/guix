@@ -4133,7 +4133,11 @@ heap.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0dmwc37vgsdjzk10443dj4f23439i9gch28jcwzmry3chrwx8v2m"))))))
+          "0dmwc37vgsdjzk10443dj4f23439i9gch28jcwzmry3chrwx8v2m"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs (("rust-kernel32-sys" ,rust-kernel32-sys-0.2))))
+    (properties '())))
 
 ;; This package makes use of removed features
 (define-public rust-heapsize-plugin-0.1
