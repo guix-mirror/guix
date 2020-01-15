@@ -20422,8 +20422,8 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
   ;; This package has versions newer than indicated on MELPA.
   ;; Get the current version from `telega-version` in telega.el.
   ;; or by running M-x telega-version.
-  (let ((commit "4497a3c19d9806eb9edfe13d326d6d9cbb895f64")
-	(revision "3")
+  (let ((commit "69565cc4de72e28148c8041de8930a122a39b800")
+	(revision "4")
 	(version "0.5.4"))
     (package
       (name "emacs-telega")
@@ -20436,7 +20436,7 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
                (commit commit)))
          (sha256
           (base32
-           "1g0gbbgs8rbcip6kqjxdmnsjlq0ixgknb0qcda7siaha9gd7fjh2"))
+           "0blvj07f1sbdmp68qwlwgnhnv42ib0mjai5ndf8scbi12drn4rmk"))
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
@@ -20523,6 +20523,7 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
        `(("ffmpeg" ,ffmpeg))) ; mp4/gif support.
       (propagated-inputs
        `(("emacs-visual-fill-column" ,emacs-visual-fill-column)
+         ("emacs-company" ,emacs-company)
          ("libwebp" ,libwebp))) ; sticker support.
       (native-inputs
        `(("tdlib" ,tdlib)
