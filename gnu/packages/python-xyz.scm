@@ -12963,13 +12963,13 @@ It supports both normal and Unicode strings.")
 (define-public python-scandir
   (package
     (name "python-scandir")
-    (version "1.9.0")
+    (version "1.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "scandir" version))
        (sha256
-        (base32 "0r3hvf1a9jm1rkqgx40gxkmccknkaiqjavs8lccgq9s8khh5x5s4"))))
+        (base32 "1bkqwmf056pkchf05ywbnf659wqlp6lljcdb0y88wr9f0vv32ijd"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
