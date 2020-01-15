@@ -677,6 +677,35 @@ behave like a set of bitflags.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-blake2-rfc-0.2
+  (package
+    (name "rust-blake2-rfc")
+    (version "0.2.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "blake2-rfc" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0034g47hyq2bzmk40895ill1mbnpmmjakdq3dmm9clidvl5m6vax"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-arrayvec" ,rust-arrayvec-0.4)
+        ("rust-clippy" ,rust-clippy-0.0)
+        ("rust-constant-time-eq" ,rust-constant-time-eq-0.1))
+       #:cargo-development-inputs
+       (("rust-data-encoding" ,rust-data-encoding-2.1))))
+    (home-page "https://github.com/cesarb/blake2-rfc")
+    (synopsis "Rust implementation of BLAKE2 based on RFC 7693")
+    (description
+     "This package provides a pure Rust implementation of BLAKE2 based on RFC
+7693.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-blas-sys-0.7
   (package
     (name "rust-blas-sys")
