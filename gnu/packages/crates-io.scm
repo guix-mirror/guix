@@ -15234,6 +15234,31 @@ color in a Windows console.")
     (description "This package provides x11 clipboard support for Rust.")
     (license license:expat)))
 
+(define-public rust-x11-dl-2
+  (package
+    (name "rust-x11-dl")
+    (version "2.18.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "x11-dl" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0n1w837xagxqgwx2880d7c9ks6l3g1kk00yd75afdaiv58sf2rdy"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-maybe-uninit" ,rust-maybe-uninit-2.0)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))
+    (home-page "https://github.com/erlepereira/x11-rs.git")
+    (synopsis "X11 library bindings for Rust")
+    (description "This package provides X11 library bindings for Rust.")
+    (license license:cc0)))
+
 (define-public rust-xattr-0.2
   (package
     (name "rust-xattr")
