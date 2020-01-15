@@ -120,7 +120,8 @@ interactions, which will update them to correspond to the new API.")
         (base32 "0j6j1gvj6x451y3qsx4xbaq9p1w9gg3mwk7n0w80cy8vdyjkngb0"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-importlib-metadata" ,python-importlib-metadata)
+     `(("python-docutils" ,python-docutils)
+       ("python-importlib-metadata" ,python-importlib-metadata)
        ("python-more-itertools" ,python-more-itertools)))
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)))
