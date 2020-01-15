@@ -42,7 +42,7 @@
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Jesse Gibbons <jgibbons2357+guix@gmail.com>
 ;;; Copyright © 2019 Dan Frumin <dfrumin@cs.ru.nl>
-;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019, 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2019 Josh Holland <josh@inv.alid.pw>
 ;;; Copyright © 2017, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -850,8 +850,8 @@ destroying an ancient book using a special wand.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://files.gnubg.org/media/sources/gnubg-release-"
-                           version "-sources." "tar.gz"))
+       (uri (string-append "mirror://gnu/gnubg/gnubg-release-"
+                           version "-sources.tar.gz"))
        (sha256
         (base32
          "11xwhcli1h12k6rnhhyq4jphzrhfik7i8ah3k32pqw803460n6yf"))))
@@ -866,7 +866,7 @@ destroying an ancient book using a special wand.")
               ("libcanberra" ,libcanberra)))
     (native-inputs `(("python-2" ,python-2)
                      ("pkg-config" ,pkg-config)))
-    (home-page "http://gnubg.org")
+    (home-page "https://www.gnu.org/software/gnubg/")
     (synopsis "Backgammon game")
     (description "The GNU backgammon application (also known as \"gnubg\") can
 be used for playing, analyzing and teaching the game.  It has an advanced
