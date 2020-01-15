@@ -4243,6 +4243,26 @@ for the futures-rs library.")
 @code{Future}s at once and handling the first one to complete.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-futures-sink-0.3
+  (package
+    (name "rust-futures-sink")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "futures-sink" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "05iwskzxq3yqvxv9l1kqnd7kkmp0dwc39fnvwrcjsg76z8zf66qp"))))
+    (build-system cargo-build-system)
+    (home-page "https://rust-lang-nursery.github.io/futures-rs")
+    (synopsis "Asynchronous `Sink` trait for the futures-rs library")
+    (description "This package provides the asynchronous @code{Sink} trait for
+the futures-rs library.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-futures-sink-preview-0.3
   (package
     (name "rust-futures-sink-preview")
