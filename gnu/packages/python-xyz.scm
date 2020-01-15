@@ -8751,14 +8751,14 @@ library as well as on the command line.")
 (define-public python-pluggy
   (package
    (name "python-pluggy")
-   (version "0.11.0")
+   (version "0.13.1")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "pluggy" version))
      (sha256
       (base32
-       "10511a54dvafw1jrk75mrhml53c7b7w4yaw7241696lc2hfvr895"))))
+       "1c35qyhvy27q9ih9n899f3h4sdnpgq027dbiilly2qb5cvgarchm"))))
    (build-system python-build-system)
    (native-inputs
     `(("python-setuptools-scm" ,python-setuptools-scm)))
@@ -8766,10 +8766,21 @@ library as well as on the command line.")
    (description "Pluggy is an extraction of the plugin manager as used by
 Pytest but stripped of Pytest specific details.")
    (home-page "https://pypi.python.org/pypi/pluggy")
+   (properties `((python2-variant . ,(delay python2-pluggy))))
    (license license:expat)))
 
 (define-public python2-pluggy
-  (package-with-python2 python-pluggy))
+  (let ((base (package-with-python2 (strip-python2-variant
+                                     python-pluggy))))
+    (package/inherit
+     base
+     (version "0.11.0")
+     (source (origin
+               (method url-fetch)
+               (uri (pypi-uri "pluggy" version))
+               (sha256
+                (base32
+                 "10511a54dvafw1jrk75mrhml53c7b7w4yaw7241696lc2hfvr895")))))))
 
 (define-public python-tox
   (package
