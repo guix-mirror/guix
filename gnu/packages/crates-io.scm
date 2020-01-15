@@ -8647,6 +8647,34 @@ system calls.")
      "This package provides a Rust library to access Redox termios functions.")
     (license license:expat)))
 
+(define-public rust-redox-users-0.3
+  (package
+    (name "rust-redox-users")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "redox_users" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0vdn688q9wg997b1x5abx2gf7406rn1lvd62ypcgh1gj7g5dpkjf"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-failure" ,rust-failure-0.1)
+        ("rust-rand-os" ,rust-rand-os-0.1)
+        ("rust-redox-syscall" ,rust-redox-syscall-0.1)
+        ("rust-rust-argon2" ,rust-rust-argon2-0.5))))
+    (home-page "https://gitlab.redox-os.org/redox-os/users")
+    (synopsis "Access Redox users and groups")
+    (description
+     "This package provides a Rust library to access Redox users and groups
+functionality.")
+    (license license:expat)))
+
 (define-public rust-ref-cast-0.2
   (package
     (name "rust-ref-cast")
