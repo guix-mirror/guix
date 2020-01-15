@@ -1028,12 +1028,15 @@ capabilities")
          (base32
           "1cszlab7jk736p0lb50ag4l9nv72m7j41bwrmygl0lr4iz0350w2"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-development-inputs
+       (("rust-gcc" ,rust-gcc-0.3))))
     (home-page "https://github.com/bryant/argon2rs")
     (synopsis "Thin wrapper around the Argon2 C library")
     (description
      "This package provides a thin wrapper around the Argon2 C library.  It is
 used in argon2rs' bench suite.")
-    (properties '((hidden? . #t)))
     (license license:wtfpl2)))
 
 (define-public rust-cast-0.2
