@@ -9638,7 +9638,7 @@ proven statistical guarantees.")
 (define-public rust-serde-derive-1.0
   (package
     (name "rust-serde-derive")
-    (version "1.0.101")
+    (version "1.0.104")
     (source
       (origin
         (method url-fetch)
@@ -9646,7 +9646,7 @@ proven statistical guarantees.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0bn0wz3j48248187mfmypyqnh73mq734snxxhr05vmgcl51kl4sb"))))
+          "0r7gjlwfry44b4ylz524ynjp9v3qiwdj4c588lh94aas78q9x3qj"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
