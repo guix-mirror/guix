@@ -10732,12 +10732,21 @@ fixed set of worker threads.")
          (base32
           "161hqx0gw722ikydanpahky447vaxqncwmkj66rny282vzqpalx1"))))
     (build-system cargo-build-system)
-    (home-page "https://github.com/rust-lang-deprecated/time")
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-redox-syscall" ,rust-redox-syscall-0.1)
+        ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-log" ,rust-log-0.3)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/time-rs/time")
     (synopsis "Simple time handling in Rust")
     (description
      "This package provides utilities for working with time-related functions
 in Rust.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
