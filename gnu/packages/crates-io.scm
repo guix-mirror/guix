@@ -11804,6 +11804,22 @@ spinning.  They may contain data, are usable without @code{std},and static
 initializers are available.")
     (license license:expat)))
 
+(define-public rust-spin-0.4
+  (package
+    (inherit rust-spin-0.5)
+    (name "rust-spin")
+    (version "0.4.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "spin" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "07ywqn1vrpi3c43fmvsx7pawk9h3rb77yyqbnhap2micl454kb6f"))))
+    (arguments '(#:skip-build? #t))))
+
 (define-public rust-stable-deref-trait-1.1
   (package
     (name "rust-stable-deref-trait")
