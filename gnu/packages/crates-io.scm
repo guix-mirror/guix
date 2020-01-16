@@ -1311,7 +1311,7 @@ Command Line Argument Parser.")
 (define-public rust-clicolors-control-1.0
   (package
     (name "rust-clicolors-control")
-    (version "1.0.0")
+    (version "1.0.1")
     (source
       (origin
         (method url-fetch)
@@ -1319,7 +1319,7 @@ Command Line Argument Parser.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1y80cgarxhrd1bz5yjm81r444v6flvy36aaxrrsac0yhfd6gvavk"))))
+          "07klix8nbpwk0cg1k4h0kkiijm1jxvrzndqdkr7dqr6xvkjjw24h"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
