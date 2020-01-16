@@ -1397,13 +1397,15 @@ pitfalls in Rust.")
          (base32
           "0qkwibkvx5xjazvv9v8gvdlpky2jhjxvcz014nrixgzqfyv2byw1"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs (("rust-cc" ,rust-cc-1.0))))
     (home-page "https://github.com/alexcrichton/cmake-rs")
     (synopsis "Rust build dependency for running cmake")
     (description
      "This package provides a build dependency for running @code{cmake} to build
 a native library.  The CMake executable is assumed to be @code{cmake} unless the
 CMAKE environmental variable is set.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
