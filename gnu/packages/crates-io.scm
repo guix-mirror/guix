@@ -1321,12 +1321,18 @@ Command Line Argument Parser.")
          (base32
           "1y80cgarxhrd1bz5yjm81r444v6flvy36aaxrrsac0yhfd6gvavk"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-atty" ,rust-atty-0.2)
+        ("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-winapi" ,rust-winapi-0.3))))
     (home-page "https://github.com/mitsuhiko/clicolors-control")
     (synopsis "Common utility library to control CLI colorization")
     (description
      "This package provides a common utility library to control CLI
 colorization.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-clippy-0.0
