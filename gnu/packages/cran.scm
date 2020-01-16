@@ -5768,14 +5768,14 @@ Python to R they are converted back to R types.")
 (define-public r-bibtex
   (package
     (name "r-bibtex")
-    (version "0.4.2.1")
+    (version "0.4.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "bibtex" version))
        (sha256
         (base32
-         "1ks1w59ldwmfd1sj8ap7smyhf8dhykv7xnwrl8z9xzkcfpv1rbc0"))))
+         "140hkjzdp3033cvji861rd06z1ixgpnn4n5amygqsmhnixk8ff07"))))
     (build-system r-build-system)
     (propagated-inputs `(("r-stringr" ,r-stringr)))
     (home-page "https://github.com/romainfrancois/bibtex")
