@@ -3807,12 +3807,15 @@ reading and writing git repositories.")
          (base32
           "0x25wfr7vg3mzxc9x05dcphvd3nwlcmbnxrvwcvrrdwplcrrk4cv"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir-0.3))))
     (home-page "https://github.com/rust-lang-nursery/glob")
     (synopsis "Match file paths against Unix shell style patterns")
     (description
      "This package provides support for matching file paths against Unix
 shell style patterns.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
@@ -3828,12 +3831,7 @@ shell style patterns.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1ysvi72slkw784fcsymgj4308c3y03gwjjzqxp80xdjnkbh8vqcb"))))
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-development-inputs
-       (("rust-tempdir" ,rust-tempdir-0.3))))
-    (properties '())))
+          "1ysvi72slkw784fcsymgj4308c3y03gwjjzqxp80xdjnkbh8vqcb"))))))
 
 (define-public rust-globset-0.4
   (package
