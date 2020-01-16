@@ -12104,14 +12104,14 @@ transformation, respectively.")
 (define-public r-shinyjs
   (package
     (name "r-shinyjs")
-    (version "1.0")
+    (version "1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "shinyjs" version))
        (sha256
         (base32
-         "113zpijri0l80rlgrvqn6bxk0sdqgl79h7yhja2p76f9dc9i2sr8"))))
+         "14k8y313ppj23m9rhlk8jc94x6sbn3qrsnx6xrijiyv8m8dii1l9"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-digest" ,r-digest)
