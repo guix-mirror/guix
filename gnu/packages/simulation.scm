@@ -292,14 +292,14 @@ the complexity of that interface.  Parallel support depends on the
 (define-public python-fenics-ufl
   (package
     (name "python-fenics-ufl")
-    (version "2018.1.0")
+    (version "2019.1.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "fenics-ufl" version))
         (sha256
           (base32
-            "1fq8yc86s1s3c8c0b1rc2vf265q0hrkzg57100fg1nghcz0p4vla"))))
+            "10dz8x3lm68x2w3kkqcjask38h0zkhhak26jdbkppr8g9y8wny7p"))))
     (build-system python-build-system)
     (inputs
      `(("python-numpy" ,python-numpy)))
