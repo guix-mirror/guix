@@ -3258,11 +3258,12 @@ process and much more.")
          (base32
           "1fnkqrbz7ixxzsb04bsz9p0zzazanma8znfdqjvh39n14vapfvx0"))))
     (build-system cargo-build-system)
-    (home-page "https://fuchsia.googlesource.com/fuchsia/+/master/garnet/public/rust/fuchsia-cprng")
+    (arguments '(#:skip-build? #t))
+    (home-page
+     "https://fuchsia.googlesource.com/fuchsia/+/master/garnet/public/rust/fuchsia-cprng")
     (synopsis "Fuchsia cryptographically secure pseudorandom number generator")
     (description "Rust crate for the Fuchsia cryptographically secure
 pseudorandom number generator")
-    (properties '((hidden? . #t)))
     (license license:bsd-3)))
 
 (define-public rust-fuchsia-zircon-0.3
