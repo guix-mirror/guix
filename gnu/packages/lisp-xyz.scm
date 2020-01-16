@@ -9335,3 +9335,50 @@ transforming Common Lisp code to continuation passing style.")
 
 (define-public ecl-cl-cont
   (sbcl-package->ecl-package sbcl-cl-cont))
+
+(define-public sbcl-cl-coroutine
+  (let ((commit "de098f8d5debd8b14ef6864b5bdcbbf5ddbcfd72")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-coroutine")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/takagi/cl-coroutine.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1cqdhdjxffgfs116l1swjlsmcbly0xgcgrckvaajd566idj9yj4l"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-cont" ,sbcl-cl-cont)))
+      (native-inputs
+       `(("prove" ,sbcl-prove)))
+      (arguments
+       `(;; TODO: Fix the tests. They fail with:
+         ;; "Component CL-COROUTINE-ASD::CL-COROUTINE-TEST not found"
+         #:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-tests
+             (lambda _
+               (substitute* "cl-coroutine-test.asd"
+                 (("cl-test-more")
+                  "prove"))
+               #t)))))
+      (synopsis "Coroutine library for Common Lisp")
+      (description
+       "This is a coroutine library for Common Lisp implemented using the
+continuations of the @code{cl-cont} library.")
+      (home-page "https://github.com/takagi/cl-coroutine")
+      (license license:llgpl))))
+
+(define-public cl-coroutine
+  (sbcl-package->cl-source-package sbcl-cl-coroutine))
+
+(define-public ecl-cl-coroutine
+  (sbcl-package->ecl-package sbcl-cl-coroutine))
