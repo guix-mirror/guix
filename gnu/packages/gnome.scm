@@ -6481,6 +6481,10 @@ users.")
            (lambda _
              ;; For the missing /etc/machine-id.
              (setenv "DBUS_FATAL_WARNINGS" "0")
+
+             ;; XXX: Regenerate some of the tests that are dependent on Python version.
+             ;; Try removing this variable for newer versions of NetworkManager.
+             (setenv "NM_TEST_REGENERATE" "1")
              #t))
          (replace 'install
            (lambda _
