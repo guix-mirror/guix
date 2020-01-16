@@ -2064,6 +2064,12 @@ format is also supported.")
 The picture values can directly be displayed in Geiser.")
       (license license:lgpl3+))))
 
+(define-public guile3.0-picture-language
+  (package
+    (inherit guile-picture-language)
+    (name "guile3.0-picture-language")
+    (inputs `(("guile" ,guile-3.0)))))
+
 (define-public guile-studio
   (package
     (name "guile-studio")
