@@ -63,6 +63,8 @@
             delete-matching-generations
             guix-package
 
+            transaction-upgrade-entry             ;mostly for testing
+
             (%options . %package-options)
             (%default-options . %package-default-options)
             guix-package*))
@@ -205,7 +207,7 @@ non-zero relevance score."
                                 (package-full-name package2))
                       (> score1 score2))))))))))
 
-(define (transaction-upgrade-entry entry transaction)
+(define (transaction-upgrade-entry store entry transaction)
   "Return a variant of TRANSACTION that accounts for the upgrade of ENTRY, a
 <manifest-entry>."
   (define (supersede old new)
@@ -242,7 +244,7 @@ non-zero relevance score."
                 transaction)
                ((=)
                 (let ((candidate-path (derivation->output-path
-                                       (package-derivation (%store) pkg))))
+                                       (package-derivation store pkg))))
                   ;; XXX: When there are propagated inputs, assume we need to
                   ;; upgrade the whole entry.
                   (if (and (string=? path candidate-path)
@@ -600,7 +602,7 @@ and upgrades."
   (define upgraded
     (fold (lambda (entry transaction)
             (if (upgrade? (manifest-entry-name entry))
-                (transaction-upgrade-entry entry transaction)
+                (transaction-upgrade-entry (%store) entry transaction)
                 transaction))
           transaction
           (manifest-entries manifest)))

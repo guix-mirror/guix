@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -100,7 +100,8 @@
   (let* ((old (dummy-package "foo" (version "1")))
          (tx  (mock ((gnu packages) find-best-packages-by-name
                      (const '()))
-                    ((@@ (guix scripts package) transaction-upgrade-entry)
+                    (transaction-upgrade-entry
+                     #f                           ;no store access needed
                      (manifest-entry
                        (inherit (package->manifest-entry old))
                        (item (string-append (%store-prefix) "/"
@@ -113,7 +114,8 @@
          (new (dummy-package "foo" (version "2")))
          (tx  (mock ((gnu packages) find-best-packages-by-name
                      (const (list new)))
-                    ((@@ (guix scripts package) transaction-upgrade-entry)
+                    (transaction-upgrade-entry
+                     #f                           ;no store access needed
                      (manifest-entry
                        (inherit (package->manifest-entry old))
                        (item (string-append (%store-prefix) "/"
@@ -130,7 +132,8 @@
          (dep (deprecated-package "foo" new))
          (tx  (mock ((gnu packages) find-best-packages-by-name
                      (const (list dep)))
-                    ((@@ (guix scripts package) transaction-upgrade-entry)
+                    (transaction-upgrade-entry
+                     #f                           ;no store access needed
                      (manifest-entry
                        (inherit (package->manifest-entry old))
                        (item (string-append (%store-prefix) "/"
