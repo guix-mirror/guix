@@ -11,7 +11,7 @@
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
-;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -692,7 +692,7 @@ useful for C++.")
 (define-public python-pygobject
   (package
     (name "python-pygobject")
-    (version "3.28.3")
+    (version "3.34.0")
     (source
      (origin
        (method url-fetch)
@@ -701,24 +701,20 @@ useful for C++.")
                            "/pygobject-" version ".tar.xz"))
        (sha256
         (base32
-         "1c6h3brzlyvzbpdsammnd957azmp6cbzqrd65r400vnh2l8f5lrx"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'delete-broken-tests
-           (lambda _
-             ;; FIXME: this test freezes and times out.
-             (delete-file "tests/test_mainloop.py")
-             ;; FIXME: this test fails with this kind of error:
-             ;; AssertionError: <Handlers.SIG_IGN: 1> != <built-in function default_int_handler
-             (delete-file "tests/test_ossig.py")
+         "06i7ynnbvgpz0gw09zsjbvhgcp5qz4yzdifw27qjwdazg2mckql7"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; We disable these tests in a snippet so that they are inherited
+           ;; by the Python 2 variant which is built differently.
+           (with-directory-excursion "tests"
+             ;; FIXME: These tests require Gdk and/or Gtk 4.
+             (for-each delete-file
+                       '("test_atoms.py" "test_overrides_gtk.py"))
              #t)))))
+    (build-system meson-build-system)
     (native-inputs
-     `(("which" ,which)
-       ;for tests: dbus-run-session and glib-compile-schemas
-       ("dbus" ,dbus)
-       ("glib-bin" ,glib "bin")
+     `(("glib-bin" ,glib "bin")
        ("pkg-config" ,pkg-config)
        ("python-pytest" ,python-pytest)))
     (inputs
@@ -741,44 +737,30 @@ useful for C++.")
 (define-public python2-pygobject
   (package (inherit (strip-python2-variant python-pygobject))
     (name "python2-pygobject")
+
+    ;; Note: We use python-build-system here, because Meson only supports
+    ;; Python 3, and needs PYTHONPATH etc set up correctly, which makes it
+    ;; difficult to use for Python 2 projects.
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-broken-tests
+           (lambda _
+             ;; FIXME: this test freezes and times out.
+             (delete-file "tests/test_mainloop.py")
+             ;; FIXME: this test fails with this kind of error:
+             ;; AssertionError: <Handlers.SIG_IGN: 1> != <built-in function default_int_handler
+             (delete-file "tests/test_ossig.py")
+             #t)))))
     (inputs
-     `(("python" ,python-2)
-       ("python-pycairo" ,python2-pycairo)
+     `(("python-pycairo" ,python2-pycairo)
        ("gobject-introspection" ,gobject-introspection)))
     (native-inputs
-     `(("which" ,which)
-       ;for tests: dbus-run-session and glib-compile-schemas
-       ("dbus" ,dbus)
-       ("glib-bin" ,glib "bin")
+     `(("glib-bin" ,glib "bin")
        ("pkg-config" ,pkg-config)
        ("python-pytest" ,python2-pytest)))))
-
-;; Newer version of this core-updates package, for Lollypop.
-(define-public python-pygobject-3.34
-  (package/inherit
-   python-pygobject
-   (version "3.34.0")
-   (source
-    (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnome/sources/pygobject/"
-                          (version-major+minor version)
-                          "/pygobject-" version ".tar.xz"))
-      (sha256
-       (base32 "06i7ynnbvgpz0gw09zsjbvhgcp5qz4yzdifw27qjwdazg2mckql7"))))
-   (build-system meson-build-system)
-   (arguments
-    `(#:phases
-      (modify-phases %standard-phases
-        (add-after 'unpack 'delete-broken-tests
-          (lambda _
-            (with-directory-excursion "tests"
-              (for-each
-               delete-file
-               ;; FIXME: these tests require Gdk and/or Gtk 4.
-               '("test_atoms.py"
-                 "test_overrides_gtk.py")))
-            #t)))))))
 
 (define-public perl-glib
   (package
