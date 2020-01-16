@@ -4599,11 +4599,15 @@ immutable interval tree.")
          (base32
           "025vi072m22299z3fg73qid188z2iip7k41ba6v5v5yhwwby9rnv"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-winapi" ,rust-winapi-0.2))))
     (home-page "https://github.com/carllerche/iovec")
     (synopsis "Portable buffer type for scatter/gather I/O operations")
     (description
      "Portable buffer type for scatter/gather I/O operations.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
