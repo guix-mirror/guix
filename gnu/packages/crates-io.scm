@@ -3015,10 +3015,10 @@ cross platform API.")
          (base32
           "0czam11mi80dbyhf4rd4lz0ihcf7vkfchrdcrn45wbs0h40dxm46"))))
     (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/petgraph/fixedbitset")
     (synopsis "FixedBitSet is a simple bitset collection")
     (description "FixedBitSet is a simple bitset collection.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
