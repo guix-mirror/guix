@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Simon Tournier <zimon.toutoune@gmail.com>
@@ -1053,14 +1053,14 @@ problems in CEL-level data to help evaluate performance of quality metrics.")
 (define-public r-affycoretools
   (package
     (name "r-affycoretools")
-    (version "1.58.3")
+    (version "1.58.4")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "affycoretools" version))
        (sha256
         (base32
-         "12r9ljkp3xix0xq8d1488c8wb3a4whb805v48ynmv985bs3phc71"))))
+         "1p283ysib04qzaayxmrpsmk5bq0jdq2rlky180jrlskpyg6risfw"))))
     (properties `((upstream-name . "affycoretools")))
     (build-system r-build-system)
     (propagated-inputs
@@ -1071,6 +1071,7 @@ problems in CEL-level data to help evaluate performance of quality metrics.")
        ("r-dbi" ,r-dbi)
        ("r-edger" ,r-edger)
        ("r-gcrma" ,r-gcrma)
+       ("r-glimma" ,r-glimma)
        ("r-ggplot2" ,r-ggplot2)
        ("r-gostats" ,r-gostats)
        ("r-gplots" ,r-gplots)
