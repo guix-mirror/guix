@@ -5157,7 +5157,11 @@ functions and static variables these libraries contain.")
         (sha256
          (base32
           "0b24q9mh258xa52ap636q1sxz0j5vrnp0hwbbh7ddjka3wwz3sv2"))))
-    (properties '((hidden? . #t)))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-scopeguard" ,rust-scopeguard-0.3)
+        ("rust-owning-ref" ,rust-owning-ref-0.4))))))
 
 (define-public rust-log-0.4
   (package
