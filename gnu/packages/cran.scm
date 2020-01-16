@@ -2552,14 +2552,14 @@ statistics/methods are implemented.")
 (define-public r-suppdists
   (package
     (name "r-suppdists")
-    (version "1.1-9.4")
+    (version "1.1-9.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "SuppDists" version))
        (sha256
         (base32
-         "1ffx8wigqqvz2pnh06jjc0fnf4vq9z2rhwk2y3f9aszn18ap3dgw"))))
+         "01j6p94m1g363nph2158fq2rmd6z3h5dvcv6aidh2d6syw131xak"))))
     (properties `((upstream-name . "SuppDists")))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/SuppDists")
