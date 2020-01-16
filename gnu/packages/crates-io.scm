@@ -11498,6 +11498,46 @@ futures efficiently")
     (properties '((hidden? . #t)))
     (license license:expat)))
 
+(define-public rust-tokio-process-0.2
+  (package
+    (name "rust-tokio-process")
+    (version "0.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-process" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1s6vi5n5iax4ksx3bzpfdhfbngj49mvq5n40np1d4aycp3qnxgdg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-crossbeam-queue" ,rust-crossbeam-queue-0.1)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mio" ,rust-mio-0.6)
+        ("rust-mio-named-pipes" ,rust-mio-named-pipes-0.1)
+        ("rust-tokio-io" ,rust-tokio-io-0.1)
+        ("rust-tokio-reactor" ,rust-tokio-reactor-0.1)
+        ("rust-tokio-signal" ,rust-tokio-signal-0.2)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-failure" ,rust-failure-0.1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-tokio" ,rust-tokio-0.1))))
+    (home-page "https://github.com/tokio-rs/tokio")
+    (synopsis
+     "Asynchronous process management backed futures")
+    (description
+     "An implementation of an asynchronous process management backed
+futures.")
+    (license license:expat)))
+
 (define-public rust-tokio-reactor-0.1
   (package
     (name "rust-tokio-reactor")
