@@ -8720,12 +8720,12 @@ non-'static references in parallel.")
          (base32
           "1hj8lifzvivdb1z02lfnzkshpvk85nkgzxsy2hc0zky9wf894spa"))))
     (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/alexcrichton/scoped-tls")
     (synopsis "Rust library providing the old standard library's scoped_thread_local")
     (description "This crate provides a library implementation of the standard
 library's old @code{scoped_thread_local!} macro for providing scoped access to
 @dfn{thread local storage} (TLS) so any type can be stored into TLS.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
@@ -8741,9 +8741,7 @@ library's old @code{scoped_thread_local!} macro for providing scoped access to
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0a2bn9d2mb07c6l16sadijy4p540g498zddfxyiq4rsqpwrglbrk"))))
-    (arguments '(#:skip-build? #t))
-    (properties '())))
+          "0a2bn9d2mb07c6l16sadijy4p540g498zddfxyiq4rsqpwrglbrk"))))))
 
 (define-public rust-scopeguard-1.0
   (package
