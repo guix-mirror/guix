@@ -7783,13 +7783,13 @@ tab-delimited (tabix) files.")
 (define-public r-delayedarray
   (package
     (name "r-delayedarray")
-    (version "0.12.1")
+    (version "0.12.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "DelayedArray" version))
               (sha256
                (base32
-                "1yr4i2x127v814nxg53aibp77p3vg76f3n3hgknpwx3snfhc81xs"))))
+                "09lackgix5jpm16k0mz2zkibflfb4wzidbz4q32mlxmklf40037q"))))
     (properties
      `((upstream-name . "DelayedArray")))
     (build-system r-build-system)
