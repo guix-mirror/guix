@@ -3991,7 +3991,7 @@ default and preferred audio driver but also supports native drivers like ALSA.")
     (version "2.9.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://nosignal.fi/download/ecasound-"
+              (uri (string-append "https://nosignal.fi/download/ecasound-"
                                   version ".tar.gz"))
               (sha256
                (base32 "15rcs28fq2wfvfs66p5na7adq88b55qszbhshpizgdbyqzgr2jf1"))))
@@ -4012,7 +4012,7 @@ default and preferred audio driver but also supports native drivers like ALSA.")
               ("ncurses" ,ncurses)
               ("ladspa" ,ladspa)
               ("lilv" ,lilv)))
-    (home-page "http://nosignal.fi/ecasound/index.php")
+    (home-page "https://nosignal.fi/ecasound/index.php")
     (synopsis "Multitrack audio processing")
     (description "Ecasound is a software package designed for multitrack audio
 processing. It can be used for simple tasks like audio playback, recording and
