@@ -12883,6 +12883,32 @@ cryptographic implementations.")
     (properties '((hidden? . #t)))
     (license license:expat)))
 
+(define-public rust-syntex-0.58
+ (package
+   (name "rust-syntex")
+   (version "0.58.1")
+   (source
+    (origin
+      (method url-fetch)
+      (uri (crate-uri "syntex" version))
+      (file-name
+       (string-append name "-" version ".tar.gz"))
+      (sha256
+       (base32
+        "03lgd36cxhc6gzaab0wqvckbhml00s6s73lk34ymf6cklymf7xd8"))))
+   (build-system cargo-build-system)
+   (arguments
+    `(#:skip-build? #t
+      #:cargo-inputs
+      (("rust-syntex-errors" ,rust-syntex-errors-0.58)
+       ("rust-syntex-syntax" ,rust-syntex-syntax-0.58))))
+   (home-page "https://github.com/erickt/rust-syntex")
+   (synopsis "Compile time syntax extension expansion")
+   (description
+    "This package provides a library that enables compile time
+syntax extension expansion.")
+   (license (list license:expat license:asl2.0))))
+
 (define-public rust-syntex-pos-0.58
   (package
     (name "rust-syntex-pos")
