@@ -2635,14 +2635,14 @@ contexts.")
 (define-public r-squarem
   (package
     (name "r-squarem")
-    (version "2017.10-1")
+    (version "2020.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "SQUAREM" version))
        (sha256
         (base32
-         "10xj26x7qjyvzndnbjl5krr9wabnb9cbrnp3m7xg673g8ddr12cv"))))
+         "0v4ax1v8diw2w7fdhfzz1z0bwixkmcrc39ax3y116f399rc06qbs"))))
     (properties `((upstream-name . "SQUAREM")))
     (build-system r-build-system)
     (home-page "http://www.jhsph.edu/agingandhealth/People/Faculty_personal_pages/Varadhan.html")
