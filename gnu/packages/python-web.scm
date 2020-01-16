@@ -14,7 +14,7 @@
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2015, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
@@ -2748,17 +2748,26 @@ List.")
 (define-public python-publicsuffix2
   (package
     (name "python-publicsuffix2")
-    (version "2.20160818")
+    (version "2.20191221")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "publicsuffix2" version ".tar.bz2"))
+       (uri (pypi-uri "publicsuffix2" version))
        (sha256
-        (base32
-         "1bb55yka9vkn7i6y1kjzxa516kh6v4gsrxa90w5wdz5p5n968r68"))))
+        (base32 "0yzysvfj1najr1mb4pcqrbmjir3xpb69rlffln95a3cdm8qwry00"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f)) ; The test suite requires network access.
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'ignore-maintainer-inputs
+           (lambda _
+             ;; Comment out a demand for python-requests, which is used only by
+             ;; the unused ‘update_psl’ helper command.
+             (substitute* "setup.py"
+               (("'requests " match)
+                (format "# ~a" match)))
+             #t)))
+       #:tests? #f))                  ; the test suite requires network access
     (home-page "https://github.com/pombredanne/python-publicsuffix2")
     (synopsis "Get a public suffix for a domain name using the Public Suffix List")
     (description "Get a public suffix for a domain name using the Public Suffix
