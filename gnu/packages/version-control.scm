@@ -678,7 +678,8 @@ collaboration using typical untrusted file hosts or services.")
 (define-public cgit
   (package
     (name "cgit")
-    (version "1.2.1")
+    ;; Update the ‘git-source’ input as well.
+    (version "1.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -686,7 +687,7 @@ collaboration using typical untrusted file hosts or services.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1gw2j5xc5qdx2hwiwkr8h6kgya7v9d9ff9j32ga1dys0cca7qm1w"))))
+                "0dmjsisigjz5k4gw7gm55qhm3wazzbm4cg7a5dwf0gqg9nacx5rz"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; XXX: fail to build the in-source git.
@@ -764,11 +765,11 @@ collaboration using typical untrusted file hosts or services.")
        ("git-source"
         ,(origin
            (method url-fetch)
-           ;; XXX CGit is currently incompatible with Git > 2.18.
-           (uri "mirror://kernel.org/software/scm/git/git-2.18.2.tar.xz")
+           ;; cgit is tightly bound to git.  Use GIT_VER from the Makefile,
+           ;; which may not match the current (package-version git).
+           (uri "mirror://kernel.org/software/scm/git/git-2.25.0.tar.xz")
            (sha256
-            (base32
-             "1gmcz5k8sa6phzhhv6zjl8izbyqnxcdb8ns8kd2czyak0g409vrq"))))
+            (base32 "1l58v42aazj0x9276gk8r9mwyl9pgp9w99aakz4xfhzv7wd2jq60"))))
        ("openssl" ,openssl)
        ("groff" ,groff)
        ("python" ,python)
