@@ -54,7 +54,10 @@
             cran-package?
             bioconductor-package?
             bioconductor-data-package?
-            bioconductor-experiment-package?))
+            bioconductor-experiment-package?
+
+            description->alist
+            description->package))
 
 ;;; Commentary:
 ;;;
@@ -269,6 +272,10 @@ empty list when the FIELD cannot be found."
                         ;; begin with.
                         (string-any char-set:whitespace item)))
                   (map string-trim-both items))))))
+
+;; Trick Guile 3 so that it keeps the 'listify' binding accessible *and*
+;; private even though this module is declarative.
+(set! listify listify)
 
 (define default-r-packages
   (list "base"
