@@ -190,6 +190,7 @@ Pendulum instances.")
                       (invoke "pytest" "-vv"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
        ("python-setuptools-scm" ,python-setuptools-scm)))
     (propagated-inputs
      `(("python-six" ,python-six)))
