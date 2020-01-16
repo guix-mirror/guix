@@ -2946,7 +2946,7 @@ provides implementations for @code{HashMap} and @code{HashSet}.")
 (define-public rust-filetime-0.2
   (package
     (name "rust-filetime")
-    (version "0.2.7")
+    (version "0.2.8")
     (source
       (origin
         (method url-fetch)
@@ -2954,7 +2954,7 @@ provides implementations for @code{HashMap} and @code{HashSet}.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0sflihq2l77xjrza7yjalnxsc7dxzg25rhzcfbd9vmyfah5kimvb"))))
+          "0zfc90802dbw11bx6kmm8zw6r88k7glm4q6l8riqw35an3dd9xhz"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -2964,7 +2964,7 @@ provides implementations for @code{HashMap} and @code{HashSet}.")
         ("rust-redox-syscall" ,rust-redox-syscall-0.1)
         ("rust-winapi" ,rust-winapi-0.3))
        #:cargo-development-inputs
-       (("rust-tempdir" ,rust-tempdir-0.3))))
+       (("rust-tempfile" ,rust-tempfile-3.0))))
     (home-page "https://github.com/alexcrichton/filetime")
     (synopsis "Platform-agnostic accessors of timestamps in File metadata")
     (description
