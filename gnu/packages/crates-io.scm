@@ -11537,6 +11537,42 @@ futures efficiently")
      "Event loop that drives Tokio I/O resources.")
     (license license:expat)))
 
+(define-public rust-tokio-signal-0.2
+  (package
+    (name "rust-tokio-signal")
+    (version "0.2.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-signal" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "15l27cvhfcjsahwnm2pgsm0690w0xj1h1sbdl5wy6p50dqkwavfx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-futures" ,rust-futures-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-mio" ,rust-mio-0.6)
+        ("rust-mio-uds" ,rust-mio-uds-0.6)
+        ("rust-signal-hook" ,rust-signal-hook-0.1)
+        ("rust-tokio-executor" ,rust-tokio-executor-0.1)
+        ("rust-tokio-io" ,rust-tokio-io-0.1)
+        ("rust-tokio-reactor" ,rust-tokio-reactor-0.1)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-tokio" ,rust-tokio-0.1))))
+    (home-page "https://github.com/tokio-rs/tokio")
+    (synopsis
+     "Asynchronous Unix signal handling backed futures")
+    (description
+     "An implementation of an asynchronous Unix signal handling backed
+futures.")
+    (license license:expat)))
+
 (define-public rust-tokio-sync-0.1
   (package
     (name "rust-tokio-sync")
