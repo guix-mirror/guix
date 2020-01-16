@@ -5308,9 +5308,9 @@ friction with idiomatic Rust structs to ease interopability.")
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
-       #:cargo-inputs (("rust-winapi" ,rust-winapi-0.2))
-       #:cargo-development-inputs
-       (("rust-winapi-build" ,rust-winapi-build-0.1))))
+       #:cargo-inputs
+       (("rust-winapi" ,rust-winapi-0.2)
+        ("rust-winapi-build" ,rust-winapi-build-0.1))))
     (home-page "https://github.com/retep998/winapi-rs")
     (synopsis "Function definitions for the Windows API library kernel32")
     (description "Contains function definitions for the Windows API library
