@@ -8006,6 +8006,31 @@ giga, kibi.")
      "This package can convert numbers into stack-allocated byte arrays.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-objc-0.2
+  (package
+    (name "rust-objc")
+    (version "0.2.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "objc" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1cbpf6kz8a244nn1qzl3xyhmp05gsg4n313c9m3567625d3innwi"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f  ; Tests require gcc-objc.
+       #:cargo-inputs
+       (("rust-malloc-buf" ,rust-malloc-buf-0.0)
+        ("rust-objc-exception" ,rust-objc-exception-0.1))))
+    (home-page "http://github.com/SSheldon/rust-objc")
+    (synopsis "Objective-C Runtime bindings and wrapper for Rust")
+    (description "This package provides an Objective-C Runtime bindings and
+wrapper for Rust.")
+    (license license:expat)))
+
 (define-public rust-objc-exception-0.1
   (package
     (name "rust-objc-exception")
