@@ -2803,7 +2803,7 @@ of modern, widely supported codecs.")
 (define-public intel-vaapi-driver
   (package
     (name "intel-vaapi-driver")
-    (version "2.3.0")
+    (version "2.4.0")
     (source
      (origin
        (method url-fetch)
@@ -2811,7 +2811,7 @@ of modern, widely supported codecs.")
                            "releases/download/" version "/intel-vaapi-driver-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "1qyzxh3p8cw4fv8bz9zd4kc8hajlaps7xryzh6pad814n3m5sbjw"))))
+        (base32 "12fhydgwpvyh97gxqlgv77wsf9yax321h46vi49j4sxghpcxvqki"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
