@@ -2933,13 +2933,13 @@ is configured via an environment variable.")
          (base32
           "1xq759lsr8gqss7hva42azn3whgrbrs2sd9xpn92c5ickxm1fhs4"))))
     (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/sfackler/rust-fallible-iterator")
     (synopsis "Fallible iterator traits")
     (description "If the @code{std} or @code{alloc} features are enabled, this
 crate provides implementations for @code{Box}, @code{Vec}, @code{BTreeMap}, and
 @code{BTreeSet}.  If the @code{std} feature is enabled, this crate additionally
 provides implementations for @code{HashMap} and @code{HashSet}.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
