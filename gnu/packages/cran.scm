@@ -2362,14 +2362,14 @@ and S4 methods with inlined C, C++ or Fortran code supporting @code{.C} and
 (define-public r-bdsmatrix
   (package
     (name "r-bdsmatrix")
-    (version "1.3-3")
+    (version "1.3-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "bdsmatrix" version))
        (sha256
         (base32
-         "17ddvz4gnih7rx0lr1gzk280xyh6x796cf2x794dvplpiiq83skh"))))
+         "1sh6pg43rgqvips4fx0k4vmp5i9lmniix0bqwj2yq5m06gs227i5"))))
     (properties `((upstream-name . "bdsmatrix")))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/bdsmatrix/")
