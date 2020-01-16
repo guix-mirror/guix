@@ -8741,7 +8741,9 @@ library's old @code{scoped_thread_local!} macro for providing scoped access to
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0a2bn9d2mb07c6l16sadijy4p540g498zddfxyiq4rsqpwrglbrk"))))))
+          "0a2bn9d2mb07c6l16sadijy4p540g498zddfxyiq4rsqpwrglbrk"))))
+    (arguments '(#:skip-build? #t))
+    (properties '())))
 
 (define-public rust-scopeguard-1.0
   (package
