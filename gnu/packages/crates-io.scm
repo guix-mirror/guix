@@ -7895,11 +7895,11 @@ in terms of the upstream unstable API.")
          (base32
           "1q6za3v78hsspisc197bg3g7rpc989qycy8ypr8ap8igv10ikl51"))))
     (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
     (home-page "https://github.com/tailhook/quick-error")
     (synopsis "Macro which makes error types pleasant to write")
     (description "This crate provides a macro which makes error types pleasant
 to write.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
