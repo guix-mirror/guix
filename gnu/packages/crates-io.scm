@@ -3237,12 +3237,12 @@ APIs.")
          (base32
           "0x6675wdhsx277k1k1235jwcv38naf20d8kwrk948ds26hh4lajz"))))
     (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/webdesus/fs_extra")
     (synopsis "Extra filesystem methods")
     (description "Expanding opportunities standard library @code{std::fs} and
 @code{std::io}.  Recursively copy folders with recept information about
 process and much more.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-fuchsia-cprng-0.1
