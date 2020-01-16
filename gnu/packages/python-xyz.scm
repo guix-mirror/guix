@@ -17094,3 +17094,22 @@ that take parsers as their arguments and return them as result values.")
     (description "This package is a PEG-based parser and interpreter with
 memoization.")
     (license license:expat)))
+
+(define-public python-cson
+  (package
+    (name "python-cson")
+    (version "0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cson" version))
+       (sha256
+        (base32 "00cyvigg4npbph39ghkg77xbxisa6plf75vii24igxfizik0337f"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-speg" ,python-speg)))
+    (home-page "https://github.com/avakar/pycson")
+    (synopsis "Parser for Coffeescript Object Notation (CSON)")
+    (description "This package is a parser for Coffeescript Object
+Notation (CSON).")
+    (license license:expat)))
