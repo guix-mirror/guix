@@ -8081,6 +8081,32 @@ wrapper for Rust.")
 try/catch statements.")
     (license license:expat)))
 
+(define-public rust-objc-foundation-0.1
+  (package
+    (name "rust-objc-foundation")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "objc-foundation" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1y9bwb3m5fdq7w7i4bnds067dhm4qxv4m1mbg9y61j9nkrjipp8s"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t     ; Only available on macOS.
+       #:cargo-inputs
+       (("rust-block" ,rust-block-0.1)
+        ("rust-objc" ,rust-objc-0.2)
+        ("rust-objc-id" ,rust-objc-id-0.1))))
+    (home-page "http://github.com/SSheldon/rust-objc-foundation")
+    (synopsis "Rust wrapper for Objective-C's Foundation framework")
+    (description "This package provides a rust wrapper for Objective-C's
+Foundation framework.")
+    (license license:expat)))
+
 (define-public rust-objc-id-0.1
   (package
     (name "rust-objc-id")
