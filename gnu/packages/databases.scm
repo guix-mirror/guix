@@ -23,7 +23,7 @@
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
@@ -2064,7 +2064,7 @@ database.")
 (define-public lmdb
   (package
     (name "lmdb")
-    (version "0.9.23")
+    (version "0.9.24")
     (source
      (origin
        (method git-fetch)
@@ -2073,7 +2073,7 @@ database.")
              (commit (string-append "LMDB_" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ag7l5180ajvm73y59m7sn3p52xm8m972d08cshxhpwgwa4v35k6"))))
+        (base32 "088q6m8fvr12w43s461h7cvpg5hj8csaqj6n9pci150dz7bk5lxm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
