@@ -1278,7 +1278,7 @@ printing and other features typical of a source code editor.")
 (define-public python-pycairo
   (package
     (name "python-pycairo")
-    (version "1.17.1")
+    (version "1.18.2")
     (source
      (origin
       (method url-fetch)
@@ -1286,7 +1286,7 @@ printing and other features typical of a source code editor.")
                           version "/pycairo-" version ".tar.gz"))
       (sha256
        (base32
-        "165n0g7gp2a0qi8558snvfans17x83jv2lv7bx4vr1rxjbn3a2hg"))))
+        "0cb5n4r4nl0k1g90b1gz9iyk4lp7hi03db98i1p52a870bym7f6w"))))
     (build-system python-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1305,9 +1305,6 @@ printing and other features typical of a source code editor.")
                   (strip-python2-variant python-pycairo))))
     (package
       (inherit pycairo)
-      (propagated-inputs
-       `(("python2-funcsigs" ,python2-funcsigs)
-         ,@(package-propagated-inputs pycairo)))
       ;; Dual-licensed under LGPL 2.1 or Mozilla Public License 1.1
       (license (list license:lgpl2.1 license:mpl1.1)))))
 
