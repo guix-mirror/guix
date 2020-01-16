@@ -2956,6 +2956,15 @@ provides implementations for @code{HashMap} and @code{HashSet}.")
          (base32
           "0sflihq2l77xjrza7yjalnxsc7dxzg25rhzcfbd9vmyfah5kimvb"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-redox-syscall" ,rust-redox-syscall-0.1)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir-0.3))))
     (home-page "https://github.com/alexcrichton/filetime")
     (synopsis "Platform-agnostic accessors of timestamps in File metadata")
     (description
@@ -2964,7 +2973,6 @@ various timestamps of files in Rust.  This library takes into account
 cross-platform differences in terms of where the timestamps are located, what
 they are called, and how to convert them into a platform-independent
 representation.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
