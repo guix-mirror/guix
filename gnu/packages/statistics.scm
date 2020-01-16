@@ -3592,15 +3592,15 @@ vignettes.")
 (define-public r-mvtnorm
   (package
     (name "r-mvtnorm")
-    (version "1.0-11")
+    (version "1.0-12")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "mvtnorm" version))
               (sha256
                (base32
-                "0lkjph661blc1nwfzg9w48a60wvj6ffh4zjwlisvracsx4nn2883"))))
+                "03rfmii9j8x8fjv7hp8qd28z0svl4w0x54k2f4jpwv4qa7079i24"))))
     (build-system r-build-system)
-    (inputs
+    (native-inputs
      `(("gfortran" ,gfortran)))
     (home-page "http://mvtnorm.R-forge.R-project.org")
     (synopsis "Package for multivariate normal and t-distributions")
