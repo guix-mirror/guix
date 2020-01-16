@@ -8056,6 +8056,29 @@ wrapper for Rust.")
 try/catch statements.")
     (license license:expat)))
 
+(define-public rust-objc-id-0.1
+  (package
+    (name "rust-objc-id")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "objc_id" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fq71hnp2sdblaighjc82yrac3adfmqzhpr11irhvdfp9gdlsbf9"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f  ; Tests require gcc-objc.
+       #:cargo-inputs (("rust-objc" ,rust-objc-0.2))))
+    (home-page "http://github.com/SSheldon/rust-objc-id")
+    (synopsis "Rust smart pointers for Objective-C reference counting")
+    (description
+     "This package provides Rust smart pointers for Objective-C reference counting.")
+    (license license:expat)))
+
 (define-public rust-objc-test-utils-0.0
   (package
     (name "rust-objc-test-utils")
