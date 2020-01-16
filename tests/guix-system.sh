@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 # Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 #
@@ -128,6 +128,26 @@ else
     else
 	grep "$tmpfile:9:[0-9]\+:.*GRUB-config.*[Uu]nbound variable" "$errorfile"
     fi
+fi
+
+cat > "$tmpfile" <<EOF
+(use-modules (gnu))                                    ; 1
+
+(operating-system                                      ; 3
+  (file-systems (cons (file-system                     ; 4
+                        (device (file-system-label "root"))
+                        (mount-point "/")              ; 6
+                        (type "ext4"))))               ; 7 (!!)
+                      %base-file-systems)
+EOF
+
+if guix system build "$tmpfile" -n 2> "$errorfile"
+then false
+else
+    # Here '%base-file-systems' appears as if it were a field specified of the
+    # enclosing 'operating-system' form due to parenthesis mismatch.
+    grep "$tmpfile:3:[0-9]\+:.*%base-file-system.*invalid field specifier" \
+	 "$errorfile"
 fi
 
 OS_BASE='
