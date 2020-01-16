@@ -3663,7 +3663,7 @@ archive to be linked into Rustcode.")
 (define-public rust-getopts-0.2
   (package
     (name "rust-getopts")
-    (version "0.2.17")
+    (version "0.2.21")
     (source
       (origin
         (method url-fetch)
@@ -3671,10 +3671,14 @@ archive to be linked into Rustcode.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "018yhq97zgcrcxwhj3pxh31h83704sgaiijdnpl0r1ir366c005r"))))
+          "1mgb3qvivi26gs6ihqqhh8iyhp3vgxri6vwyrwg28w0xqzavznql"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-unicode-width" ,rust-unicode-width-0.1)
+        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1.0)
+        ("rust-rustc-std-workspace-std" ,rust-rustc-std-workspace-std-1.0))
        #:cargo-development-inputs
        (("rust-log" ,rust-log-0.3))))
     (home-page "https://github.com/rust-lang/getopts")
