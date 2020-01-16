@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -153,8 +153,7 @@ References: ~a~%"
          (signature (base64-encode
                      (string->utf8
                       (canonical-sexp->string
-                       ((@@ (guix scripts publish) signed-string)
-                        unsigned-info))))))
+                       (signed-string unsigned-info))))))
     (format #f "~aSignature: 1;~a;~a~%"
             unsigned-info (gethostname) signature))
   (utf8->string
@@ -184,8 +183,7 @@ References: ~%"
          (signature (base64-encode
                      (string->utf8
                       (canonical-sexp->string
-                       ((@@ (guix scripts publish) signed-string)
-                        unsigned-info))))))
+                       (signed-string unsigned-info))))))
     (format #f "~aSignature: 1;~a;~a~%"
             unsigned-info (gethostname) signature))
 
