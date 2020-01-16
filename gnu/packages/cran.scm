@@ -6438,14 +6438,14 @@ vice versa), or to deal with multiple declared missing values.")
 (define-public r-sjmisc
   (package
     (name "r-sjmisc")
-    (version "2.8.2")
+    (version "2.8.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sjmisc" version))
        (sha256
         (base32
-         "0rl0bmk91wc4dxdgy008fl0dwkx3ffvys30vgpnr78lb4pk45nb2"))))
+         "0w8l9grmp4q775jrf4q6rxx36ld5daz9b0gdxyyh42xfihk6m62h"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
