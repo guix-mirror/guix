@@ -9236,3 +9236,29 @@ extensions to Common Lisp.  It contains:
 
 (define-public ecl-misc-extensions
   (sbcl-package->ecl-package sbcl-misc-extensions))
+
+(define-public sbcl-mt19937
+  (package
+    (name "sbcl-mt19937")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://common-lisp.net/project/asdf-packaging/"
+                           "mt19937-latest.tar.gz"))
+       (sha256
+        (base32
+         "1iw636b0iw5ygkv02y8i41lh7xj0acglv0hg5agryn0zzi2nf1xv"))))
+    (build-system asdf-build-system/sbcl)
+    (synopsis "Mersenne Twister pseudo-random number generator")
+    (description
+     "MT19937 is a portable Mersenne Twister pseudo-random number generator
+for Common Lisp.")
+    (home-page "https://www.cliki.net/mt19937")
+    (license license:public-domain)))
+
+(define-public cl-mt19937
+  (sbcl-package->cl-source-package sbcl-mt19937))
+
+(define-public ecl-mt19937
+  (sbcl-package->ecl-package sbcl-mt19937))
