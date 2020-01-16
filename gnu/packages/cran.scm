@@ -18405,7 +18405,7 @@ it may be seen by an animal with less acute vision.")
     (home-page "https://github.com/topepo/caret")
     (synopsis "Classification and regression training")
     (description
-     "This package provides misc functions for training and plotting
+     "This package provides miscellaneous functions for training and plotting
 classification and regression models.")
     (license license:gpl2+)))
 
