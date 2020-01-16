@@ -18871,14 +18871,14 @@ Langford (2006) @url{doi:10.1145/1143844.1143857}.")
 (define-public r-poibin
   (package
     (name "r-poibin")
-    (version "1.4")
+    (version "1.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "poibin" version))
        (sha256
         (base32
-         "1rllgmk7yanb5amysl33kmi11lx86q5kqblyb8qqb3ckj2w4jhm2"))))
+         "1sxryvwwz6ldsnkzdy56p8c895s5yvpcai9ndyjv1x5q3l05wf9v"))))
     (properties `((upstream-name . "poibin")))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/poibin/")
