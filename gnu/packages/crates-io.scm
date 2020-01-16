@@ -5153,6 +5153,36 @@ primitives to an @code{io::Write}.")
         (base32
          "18g7p2hrb3dk84z3frfgmszfc9hjb4ps9vp99qlb1kmf9gm8hc5f"))))))
 
+(define-public rust-jobserver-0.1
+  (package
+    (name "rust-jobserver")
+    (version "0.1.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "jobserver" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1q2w80v8p2pbfm8ayhjs6zi11a1hp4535z4ck8kg872z8ldnrc37"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2))
+       #:cargo-development-inputs
+       (("rust-futures" ,rust-futures-0.1)
+        ("rust-num-cpus" ,rust-num-cpus-1.10)
+        ("rust-tempdir" ,rust-tempdir-0.3)
+        ("rust-tokio-core" ,rust-tokio-core-0.1)
+        ("rust-tokio-process" ,rust-tokio-process-0.2))))
+    (home-page "https://github.com/alexcrichton/jobserver-rs")
+    (synopsis "GNU make jobserver for Rust")
+    (description
+     "An implementation of the GNU make jobserver for Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-js-sys-0.3
   (package
     (name "rust-js-sys")
