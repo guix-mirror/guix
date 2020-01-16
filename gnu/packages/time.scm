@@ -166,14 +166,14 @@ Pendulum instances.")
 (define-public python-dateutil
   (package
     (name "python-dateutil")
-    (version "2.8.0")
+    (version "2.8.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-dateutil" version))
        (sha256
         (base32
-         "17nsfhy4xdz1khrfxa61vd7pmvd5z0wa3zb6v4gb4kfnykv0b668"))))
+         "0g42w7k5007iv9dam6gnja2ry8ydwirh99mgdll35s12pyfzxsvk"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
