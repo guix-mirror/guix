@@ -9300,3 +9300,38 @@ may contain sets, maps may be keyed by sets, etc.")
 
 (define-public cl-fset
   (sbcl-package->cl-source-package sbcl-fset))
+
+(define-public sbcl-cl-cont
+  (let ((commit "fc1fa7e6eb64894fdca13e688e6015fad5290d2a")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-cont")
+      (version (git-version "0.3.8" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.common-lisp.net/cl-cont/cl-cont.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1zf8zvb0i6jm3hhfks4w74hibm6avgc6f9s1qwgjrn2bcik8lrvz"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("closer-mop" ,sbcl-closer-mop)))
+      (native-inputs
+       `(("rt" ,sbcl-rt)))
+      (synopsis "Delimited continuations for Common Lisp")
+      (description
+       "This is a library that implements delimited continuations by
+transforming Common Lisp code to continuation passing style.")
+      (home-page "https://common-lisp.net/project/cl-cont/")
+      (license license:llgpl))))
+
+(define-public cl-cont
+  (sbcl-package->cl-source-package sbcl-cl-cont))
+
+(define-public ecl-cl-cont
+  (sbcl-package->ecl-package sbcl-cl-cont))
