@@ -3302,10 +3302,10 @@ pseudorandom number generator")
          (base32
           "19zp2085qsyq2bh1gvcxq1lb8w6v6jj9kbdkhpdjrl95fypakjix"))))
     (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
     (home-page "https://fuchsia.googlesource.com/garnet/")
     (synopsis "Low-level Rust bindings for the Zircon kernel")
     (description "Low-level Rust bindings for the Zircon kernel.")
-    (properties '((hidden? . #t)))
     (license license:bsd-3)))
 
 (define-public rust-futf-0.1
