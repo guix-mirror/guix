@@ -1749,58 +1749,84 @@ is subjective.")
        #:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'enter-dir
-           (lambda _ (chdir "TuxGuitar-lib") #t))
-         (add-after 'build 'build-libraries
+         (replace 'build
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((initial-classpath (getenv "CLASSPATH"))
                     (build-dir (lambda (dir)
-                                 (chdir "..")
-                                 (setenv "CLASSPATH"
-                                         (string-join (cons initial-classpath
-                                                            (find-files (getcwd) "\\.jar$"))
-                                                      ":"))
-                                 (chdir dir)
-                                 (if (file-exists? "build.xml")
-                                     ((assoc-ref %standard-phases 'build)
-                                      #:build-target "build")
-                                     (begin
-                                       ;; Generate default build.xml.
-                                       ((@@ (guix build ant-build-system) default-build.xml)
-                                        (string-append (string-downcase dir) ".jar")
-                                        (string-append (assoc-ref outputs "out")
-                                                       "/share/java"))
-                                       ((assoc-ref %standard-phases 'build)))))))
-               (map build-dir '("TuxGuitar-editor-utils"
+                                 (setenv
+                                  "CLASSPATH"
+                                  (string-join (cons initial-classpath
+                                                     (find-files (getcwd) "\\.jar$"))
+                                               ":"))
+                                 (with-directory-excursion dir
+                                   (if (file-exists? "build.xml")
+                                       ((assoc-ref %standard-phases 'build)
+                                        #:build-target "build")
+                                       (begin
+                                         ;; Generate default build.xml.
+                                         ((@@ (guix build ant-build-system)
+                                              default-build.xml)
+                                          (string-append (string-downcase dir) ".jar")
+                                          (string-append (assoc-ref outputs "out")
+                                                         "/share/java"))
+                                         ((assoc-ref %standard-phases 'build))))))))
+               (map build-dir '("TuxGuitar-lib"
+                                "TuxGuitar-editor-utils"
                                 "TuxGuitar-ui-toolkit"
                                 "TuxGuitar-ui-toolkit-swt"
-                                "TuxGuitar-awt-graphics")))))
-         (add-after 'build-libraries 'build-application
+                                "TuxGuitar-viewer"
+                                "TuxGuitar"
+                                "TuxGuitar-gm-utils"
+                                "TuxGuitar-alsa"
+                                "TuxGuitar-midi"
+                                "TuxGuitar-midi-ui"))
+               #t)))
+         (add-after 'build 'build-jni
            (lambda _
-             (chdir "../TuxGuitar")
-             ((assoc-ref %standard-phases 'build)
-              #:build-target "build")))
+             (setenv "CC" "gcc")
+             (setenv "CFLAGS" (string-append
+                               "-fpic -I"
+                               (getcwd)
+                               "/build-scripts/native-modules/common-include"))
+             (invoke "make" "-C" "./TuxGuitar-alsa/jni" "-f" "GNUmakefile")))
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out   (assoc-ref outputs "out"))
                     (bin   (string-append out "/bin"))
                     (share (string-append out "/share"))
+                    (jni-lib (string-append out "/lib"))
                     (lib   (string-append share "/java"))
-                    (swt   (assoc-ref inputs "java-swt")))
+                    (swt   (assoc-ref inputs "java-swt"))
+                    (mime  (string-append share "/mime/packages"))
+                    (app   (string-append share "/applications"))
+                    (man   (string-append share "/man/man1")))
+
                (mkdir-p bin)
                ;; Install all jars.
                (for-each (lambda (file)
                            (install-file file lib))
-                         (find-files ".." "\\.jar$"))
+                         (find-files "." "\\.jar$"))
+
+               ;; Install jni libraries
+               (for-each (lambda (file)
+                           (install-file file jni-lib))
+                         (find-files "." "\\-jni.so$"))
 
                ;; Install all resources.
-               (copy-recursively "share" share)
+               (copy-recursively "./TuxGuitar/share" share)
+
+               ;; Install desktop and mime files
+               (install-file "./misc/tuxguitar.xml" mime)
+               (install-file "./misc/tuxguitar.desktop" app)
+
+               ;; Install manaual
+               (install-file "./misc/tuxguitar.1" man)
 
                ;; Create wrapper.
                (call-with-output-file (string-append bin "/tuxguitar")
                  (lambda (port)
-                   (let ((classpath (string-join (append (find-files lib "\\.jar$")
-                                                         (find-files swt "\\.jar$"))
+                   (let ((classpath (string-join (append  (find-files lib "\\.jar$")
+                                                          (find-files swt "\\.jar$"))
                                                  ":")))
                      (format
                       port
@@ -1810,12 +1836,14 @@ is subjective.")
                                      " -Dtuxguitar.home.path=" out
                                      " -Dtuxguitar.share.path=" out "/share"
                                      " -Dswt.library.path=" swt "/lib"
+                                     " -Djava.library.path=" out "/lib"
                                      " org.herac.tuxguitar.app.TGMainSingleton"
                                      " \"$1\" \"$2\"")))))
                (chmod (string-append bin "/tuxguitar") #o555)
                #t))))))
     (inputs
-     `(("java-swt" ,java-swt)))
+     `(("alsa-lib" ,alsa-lib)
+       ("java-swt" ,java-swt)))
     (home-page "http://tuxguitar.com.ar/")
     (synopsis "Multitrack tablature editor and player")
     (description
