@@ -4589,7 +4589,7 @@ immutable interval tree.")
 (define-public rust-iovec-0.1
   (package
     (name "rust-iovec")
-    (version "0.1.2")
+    (version "0.1.4")
     (source
       (origin
         (method url-fetch)
@@ -4597,13 +4597,11 @@ immutable interval tree.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "025vi072m22299z3fg73qid188z2iip7k41ba6v5v5yhwwby9rnv"))))
+          "0ph73qygwx8i0mblrf110cj59l00gkmsgrpzz1rm85syz5pymcxj"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-libc" ,rust-libc-0.2)
-        ("rust-winapi" ,rust-winapi-0.2))))
+       #:cargo-inputs (("rust-libc" ,rust-libc-0.2))))
     (home-page "https://github.com/carllerche/iovec")
     (synopsis "Portable buffer type for scatter/gather I/O operations")
     (description
