@@ -3012,18 +3012,17 @@ problems as well as resampling based estimators of prediction error.")
 (define-public r-psych
   (package
     (name "r-psych")
-    (version "1.9.12")
+    (version "1.9.12.31")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "psych" version))
        (sha256
         (base32
-         "13r7fyjsl93m121awnwfhya8a0lw0l2byn60yqdbf9gp3lmb9ny0"))))
+         "02i9p6appf15hjdsi58g39bzs9as40f9qhy8m7ki30hd1fz1vrr5"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-foreign" ,r-foreign)
-       ("r-lattice" ,r-lattice)
+     `(("r-lattice" ,r-lattice)
        ("r-mnormt" ,r-mnormt)
        ("r-nlme" ,r-nlme)))
     (home-page "https://cran.r-project.org/web/packages/psych/")
