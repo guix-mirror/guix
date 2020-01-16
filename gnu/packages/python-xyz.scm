@@ -8990,13 +8990,16 @@ python-xdo for newer bindings.)")
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (replace 'check
-                    (lambda _
-                      (invoke "pytest" "-vv"))))))
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          (invoke "nosetests" "-v")
+                          (format #t "test suite not run~%"))
+                      #t)))))
     (propagated-inputs
      `(("python-markupsafe" ,python-markupsafe)))
     (native-inputs
      `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)))
+       ("python-nose" ,python-nose)))
     (home-page "https://www.makotemplates.org/")
     (synopsis "Templating language for Python")
     (description "Mako is a templating language for Python that compiles
