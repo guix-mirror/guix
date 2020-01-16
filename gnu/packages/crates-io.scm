@@ -3828,7 +3828,12 @@ shell style patterns.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1ysvi72slkw784fcsymgj4308c3y03gwjjzqxp80xdjnkbh8vqcb"))))))
+          "1ysvi72slkw784fcsymgj4308c3y03gwjjzqxp80xdjnkbh8vqcb"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir-0.3))))
+    (properties '())))
 
 (define-public rust-globset-0.4
   (package
