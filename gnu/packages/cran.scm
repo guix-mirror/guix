@@ -18383,14 +18383,14 @@ it may be seen by an animal with less acute vision.")
 (define-public r-caret
   (package
     (name "r-caret")
-    (version "6.0-84")
+    (version "6.0-85")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "caret" version))
        (sha256
         (base32
-         "03898irgb70q0p01kq99yb6q6xji0jx4jmj0yxlv8wcwd841r0x1"))))
+         "0jxbf2zcvbb5s2pnjzg182awjvylc57q7z5plx6gs6gm62zxjafs"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-foreach" ,r-foreach)
@@ -18399,6 +18399,7 @@ it may be seen by an animal with less acute vision.")
        ("r-modelmetrics" ,r-modelmetrics)
        ("r-nlme" ,r-nlme)
        ("r-plyr" ,r-plyr)
+       ("r-proc" ,r-proc)
        ("r-recipes" ,r-recipes)
        ("r-reshape2" ,r-reshape2)
        ("r-withr" ,r-withr)))
