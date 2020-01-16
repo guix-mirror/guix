@@ -11543,6 +11543,54 @@ backed applications.")
      "Utilities for encoding and decoding frames.")
     (license license:expat)))
 
+(define-public rust-tokio-core-0.1
+  (package
+    (name "rust-tokio-core")
+    (version "0.1.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-core" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0wbgg59mxfvrhzv97y56nh3gmnmw3jj9dhgkmvz27410jjxzpvxf"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.4)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-iovec" ,rust-iovec-0.1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mio" ,rust-mio-0.6)
+        ("rust-scoped-tls" ,rust-scoped-tls-0.1)
+        ("rust-tokio" ,rust-tokio-0.1)
+        ("rust-tokio-executor" ,rust-tokio-executor-0.1)
+        ("rust-tokio-io" ,rust-tokio-io-0.1)
+        ("rust-tokio-reactor" ,rust-tokio-reactor-0.1)
+        ("rust-tokio-timer" ,rust-tokio-timer-0.2))
+       #:cargo-development-inputs
+       (("rust-env-logger" ,rust-env-logger-0.4)
+        ("rust-flate2" ,rust-flate2-1.0)
+        ("rust-futures-cpupool" ,rust-futures-cpupool-0.1)
+        ("rust-http" ,rust-http-0.1)
+        ("rust-httparse" ,rust-httparse-1.3)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-num-cpus" ,rust-num-cpus-1.10)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0)
+        ("rust-time" ,rust-time-0.1))))
+    (home-page "https://tokio.rs")
+    (synopsis
+     "Core I/O and event loop primitives for asynchronous I/O in Rust")
+    (description
+     "Core I/O and event loop primitives for asynchronous I/O in Rust.
+Foundation for the rest of the tokio crates.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-tokio-current-thread-0.1
   (package
     (name "rust-tokio-current-thread")
