@@ -7885,7 +7885,7 @@ in terms of the upstream unstable API.")
 (define-public rust-quick-error-1.2
   (package
     (name "rust-quick-error")
-    (version "1.2.2")
+    (version "1.2.3")
     (source
       (origin
         (method url-fetch)
@@ -7893,7 +7893,7 @@ in terms of the upstream unstable API.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1w6kgwwv7p7zr0yyg5rb315lkk24bimywklwx7fsvsbwi10bjx4j"))))
+          "1q6za3v78hsspisc197bg3g7rpc989qycy8ypr8ap8igv10ikl51"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/tailhook/quick-error")
     (synopsis "Macro which makes error types pleasant to write")
