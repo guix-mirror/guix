@@ -9025,6 +9025,26 @@ decoding.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-rustc-std-workspace-alloc-1.0
+  (package
+    (name "rust-rustc-std-workspace-alloc")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc-std-workspace-alloc" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "11psmqk6glglxl3zwh8slz6iynfxaifh4spd2wcnws552dqdarpz"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://crates.io/crates/rustc-std-workspace-alloc")
+    (synopsis "Rust workspace hack")
+    (description "This package is a Rust workspace hack.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-rustc-std-workspace-core-1.0
   (package
     (name "rust-rustc-std-workspace-core")
