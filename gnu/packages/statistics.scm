@@ -4442,13 +4442,13 @@ Wall Street Journal, among others.  This package also provides
 (define-public r-statmod
   (package
     (name "r-statmod")
-    (version "1.4.32")
+    (version "1.4.33")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "statmod" version))
               (sha256
                (base32
-                "083yyp84xj85zg4bhz7i90bqzl3p6155ch4abwsfc9k1lv7s2rrg"))))
+                "1fbi5m4c0lingm2vvi0g6jf8f2mg1h01xwyz5rnymrq7gs0ibiks"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/statmod")
     (native-inputs
