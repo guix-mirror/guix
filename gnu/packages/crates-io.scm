@@ -4682,11 +4682,11 @@ and functions.")
          (base32
           "0zvg2d9qv3avhf3d8ggglh6fdyw8kkwqg3r4622ly5yhxnvnc4jh"))))
     (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/dtolnay/itoa")
     (synopsis "Fast functions for printing integer primitives")
     (description "This crate provides fast functions for printing integer
 primitives to an @code{io::Write}.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
@@ -4702,9 +4702,7 @@ primitives to an @code{io::Write}.")
        (file-name (string-append name "-" version ".crate"))
        (sha256
         (base32
-         "18g7p2hrb3dk84z3frfgmszfc9hjb4ps9vp99qlb1kmf9gm8hc5f"))))
-   (arguments '(#:skip-build? #t))
-   (properties '())))
+         "18g7p2hrb3dk84z3frfgmszfc9hjb4ps9vp99qlb1kmf9gm8hc5f"))))))
 
 (define-public rust-js-sys-0.3
   (package
