@@ -15346,14 +15346,14 @@ easily.")
 (define-public r-umap
   (package
     (name "r-umap")
-    (version "0.2.4.0")
+    (version "0.2.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "umap" version))
        (sha256
         (base32
-         "1dzbwq96k5vqr64wk6s26ks4311h570xg6gf0prr4vnn033pqnch"))))
+         "1pnh3hv8ihiz2nszqp797lkrdhhna2a6mzpizbsk0s9m8cj4wxva"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-openssl" ,r-openssl)
