@@ -8780,7 +8780,9 @@ with one of the implemented strategies.")
           (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "09sy9wbqp409pkwmqni40qmwa99ldqpl48pp95m1xw8sc19qy9cl"))))))
+          "09sy9wbqp409pkwmqni40qmwa99ldqpl48pp95m1xw8sc19qy9cl"))))
+    (arguments '(#:skip-build? #t))
+    (properties '())))
 
 (define-public rust-scroll-0.9
   (package
