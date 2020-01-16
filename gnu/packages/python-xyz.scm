@@ -10006,6 +10006,9 @@ are synchronized with data exchanges on \"channels\".")
 graphviz.")
     (license license:expat)))
 
+(define-public python2-objgraph
+  (package-with-python2 python-objgraph))
+
 (define-public python-gevent
   (package
     (name "python-gevent")
