@@ -9,7 +9,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -585,7 +585,13 @@ definitions.")
              (base32 "0lh8yx01asbzxm6car5cfi64njh5p4lxc7iv8dldr5rwg357a86r"))))
    (build-system gnu-build-system)
    (native-inputs
-    `(("pkg-config" ,pkg-config)))
+    `(("pkg-config" ,pkg-config)
+
+      ;; TODO: Remove these inputs and the 'fix-linking-with-python-3.8' phase
+      ;; below when updating fontforge.
+      ("autoconf" ,autoconf)
+      ("automake" ,automake)
+      ("libtool" ,libtool)))
    (inputs `(("cairo"           ,cairo)
              ("fontconfig"      ,fontconfig) ;dlopen'd
              ("freetype"        ,freetype)
@@ -610,6 +616,17 @@ definitions.")
    (arguments
     '(#:phases
       (modify-phases %standard-phases
+        (add-before 'bootstrap 'fix-linking-with-python-3.8
+          (lambda _
+            ;; Applications that embed the Python interpreter are supposed to
+            ;; use the new "python-3.8-embed.pc" pkg-config file starting with
+            ;; Python 3.8.  Adjust the build system accordingly.
+            (substitute* "m4/fontforge_arg_enable.m4"
+              (("python-\"\\$\\{PYTHON_VERSION\\}\"" all)
+               (string-append all "-embed")))
+            ;; Delete the configure script in order to force autoreconf.
+            (delete-file "configure")
+            #t))
         (add-after 'install 'set-library-path
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out"))
