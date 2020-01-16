@@ -1086,39 +1086,31 @@ developed mainly for Ren'py.")
              (setenv "RENPY_DEPS_INSTALL" (string-join (map cdr inputs) ":"))
              #t))
          (replace 'build
-           (lambda args
-             (apply
-              (lambda* (build-root #:key inputs outputs #:allow-other-keys)
-                ;; The "module" subdirectory contains a python (really cython)
-                ;; project, which is built using a script, that is thankfully
-                ;; named "setup.py".
-                (chdir "module")
-                (apply (assoc-ref %standard-phases 'build) args)
-                ;; the above causes renpy.__init__ to be compiled but does not
-                ;; compile anything else, hence we do that here
-                (chdir build-root)
-                (delete-file "renpy/__init__.pyc")
-                (invoke "python" "-m" "compileall" "renpy"))
-              (getcwd) args)
+           (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
+             ;; The "module" subdirectory contains a python (really cython)
+             ;; project, which is built using a script, that is thankfully
+             ;; named "setup.py".
+             (with-directory-excursion "module"
+               (apply (assoc-ref %standard-phases 'build) args))
+             ;; the above causes renpy.__init__ to be compiled but does not
+             ;; compile anything else, hence we do that here
+             (delete-file "renpy/__init__.pyc")
+             (invoke "python" "-m" "compileall" "renpy")
              #t))
          (replace 'install
-           (lambda args
-             (apply
-              (lambda* (build-root #:key inputs outputs #:allow-other-keys)
-                ;; Again, we have to wrap the module installation.
-                ;; Additionally, we want to install the python code
-                ;; (both source and compiled) in the same directory.
-                (let* ((out (assoc-ref outputs "out"))
-                       (site (string-append "/lib/python"
-                                            ,(version-major+minor
-                                              (package-version python-2))
-                                            "/site-packages")))
-                  (chdir "module")
-                  (apply (assoc-ref %standard-phases 'install) args)
-                  (chdir build-root)
-                  (copy-recursively "renpy"
-                                    (string-append out site "/renpy"))))
-              (getcwd) args)
+           (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
+             ;; Again, we have to wrap the module installation.
+             ;; Additionally, we want to install the python code
+             ;; (both source and compiled) in the same directory.
+             (let* ((out (assoc-ref outputs "out"))
+                    (site (string-append "/lib/python"
+                                         ,(version-major+minor
+                                           (package-version python-2))
+                                         "/site-packages")))
+               (with-directory-excursion "module"
+                 (apply (assoc-ref %standard-phases 'install) args))
+               (copy-recursively "renpy"
+                                 (string-append out site "/renpy")))
              #t)))))
     (inputs
      `(("ffmpeg" ,ffmpeg)
