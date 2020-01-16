@@ -283,19 +283,19 @@ without requiring the source code to be rewritten.")
               (base32
                "07p3g0v2ba2vlfbfidqzlgbhnzdx46wh2rgc5gszq1mjyx5bks6r"))))))
 
-(define-public guile-next
-  ;; This is the upcoming Guile 3.0, with JIT support.
+(define-public guile-3.0
+  ;; This is the latest Guile stable version.
   (package
     (inherit guile-2.2)
-    (name "guile-next")
-    (version "2.9.9")
+    (name "guile-next")                           ;to be renamed to "guile"
+    (version "3.0.0")
     (source (origin
               (inherit (package-source guile-2.2))
-              (uri (string-append "ftp://alpha.gnu.org/gnu/guile/guile-"
+              (uri (string-append "ftp://ftp.gnu.org/gnu/guile/guile-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0s99zzdzj29fb42q5fwn7vqg9k7y9ppq9vkv4p39zr93z8694wdz"))))
+                "0x8ca6q1qdmk29lh12gj6ngvgn7kp79w42rxfgwrpxm9jmjqs4y9"))))
     (native-search-paths
      (list (search-path-specification
             (variable "GUILE_LOAD_PATH")
@@ -303,9 +303,9 @@ without requiring the source code to be rewritten.")
            (search-path-specification
             (variable "GUILE_LOAD_COMPILED_PATH")
             (files '("lib/guile/3.0/site-ccache"
-                     "share/guile/site/3.0")))))
-    (properties '((ftp-server . "alpha.gnu.org")
-                  (upstream-name . "guile")))))
+                     "share/guile/site/3.0")))))))
+
+(define-public guile-next guile-3.0)
 
 (define* (make-guile-readline guile #:optional (name "guile-readline"))
   (package
