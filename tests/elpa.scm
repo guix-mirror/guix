@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,10 +19,11 @@
 
 (define-module (test-elpa)
   #:use-module (guix import elpa)
-  #:use-module (guix tests)
+  #:use-module (guix tests http)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-64)
-  #:use-module (ice-9 match))
+  #:use-module (ice-9 match)
+  #:use-module (web client))
 
 (define elpa-mock-archive
   '(1
@@ -37,77 +39,42 @@
              nil "Integrated environment for *TeX*" tar
              ((:url . "http://www.gnu.org/software/auctex/"))])))
 
-(define auctex-readme-mock "This is the AUCTeX description.")
-
-(define* (elpa-package-info-mock name #:optional (repo "gnu"))
-  "Simulate retrieval of 'archive-contents' file from REPO and extraction of
-information about package NAME. (Function 'elpa-package-info'.)"
-  (let* ((archive elpa-mock-archive)
-         (info (filter (lambda (p) (eq? (first p) (string->symbol name)))
-                       (cdr archive))))
-    (if (pair? info) (first info) #f)))
-
-(define elpa-version->string
-  (@@ (guix import elpa) elpa-version->string))
-
-(define package-source-url
-  (@@ (guix import elpa) package-source-url))
-
-(define ensure-list
-  (@@ (guix import elpa) ensure-list))
-
-(define package-home-page
-  (@@ (guix import elpa) package-home-page))
-
-(define make-elpa-package
-  (@@ (guix import elpa) make-elpa-package))
+;; Avoid collisions with other tests.
+(%http-server-port 10300)
 
 (test-begin "elpa")
 
 (define (eval-test-with-elpa pkg)
-  (mock
-   ;; replace the two fetching functions
-   ((guix import elpa) fetch-elpa-package
-    (lambda* (name #:optional (repo "gnu"))
-      (let ((pkg (elpa-package-info-mock name repo)))
-        (match pkg
-          ((name version reqs synopsis kind . rest)
-           (let* ((name (symbol->string name))
-                  (ver (elpa-version->string version))
-                  (url (package-source-url kind name ver repo)))
-             (make-elpa-package name ver
-                                (ensure-list reqs) synopsis kind
-                                (package-home-page (first rest))
-                                auctex-readme-mock
-                                url)))
-          (_ #f)))))
-   (mock
-    ((guix build download) url-fetch
-     (lambda (url file . _)
-       (call-with-output-file file
-         (lambda (port)
-           (display "fake tarball" port)))))
-
-    (match (elpa->guix-package pkg)
-      (('package
-         ('name "emacs-auctex")
-         ('version "11.88.6")
-         ('source
-          ('origin
-            ('method 'url-fetch)
-            ('uri ('string-append
-                   "https://elpa.gnu.org/packages/auctex-" 'version ".tar"))
-            ('sha256 ('base32 (? string? hash)))))
-         ('build-system 'emacs-build-system)
-         ('home-page "http://www.gnu.org/software/auctex/")
-         ('synopsis "Integrated environment for *TeX*")
-         ('description (? string?))
-         ('license 'license:gpl3+))
-       #t)
-      (x
-       (pk 'fail x #f))))))
+  ;; Set up an HTTP server and use it as a pseudo-proxy so that
+  ;; 'elpa->guix-package' talks to it.
+  (with-http-server `((200 ,(object->string elpa-mock-archive))
+                      (200 "This is the description.")
+                      (200 "fake tarball contents"))
+    (parameterize ((current-http-proxy (%local-url)))
+      (match (elpa->guix-package pkg 'gnu/http)
+        (('package
+           ('name "emacs-auctex")
+           ('version "11.88.6")
+           ('source
+            ('origin
+              ('method 'url-fetch)
+              ('uri ('string-append
+                     "http://elpa.gnu.org/packages/auctex-" 'version ".tar"))
+              ('sha256 ('base32 (? string? hash)))))
+           ('build-system 'emacs-build-system)
+           ('home-page "http://www.gnu.org/software/auctex/")
+           ('synopsis "Integrated environment for *TeX*")
+           ('description "This is the description.")
+           ('license 'license:gpl3+))
+         #t)
+        (x
+         (pk 'fail x #f))))))
 
 (test-assert "elpa->guix-package test 1"
   (eval-test-with-elpa "auctex"))
 
 (test-end "elpa")
+
+;; Local Variables:
+;; eval: (put 'with-http-server 'scheme-indent-function 1)
+;; End:

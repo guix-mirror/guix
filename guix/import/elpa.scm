@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
-;;; Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -72,6 +72,7 @@ NAMES (strings)."
   "Retrieve the URL of REPO."
   (let ((elpa-archives
          '((gnu . "https://elpa.gnu.org/packages")
+           (gnu/http . "http://elpa.gnu.org/packages") ;for testing
            (melpa-stable . "https://stable.melpa.org/packages")
            (melpa . "https://melpa.org/packages"))))
     (assq-ref elpa-archives repo)))
@@ -251,7 +252,7 @@ type '<elpa-package>'."
     (package
       ;; ELPA is known to contain only GPLv3+ code.  Other repos may contain
       ;; code under other license but there's no license metadata.
-      (let ((license (and (eq? 'gnu repo) 'license:gpl3+)))
+      (let ((license (and (memq repo '(gnu gnu/http)) 'license:gpl3+)))
         (elpa-package->sexp package license)))))
 
 
