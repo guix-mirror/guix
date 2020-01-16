@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
@@ -756,6 +756,7 @@ from forcing GEXP-PROMISE."
        ;;   and related comments in the 'remove-bundled-libraries' phase.
        ;; UNBUNDLE-ME! ("nspr" ,nspr)
        ;; UNBUNDLE-ME! ("nss" ,nss)
+       ("shared-mime-info" ,shared-mime-info)
        ("sqlite" ,sqlite)
        ("startup-notification" ,startup-notification)
        ("unzip" ,unzip)
@@ -882,6 +883,10 @@ from forcing GEXP-PROMISE."
                   (ice-9 match)
                   (srfi srfi-34)
                   (srfi srfi-35)
+                  (rnrs bytevectors)
+                  (rnrs io ports)
+                  (guix elf)
+                  (guix build gremlin)
                   ,@%gnu-build-system-modules)
        #:phases
        (modify-phases %standard-phases
@@ -966,11 +971,31 @@ from forcing GEXP-PROMISE."
              #t))
          (add-after 'link-libxul-with-libraries 'fix-ffmpeg-runtime-linker
            (lambda* (#:key inputs #:allow-other-keys)
-             ;; Arrange to load libavcodec.so by its absolute file name.
-             (substitute* "dom/media/platforms/ffmpeg/FFmpegRuntimeLinker.cpp"
-               (("libavcodec\\.so")
-                (string-append (assoc-ref inputs "ffmpeg") "/lib/libavcodec.so")))
-             #t))
+             (let* ((ffmpeg (assoc-ref inputs "ffmpeg"))
+                    (libavcodec (string-append ffmpeg "/lib/libavcodec.so")))
+               ;; Arrange to load libavcodec.so by its absolute file name.
+               (substitute* "dom/media/platforms/ffmpeg/FFmpegRuntimeLinker.cpp"
+                 (("libavcodec\\.so")
+                  libavcodec))
+               ;; Populate the sandbox read-path whitelist as needed by ffmpeg.
+               (let* ((mime-info (assoc-ref inputs "shared-mime-info"))
+                      (libavcodec-runpath (call-with-input-file libavcodec
+                                            (compose elf-dynamic-info-runpath
+                                                     elf-dynamic-info
+                                                     parse-elf
+                                                     get-bytevector-all)))
+                      (whitelist (cons (string-append mime-info "/share/mime/")
+                                       (map (lambda (dir)
+                                              (string-append dir "/"))
+                                            libavcodec-runpath)))
+                      (whitelist-string (string-join whitelist ","))
+                      (port (open-file "browser/app/profile/icecat.js" "a")))
+                 (format #t "setting 'security.sandbox.content.read_path_whitelist' to '~a'~%"
+                         whitelist-string)
+                 (format port "~%pref(\"security.sandbox.content.read_path_whitelist\", ~S);~%"
+                         whitelist-string)
+                 (close-output-port port))
+               #t)))
          (replace 'bootstrap
            (lambda _
              (invoke "sh" "-c" "autoconf old-configure.in > old-configure")
