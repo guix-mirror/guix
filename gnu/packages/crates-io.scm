@@ -1071,6 +1071,30 @@ BLAKE2bp hash functions.")
      "Iterator over simple binary blob storage.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-block-0.1
+  (package
+    (name "rust-block")
+    (version "0.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "block" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "16k9jgll25pzsq14f244q22cdv0zb4bqacldg3kx6h89d7piz30d"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-development-inputs
+       (("rust-objc-test-utils" ,rust-objc-test-utils-0.0))))
+    (home-page "http://github.com/SSheldon/rust-block")
+    (synopsis "Rust interface for Apple's C language extension of blocks")
+    (description "This package provides a rust interface for Apple's C language
+extension of blocks.")
+    (license license:expat)))
+
 (define-public rust-block-buffer-0.7
   (package
     (name "rust-block-buffer")
