@@ -8439,6 +8439,26 @@ rust-lang/rust integration.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-rustc-std-workspace-std-1.0
+  (package
+    (name "rust-rustc-std-workspace-std")
+    (version "1.0.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rustc-std-workspace-std" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1vq4vaclamwhk0alf4f7wq3i9wxa993sxpmhy6qfaimy1ai7d9mb"))))
+    (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
+    (home-page "https://crates.io/crates/rustc-std-workspace-std")
+    (synopsis "Workaround for rustbuild")
+    (description "This package provides a workaround for rustbuild.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rustc-test-0.3
   (package
     (name "rust-rustc-test")
