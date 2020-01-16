@@ -4407,11 +4407,15 @@ SystemTime}}.")
          (base32
           "0kprf862qaa7lwdms6aw7f3275h0j2rwhs9nz5784pm8hdmb9ki1"))))
     (build-system cargo-build-system)
-    (home-page "https://github.com/fengcen/hostname")
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-winutil" ,rust-winutil-0.1))))
+    (home-page "https://github.com/svartalf/hostname")
     (synopsis "Get hostname for Rust")
     (description
      "Get hostname for Rust.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-idna-0.1
