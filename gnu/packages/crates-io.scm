@@ -3345,11 +3345,11 @@ pseudorandom number generator")
          (base32
           "0saq8ffjw1pwf1pzhw3kq1z7dfq6wpd8x93dnni6vbkc799kkp25"))))
     (build-system cargo-build-system)
-    (home-page "https://github.com/rust-lang-nursery/futures-rs")
+    (arguments '(#:skip-build? #t))
+    (home-page "https://github.com/rust-lang/futures-rs")
     (synopsis "Implementation of zero-cost futures in Rust")
     (description "An implementation of @code{futures} and @code{streams}
 featuring zero allocations, composability, and iterator-like interfaces.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
