@@ -12958,6 +12958,34 @@ syntax extension expansion.")
     (description "This package provides a backport of @code{libsyntax_pos}.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-syntex-syntax-0.58
+  (package
+    (name "rust-syntex-syntax")
+    (version "0.58.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "syntex_syntax" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "14f74l7yzwl6fr9i23k4j23k66qn0gakvhk4jjc9ipb3w6x4s3kf"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-0.8)
+        ("rust-log" ,rust-log-0.3)
+        ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
+        ("rust-syntex-errors" ,rust-syntex-errors-0.58)
+        ("rust-syntex-pos" ,rust-syntex-pos-0.58)
+        ("rust-unicode-xid" ,rust-unicode-xid-0.0))))
+    (home-page "https://github.com/serde-rs/syntex")
+    (synopsis "Backport of libsyntax")
+    (description "This package provides a backport of libsyntax.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-sysctl-0.4
   (package
     (name "rust-sysctl")
