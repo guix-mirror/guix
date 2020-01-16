@@ -8756,6 +8756,7 @@ library's old @code{scoped_thread_local!} macro for providing scoped access to
          (base32
           "03aay84r1f6w87ckbpj6cc4rnsxkxcfs13n5ynxjia0qkgjiabml"))))
     (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/bluss/scopeguard")
     (synopsis "Scope guard which will run a closure even out of scope")
     (description "This package provides a RAII scope guard that will run a
@@ -8763,7 +8764,6 @@ given closure when it goes out of scope, even if the code between panics
 (assuming unwinding panic).  Defines the macros @code{defer!},
 @code{defer_on_unwind!}, @code{defer_on_success!} as shorthands for guards
 with one of the implemented strategies.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
@@ -8780,9 +8780,7 @@ with one of the implemented strategies.")
           (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "09sy9wbqp409pkwmqni40qmwa99ldqpl48pp95m1xw8sc19qy9cl"))))
-    (arguments '(#:skip-build? #t))
-    (properties '())))
+          "09sy9wbqp409pkwmqni40qmwa99ldqpl48pp95m1xw8sc19qy9cl"))))))
 
 (define-public rust-scroll-0.9
   (package
