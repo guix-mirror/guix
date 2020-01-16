@@ -7963,6 +7963,30 @@ giga, kibi.")
      "This package can convert numbers into stack-allocated byte arrays.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-objc-test-utils-0.0
+  (package
+    (name "rust-objc-test-utils")
+    (version "0.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "objc_test_utils" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "09rckmp5h9bbns08xzicdlk7y5lxj2ygbg3yqk1cszfnzd5n8kzx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-gcc" ,rust-gcc-0.3))))
+    (home-page "http://github.com/SSheldon/rust-objc")
+    (synopsis "Utilities for testing Objective-C interop")
+    (description
+     "This package provides utilities for testing Objective-C interop.")
+    (license license:expat)))
+
 (define-public rust-object-0.12
   (package
     (name "rust-object")
