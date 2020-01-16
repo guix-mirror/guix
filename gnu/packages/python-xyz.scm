@@ -9985,14 +9985,14 @@ are synchronized with data exchanges on \"channels\".")
 (define-public python-objgraph
   (package
     (name "python-objgraph")
-    (version "3.4.0")
+    (version "3.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "objgraph" version))
        (sha256
         (base32
-         "184m09am5gpbqfaiy7l0hwh476mczbrly1dffs0rw2p1d1i2q32a"))))
+         "19qmqsh984zq1rzzjy4vqnmviaqnymcyl8h7z99pnicbgwnm2adz"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-graphviz" ,python-graphviz)))
