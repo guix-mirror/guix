@@ -496,7 +496,29 @@ Unix-style DSV format and RFC 4180 format.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0vjkg72ghgdgphzbjz9ig8al8271rq8974viknb2r1rg4lz92ld0"))))
+                "0vjkg72ghgdgphzbjz9ig8al8271rq8974viknb2r1rg4lz92ld0"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Allow builds with Guile 3.0.
+                  (substitute* "configure"
+                    (("search=\"2\\.2\"")
+                     "search=\"3.0 2.2\""))
+
+                  ;; Explicitly include system headers rather than relying on
+                  ;; <libguile.h> to do it for us.
+                  (substitute* "epoll.c"
+                    (("#include.*libguile\\.h.*$" all)
+                     (string-append "#include <unistd.h>\n"
+                                    "#include <string.h>\n"
+                                    all "\n")))
+
+                  ;; Import (ice-9 threads) for 'current-processor-count'.
+                  (substitute* "tests/channels.scm"
+                    (("#:use-module \\(fibers\\)")
+                     (string-append "#:use-module (fibers)\n"
+                                    "#:use-module (ice-9 threads)\n")))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -531,6 +553,16 @@ Note that Fibers makes use of some Guile 2.1/2.2-specific features and
 is not available for Guile 2.0.")
     (home-page "https://github.com/wingo/fibers")
     (license license:lgpl3+)))
+
+(define-public guile3.0-fibers
+  (package
+    (inherit guile-fibers)
+    (name "guile3.0-fibers")
+    (arguments
+     ;; The code uses 'scm_t_uint64' et al., which are deprecated in 3.0.
+     `(#:configure-flags '("CFLAGS=-Wno-error=deprecated-declarations")
+       ,@(package-arguments guile-fibers)))
+    (inputs `(("guile" ,guile-3.0)))))
 
 (define-public guile-syntax-highlight
   (package
