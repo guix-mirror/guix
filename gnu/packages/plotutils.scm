@@ -37,7 +37,9 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages compression)
@@ -196,7 +198,7 @@ colors, styles, options and details.")
      `(("emacs" ,emacs-minimal)
        ("gs" ,ghostscript)              ;For tests
        ("perl" ,perl)
-       ("texinfo" ,texinfo)           ;For generating documentation
+       ("texinfo" ,texinfo)             ;For generating documentation
        ;; For the manual and the tests.
        ("texlive" ,(texlive-union (list texlive-amsfonts
                                         texlive-epsf
@@ -214,6 +216,8 @@ colors, styles, options and details.")
        ("gsl" ,gsl)
        ("libgc" ,libgc)
        ("python" ,python)
+       ("python-cson" ,python-cson)
+       ("python-pyqt" ,python-pyqt)
        ("readline" ,readline)
        ("zlib" ,zlib)))
     (arguments
@@ -271,6 +275,14 @@ colors, styles, options and details.")
                (for-each (cut install-file <> lisp-dir)
                          (find-files "." "\\.el$"))
                (emacs-generate-autoloads ,name lisp-dir))
+             #t))
+         (add-after 'install-Emacs-data 'wrap-python-script
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Make sure 'xasy' runs with the correct PYTHONPATH.
+             (let* ((out (assoc-ref outputs "out"))
+                    (path (getenv "PYTHONPATH")))
+               (wrap-program (string-append out "/share/asymptote/GUI/xasy.py")
+                 `("PYTHONPATH" ":" prefix (,path))))
              #t)))))
     (home-page "http://asymptote.sourceforge.net")
     (synopsis "Script-based vector graphics language")
