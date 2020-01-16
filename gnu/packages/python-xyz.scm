@@ -13059,6 +13059,8 @@ several utilities, as well as an API for building localization tools.")
       (origin
         (method url-fetch)
         (uri (pypi-uri "packaging" version))
+        ;; XXX: The URL in the patch file is wrong, it should be
+        ;; <https://github.com/pypa/packaging/pull/256>.
         (patches (search-patches "python-packaging-test-arch.patch"))
         (sha256
          (base32
