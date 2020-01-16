@@ -12909,6 +12909,33 @@ cryptographic implementations.")
 syntax extension expansion.")
    (license (list license:expat license:asl2.0))))
 
+(define-public rust-syntex-errors-0.58
+  (package
+    (name "rust-syntex-errors")
+    (version "0.58.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "syntex_errors" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "176vma7sjv6li17q7dsilryac66b76zyis9ampmff2hlsz1caz46"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
+        ("rust-syntex-pos" ,rust-syntex-pos-0.58)
+        ("rust-term" ,rust-term-0.4)
+        ("rust-unicode-xid" ,rust-unicode-xid-0.0))))
+    (home-page "https://github.com/serde-rs/syntex")
+    (synopsis "Backport of librustc_errors")
+    (description "This package provides a backport of @code{librustc_errors}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-syntex-pos-0.58
   (package
     (name "rust-syntex-pos")
