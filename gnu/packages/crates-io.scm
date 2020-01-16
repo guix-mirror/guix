@@ -3335,7 +3335,7 @@ pseudorandom number generator")
 (define-public rust-futures-0.1
   (package
     (name "rust-futures")
-    (version "0.1.28")
+    (version "0.1.29")
     (source
       (origin
         (method url-fetch)
@@ -3343,7 +3343,7 @@ pseudorandom number generator")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0saq8ffjw1pwf1pzhw3kq1z7dfq6wpd8x93dnni6vbkc799kkp25"))))
+          "1vq3cw37knnd0afw3rcjzh71i2l01v5m4ysinrrqdvnn2ql0z60v"))))
     (build-system cargo-build-system)
     (arguments '(#:skip-build? #t))
     (home-page "https://github.com/rust-lang/futures-rs")
