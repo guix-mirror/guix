@@ -13054,6 +13054,7 @@ several utilities, as well as an API for building localization tools.")
       (origin
         (method url-fetch)
         (uri (pypi-uri "packaging" version))
+        (patches (search-patches "python-packaging-test-arch.patch"))
         (sha256
          (base32
           "1y2ip3a4ykkpgnwgn85j6hkspcl0cg3mzms97f40mk57vwqq67gy"))))
