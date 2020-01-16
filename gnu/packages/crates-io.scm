@@ -1880,6 +1880,27 @@ need compiler-rt intrinsics.")
 harness.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-compiletest-rs-0.2
+  (package
+    (inherit rust-compiletest-rs-0.3)
+    (name "rust-compiletest-rs")
+    (version "0.2.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "compiletest_rs" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0njz4shbhl1pvb6ngpi1wpz2gr5lf2dcha22lpdk995pzrwd6h97"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-log" ,rust-log-0.3)
+        ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
+        ("rust-tempdir" ,rust-tempdir-0.3))))))
+
 (define-public rust-console-0.7
   (package
     (name "rust-console")
