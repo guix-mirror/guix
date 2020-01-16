@@ -5104,7 +5104,7 @@ functions and static variables these libraries contain.")
 (define-public rust-lock-api-0.3
   (package
     (name "rust-lock-api")
-    (version "0.3.1")
+    (version "0.3.3")
     (source
      (origin
        (method url-fetch)
@@ -5113,7 +5113,7 @@ functions and static variables these libraries contain.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1p04271jikw69ja0ap0plrfwm9incf1iny48g0b3ma9k4mw2x4gq"))))
+         "0yzlz7f5xl5sm129dq8jqsrcrkyv7jjnqwd4zr4ijsdlxjaxxckr"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
