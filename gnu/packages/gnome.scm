@@ -34,7 +34,7 @@
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2018, 2019 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2019 Danny Milosavljevic <dannym@scratchpost.org>
-;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
@@ -1883,7 +1883,7 @@ some form of information without getting in the user's way.")
 (define-public libpeas
   (package
     (name "libpeas")
-    (version "1.22.0")
+    (version "1.24.1")
     (source
      (origin
       (method url-fetch)
@@ -1892,8 +1892,19 @@ some form of information without getting in the user's way.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "0qm908kisyjzjxvygdl18hjqxvvgkq9w0phs2g55pck277sw0bsv"))))
-    (build-system gnu-build-system)
+        "1162dr7smmfb02czmhshr0f93hqj7w0nw29bys5lzfvwarxcyflw"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'start-xserver
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xorg-server (assoc-ref inputs "xorg-server"))
+                   (disp ":1"))
+               (setenv "DISPLAY" disp)
+               ;; Tests require a running X server.
+               (system (format #f "~a/bin/Xvfb ~a &" xorg-server disp))
+               #t))))))
     (inputs
      `(("gtk+" ,gtk+)
        ("glade" ,glade3)
@@ -1901,9 +1912,10 @@ some form of information without getting in the user's way.")
        ("python-pygobject" ,python-pygobject)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
-       ("intltool" ,intltool)))
+       ("xorg-server" ,xorg-server-for-tests)))
     (propagated-inputs
      ;; The .pc file "Requires" gobject-introspection.
      `(("gobject-introspection" ,gobject-introspection)))
