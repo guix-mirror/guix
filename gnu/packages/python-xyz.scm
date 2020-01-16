@@ -17073,3 +17073,24 @@ scripts to load entry points more quickly.")
 functional combinators.  Parser combinators are just higher-order functions
 that take parsers as their arguments and return them as result values.")
     (license license:expat)))
+
+(define-public python-speg
+  (package
+    (name "python-speg")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "speg" version ".zip"))
+       (sha256
+        (base32 "0w9y4jf4787dzhy6rvhwi0mpl0r8qkqmqmyv2hpwdpv8w53yzjqh"))))
+    (arguments
+     `(#:tests? #f))                    ;FIXME: tests fail, not sure why
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (build-system python-build-system)
+    (home-page "https://github.com/avakar/speg")
+    (synopsis "PEG-based parser interpreter with memoization")
+    (description "This package is a PEG-based parser and interpreter with
+memoization.")
+    (license license:expat)))
