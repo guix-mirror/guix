@@ -7498,9 +7498,8 @@ algorithm.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-maplit" ,rust-maplit-1.0)
-        ("rust-pest" ,rust-pest-2.1))
-       #:cargo-development-inputs
-       (("rust-sha-1" ,rust-sha-1-0.8))))
+        ("rust-pest" ,rust-pest-2.1)
+        ("rust-sha-1" ,rust-sha-1-0.8))))
     (home-page "https://pest.rs")
     (synopsis "Pest meta language parser and validator")
     (description
