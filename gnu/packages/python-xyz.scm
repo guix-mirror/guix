@@ -5008,6 +5008,7 @@ its top-level name.  This functionality intends to replace most uses of
 @code{pkg_resources} entry point API and metadata API.  Along with
 @code{importlib.resources} in Python 3.7 and newer, this can eliminate the
 need to use the older and less efficient @code{pkg_resources} package.")
+    (properties `((python2-variant . ,(delay python2-importlib-metadata))))
     (license license:asl2.0)))
 
 (define-public python2-importlib-metadata
