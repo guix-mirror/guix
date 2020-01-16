@@ -4954,7 +4954,7 @@ requires non-const function calls to be computed.")
 (define-public rust-libc-0.2
   (package
     (name "rust-libc")
-    (version "0.2.65")
+    (version "0.2.66")
     (source
      (origin
        (method url-fetch)
@@ -4962,7 +4962,7 @@ requires non-const function calls to be computed.")
        (file-name (string-append name "-" version ".crate"))
        (sha256
         (base32
-         "1s14bjxnz6haw0gr1h3j4sr7s2s407hpgm8dxhwnl7yzgxia0c8s"))))
+         "0n0mwry21fxfwc063k33mvxk8xj7ia5ar8m42c9ymbam2ksb25fm"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
