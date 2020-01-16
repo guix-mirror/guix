@@ -9539,10 +9539,10 @@ This package is part of the KDE games module.")
        ("zlib" ,zlib)))
     (home-page "https://xmoto.tuxfamily.org/")
     (synopsis "2D motocross platform game")
-    (description "X-Moto is a challenging 2D motocross platform game,
-where physics play an all important role in the gameplay.  You need to
-control your bike to its limit, if you want to have a chance finishing
-the more difficult of the challenges.")
+    (description "X-Moto is a challenging 2D motocross platform game, where
+physics play an all important role in the gameplay.  You need to control your
+bike to its limit, if you want to have a chance finishing the more difficult
+challenges.")
     (license (list license:gpl2+        ;whole project
                    license:bsd-4        ;src/bzip
                    license:bsd-3        ;src/md5sum
