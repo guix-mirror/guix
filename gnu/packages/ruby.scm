@@ -7764,23 +7764,34 @@ features that don't exist yet like variables, nesting, mixins and inheritance.")
 (define-public ruby-sassc
   (package
     (name "ruby-sassc")
-    (version "2.0.1")
+    (version "2.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "sassc" version))
        (sha256
         (base32
-         "1sr4825rlwsrl7xrsm0sgalcpf5zgp4i56dbi3qxfa9lhs8r6zh4"))))
+         "09bnid7r5z5hcin5hykvpvv8xig27wbbckxwis60z2aaxq4j9siz"))))
     (build-system ruby-build-system)
     (arguments
-     '(#:phases
+     '(#:modules ((guix build ruby-build-system)
+                  (guix build utils)
+                  (ice-9 textual-ports))
+       #:phases
        (modify-phases %standard-phases
          ;; TODO: This would be better as a snippet, but the ruby-build-system
          ;; doesn't seem to support that
          (add-after 'unpack 'remove-libsass
            (lambda _
              (delete-file-recursively "ext")
+             (with-atomic-file-replacement "sassc.gemspec"
+               (lambda (in out)
+                 (let* ((gemspec (get-string-all in))
+                        (index (string-contains gemspec "libsass_dir")))
+                   (display (string-append
+                             (string-take gemspec index)
+                             "\nend\n")
+                            out))))
              #t))
          (add-after 'unpack 'dont-check-the-libsass-version
            (lambda _
@@ -7790,18 +7801,17 @@ features that don't exist yet like variables, nesting, mixins and inheritance.")
          (add-after 'unpack 'remove-git-from-gemspec
            (lambda _
              (substitute* "sassc.gemspec"
-               (("`git ls-files -z`") "`find . -type f -print0 |sort -z`")
-               (("`git submodule --quiet foreach pwd`") "''"))
+               (("`git ls-files -z`") "`find . -type f -print0 |sort -z`"))
              #t))
          (add-after 'unpack 'remove-extensions-from-gemspec
            (lambda _
              (substitute* "sassc.gemspec"
-               (("\\[\"ext/Rakefile\"\\]") "[]"))
+               (("\\[\"ext/extconf.rb\"\\]") "[]"))
              #t))
          (add-after 'unpack 'fix-Rakefile
            (lambda _
              (substitute* "Rakefile"
-               (("test: 'libsass:compile'") ":test"))
+               (("test: 'compile:libsass'") ":test"))
              #t))
          (add-after 'unpack 'remove-unnecessary-dependencies
            (lambda _
@@ -7826,6 +7836,7 @@ features that don't exist yet like variables, nesting, mixins and inheritance.")
      `(("libsass" ,libsass)))
     (native-inputs
      `(("bundler" ,bundler)
+       ("ruby-rake-compiler" ,ruby-rake-compiler)
        ("ruby-minitest-around" ,ruby-minitest-around)
        ("ruby-test-construct" ,ruby-test-construct)))
     (synopsis "Use libsss from Ruby")
