@@ -544,7 +544,15 @@ is not available for Guile 2.0.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1p771kq15x83483m23bhah1sz6vkalg3drm7x279f4j1cxligkzi"))))
+                "1p771kq15x83483m23bhah1sz6vkalg3drm7x279f4j1cxligkzi"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Allow builds with Guile 3.0.
+                  (substitute* "configure"
+                    (("2\\.2 2\\.0")
+                     "3.0 2.2 2.0"))
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -557,6 +565,12 @@ programming languages into a simple s-expression that can be converted to
 HTML (via SXML) or any other format for rendering.")
     (home-page "http://dthompson.us/projects/guile-syntax-highlight.html")
     (license license:lgpl3+)))
+
+(define-public guile3.0-syntax-highlight
+  (package
+    (inherit guile-syntax-highlight)
+    (name "guile3.0-syntax-highlight")
+    (inputs `(("guile" ,guile-3.0)))))
 
 (define-public guile-sjson
   (package
