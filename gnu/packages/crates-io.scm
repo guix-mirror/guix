@@ -1146,7 +1146,7 @@ used in argon2rs' bench suite.")
 (define-public rust-cc-1.0
   (package
     (name "rust-cc")
-    (version "1.0.41")
+    (version "1.0.50")
     (source
       (origin
         (method url-fetch)
@@ -1154,14 +1154,14 @@ used in argon2rs' bench suite.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1zxzd559dbbf1iwdzmkj7czapzccs17kqqmsj9ayijpdix5rrbld"))))
+          "1kdqm8ka7xg9h56b694pcz29ka33fsz27mzrphqc78gx96h8zqlm"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-rayon" ,rust-rayon-1.1))
+       (("rust-jobserver" ,rust-jobserver-0.1))
        #:cargo-development-inputs
-       (("rust-tempdir" ,rust-tempdir-0.3))))
+       (("rust-tempfile" ,rust-tempfile-3.1))))
     (home-page "https://github.com/alexcrichton/cc-rs")
     (synopsis "Invoke the native C compiler")
     (description
