@@ -6057,6 +6057,36 @@ drop-in replacement for miniz.")
     (description "Lightweight non-blocking IO.")
     (license license:expat)))
 
+(define-public rust-mio-named-pipes-0.1
+  (package
+    (name "rust-mio-named-pipes")
+    (version "0.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "mio-named-pipes" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1cwwfx1yr9vws8x971x34ijnirs377vcxi47frdirki5yppp9qzm"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-log" ,rust-log-0.4)
+        ("rust-mio" ,rust-mio-0.6)
+        ("rust-miow" ,rust-miow-0.3)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-env-logger" ,rust-env-logger-0.4)
+        ("rust-rand" ,rust-rand-0.4))))
+    (home-page "https://github.com/alexcrichton/mio-named-pipes")
+    (synopsis "Windows named pipe bindings for mio")
+    (description
+     "A library for integrating Windows Named Pipes with mio.")
+    (license `(,license:asl2.0 ,license:expat))))
+
 (define-public rust-mio-uds-0.6
   (package
     (name "rust-mio-uds")
