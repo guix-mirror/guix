@@ -7984,6 +7984,31 @@ giga, kibi.")
      "This package can convert numbers into stack-allocated byte arrays.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-objc-exception-0.1
+  (package
+    (name "rust-objc-exception")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "objc-exception" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "191cmdmlypp6piw67y4m8y5swlxf5w0ss8n1lk5xd2l1ans0z5xd"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cc" ,rust-cc-1.0))))
+    (home-page "http://github.com/SSheldon/rust-objc-exception")
+    (synopsis "Rust interface for Objective-C's throw and try/catch statements")
+    (description
+     "This package provides a Rust interface for Objective-C's throw and
+try/catch statements.")
+    (license license:expat)))
+
 (define-public rust-objc-test-utils-0.0
   (package
     (name "rust-objc-test-utils")
