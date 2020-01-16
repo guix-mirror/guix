@@ -3673,10 +3673,13 @@ archive to be linked into Rustcode.")
          (base32
           "018yhq97zgcrcxwhj3pxh31h83704sgaiijdnpl0r1ir366c005r"))))
     (build-system cargo-build-system)
-    (home-page "https://github.com/rust-lang-nursery/getopts")
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-development-inputs
+       (("rust-log" ,rust-log-0.3))))
+    (home-page "https://github.com/rust-lang/getopts")
     (synopsis "Rust library for option parsing for CLI utilities")
     (description "This library provides getopts-like option parsing.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
