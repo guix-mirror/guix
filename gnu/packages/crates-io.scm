@@ -3279,10 +3279,14 @@ pseudorandom number generator")
          (base32
           "10jxc5ks1x06gpd0xg51kcjrxr35nj6qhx2zlc5n7bmskv3675rf"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-fuchsia-zircon-sys" ,rust-fuchsia-zircon-sys-0.3))))
     (home-page "https://fuchsia.googlesource.com/garnet/")
     (synopsis "Rust bindings for the Zircon kernel")
     (description "Rust bindings for the Zircon kernel.")
-    (properties '((hidden? . #t)))
     (license license:bsd-3)))
 
 (define-public rust-fuchsia-zircon-sys-0.3
