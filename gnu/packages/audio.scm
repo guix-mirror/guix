@@ -3988,17 +3988,17 @@ default and preferred audio driver but also supports native drivers like ALSA.")
 (define-public ecasound
   (package
     (name "ecasound")
-    (version "2.9.2")
+    (version "2.9.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nosignal.fi/download/ecasound-"
                                   version ".tar.gz"))
               (sha256
-               (base32 "15rcs28fq2wfvfs66p5na7adq88b55qszbhshpizgdbyqzgr2jf1"))))
+               (base32 "1m7njfjdb7sqf0lhgc4swihgdr4snkg8v02wcly08wb5ar2fr2s6"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    ;; would be nice to add mikmod to inputs if that gets packaged
-    ;; eventually
+    ;; It would be nice to add mikmod to inputs if that gets packaged
+    ;; eventually.
     (inputs `(("alsa-lib" ,alsa-lib)
               ("jack" ,jack-1)
               ("mpg123" ,mpg123)
