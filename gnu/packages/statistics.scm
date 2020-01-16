@@ -5264,35 +5264,6 @@ Companion to Applied Regression, Third Edition, Sage.")
 to Applied regression, Second Edition, Sage, 2011.")
     (license license:gpl2+)))
 
-(define-public r-caret
-  (package
-    (name "r-caret")
-    (version "6.0-84")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "caret" version))
-       (sha256
-        (base32
-         "03898irgb70q0p01kq99yb6q6xji0jx4jmj0yxlv8wcwd841r0x1"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-foreach" ,r-foreach)
-       ("r-ggplot2" ,r-ggplot2)
-       ("r-lattice" ,r-lattice)
-       ("r-modelmetrics" ,r-modelmetrics)
-       ("r-nlme" ,r-nlme)
-       ("r-plyr" ,r-plyr)
-       ("r-recipes" ,r-recipes)
-       ("r-reshape2" ,r-reshape2)
-       ("r-withr" ,r-withr)))
-    (home-page "https://github.com/topepo/caret")
-    (synopsis "Classification and regression training")
-    (description
-     "This package provides misc functions for training and plotting
-classification and regression models.")
-    (license license:gpl2+)))
-
 (define-public r-rcppprogress
   (package
     (name "r-rcppprogress")
