@@ -6750,6 +6750,28 @@ implementation of LZMA and xz stream encoding/decoding.")
 platform-independently.")
     (license license:expat)))
 
+(define-public rust-malloc-buf-0.0
+ (package
+   (name "rust-malloc-buf")
+   (version "0.0.6")
+   (source
+    (origin
+      (method url-fetch)
+      (uri (crate-uri "malloc-buf" version))
+      (file-name
+       (string-append name "-" version ".tar.gz"))
+      (sha256
+       (base32
+        "1jqr77j89pwszv51fmnknzvd53i1nkmcr8rjrvcxhm4dx1zr1fv2"))))
+   (build-system cargo-build-system)
+   (arguments
+    `(#:cargo-inputs (("rust-libc" ,rust-libc-0.2))))
+   (home-page "https://github.com/SSheldon/malloc_buf")
+   (synopsis "Structs for handling malloc'd memory passed to Rust")
+   (description
+    "This package provides structs for handling malloc'd memory passed to Rust.")
+   (license license:expat)))
+
 (define-public rust-maplit-1.0
   (package
     (name "rust-maplit")
