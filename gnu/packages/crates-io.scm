@@ -9553,6 +9553,32 @@ stack pointer and inspect the properties of the stack.")
      "This package provides a collection of approximate quantile algorithms.")
     (license license:expat)))
 
+(define-public rust-quasi-0.32
+  (package
+    (name "rust-quasi")
+    (version "0.32.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "quasi" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1csqqgz3aw85q570ywmhb34r3sqgi1sprf8xadfwzlfnai45ri0q"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-clippy" ,rust-clippy-0.0)
+        ("rust-syntex-errors" ,rust-syntex-errors-0.58)
+        ("rust-syntex-syntax" ,rust-syntex-syntax-0.58))))
+    (home-page "https://github.com/serde-rs/quasi")
+    (synopsis "Quasi-quoting macro system")
+    (description
+     "This package provides a quasi-quoting macro system.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-quick-error-1.2
   (package
     (name "rust-quick-error")
