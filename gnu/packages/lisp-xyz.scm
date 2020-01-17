@@ -9591,3 +9591,38 @@ Common Lisp.  It uses the libuv library as backend.")
 
 (define-public ecl-cl-async-ssl
   (sbcl-package->ecl-package sbcl-cl-async-ssl))
+
+(define-public sbcl-blackbird
+  (let ((commit "d361f81c1411dec07f6c2dcb11c78f7aea9aaca8")
+        (revision "1"))
+    (package
+      (name "sbcl-blackbird")
+      (version (git-version "0.5.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/orthecreedence/blackbird.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0xfds5yaya64arzr7w1x38karyz11swzbhxx1afldpradj9dh19c"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("vom" ,sbcl-vom)))
+      (native-inputs
+       `(("cl-async" ,sbcl-cl-async)
+         ("fiveam" ,sbcl-fiveam)))
+      (synopsis "Promise implementation for Common Lisp")
+      (description
+       "This is a standalone promise implementation for Common Lisp.  It is
+the successor to the now-deprecated cl-async-future project.")
+      (home-page "http://orthecreedence.github.io/blackbird/")
+      (license license:expat))))
+
+(define-public cl-blackbird
+  (sbcl-package->cl-source-package sbcl-blackbird))
+
+(define-public ecl-blackbird
+  (sbcl-package->ecl-package sbcl-blackbird))
