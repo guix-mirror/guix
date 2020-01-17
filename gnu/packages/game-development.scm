@@ -723,7 +723,7 @@ package is the Nuklear bindings for LÖVE created by Kevin Harrison.")
 multimedia programming.  It handles common, low-level tasks such as creating
 windows, accepting user input, loading data, drawing images, playing sounds,
 etc.")
-    (home-page "http://liballeg.org")
+    (home-page "https://liballeg.org")
     (license license:giftware)))
 
 (define-public allegro
@@ -764,7 +764,7 @@ etc.")
 multimedia programming.  It handles common, low-level tasks such as creating
 windows, accepting user input, loading data, drawing images, playing sounds,
 etc.")
-    (home-page "http://liballeg.org")
+    (home-page "https://liballeg.org")
     (license license:bsd-3)))
 
 (define-public allegro-5.0

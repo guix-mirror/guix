@@ -286,7 +286,7 @@ at URI, which may be a file:// URI pointing the package's tree."
 
 (define giftware
   (license "Giftware"
-           "http://liballeg.org/license.html"
+           "https://liballeg.org/license.html"
            "The Allegro 4 license"))
 
 (define gpl1
