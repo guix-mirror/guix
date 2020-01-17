@@ -3422,7 +3422,7 @@ hard or impossible to fix in cssselect.")
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-sphinx" ,python-sphinx)
        ("texinfo" ,texinfo)))
-    (home-page "http://gunicorn.org/")
+    (home-page "https://gunicorn.org/")
     (synopsis "Python WSGI HTTP Server for UNIX")
     (description "Gunicorn ‘Green Unicorn’ is a Python WSGI HTTP
 Server for UNIX.  It’s a pre-fork worker model ported from Ruby’s
