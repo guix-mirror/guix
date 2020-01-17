@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Alex Kost <alezost@gmail.com>
@@ -756,14 +756,16 @@
 
 (test-equal "cve: one vulnerability"
   "probably vulnerable to CVE-2015-1234"
-  (mock ((guix lint) package-vulnerabilities
+  (let ((dummy-vulnerabilities
          (lambda (package)
-           (list (make-struct/no-tail (@@ (guix cve) <vulnerability>)
-                                      "CVE-2015-1234"
-                                      (list (cons (package-name package)
-                                                  (package-version package)))))))
-        (single-lint-warning-message
-         (check-vulnerabilities (dummy-package "pi" (version "3.14"))))))
+           (list (make-struct/no-tail
+                  (@@ (guix cve) <vulnerability>)
+                  "CVE-2015-1234"
+                  (list (cons (package-name package)
+                              (package-version package))))))))
+    (single-lint-warning-message
+     (check-vulnerabilities (dummy-package "pi" (version "3.14"))
+                            dummy-vulnerabilities))))
 
 (test-equal "cve: one patched vulnerability"
   '()

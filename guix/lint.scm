@@ -1029,8 +1029,11 @@ the NIST server non-fatal."
                          (package-version package))))
         ((force lookup) name version)))))
 
-(define (check-vulnerabilities package)
-  "Check for known vulnerabilities for PACKAGE."
+(define* (check-vulnerabilities package
+                                #:optional (package-vulnerabilities
+                                            package-vulnerabilities))
+  "Check for known vulnerabilities for PACKAGE.  Obtain the list of
+vulnerability records for PACKAGE by calling PACKAGE-VULNERABILITIES."
   (let ((package (or (package-replacement package) package)))
     (match (package-vulnerabilities package)
       (()
