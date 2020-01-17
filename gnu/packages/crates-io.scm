@@ -11826,6 +11826,37 @@ proven statistical guarantees.")
     (description "CBOR support for serde.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-serde-codegen-0.4
+  (package
+    (name "rust-serde-codegen")
+    (version "0.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serde_codegen" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0167ghvqs0n8qin8fjx2ihn3gx92m55685qpv4nzihw48h4rq0vq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-aster" ,rust-aster-0.41)
+        ("rust-quasi" ,rust-quasi-0.32)
+        ("rust-quasi-macros" ,rust-quasi-macros-0.32)
+        ("rust-syntex" ,rust-syntex-0.58)
+        ("rust-syntex-syntax" ,rust-syntex-syntax-0.58))
+       #:cargo-development-inputs
+       (("rust-quasi-codegen" ,rust-quasi-codegen-0.32)
+        ("rust-syntex" ,rust-syntex-0.58))))
+    (home-page "https://serde.rs")
+    (synopsis "Macros for the serde framework")
+    (description "This package provides macros to auto-generate implementations
+for the serde framework.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-serde-derive-1.0
   (package
     (name "rust-serde-derive")
