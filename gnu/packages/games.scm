@@ -3262,7 +3262,13 @@ http://lavachat.symlynx.com/unix/")
                (recursive? #t))) ; for game data
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0sz0mqhwx8r9n4mk3qrxw420nlsm3y0n48gd0lazgd64lfqjh3ab"))))
+          (base32 "0sz0mqhwx8r9n4mk3qrxw420nlsm3y0n48gd0lazgd64lfqjh3ab"))
+         (modules '((guix build utils)))
+         (snippet
+          ;; Remove proprietary libraries and other pre-compiled binaries.
+          '(begin
+             (delete-file-recursively "bin")
+             #t))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f            ; no check target
@@ -3341,19 +3347,22 @@ exec -a \"$0\" ~a/.redeclipse_server_linux-real~%"
          ("sdl-union" ,(sdl-union (list sdl2
                                         sdl2-image
                                         sdl2-mixer)))))
-      (home-page "http://redeclipse.net/")
+      (home-page "https://redeclipse.net/")
       (synopsis "Arena shooter derived from the Cube 2 engine")
       (description
        "Red Eclipse is an arena shooter, created from the Cube2 engine.
 Offering an innovative parkour system and distinct but all potent weapons,
 Red Eclipse provides fast paced and accessible gameplay.")
       ;; The engine is under Zlib; data files are covered by the other
-      ;; licenses.  More details at <http://redeclipse.net/wiki/License>.
+      ;; licenses.  More details at file:///doc/all-licenses.txt.
       (license (list license:expat
                      license:zlib
+                     license:cc-by-sa4.0
                      license:cc-by-sa3.0
                      license:cc-by3.0
-                     license:cc0)))))
+                     license:cc0
+                     license:public-domain
+                     license:silofl1.1)))))
 
 (define-public grue-hunter
   (package
