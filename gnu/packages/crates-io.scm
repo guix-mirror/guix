@@ -10047,8 +10047,36 @@ generator that uses the HC-128 algorithm.")
      `(#:skip-build? #t
        #:cargo-inputs (("rust-rand-core" ,rust-rand-core-0.3))))))
 
+(define-public rust-rand-isaac-0.2
+  (package
+    (name "rust-rand-isaac")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rand_isaac" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0xlb9415x518ffkazxhvk8b04i9i548nva4i5l5s34crvjrv1xld"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-rand-core" ,rust-rand-core-0.5)
+        ("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-bincode" ,rust-bincode-1.1))))
+    (home-page "https://crates.io/crates/rand_isaac")
+    (synopsis "ISAAC random number generator")
+    (description "This package implements the @code{ISAAC} and @code{ISAAC-64}
+random number generators.  ISAAC stands for \"Indirection, Shift, Accumulate,
+Add, and Count\" which are the principal bitwise operations employed.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rand-isaac-0.1
   (package
+    (inherit rust-rand-isaac-0.2)
     (name "rust-rand-isaac")
     (version "0.1.1")
     (source
@@ -10059,21 +10087,13 @@ generator that uses the HC-128 algorithm.")
         (sha256
          (base32
           "027flpjr4znx2csxk7gxb7vrf9c7y5mydmvg5az2afgisp4rgnfy"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-rand-core" ,rust-rand-core-0.3)
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0))
        #:cargo-development-inputs
-       (("rust-bincode" ,rust-bincode-1.1))))
-    (home-page "https://crates.io/crates/rand_isaac")
-    (synopsis "ISAAC random number generator")
-    (description "This package implements the @code{ISAAC} and @code{ISAAC-64}
-random number generators.  ISAAC stands for \"Indirection, Shift, Accumulate,
-Add, and Count\" which are the principal bitwise operations employed.")
-    (license (list license:asl2.0
-                   license:expat))))
+       (("rust-bincode" ,rust-bincode-1.1))))))
 
 (define-public rust-rand-jitter-0.1
   (package
