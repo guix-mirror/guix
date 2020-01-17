@@ -12,7 +12,7 @@
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2019 Katherine Cox-Buday <cox.katherine.e@gmail.com>
+;;; Copyright © 2019, 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright © 2019 Jesse Gildersleve <jessejohngildersleve@protonmail.com>
 ;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
@@ -87,6 +87,41 @@
       ,@(loop :for dir :in (xdg-data-dirs \"common-lisp/\")
               :collect `(:directory (,dir \"systems\"))"
              ,lisp))))
+
+(define-public cl-asdf
+  (package
+    (name "cl-asdf")
+    (version "3.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://common-lisp.net/project/asdf/archives/asdf-"
+                       version ".lisp"))
+       (sha256
+        (base32 "18lr6kxvzhr79c9rx3sdricz30aby866fj0m24w27zxsqlyvn3rd"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build lisp-utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (guix build lisp-utils))
+         (let* ((out (string-append (assoc-ref %outputs "out")))
+                (asdf-install (string-append out %source-install-prefix
+                                             "/source/asdf/"))
+                (asdf (string-append (assoc-ref %build-inputs "source"))))
+           (mkdir-p asdf-install)
+           (copy-file asdf (string-append asdf-install "asdf.lisp"))))))
+    (home-page "https://common-lisp.net/project/asdf/")
+    (synopsis "Another System Definition Facility")
+    (description
+     "ASDF is what Common Lisp hackers use to build and load software.  It is
+the successor of the Lisp DEFSYSTEM of yore.  ASDF stands for Another System
+Definition Facility.")
+    ;; MIT License
+    (license license:expat)))
 
 (define-public gcl
   (let ((commit "d3335e2b3deb63f930eb0328e9b05377744c9512")
