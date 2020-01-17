@@ -9382,3 +9382,34 @@ continuations of the @code{cl-cont} library.")
 
 (define-public ecl-cl-coroutine
   (sbcl-package->ecl-package sbcl-cl-coroutine))
+
+(define-public sbcl-vom
+  (let ((commit "1aeafeb5b74c53741b79497e0ef4acf85c92ff24")
+        (revision "1"))
+    (package
+      (name "sbcl-vom")
+      (version (git-version "0.1.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/orthecreedence/vom.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0536kppj76ax4lrxhv42npkfjsmx45km2g439vf9jmw3apinz9cy"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Tiny logging utility for Common Lisp")
+      (description
+       "Vom is a logging library for Common Lisp.  It's goal is to be useful
+and small.  It does not provide a lot of features as other loggers do, but
+has a small codebase that's easy to understand and use.")
+      (home-page "https://github.com/orthecreedence/vom")
+      (license license:expat))))
+
+(define-public cl-vom
+  (sbcl-package->cl-source-package sbcl-vom))
+
+(define-public ecl-vom
+  (sbcl-package->ecl-package sbcl-vom))
