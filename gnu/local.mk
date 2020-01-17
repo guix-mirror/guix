@@ -25,7 +25,7 @@
 # Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 # Copyright © 2019 Evan Straw <evan.straw99@gmail.com>
 # Copyright © 2019 Brett Gilio <brettg@gnu.org>
-# Copyright © 2019 Amin Bandali <bandali@gnu.org>
+# Copyright © 2019 Amin Bandali <mab@gnu.org>
 #
 # This file is part of GNU Guix.
 #
