@@ -53,6 +53,7 @@
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages textutils)
+  #:use-module (gnu packages unicode)
   #:use-module (gnu packages xorg))
 
 (define-public ibus
@@ -70,11 +71,18 @@
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f  ; tests fail because there's no connection to dbus
-       #:configure-flags `("--disable-emoji-dict" ; cannot find emoji.json path
-                           "--enable-python-library"
-                           ,(string-append "--with-ucd-dir="
-                                           (getcwd) "/ucd")
-                           "--enable-wayland")
+       #:configure-flags (list "--enable-python-library"
+                               (string-append
+                                "--with-unicode-emoji-dir="
+                                (assoc-ref %build-inputs "unicode-emoji")
+                                "/share/unicode/emoji")
+                               (string-append
+                                "--with-emoji-annotation-dir="
+                                (assoc-ref %build-inputs "unicode-cldr-common")
+                                "/share/unicode/cldr/common/annotations")
+                               (string-append "--with-ucd-dir="
+                                              (getcwd) "/ucd")
+                               "--enable-wayland")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'prepare-ucd-dir
@@ -150,6 +158,8 @@
      `(("glib" ,glib "bin") ; for glib-genmarshal
        ("gobject-introspection" ,gobject-introspection) ; for g-ir-compiler
 
+       ("unicode-emoji" ,unicode-emoji)
+       ("unicode-cldr-common" ,unicode-cldr-common)
        ;; XXX TODO: Move Unicode data to its own (versioned) package.
        ("unicode-nameslist"
         ,(origin
