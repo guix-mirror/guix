@@ -9464,3 +9464,39 @@ has a small codebase that's easy to understand and use.")
 
 (define-public ecl-cl-libuv
   (sbcl-package->ecl-package sbcl-cl-libuv))
+
+(define-public sbcl-cl-async-base
+  (let ((commit "f6423e44404a44434d803605e0d2e17199158e28")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-async-base")
+      (version (git-version "0.6.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/orthecreedence/cl-async.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "11xi9dxb8mjgwzrkj88i0xkgk26z9w9ddxzbv6xsvfc1d4x5cf4x"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("cffi" ,sbcl-cffi)
+         ("cl-libuv" ,sbcl-cl-libuv)))
+      (arguments
+       `(#:asd-file "cl-async.asd"))
+      (synopsis "Base system for cl-async")
+      (description
+       "Cl-async is a library for general purpose, non-blocking programming in
+Common Lisp.  It uses the libuv library as backend.")
+      (home-page "https://orthecreedence.github.io/cl-async/")
+      (license license:expat))))
+
+(define-public cl-async-base
+  (sbcl-package->cl-source-package sbcl-cl-async-base))
+
+(define-public ecl-cl-async-base
+  (sbcl-package->ecl-package sbcl-cl-async-base))
