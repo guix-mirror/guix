@@ -9559,3 +9559,35 @@ Common Lisp.  It uses the libuv library as backend.")
 
 (define-public ecl-cl-async-repl
   (sbcl-package->ecl-package sbcl-cl-async-repl))
+
+(define-public sbcl-cl-async-ssl
+  (package
+    (inherit sbcl-cl-async-base)
+    (name "sbcl-cl-async-ssl")
+    (inputs
+     `(("cffi" ,sbcl-cffi)
+       ("cl-async" ,sbcl-cl-async)
+       ("openssl" ,openssl)
+       ("vom" ,sbcl-vom)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-async-base)
+       ((#:asd-file _ "") "cl-async-ssl.asd")
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "src/ssl/package.lisp"
+                 (("libcrypto\\.so")
+                  (string-append (assoc-ref inputs "openssl")
+                                 "/lib/libcrypto.so"))
+                 (("libssl\\.so")
+                  (string-append (assoc-ref inputs "openssl")
+                                 "/lib/libssl.so")))
+               #t))))))
+    (synopsis "SSL wrapper around cl-async socket implementation")))
+
+(define-public cl-async-ssl
+  (sbcl-package->cl-source-package sbcl-cl-async-ssl))
+
+(define-public ecl-cl-async-ssl
+  (sbcl-package->ecl-package sbcl-cl-async-ssl))
