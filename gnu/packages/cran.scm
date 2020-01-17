@@ -2286,7 +2286,7 @@ SpatialVx.")
     (propagated-inputs
      `(("r-distillery" ,r-distillery)
        ("r-lmoments" ,r-lmoments)))
-    (home-page "http://www.assessment.ucar.edu/toolkit/")
+    (home-page "https://www.assessment.ucar.edu/toolkit/")
     (synopsis "Extreme value analysis")
     (description
      "ExtRemes is a suite of functions for carrying out analyses on the
