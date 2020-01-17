@@ -1,4 +1,3 @@
-
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
