@@ -20,6 +20,7 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system trivial))
 
 (define (unicode-emoji-file name version hash)
@@ -78,4 +79,42 @@
      "This package includes data files listing characters and sequences, that
 Unicode emoji supporting fonts or keyboards should support according to the
 Unicode Technological Standard #51.")
+    (license unicode)))
+
+(define-public unicode-cldr-common
+  (package
+    (name "unicode-cldr-common")
+    (version "36.0")
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri (string-append "https://unicode.org/Public/cldr/"
+                           (version-major version)
+                           "/cldr-common-" version ".zip"))
+       (sha256
+        (base32
+         "0hxsc3j5zb32hmiaj0r3ajchmklx6zng6zlh1ca6s9plq5b9w9q7"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (let ((out (string-append %output "/share/unicode/cldr/common")))
+         (use-modules (guix build utils))
+         (mkdir-p out)
+         (copy-recursively (string-append (assoc-ref %build-inputs "source")
+                                          "/common")
+                           out)
+         #t)))
+    (home-page "https://www.unicode.org")
+    (synopsis "Locale data repository")
+    (description
+     "The Unicode Common Locale Data Repository (CLDR) is a large repository
+of locale data, including among others
+
+@itemize
+@item patterns for formatting and parsing,
+@item name translations,
+@item and various informations on languages, scripts and country-specific
+  conventions.
+@end itemize\n")
     (license unicode)))
