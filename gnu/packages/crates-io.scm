@@ -12415,7 +12415,7 @@ are met.")
 (define-public rust-stdweb-0.4
   (package
     (name "rust-stdweb")
-    (version "0.4.17")
+    (version "0.4.20")
     (source
      (origin
        (method url-fetch)
@@ -12424,7 +12424,7 @@ are met.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "094giad1v81rxxs4izf88ijc9c6w3c7cr5a7cwwr86mc22xn4hy3"))))
+         "1md14n9rzxzdskz3hpgln8vxfwqsw2cswc0f5nslh4r82rmlj8nh"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
