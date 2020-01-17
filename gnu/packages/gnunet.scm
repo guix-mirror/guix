@@ -101,7 +101,7 @@
       ("gtk+" ,gtk+)
       ("libarchive" ,libarchive)
       ("libgsf" ,libgsf)
-      ("libjpeg" ,libjpeg)
+      ("libjpeg" ,libjpeg-turbo)
       ("libltdl" ,libltdl)
       ("libmpeg2" ,libmpeg2)
       ("libmp4v2" ,libmp4v2)

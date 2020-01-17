@@ -343,7 +343,7 @@ as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
        ("openblas" ,openblas)
        ("gfortran" ,gfortran)
        ("icu4c" ,icu4c)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)
        ("libxt" ,libxt)

@@ -232,7 +232,7 @@ interfaces (GUIs) in the Tcl language.")
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("libx11" ,libx11)
               ("libpng" ,libpng)
-              ("libjpeg" ,libjpeg)))
+              ("libjpeg" ,libjpeg-turbo)))
     (arguments
      `(#:make-maker-flags `(,(string-append
                               "X11=" (assoc-ref %build-inputs "libx11")))

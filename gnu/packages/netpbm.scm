@@ -102,7 +102,7 @@
 
    (build-system gnu-build-system)
    (inputs `(("ghostscript" ,ghostscript)
-             ("libjpeg" ,libjpeg)
+             ("libjpeg" ,libjpeg-turbo)
              ("libpng" ,libpng)
              ("libtiff" ,libtiff)
              ("libxml2" ,libxml2)

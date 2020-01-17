@@ -6120,7 +6120,7 @@ basic eye-candy effects.")
     (inputs `(("ffmpeg" ,ffmpeg)
               ("flac" ,flac)
               ("gtk+-2" ,gtk+-2) ;; no full GTK3 support yet
-              ("libjpeg" ,libjpeg)
+              ("libjpeg" ,libjpeg-turbo)
               ("libpng" ,libpng)
               ("libvpx" ,libvpx)
               ("libx264" ,libx264)

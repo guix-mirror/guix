@@ -531,7 +531,7 @@ highlighting and other features typical of a source code editor.")
       ;; Used for testing and required at runtime.
       ("shared-mime-info" ,shared-mime-info)))
    (inputs
-    `(("libjpeg" ,libjpeg)
+    `(("libjpeg" ,libjpeg-turbo)
       ("libtiff" ,libtiff)
       ("libx11"  ,libx11)))
    (native-inputs

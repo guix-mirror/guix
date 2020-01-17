@@ -173,7 +173,7 @@
        ("libxft" ,libxft)
        ("libtiff" ,libtiff)
        ("giflib" ,giflib)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("imagemagick" ,imagemagick)
        ("acl" ,acl)
 

@@ -83,7 +83,7 @@
        ("zlib" ,zlib)))
     (propagated-inputs
      `(("fontconfig" ,fontconfig)
-       ("libjpeg" ,libjpeg)))
+       ("libjpeg" ,libjpeg-turbo)))
     (home-page "http://www.libgd.org/")
     (synopsis "Library for the dynamic creation of images by programmers")
     (description
@@ -114,7 +114,7 @@ most common applications of GD involve website development.")
        ("freetype" ,freetype)
        ("gd" ,gd)
        ("libpng" ,libpng)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("zlib" ,zlib)))
     (arguments
      `(#:make-maker-flags

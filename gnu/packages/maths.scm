@@ -725,7 +725,7 @@ computations.")
        ("flex" ,flex)))
     (inputs
      `(("zlib" ,zlib)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libtirpc" ,libtirpc)))
     (arguments
      `(#:parallel-tests? #f
@@ -965,7 +965,7 @@ extremely large and complex data collections.")
      `(("hdf4" ,hdf4)
        ("hdf5" ,hdf5)
        ("zlib" ,zlib)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("slf4j-api" ,java-slf4j-api)))
     (arguments
      `(#:configure-flags
@@ -1082,7 +1082,7 @@ implemented in C.")
      `(("hdf4" ,hdf4-alt) ; assume most HDF-EOS2 users won't use the HDF4 netCDF API
        ;; XXX: These inputs are really dependencies of hdf4.
        ("zlib" ,zlib)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libtirpc" ,libtirpc)
 
        ("gctp" ,gctp)))
@@ -1242,7 +1242,7 @@ similar to MATLAB, GNU Octave or SciPy.")
      `(("hdf4" ,hdf4-alt)
        ("hdf5" ,hdf5)
        ("zlib" ,zlib)
-       ("libjpeg" ,libjpeg)))
+       ("libjpeg" ,libjpeg-turbo)))
     (arguments
      `(#:configure-flags '("--enable-doxygen" "--enable-dot" "--enable-hdf4")
 

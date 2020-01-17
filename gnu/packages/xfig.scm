@@ -47,7 +47,7 @@
      `(("desktop-file-utils" ,desktop-file-utils)))
     (inputs
      `(("libxaw3d" ,libxaw3d)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libxpm" ,libxpm)
        ("libx11" ,libx11)
@@ -90,7 +90,7 @@ selected in various ways.  For text, 35 fonts are available.")
        ("makedepend" ,makedepend)))
     (inputs
      `(("xfig"    ,xfig)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng"  ,libpng)
        ("libxpm"  ,libxpm)
        ("libx11"  ,libx11)

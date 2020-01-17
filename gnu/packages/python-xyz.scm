@@ -441,7 +441,7 @@ Expressions are constructed from parsed strings or directly in Python.")
    (propagated-inputs `(("numpy" ,python-numpy)))
    (inputs
     `(("hdf4" ,hdf4)
-      ("libjpeg" ,libjpeg)
+      ("libjpeg" ,libjpeg-turbo)
       ("zlib" ,zlib)))
    (arguments
     `(#:phases
@@ -4460,7 +4460,7 @@ the OleFileIO module from PIL, the Python Image Library.")
     (inputs
      `(("freetype" ,freetype)
        ("lcms"     ,lcms)
-       ("libjpeg"  ,libjpeg)
+       ("libjpeg"  ,libjpeg-turbo)
        ("libtiff"  ,libtiff)
        ("libwebp"  ,libwebp)
        ("openjpeg" ,openjpeg)

@@ -1722,7 +1722,7 @@ characters can be replaced as well, as can UTF-8 characters.")
        ;; FIXME: add reiserfs.
        ("zlib" ,zlib)
        ("e2fsprogs" ,e2fsprogs)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("ncurses" ,ncurses)))
     (home-page "https://www.cgsecurity.org/wiki/TestDisk")
     (synopsis "Data recovery tool")

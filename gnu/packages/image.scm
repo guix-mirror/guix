@@ -500,7 +500,7 @@ official designation is ISO/IEC 29199-2). This library is an implementation of t
             (sha256 (base32
                      "1dss7907fclfl8zsw0bl4qcw0hhz6fqgi3867w0jyfm3q9jfpcc8"))))
    (build-system gnu-build-system)
-   (inputs `(("libjpeg" ,libjpeg)))
+   (inputs `(("libjpeg" ,libjpeg-turbo)))
    (arguments
     '(#:tests? #f))                     ; no tests
    (synopsis "Optimize JPEG images")
@@ -565,7 +565,7 @@ extracting icontainer icon files.")
                                              ,name "-" ,version)
                               "--disable-static")))
    (inputs `(("zlib" ,zlib)
-             ("libjpeg" ,libjpeg)))
+             ("libjpeg" ,libjpeg-turbo)))
    (synopsis "Library for handling TIFF files")
    (description
     "Libtiff provides support for the Tag Image File Format (TIFF), a format
@@ -598,7 +598,7 @@ collection of tools for doing simple manipulations of TIFF images.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("giflib" ,giflib)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)
        ("libwebp" ,libwebp)))
@@ -872,7 +872,7 @@ compose, and analyze GIF images.")
        ("freetype" ,freetype)
        ("giflib" ,giflib)
        ("libid3tag" ,libid3tag)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)
        ("libx11" ,libx11)
@@ -983,7 +983,7 @@ supplies a generic doubly-linked list and some string functions.")
     `(("pkg-config" ,pkg-config)
       ("unzip" ,unzip)))
    (inputs
-    `(("libjpeg" ,libjpeg)
+    `(("libjpeg" ,libjpeg-turbo)
       ("libjxr" ,libjxr)
       ("libpng" ,libpng)
       ("libraw" ,libraw)
@@ -1020,7 +1020,7 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
       ("hdf5" ,hdf5)
       ("ilmbase" ,ilmbase) ; propagated by openexr, but needed explicitly
                            ; to create a configure-flag
-      ("libjpeg" ,libjpeg)
+      ("libjpeg" ,libjpeg-turbo)
       ("libpng" ,libpng)
       ("libtiff" ,libtiff)
       ("openexr" ,openexr)
@@ -1124,7 +1124,7 @@ language bindings to VIGRA.")
     (inputs
      `(("freeglut" ,freeglut)
        ("giflib" ,giflib)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)))
     (native-inputs
@@ -1164,7 +1164,7 @@ channels.")
     (propagated-inputs
      ;; These are all in the 'Libs.private' field of libmng.pc.
      `(("lcms" ,lcms)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("zlib" ,zlib)))
     (home-page "http://www.libmng.com/")
     (synopsis "Library for handling MNG files")
@@ -1280,7 +1280,7 @@ convert, manipulate, filter and display a wide variety of image formats.")
                (base32
                 "05l75yd1zsxwv25ykwwwjs8961szv7iywf16nc6vc6qpby27ckv6"))))
     (build-system cmake-build-system)
-    (inputs `(("libjpeg" ,libjpeg)))
+    (inputs `(("libjpeg" ,libjpeg-turbo)))
     (synopsis "JPEG-2000 library")
     (description "The JasPer Project is an initiative to provide a reference
 implementation of the codec specified in the JPEG-2000 Part-1 standard (i.e.,
@@ -1368,7 +1368,7 @@ differences in file encoding, image quality, and other small variations.")
     (inputs
      `(("libmhash" ,libmhash)
        ("libmcrypt" ,libmcrypt)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("zlib" ,zlib)))
     (arguments
      `(#:make-flags '("CXXFLAGS=-fpermissive")    ;required for MHashPP.cc
@@ -1739,7 +1739,7 @@ identical visual appearance.")
     (build-system gnu-build-system)
     (inputs
      `(("curl" ,curl)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("ncurses" ,ncurses)))
     (home-page "https://csl.name/jp2a/")
     (synopsis "Convert JPEG images to ASCII")

@@ -144,7 +144,7 @@ and others.")
        ("gettext" ,gettext-minimal)))
     (inputs
      `(("libexif" ,libexif)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libid3tag" ,libid3tag)
        ("flac" ,flac)
        ("libvorbis" ,libvorbis)

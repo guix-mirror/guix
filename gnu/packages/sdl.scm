@@ -238,7 +238,7 @@ other supporting functions for SDL.")
     ;; propagated input because the pkg-config file refers to SDL's pkg-config
     ;; file.
     (propagated-inputs `(("sdl" ,sdl)
-                         ("libjpeg" ,libjpeg)
+                         ("libjpeg" ,libjpeg-turbo)
                          ("libpng" ,libpng)
                          ("libtiff" ,libtiff)
                          ("libwebp" ,libwebp)))
@@ -507,7 +507,7 @@ directory.")
      `(("pkg-config" ,pkg-config)
        ;; Required by test suite.
        ("xorg-server" ,xorg-server)
-       ("libjpeg" ,libjpeg)))
+       ("libjpeg" ,libjpeg-turbo)))
     (inputs
      `(("guile" ,guile-2.2)
        ("sdl-union" ,(sdl-union))))

@@ -111,7 +111,7 @@
        ("libsane" ,sane-backends)
        ("libpcap" ,libpcap)
        ("libpng" ,libpng)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libtiff" ,libtiff)
        ("libICE" ,libice)
        ("libX11" ,libx11)

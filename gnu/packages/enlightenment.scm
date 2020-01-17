@@ -124,7 +124,7 @@
        ("harfbuzz" ,harfbuzz)
        ("luajit" ,luajit)
        ("libinput" ,libinput-minimal)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libsndfile" ,libsndfile)
        ("libtiff" ,libtiff)

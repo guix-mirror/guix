@@ -104,7 +104,7 @@
        ("libltdl" ,libltdl)
        ("libXaw" ,libxaw)
        ("expat" ,expat)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)))
     (native-inputs
      `(("bison" ,bison)
