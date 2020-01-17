@@ -5930,12 +5930,12 @@ Guile Reference Manual}).  The value of these arguments is usually
 evaluated in the @dfn{build stratum}---i.e., by a Guile process launched
 by the daemon (@pxref{Derivations}).
 
-The main build system is @var{gnu-build-system}, which implements the
+The main build system is @code{gnu-build-system}, which implements the
 standard build procedure for GNU and many other packages.  It
 is provided by the @code{(guix build-system gnu)} module.
 
 @defvr {Scheme Variable} gnu-build-system
-@var{gnu-build-system} represents the GNU Build System, and variants
+@code{gnu-build-system} represents the GNU Build System, and variants
 thereof (@pxref{Configuration, configuration and makefile conventions,,
 standards, GNU Coding Standards}).
 
@@ -5988,8 +5988,8 @@ is false), copying them to the @code{debug} output when available
 
 @vindex %standard-phases
 The build-side module @code{(guix build gnu-build-system)} defines
-@var{%standard-phases} as the default list of build phases.
-@var{%standard-phases} is a list of symbol/procedure pairs, where the
+@code{%standard-phases} as the default list of build phases.
+@code{%standard-phases} is a list of symbol/procedure pairs, where the
 procedure implements the actual phase.
 
 The list of phases used for a particular package can be changed with the
@@ -6012,7 +6012,7 @@ have to mention them.
 
 Other @code{<build-system>} objects are defined to support other
 conventions and tools used by free software packages.  They inherit most
-of @var{gnu-build-system}, and differ mainly in the set of inputs
+of @code{gnu-build-system}, and differ mainly in the set of inputs
 implicitly added to the build process, and in the list of phases
 executed.  Some of these build systems are listed below.
 
@@ -6160,7 +6160,7 @@ parameters, respectively.  Compile directory and main class can be specified
 with the @code{#:compile-dir} and @code{#:main-class} parameters, respectively.
 Other parameters are documented below.
 
-This build system is an extension of @var{ant-build-system}, but with the
+This build system is an extension of @code{ant-build-system}, but with the
 following phases changed:
 
 @table @code
@@ -6193,7 +6193,7 @@ Apart from the above, this build system also contains an additional phase:
 
 @item install-doc
 This phase installs all top-level files with base name matching
-@var{%doc-regex}.  A different regex can be specified with the
+@code{%doc-regex}.  A different regex can be specified with the
 @code{#:doc-regex} parameter.  All files (recursively) inside the documentation
 directories specified in @code{#:doc-dirs} are installed as well.
 @end table
@@ -6270,7 +6270,7 @@ This variable is exported by @code{(guix build-system glib-or-gtk)}.  It
 is intended for use with packages making use of GLib or GTK+.
 
 This build system adds the following two phases to the ones defined by
-@var{gnu-build-system}:
+@code{gnu-build-system}:
 
 @table @code
 @item glib-or-gtk-wrap
@@ -6444,7 +6444,7 @@ This variable is exported by @code{(guix build-system qt)}.  It
 is intended for use with applications using Qt or KDE.
 
 This build system adds the phase @code{qt-wrap} to the ones defined by
-@var{cmake-build-system}, after the @code{install} phase.
+@code{cmake-build-system}, after the @code{install} phase.
 
 This phase searches for Qt5 plugin paths, QML paths and some XDG in the inputs
 and output.  In case some path is found, all programs in the output's
@@ -6584,7 +6584,7 @@ This variable is exported by @code{(guix build-system emacs)}.  It
 implements an installation procedure similar to the packaging system
 of Emacs itself (@pxref{Packages,,, emacs, The GNU Emacs Manual}).
 
-It first creates the @code{@var{package}-autoloads.el} file, then it
+It first creates the @code{@code{package}-autoloads.el} file, then it
 byte compiles all Emacs Lisp files.  Differently from the Emacs
 packaging system, the Info documentation files are moved to the standard
 documentation directory and the @file{dir} file is deleted.  Each
@@ -6611,7 +6611,7 @@ and @code{#:ninja} if needed.  The default Meson is
 @code{meson-for-build}, which is special because it doesn't clear the
 @code{RUNPATH} of binaries and libraries when they are installed.
 
-This build system is an extension of @var{gnu-build-system}, but with the
+This build system is an extension of @code{gnu-build-system}, but with the
 following phases changed to some specific for Meson:
 
 @table @code
@@ -6656,10 +6656,10 @@ is not enabled by default.  It can be enabled with @code{#:glib-or-gtk?}.
 @end defvr
 
 @defvr {Scheme Variable} linux-module-build-system
-@var{linux-module-build-system} allows building Linux kernel modules.
+@code{linux-module-build-system} allows building Linux kernel modules.
 
 @cindex build phases
-This build system is an extension of @var{gnu-build-system}, but with the
+This build system is an extension of @code{gnu-build-system}, but with the
 following phases changed:
 
 @table @code
