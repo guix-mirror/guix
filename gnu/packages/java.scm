@@ -7079,7 +7079,7 @@ import org.antlr.grammar.v3.ANTLRTreePrinter;"))
      `(("stringtemplate" ,java-stringtemplate-3)
        ("antlr" ,antlr2)
        ("stringtemplate4" ,java-stringtemplate-4.0.6)))
-    (home-page "http://www.antlr3.org")
+    (home-page "https://www.antlr3.org")
     (synopsis "Framework for constructing recognizers, compilers, and translators")
     (description "ANTLR, ANother Tool for Language Recognition, (formerly PCCTS)
 is a language tool that provides a framework for constructing recognizers,
