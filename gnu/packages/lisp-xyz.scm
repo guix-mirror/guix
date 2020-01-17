@@ -9500,3 +9500,22 @@ Common Lisp.  It uses the libuv library as backend.")
 
 (define-public ecl-cl-async-base
   (sbcl-package->ecl-package sbcl-cl-async-base))
+
+(define-public sbcl-cl-async-util
+  (package
+    (inherit sbcl-cl-async-base)
+    (name "sbcl-cl-async-util")
+    (inputs
+     `(("cffi" ,sbcl-cffi)
+       ("cl-async-base" ,sbcl-cl-async-base)
+       ("cl-libuv" ,sbcl-cl-libuv)
+       ("cl-ppcre" ,sbcl-cl-ppcre)
+       ("fast-io" ,sbcl-fast-io)
+       ("vom" ,sbcl-vom)))
+    (synopsis "Internal utilities for cl-async")))
+
+(define-public cl-async-util
+  (sbcl-package->cl-source-package sbcl-cl-async-util))
+
+(define-public ecl-cl-async-util
+  (sbcl-package->ecl-package sbcl-cl-async-util))
