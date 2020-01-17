@@ -230,28 +230,36 @@ interface to the Tk widget system.")
              "https://common-lisp.net/project/ecl/static/files/release/"
              name "-" version ".tgz"))
        (sha256
-        (base32 "0m0j24w5d5a9dwwqyrg0d35c0nys16ijb4r0nyk87yp82v38b9bn"))
-       (modules '((guix build utils)))
-       (snippet
-        ;; Add ecl-bundle-systems to 'default-system-source-registry'.
-        `(begin
-           (substitute* "contrib/asdf/asdf.lisp"
-             ,@(asdf-substitutions name))
-           #t))))
+        (base32 "0m0j24w5d5a9dwwqyrg0d35c0nys16ijb4r0nyk87yp82v38b9bn"))))
     (build-system gnu-build-system)
     ;; src/configure uses 'which' to confirm the existence of 'gzip'.
-    (native-inputs `(("which" ,which)))
+    (native-inputs `(("cl-asdf" ,cl-asdf)
+                     ("which" ,which)))
     (inputs `(("gmp" ,gmp)
               ("libatomic-ops" ,libatomic-ops)
               ("libgc" ,libgc)
               ("libffi" ,libffi)))
     (arguments
-     '(#:configure-flags '("--without-rt")
+     `(#:configure-flags '("--without-rt")
        #:tests? #t
        #:parallel-tests? #f
        #:phases
        (modify-phases %standard-phases
          (delete 'check)
+         (add-after 'unpack 'replace-asdf
+           ;; Use system ASDF instead of bundled one.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((cl-asdf (assoc-ref inputs "cl-asdf"))
+                    (guix-asdf (string-append
+                                cl-asdf
+                                "/share/common-lisp/source/asdf/asdf.lisp"))
+                    (out (string-append (assoc-ref outputs "out")))
+                    (contrib-asdf "contrib/asdf/asdf.lisp"))
+               (copy-file guix-asdf contrib-asdf)
+               ;; Add ecl-bundle-systems to 'default-system-source-registry'.
+               (substitute* contrib-asdf
+                 ,@(asdf-substitutions name)))
+             #t))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((ecl (assoc-ref outputs "out"))
