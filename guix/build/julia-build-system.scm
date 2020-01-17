@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2019, 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,53 +37,46 @@
 ;; subpath where we store the package content
 (define %package-path "/share/julia/packages/")
 
-(define (generate-load-path inputs outputs)
-  (string-append
-   (string-join (map (match-lambda
-                       ((_ . path)
-                        (string-append path %package-path)))
-                     ;; Restrict to inputs beginning with "julia-".
-                     (filter (match-lambda
-                               ((name . _)
-                                (string-prefix? "julia-" name)))
-                             inputs))
-                ":")
-   (string-append ":" (assoc-ref outputs "out") %package-path)
-   ;; stdlib is always required to find Julia's standard libraries.
-   ;; usually there are other two paths in this variable:
-   ;; "@" and "@v#.#"
-   ":@stdlib"))
-
 (define* (install #:key source inputs outputs #:allow-other-keys)
   (let* ((out (assoc-ref outputs "out"))
          (package-dir (string-append out %package-path
-                                     (string-append
-                                      (strip-store-file-name source)))))
-    (setenv "JULIA_LOAD_PATH" (generate-load-path inputs outputs))
+                                     (strip-store-file-name source))))
     (mkdir-p package-dir)
-    (copy-recursively source package-dir))
+    (copy-recursively (getcwd) package-dir))
   #t)
 
-;; TODO: Precompilation is working, but I don't know how to tell
-;; julia to use use it. If (on rantime) we set HOME to
-;; store path, julia tries to write files there (failing)
 (define* (precompile #:key source inputs outputs #:allow-other-keys)
   (let* ((out (assoc-ref outputs "out"))
          (builddir (string-append out "/share/julia/"))
          (package (strip-store-file-name source)))
     (mkdir-p builddir)
+    ;; With a patch, SOURCE_DATE_EPOCH is honored
+    (setenv "SOURCE_DATE_EPOCH" "1")
     (setenv "JULIA_DEPOT_PATH" builddir)
-    (setenv "JULIA_LOAD_PATH" (generate-load-path inputs outputs))
-    ;; Actual precompilation
-    (invoke-julia (string-append "using " package)))
+    ;; Add new package dir to the load path.
+    (setenv "JULIA_LOAD_PATH"
+            (string-append builddir "packages/" ":"
+                           (or (getenv "JULIA_LOAD_PATH")
+                               "")))
+    ;; Actual precompilation:
+    (invoke-julia
+     ;; When using Julia as a user, Julia writes precompile cache to the first
+     ;; entry of the DEPOT_PATH list (by default, the home dir).  We want to
+     ;; write it to the store, so let's push the store path as the first
+     ;; element of DEPOT_PATH.  Once the cache file exists, this hack is not
+     ;; needed anymore (like in the check phase).  If the user install new
+     ;; packages, those will be installed and precompiled in the home dir.
+     (string-append "pushfirst!(DEPOT_PATH, pop!(DEPOT_PATH)); using " package)))
   #t)
 
 (define* (check #:key source inputs outputs #:allow-other-keys)
   (let* ((out (assoc-ref outputs "out"))
          (package (strip-store-file-name source))
          (builddir (string-append out "/share/julia/")))
+    ;; With a patch, SOURCE_DATE_EPOCH is honored
+    (setenv "SOURCE_DATE_EPOCH" "1")
     (setenv "JULIA_DEPOT_PATH" builddir)
-    (setenv "JULIA_LOAD_PATH" (generate-load-path inputs outputs))
+    (setenv "JULIA_LOAD_PATH" (string-append builddir "packages/"))
     (invoke-julia (string-append "using Pkg;Pkg.test(\"" package "\")")))
   #t)
 
