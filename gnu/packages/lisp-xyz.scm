@@ -51,6 +51,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages maths)
@@ -9413,3 +9414,53 @@ has a small codebase that's easy to understand and use.")
 
 (define-public ecl-vom
   (sbcl-package->ecl-package sbcl-vom))
+
+(define-public sbcl-cl-libuv
+  (let ((commit "32100c023c518038d0670a103eaa4d50dd785d29")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-libuv")
+      (version (git-version "0.1.6" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/orthecreedence/cl-libuv.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1kwix4si8a8hza34ab2k7whrh7z0yrmx39v2wc3qblv9m244jkh1"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)
+         ("cffi-grovel" ,sbcl-cffi-grovel)
+         ("libuv" ,libuv)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "lib.lisp"
+                 (("/usr/lib/libuv.so")
+                  (string-append (assoc-ref inputs "libuv")
+                                 "/lib/libuv.so")))
+               #t))
+           (add-after 'fix-paths 'fix-system-definition
+             (lambda _
+               (substitute* "cl-libuv.asd"
+                 (("#:cffi #:alexandria")
+                  "#:cffi #:cffi-grovel #:alexandria"))
+               #t)))))
+      (synopsis "Common Lisp bindings to libuv")
+      (description
+       "This library provides low-level libuv bindings for Common Lisp.")
+      (home-page "https://github.com/orthecreedence/cl-libuv")
+      (license license:expat))))
+
+(define-public cl-libuv
+  (sbcl-package->cl-source-package sbcl-cl-libuv))
+
+(define-public ecl-cl-libuv
+  (sbcl-package->ecl-package sbcl-cl-libuv))
