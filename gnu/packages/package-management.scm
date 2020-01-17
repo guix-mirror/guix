@@ -397,6 +397,21 @@ the Nix package manager.")
 (define-public guile2.0-guix
   (deprecated-package "guile2.0-guix" guix))
 
+(define-public guile3.0-guix
+  (package
+    (inherit guix)
+    (name "guile3.0-guix")
+    (inputs
+     `(("guile" ,guile-3.0)
+       ,@(alist-delete "guile" (package-inputs guix))))
+    (propagated-inputs
+     `(("gnutls" ,guile3.0-gnutls)
+       ("guile-gcrypt" ,guile3.0-gcrypt)
+       ("guile-json" ,guile3.0-json)
+       ("guile-sqlite3" ,guile3.0-sqlite3)
+       ("guile-ssh" ,guile3.0-ssh)
+       ("guile-git" ,guile3.0-git)))))
+
 (define-public guix-minimal
   ;; A version of Guix which is built with the minimal set of dependencies, as
   ;; outlined in the README "Requirements" section.  Intended as a CI job, so
