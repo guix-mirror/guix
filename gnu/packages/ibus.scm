@@ -71,6 +71,7 @@
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f  ; tests fail because there's no connection to dbus
+       #:parallel-build? #f ; race condition discovered with emoji support
        #:configure-flags (list "--enable-python-library"
                                (string-append
                                 "--with-unicode-emoji-dir="
