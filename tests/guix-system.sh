@@ -120,7 +120,12 @@ EOF
 if guix system build "$tmpfile" -n 2> "$errorfile"
 then false
 else
-    if test "`guile -c '(display (effective-version))'`" = 2.2
+    if test "`guile -c '(display (effective-version))'`" = 3.0
+    then
+	# FIXME: With Guile 3.3.0 the error is reported on line 11.
+	# See <https://bugs.gnu.org/38388>.
+	grep "$tmpfile:[0-9]\+:[0-9]\+:.*GRUB-config.*[Uu]nbound variable" "$errorfile"
+    elif test "`guile -c '(display (effective-version))'`" = 2.2
     then
 	# FIXME: With Guile 2.2.0 the error is reported on line 4.
 	# See <http://bugs.gnu.org/26107>.
