@@ -2261,7 +2261,7 @@ quantile mixture from L-moments and trimmed L-moments.")
         (base32
          "1mi3ig9jq0kd7yrwc5m37lmrw04p1b4lirnbsxi10z3n5yay4429"))))
     (build-system r-build-system)
-    (home-page "http://www.ral.ucar.edu/staff/ericg")
+    (home-page "https://ral.ucar.edu/staff/ericg/")
     (synopsis "Functions for confidence intervals and object information")
     (description
      "This package provides some very simple method functions for confidence
