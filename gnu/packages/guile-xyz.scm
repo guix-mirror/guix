@@ -1336,15 +1336,16 @@ PostgreSQL.")
 (define-public guile-config
   (package
     (name "guile-config")
-    (version "0.3")
+    (version "0.3.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://gitlab.com/a-sassmannshausen/guile-config")
-             (commit "ce12de3f438c6b2b59c43ee21bcd58251835fdf3")))
-       (file-name "guile-config-0.3-checkout")
-       (sha256 (base32 "02zbpin0r9m2vxmr7mv68v3xdn247dcck56kbzjn0gj4c2rhih85"))))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256 (base32
+                "0gglsqwpw77gvrqcny8irpqfl7qdf2v8n9ggwrswanxalj4vcbvf"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
