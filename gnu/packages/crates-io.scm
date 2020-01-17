@@ -308,6 +308,30 @@ text or blue underlined text, on ANSI terminals.")
 that runs on Argon2.")
     (license license:expat)))
 
+(define-public rust-arrayref-0.3
+  (package
+    (name "rust-arrayref")
+    (version "0.3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "arrayref" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vphy316jbgmgckk4z7m8csvlyc8hih9w95iyq48h8077xc2wf0d"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-development-inputs
+       (("rust-quickcheck" ,rust-quickcheck-0.6))))
+    (home-page "https://github.com/droundy/arrayref")
+    (synopsis "Macros to take array references of slices")
+    (description
+     "Macros to take array references of slices.")
+    (license license:bsd-2)))
+
 (define-public rust-arrayvec-0.4
   (package
     (name "rust-arrayvec")
