@@ -2621,7 +2621,7 @@ disks as various audio file formats.")
      `(("libsndfile" ,libsndfile)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://vamp-plugins.org")
+    (home-page "https://vamp-plugins.org")
     (synopsis "Modular and extensible audio processing system")
     (description
      "Vamp is an audio processing plugin system for plugins that extract
