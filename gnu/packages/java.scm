@@ -6808,7 +6808,7 @@ printed.")
     (version "2.7.7")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.antlr2.org/download/antlr-"
+              (uri (string-append "https://www.antlr2.org/download/antlr-"
                                   version ".tar.gz"))
               (sha256
                (base32
@@ -6855,7 +6855,7 @@ printed.")
        ("java" ,icedtea "jdk")))
     (inputs
      `(("java" ,icedtea)))
-    (home-page "http://www.antlr2.org")
+    (home-page "https://www.antlr2.org")
     (synopsis "Framework for constructing recognizers, compilers, and translators")
     (description "ANTLR, ANother Tool for Language Recognition, (formerly PCCTS)
 is a language tool that provides a framework for constructing recognizers,
