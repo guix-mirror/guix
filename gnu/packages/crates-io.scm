@@ -7483,7 +7483,7 @@ algorithm.")
 (define-public rust-pest-meta-2.1
   (package
     (name "rust-pest-meta")
-    (version "2.1.1")
+    (version "2.1.2")
     (source
      (origin
        (method url-fetch)
@@ -7492,7 +7492,7 @@ algorithm.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0kaprdz3jis9bjfwhri1zncbsvack5m3gx2g5flspdy7wxnyljgj"))))
+         "0iymvrh7lcfi8iarkgq0hwgarr00np3l4xg4bx42rmvgi6czshyz"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
