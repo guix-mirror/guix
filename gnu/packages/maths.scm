@@ -1270,7 +1270,7 @@ similar to MATLAB, GNU Octave or SciPy.")
              #t)))
 
        #:parallel-tests? #f))           ;various race conditions
-    (home-page "http://www.unidata.ucar.edu/software/netcdf/")
+    (home-page "https://www.unidata.ucar.edu/software/netcdf/")
     (synopsis "Library for scientific data")
     (description "NetCDF is an interface for scientific data access and a
 software library that provides an implementation of the interface.  The netCDF
