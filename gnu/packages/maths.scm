@@ -2644,7 +2644,7 @@ YACC = bison -pscotchyy -y -b y
                            (install-file f (string-append out "/lib")))
                          (find-files "../lib/" ".*metis\\..*"))
                #t))))))
-    (home-page "http://www.labri.fr/perso/pelegrin/scotch/")
+    (home-page "https://www.labri.fr/perso/pelegrin/scotch/")
     (synopsis "Programs and libraries for graph algorithms")
     (description "SCOTCH is a set of programs and libraries which implement
 the static mapping and sparse matrix reordering algorithms developed within
