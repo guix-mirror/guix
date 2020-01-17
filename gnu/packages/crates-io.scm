@@ -9630,6 +9630,33 @@ stack pointer and inspect the properties of the stack.")
     (description "This package provides a quasi-quoting macro system.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-quasi-macros-0.32
+  (package
+    (name "rust-quasi-macros")
+    (version "0.32.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "quasi_macros" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1p825s96wa9xcc01pm5f4nlb01nx0pah50qnwkbncrw1q9xwiki9"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-clippy" ,rust-clippy-0.0)
+        ("rust-quasi-codegen" ,rust-quasi-codegen-0.32))
+       #:cargo-development-inputs
+       (("rust-aster" ,rust-aster-0.41)
+        ("rust-quasi" ,rust-quasi-0.32))))
+    (home-page "https://github.com/serde-rs/quasi")
+    (synopsis "Quasi-quoting macro system")
+    (description "This package provides a quasi-quoting macro system.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-quick-error-1.2
   (package
     (name "rust-quick-error")
