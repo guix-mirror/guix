@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
@@ -637,8 +637,10 @@ specifies modules in scope when evaluating SNIPPET."
               (apply invoke
                      (string-append #+tar "/bin/tar")
                      "cvfa" #$output
-                     ;; avoid non-determinism in the archive
-                     "--mtime=@0"
+                     ;; Avoid non-determinism in the archive.  Set the mtime
+                     ;; to 1 as is the case in the store (software like gzip
+                     ;; behaves differently when it stumbles upon mtime = 0).
+                     "--mtime=@1"
                      "--owner=root:0"
                      "--group=root:0"
                      (if tar-supports-sort?
