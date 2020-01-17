@@ -9325,6 +9325,34 @@ uses finite automata and guarantees linear time matching on all inputs.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-rust-argon2-0.5
+  (package
+    (name "rust-rust-argon2")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rust-argon2" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1krjkmyfn37hy7sfs6lqia0fsvw130nn1z2850glsjcva7pym92c"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-base64" ,rust-base64-0.10)
+        ("rust-blake2b-simd" ,rust-blake2b-simd-0.5)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6))
+       #:cargo-development-inputs
+       (("rust-hex" ,rust-hex-0.3))))
+    (home-page "https://github.com/sru-systems/rust-argon2")
+    (synopsis "Rust implementation of the Argon2 password hashing function")
+    (description "This package contans a rust implementation of the Argon2
+password hashing function.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rustc-demangle-0.1
   (package
     (name "rust-rustc-demangle")
