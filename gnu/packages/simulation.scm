@@ -329,14 +329,14 @@ UFL is part of the FEniCS Project.")
 (define-public python-fenics-fiat
   (package
     (name "python-fenics-fiat")
-    (version "2018.1.0")
+    (version "2019.1.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "fenics-fiat" version))
         (sha256
           (base32
-            "0fmjd93r6bwf6xs8csw86qzphrnr66xwv7f372w59gmq8mg6rljc"))))
+            "13sc7lma3d2mh43an7i4kkdbbk4cmvxjk45wi43xnjd7qc38zg4b"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
@@ -351,7 +351,15 @@ UFL is part of the FEniCS Project.")
              (setenv "PYTHONPATH"
                      (string-append (getcwd) ":" (getenv "PYTHONPATH")))
              (with-directory-excursion "test"
-               (invoke "py.test" "unit/"))
+               ;; FIXME: three FIAT test modules are known to fail
+               ;; with recent versions of pytest (>= 4).  These are
+               ;; skipped for FIAT version 2019.1.0 pending an
+               ;; upstream pull request. For details see request #59
+               ;; at https://bitbucket.org/fenics-project/fiat/.
+               (invoke "py.test" "unit/"
+                       "--ignore=unit/test_fiat.py"
+                       "--ignore=unit/test_quadrature.py"
+                       "--ignore=unit/test_reference_element.py"))
              #t)))))
     (home-page "https://bitbucket.org/fenics-project/fiat/")
     (synopsis "Tabulation of finite element function spaces")
