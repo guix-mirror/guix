@@ -11445,7 +11445,11 @@ different for every thread.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "06rzik99p8c5js8238yhc8rk6np543ylb1dy9nrw5v80j0r3xdf6"))))))
+          "06rzik99p8c5js8238yhc8rk6np543ylb1dy9nrw5v80j0r3xdf6"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs (("rust-lazy-static" ,rust-lazy-static-1.4))))
+    (properties '())))
 
 (define-public rust-threadpool-1.7
   (package
