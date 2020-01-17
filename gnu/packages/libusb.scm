@@ -526,13 +526,14 @@ devices.")
   (package
     (name "hidapi")
     (version "0.8.0-rc1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/signal11/hidapi/archive/hidapi-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0qdgyj9rgb7n0nk3ghfswrhzzknxqn4ibn3wj8g4r828pw07451w"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/signal11/hidapi.git")
+             (commit (string-append "hidapi-" version))))
+       (sha256
+        (base32 "13d5jkmh9nh4c2kjch8k8amslnxapa9vkqzrk1z6rqmw8qgvzbkj"))))
     (build-system gnu-build-system)
     (inputs
      `(("libusb" ,libusb)
