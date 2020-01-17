@@ -908,12 +908,12 @@ incompatible with HDF5.")
                           (find-files ex ".*"))
                 (delete-file-recursively ex))
               #t)))))
-    (home-page "http://www.hdfgroup.org")
+    (home-page "https://www.hdfgroup.org")
     (synopsis "Management suite for extremely large and complex data")
     (description "HDF5 is a suite that makes possible the management of
 extremely large and complex data collections.")
     (license (license:x11-style
-              "http://www.hdfgroup.org/ftp/HDF5/current/src/unpacked/COPYING"))))
+              "https://www.hdfgroup.org/ftp/HDF5/current/src/unpacked/COPYING"))))
 
 (define-public hdf5-1.10
   (package (inherit hdf5)
@@ -942,7 +942,7 @@ extremely large and complex data collections.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://www.hdfgroup.org/ftp/HDF5/releases/HDF-JAVA/hdfjni-"
+             "https://www.hdfgroup.org/ftp/HDF5/releases/HDF-JAVA/hdfjni-"
              version "/src/CMake-hdfjava-" version ".tar.gz"))
        (sha256
         (base32 "0m1gp2aspcblqzmpqbdpfp6giskws85ds6p5gz8sx7asyp7wznpr"))
@@ -1175,7 +1175,7 @@ Swath).")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.hdfgroup.org/ftp/HDF5/tools/"
+       (uri (string-append "https://www.hdfgroup.org/ftp/HDF5/tools/"
                            "h5check/src/h5check-" version ".tar.gz"))
        (sha256
         (base32
