@@ -1452,6 +1452,17 @@ provides tight coupling to Guix.")
     (home-page "https://gitlab.com/a-sassmannshausen/guile-hall")
     (license license:gpl3+)))
 
+(define-public guile3.0-hall
+  (package
+    (inherit guile-hall)
+    (name "guile3.0-hall")
+    (inputs `(("guile" ,guile-next)
+              ,@(alist-delete "guile" (package-inputs guile-hall))))
+    (propagated-inputs
+     `(("guile-config" ,guile3.0-config)
+       ,@(alist-delete "guile-config"
+                       (package-propagated-inputs guile-hall))))))
+
 (define-public guile-ics
   (package
     (name "guile-ics")
