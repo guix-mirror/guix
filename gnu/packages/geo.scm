@@ -1308,7 +1308,7 @@ associated with an address.")
      `(#:tests? #f)) ;; Tests require a copy of the maxmind database
     (inputs
      `(("libmaxminddb" ,libmaxminddb)))
-    (home-page "http://www.maxmind.com/")
+    (home-page "https://www.maxmind.com/")
     (synopsis "Reader for the MaxMind DB format")
     (description "MaxMind DB is a binary file format that stores data indexed
 by IP address subnets (IPv4 or IPv6).  This is a Python module for reading
@@ -1332,7 +1332,7 @@ MaxMind DB files.")
     (inputs
      `(("python-maxminddb" ,python-maxminddb)
        ("python-requests" ,python-requests)))
-    (home-page "http://www.maxmind.com/")
+    (home-page "https://www.maxmind.com/")
     (synopsis "MaxMind GeoIP2 API")
     (description "Provides an API for the GeoIP2 web services and databases.
 The API also works with MaxMind’s free GeoLite2 databases.")
