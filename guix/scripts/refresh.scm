@@ -120,16 +120,16 @@
 
         ;; The short option -L is already used by --list-updaters, therefore
         ;; it needs to be removed from %standard-build-options.
-        (let ((%load-path-option (find (lambda (option)
+        (let ((load-path-option (find (lambda (option)
                                          (member "load-path"
                                                  (option-names option)))
                                        %standard-build-options)))
           (option
            (filter (lambda (name) (not (equal? #\L name)))
-                   (option-names %load-path-option))
-           (option-required-arg? %load-path-option)
-           (option-optional-arg? %load-path-option)
-           (option-processor     %load-path-option)))
+                   (option-names load-path-option))
+           (option-required-arg? load-path-option)
+           (option-optional-arg? load-path-option)
+           (option-processor     load-path-option)))
 
         (option '(#\h "help") #f #f
                 (lambda args
