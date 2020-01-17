@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
@@ -548,7 +548,17 @@ displayed in a terminal.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (delete 'configure))
+         (delete 'configure)
+         (add-after 'install 'record-absolute-file-names
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; 'imv' is a script that execs 'imv-x11' or 'imv-wayland'.
+             ;; Record their absolute file name.
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (substitute* (string-append bin "/imv")
+                 (("imv-")
+                  (string-append bin "/imv-")))
+               #t))))
        #:make-flags
        (list "CC=gcc"
              (string-append "PREFIX=" (assoc-ref %outputs "out"))
