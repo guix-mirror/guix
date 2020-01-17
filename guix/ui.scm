@@ -175,7 +175,11 @@ information, or #f if it could not be found."
                (previous frame))
       (if (not frame)
           previous
-          (if (frame-source frame)
+
+          ;; On Guile 3, the latest frame with source may be that of
+          ;; 'raise-exception' in boot-9.scm.  Skip it.
+          (if (and (frame-source frame)
+                   (not (eq? 'raise-exception (frame-procedure-name frame))))
               frame
               (loop (frame-previous frame) frame)))))
 
