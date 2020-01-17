@@ -1370,7 +1370,7 @@ above command-line parameters.")
 (define-public guile-hall
   (package
     (name "guile-hall")
-    (version "0.2")
+    (version "0.2.1")
     (source
      (origin
        (method git-fetch)
@@ -1379,7 +1379,7 @@ above command-line parameters.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256 (base32
-                "1bkbqgj24xh5b65sw2m98iggpi67b72szx1dsiq3cpzlcxplmgaz"))))
+                "0dwx5iyg0dmdf64wq0b4w306bapr86jwnw35npgbjq4cqm8qbzqn"))))
     (build-system gnu-build-system)
     (arguments
       `(#:modules
