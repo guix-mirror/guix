@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -37,17 +37,17 @@
 (define-public synergy
   (package
     (name "synergy")
-    (version "1.10.1")
+    (version "1.11.0")
     (source
      (origin
       (method git-fetch)
       (uri (git-reference
             (url "https://github.com/symless/synergy-core.git")
-            (commit (string-append "v" version "-stable"))))
+            (commit (string-append version "-stable"))))
       (file-name (git-file-name name version))
       (sha256
        (base32
-        "112w2xrp04cysd14xk1ax7cllqpcki0pyica4ivrdngr5qw0r9hp"))
+        "1jk60xw4h6s5crha89wk4y8rrf1f3bixgh5mzh3cq3xyrkba41gh"))
       (modules '((guix build utils)))
       (snippet
        ;; Remove unnecessary bundled source and binaries
@@ -64,13 +64,6 @@
              (setenv "CPLUS_INCLUDE_PATH"
                      (string-append (assoc-ref inputs "avahi")
                                     "/include/avahi-compat-libdns_sd"))
-             ;; See https://github.com/symless/synergy-core/pull/6359/
-             (substitute* "src/gui/src/ScreenSetupView.cpp"
-               (("#include <QtGui>" m)
-                (string-append m "\n#include <QHeaderView>")))
-             (substitute* "src/gui/src/ActionDialog.cpp"
-               (("#include <QtGui>" m)
-                (string-append m "\n#include <QButtonGroup>")))
              #t)))))
     (inputs
      `(("avahi" ,avahi)
