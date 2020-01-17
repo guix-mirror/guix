@@ -369,6 +369,9 @@ VERSION."
                          (string=? (package-version p) highest))
                        matches))))))
 
+;; Prevent Guile 3 from inlining this procedure so we can mock it in tests.
+(set! find-best-packages-by-name find-best-packages-by-name)
+
 (define (generate-package-cache directory)
   "Generate under DIRECTORY a cache of all the available packages.
 
