@@ -501,6 +501,31 @@ ArrayVec and ArrayString.")
      "This package asserts that a value matches a pattern in Rust.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-aster-0.41
+  (package
+    (name "rust-aster")
+    (version "0.41.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "aster" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1q704kn23wnwnrxml7w1mxw6a3xb6386x5wgys6ibnyramrxzksc"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-clippy" ,rust-clippy-0.0)
+        ("rust-compiletest-rs" ,rust-compiletest-rs-0.2)
+        ("rust-syntex-syntax" ,rust-syntex-syntax-0.58))))
+    (home-page "https://github.com/serde-rs/aster")
+    (synopsis "Libsyntax ast builder")
+    (description "This package provides a libsyntax ast builder.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-atty-0.2
   (package
     (name "rust-atty")
