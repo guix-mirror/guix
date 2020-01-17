@@ -38,7 +38,10 @@
   #:use-module (guix packages)
   #:use-module (gnu packages)
   #:use-module (guix build-system texlive)
-  #:export (texlive->guix-package))
+  #:export (texlive->guix-package
+
+            fetch-sxml
+            sxml->package))
 
 ;;; Commentary:
 ;;;
