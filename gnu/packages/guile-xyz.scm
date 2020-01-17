@@ -1367,6 +1367,13 @@ above command-line parameters.")
      "https://gitlab.com/a-sassmannshausen/guile-config")
     (license license:gpl3+)))
 
+(define-public guile3.0-config
+  (package
+    (inherit guile-config)
+    (name "guile3.0-config")
+    (inputs `(("guile" ,guile-next)
+              ,@(alist-delete "guile" (package-inputs guile-config))))))
+
 (define-public guile-hall
   (package
     (name "guile-hall")
