@@ -10277,8 +10277,35 @@ generator based on timing jitter.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-rand-xoshiro-0.4
+  (package
+    (name "rust-rand-xoshiro")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rand-xoshiro" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "013h45rikipv5bda2ixmwx5rwsk9wpc7mr0a77cz20hxi0pdvz59"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-rand-core" ,rust-rand-core-0.5)
+        ("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-bincode" ,rust-bincode-1.1))))
+    (home-page "https://crates.io/crates/rand_xoshiro")
+    (synopsis "Xoshiro, xoroshiro and splitmix64 random number generators")
+    (description "This package provides the xoshiro, xoroshiro and splitmix64
+random number generators.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rand-xoshiro-0.3
   (package
+    (inherit rust-rand-xoshiro-0.4)
     (name "rust-rand-xoshiro")
     (version "0.3.0")
     (source
@@ -10290,7 +10317,6 @@ generator based on timing jitter.")
        (sha256
         (base32
          "07w3qgrac8r356lz5vqff42rly6yd9vs3g5lx5pbn13rcmb05rqb"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -10298,17 +10324,11 @@ generator based on timing jitter.")
         ("rust-rand-core" ,rust-rand-core-0.5)
         ("rust-serde" ,rust-serde-1.0))
        #:cargo-development-inputs
-       (("rust-bincode" ,rust-bincode-1.1))))
-    (home-page "https://github.com/rust-random/rand")
-    (synopsis
-     "Xoshiro, xoroshiro and splitmix64 random number generators")
-    (description
-     "Xoshiro, xoroshiro and splitmix64 random number generators.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-bincode" ,rust-bincode-1.1))))))
 
 (define-public rust-rand-xoshiro-0.1
   (package
-    (inherit rust-rand-xoshiro-0.3)
+    (inherit rust-rand-xoshiro-0.4)
     (name "rust-rand-xoshiro")
     (version "0.1.0")
     (source
