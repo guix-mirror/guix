@@ -5,7 +5,7 @@
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -231,6 +231,18 @@ and workspaces that can be used in the compiler environment of your choice.")
     (native-search-paths '())
     (search-paths
      (package-native-search-paths cmake-minimal))))
+
+;; The purpose of this package is to solve a circular dependency between
+;; packages that use cmake-build-system and CMakes own dependencies.
+(define-public cmake-minimal-bootstrap
+  (package
+    (inherit cmake-minimal)
+    (name "cmake-minimal-bootstrap")
+    (native-inputs
+     `(;; cURL depends on ghostscript (via groff and OpenLDAP), which depends on
+       ;; 'cmake-build-system' through libtiff and ultimately libjpeg-turbo.
+       ("curl" ,curl-minimal)
+       ,@(alist-delete "curl" (package-native-inputs cmake-minimal))))))
 
 (define-public emacs-cmake-mode
   (package

@@ -46,7 +46,8 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages web))
+  #:use-module (gnu packages web)
+  #:use-module (srfi srfi-1))
 
 (define-public curl
   (package
@@ -158,6 +159,15 @@ tunneling, and so on.")
    (license (license:non-copyleft "file://COPYING"
                                   "See COPYING in the distribution."))
    (home-page "https://curl.haxx.se/")))
+
+;; This package exists mainly to bootstrap CMake.  It must not depend on
+;; anything that uses cmake-build-system.
+(define-public curl-minimal
+  (hidden-package
+   (package/inherit
+    curl
+    (name "curl-minimal")
+    (inputs (alist-delete "openldap" (package-inputs curl))))))
 
 (define-public kurly
   (package

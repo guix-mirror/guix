@@ -46,6 +46,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
@@ -1504,8 +1505,13 @@ is hereby granted."))))
     (native-inputs
      `(("nasm" ,nasm)))
     (arguments
-     '(#:configure-flags '("-DCMAKE_INSTALL_LIBDIR:PATH=lib"
-                           "-DENABLE_STATIC=0")))
+     `(#:configure-flags '("-DCMAKE_INSTALL_LIBDIR:PATH=lib"
+                           "-DENABLE_STATIC=0")
+       ,@(if (%current-target-system)
+             '()
+             ;; Use a special "bootstrap" CMake for the native build to work
+             ;; around a circular dependency between CMake and this package.
+             `(#:cmake ,cmake-minimal-bootstrap))))
     (home-page "https://libjpeg-turbo.org/")
     (synopsis "SIMD-accelerated JPEG image handling library")
     (description "libjpeg-turbo is a JPEG image codec that accelerates baseline
