@@ -2044,7 +2044,7 @@ computer games, 3D authoring tools and simulation tools.")
      `(("freeglut" ,freeglut)
        ("libxmu" ,libxmu)
        ("libxrandr" ,libxrandr)))
-    (home-page "http://chipmunk2d.net/")
+    (home-page "https://chipmunk-physics.net/")
     (synopsis "Fast and lightweight 2D game physics library")
     (description "Chipmunk is a simple, lightweight, fast and portable 2D
 rigid body physics library written in C.")
