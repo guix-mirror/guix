@@ -11413,8 +11413,29 @@ different for every thread.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-thread-local-1.0
+  (package
+    (name "rust-thread-local")
+    (version "1.0.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "thread_local" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "054vlrr1vsdy1h4b7n99mr24pnj8928ig9qwzg36wnkld4dns36l"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/Amanieu/thread_local-rs")
+    (synopsis "Per-object thread-local storage")
+    (description "Per-object thread-local storage")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-thread-local-0.3
   (package
+    (inherit rust-thread-local-1.0)
     (name "rust-thread-local")
     (version "0.3.6")
     (source
@@ -11424,14 +11445,7 @@ different for every thread.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "06rzik99p8c5js8238yhc8rk6np543ylb1dy9nrw5v80j0r3xdf6"))))
-    (build-system cargo-build-system)
-    (home-page "https://github.com/Amanieu/thread_local-rs")
-    (synopsis "Per-object thread-local storage")
-    (description "Per-object thread-local storage")
-    (properties '((hidden? . #t)))
-    (license (list license:asl2.0
-                   license:expat))))
+          "06rzik99p8c5js8238yhc8rk6np543ylb1dy9nrw5v80j0r3xdf6"))))))
 
 (define-public rust-threadpool-1.7
   (package
