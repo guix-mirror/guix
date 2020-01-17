@@ -1565,8 +1565,7 @@ stylesheets, you'll need to use another program that uses this library,
      `(#:make-flags
        (list "CC=gcc"
              (string-append "PREFIX=" (assoc-ref %outputs "out")))
-       ;; I don't believe sassc contains any tests
-       #:tests? #f
+       #:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-Makefile
@@ -1579,9 +1578,9 @@ stylesheets, you'll need to use another program that uses this library,
                (("install: libsass-install-\\$\\(BUILD\\) \\\\")
                 "install: \\"))
              #t))
-         ;; This phase fails for some reason
+         ;; This phase fails for some reason.
          (delete 'bootstrap)
-         ;; There is no configure script
+         ;; There is no configure script.
          (delete 'configure)
          (add-before 'build 'setup-environment
            (lambda _
@@ -1593,7 +1592,7 @@ stylesheets, you'll need to use another program that uses this library,
     (synopsis "CSS pre-processor")
     (description "SassC is a compiler written in C for the CSS pre-processor
 language known as SASS.")
-    (home-page "http://sass-lang.com/libsass")
+    (home-page "https://sass-lang.com/libsass")
     (license license:expat)))
 
 

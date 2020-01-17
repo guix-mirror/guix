@@ -7755,7 +7755,7 @@ the @file{spec} directory.")
     (native-inputs
      `(("ruby-sass-spec" ,ruby-sass-spec)
        ("ruby-mathn" ,ruby-mathn)))
-    (home-page "http://sass-lang.com/")
+    (home-page "https://sass-lang.com/")
     (synopsis "CSS extension language")
     (description "Sass is a CSS extension language.  It extends CSS with
 features that don't exist yet like variables, nesting, mixins and inheritance.")
