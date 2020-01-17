@@ -93,7 +93,7 @@ m4_pattern_forbid([^GUIX_])
 
 dnl Search for 'guile' and 'guild'.  This macro defines
 dnl 'GUILE_EFFECTIVE_VERSION'.
-GUILE_PKG([2.2])
+GUILE_PKG([3.0 2.2])
 GUILE_PROGS
 if test "x$GUILD" = "x"; then
    AC_MSG_ERROR(['guild' binary not found; please check your guile-2.x installation.])
