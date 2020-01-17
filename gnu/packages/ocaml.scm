@@ -131,10 +131,10 @@
                          "/lib/ocaml/site-lib"))
     #:phases (modify-phases %standard-phases (delete 'configure))))
 
-(define-public ocaml-4.07
+(define-public ocaml-4.09
   (package
     (name "ocaml")
-    (version "4.07.1")
+    (version "4.09.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -143,7 +143,7 @@
                     "/ocaml-" version ".tar.xz"))
               (sha256
                (base32
-                "1f07hgj5k45cylj1q3k5mk8yi02cwzx849b1fwnwia8xlcfqpr6z"))))
+                "1v3z5ar326f3hzvpfljg4xj8b9lmbrl53fn57yih1bkbx3gr3yzj"))))
     (build-system gnu-build-system)
     (native-search-paths
      (list (search-path-specification
@@ -162,10 +162,7 @@
        ("gcc:lib" ,(canonical-package gcc) "lib")
        ("zlib" ,zlib)))                       ;also needed for objdump support
     (arguments
-     `(#:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (web server))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-/bin/sh-references
            (lambda* (#:key inputs #:allow-other-keys)
@@ -184,21 +181,11 @@ patch-/bin/sh-references: ~a: changing `\"/bin/sh\"' to `~a'~%"
                          quoted-sh))))
                   (find-files "." "\\.ml$"))
                  #t))))
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (mandir (string-append out "/share/man")))
-               ;; Custom configure script doesn't recognize
-               ;; --prefix=<PREFIX> syntax (with equals sign).
-               (invoke "./configure"
-                       "--prefix" out
-                       "--mandir" mandir))))
          (replace 'build
            (lambda _
              (invoke "make" "-j" (number->string (parallel-job-count))
                      "world.opt")))
-         (delete 'check)
-         (add-after 'install 'check
+         (replace 'check
            (lambda _
              (with-directory-excursion "testsuite"
                (invoke "make" "all")))))))
@@ -213,6 +200,33 @@ functional, imperative and object-oriented styles of programming.")
     ;; law: the license is governed by the laws of France.  The library is
     ;; distributed under lgpl2.0.
     (license (list license:qpl license:lgpl2.0))))
+
+(define-public ocaml-4.07
+  (package
+    (inherit ocaml-4.09)
+    (version "4.07.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://caml.inria.fr/pub/distrib/ocaml-"
+                    (version-major+minor version)
+                    "/ocaml-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1f07hgj5k45cylj1q3k5mk8yi02cwzx849b1fwnwia8xlcfqpr6z"))))
+    (arguments
+      (substitute-keyword-arguments (package-arguments ocaml-4.09)
+        ((#:phases phases)
+         `(modify-phases ,phases
+            (replace 'configure
+              (lambda* (#:key outputs #:allow-other-keys)
+                (let* ((out (assoc-ref outputs "out"))
+                       (mandir (string-append out "/share/man")))
+                  ;; Custom configure script doesn't recognize
+                  ;; --prefix=<PREFIX> syntax (with equals sign).
+                  (invoke "./configure"
+                          "--prefix" out
+                          "--mandir" mandir))))))))))
 
 (define-public ocaml ocaml-4.07)
 
