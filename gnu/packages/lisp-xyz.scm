@@ -9626,3 +9626,38 @@ the successor to the now-deprecated cl-async-future project.")
 
 (define-public ecl-blackbird
   (sbcl-package->ecl-package sbcl-blackbird))
+
+(define-public sbcl-cl-async-future
+  (let ((commit "ee36c22a69a9516407458d2ed8b475f1fc473959")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-async-future")
+      (version (git-version "0.4.4.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/orthecreedence/cl-async-future.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0z0sc7qlzzxk99f4l26zp6rai9kv0kj0f599sxai5s44p17zbbvh"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("blackbird" ,sbcl-blackbird)))
+      (native-inputs
+       `(("cl-async" ,sbcl-cl-async)
+         ("eos" ,sbcl-eos)))
+      (synopsis "Futures implementation for Common Lisp")
+      (description
+       "This is futures implementation for Common Lisp.  It plugs in nicely
+to cl-async.")
+      (home-page "http://orthecreedence.github.io/cl-async/future")
+      (license license:expat))))
+
+(define-public cl-async-future
+  (sbcl-package->cl-source-package sbcl-cl-async-future))
+
+(define-public ecl-cl-async-future
+  (sbcl-package->ecl-package sbcl-cl-async-future))
