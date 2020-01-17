@@ -364,14 +364,7 @@ an interpreter, a compiler, a debugger, and much more.")
        (uri (string-append "mirror://sourceforge/sbcl/sbcl/" version "/sbcl-"
                            version "-source.tar.bz2"))
        (sha256
-        (base32 "1krgd69cirp4ili2pfsh1a0mfvq722jbknlvmf17qhsxh1b94dlh"))
-       (modules '((guix build utils)))
-       (snippet
-        ;; Add sbcl-bundle-systems to 'default-system-source-registry'.
-        `(begin
-           (substitute* "contrib/asdf/asdf.lisp"
-             ,@(asdf-substitutions name))
-           #t))))
+        (base32 "1krgd69cirp4ili2pfsh1a0mfvq722jbknlvmf17qhsxh1b94dlh"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (native-inputs
@@ -400,11 +393,12 @@ an interpreter, a compiler, a debugger, and much more.")
             `(("clisp" ,clisp)))
            (_
             `(("clisp" ,clisp))))
-       ("which" ,which)
-       ("inetutils" ,inetutils)         ;for hostname(1)
+       ("cl-asdf" ,cl-asdf)
        ("ed" ,ed)
-       ("texlive" ,(texlive-union (list texlive-tex-texinfo)))
+       ("inetutils" ,inetutils)         ;for hostname(1)
        ("texinfo" ,texinfo)
+       ("texlive" ,(texlive-union (list texlive-tex-texinfo)))
+       ("which" ,which)
        ("zlib" ,zlib)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -413,6 +407,24 @@ an interpreter, a compiler, a debugger, and much more.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
+         (add-after 'unpack 'replace-asdf
+           ;; SBCL developers have not committed to keeping ASDF up to date
+           ;; due to breaking changes [1]. Guix can handle this situation
+           ;; easily, and it behooves us to have more control over what version
+           ;; of ASDF we use to build software; therefore, replace the contrib
+           ;; ASDF with the version packaged into Guix.
+           ;; [1] - https://bugs.launchpad.net/sbcl/+bug/1823442
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((cl-asdf (assoc-ref inputs "cl-asdf"))
+                    (guix-asdf (string-append
+                                cl-asdf
+                                "/share/common-lisp/source/asdf/asdf.lisp"))
+                    (out (string-append (assoc-ref outputs "out")))
+                    (contrib-asdf "contrib/asdf/asdf.lisp"))
+               (copy-file guix-asdf contrib-asdf)
+               (substitute* contrib-asdf
+                 ,@(asdf-substitutions name)))
+             #t))
          (add-before 'build 'patch-unix-tool-paths
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
@@ -512,8 +524,8 @@ an interpreter, a compiler, a debugger, and much more.")
                                  new-doc/sbcl-dir)
                (delete-file-recursively old-doc-dir)
                #t))))
-         ;; No 'check' target, though "make.sh" (build phase) runs tests.
-         #:tests? #f))
+       ;; No 'check' target, though "make.sh" (build phase) runs tests.
+       #:tests? #f))
     (native-search-paths
      (list (search-path-specification
             (variable "XDG_DATA_DIRS")
