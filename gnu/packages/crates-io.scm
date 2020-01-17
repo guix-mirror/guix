@@ -332,10 +332,10 @@ that runs on Argon2.")
      "Macros to take array references of slices.")
     (license license:bsd-2)))
 
-(define-public rust-arrayvec-0.4
+(define-public rust-arrayvec-0.5
   (package
     (name "rust-arrayvec")
-    (version "0.4.10")
+    (version "0.5.1")
     (source
      (origin
        (method url-fetch)
@@ -344,13 +344,12 @@ that runs on Argon2.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0wcch3ca9qvkixgdbd2afrv1xa27l83vpraf7frsh9l8pivgpiwj"))))
+         "1f5mca8kiiwhvhxd1mbnq68j6v6rk139sch567zwwzl6hs37vxyg"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-nodrop" ,rust-nodrop-0.1)
-        ("rust-serde" ,rust-serde-1.0))
+       (("rust-serde" ,rust-serde-1.0))
        #:cargo-development-inputs
        (("rust-bencher" ,rust-bencher-0.1)
         ("rust-matches" ,rust-matches-0.1)
@@ -362,6 +361,30 @@ that runs on Argon2.")
 array (it can be stored on the stack too).  Implements fixed capacity
 ArrayVec and ArrayString.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-arrayvec-0.4
+  (package
+    (inherit rust-arrayvec-0.5)
+    (name "rust-arrayvec")
+    (version "0.4.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "arrayvec" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0wcch3ca9qvkixgdbd2afrv1xa27l83vpraf7frsh9l8pivgpiwj"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-nodrop" ,rust-nodrop-0.1)
+        ("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-bencher" ,rust-bencher-0.1)
+        ("rust-matches" ,rust-matches-0.1)
+        ("rust-serde-test" ,rust-serde-test-1.0))))))
 
 (define-public rust-ascii-0.9
   (package
