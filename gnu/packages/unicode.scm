@@ -23,6 +23,35 @@
   #:use-module (guix utils)
   #:use-module (guix build-system trivial))
 
+(define-public ucd
+  (package
+    (name "ucd")
+    (version "12.0.0")
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri (string-append "https://www.unicode.org/Public/zipped/" version
+                           "/UCD.zip"))
+       (sha256
+        (base32
+         "1ighy39cjkmqnv1797wrxjz76mv1fdw7zp5j04q55bkwxsdkvrmh"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (let ((out (string-append %output "/share/ucd")))
+         (use-modules (guix build utils))
+         (mkdir-p out)
+         (copy-recursively (assoc-ref %build-inputs "source") out)
+         #t)))
+    (home-page "https://www.unicode.org")
+    (synopsis "Unicode Character Database")
+    (description
+     "The @dfn{Unicode Character Database} (UCD) consists of a number of data
+files listing Unicode character properties and related data.  It also includes
+test data for conformance to several important Unicode algorithms.")
+    (license unicode)))
+
 (define (unicode-emoji-file name version hash)
   (origin
     (method url-fetch)
