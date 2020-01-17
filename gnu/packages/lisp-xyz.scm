@@ -9541,3 +9541,21 @@ Common Lisp.  It uses the libuv library as backend.")
 
 (define-public ecl-cl-async
   (sbcl-package->ecl-package sbcl-cl-async))
+
+(define-public sbcl-cl-async-repl
+  (package
+    (inherit sbcl-cl-async-base)
+    (name "sbcl-cl-async-repl")
+    (inputs
+     `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("cl-async" ,sbcl-cl-async)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cl-async-base)
+       ((#:asd-file _ "") "cl-async-repl.asd")))
+    (synopsis "REPL integration for cl-async")))
+
+(define-public cl-async-repl
+  (sbcl-package->cl-source-package sbcl-cl-async-repl))
+
+(define-public ecl-cl-async-repl
+  (sbcl-package->ecl-package sbcl-cl-async-repl))
