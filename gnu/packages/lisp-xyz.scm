@@ -9519,3 +9519,25 @@ Common Lisp.  It uses the libuv library as backend.")
 
 (define-public ecl-cl-async-util
   (sbcl-package->ecl-package sbcl-cl-async-util))
+
+(define-public sbcl-cl-async
+  (package
+    (inherit sbcl-cl-async-base)
+    (name "sbcl-cl-async")
+    (inputs
+     `(("babel" ,sbcl-babel)
+       ("cffi" ,sbcl-cffi)
+       ("cl-async-base" ,sbcl-cl-async-base)
+       ("cl-async-util" ,sbcl-cl-async-util)
+       ("cl-libuv" ,sbcl-cl-libuv)
+       ("cl-ppcre" ,sbcl-cl-ppcre)
+       ("static-vectors" ,sbcl-static-vectors)
+       ("trivial-features" ,sbcl-trivial-features)
+       ("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+    (synopsis "Asynchronous operations for Common Lisp")))
+
+(define-public cl-async
+  (sbcl-package->cl-source-package sbcl-cl-async))
+
+(define-public ecl-cl-async
+  (sbcl-package->ecl-package sbcl-cl-async))
