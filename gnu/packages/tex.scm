@@ -2402,6 +2402,13 @@ formats.")
             (srfi srfi-26)))
          ((#:phases phases)
           `(modify-phases ,phases
+             ;; The literal tab in the dtx file is translated to the string
+             ;; "^^I" in the generated Lua file, which causes a syntax error.
+             (add-after 'unpack 'fix-lua-sources
+               (lambda _
+                 (substitute* "source/latex/base/ltluatex.dtx"
+                   (("	") "  "))
+                 #t))
              (replace 'build
                (lambda* (#:key inputs #:allow-other-keys)
                  ;; Find required fonts
