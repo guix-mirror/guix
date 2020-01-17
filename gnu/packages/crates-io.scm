@@ -9678,10 +9678,37 @@ to write.")
     (license (list license:asl2.0
                    license:expat))))
 
-;; Many circular dependencies.
-;; Dev dependencies are allowed to have them in crates.io.
+(define-public rust-quickcheck-0.9
+  (package
+    (name "rust-quickcheck")
+    (version "0.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "quickcheck" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0pwl7j21wmf843kpa9gr0byb40hg975ghjrwp0yxcym99bkq6j54"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-env-logger" ,rust-env-logger-0.7)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-rand-core" ,rust-rand-core-0.5))))
+    (home-page "https://github.com/BurntSushi/quickcheck")
+    (synopsis "Automatic property based testing with shrinking")
+    (description
+     "QuickCheck is a way to do property based testing using randomly generated
+input.  This crate comes with the ability to randomly generate and shrink
+integers, floats, tuples, booleans, lists, strings, options and results.")
+    (license (list license:unlicense license:expat))))
+
 (define-public rust-quickcheck-0.8
   (package
+    (inherit rust-quickcheck-0.9)
     (name "rust-quickcheck")
     (version "0.8.5")
     (source
@@ -9693,24 +9720,16 @@ to write.")
        (sha256
         (base32
          "0mkl4wnvvjk4m32aq3an4ayfyvnmbxnzcybfm7n3fbsndb1xjdcw"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-env-logger" ,rust-env-logger-0.6)
         ("rust-log" ,rust-log-0.4)
         ("rust-rand" ,rust-rand-0.6)
-        ("rust-rand-core" ,rust-rand-core-0.4))))
-    (home-page
-     "https://github.com/BurntSushi/quickcheck")
-    (synopsis
-     "Automatic property based testing with shrinking")
-    (description
-     "Automatic property based testing with shrinking.")
-    (license (list license:expat license:unlicense))))
+        ("rust-rand-core" ,rust-rand-core-0.4))))))
 
 (define-public rust-quickcheck-0.7
   (package
-    (inherit rust-quickcheck-0.8)
+    (inherit rust-quickcheck-0.9)
     (name "rust-quickcheck")
     (version "0.7.2")
     (source
@@ -9732,7 +9751,7 @@ to write.")
 
 (define-public rust-quickcheck-0.6
   (package
-    (inherit rust-quickcheck-0.8)
+    (inherit rust-quickcheck-0.9)
     (name "rust-quickcheck")
     (version "0.6.2")
     (source
@@ -9753,7 +9772,7 @@ to write.")
 
 (define-public rust-quickcheck-0.5
   (package
-    (inherit rust-quickcheck-0.8)
+    (inherit rust-quickcheck-0.9)
     (name "rust-quickcheck")
     (version "0.5.0")
     (source
@@ -9773,7 +9792,7 @@ to write.")
 
 (define-public rust-quickcheck-0.2
   (package
-    (inherit rust-quickcheck-0.8)
+    (inherit rust-quickcheck-0.9)
     (name "rust-quickcheck")
     (version "0.2.27")
     (source
