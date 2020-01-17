@@ -807,6 +807,33 @@ behave like a set of bitflags.")
 7693.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-blake2b-simd-0.5
+  (package
+    (name "rust-blake2b-simd")
+    (version "0.5.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "blake2b-simd" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "12icvk8ixlivv3jv5nyrg01sajp4s279zb1kmif0nfja4ms2vyyq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-arrayref" ,rust-arrayref-0.3)
+        ("rust-arrayvec" ,rust-arrayvec-0.5)
+        ("rust-constant-time-eq" ,rust-constant-time-eq-0.1))))
+    (home-page "https://github.com/oconnor663/blake2_simd")
+    (synopsis "Pure Rust BLAKE2b implementation with dynamic SIMD")
+    (description
+     "This package provides a pure Rust implementation of the BLAKE2b and
+BLAKE2bp hash functions.")
+    (license license:expat)))
+
 (define-public rust-blas-sys-0.7
   (package
     (name "rust-blas-sys")
