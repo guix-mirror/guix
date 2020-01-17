@@ -483,7 +483,7 @@ ksh, and tcsh.")
        #:tests? #f))
     (inputs
      `(("python-ply" ,python-ply)))
-    (home-page "http://xon.sh/")
+    (home-page "https://xon.sh/")
     (synopsis "Python-ish shell")
     (description
      "Xonsh is a Python-ish, BASHwards-looking shell language and command
