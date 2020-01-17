@@ -76,14 +76,13 @@ conversions for values passed between the two languages.")
 (define-public python-cffi
   (package
     (name "python-cffi")
-    (version "1.11.5")
+    (version "1.13.2")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "cffi" version))
       (sha256
-       (base32 "1x3lrj928dcxx1k8k9gf3s4s3jwvzv8mc3kkyg1g7c3a1sc1f3z9"))
-      (patches (search-patches "python-cffi-x87-stack-clean.patch"))))
+       (base32 "0iikq5rn9a405n94c7s2j6kq3jv5qs9q4xyik8657b2py27ix6jr"))))
     (build-system python-build-system)
     (inputs
      `(("libffi" ,libffi)))
@@ -116,7 +115,7 @@ conversions for values passed between the two languages.")
                                "compiler_so='gcc',linker_exe='gcc',"
                                "linker_so='gcc -shared')")))
              (substitute* "testing/cffi0/test_ownlib.py"
-               (("'cc testownlib") "'gcc testownlib"))
+               (("\"cc testownlib") "\"gcc testownlib"))
              (invoke "py.test" "-v" "c/" "testing/")
              #t))
          (add-before 'check 'patch-paths-of-dynamically-loaded-libraries
@@ -142,14 +141,7 @@ conversions for values passed between the two languages.")
                (substitute* "c/test_c.py"
                  (("find_and_load_library\\(['\"]{1}c['\"]{1}")
                   (format #f "find_and_load_library('~a'" libc)))
-               #t)))
-         (add-before 'check 'disable-failing-test
-           ;; This is assumed to be a libffi issue:
-           ;; https://bitbucket.org/cffi/cffi/issues/312/tests-failed-with-armv8
-           (lambda _
-             (substitute* "testing/cffi0/test_ownlib.py"
-               (("ret.left") "ownlib.left"))
-             #t)))))
+               #t))))))
     (home-page "https://cffi.readthedocs.io/")
     (synopsis "Foreign function interface for Python")
     (description "Foreign Function Interface for Python calling C code.")
