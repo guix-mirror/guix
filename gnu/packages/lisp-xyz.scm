@@ -9661,3 +9661,51 @@ to cl-async.")
 
 (define-public ecl-cl-async-future
   (sbcl-package->ecl-package sbcl-cl-async-future))
+
+(define-public sbcl-green-threads
+  (let ((commit "fff5ebecb441a37e5c511773716aafd84a3c5840")
+        (revision "1"))
+    (package
+      (name "sbcl-green-threads")
+      (version (git-version "0.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/thezerobit/green-threads.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1czw7nr0dwfps76h8hjvglk1wdh53yqbfbvv30whwbgqx33iippz"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-async-future" ,sbcl-cl-async-future)
+         ("cl-cont" ,sbcl-cl-cont)))
+      (native-inputs
+       `(("prove" ,sbcl-prove)))
+      (arguments
+       `(;; TODO: Fix the tests. They fail with:
+         ;; "The function BLACKBIRD::PROMISE-VALUES is undefined"
+         #:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-tests
+             (lambda _
+               (substitute* "green-threads-test.asd"
+                 (("cl-test-more")
+                  "prove"))
+               #t)))))
+      (synopsis "Cooperative multitasking library for Common Lisp")
+      (description
+       "This library allows for cooperative multitasking with help of cl-cont
+for continuations.  It tries to mimic the API of bordeaux-threads as much as
+possible.")
+      (home-page "https://github.com/thezerobit/green-threads")
+      (license license:bsd-3))))
+
+(define-public cl-green-threads
+  (sbcl-package->cl-source-package sbcl-green-threads))
+
+(define-public ecl-green-threads
+  (sbcl-package->ecl-package sbcl-green-threads))
