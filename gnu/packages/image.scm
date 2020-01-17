@@ -83,6 +83,7 @@
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system scons)
+  #:use-module (guix deprecation)
   #:use-module (srfi srfi-1))
 
 (define-public libpng
@@ -364,7 +365,7 @@ Features:
 @end enumerate")
     (license license:gpl3+)))
 
-(define-public libjpeg
+(define-public ijg-libjpeg
   (package
    (name "libjpeg")
    (version "9c")
@@ -393,8 +394,8 @@ lossless JPEG manipulations such as rotation, scaling or cropping:
    (license license:ijg)
    (home-page "https://www.ijg.org/")))
 
-(define-public libjpeg-8
-  (package (inherit libjpeg)
+(define-public ijg-libjpeg-8
+  (package (inherit ijg-libjpeg)
    (version "8d")
    (source (origin
             (method url-fetch)
@@ -1527,6 +1528,8 @@ and decompress to 32-bit and big-endian pixel buffers (RGBX, XBGR, etc.).")
     (license (list license:bsd-3        ;the TurboJPEG API library and programs
                    license:ijg          ;the libjpeg library and associated tools
                    license:zlib))))     ;the libjpeg-turbo SIMD extensions
+
+(define-deprecated libjpeg libjpeg-turbo)
 
 (define-public niftilib
   (package
