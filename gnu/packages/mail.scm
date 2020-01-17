@@ -489,7 +489,7 @@ operating systems.")
                (apply invoke bash
                       (string-append (getcwd) "/configure")
                       flags)))))))
-    (home-page "https://www.neomutt.org/")
+    (home-page "https://neomutt.org/")
     (synopsis "Command-line mail reader based on Mutt")
     (description
      "NeoMutt is a command-line mail reader which is based on mutt.
