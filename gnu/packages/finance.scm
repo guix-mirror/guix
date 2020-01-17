@@ -1242,7 +1242,7 @@ a client based on Qt.  This is a fork of Bitcoin Core.")))
     (home-page "http://libofx.sourceforge.net/")
     (synopsis "Library supporting the Open Financial Exchange format")
     (description
-     "The LibOFX library is a API designed to allow applications to very easily
+     "The LibOFX library is an API designed to allow applications to very easily
 support OFX command responses, usually provided by financial institutions.  The
 following three utilities are included with the library:
 @enumerate
