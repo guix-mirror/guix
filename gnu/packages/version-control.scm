@@ -1049,7 +1049,7 @@ lot easier.")
 (define-public stgit
   (package
     (name "stgit")
-    (version "0.18")
+    (version "0.21")
     (source
      (origin
        (method git-fetch)
@@ -1058,20 +1058,36 @@ lot easier.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ydgg744m671nkhg7h4q2z3b9vpbc9914rbc0wcgimqfqsxkxx2y"))))
+        (base32 "00pmz93znl418lsjwy4mr0chp8i2w27h1xjysa05f62smsv91yyc"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("perl" ,perl)))
     (inputs
      `(("git" ,git)))
     (arguments
-     `(#:python ,python-2
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'hard-code-version
+           (lambda _
+             ;; setup.py tries to cleverly extract the version number from the
+             ;; git history, which the source checkout lacks.  Hard-code one.
+             (substitute* "setup.py"
+               (("get_ver\\(\\)")
+                (format #f "'~a'" ,version)))
+             #t))
+         (add-before 'check 'patch-tests
+           (lambda _
+             (substitute* (list "t/t1900-mail.sh"
+                                "t/t7504-commit-msg-hook.sh")
+               (("/bin/sh")
+                (which "bash")))
+             #t))
          (replace 'check
            (lambda _
-             ;; Two tests will fail -> disable them. TODO: fix the failing tests
-             (delete-file "t/t3300-edit.sh")
-             (delete-file "t/t7504-commit-msg-hook.sh")
-             (invoke "make" "test"))))))
+             (invoke "make"
+                     "PERL_PATH=perl"
+                     (string-append "SHELL_PATH=" (which "bash"))
+                     "test"))))))
     (home-page "http://procode.org/stgit/")
     (synopsis "Stacked Git")
     (description
