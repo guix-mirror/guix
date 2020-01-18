@@ -218,7 +218,7 @@ support.")
 ANSI CL by David N. Gray.  The proposal did not make it into ANSI CL, but most
 popular CL implementations implement it.  This package provides an extremely
 thin compatibility layer for gray streams.")
-      (home-page "http://www.cliki.net/trivial-gray-streams")
+      (home-page "https://www.cliki.net/trivial-gray-streams")
       (license license:x11))))
 
 (define-public cl-trivial-gray-streams
