@@ -15331,7 +15331,7 @@ Glob2 currently based on the glob code from Python 3.3.1.")
      `(("unzip" ,unzip)))
     (propagated-inputs
      `(("python-gevent" ,python-gevent)))
-    (home-page "http://gehrcke.de/gipc")
+    (home-page "https://gehrcke.de/gipc/")
     (synopsis "Child process management in the context of gevent")
     (description "Usage of Python's multiprocessing package in a
 gevent-powered application may raise problems.  With @code{gipc},
