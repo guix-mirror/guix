@@ -603,7 +603,7 @@ files.")
     (build-system asdf-build-system/sbcl)
     (native-inputs
      `(("fiasco" ,sbcl-fiasco)))
-    (home-page "http://www.cliki.net/portable-clx")
+    (home-page "https://www.cliki.net/portable-clx")
     (synopsis "X11 client library for Common Lisp")
     (description "CLX is an X11 client library for Common Lisp.  The code was
 originally taken from a CMUCL distribution, was modified somewhat in order to
