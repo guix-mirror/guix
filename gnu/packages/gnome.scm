@@ -9254,7 +9254,7 @@ mp3, Ogg Vorbis and FLAC")
        ("python-pygobject" ,python-pygobject)
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)))
-    (home-page "http://soundconverter.org/")
+    (home-page "https://soundconverter.org/")
     (synopsis "Convert between audio formats with a graphical interface")
     (description
      "SoundConverter supports converting between many audio formats including
