@@ -13535,7 +13535,7 @@ inbred lines, F2 intercrosses, and association mapping populations.")
      `(("r-genetics" ,r-genetics)
        ("r-rcpp" ,r-rcpp)
        ("r-snpstats" ,r-snpstats)))
-    (home-page "http://stat.sfu.ca/statgen/research/ldheatmap.html")
+    (home-page "https://stat.sfu.ca/statgen/research/ldheatmap.html")
     (synopsis "Graphical display of pairwise linkage disequilibria between SNPs")
     (description
      "This package provides tools to produce a graphical display, as a heat
