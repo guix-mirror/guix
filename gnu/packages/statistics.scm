@@ -5499,7 +5499,7 @@ and the corresponding decision threshold.")
        ("r-magrittr" ,r-magrittr)
        ("r-tibble" ,r-tibble)
        ("r-rlang" ,r-rlang)))
-    (home-page "http://forcats.tidyverse.org")
+    (home-page "https://forcats.tidyverse.org")
     (synopsis "Tools for working with factors")
     (description "This package provides helpers for reordering factor
 levels (including moving specified levels to front, ordering by first
