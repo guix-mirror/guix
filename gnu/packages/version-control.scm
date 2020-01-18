@@ -1310,7 +1310,7 @@ also walk each side of a merge and test those changes individually.")
     (propagated-inputs
      `(("git" ,git)
        ("openssh" ,openssh)))
-    (home-page "http://gitolite.com")
+    (home-page "https://gitolite.com")
     (synopsis "Git access control layer")
     (description
      "Gitolite is an access control layer on top of Git, providing fine access
