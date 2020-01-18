@@ -733,7 +733,7 @@ OpenGL.")
        ("libxinerama" ,libxinerama)
        ("libxcursor" ,libxcursor)
        ("libxxf86vm" ,libxxf86vm)))
-    (home-page "http://www.glfw.org")
+    (home-page "https://www.glfw.org")
     (synopsis "OpenGL application development library")
     (description
      "GLFW is a library for OpenGL, OpenGL ES and Vulkan development for
