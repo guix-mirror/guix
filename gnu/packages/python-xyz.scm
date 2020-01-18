@@ -9418,7 +9418,7 @@ parsing and generating vCard and vCalendar files.  Currently, iCalendar files
 are supported and well tested. vCard 3.0 files are supported, and all data
 should be imported, but only a few components are understood in a sophisticated
 way.")
-    (home-page "http://eventable.github.io/vobject/")
+    (home-page "https://eventable.github.io/vobject/")
     (license license:asl2.0)))
 
 (define-public python2-vobject
