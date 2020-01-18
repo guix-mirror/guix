@@ -88,7 +88,7 @@
                  (("-lpng") (string-append "-L" png "/lib -lpng"))
                  (("-lz") (string-append "-L" zlib "/lib -lz"))))
              #t)))))
-    (home-page "http://www.fltk.org")
+    (home-page "https://www.fltk.org")
     (synopsis "3D C++ GUI library")
     (description "FLTK is a C++ GUI toolkit providing modern GUI functionality
 without the bloat.  It supports 3D graphics via OpenGL and its built-in GLUT
