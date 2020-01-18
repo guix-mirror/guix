@@ -570,7 +570,7 @@ Git-friendly development workflow.")
              (install-file "etc/META" (string-append (assoc-ref outputs "out")
                                                      "/lib/ocaml/camlp5/"))
              #t)))))
-    (home-page "http://camlp5.gforge.inria.fr/")
+    (home-page "https://camlp5.github.io/")
     (synopsis "Pre-processor Pretty Printer for OCaml")
     (description
      "Camlp5 is a Pre-Processor-Pretty-Printer for Objective Caml.  It offers
