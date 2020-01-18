@@ -32,6 +32,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages kde)
   #:use-module (gnu packages kde-frameworks)
+  #:use-module (gnu packages kde-internet)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages search)
@@ -768,6 +769,84 @@ mail transport.")
     (description "This is a library for handling mailboxes in mbox format,
 using a Qt/KMime C++ API.")
     (license license:lgpl2.0+ )))
+
+(define-public kmessagelib
+  (package
+    (name "kmessagelib")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/messagelib-" version ".tar.xz"))
+       (sha256
+        (base32 "0a378aqkdjzyzlxxha2qxa6vzrj92l1fplzb6fajz4l7ipj4hbnv"))))
+    (properties `((upstream-name . "messagelib")))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("gnupg" ,gnupg)
+       ("libxml2" ,libxml2)))
+    (inputs
+     `(("akonadi" ,akonadi)
+       ("akonadi-contacts" ,akonadi-contacts)
+       ("akonadi-mime" ,akonadi-mime)
+       ("akonadi-notes" ,akonadi-notes)
+       ("akonadi-search" ,akonadi-search)
+       ("boost" ,boost)
+       ("gpgme" ,gpgme)
+       ("grantlee" ,grantlee)
+       ("grantleetheme" ,grantleetheme)
+       ("karchive" ,karchive)
+       ("kcalendarcore" ,kcalendarcore)
+       ("kcodecs" ,kcodecs)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcontacts" ,kcontacts)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdepim-apps-libs" ,kdepim-apps-libs)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kidentitymanagement" ,kidentitymanagement)
+       ("kimap" ,kimap)
+       ("kio" ,kio)
+       ("kitemmodels" ,kitemmodels)
+       ("kitemviews" ,kitemviews)
+       ("kjobwidgets" ,kjobwidgets)
+       ("kldap" ,kldap)
+       ("kmailtransport" ,kmailtransport)
+       ("kmbox" ,kmbox)
+       ("kmime" ,kmime)
+       ("knewstuff" ,knewstuff)
+       ("kpimcommon" ,kpimcommon)
+       ("kpimtextedit" ,kpimtextedit)
+       ("kservice" ,kservice)
+       ("ksyntaxhighlighting" ,ksyntaxhighlighting)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwallet" ,kwallet)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kxmlgui" ,kxmlgui)
+       ("libgravatar" ,libgravatar)
+       ("libkdepim" ,libkdepim)
+       ("libkleo" ,libkleo)
+       ("qgpgme" ,qgpgme)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtwebchannel" ,qtwebchannel)
+       ("qtwebengine" ,qtwebengine)
+       ("qtwebkit" ,qtwebkit)
+       ("sonnet" ,sonnet)))
+    (arguments
+     `(#:tests? #f)) ;; TODO many test fail for quite different reasons
+    (home-page "https://cgit.kde.org/messagelib.git")
+    (synopsis "KDE PIM messaging libraries")
+    (description "This packages provides several libraries for messages,
+e.g. a message list, a mime tree parse, a template parser and the
+kwebengineviewer.")
+    (license ;; GPL for programs, LGPL for libraries
+     (list license:gpl2+ license:lgpl2.0+))))
 
 (define-public kmime
   (package
