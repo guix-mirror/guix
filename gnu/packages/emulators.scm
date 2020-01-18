@@ -266,7 +266,7 @@ turbo speed, networked multiplayer, and graphical enhancements.")
        ("alsa-lib" ,alsa-lib)
        ("glu" ,glu)
        ("mesa" ,mesa)))
-    (home-page "http://www.dosbox.com")
+    (home-page "https://www.dosbox.com")
     (synopsis "X86 emulator with CGA/EGA/VGA/etc. graphics and sound")
     (description "DOSBox is a DOS-emulator that uses the SDL library.  DOSBox
 also emulates CPU:286/386 realmode/protected mode, Directory
