@@ -1543,7 +1543,7 @@ expressed genes in DNA microarray experiments.")
      `(("r-codetools" ,r-codetools)
        ("r-graph" ,r-graph)
        ("r-xml" ,r-xml)))
-    (home-page "http://cran.r-project.org/web/packages/CodeDepends")
+    (home-page "https://cran.r-project.org/web/packages/CodeDepends")
     (synopsis "Analysis of R code for reproducible research and code comprehension")
     (description
      "This package provides tools for analyzing R expressions or blocks of
