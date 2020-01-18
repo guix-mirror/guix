@@ -311,7 +311,7 @@ with calls to the POMP2 measurement interface.")
                  (("^source .*frontend.*$") "")
                  (((assoc-ref outputs "out")) lib))
                #t))))))
-    (home-page "http://www.scalasca.org/software/cube-4.x/download.html")
+    (home-page "https://www.scalasca.org/software/cube-4.x/download.html")
     (synopsis "Performance report explorer for parallel programs")
     (description
      "CUBE (CUBE Uniform Behavioral Encoding) is a tool to display a variety
