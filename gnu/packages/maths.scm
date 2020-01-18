@@ -5242,7 +5242,7 @@ syntax-highlighted scrollable display and is designed to be fully used via
 keyboard.  Some distinctive features are auto-completion of functions and
 variables, a formula book, and quick insertion of constants from various
 fields of knowledge.")
-    (home-page "http://speedcrunch.org/")
+    (home-page "https://speedcrunch.org/")
     (license license:gpl2+)))
 
 (define-public minisat
