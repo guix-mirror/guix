@@ -6303,7 +6303,7 @@ opacity of X11 windows.  This patched version of X.Org's @command{transset}
 adds functionality, including: selecting window by clicking (as transset),
 selecting windows by pointing select actual focused X11 window, selecting by
 window name or id, forcing toggle, increase or decrease opacity.")
-    (home-page "http://forchheimer.se/transset-df/")
+    (home-page "https://forchheimer.se/transset-df/")
     (license license:x11)))
 
 (define-public bdfresize
