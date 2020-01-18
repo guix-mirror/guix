@@ -88,7 +88,7 @@
 
     (inputs `(("tk" ,tk)
               ("tcl" ,tcl)))
-    (home-page "http://wordnet.princeton.edu/")
+    (home-page "https://wordnet.princeton.edu/")
     (synopsis "Lexical database for the English language")
     (description
      "WordNet is a large lexical database of English.  Nouns, verbs,
