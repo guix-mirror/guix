@@ -917,7 +917,11 @@ more modular, simple, and flexible.")
     (inputs
      `(("libx11" ,libx11)
        ("imlib2" ,imlib2)))
-    (home-page "http://linuxbrit.co.uk/software/") ; no real home-page
+    (home-page
+     ;; This vanished page is universally accepted as giblib's home despite not
+     ;; mentioning the package once.
+     (string-append "https://web.archive.org/web/20140907071208"
+                    "https://linuxbrit.co.uk/software/"))
     (synopsis "Wrapper library for imlib2")
     (description
      "Giblib is a simple library which wraps imlib2's context API, avoiding
