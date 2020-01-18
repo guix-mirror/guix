@@ -687,6 +687,31 @@ trace (backtrace) at runtime in a Rust program.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-base64-0.11
+  (package
+    (name "rust-base64")
+    (version "0.11.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "base64" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1iqmims6yvr6vwzyy54qd672zw29ipjj17p8klcr578c9ajpw6xl"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-doc-comment" ,rust-doc-comment-0.3)
+        ("rust-rand" ,rust-rand-0.6))))
+    (home-page "https://github.com/marshallpierce/rust-base64")
+    (synopsis "Encodes and decodes base64 as bytes or utf8")
+    (description
+     "This package encodes and decodes base64 as bytes or utf8.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-base64-0.10
   (package
     (name "rust-base64")
