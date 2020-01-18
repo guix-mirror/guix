@@ -73,7 +73,8 @@
                      ;; This test is therefore just skipped.
                      ;; ("inetutils" ,inetutils)
                      ("ed" ,ed)))
-    (home-page "http://miller.emu.id.au/pmiller/software/cook")
+    (home-page "https://web.archive.org/web/20140727122520/"
+               "http://miller.emu.id.au/pmiller/software/cook/")
     (synopsis "Tool for constructing files")
     (description "Cook is a tool for constructing files.  It is given a set of
 files to create, and recipes of how to create them.  In any non-trivial program
