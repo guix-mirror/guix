@@ -4088,7 +4088,7 @@ colors, pictures, and sounds.")
     (inputs
      `(("bash" ,bash)
        ("love" ,love)))
-    (home-page "http://tangramgames.dk/games/mrrescue")
+    (home-page "https://tangramgames.dk/games/mrrescue")
     (synopsis "Arcade-style fire fighting game")
     (description
      "Mr. Rescue is an arcade styled 2d action game centered around evacuating
