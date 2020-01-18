@@ -620,7 +620,7 @@ based WAI (Web Application Interface in Haskell).")
       ("ghc-clock" ,ghc-clock)
       ("ghc-psqueues" ,ghc-psqueues)
       ("ghc-tls" ,ghc-tls)))
-  (home-page "http://hackage.haskell.org/package/tls-session-manager")
+  (home-page "https://hackage.haskell.org/package/tls-session-manager")
   (synopsis "In-memory TLS session manager")
   (description "This Haskell library provides a TLS session manager with
 limitation, automatic pruning, energy saving and replay resistance.")

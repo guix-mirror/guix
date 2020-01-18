@@ -790,7 +790,7 @@ pragmas in your code.")
     (arguments
      `(#:cabal-revision
        ("1" "15sn2qc8k0hxbb2nai341kkrci98hlhzcj2ci087m0zxcg5jcdbp")))
-    (home-page "http://hackage.haskell.org/package/base-compat-batteries")
+    (home-page "https://hackage.haskell.org/package/base-compat-batteries")
     (synopsis "base-compat with extra batteries")
     (description "This library provides functions available in later
 versions of @code{base} to a wider range of compilers, without requiring
@@ -3577,7 +3577,7 @@ Double.")
      `(("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-hspec" ,ghc-hspec)
        ("hspec-discover" ,hspec-discover)))
-    (home-page "http://hackage.haskell.org/package/errorcall-eq-instance")
+    (home-page "https://hackage.haskell.org/package/errorcall-eq-instance")
     (synopsis "Orphan Eq instance for ErrorCall")
     (description
      "Prior to @code{base-4.7.0.0} there was no @code{Eq} instance for @code{ErrorCall}.
@@ -3693,7 +3693,7 @@ generated SQL and optimize it for your backend.")
        ("ghc-silently" ,ghc-silently)
        ("ghc-filemanip" ,ghc-filemanip)))
     (home-page
-     "http://hackage.haskell.org/package/ghc-exactprint")
+     "https://hackage.haskell.org/package/ghc-exactprint")
     (synopsis "ExactPrint for GHC")
     (description
      "Using the API Annotations available from GHC 7.10.2, this library
@@ -4018,7 +4018,7 @@ file contents, and more.")
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)))
-    (home-page "http://hackage.haskell.org/package/filepath-bytestring")
+    (home-page "https://hackage.haskell.org/package/filepath-bytestring")
     (synopsis "Library for manipulating RawFilePaths in a cross-platform way")
     (description "This package provides a drop-in replacement for the standard
 @code{filepath} library, operating on @code{RawFilePath} values rather than
@@ -5056,7 +5056,7 @@ a set of wrappers to use the hash tables in the IO monad.")
        (sha256
         (base32 "1wyxd8x33x4v5vxyzkhm610pl86gbkc8y439092fr1735q9g7kfq"))))
     (build-system haskell-build-system)
-    (home-page "http://hackage.haskell.org/package/haskell-lexer")
+    (home-page "https://hackage.haskell.org/package/haskell-lexer")
     (synopsis "Fully compliant Haskell 98 lexer")
     (description
      "This package provides a fully compliant Haskell 98 lexer.")
@@ -5792,7 +5792,7 @@ for general types.")
         (base32
          "1kfx1bwfjczj93a8yqz1n8snqiq5655qgzwv1lrycry8wb1vzlwa"))))
     (build-system haskell-build-system)
-    (home-page "http://hackage.haskell.org/package/IfElse")
+    (home-page "https://hackage.haskell.org/package/IfElse")
     (synopsis "Monadic control flow with anaphoric variants")
     (description "This library provides functions for control flow inside of
 monads with anaphoric variants on @code{if} and @code{when} and a C-like
@@ -5845,7 +5845,7 @@ lines continued at an indented level below.")
     (native-inputs
      `(("ghc-hspec" ,ghc-hspec)
        ("hspec-discover" ,hspec-discover)))
-    (home-page "http://hackage.haskell.org/package/infer-license")
+    (home-page "https://hackage.haskell.org/package/infer-license")
     (synopsis "Infer software license from a given license file")
     (description "This library provides tools to infer a software
 license from a given license file.")
@@ -5876,7 +5876,7 @@ license from a given license file.")
        ("ghc-hspec" ,ghc-hspec)
        ("ghc-raw-strings-qq" ,ghc-raw-strings-qq)
        ("ghc-regex-posix" ,ghc-regex-posix)))
-    (home-page "http://hackage.haskell.org/package/inline-c")
+    (home-page "https://hackage.haskell.org/package/inline-c")
     (synopsis "Write Haskell source files including C code inline")
     (description
      "inline-c lets you seamlessly call C libraries and embed high-performance
@@ -6100,7 +6100,7 @@ functors).  For more information, see Edward Kmett's article
        ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
        ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
        ("ghc-zlib" ,ghc-zlib)))
-    (home-page "http://hackage.haskell.org/package/io-streams")
+    (home-page "https://hackage.haskell.org/package/io-streams")
     (synopsis "Simple and composable stream I/O")
     (description "This library contains simple and easy-to-use
 primitives for I/O using streams.")
@@ -6341,7 +6341,7 @@ and a large set of GNU extensions.")
      `(#:tests? #f
        #:cabal-revision
        ("1" "10ac9pk4jy75k03j1ns4b5136l4kw8krr2d2nw2fdmpm5jzyghc5")))
-    (home-page "http://hackage.haskell.org/package/language-glsl")
+    (home-page "https://hackage.haskell.org/package/language-glsl")
     (synopsis "GLSL abstract syntax tree, parser, and pretty-printer")
     (description "This package is a Haskell library for the
 representation, parsing, and pretty-printing of GLSL 1.50 code.")
@@ -6445,7 +6445,7 @@ indexed variants.")
     (build-system haskell-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("libffi" ,libffi)))
-    (home-page "http://hackage.haskell.org/package/libffi")
+    (home-page "https://hackage.haskell.org/package/libffi")
     (synopsis "Haskell binding to libffi")
     (description
      "A binding to libffi, allowing C functions of types only known at runtime
@@ -6899,7 +6899,7 @@ compression algorithm used in the @code{.xz} file format.")
         (base32
          "10p0gjjjwr1dda7hahwrwn5njbfhl67arq3v3nf1jr3vymlkn75j"))))
     (build-system haskell-build-system)
-    (home-page "http://hackage.haskell.org/package/magic")
+    (home-page "https://hackage.haskell.org/package/magic")
     (synopsis "Interface to C file/magic library")
     (description
      "This package provides a full-featured binding to the C libmagic library.
@@ -7786,7 +7786,7 @@ network database (<netdb.h>) API.")
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-doctest" ,ghc-doctest)))
-    (home-page "http://hackage.haskell.org/package/network-byte-order")
+    (home-page "https://hackage.haskell.org/package/network-byte-order")
     (synopsis "Network byte order utilities")
     (description "This library provides peek and poke functions for network
 byte order.")
@@ -8568,7 +8568,7 @@ the parsers provided by @code{parsec}, @code{attoparsec} and @code{base}'s
        ("ghc-hspec" ,ghc-hspec)
        ("ghc-validity" ,ghc-validity)))
     (home-page
-     "http://hackage.haskell.org/package/path")
+     "https://hackage.haskell.org/package/path")
     (synopsis "Support for well-typed paths")
     (description "This package introduces a type for paths upholding useful
 invariants.")
@@ -8851,7 +8851,7 @@ dependencies
          "16xsrzqql7i4z6a3xy07sqnbyqdmcar1jiacla58y4mvkkwb0g3l"))))
     (build-system haskell-build-system)
     (home-page
-     "http://hackage.haskell.org/package/pointedlist")
+     "https://hackage.haskell.org/package/pointedlist")
     (synopsis
      "Zipper-like comonad which works as a list, tracking a position")
     (description
@@ -8946,7 +8946,7 @@ reduce @code{UndecidableInstances}.")
         (base32
          "11l9ajci7nh1r547hx8hgxrhq8mh5gdq30pdf845wvilg9p48dz5"))))
     (build-system haskell-build-system)
-    (home-page "http://hackage.haskell.org/package/prettyclass")
+    (home-page "https://hackage.haskell.org/package/prettyclass")
     (synopsis "Pretty printing class similar to Show")
     (description "This package provides a pretty printing class similar
 to @code{Show}, based on the HughesPJ pretty printing library.  It
@@ -9313,7 +9313,7 @@ containers and a general map/reduce framework for Haskell.")
         (base32
          "0v0zxcx29b8jxs2kgy9csykqcp8kzhdvyylw2xfwmj4pfxr2kl0a"))))
     (build-system haskell-build-system)
-    (home-page "http://hackage.haskell.org/package/refact")
+    (home-page "https://hackage.haskell.org/package/refact")
     (synopsis "Specify refactorings to perform with apply-refact")
     (description
      "This library provides a datatype which can be interpreted by
@@ -9581,7 +9581,7 @@ inspired by libtre.")
      `(("ghc-regex-base" ,ghc-regex-base)
        ("ghc-regex-tdfa" ,ghc-regex-tdfa)))
     (home-page
-     "http://hackage.haskell.org/package/regex-tdfa-text")
+     "https://hackage.haskell.org/package/regex-tdfa-text")
     (synopsis "Text interface for regex-tdfa")
     (description
      "This provides an extra text interface for regex-tdfa.")
@@ -10098,7 +10098,7 @@ programming.")
        ("sdl2-image" ,sdl2-image)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://hackage.haskell.org/package/sdl2-image")
+    (home-page "https://hackage.haskell.org/package/sdl2-image")
     (synopsis "Bindings to SDL2_image")
     (description "This package provides Haskell bindings to
 @code{SDL2_image}.")
@@ -10126,7 +10126,7 @@ programming.")
        ("sdl2-mixer" ,sdl2-mixer)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://hackage.haskell.org/package/sdl2-mixer")
+    (home-page "https://hackage.haskell.org/package/sdl2-mixer")
     (synopsis "Bindings to SDL2 mixer")
     (description "This package provides Haskell bindings to
 @code{SDL2_mixer}.")
@@ -10630,7 +10630,7 @@ automatically by SmallCheck.")
         (base32
          "07ci2mh8cbjvipb576rxsj3iyhkj5c5dnsns4xkdppp2p3pv10d3"))))
     (build-system haskell-build-system)
-    (home-page "http://hackage.haskell.org/package/sop-core")
+    (home-page "https://hackage.haskell.org/package/sop-core")
     (synopsis "True Sums of Products")
     (description "This package provides an implementation of
 @math{n}-ary sums and @math{n}-ary products.  The module @code{Data.SOP}
@@ -11084,7 +11084,7 @@ literals.")
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-hunit" ,ghc-hunit)))
-    (home-page "http://hackage.haskell.org/package/string-qq")
+    (home-page "https://hackage.haskell.org/package/string-qq")
     (synopsis
      "QuasiQuoter for non-interpolated strings, texts and bytestrings.")
     (description
@@ -12213,7 +12213,7 @@ upon it.")
        #:cabal-revision
        ("1"
         "09pqi867wskwgc5lpn197f895mbn1174ydgllvcppcsmrz2b6yr6")))
-    (home-page "http://hackage.haskell.org/package/unagi-chan")
+    (home-page "https://hackage.haskell.org/package/unagi-chan")
     (synopsis "Fast concurrent queues with a Chan-like API, and more")
     (description
      "This library provides implementations of concurrent FIFO queues (for
