@@ -1040,7 +1040,7 @@ Guile.")
          ("ntk" ,ntk)))
       (native-inputs
        `(("pkg-config" ,pkg-config)))
-      (home-page "http://non.tuxfamily.org/wiki/Non%20Sequencer")
+      (home-page "https://non.tuxfamily.org/wiki/Non%20Sequencer")
       (synopsis "Pattern-based MIDI sequencer")
       (description
        "The Non Sequencer is a powerful, lightweight, real-time,
@@ -1064,7 +1064,7 @@ transport is rolling.")
        ("ntk" ,ntk)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://non.tuxfamily.org/nsm/")
+    (home-page "https://non.tuxfamily.org/nsm/")
     (synopsis "Audio session management")
     (description
      "The Non Session Manager is an API and an implementation for audio
@@ -1088,7 +1088,7 @@ communicate with the session management daemon.")
        ("ntk" ,ntk)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://non.tuxfamily.org/wiki/Non%20Mixer")
+    (home-page "https://non.tuxfamily.org/wiki/Non%20Mixer")
     (synopsis "Modular digital audio mixer")
     (description
      "The Non Mixer is a powerful, reliable and fast modular digital audio
@@ -1113,7 +1113,7 @@ studio.")
        ("ntk" ,ntk)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://non.tuxfamily.org/wiki/Non%20Timeline")
+    (home-page "https://non.tuxfamily.org/wiki/Non%20Timeline")
     (synopsis "Modular digital audio timeline arranger")
     (description
      "The Non Timeline is a powerful, reliable and fast modular digital audio
