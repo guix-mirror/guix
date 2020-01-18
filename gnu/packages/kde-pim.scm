@@ -27,6 +27,7 @@
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages kde-frameworks)
@@ -508,6 +509,62 @@ easier to do so.")
     (synopsis "Library for accessing LDAP")
     (description "This library provides an API for LDAP.")
     (license license:lgpl2.0+)))
+
+(define-public kleopatra
+  (package
+    (name "kleopatra")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/kleopatra-" version ".tar.xz"))
+       (sha256
+        (base32 "1bqwxdl91s2nai871vvhkmcc3simbnvr2i5m6dnl327bplzqgfa4"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("dbus" ,dbus)
+       ("extra-cmake-modules" ,extra-cmake-modules)
+       ("gnupg" ,gnupg)  ;; TODO: Remove after gpgme uses fixed path
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("boost" ,boost)
+       ("gpgme" ,gpgme)
+       ("kcmutils" ,kcmutils)
+       ("kcodecs" ,kcodecs)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kitemmodels" ,kitemmodels)
+       ("kmime" ,kmime)
+       ("knotifications" ,knotifications)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kxmlgui" ,kxmlgui)
+       ("libassuan" ,libassuan)
+       ("libkleo" ,libkleo)
+       ("oxygen-icons" ,oxygen-icons) ;; default icon set
+       ("qgpgme" ,qgpgme)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "dbus-launch" "ctest" ".")
+             #t)))))
+    (home-page "https://kde.org/applications/utilities/org.kde.kleopatra")
+    (synopsis "Certificate Manager and Unified Crypto GUI")
+    (description "Kleopatra is a certificate manager and a universal crypto
+GUI.  It supports managing X.509 and OpenPGP certificates in the GpgSM keybox
+and retrieving certificates from LDAP servers.")
+    (license ;; GPL for programs, FDL for documentation
+     (list license:gpl2+ license:fdl1.2+))))
 
 (define-public kmailtransport
   (package
