@@ -4897,7 +4897,7 @@ port within a range.")
 to be easy to use so that you can quickly start testing.  CLUnit
 provides a rich set of features aimed at improving your unit testing
 experience.")
-      (home-page "http://tgutu.github.io/clunit/")
+      (home-page "https://tgutu.github.io/clunit/")
       ;; MIT License
       (license license:expat))))
 
