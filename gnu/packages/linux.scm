@@ -3065,7 +3065,7 @@ Linux Wireless Extensions; consider using @code{iw} instead.  The Wireless
 Extension was an interface allowing you to set Wireless LAN specific
 parameters and get the specific stats.  It is deprecated in favor the nl80211
 interface.")
-    (home-page "http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html")
+    (home-page "https://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html")
     ;; wireless.21.h and wireless.22.h are distributed under lgpl2.1+, the
     ;; other files are distributed under gpl2.
     (license (list license:gpl2 license:lgpl2.1+))))
