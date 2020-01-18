@@ -1757,7 +1757,7 @@ code introspection, and logging.")
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))
-    (home-page "http://docs.openstack.org/developer/pbr/")
+    (home-page "https://docs.openstack.org/pbr/latest/")
     (synopsis "Minimal build of python-pbr used for bootstrapping")
     (description
      "Used only for bootstrapping python2-pbr, you should not need this.")
