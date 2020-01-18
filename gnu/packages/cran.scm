@@ -16892,7 +16892,7 @@ Components.  The Lasso solution paths can be computed by the same function.")
      `(("r-elasticnet" ,r-elasticnet)
        ("r-mass" ,r-mass)
        ("r-mda" ,r-mda)))
-    (home-page "http://www.imm.dtu.dk/~lhc")
+    (home-page "https://www.imm.dtu.dk/~lkhc/")
     (synopsis "Sparse discriminant analysis")
     (description
      "This package performs sparse linear discriminant analysis for Gaussians
