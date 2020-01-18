@@ -12618,7 +12618,7 @@ files to be expanded upon opening them.")
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-parsebib" ,emacs-parsebib)))
-      (home-page "http://joostkremers.github.io/ebib/")
+      (home-page "https://joostkremers.github.io/ebib/")
       (synopsis "BibTeX database manager for Emacs")
       (description
        "Ebib is a BibTeX database manager that runs in GNU Emacs.
