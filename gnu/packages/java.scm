@@ -6503,7 +6503,7 @@ JavaMail API.")
      `(("java-osgi-core" ,java-osgi-core)
        ("java-hamcrest-core" ,java-hamcrest-core)
        ("java-junit" ,java-junit)))
-    (home-page "http://logging.apache.org/log4j/2.x/")
+    (home-page "https://logging.apache.org/log4j/2.x/")
     (synopsis "API module of the Log4j logging framework for Java")
     (description
      "This package provides the API module of the Log4j logging framework for
