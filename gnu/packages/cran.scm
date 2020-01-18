@@ -1351,7 +1351,7 @@ applications.  That is, compute distances and related measures for angular
          "1a8mi70x79a691r40yiw684jkg1mr9n8agkxlcksxcnrdybs9c0x"))))
     (build-system r-build-system)
     (inputs `(("libjpeg" ,libjpeg)))
-    (home-page "http://www.rforge.net/jpeg/")
+    (home-page "https://www.rforge.net/jpeg/")
     (synopsis "Read and write JPEG images with R")
     (description "This package provides a way to read, write and display
 bitmap images stored in the JPEG format with R.  It can read and write both
@@ -1979,7 +1979,7 @@ use in R.  It also provides a simple way for variable interpolation in R.")
         (base32
          "0z80jxkygmzn11sq0c2iz357s9bpki548lg926g85gldhfj1md90"))))
     (build-system r-build-system)
-    (home-page "http://www.rforge.net/fastmatch")
+    (home-page "https://www.rforge.net/fastmatch")
     (synopsis "Fast match function")
     (description
      "This package provides a fast @code{match} replacement for cases that
@@ -4141,7 +4141,7 @@ terminals.")
         (base32
          "0gm9ii7ncvllxbvyk6srsiinjmqyj7lmh84w43x4nhqpvafj9q4q"))))
     (build-system r-build-system)
-    (home-page "http://www.rforge.net/uuid")
+    (home-page "https://www.rforge.net/uuid")
     (synopsis "Tools for generating and handling of UUIDs")
     (description
      "This package provides tools for generating and handling of
@@ -9698,7 +9698,7 @@ redundant complex conjugate when the input is real data.")
      `(("libtiff" ,libtiff)
        ("libjpeg" ,libjpeg)
        ("zlib" ,zlib)))
-    (home-page "http://www.rforge.net/tiff/")
+    (home-page "https://www.rforge.net/tiff/")
     (synopsis "Read and write TIFF images")
     (description
      "This package provides an easy and simple way to read, write and display
@@ -13848,7 +13848,7 @@ the corresponding outputs (tables and graphs).")
        ("jdk" ,icedtea-8 "jdk")
        ("pcre" ,pcre)
        ("zlib" ,zlib)))
-    (home-page "http://www.rforge.net/rJava/")
+    (home-page "https://www.rforge.net/rJava/")
     (synopsis "Low-Level R to Java interface")
     (description
      "This package provides a low-level interface to the Java VM very much

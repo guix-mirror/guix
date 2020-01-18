@@ -3179,7 +3179,7 @@ Shiny).  The @code{DataTables} library has been included in this R package.")
                (base32
                 "13b89fhg1nx7zds82a0biz847ixphg9byf5zl2cw9kab6s56v1bd"))))
     (build-system r-build-system)
-    (home-page "http://www.rforge.net/base64enc")
+    (home-page "https://www.rforge.net/base64enc")
     (synopsis "Tools for Base64 encoding")
     (description
      "This package provides tools for handling Base64 encoding.  It is more
