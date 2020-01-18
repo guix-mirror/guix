@@ -127,7 +127,7 @@ locally for later listening.")
        ;; TODO: Enable tests when https://github.com/gpodder/gpodder/issues/446
        ;; is fixed.
        #:tests? #f))
-    (home-page "http://wiki.gpodder.org/wiki/Libmygpo-qt")
+    (home-page "https://gpodder.github.io")
     (synopsis "Qt/C++ library wrapping the gpodder web service")
     (description "@code{libmygpo-qt} is a Qt/C++ library wrapping the
 @url{https://gpodder.net} APIs.  It allows applications to discover, manage
