@@ -18003,7 +18003,7 @@ actigraphy-measured activity counts data.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-matrix" ,r-matrix)))
-    (home-page "http://www.functionaldata.org")
+    (home-page "https://www.functionaldata.org")
     (synopsis "Functional data analysis")
     (description
      "These functions were developed to support functional data analysis as
