@@ -461,16 +461,16 @@ including CBZ, CB7, CBT, LHA.")
 (define-public qview
   (package
     (name "qview")
-    (version "2.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/jurplel/qView.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1s29hz44rb5dwzq8d4i4bfg77dr0v3ywpvidpa6xzg7hnnv3mhi5"))))
+    (version "3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jurplel/qView.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "15a91bs3wcqhgf76wzigbn10hayg628j84pq4j2vaxar94ak0vk7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
