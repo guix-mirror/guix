@@ -238,7 +238,7 @@ Python without keeping their credentials in a Docker configuration file.")
     (description "This package provides the container daemon for Docker.
 It includes image transfer and storage, container execution and supervision,
 network attachments.")
-    (home-page "http://containerd.io/")
+    (home-page "https://containerd.io/")
     (license license:asl2.0)))
 
 ;;; Private package that shouldn't be used directly; its purposes is to be
