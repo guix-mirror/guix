@@ -10266,7 +10266,7 @@ Dependency Injection (CDI).")
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://www.joda.org/joda-convert/")
+    (home-page "https://www.joda.org/joda-convert/")
     (synopsis "Conversion between Objects and Strings")
     (description "Joda-Convert provides a small set of classes to aid
 conversion between Objects and Strings.  It is not intended to tackle the
