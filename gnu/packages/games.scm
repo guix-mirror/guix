@@ -383,7 +383,7 @@ physics settings to tweak as well.")
     (inputs
      `(("boost" ,boost)
        ("ncurses" ,ncurses)))
-    (home-page "http://fph.altervista.org/prog/bastet.html")
+    (home-page "https://fph.altervista.org/prog/bastet.html")
     (synopsis "Antagonistic Tetris-style falling brick game for text terminals")
     (description
      "Bastet (short for Bastard Tetris) is a simple ncurses-based falling brick
