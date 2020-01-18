@@ -4278,7 +4278,7 @@ symmetric matrices.")
                (base32
                 "1687xpjjzig27y2pnqv7hv09smpijyfdpz7qjgmcxf4shfajlfkc"))))
     (build-system cmake-build-system)
-    (home-page "http://libelemental.org")
+    (home-page "https://github.com/elemental/Elemental")
     (native-inputs
      `(("gfortran" ,gfortran)))
     (inputs
