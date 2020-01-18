@@ -2263,6 +2263,7 @@ intrinsics.")
 
 (define-public rust-criterion-plot-0.3
   (package
+    (inherit rust-criterion-plot-0.4)
     (name "rust-criterion-plot")
     (version "0.3.1")
     (source
@@ -2274,7 +2275,6 @@ intrinsics.")
        (sha256
         (base32
          "13pv09z4ryp70qyzablkibwa2mh6c2852qq1sjr9wjigvwnj3ybn"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -2284,11 +2284,7 @@ intrinsics.")
        #:cargo-development-inputs
        (("rust-itertools-num" ,rust-itertools-num-0.1)
         ("rust-num-complex" ,rust-num-complex-0.2)
-        ("rust-rand" ,rust-rand-0.4))))
-    (home-page "https://github.com/bheisler/criterion.rs")
-    (synopsis "Criterion's plotting library")
-    (description "Criterion's plotting library.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-rand" ,rust-rand-0.4))))))
 
 (define-public rust-crossbeam-0.7
   (package
