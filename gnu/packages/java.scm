@@ -10363,7 +10363,7 @@ wider problem of Object to Object transformation.")
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)
        ("tzdata" ,tzdata)))
-    (home-page "http://www.joda.org/joda-time/")
+    (home-page "https://www.joda.org/joda-time/")
     (synopsis "Replacement for the Java date and time classes")
     (description "Joda-Time is a replacement for the Java date and time
 classes prior to Java SE 8.")
