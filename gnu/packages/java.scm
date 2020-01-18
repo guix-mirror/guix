@@ -10637,7 +10637,7 @@ against expected outcomes.")
      `(("unzip" ,unzip)
        ("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://approximatrix.com/products/openchart2/")
+    (home-page "https://approximatrix.com/products/openchart2/")
     (synopsis "Simple plotting for Java")
     (description "Openchart2 provides a simple, yet powerful, interface for
 Java programmers to create two-dimensional charts and plots.  The library
