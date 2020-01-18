@@ -10317,7 +10317,7 @@ conditional reporting based on the current \"output level\".")
        ("r-reportr" ,r-reportr)
        ("r-rnifti" ,r-rnifti)
        ("r-shades" ,r-shades)))
-    (home-page "http://www.tractor-mri.org.uk")
+    (home-page "https://www.tractor-mri.org.uk")
     (synopsis "Read, manipulate and visualize magnetic resonance images")
     (description
      "This package provides functions for working with magnetic resonance
