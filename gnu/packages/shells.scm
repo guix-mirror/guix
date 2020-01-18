@@ -383,7 +383,7 @@ written by Paul Haahr and Byron Rakitzis.")
                 (with-directory-excursion bin
                   (symlink "tcsh" "csh"))
                 #t))))))
-    (home-page "http://www.tcsh.org/")
+    (home-page "https://www.tcsh.org/")
     (synopsis "Unix shell based on csh")
     (description
      "Tcsh is an enhanced, but completely compatible version of the Berkeley
