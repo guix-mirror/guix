@@ -3398,7 +3398,7 @@ code, used in @code{libtoxcore}.")
      `(#:tests? #f))                   ; tests require access to ALSA devices.
     (inputs
      `(("alsa-lib" ,alsa-lib)))
-    (home-page "http://larsimmisch.github.io/pyalsaaudio/")
+    (home-page "https://larsimmisch.github.io/pyalsaaudio/")
     (synopsis "ALSA wrappers for Python")
     (description
      "This package contains wrappers for accessing the ALSA API from Python.
