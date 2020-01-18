@@ -13520,7 +13520,7 @@ deleting all contents when it's dropped.")
         ("rust-redox-syscall" ,rust-redox-syscall-0.1)
         ("rust-remove-dir-all" ,rust-remove-dir-all-0.5)
         ("rust-winapi" ,rust-winapi-0.3))))
-    (home-page "http://stebalien.com/projects/tempfile-rs")
+    (home-page "https://stebalien.com/projects/tempfile-rs")
     (synopsis "Library for managing temporary files and directories")
     (description
      "This package provides a library for managing temporary files and
