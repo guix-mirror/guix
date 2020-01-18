@@ -3464,7 +3464,7 @@ include_dirs = ~a/include
              (with-directory-excursion "/tmp"
                (invoke "python" "-c"
                        "import numpy; numpy.test(verbose=2)")))))))
-    (home-page "http://www.numpy.org/")
+    (home-page "https://numpy.org")
     (synopsis "Fundamental package for scientific computing with Python")
     (description "NumPy is the fundamental package for scientific computing
 with Python.  It contains among other things: a powerful N-dimensional array
