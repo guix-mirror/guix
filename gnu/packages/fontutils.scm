@@ -678,7 +678,7 @@ files.  UFO is a file format that stores fonts source files.")
     (propagated-inputs
      `(("python2-fonttools" ,python2-fonttools)
        ("python2-ufolib" ,python2-ufolib)))
-    (home-page "https://pypi.python.org/pypi/defcon")
+    (home-page "https://pypi.org/project/defcon/")
     (synopsis "Flexible objects for representing @acronym{UFO, unified font object} data")
     (description
      "Defcon is a set of @acronym{UFO, unified font object} based objects

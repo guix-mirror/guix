@@ -748,7 +748,7 @@ other machines, such as over the network.")
     ;; One could bootstrap with an internal untested setuptools.
     (arguments
      `(#:tests? #f))
-    (home-page "https://pypi.python.org/pypi/setuptools")
+    (home-page "https://pypi.org/project/setuptools/")
     (synopsis
      "Library designed to facilitate packaging Python projects")
     (description
@@ -1111,7 +1111,7 @@ from the Python interpreter, or as a small part of a larger application.")
     (native-inputs
      `(("python-py" ,python-py)
        ("python-pytest" ,python-pytest-bootstrap)))
-    (home-page "https://pypi.python.org/pypi/six/")
+    (home-page "https://pypi.org/project/six/")
     (synopsis "Python 2 and 3 compatibility utilities")
     (description
      "Six is a Python 2 and 3 compatibility library.  It provides utility
@@ -1282,7 +1282,7 @@ Python 3.3+.")
     (arguments `(#:python ,python-2
                  #:tests? #f))                    ; invalid command "test"
     ;; Currently no offical homepage.
-    (home-page "https://pypi.python.org/pypi/dogtail/")
+    (home-page "https://pypi.org/project/dogtail/")
     (synopsis "GUI test tool and automation framework written in Python")
     (description
      "Dogtail is a GUI test tool and automation framework written in Python.
@@ -1393,7 +1393,7 @@ bug tracker.")
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2))
-    (home-page "https://pypi.python.org/pypi/enum/")
+    (home-page "https://pypi.org/project/enum/")
     (synopsis "Robust enumerated type support in Python")
     (description
      "This provides a module for robust enumerations in Python.  It has
@@ -1414,7 +1414,7 @@ compatibility.")
        (base32
         "1cgm5ng2gcfrkrm3hc22brl6chdmv67b9zvva9sfs7gn7dwc9n4a"))))
     (build-system python-build-system)
-    (home-page "https://pypi.python.org/pypi/enum34")
+    (home-page "https://pypi.org/project/enum34/")
     (synopsis "Backported Python 3.4 Enum")
     (description
      "Enum34 is the new Python stdlib enum module available in Python 3.4
@@ -2158,7 +2158,7 @@ cutting and pasting that code over and over.")
               (base32
                "1s6cp2lv4m0f00hjckjz8p6m7d3n3v16jvg353llf5ia1iqsnsib"))))
     (build-system python-build-system)
-    (home-page "https://pypi.python.org/pypi/Unidecode")
+    (home-page "https://pypi.org/project/Unidecode/")
     (synopsis "ASCII transliterations of Unicode text")
     (description
      "Unidecode provides ASCII transliterations of Unicode text.  Unidecode is
@@ -3827,7 +3827,7 @@ that client code uses to construct the grammar directly in Python code.")
      `(("python-sphinx" ,python-sphinx)))
     (native-inputs
      `(("python-nose" ,python-nose)))
-    (home-page "https://pypi.python.org/pypi/numpydoc")
+    (home-page "https://pypi.org/project/numpydoc/")
     (synopsis
      "Numpy's Sphinx extensions")
     (description
@@ -4777,7 +4777,7 @@ PNG, PostScript, PDF, and SVG file output.")
        (sha256
         (base32 "0308djallnh00v112y5b7nadl657ysmkp6vc8xn51d6yzc9zm7n3"))))
     (build-system python-build-system)
-    (home-page "https://pypi.python.org/pypi/decorator/")
+    (home-page "https://pypi.org/project/decorator/")
     (synopsis "Python module to simplify usage of decorators")
     (description
       "The aim of the decorator module is to simplify the usage of decorators
@@ -4806,7 +4806,7 @@ etc.  The core of this module is a decorator factory.")
     (arguments '(#:tests? #f))
     (native-inputs
      `(("python-nose" ,python-nose)))
-    (home-page "https://pypi.python.org/pypi/drmaa")
+    (home-page "https://pypi.org/project/drmaa/")
     (synopsis "Python bindings for the DRMAA library")
     (description
       "A Python package for Distributed Resource Management (DRM) job
@@ -5021,7 +5021,7 @@ them as the version argument or in a SCM managed file.")
     (propagated-inputs
      `(("python-scandir" ,python-scandir)
        ("python-six" ,python-six)))
-    (home-page "https://pypi.python.org/pypi/pathlib2/")
+    (home-page "https://pypi.org/project/pathlib2/")
     (synopsis "Object-oriented file system paths")
     (description "The goal of pathlib2 is to provide a backport of the
 standard @code{pathlib} module which tracks the standard library module, so
@@ -6928,7 +6928,7 @@ from an XML-based format.")
     (description "This package provides a Python library to parse, manipulate
 or create documents in LilyPond format.  A command line program ly is also
 provided that can be used to do various manipulations with LilyPond files.")
-    (home-page "https://pypi.python.org/pypi/python-ly")
+    (home-page "https://pypi.org/project/python-ly/")
     (license license:gpl2+)))
 
 (define-public python-appdirs
@@ -7033,7 +7033,7 @@ should be stored on various operating systems.")
     (description "MessagePack is a fast, compact binary serialization format,
 suitable for similar data to JSON.  This package provides CPython bindings for
 reading and writing MessagePack data.")
-    (home-page "https://pypi.python.org/pypi/msgpack/")
+    (home-page "https://pypi.org/project/msgpack/")
     (license license:asl2.0)))
 
 ;; This msgpack library's name changed from "python-msgpack" to "msgpack" with
@@ -7526,7 +7526,7 @@ a hash value.")
     (arguments
      ;; There are no tests.
      `(#:tests? #f))
-    (home-page "https://pypi.python.org/pypi/termcolor")
+    (home-page "https://pypi.org/project/termcolor/")
     (synopsis "ANSII Color formatting for terminal output")
     (description
      "This package provides ANSII Color formatting for output in terminals.")
@@ -8780,7 +8780,7 @@ for the module to work under Python 3.3.")
    (synopsis "Colored terminal text rendering for Python")
    (description "Colorama is a Python library for rendering colored terminal
 text.")
-   (home-page "https://pypi.python.org/pypi/colorama")
+   (home-page "https://pypi.org/project/colorama/")
    (license license:bsd-3)))
 
 (define-public python2-colorama
@@ -8828,7 +8828,7 @@ library as well as on the command line.")
    (synopsis "Plugin and hook calling mechanism for Python")
    (description "Pluggy is an extraction of the plugin manager as used by
 Pytest but stripped of Pytest specific details.")
-   (home-page "https://pypi.python.org/pypi/pluggy")
+   (home-page "https://pypi.org/project/pluggy/")
    (license license:expat)))
 
 (define-public python2-pluggy
@@ -9533,7 +9533,7 @@ anymore.")
     (propagated-inputs
      `(("python2-scandir" ,python2-scandir)
        ("python2-six" ,python2-six)))
-    (home-page "https://pypi.python.org/pypi/pathlib2/")
+    (home-page "https://pypi.org/project/pathlib2/")
     (synopsis "Object-oriented file system paths - backport of standard
 pathlib module")
     (description "The goal of pathlib2 is to provide a backport of standard
@@ -13484,7 +13484,7 @@ which adds support for zone identifiers to IPv6 addresses.")
        (base32
         "192pclzs2y0yaywqkrlvd0x73740q310kvqvm6jldhi619mq59wi"))))
     (build-system python-build-system)
-    (home-page "https://pypi.python.org/pypi/rfc3987")
+    (home-page "https://pypi.org/project/rfc3987/")
     (synopsis "Parsing and validation of URIs (RFC 3986) and IRIs (RFC 3987)")
     (description "@code{rfc3987} provides routines for parsing and
 validation of URIs (see RFC 3986) and IRIs (see RFC 3987).")

@@ -226,7 +226,7 @@ When present, Poppler is able to correctly render CJK and Cyrillic text.")
        ("python-pyqt" ,python-pyqt)
        ("poppler-qt5" ,poppler-qt5)
        ("qtbase" ,qtbase)))
-    (home-page "https://pypi.python.org/pypi/python-poppler-qt5")
+    (home-page "https://pypi.org/project/python-poppler-qt5/")
     (synopsis "Python bindings for Poppler-Qt5")
     (description
      "This package provides Python bindings for the Qt5 interface of the

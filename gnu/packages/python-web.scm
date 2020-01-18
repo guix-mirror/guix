@@ -972,7 +972,7 @@ object to help create WSGI responses.")
         (base32
          "1ksbc726av9xacml6jhcfyn828hlhb9xlddpx6fcvnlvmpmpvhk9"))))
     (build-system python-build-system)
-    (home-page "https://pypi.python.org/pypi/zope.event")
+    (home-page "https://pypi.org/project/zope.event/")
     (synopsis "Event publishing system for Python")
     (description "Zope.event provides an event publishing API, intended for
 use by applications which are unaware of any subscribers to their events.  It
@@ -1051,7 +1051,7 @@ that have uses outside of the Zope framework.")
            (for-each delete-file (find-files "." "(\\.pyc|~)$"))
            #t))))
     (build-system python-build-system)
-    (home-page "https://pypi.python.org/pypi/zope.testing")
+    (home-page "https://pypi.org/project/zope.testing/")
     (synopsis "Zope testing helpers")
     (description "Zope.testing provides a number of testing utilities for HTML
 forms, HTTP servers, regular expressions, and more.")
@@ -1082,7 +1082,7 @@ forms, HTTP servers, regular expressions, and more.")
        ("unzip" ,unzip)))
     (propagated-inputs
      `(("python-zope-interface" ,python-zope-interface)))
-    (home-page "https://pypi.python.org/pypi/zope.testrunner")
+    (home-page "https://pypi.org/project/zope.testrunner/")
     (synopsis "Zope testrunner script")
     (description "Zope.testrunner provides a script for running Python
 tests.")
@@ -1109,7 +1109,7 @@ tests.")
         (base32
          "1rslyph0klk58dmjjy4j0jxy21k03azksixc3x2xhqbkv97cmzml"))))
     (build-system python-build-system)
-    (home-page "https://pypi.python.org/pypi/zope.i18nmessageid")
+    (home-page "https://pypi.org/project/zope.i18nmessageid/")
     (synopsis "Message identifiers for internationalization")
     (description "Zope.i18nmessageid provides facilities for declaring
 internationalized messages within program source text.")
@@ -1140,7 +1140,7 @@ internationalized messages within program source text.")
      `(("python-zope-testing" ,python-zope-testing)
        ("python-coverage" ,python-coverage)
        ("python-nose" ,python-nose)))
-    (home-page "https://pypi.python.org/pypi/zope.schema")
+    (home-page "https://pypi.org/project/zope.schema/")
     (synopsis "Zope data schemas")
     (description "Zope.scheme provides extensions to zope.interface for
 defining data schemas.")
@@ -1165,7 +1165,7 @@ defining data schemas.")
     (propagated-inputs
      `(("python-zope-i18nmessageid" ,python-zope-i18nmessageid)
        ("python-zope-schema" ,python-zope-schema)))
-    (home-page "https://pypi.python.org/pypi/zope.configuration")
+    (home-page "https://pypi.org/project/zope.configuration/")
     (synopsis "Zope Configuration Markup Language")
     (description "Zope.configuration implements ZCML, the Zope Configuration
 Markup Language.")
@@ -1190,7 +1190,7 @@ Markup Language.")
      '(#:tests? #f)) ; FIXME: Tests can't find zope.interface.
     (propagated-inputs
      `(("python-zope-interface" ,python-zope-interface)))
-    (home-page "https://pypi.python.org/pypi/zope.proxy")
+    (home-page "https://pypi.org/project/zope.proxy/")
     (synopsis "Generic, transparent proxies")
     (description "Zope.proxy provides generic, transparent proxies for Python.
 Proxies are special objects which serve as mostly-transparent wrappers around
@@ -1219,7 +1219,7 @@ brokering, etc.) for which the proxy is responsible.")
     (propagated-inputs
      `(("python-zope-proxy" ,python-zope-proxy)
        ("python-zope-schema" ,python-zope-schema)))
-    (home-page "https://pypi.python.org/pypi/zope.location/")
+    (home-page "https://pypi.org/project/zope.location/")
     (synopsis "Zope location library")
     (description "Zope.location implements the concept of \"locations\" in
 Zope3, which are are special objects that have a structural location.")
@@ -1253,7 +1253,7 @@ Zope3, which are are special objects that have a structural location.")
        ("python-zope-location" ,python-zope-location)
        ("python-zope-testrunner" ,python-zope-testrunner)
        ("python-zope-testing" ,python-zope-testing)))
-    (home-page "https://pypi.python.org/pypi/zope.security")
+    (home-page "https://pypi.org/project/zope.security/")
     (synopsis "Zope security framework")
     (description "Zope.security provides a generic mechanism to implement
 security policies on Python objects.")

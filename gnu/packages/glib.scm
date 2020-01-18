@@ -670,7 +670,7 @@ useful for C++.")
     (arguments
      `(#:tests? #f                      ;segfaults during tests
        #:configure-flags '("LIBS=-lcairo-gobject")))
-    (home-page "https://pypi.python.org/pypi/PyGObject")
+    (home-page "https://pypi.org/project/PyGObject/")
     (synopsis "Python bindings for GObject")
     (description
      "Python bindings for GLib, GObject, and GIO.")
