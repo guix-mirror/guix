@@ -2546,7 +2546,7 @@ making @dfn{screencasts}.")
        (list "-DWITH_QT5=TRUE")
        #:tests? #f))                    ; no test suite
     ;; Using HTTPS causes part of the page to be displayed improperly.
-    (home-page "http://www.maartenbaert.be/simplescreenrecorder/")
+    (home-page "https://www.maartenbaert.be/simplescreenrecorder/")
     (synopsis "Screen recorder")
     (description "SimpleScreenRecorder is an easy to use screen recorder with
 a graphical user interface.  It supports recording the entire screen, or a
