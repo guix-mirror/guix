@@ -4604,7 +4604,7 @@ It uses the uwsgi protocol for all the networking/interprocess communications.")
        ;;("bundler" ,bundler)
        ("valgrind" ,valgrind)))
     (build-system gnu-build-system)
-    (home-page "http://stedolan.github.io/jq/")
+    (home-page "https://stedolan.github.io/jq/")
     (synopsis "Command-line JSON processor")
     (description "jq is like sed for JSON data – you can use it to slice and
 filter and map and transform structured data with the same ease that sed, awk,
