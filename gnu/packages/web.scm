@@ -1129,7 +1129,7 @@ parser written in ANSI C and a small validating JSON generator.")
      "Libwebsockets is a library that allows C programs to establish client
 and server WebSockets connections---a protocol layered above HTTP that allows
 for efficient socket-like bidirectional reliable communication channels.")
-    (home-page "http://libwebsockets.org/")
+    (home-page "https://libwebsockets.org")
 
     ;; This is LGPLv2.1-only with extra exceptions specified in 'LICENSE'.
     (license license:lgpl2.1)))
