@@ -19472,7 +19472,7 @@ It is a fork of https://github.com/cofi/evil-numbers, which is unmaintained.")
                (base32
                 "1cgxv4aibkvv6lnssynn0438a615fz3zq8hg9sb0lhfgsr99pxln"))))
     (build-system emacs-build-system)
-    (home-page "http://nschum.de/src/emacs/rotate-text/")
+    (home-page "https://nschum.de/src/emacs/rotate-text/")
     (synopsis "Cycle through words, symbols and patterns in Emacs")
     (description "@code{rotate-text} allows you rotate to commonly
 interchanged text with a single keystroke.  For example, you can toggle
