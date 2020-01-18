@@ -986,7 +986,7 @@ images onto Cairo surfaces.")
      `(("guile-lib" ,guile-lib)
        ("guile-cairo" ,guile-cairo)
        ("guile-rsvg" ,guile-rsvg)))
-    (home-page "http://wingolog.org/software/guile-present/")
+    (home-page "https://wingolog.org/software/guile-present/")
     (synopsis "Create SVG or PDF presentations in Guile")
     (description
      "Guile-Present defines a declarative vocabulary for presentations,
