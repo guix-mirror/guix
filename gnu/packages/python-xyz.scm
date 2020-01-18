@@ -16381,7 +16381,7 @@ class in a @acronym{DRY, Don't Repeat Yourself} way.")
        ("python-arrow" ,python-arrow)
        ("python-numpy" ,python-numpy)
        ("python-ruamel.yaml" ,python-ruamel.yaml)))
-    (home-page "http://construct.readthedocs.io")
+    (home-page "https://construct.readthedocs.io")
     (synopsis "Declarative and symmetrical parser and builder for binary data")
     (description
      "This package provides both simple, atomic constructs (such as
