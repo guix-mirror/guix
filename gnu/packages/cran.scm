@@ -5077,7 +5077,7 @@ It also includes interpolation functions.")
          "00j6b8b6xsx6v370h220x233rpk6asca78165y3d48jpwvwisdc9"))))
     (build-system r-build-system)
     (propagated-inputs `(("r-proto" ,r-proto)))
-    (home-page "http://gsubfn.googlecode.com")
+    (home-page "https://code.google.com/archive/p/gsubfn/")
     (synopsis "Utilities for strings and function arguments.")
     (description
      "This package provides @code{gsubfn} which is like @code{gsub} but can
