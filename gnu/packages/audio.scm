@@ -1988,7 +1988,7 @@ software.")
      (list (search-path-specification
             (variable "LV2_PATH")
             (files '("lib/lv2")))))
-    (home-page "http://elephly.net/lv2/mdapiano.html")
+    (home-page "https://elephly.net/lv2/mdapiano.html")
     (synopsis "LV2 port of the mda Piano plugin")
     (description "An LV2 port of the mda Piano VSTi.")
     (license license:gpl3+)))
@@ -2002,7 +2002,7 @@ software.")
                      (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:tests? #f ; no check target
        #:phases (modify-phases %standard-phases (delete 'configure))))
-    (home-page "http://elephly.net/lv2/mdaepiano.html")
+    (home-page "https://elephly.net/lv2/mdaepiano.html")
     (synopsis "LV2 port of the mda EPiano plugin")
     (description "An LV2 port of the mda EPiano VSTi.")))
 
