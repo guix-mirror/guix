@@ -199,7 +199,7 @@ work, such as sentence length and other readability measures.")
     (synopsis "Dictionary lookup program with a German-English dictionary")
     (description "Ding is a dictionary lookup program for the X window system.
 It comes with a German-English dictionary with approximately 270,000 entries.")
-    (home-page  "http://www-user.tu-chemnitz.de/~fri/ding/")
+    (home-page  "https://www-user.tu-chemnitz.de/~fri/ding/")
     (license license:gpl2+)))
 
 (define-public grammalecte
