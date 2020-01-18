@@ -65,7 +65,7 @@
      (list (search-path-specification
             (variable "REP_DL_LOAD_PATH")
             (files '("lib/rep")))))
-    (home-page "http://sawfish.wikia.com/wiki/Librep")
+    (home-page "https://sawfish.fandom.com/wiki/Librep")
     (synopsis "Lisp system for sawfish")
     (description
      "Librep is a dialect of Lisp, designed to be used both as an extension
