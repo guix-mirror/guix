@@ -19044,7 +19044,7 @@ OpenMP.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-quantreg" ,r-quantreg)))
-    (home-page "http://www.ms.uky.edu/~mai/EmpLik.html")
+    (home-page "https://www.ms.uky.edu/~mai/EmpLik.html")
     (synopsis "Empirical likelihood ratio for censored/truncated data")
     (description
      "This package provides empirical likelihood ratio tests for
