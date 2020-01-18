@@ -7186,7 +7186,7 @@ Unicode-aware.  It is not intended as an end-user tool.")
         (base32
          "0diwsicwmiq2cpzpxri7cyl5fmsvicafw6nfqf6p6p322dji2g45"))))
     (build-system python-build-system)
-    (home-page "http://code.google.com/p/prettytable/")
+    (home-page "https://code.google.com/archive/p/prettytable/")
     (synopsis "Display tabular data in an ASCII table format")
     (description
       "A library designed to represent tabular data in visually appealing ASCII
