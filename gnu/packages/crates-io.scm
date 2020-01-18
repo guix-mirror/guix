@@ -4302,6 +4302,35 @@ implementation that is more efficient for smaller hash keys.")
         (base32
          "0jxgzd04ra4imjv8jgkmdq59kj8fsz6w4zxsbmlai34h26225c00"))))))
 
+(define-public rust-freetype-rs-0.23
+  (package
+    (name "rust-freetype-rs")
+    (version "0.23.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "freetype-rs" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06yn6l44wad0h0i4nzs5jfq64zgf89xr01fy1w22i90j22ilnkmd"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-freetype-sys" ,rust-freetype-sys-0.9)
+        ("rust-libc" ,rust-libc-0.2))
+       #:cargo-development-inputs
+       (("rust-unicode-normalization" ,rust-unicode-normalization-0.1))))
+    (inputs
+     `(("freetype" ,freetype)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/PistonDevelopers/freetype-rs")
+    (synopsis "Bindings for FreeType font library")
+    (description "This package provides bindings for FreeType font library.")
+    (license license:expat)))
+
 (define-public rust-freetype-sys-0.9
   (package
     (name "rust-freetype-sys")
