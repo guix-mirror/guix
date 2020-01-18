@@ -4685,7 +4685,7 @@ local directories.")
   (package
     (name "emacs-ffap-rfc-space")
     (version "12")
-    (home-page "http://user42.tuxfamily.org/ffap-rfc-space/index.html")
+    (home-page "https://user42.tuxfamily.org/ffap-rfc-space/index.html")
     (source (origin
               (method url-fetch)
               (uri "http://download.tuxfamily.org/user42/ffap-rfc-space.el")
