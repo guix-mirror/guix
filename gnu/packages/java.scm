@@ -4929,7 +4929,7 @@ file filters and endian classes.")
          (replace 'install (install-jars "target")))))
     (native-inputs
      `(("java-junit" ,java-junit)))
-    (home-page "http://commons.apache.org/proper/commons-exec/")
+    (home-page "https://commons.apache.org/proper/commons-exec/")
     (synopsis "Common program execution related classes")
     (description "Commons-Exec simplifies executing external processes.")
     (license license:asl2.0)))
