@@ -3922,7 +3922,7 @@ from within R.")
     (propagated-inputs
      `(("r-lattice" ,r-lattice)
        ("r-matrix" ,r-matrix)))
-    (home-page "http://spams-devel.gforge.inria.fr")
+    (home-page "https://spams-devel.gforge.inria.fr")
     (synopsis "Toolbox for solving sparse estimation problems")
     (description "SPAMS (SPArse Modeling Software) is an optimization toolbox
 for solving various sparse estimation problems.  It includes tools for the
