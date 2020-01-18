@@ -16771,7 +16771,7 @@ experienced.")
     (inputs
      `(("tcl" ,tcl)
        ("tk" ,tk)))
-    (home-page "http://www.sciviews.org/SciViews-R")
+    (home-page "https://www.sciviews.org/SciViews-R")
     (synopsis "Tcl/Tk additions")
     (description
      "This package provides a series of additional Tcl commands and Tk widgets
