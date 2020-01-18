@@ -68,8 +68,8 @@
     (version "3.0.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.dillo.org/download/"
-                                  name "-" version ".tar.bz2"))
+              (uri (string-append "https://www.dillo.org/download/"
+                                  "dillo-" version ".tar.bz2"))
               (sha256
                (base32
                 "12ql8n1lypv3k5zqgwjxlw1md90ixz3ag6j1gghfnhjq3inf26yv"))))
@@ -90,7 +90,7 @@
     (synopsis "Very small and fast graphical web browser")
     (description "Dillo is a minimalistic web browser particularly intended for
 older or slower computers and embedded systems.")
-    (home-page "http://www.dillo.org")
+    (home-page "https://www.dillo.org")
     (license license:gpl3+)))
 
 (define-public links
