@@ -5441,7 +5441,7 @@ genome-wide association studies can be analyzed efficiently.")
        ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.rforge.net/Cairo/")
+    (home-page "https://www.rforge.net/Cairo/")
     (synopsis "R graphics device using Cairo graphics library")
     (description
      "This package provides a Cairo graphics device that can be use to
