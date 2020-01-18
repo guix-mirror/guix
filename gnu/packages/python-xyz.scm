@@ -6303,7 +6303,7 @@ It is written entirely in Python.")
     (native-inputs
      `(("python-six" ,python-six))) ; required for conversion, not at run-time
     (home-page
-     "http://docs.python.org/3/library/functools.html#functools.singledispatch")
+     "https://docs.python.org/3/library/functools.html#functools.singledispatch")
     (synopsis "Backport of singledispatch feature from Python 3.4")
     (description
      "This library brings functools.singledispatch from Python 3.4 to Python
