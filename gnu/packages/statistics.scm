@@ -4563,7 +4563,7 @@ mixture models.")
     (build-system r-build-system)
     (inputs
      `(("gfortran" ,gfortran)))
-    (home-page "http://www-stat.stanford.edu/~hastie/Papers/#LARS")
+    (home-page "https://web.stanford.edu/~hastie/Papers/LARS/")
     (synopsis "Least angle regression software")
     (description
      "Least Angle Regression (\"LAR\") is a model selection algorithm; a
