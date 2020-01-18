@@ -8840,7 +8840,7 @@ Pytest but stripped of Pytest specific details.")
     `(; FIXME: Missing: ("python-pytest-timeout" ,python-pytest-timeout)
       ("python-pytest" ,python-pytest)  ; >= 2.3.5
       ("python-setuptools-scm" ,python-setuptools-scm)))
-   (home-page "http://tox.testrun.org/")
+   (home-page "https://tox.readthedocs.io")
    (synopsis "Virtualenv-based automation of test activities")
    (description "Tox is a generic virtualenv management and test command line
 tool.  It can be used to check that a package installs correctly with
