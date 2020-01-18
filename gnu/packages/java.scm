@@ -3578,7 +3578,7 @@ cli/shell/BourneShell.java"
     (native-inputs
      `(("java-hamcrest-core" ,java-hamcrest-core)
        ("java-junit" ,java-junit)))
-    (home-page "http://codehaus-plexus.github.io/plexus-utils/")
+    (home-page "https://codehaus-plexus.github.io/plexus-utils/")
     (synopsis "Common utilities for the Plexus framework")
     (description "This package provides various Java utility classes for the
 Plexus framework to ease working with strings, files, command lines, XML and
