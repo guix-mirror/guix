@@ -15473,7 +15473,7 @@ path of values for the regularization parameter.")
          "0iwc06blr5sx7rylwczi2jrha8sk8qs0jklflwpidl0zj1jxdggp"))))
     (properties `((upstream-name . "RhpcBLASctl")))
     (build-system r-build-system)
-    (home-page "http://prs.ism.ac.jp/~nakama/Rhpc/")
+    (home-page "https://prs.ism.ac.jp/~nakama/Rhpc/")
     (synopsis "Control the number of threads on BLAS")
     (description
      "This package allows you to control the number of threads the BLAS
