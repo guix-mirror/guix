@@ -4698,7 +4698,7 @@ models, generalized linear models and model-based clustering.")
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
-    (home-page "http://www.stat.washington.edu/mclust/")
+    (home-page "https://www.stat.washington.edu/mclust/")
     (synopsis "Gaussian mixture modelling for model-based clustering etc.")
     (description
      "This package provides Gaussian finite mixture models fitted via EM
