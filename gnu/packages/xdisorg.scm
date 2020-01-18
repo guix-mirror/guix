@@ -840,7 +840,7 @@ shows it again when the mouse cursor moves or a mouse button is pressed.")
        ("libXext" ,libxext)
        ("libXt" ,libxt)
        ("linux-pam" ,linux-pam)))
-    (home-page "http://sillycycle.com/xlockmore.html")
+    (home-page "https://sillycycle.com/xlockmore.html")
     (synopsis "Screen locker for the X Window System")
     (description
      "XLockMore is a classic screen locker and screen saver for the
