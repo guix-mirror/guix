@@ -8708,7 +8708,7 @@ minimal effort.")
 and stability,
 @item Rack, a minimal interface between webservers and Ruby frameworks.
 @end itemize\n")
-    (home-page "http://code.macournoyer.com/thin/")
+    (home-page "https://github.com/macournoyer/thin")
     (license license:ruby)))
 
 (define-public ruby-skinny
