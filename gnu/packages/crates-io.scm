@@ -4068,6 +4068,30 @@ implementation that is more efficient for smaller hash keys.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-foreign-types-0.5
+  (package
+    (name "rust-foreign-types")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "foreign-types" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0rfr2zfxnx9rz3292z5nyk8qs2iirznn5ff3rd4vgdwza6mdjdyp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-foreign-types-macros" ,rust-foreign-types-macros-0.2)
+        ("rust-foreign-types-shared" ,rust-foreign-types-shared-0.3))))
+    (home-page "https://github.com/sfackler/foreign-types")
+    (synopsis "Framework for Rust wrappers over C APIs")
+    (description
+     "This package provides a framework for Rust wrappers over C APIs.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-foreign-types-0.3
   (package
     (name "rust-foreign-types")
