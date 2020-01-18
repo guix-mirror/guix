@@ -550,7 +550,7 @@ test_parse_format_ipv(4(|_listen_all|_mapped_ipv6)|6)\\);")
               ("zlib" ,zlib)))
     (native-inputs `(("check" ,check)
                      ("pkg-config" ,pkg-config)))
-    (home-page "http://code.kryo.se/iodine/")
+    (home-page "https://code.kryo.se/iodine/")
     (synopsis "Tunnel IPv4 data through a DNS server")
     (description "Iodine tunnels IPv4 data through a DNS server.  This
 can be useful in different situations where internet access is firewalled, but
