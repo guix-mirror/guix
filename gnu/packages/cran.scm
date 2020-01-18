@@ -9534,7 +9534,7 @@ circular variables).")
          "0ddf9bw5lhj8vb0ja78jf99i0smq4rgmm842k4a4ygap41vdyn2b"))))
     (build-system r-build-system)
     (propagated-inputs `(("r-subplex" ,r-subplex)))
-    (home-page "http://kingaa.github.io/ouch/")
+    (home-page "https://kingaa.github.io/ouch/")
     (synopsis "Ornstein-Uhlenbeck models for phylogenetic comparative hypotheses")
     (description
      "This package provides tools to fit and compare Ornstein-Uhlenbeck models
