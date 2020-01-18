@@ -1126,7 +1126,7 @@ Grisbi can manage multiple accounts, currencies and users.  It manages
 third party, expenditure and receipt categories, budgetary lines,
 financial years, budget estimates, bankcard management and other
 information.")
-    (home-page "http://grisbi.org")
+    (home-page "https://grisbi.org")
     (license license:gpl2+)))
 
 (define-public trezord
