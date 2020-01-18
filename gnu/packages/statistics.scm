@@ -4328,7 +4328,7 @@ within a category based on their density using quasirandom noise.")
                (base32
                 "0hy89bwv7jixlg91li1fywa77916am2whqp1m1fx1khd45g44581"))))
     (build-system r-build-system)
-    (home-page "http://www.cbs.dtu.dk/~eklund/beeswarm/")
+    (home-page "https://www.cbs.dtu.dk/~eklund/beeswarm/")
     (synopsis "Implementation of bee swarm plots")
     (description
      "This package provides an implementation of bee swarm plots.  The bee
