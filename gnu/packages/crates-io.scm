@@ -3189,6 +3189,27 @@ from macros.")
     (description "Command line argument parsing.")
     (license (list license:expat license:unlicense))))
 
+(define-public rust-docopt-0.7
+  (package
+    (inherit rust-docopt-1.1)
+    (name "rust-docopt")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "docopt" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1n6gbhsks2w9y0b4bwqyawh4ghbkka09w6pjcrq9i1sd51pflcmb"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-0.2)
+        ("rust-regex" ,rust-regex-0.2)
+        ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
+        ("rust-strsim" ,rust-strsim-0.6))))))
+
 (define-public rust-downcast-rs-1.1
   (package
     (name "rust-downcast-rs")
