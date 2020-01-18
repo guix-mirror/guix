@@ -709,7 +709,7 @@ IPv6, proxies, and Unix sockets.")
         (base32
          "0mv3wndj4z2bsshh2k8d5sy3j8wxzgf8mzmmkvj1k8gpcz37dm6g"))))
     (build-system gnu-build-system)
-    (home-page "http://www.routemeister.net/projects/sipcalc/")
+    (home-page "https://www.routemeister.net/projects/sipcalc/")
     (synopsis "Command-line IP subnet calculator")
     (description
      "Sipcalc is an advanced command-line IP subnet calculator.  It can take
