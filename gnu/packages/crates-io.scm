@@ -4094,6 +4094,7 @@ implementation that is more efficient for smaller hash keys.")
 
 (define-public rust-foreign-types-0.3
   (package
+    (inherit rust-foreign-types-0.5)
     (name "rust-foreign-types")
     (version "0.3.2")
     (source
@@ -4105,18 +4106,11 @@ implementation that is more efficient for smaller hash keys.")
        (sha256
         (base32
          "1cgk0vyd7r45cj769jym4a6s7vwshvd0z4bqrb92q1fwibmkkwzn"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-foreign-types-macros" ,rust-foreign-types-macros-0.1)
-        ("rust-foreign-types-shared" ,rust-foreign-types-shared-0.1))))
-    (home-page "https://github.com/sfackler/foreign-types")
-    (synopsis "Framework for Rust wrappers over C APIs")
-    (description
-     "This package provides a framework for Rust wrappers over C
-APIs.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-foreign-types-shared" ,rust-foreign-types-shared-0.1))))))
 
 (define-public rust-foreign-types-macros-0.2
   (package
