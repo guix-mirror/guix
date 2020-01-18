@@ -227,7 +227,7 @@
                (delete-file-recursively font-dest)
                (symlink font-src font-dest))
              #t)))))
-    (home-page "http://calibre-ebook.com/")
+    (home-page "https://calibre-ebook.com/")
     (synopsis "E-book library management software")
     (description "Calibre is an e-book library manager.  It can view, convert
 and catalog e-books in most of the major e-book formats.  It can also talk
