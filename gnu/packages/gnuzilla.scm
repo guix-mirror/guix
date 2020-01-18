@@ -10,6 +10,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
+;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,6 +42,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cargo)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
@@ -1127,3 +1129,43 @@ standards of the IceCat project.")
   ;; The Conkeror web browser relied on XULRunner, which IceCat > 50 no longer
   ;; provides.  See <http://conkeror.org> for the original web page.
   (deprecated-package "conkeror" icecat))
+
+(define-public firefox-decrypt
+  (package
+    (name "firefox-decrypt")
+    (version "0.7.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Unode/firefox_decrypt.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "17yyyxp47z4m8hnflcq34rc1y871515kr3f1y42j1l0yx3g0il07"))))
+    (build-system trivial-build-system)
+    (inputs
+     `(("nss" ,nss)
+       ("python" ,python)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (setenv "PATH"
+                 (string-append
+                  (assoc-ref %build-inputs "python") "/bin"))
+         (copy-file (string-append (assoc-ref %build-inputs "source")
+                                   "/firefox_decrypt.py")
+                    "firefox_decrypt.py")
+         (substitute* "firefox_decrypt.py"
+           (("/usr/bin/env python") (which "python3"))
+           (("libnss3.so") (string-append (assoc-ref %build-inputs "nss")
+                                          "/lib/nss/libnss3.so")))
+         (install-file "firefox_decrypt.py" (string-append %output "/bin"))
+         #t)))
+    (home-page "https://github.com/Unode/firefox_decrypt/")
+    (synopsis "Tool to extract passwords from Mozilla profiles")
+    (description "Firefox Decrypt is a tool to extract passwords from
+Mozilla (Firefox, Waterfox, Thunderbird, SeaMonkey) profiles.")
+    (license license:gpl3+)))
