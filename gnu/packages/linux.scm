@@ -1785,7 +1785,7 @@ Both commands are targeted at system administrators.")
      `(("perl" ,perl)
        ("iptables" ,iptables)))
     (synopsis "Ethernet bridge frame table administration")
-    (home-page "http://ebtables.netfilter.org/")
+    (home-page "https://ebtables.netfilter.org/")
     (description
      "ebtables is an application program used to set up and maintain the
 tables of rules (inside the Linux kernel) that inspect Ethernet frames.  It is
