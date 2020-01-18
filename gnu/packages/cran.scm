@@ -8360,7 +8360,7 @@ correlation, censored, ordered and multivariate problems.")
        ("r-rlang" ,r-rlang)
        ("r-tibble" ,r-tibble)
        ("r-tidyselect" ,r-tidyselect)))
-    (home-page "http://mc-stan.org/bayesplot")
+    (home-page "https://mc-stan.org/bayesplot")
     (synopsis "Plotting for Bayesian models")
     (description
      "This package provides plotting functions for posterior analysis, model
