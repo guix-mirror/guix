@@ -4926,7 +4926,7 @@ files.")
     (propagated-inputs
      `(("r-shiny" ,r-shiny)
        ("r-jsonlite" ,r-jsonlite)))
-    (home-page "http://cran.r-project.org/web/packages/shinyAce")
+    (home-page "https://cran.r-project.org/web/packages/shinyAce/")
     (synopsis "Ace editor bindings for Shiny")
     (description
      "This package provides Ace editor bindings to enable a rich text editing
