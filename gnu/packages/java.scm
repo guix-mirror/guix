@@ -9167,7 +9167,7 @@ those in Perl and JavaScript.")
        ("cglib" ,java-cglib)
        ("asm" ,java-asm)
        ("aopalliance" ,java-aopalliance)))
-    (home-page "http://testng.org")
+    (home-page "https://testng.org")
     (synopsis "Testing framework")
     (description "TestNG is a testing framework inspired from JUnit and NUnit
 but introducing some new functionalities that make it more powerful and easier
