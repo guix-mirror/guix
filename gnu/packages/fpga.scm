@@ -75,7 +75,7 @@
              (let* ((out (assoc-ref outputs "out"))
                     (out-bin (string-append out "/bin")))
                (install-file "abc" out-bin)))))))
-    (home-page "http://people.eecs.berkeley.edu/~alanmi/abc/")
+    (home-page "https://people.eecs.berkeley.edu/~alanmi/abc/")
     (synopsis "Sequential logic synthesis and formal verification")
     (description "ABC is a program for sequential logic synthesis and
 formal verification.")
