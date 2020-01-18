@@ -16056,7 +16056,7 @@ wiki.")
         (revision "1"))
     (package
       (name "emacs-recent-addresses")
-      (home-page "http://nschum.de/src/emacs/recent-addresses/")
+      (home-page "https://nschum.de/src/emacs/recent-addresses/")
       (version (git-version "0.1" revision commit))
       (source (origin
                 (method git-fetch)
