@@ -16059,6 +16059,27 @@ attribute that is not in the shared backend crate.")
 Locate installed executable in cross platforms.")
     (license license:expat)))
 
+(define-public rust-which-1.0
+  (package
+    (inherit rust-which-2.0)
+    (name "rust-which")
+    (version "1.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "which" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1cjwa57kzfgzs681a27m5pjmq580pv3hkcg23smf270bgqz60jp8"))))
+    (arguments
+     `(#:tests? #f
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2))
+       #:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir-0.3))))))
+
 (define-public rust-widestring-0.4
   (package
     (name "rust-widestring")
