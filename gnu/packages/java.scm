@@ -6634,7 +6634,7 @@ This is a part of the Apache Commons Project.")
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://commons.apache.org/codec/")
+    (home-page "https://commons.apache.org/codec/")
     (synopsis "Common encoders and decoders such as Base64, Hex, Phonetic and URLs")
     (description "The codec package contains simple encoder and decoders for
 various formats such as Base64 and Hexadecimal.  In addition to these widely
