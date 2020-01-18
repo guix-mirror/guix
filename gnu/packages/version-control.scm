@@ -1066,7 +1066,7 @@ will work.")
                           "gitflow-shFlags")))))
          (delete 'configure)
          (delete 'build))))
-    (home-page "http://nvie.com/posts/a-successful-git-branching-model/")
+    (home-page "https://nvie.com/posts/a-successful-git-branching-model/")
     (synopsis "Git extensions for Vincent Driessen's branching model")
     (description
      "Vincent Driessen's branching model is a git branching and release
