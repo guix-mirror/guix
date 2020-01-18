@@ -248,7 +248,7 @@ with arguments to the field constructor.")
        ("python-setuptools-scm" ,python-setuptools-scm)))
     (propagated-inputs
      `(("python-pytest" ,python-pytest)))
-    (home-page "http://pytest-django.readthedocs.org/")
+    (home-page "https://pytest-django.readthedocs.org/")
     (synopsis "Django plugin for py.test")
     (description "Pytest-django is a plugin for py.test that provides a set of
 useful tools for testing Django applications and projects.")
