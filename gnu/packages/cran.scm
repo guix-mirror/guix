@@ -11584,7 +11584,7 @@ lasso, adaptive lasso and Ridge regression based on cross-validation.")
         (base32
          "1i1nhdapyijvm58zx38q28zk01ndmi6smjivxk5xs2cx9b6v2av9"))))
     (build-system r-build-system)
-    (home-page "http://www.stat.umn.edu/geyer/mcmc/")
+    (home-page "https://www.stat.umn.edu/geyer/mcmc/")
     (synopsis "Markov chain Monte Carlo")
     (description
      "This package simulates continuous distributions of random vectors using
