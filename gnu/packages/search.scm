@@ -249,7 +249,7 @@ for parsing HTML files.")
      `(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
                                               (assoc-ref %outputs "out")
                                               "/lib"))))
-    (home-page "http://fallabs.com/hyperestraier")
+    (home-page "https://fallabs.com/hyperestraier")
     (synopsis "Full-text search system")
     (description "Hyper Estraier can be used to integrate full-text
 search into applications, using either the provided command line and CGI
