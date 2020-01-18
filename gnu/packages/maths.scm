@@ -1921,13 +1921,13 @@ September 2004}")
               (copy-recursively exdir exdir')
               (delete-file-recursively exdir)
               #t))))))
-    (home-page "http://www.mcs.anl.gov/petsc")
+    (home-page "https://www.mcs.anl.gov/petsc")
     (synopsis "Library to solve PDEs")
     (description "PETSc, pronounced PET-see (the S is silent), is a suite of
 data structures and routines for the scalable (parallel) solution of
 scientific applications modeled by partial differential equations.")
     (license (license:non-copyleft
-              "http://www.mcs.anl.gov/petsc/documentation/copyright.html"))))
+              "https://www.mcs.anl.gov/petsc/documentation/copyright.html"))))
 
 (define-public petsc-complex
   (package (inherit petsc)
