@@ -4609,7 +4609,7 @@ performance and simplicity in mind.")
        `(("stefil" ,sbcl-hu.dwim.stefil)))
       (inputs
        `(("sbcl-cl-fad" ,sbcl-cl-fad)))
-      (home-page "http://shinmera.github.io/trivial-mimes/")
+      (home-page "https://shinmera.github.io/trivial-mimes/")
       (synopsis "Tiny Common Lisp library to detect mime types in files")
       (description
        "This is a teensy library that provides some functions to determine the
