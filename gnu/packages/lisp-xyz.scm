@@ -1132,7 +1132,7 @@ utilities that make it even easier to manipulate text in Common Lisp.  It has
         (base32 "0ccv7dqyrk55xga78i5vzlic7mdwp28in3g1a8fqhlk6626scsq9"))))
     (build-system asdf-build-system/sbcl)
     (arguments '(#:tests? #f))
-    (home-page "http://cliki.net/trivial-features")
+    (home-page "https://cliki.net/trivial-features")
     (synopsis "Ensures consistency of @code{*FEATURES*} in Common Lisp")
     (description "Trivial-features ensures that @code{*FEATURES*} is
 consistent across multiple Common Lisp implementations.")
