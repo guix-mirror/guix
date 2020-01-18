@@ -54,7 +54,7 @@ and edited by calendar and contact clients on mobile phones or computers.
 Radicale intentionally does not fully comply with the CalDAV and CardDAV RFCs.
 Instead, it supports the CalDAV and CardDAV implementations of popular
 clients.")
-    (home-page "http://radicale.org/")
+    (home-page "https://radicale.org/")
     (license gpl3+)))
 
 (define-public vdirsyncer
