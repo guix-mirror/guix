@@ -7954,6 +7954,29 @@ implementation (which is unstable / requires nightly).")
 combinators library.")
     (license license:expat)))
 
+(define-public rust-nom-3
+  (package
+    (inherit rust-nom-4.2)
+    (name "rust-nom")
+    (version "3.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nom" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0yr8fazcspgawl6s7wmx5llz61s68jl88cnrph18fa7xf06cbbh5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; stream::tests::seeking_consumer fails
+       #:cargo-inputs
+       (("rust-compiler-error" ,rust-compiler-error-0.1)
+        ("rust-lazy-static" ,rust-lazy-static-0.2)
+        ("rust-memchr" ,rust-memchr-1.0)
+        ("rust-regex" ,rust-regex-0.2))))))
+
 (define-public rust-nom-1.2
   (package
     (inherit rust-nom-4.2)
