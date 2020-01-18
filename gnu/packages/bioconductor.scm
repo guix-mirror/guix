@@ -6630,7 +6630,8 @@ measures.")
        ("r-gplots" ,r-gplots)
        ("r-limma" ,r-limma)
        ("r-rcolorbrewer" ,r-rcolorbrewer)))
-    (home-page "http://www.ebi.ac.uk/bertone/software")
+    (home-page (string-append "https://www.ebi.ac.uk/sites/ebi.ac.uk/files/"
+                              "groups/bertone/software/HTqPCR.pdf"))
     (synopsis "Automated analysis of high-throughput qPCR data")
     (description
      "Analysis of Ct values from high throughput quantitative real-time
