@@ -3530,7 +3530,7 @@ testing frameworks, mocking libraries and UI validation rules.")
        #:jar-name "junit.jar"))
     (inputs
      `(("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://junit.org/")
+    (home-page "https://junit.org/")
     (synopsis "Test framework for Java")
     (description
      "JUnit is a simple framework to write repeatable tests for Java projects.
