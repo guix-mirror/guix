@@ -10440,7 +10440,7 @@ the combination of non-negative and non-positive constraints.")
     (properties `((upstream-name . "Iso")))
     (build-system r-build-system)
     (native-inputs `(("gfortran" ,gfortran)))
-    (home-page "http://www.stat.auckland.ac.nz/~rolf/")
+    (home-page "https://www.stat.auckland.ac.nz/~rolf/")
     (synopsis "Functions to perform isotonic regression")
     (description
      "This package provides support for linear order and unimodal
