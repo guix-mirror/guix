@@ -1171,7 +1171,7 @@ channels.")
      `(("lcms" ,lcms)
        ("libjpeg" ,libjpeg)
        ("zlib" ,zlib)))
-    (home-page "http://www.libmng.com/")
+    (home-page "https://www.libmng.com/")
     (synopsis "Library for handling MNG files")
     (description
      "Libmng is the MNG (Multiple-image Network Graphics) reference library.")
