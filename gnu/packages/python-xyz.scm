@@ -508,7 +508,7 @@ NetCDF files can also be read and modified.  Python-HDF4 is a fork of
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-pkgconfig" ,python-pkgconfig)))
-    (home-page "http://www.h5py.org/")
+    (home-page "https://www.h5py.org/")
     (synopsis "Read and write HDF5 files from Python")
     (description
      "The h5py package provides both a high- and low-level interface to the
