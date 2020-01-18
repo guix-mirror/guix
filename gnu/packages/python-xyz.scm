@@ -17150,3 +17150,25 @@ Notation (CSON).")
      "The package asynctest is built on top of the standard unittest module
 and cuts down boilerplate code when testing libraries for asyncio.")
     (license license:asl2.0)))
+
+(define-public python-aionotify
+  (package
+    (name "python-aionotify")
+    (version "0.2.0")
+    (source
+     (origin
+       ;; Source tarball on PyPi lacks tests
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rbarrois/aionotify")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1sk9i8czxgsbrswsf1nlb4c82vgnlzi8zrvrxdip92w2z8hqh43y"))))
+    (build-system python-build-system)
+    (native-inputs `(("python-asynctest" ,python-asynctest)))
+    (home-page "https://github.com/rbarrois/aionotify")
+    (synopsis "Asyncio-powered inotify library")
+    (description
+     "@code{aionotify} is a simple, asyncio-based inotify library.")
+    (license license:bsd-3)))
