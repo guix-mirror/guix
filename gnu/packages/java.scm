@@ -6584,7 +6584,7 @@ logging framework for Java.")))
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://commons.apache.org/cli/")
+    (home-page "https://commons.apache.org/cli/")
     (synopsis "Command line arguments and options parsing library")
     (description "The Apache Commons CLI library provides an API for parsing
 command line options passed to programs.  It is also able to print help
