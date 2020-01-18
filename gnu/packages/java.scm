@@ -3604,7 +3604,7 @@ more.")
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://codehaus-plexus.github.io/plexus-interpolation/")
+    (home-page "https://codehaus-plexus.github.io/plexus-interpolation/")
     (synopsis "Java components for interpolating ${} strings and the like")
     (description "Plexus interpolator is a modular, flexible interpolation
 framework for the expression language style commonly seen in Maven, Plexus,
