@@ -14319,7 +14319,7 @@ layer by layer.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-randomforest" ,r-randomforest)))
-    (home-page "http://ligarto.org/rdiaz/Software/Software.html")
+    (home-page "https://www.ligarto.org/rdiaz/software/software")
     (synopsis "Variable selection using random forests")
     (description
      "This package provides tools for the variable selection from random
