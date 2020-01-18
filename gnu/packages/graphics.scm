@@ -979,7 +979,7 @@ requirements.")
        ("libxi" ,libxi)
        ("zlib" ,zlib)
        ("glfw" ,glfw)))
-    (home-page "http://graphics.pixar.com/opensubdiv/")
+    (home-page "https://graphics.pixar.com/opensubdiv/")
     (synopsis "High performance subdivision surface evaluation")
     (description "OpenSubdiv is a set of libraries that implement high
 performance subdivision surface (subdiv) evaluation on massively parallel CPU
