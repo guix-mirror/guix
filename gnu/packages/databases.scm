@@ -38,6 +38,7 @@
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -939,6 +940,31 @@ as a drop-in replacement of MySQL.")
               (string-append (assoc-ref %build-inputs "mariadb:lib")
                              "/share/mysql")))
            #t)))))))
+
+(define-public mariadb-connector-c
+  (package
+    (name "mariadb-connector-c")
+    (version "3.1.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://downloads.mariadb.org/f/connector-c-"
+                    version "/mariadb-connector-c-"
+                    version "-src.tar.gz"))
+              (sha256
+               (base32
+                "083724f5daaqyzdcx508caz6fk2hs89jff85zg28ih43vxkvnrnj"))))
+    (inputs
+     `(("openssl" ,openssl)))
+    (build-system cmake-build-system)
+    (arguments
+     ;; No tests.
+     '(#:tests? #f))
+    (home-page "https://mariadb.com/kb/en/mariadb-connector-c/")
+    (synopsis "Client library to connect to MySQL or MariaDB")
+    (description "The MariaDB Connector/C is used to connect applications
+developed in C/C++ to MariaDB and MySQL databases.")
+    (license license:lgpl2.1+)))
 
 ;; Don't forget to update the other postgresql packages when upgrading this one.
 (define-public postgresql
