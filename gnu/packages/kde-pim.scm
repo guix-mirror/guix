@@ -30,6 +30,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages kde)
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages qt)
@@ -411,6 +412,51 @@ data")
     (description "This library provides a utility and user interface
 functions for accessing calendar data using the kcalcore API.")
     (license  license:lgpl2.0+)))
+
+(define-public kdepim-apps-libs
+  (package
+    (name "kdepim-apps-libs")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/kdepim-apps-libs-" version ".tar.xz"))
+       (sha256
+        (base32 "10xbzvp9cm5fpy4nxp38qm4vf0bycpq94bm4z2j4lw7ll1aq8irw"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("akonadi" ,akonadi)
+       ("akonadi-contacts" ,akonadi-contacts)
+       ("boost" ,boost)
+       ("gpgme" ,gpgme)
+       ("grantlee" ,grantlee)
+       ("grantleetheme" ,grantleetheme)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcontacts" ,kcontacts)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kdbusaddons" ,kdbusaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kimap" ,kimap)
+       ("kio" ,kio)
+       ("kitemmodels" ,kitemmodels)
+       ("kmime" ,kmime)
+       ("kpimcommon" ,kpimcommon)
+       ("kservice" ,kservice)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("libkleo" ,libkleo)
+       ("prison" ,prison)
+       ("qgpgme" ,qgpgme)
+       ("qtbase" ,qtbase)))
+    (home-page "https://cgit.kde.org/kdepim-apps-libs.git")
+    (synopsis "KDE PIM mail related libraries and data files")
+    (description "KDE PIM mail related libraries and data files.")
+    (license ;; GPL for programs, LGPL for libraries
+     (list license:gpl2+ license:lgpl2.0+))))
 
 (define-public kgpg
   (package
