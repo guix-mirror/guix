@@ -5992,7 +5992,7 @@ original.")
 (define-public fortune-mod
   (package
     (name "fortune-mod")
-    (version "2.6.2")
+    (version "2.12.0")
     (source
      (origin
        (method git-fetch)
@@ -6002,7 +6002,7 @@ original.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "11xff87s8ifw2dqs90n0rjq0psv4i7ykybygmibsqjj7id3xxw4c"))))
+         "0laxgqsdg7kvpvvm1f54b94ga9r0cr9g3ffii8avg8fy65x6pzc9"))))
     (build-system cmake-build-system)
     (arguments
      `(#:test-target "check"
@@ -6041,7 +6041,8 @@ original.")
        ("perl-class-xsaccessor" ,perl-class-xsaccessor)
        ("perl-io-all" ,perl-io-all)
        ("perl-test-runvalgrind" ,perl-test-runvalgrind)
-       ("cmake-rules" ,shlomif-cmake-modules)))
+       ("cmake-rules" ,shlomif-cmake-modules)
+       ("rinutils" ,rinutils)))
     (home-page "http://www.shlomifish.org/open-source/projects/fortune-mod/")
     (synopsis "The Fortune Cookie program from BSD games")
     (description "Fortune is a command-line utility which displays a random
