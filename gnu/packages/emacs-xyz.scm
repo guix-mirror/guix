@@ -6308,7 +6308,7 @@ provides the following features:
                (base32
                 "1zm1j4w0f3h01bmmpsv4j4mh6i13nnl8fcqlj2hsa1ncy1lgi8q7"))))
     (build-system emacs-build-system)
-    (home-page "http://jblevins.org/projects/markdown-mode/")
+    (home-page "https://jblevins.org/projects/markdown-mode/")
     (synopsis "Emacs Major mode for Markdown files")
     (description
      "Markdown-mode is a major mode for editing Markdown-formatted text files
