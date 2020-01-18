@@ -330,7 +330,7 @@ JNI.")
        ("jamvm" ,jamvm-1-bootstrap)
        ("unzip" ,unzip)
        ("zip" ,zip)))
-    (home-page "http://ant.apache.org")
+    (home-page "https://ant.apache.org")
     (synopsis "Build tool for Java")
     (description
      "Ant is a platform-independent build tool for Java.  It is similar to
