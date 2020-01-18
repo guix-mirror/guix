@@ -11492,7 +11492,7 @@ model with finite state space using the Aalen-Johansen estimator.")
        ("r-plyr" ,r-plyr)
        ("r-survival" ,r-survival)
        ("r-zoo" ,r-zoo)))
-    (home-page "http://BendixCarstensen.com/Epi/")
+    (home-page "https://BendixCarstensen.com/Epi/")
     (synopsis "Statistical analysis in epidemiology")
     (description
      "This package provides functions for demographic and epidemiological
