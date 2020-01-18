@@ -16880,7 +16880,7 @@ data.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lars" ,r-lars)))
-    (home-page "http://www.stat.umn.edu/~hzou")
+    (home-page "http://users.stat.umn.edu/~zouxx019/")
     (synopsis "Elastic-Net for sparse estimation and sparse PCA")
     (description
      "This package provides functions for fitting the entire solution path of
