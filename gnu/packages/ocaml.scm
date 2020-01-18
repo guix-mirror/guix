@@ -1038,7 +1038,7 @@ other XUnit testing frameworks.")
        (list "all" "allopt"
              (string-append "INSTALLDIR=" (assoc-ref %outputs "out")
                             "/lib/ocaml"))))
-    (home-page "http://forge.ocamlcore.org/projects/camlzip")
+    (home-page "https://github.com/xavierleroy/camlzip")
     (synopsis "Provides easy access to compressed files")
     (description "Provides easy access to compressed files in ZIP, GZIP and
 JAR format.  It provides functions for reading from and writing to compressed
