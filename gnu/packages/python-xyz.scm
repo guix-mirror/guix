@@ -14378,7 +14378,7 @@ particularly convenient for use in tests.")
        ("python-nose" ,python-nose)))
     (propagated-inputs
      `(("python-h5py" ,python-h5py)))
-    (home-page "http://www.activepapers.org/")
+    (home-page "https://www.activepapers.org/")
     (synopsis "Executable papers for scientific computing")
     (description
      "ActivePapers is a tool for working with executable papers, which
