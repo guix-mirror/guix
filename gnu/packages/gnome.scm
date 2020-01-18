@@ -4586,7 +4586,7 @@ throughout GNOME for API documentation).")
                                        (assoc-ref inputs "xorg-server")))
                        (setenv "DISPLAY" ":1")
                        #t)))))
-    (home-page "http://www.cogl3d.org")
+    (home-page "https://www.cogl3d.org")
     (synopsis "Object oriented GL/GLES Abstraction/Utility Layer")
     (description
      "Cogl is a small library for using 3D graphics hardware to draw pretty
