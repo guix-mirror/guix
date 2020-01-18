@@ -3658,7 +3658,7 @@ build jobs.")
              #t)))
        #:tests? #t
        #:test-command '("make" "test-batch")))
-    (home-page "http://company-mode.github.io/")
+    (home-page "https://company-mode.github.io/")
     (synopsis "Modular text completion framework")
     (description
      "Company is a modular completion mechanism.  Modules for retrieving
