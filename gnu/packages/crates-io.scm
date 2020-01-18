@@ -2233,6 +2233,7 @@ intrinsics.")
 
 (define-public rust-criterion-0.2
   (package
+    (inherit rust-criterion-0.3)
     (name "rust-criterion")
     (version "0.2.11")
     (source
@@ -2244,7 +2245,6 @@ intrinsics.")
        (sha256
         (base32
          "1543wlpc4p1kz7sqqa7ylr8bkdr8l4f34hy4bxj7krpkahwhaqq3"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -2271,12 +2271,7 @@ intrinsics.")
        (("rust-approx" ,rust-approx-0.3)
         ("rust-quickcheck" ,rust-quickcheck-0.8)
         ("rust-rand" ,rust-rand-0.4)
-        ("rust-tempdir" ,rust-tempdir-0.3))))
-    (home-page "https://bheisler.github.io/criterion.rs/book/index.html")
-    (synopsis "Statistics-driven micro-benchmarking library")
-    (description
-     "Statistics-driven micro-benchmarking library.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-tempdir" ,rust-tempdir-0.3))))))
 
 (define-public rust-criterion-plot-0.4
   (package
