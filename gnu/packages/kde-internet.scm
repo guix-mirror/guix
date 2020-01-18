@@ -431,8 +431,8 @@ a full-featured client for BitTorrent.")
     (source
      (origin
        (method url-fetch)
-       ;; TODO: Base on version of ktorrent
-       (uri (string-append "mirror://kde//stable/ktorrent/5.1.2"
+       (uri (string-append "mirror://kde//stable/ktorrent/"
+                           (package-version ktorrent)
                            "/libktorrent-" version ".tar.xz"))
        (sha256
         (base32 "0051zh8bb4p9wmcfn5ql987brhsaiw9880xdck7b5dm1a05mri2w"))))
