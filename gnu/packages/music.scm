@@ -2646,7 +2646,7 @@ tune-in sender list from @url{http://opml.radiotime.com}.")
        ("ffmpeg" ,ffmpeg-3.4)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://6xq.net/projects/pianobar/")
+    (home-page "https://6xq.net/pianobar/")
     (synopsis "Console-based pandora.com player")
     (description "pianobar is a console-based music player for the
 personalized online radio pandora.com.  It has configurable keys for playing
