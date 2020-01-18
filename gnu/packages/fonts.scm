@@ -1222,7 +1222,7 @@ monospace, slab-serif fonts.")
                (base32
                 "17q5brcqyyc8gbjdgpv38p89s60cwxjlwy2ljnrvas5cj0s62np0"))))
     (build-system font-build-system)
-    (home-page "http://google.github.io/material-design-icons")
+    (home-page "https://google.github.io/material-design-icons")
     (synopsis "Icon font of Google Material Design icons")
     (description
      "Material design system icons are simple, modern, friendly, and sometimes
