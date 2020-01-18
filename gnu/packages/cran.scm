@@ -15443,7 +15443,7 @@ customize styles using a readable syntax.")
         (base32 "02p3612rpydk195n2qr77lp1j2w8zsw1ckkk98c8angm4r5q8dsc"))))
     (build-system r-build-system)
     (native-inputs `(("gfortran" ,gfortran)))
-    (home-page "http://www-stat.stanford.edu/~tibs/glasso")
+    (home-page "https://statweb.stanford.edu/~tibs/glasso/")
     (synopsis "Graphical Lasso: estimation of Gaussian graphical models")
     (description
      "This is a package for estimation of a sparse inverse covariance matrix
