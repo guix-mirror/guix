@@ -2112,7 +2112,7 @@ buffers, and audio capture.")
      `(("openal" ,openal)))
     (synopsis "Free implementation of OpenAL's ALUT standard")
     (description "freealut is the OpenAL Utility Toolkit.")
-    (home-page "http://kcat.strangesoft.net/openal.html")
+    (home-page "https://kcat.strangesoft.net/openal.html")
     (license license:lgpl2.0)))
 
 (define-public patchage
