@@ -8599,7 +8599,7 @@ minimal and fast API targeting the following uses:
 @item write and deploy hybrid multi-process applications
 @item write scripts to administer multiple environments
 @end enumerate")
-    (home-page "http://codespeak.net/execnet/")
+    (home-page "https://codespeak.net/execnet/")
     (license license:expat)))
 
 (define-public python2-execnet
