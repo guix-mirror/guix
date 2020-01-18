@@ -4254,7 +4254,7 @@ for @code{AUCTeX}.")
                (substitute* "mit-scheme-doc.el"
                  (("http://www\\.gnu\\.org/software/mit-scheme/documentation/mit-scheme-ref/")
                   (string-append "file:" doc-dir "/mit-scheme-ref/")))))))))
-    (home-page "http://groups.csail.mit.edu/mac/users/gjs/6.945/dont-panic/")
+    (home-page "https://groups.csail.mit.edu/mac/users/gjs/6.945/dont-panic/")
     (synopsis "MIT-Scheme documentation lookup for Emacs")
     (description
      "This package provides a set of Emacs functions to search definitions of
