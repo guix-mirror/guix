@@ -306,7 +306,7 @@ tools such as @command{grep}.")
                (base32
                 "02pwd5m5vq7hbrffgm2na1dfc249z50yyr5jv73vdw15bd7ygl44"))))
     (build-system gnu-build-system)
-    (home-page "http://daniel.haxx.se/projects/trio/")
+    (home-page "https://daniel.haxx.se/projects/trio/")
     (synopsis "Portable and extendable printf and string functions")
     (description
      "Trio is a set of @code{printf} and string functions designed be used by
