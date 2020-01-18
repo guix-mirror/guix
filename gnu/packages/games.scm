@@ -5920,6 +5920,14 @@ entirely config file, savegame, netplay and demo compatible with the
 original.")
     (home-page "https://www.chocolate-doom.org/wiki/index.php/Crispy_Doom")))
 
+(define shlomif-cmake-modules
+  (origin
+    (method url-fetch)
+    (uri (string-append "https://bitbucket.org/shlomif/shlomif-cmake-modules/"
+                        "raw/c505713d7a7cda608f97f01577e5868a711b883e/"
+                        "shlomif-cmake-modules/Shlomif_Common.cmake"))
+    (sha256
+     (base32 "0kx9s1qqhhzprp1w3b67xmsns0n0v506bg5hgrshxaxpy6lqiwb2"))))
 (define-public fortune-mod
   (package
     (name "fortune-mod")
@@ -5972,14 +5980,7 @@ original.")
        ("perl-class-xsaccessor" ,perl-class-xsaccessor)
        ("perl-io-all" ,perl-io-all)
        ("perl-test-runvalgrind" ,perl-test-runvalgrind)
-       ("cmake-rules"
-        ,(origin
-           (method url-fetch)
-           (uri (string-append "https://bitbucket.org/shlomif/shlomif-cmake-modules/"
-                               "raw/c505713d7a7cda608f97f01577e5868a711b883e/"
-                               "shlomif-cmake-modules/Shlomif_Common.cmake"))
-           (sha256
-            (base32 "0kx9s1qqhhzprp1w3b67xmsns0n0v506bg5hgrshxaxpy6lqiwb2"))))))
+       ("cmake-rules" ,shlomif-cmake-modules)))
     (home-page "http://www.shlomifish.org/open-source/projects/fortune-mod/")
     (synopsis "The Fortune Cookie program from BSD games")
     (description "Fortune is a command-line utility which displays a random
