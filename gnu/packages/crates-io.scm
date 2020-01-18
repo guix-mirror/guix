@@ -7904,14 +7904,12 @@ implementation (which is unstable / requires nightly).")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-lexical-core" ,rust-lexical-core-0.4)
         ("rust-memchr" ,rust-memchr-2.2)
-        ("rust-regex" ,rust-regex-1.1))
+        ("rust-regex" ,rust-regex-1.1)
+        ("rust-version-check" ,rust-version-check-0.1))
        #:cargo-development-inputs
        (("rust-criterion" ,rust-criterion-0.2)
-        ("rust-doc-comment" ,rust-doc-comment-0.3)
-        ("rust-jemallocator" ,rust-jemallocator-0.3)
-        ("rust-version-check" ,rust-version-check-0.9))))
+        ("rust-jemallocator" ,rust-jemallocator-0.1))))
     (home-page "https://github.com/Geal/nom")
     (synopsis
      "Byte-oriented, zero-copy, parser combinators library")
