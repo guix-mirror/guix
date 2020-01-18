@@ -9253,7 +9253,7 @@ package provides a minimal R interface by relying on the Rcpp package.")
          "1mhd6vp47xmfw533h0pkvydv96m57fspvd85g8m7iqb5rcxvhhdb"))))
     (properties `((upstream-name . "RcppParallel")))
     (build-system r-build-system)
-    (home-page "http://rcppcore.github.io/RcppParallel")
+    (home-page "https://rcppcore.github.io/RcppParallel/")
     (synopsis "Parallel programming tools for Rcpp")
     (description
      "This package provides high level functions for parallel programming with
