@@ -296,7 +296,7 @@ provide a 100% native look and feel for the application.")
        ("wxwidgets" ,wxwidgets-gtk2)))
     (synopsis "Python 2 Bindings for wxWidgets")
     (description "@code{wxpython} provides Python 2 bindings for wxWidgets.")
-    (home-page "http://wxpython.org/")
+    (home-page "https://wxpython.org/")
     (license (package-license wxwidgets))))
 
 (define-public wxsvg
