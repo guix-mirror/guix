@@ -442,7 +442,7 @@ used to keep a folder in sync between computers.")
        ("ghc-aeson" ,ghc-aeson)
        ("ghc-lib-parser" ,ghc-lib-parser)
        ("hscolour" ,hscolour)))
-    (home-page "http://community.haskell.org/~ndm/hlint/")
+    (home-page "https://github.com/ndmitchell/hlint")
     (synopsis "Suggest improvements for Haskell source code")
     (description "HLint reads Haskell programs and suggests changes that
 hopefully make them easier to read.  HLint also makes it easy to disable
