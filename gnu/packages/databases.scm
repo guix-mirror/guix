@@ -1070,7 +1070,7 @@ Most public APIs are compatible with @command{mysqlclient} and MySQLdb.")
                                               (assoc-ref %outputs "out")
                                               "/lib"))
        #:make-flags (list "CFLAGS=-fPIC")))
-    (home-page "http://fallabs.com/qdbm")
+    (home-page "https://fallabs.com/qdbm/")
     (synopsis "Key-value database")
     (description "QDBM is a library of routines for managing a
 database.  The database is a simple data file containing key-value
