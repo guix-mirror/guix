@@ -9579,7 +9579,7 @@ related functions.")
         (base32
          "0scar396wiq6wkbkvwp4qrxqc1m075y56p37i6iry5rw796p1i86"))))
     (build-system r-build-system)
-    (home-page "http://www.rmetrics.org")
+    (home-page "https://www.rmetrics.org")
     (synopsis "Stable distribution functions")
     (description
      "This package provides density, probability and quantile functions, and
