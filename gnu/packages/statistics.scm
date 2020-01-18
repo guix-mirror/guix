@@ -3221,7 +3221,7 @@ analysis of large sparse or dense matrices.")
     `(("r-foreach" ,r-foreach)
       ("r-matrix" ,r-matrix)
       ("r-shape" ,r-shape)))
-   (home-page "http://www.jstatsoft.org/v33/i01")
+   (home-page "https://www.jstatsoft.org/article/view/v033i01")
    (synopsis "Lasso and elastic-net regularized generalized linear models")
    (description
     "The glmnet package provides efficient procedures for fitting the entire
