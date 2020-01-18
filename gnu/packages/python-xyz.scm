@@ -1559,7 +1559,7 @@ and is not compatible with JSON.")
              (invoke "python" "bootstrap.py" "build/scons" "DEVELOPER=guix")
              (chdir "build/scons")
              #t)))))
-    (home-page "http://scons.org/")
+    (home-page "https://scons.org/")
     (synopsis "Software construction tool written in Python")
     (description
      "SCons is a software construction tool.  Think of SCons as an improved,
