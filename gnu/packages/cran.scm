@@ -13752,7 +13752,7 @@ variance components, using the likelihood-ratio statistics G.")
         (base32
          "0qs5jl0snzfchgpp6pabncwywxcmi743g91jvjiyyzw0lw85yv4s"))))
     (build-system r-build-system)
-    (home-page "http://stat.sfu.ca/statgen/research/hapassoc.html")
+    (home-page "https://stat.sfu.ca/statgen/research/hapassoc.html")
     (synopsis "Inference of trait associations with SNP haplotypes")
     (description
      "Hapassoc performs likelihood inference of trait associations with
