@@ -2337,7 +2337,7 @@ environments and back.")
     (build-system python-build-system)
     (inputs
      `(("libyaml" ,libyaml)))
-    (home-page "http://pyyaml.org/wiki/PyYAML")
+    (home-page "https://pyyaml.org")
     (synopsis "YAML parser and emitter for Python")
     (description
      "PyYAML is a YAML parser and emitter for Python.  PyYAML features a
