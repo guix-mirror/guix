@@ -2284,7 +2284,7 @@ improves on support for JACK features, such as JACK MIDI.")
        ("libsndfile" ,libsndfile)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://linuxsampler.org/libgig/")
+    (home-page "https://linuxsampler.org/libgig/")
     (synopsis "C++ library for working with Gigasampler (.gig) files")
     (description
      "Libgig is a C++ library for loading, modifying existing and creating new
