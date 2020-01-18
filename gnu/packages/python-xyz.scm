@@ -3201,7 +3201,7 @@ feature-set for programming Python effectively.")
         (base32
          "1dpq0vb01p36jjwbhhd08ylvrnyvcc82yxx3mwjx6awrycjyw6j7"))))
     (build-system python-build-system)
-    (home-page "http://pythonhosted.org/blinker/")
+    (home-page "https://pythonhosted.org/blinker/")
     (synopsis "Fast, simple object-to-object and broadcast signaling")
     (description
      "Blinker provides a fast dispatching system that allows any number of
