@@ -2870,7 +2870,7 @@ websites such as Libre.fm.")
                                 (find-files "instantmusic.egg-info"
                                             "PKG-INFO|.*\\.txt"))
                       #t)))))
-    (home-page "http://iyask.me/Instant-Music-Downloader/")
+    (home-page "https://github.com/yask123/Instant-Music-Downloader")
     (synopsis "Command-line program to download a song from YouTube")
     (description "InstantMusic downloads a song from YouTube in MP3 format.
 Songs can be searched by artist, name or even by a part of the song text.")
