@@ -2099,8 +2099,7 @@ Linux-based operating systems.")
              #t)))
        #:tests? #f))                              ; no 'check' target
 
-    (home-page
-     "http://www.linuxfoundation.org/collaborate/workgroups/networking/bridge")
+    (home-page "https://wiki.linuxfoundation.org/networking/bridge")
     (synopsis "Manipulate Ethernet bridges")
     (description
      "Utilities for Linux's Ethernet bridging facilities.  A bridge is a way
