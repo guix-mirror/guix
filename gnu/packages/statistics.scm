@@ -1414,7 +1414,7 @@ emitter (http://pyyaml.org/wiki/LibYAML) for R.")
        ("r-stringr" ,r-stringr)
        ("r-xfun" ,r-xfun)
        ("r-yaml" ,r-yaml)))
-    (home-page "http://yihui.name/knitr/")
+    (home-page "https://yihui.org/knitr/")
     (synopsis "General-purpose package for dynamic report generation in R")
     (description
      "This package provides a general-purpose tool for dynamic report
