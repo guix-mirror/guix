@@ -55,7 +55,7 @@
        ("python-six" ,python-six)
        ("python-dateutil" ,python-dateutil)
        ("python-parsedatetime" ,python-parsedatetime)))
-    (home-page "http://maebert.github.io/jrnl/")
+    (home-page "https://maebert.github.io/jrnl/")
     (synopsis "Personal journal application")
     (description
      "Jrnl is a command line journal application that stores your journal in a
