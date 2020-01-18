@@ -60,8 +60,7 @@
     ;; XXX: testsuite: 209 and 279 failed. The latter is an impurity. It
     ;; should use our own "cpp" instead of "/lib/cpp".
     (arguments `(#:tests? #f))
-    (home-page
-     "http://www.gnu.org/software/autoconf/")
+    (home-page "https://www.gnu.org/software/autoconf/")
     (synopsis "Create source code configuration scripts")
     (description
      "Autoconf offers the developer a robust set of M4 macros which expand
