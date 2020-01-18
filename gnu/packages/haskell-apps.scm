@@ -615,7 +615,7 @@ Wayland, and Linux console environments alike.")
        ("ghc-sdl2" ,ghc-sdl2)
        ("ghc-sdl2-image" ,ghc-sdl2-image)
        ("ghc-sdl2-mixer" ,ghc-sdl2-mixer)))
-    (home-page "http://www.bysusanlin.com/raincat/")
+    (home-page "https://www.gamecreation.org/games/raincat")
     (synopsis "Puzzle game with a cat in lead role")
     (description "Project Raincat is a game developed by Carnegie Mellon
 students through GCS during the Fall 2008 semester.  Raincat features game
