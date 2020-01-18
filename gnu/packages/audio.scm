@@ -1443,7 +1443,7 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
      (list (search-path-specification
             (variable "LV2_PATH")
             (files '("lib/lv2")))))
-    (home-page "http://guitarix.org/")
+    (home-page "https://guitarix.org/")
     (synopsis "Virtual guitar amplifier")
     (description "Guitarix is a virtual guitar amplifier running JACK.
 Guitarix takes the signal from your guitar as a mono-signal from your sound
