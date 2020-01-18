@@ -6218,7 +6218,7 @@ multiprecision arithmetic.")
              #t)))))
     (propagated-inputs
      `(("python-mpmath" ,python-mpmath)))
-    (home-page "http://www.sympy.org/")
+    (home-page "https://www.sympy.org/")
     (synopsis "Python library for symbolic mathematics")
     (description
      "SymPy is a Python library for symbolic mathematics.  It aims to become a
