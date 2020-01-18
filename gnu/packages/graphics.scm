@@ -420,7 +420,7 @@ storage of the \"EXR\" file format for storing 16-bit floating-point images.")
 related classes, utilities, and applications.  There is a particular emphasis
 on formats and functionality used in professional, large-scale animation and
 visual effects work for film.")
-    (home-page "http://www.openimageio.org")
+    (home-page "https://www.openimageio.org")
     (license license:bsd-3)))
 
 ;; This older version of OpenImageIO is required for Blender 2.79.
