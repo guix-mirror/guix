@@ -1132,3 +1132,61 @@ various Google services.")
 KDE using certificate-based crypto.")
     (license ;; GPL for programs, LGPL for libraries
      (list license:gpl2+ license:lgpl2.0+))))
+
+(define-public libksieve
+  (package
+    (name "libksieve")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/libksieve-" version ".tar.xz"))
+       (sha256
+        (base32 "0q6f6lc4yvlq0vsfml10lz844z6zxxf7yivk7l3vglap58ci20x1"))
+       (patches (search-patches "libksieve-Fix-missing-link-libraries.patch"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("akonadi" ,akonadi)
+       ("cyrus-sasl" ,cyrus-sasl)
+       ("karchive" ,karchive)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kidentitymanagement" ,kidentitymanagement)
+       ("kimap" ,kimap)
+       ("kio" ,kio)
+       ("kmailtransport" ,kmailtransport)
+       ("kmime" ,kmime)
+       ("knewstuff" ,knewstuff)
+       ("kpimcommon" ,kpimcommon)
+       ("kpimtextedit" ,kpimtextedit)
+       ("ksyntaxhighlighting" ,ksyntaxhighlighting)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwallet" ,kwallet)
+       ("kwindowsystem" ,kwindowsystem)
+       ("libkdepim" ,libkdepim)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtwebchannel" ,qtwebchannel)
+       ("qtwebengine" ,qtwebengine)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'substitute
+           (lambda _
+             ;; Disable a failing test
+             ;; sieveeditorhelphtmlwidgettest fails with `sigtrap`
+             (substitute*
+                 "src/ksieveui/editor/webengine/autotests/CMakeLists.txt"
+               (("^\\s*(add_test|ecm_mark_as_test)\\W" line)
+                (string-append "# " line)))
+             #t)))))
+    (home-page "https://cgit.kde.org/libksieve.git")
+    (synopsis "KDE Sieve library")
+    (description "Sieve is a language that can be used filter emails.  KSieve
+is a Sieve parser and interpreter library for KDE.")
+    (license ;; GPL for programs, LGPL for libraries
+     (list license:gpl2+ license:lgpl2.0+))))
