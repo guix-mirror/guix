@@ -4757,7 +4757,7 @@ targeting the JVM.")
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)
        ("java-easymock" ,java-easymock)))
-    (home-page "http://commons.apache.org/collections/")
+    (home-page "https://commons.apache.org/collections/")
     (synopsis "Collections framework")
     (description "The Java Collections Framework is the recognised standard
 for collection handling in Java.  Commons-Collections seek to build upon the
