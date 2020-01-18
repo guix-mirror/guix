@@ -5662,7 +5662,7 @@ elements to achieve a simple goal in the most complex way possible.")
        #:configure-flags (list "-DUSE_SYSTEM_LIBLUA:BOOL=YES"
                                (string-append "-DPIONEER_DATA_DIR="
                                               %output "/share/games/pioneer"))))
-    (home-page "http://pioneerspacesim.net")
+    (home-page "https://pioneerspacesim.net")
     (synopsis "Game of lonely space adventure")
     (description
      "Pioneer is a space adventure game set in our galaxy at the turn of the
