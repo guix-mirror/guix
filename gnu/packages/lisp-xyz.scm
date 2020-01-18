@@ -4753,7 +4753,7 @@ performance and simplicity in mind.")
          ("sbcl-lack-component" ,sbcl-lack-component)
          ("sbcl-alexandria" ,sbcl-alexandria)
          ("sbcl-babel" ,sbcl-babel)))
-      (home-page "http://8arrow.org/ningle/")
+      (home-page "https://8arrow.org/ningle/")
       (synopsis "Super micro framework for Common Lisp")
       (description
        "Ningle is a lightweight web application framework for Common Lisp.")
