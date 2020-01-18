@@ -1892,7 +1892,7 @@ similar to BerkeleyDB, LevelDB, etc.")
     (description "Redis is an advanced key-value cache and store.  Redis
 supports many data structures including strings, hashes, lists, sets, sorted
 sets, bitmaps and hyperloglogs.")
-    (home-page "http://redis.io/")
+    (home-page "https://redis.io/")
     (license license:bsd-3)))
 
 (define-public kyotocabinet
