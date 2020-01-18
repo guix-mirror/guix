@@ -264,7 +264,7 @@ bind processes, and much more.")
                       (let ((out (assoc-ref outputs "out")))
                         (for-each delete-file (find-files out "config.log"))
                         #t))))))
-    (home-page "http://www.open-mpi.org")
+    (home-page "https://www.open-mpi.org")
     (synopsis "MPI-3 implementation")
     (description
      "The Open MPI Project is an MPI-3 implementation that is developed and
