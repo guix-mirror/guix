@@ -3991,7 +3991,7 @@ sample library.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
-    (home-page "http://muse-sequencer.org")
+    (home-page "https://muse-sequencer.github.io/")
     (synopsis "MIDI/Audio sequencer")
     (description "MusE is a MIDI/Audio sequencer with recording and editing
 capabilities.  Its audio sequencer supports the LADSPA, DSSI, and LV2 audio
