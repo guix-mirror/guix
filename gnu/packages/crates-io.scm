@@ -11765,6 +11765,28 @@ paths point to the same file.")
     (license (list license:unlicense
                    license:expat))))
 
+(define-public rust-same-file-0.1
+  (package
+    (inherit rust-same-file-1.0)
+    (name "rust-same-file")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "same-file" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "19qpl6j8s3ph9jm8rh1k0wp2nkyw5ah34xly00vqcfx4v97s8cfr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-kernel32-sys" ,rust-kernel32-sys-0.2)
+        ("rust-winapi" ,rust-winapi-0.2))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.3))))))
+
 (define-public rust-schannel-0.1
   (package
     (name "rust-schannel")
