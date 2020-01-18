@@ -10689,7 +10689,7 @@ mainstream languages.")
        ("ghc-base-compat-batteries" ,ghc-base-compat-batteries)
        ("ghc-tf-random" ,ghc-tf-random)
        ("ghc-vector" ,ghc-vector)))
-    (home-page "http://hackage.haskell.org/package/splitmix")
+    (home-page "https://hackage.haskell.org/package/splitmix")
     (synopsis "Fast and splittable pseudorandom number generator")
     (description "This package provides a Pure Haskell implementation of the
 SplitMix pseudorandom number generator.  SplitMix is a \"splittable\"
