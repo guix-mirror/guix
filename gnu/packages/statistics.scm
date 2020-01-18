@@ -4266,7 +4266,7 @@ including:
     (build-system r-build-system)
     (propagated-inputs
      `(("r-gplots" ,r-gplots)))
-    (home-page "http://rocr.bioinf.mpi-sb.mpg.de/")
+    (home-page "https://rocr.bioinf.mpi-sb.mpg.de/")
     (synopsis "Visualizing the performance of scoring classifiers")
     (description
      "ROCR is a flexible tool for creating cutoff-parameterized 2D performance
