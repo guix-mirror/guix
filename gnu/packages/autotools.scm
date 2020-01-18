@@ -243,7 +243,7 @@ Autobuild generates an HTML summary file, containing links to each build log.
 The summary includes project name, version, build hostname, host type (cross
 compile aware), date of build, and indication of success or failure.  The
 output is indexed in many ways to simplify browsing.")
-    (home-page "http://josefsson.org/autobuild/")
+    (home-page "https://josefsson.org/autobuild/")
     (license gpl3+)))
 
 (define-public automake
