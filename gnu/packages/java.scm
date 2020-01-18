@@ -8040,7 +8040,7 @@ package contains utilities for obtaining services via the Java SE 6
      `(#:jar-name "java-aqute-bnd-annotation.jar"
        #:source-dir "biz.aQute.bnd.annotation/src"
        #:tests? #f)); empty test dir
-    (home-page "http://bnd.bndtools.org/")
+    (home-page "https://bnd.bndtools.org/")
     (synopsis "Tools for OSGi")
     (description "Bnd is a swiss army knife for OSGi, it creates manifest
 headers based on analyzing the class code, it verifies the project settings,
