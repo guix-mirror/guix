@@ -1631,16 +1631,21 @@ a C library, so they can easily be integrated into other programs.")
 (define-public cmatrix
   (package
     (name "cmatrix")
-    (version "1.2a")
+    (version "2.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "http://www.asty.org/cmatrix/dist/cmatrix-" version
-                           ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/abishekvashok/cmatrix.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0k06fw2n8nzp1pcdynhajp5prba03gfgsbj91bknyjr5xb5fd9hz"))))
+         "1h9jz4m4s5l8c3figaq46ja0km1gimrkfxm4dg7mf4s84icmasbm"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
