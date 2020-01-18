@@ -12326,7 +12326,7 @@ projects.")
 (define-public python-invoke
   (package
     (name "python-invoke")
-    (home-page "http://www.pyinvoke.org/")
+    (home-page "https://www.pyinvoke.org/")
     (version "1.3.0")
     (source (origin
               (method url-fetch)
