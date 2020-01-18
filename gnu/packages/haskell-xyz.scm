@@ -13224,7 +13224,7 @@ parts.")
         (base32
          "0g814lj7vaxvib2g3r734221k80k7ap9czv9hinifn8syals3l9j"))))
     (build-system haskell-build-system)
-    (home-page "http://code.galois.com")
+    (home-page "https://github.com/GaloisInc/xml")
     (synopsis "Simple XML library for Haskell")
     (description "This package provides a simple XML library for Haskell.")
     (license license:bsd-3)))
