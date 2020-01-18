@@ -14559,7 +14559,7 @@ analysis.")
     (inputs
      `(("libpng" ,libpng)
        ("zlib" ,zlib)))
-    (home-page "http://www.rforge.net/png/")
+    (home-page "https://www.rforge.net/png/")
     (synopsis "Read and write PNG images")
     (description
      "This package provides an easy and simple way to read, write and display
