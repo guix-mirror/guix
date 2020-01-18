@@ -614,6 +614,44 @@ and retrieving certificates from LDAP servers.")
     (license ;; GPL for programs, FDL for documentation
      (list license:gpl2+ license:fdl1.2+))))
 
+(define-public kmailimporter
+  (package
+    (name "kmailimporter")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/mailimporter-" version ".tar.xz"))
+       (sha256
+        (base32 "0vmrgjz47f96crrbv0bhaz0abh2am4whhb294rfz02mvjghbzpzv"))))
+    (properties `((upstream-name . "mailimporter")))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("akonadi" ,akonadi)
+       ("akonadi-mime" ,akonadi-mime)
+       ("boost" ,boost)
+       ("karchive" ,karchive)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kdbusaddons" ,kdbusaddons)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("kitemmodels" ,kitemmodels)
+       ("kmime" ,kmime)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdepim" ,libkdepim)
+       ("qtbase" ,qtbase)))
+    (home-page "https://cgit.kde.org/mailimporter.git")
+    (synopsis "KDE mail importer library")
+    (description "KDE mail importer library.")
+    (license ;; GPL for programs, LGPL for libraries
+     (list license:gpl2+ license:lgpl2.0+))))
+
 (define-public kmailtransport
   (package
     (name "kmailtransport")
