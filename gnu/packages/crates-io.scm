@@ -7261,7 +7261,7 @@ drop-in replacement for miniz.")
 (define-public rust-mio-0.6
   (package
     (name "rust-mio")
-    (version "0.6.19")
+    (version "0.6.21")
     (source
      (origin
        (method url-fetch)
@@ -7270,12 +7270,13 @@ drop-in replacement for miniz.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "08zzs227vrnyz5kvws6awzlgzb8zqpnihs71hkqlw07dlfb1kxc3"))))
+         "13q02a7cwc140aygf8amadpzpl5lyj3p2r4wnvgydfpnphifqb9h"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
+     `(#:tests? #f
        #:cargo-inputs
-       (("rust-fuchsia-zircon" ,rust-fuchsia-zircon-0.3)
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-fuchsia-zircon" ,rust-fuchsia-zircon-0.3)
         ("rust-fuchsia-zircon-sys" ,rust-fuchsia-zircon-sys-0.3)
         ("rust-iovec" ,rust-iovec-0.1)
         ("rust-kernel32-sys" ,rust-kernel32-sys-0.2)
@@ -7284,10 +7285,10 @@ drop-in replacement for miniz.")
         ("rust-miow" ,rust-miow-0.2)
         ("rust-net2" ,rust-net2-0.2)
         ("rust-slab" ,rust-slab-0.4)
-        ("rust-winapi" ,rust-winapi-0.3))
+        ("rust-winapi" ,rust-winapi-0.2))
        #:cargo-development-inputs
-       (("rust-bytes" ,rust-bytes-0.4)
-        ("rust-env-logger" ,rust-env-logger-0.6)
+       (("rust-bytes" ,rust-bytes-0.3)
+        ("rust-env-logger" ,rust-env-logger-0.4)
         ("rust-tempdir" ,rust-tempdir-0.3))))
     (home-page "https://github.com/tokio-rs/mio")
     (synopsis "Lightweight non-blocking IO")
