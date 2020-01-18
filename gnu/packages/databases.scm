@@ -1220,7 +1220,7 @@ including field and record folding.")))
        ("lz4" ,lz4)
        ("snappy" ,snappy)
        ("zlib" ,zlib)))
-    (home-page "http://rocksdb.org/")
+    (home-page "https://rocksdb.org/")
     (synopsis "Persistent key-value store for fast storage")
     (description
      "RocksDB is a library that forms the core building block for a fast
