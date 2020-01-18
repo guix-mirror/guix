@@ -7224,7 +7224,7 @@ access.")
        ("r-s4vectors" ,r-s4vectors)
        ("r-summarizedexperiment" ,r-summarizedexperiment)
        ("r-tidyr" ,r-tidyr)))
-    (home-page "http://waldronlab.io/MultiAssayExperiment/")
+    (home-page "https://waldronlab.io/MultiAssayExperiment/")
     (synopsis "Integration of multi-omics experiments in Bioconductor")
     (description
      "MultiAssayExperiment harmonizes data management of multiple assays
