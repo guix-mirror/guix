@@ -511,7 +511,7 @@ variants.")
                (base32
                 "1mkmxq8g2hjcglb3zajfqj20r4r88l78ymsp2xyl5yav8w3f7dz4"))))
     (build-system font-build-system)
-    (home-page "https://wenq.org/wqy2/")
+    (home-page "http://wenq.org/wqy2/")
     (synopsis "CJK font")
     (description
      "WenQuanYi Zen Hei is a Hei-Ti style (sans-serif type) Chinese outline
