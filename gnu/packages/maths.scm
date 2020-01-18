@@ -3232,7 +3232,7 @@ parts of it.")
      `(("cunit" ,cunit)
        ("fortran" ,gfortran)
        ("perl" ,perl)))
-    (home-page "http://www.openblas.net/")
+    (home-page "https://www.openblas.net/")
     (synopsis "Optimized BLAS library based on GotoBLAS")
     (description
      "OpenBLAS is a BLAS library forked from the GotoBLAS2-1.13 BSD version.")
