@@ -730,7 +730,7 @@ tiled on several screens.")
              (substitute* "test/Xmobar/Plugins/Monitors/AlsaSpec.hs"
                (("/bin/bash") (which "bash")))
              #t)))))
-    (home-page "http://xmobar.org")
+    (home-page "https://xmobar.org")
     (synopsis "Minimalistic text based status bar")
     (description
      "@code{xmobar} is a lightweight, text-based, status bar written in
