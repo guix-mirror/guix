@@ -4179,7 +4179,7 @@ project and determining what files need to be rebuilt.")
        ("java-plexus-classworlds" ,java-plexus-classworlds)
        ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
        ("java-guava" ,java-guava)))
-    (home-page "http://codehaus-plexus.github.io/modello/")
+    (home-page "https://codehaus-plexus.github.io/modello/")
     (synopsis "Framework for code generation from a simple model")
     (description "Modello is a framework for code generation from a simple model.
 
