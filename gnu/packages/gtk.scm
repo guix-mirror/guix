@@ -1113,7 +1113,7 @@ library.")
        ("cairomm" ,cairomm)
        ("glibmm" ,glibmm)
        ("pango" ,pango)))
-    (home-page "http://www.pango.org/")
+    (home-page "https://pango.gnome.org//")
     (synopsis "C++ interface to the Pango text rendering library")
     (description
      "Pangomm provides a C++ programming interface to the Pango text rendering
