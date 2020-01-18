@@ -2882,7 +2882,7 @@ post-processing of video formats like MPEG2, H.264/AVC, and VC-1.")
        #:phases (modify-phases %standard-phases
                   ;; no configure script
                   (delete 'configure))))
-    (home-page "http://www.openh264.org/")
+    (home-page "https://www.openh264.org/")
     (synopsis "H264 decoder library")
     (description
      "Openh264 is a library which can decode H264 video streams.")
