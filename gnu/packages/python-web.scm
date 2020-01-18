@@ -1021,10 +1021,10 @@ conforming to a given API or contract.")
          "0zwxaaa66sqxg5k7zcrvs0fbg9ym1njnxnr28dfmchzhwjvwnfzl"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f)) ; circular dependency with zope.testrunner
+     '(#:tests? #f))                ; circular dependency with zope.testrunner
     (propagated-inputs
      `(("python-zope-interface" ,python-zope-interface)))
-    (home-page "http://cheeseshop.python.org/pypi/zope.exceptions")
+    (home-page "https://pypi.org/project/zope.exceptions/")
     (synopsis "Zope exceptions")
     (description "Zope.exceptions provides general-purpose exception types
 that have uses outside of the Zope framework.")
