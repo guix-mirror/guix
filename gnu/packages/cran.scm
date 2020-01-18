@@ -2645,7 +2645,7 @@ contexts.")
          "0v4ax1v8diw2w7fdhfzz1z0bwixkmcrc39ax3y116f399rc06qbs"))))
     (properties `((upstream-name . "SQUAREM")))
     (build-system r-build-system)
-    (home-page "http://www.jhsph.edu/agingandhealth/People/Faculty_personal_pages/Varadhan.html")
+    (home-page "https://coah.jhu.edu/people/Faculty_personal_Pages/Varadhan.html")
     (synopsis "Squared Extrapolation Methods for Accelerating EM-Like Monotone Algorithms")
     (description
      "This package provides algorithms for accelerating the convergence of
