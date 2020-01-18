@@ -9646,7 +9646,7 @@ Common Lisp.  It uses the libuv library as backend.")
       (description
        "This is a standalone promise implementation for Common Lisp.  It is
 the successor to the now-deprecated cl-async-future project.")
-      (home-page "http://orthecreedence.github.io/blackbird/")
+      (home-page "https://orthecreedence.github.io/blackbird/")
       (license license:expat))))
 
 (define-public cl-blackbird
@@ -9681,7 +9681,7 @@ the successor to the now-deprecated cl-async-future project.")
       (description
        "This is futures implementation for Common Lisp.  It plugs in nicely
 to cl-async.")
-      (home-page "http://orthecreedence.github.io/cl-async/future")
+      (home-page "https://orthecreedence.github.io/cl-async/future")
       (license license:expat))))
 
 (define-public cl-async-future
