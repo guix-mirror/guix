@@ -4094,6 +4094,31 @@ implementation that is more efficient for smaller hash keys.")
 APIs.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-foreign-types-macros-0.2
+  (package
+    (name "rust-foreign-types-macros")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "foreign-types-macros" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0x71sdffjfb123l2jn5vhz0ni09b4rdq3h3gpczd1dj1g5qlr2yv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1.0)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-syn" ,rust-syn-1.0))))
+    (home-page "https://github.com/sfackler/foreign-types")
+    (synopsis "Internal crate used by foreign-types")
+    (description
+     "This package is an internal crate used by foreign-types.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-foreign-types-macros-0.1
   (package
     (name "rust-foreign-types-macros")
