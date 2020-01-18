@@ -4680,7 +4680,7 @@ overly clever.")
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://commons.apache.org/math/")
+    (home-page "https://commons.apache.org/math/")
     (synopsis "Apache Commons mathematics library")
     (description "Commons Math is a library of lightweight, self-contained
 mathematics and statistics components addressing the most common problems not
@@ -4862,7 +4862,7 @@ are many features, including:
     (native-inputs
      `(("junit" ,java-junit)
        ("collections-test" ,java-commons-collections-test-classes)))
-    (home-page "http://commons.apache.org/beanutils/")
+    (home-page "https://commons.apache.org/beanutils/")
     (synopsis "Dynamically set or get properties in Java")
     (description "BeanUtils provides a simplified interface to reflection and
 introspection to set or get dynamically determined properties through their
@@ -4897,7 +4897,7 @@ setter and getter method.")
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://commons.apache.org/io/")
+    (home-page "https://commons.apache.org/io/")
     (synopsis "Common useful IO related classes")
     (description "Commons-IO contains utility classes, stream implementations,
 file filters and endian classes.")
@@ -5013,7 +5013,7 @@ time/FastDateFormatTest.java"
          (add-after 'install 'install-doc (install-javadoc "target/apidocs")))))
     (native-inputs
      `(("java-junit" ,java-junit)))
-    (home-page "http://commons.apache.org/lang/")
+    (home-page "https://commons.apache.org/lang/")
     (synopsis "Extension of the java.lang package")
     (description "The Commons Lang components contains a set of Java classes
 that provide helper methods for standard Java classes, especially those found
@@ -5077,7 +5077,7 @@ included:
        ("java-commons-io" ,java-commons-io)
        ("java-hamcrest-all" ,java-hamcrest-all)
        ("java-easymock" ,java-easymock)))
-    (home-page "http://commons.apache.org/lang/")
+    (home-page "https://commons.apache.org/lang/")
     (synopsis "Extension of the java.lang package")
     (description "The Commons Lang components contains a set of Java classes
 that provide helper methods for standard Java classes, especially those found
@@ -5185,7 +5185,7 @@ these scripting language engines.")
        ("java-commons-beanutils" ,java-commons-beanutils)))
     (native-inputs
      `(("java-junit" ,java-junit)))
-    (home-page "http://commons.apache.org/jxpath/")
+    (home-page "https://commons.apache.org/jxpath/")
     (synopsis "Simple interpreter of an expression language called XPath.")
     (description "The org.apache.commons.jxpath package defines a simple
 interpreter of an expression language called XPath.  JXPath applies XPath
@@ -5444,7 +5444,7 @@ more!")
                     "LogKitLogger.java"))
              (delete-file-recursively "src/test")
              #t)))))
-    (home-page "http://commons.apache.org/logging/")
+    (home-page "https://commons.apache.org/logging/")
     (synopsis "Common API for logging implementations")
     (description "The Logging package is a thin bridge between different
 logging implementations.  A library that uses the commons-logging API can be
@@ -5661,7 +5661,7 @@ standards and recommendations.")
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://commons.apache.org/net/")
+    (home-page "https://commons.apache.org/net/")
     (synopsis "Client library for many basic Internet protocols")
     (description "The Apache Commons Net library implements the client side of
 many basic Internet protocols.  The purpose of the library is to provide
@@ -6671,7 +6671,7 @@ This is a part of the Apache Commons Project.")
          (add-after 'install 'install-doc (install-javadoc "dist/docs/api")))))
     (native-inputs
      `(("java-junit" ,java-junit)))
-    (home-page "http://commons.apache.org/daemon/")
+    (home-page "https://commons.apache.org/daemon/")
     (synopsis "Library to launch Java applications as daemons")
     (description "The Daemon package from Apache Commons can be used to
 implement Java applications which can be launched as daemons.  For example the
@@ -10733,7 +10733,7 @@ authentication, HTTP state management, and HTTP connection management.")
        ("java-commons-logging-minimal" ,java-commons-logging-minimal)
        ("java-commons-net" ,java-commons-net)
        ("java-jsch" ,java-jsch)))
-    (home-page "http://commons.apache.org/proper/commons-vfs/")
+    (home-page "https://commons.apache.org/proper/commons-vfs/")
     (synopsis "Java file system library")
     (description "Commons VFS provides a single API for accessing various
 different file systems.  It presents a uniform view of the files from various
