@@ -3357,7 +3357,7 @@ access to BLIS implementations via traditional BLAS routine calls.")
        ;; no configure script
        (modify-phases %standard-phases (delete 'configure))
        #:tests? #f)) ;the tests are part of the default target
-    (home-page "http://openlibm.org/")
+    (home-page "https://openlibm.org/")
     (synopsis "Portable C mathematical library (libm)")
     (description
      "OpenLibm is an effort to have a high quality, portable, standalone C
