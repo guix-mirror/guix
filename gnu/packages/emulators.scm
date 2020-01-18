@@ -1453,7 +1453,7 @@ play them on systems for which they were never designed!")
        ("sqlite" ,sqlite)
        ("utf8proc" ,utf8proc)
        ("zlib" ,zlib)))
-    (home-page "http://mamedev.org/")
+    (home-page "https://www.mamedev.org")
     (synopsis "Multi-purpose emulation framework")
     (description "MAME's purpose is to preserve decades of software
 history.  As electronic technology continues to rush forward, MAME
