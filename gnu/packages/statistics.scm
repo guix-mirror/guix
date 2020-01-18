@@ -3151,7 +3151,7 @@ using the multicore functionality of the parallel package.")
        ("r-jsonlite" ,r-jsonlite)
        ("r-magrittr" ,r-magrittr)
        ("r-promises" ,r-promises)))
-    (home-page "http://rstudio.github.io/DT")
+    (home-page "https://rstudio.github.io/DT")
     (synopsis "R wrapper of the DataTables JavaScript library")
     (description
      "This package allows for data objects in R to be rendered as HTML tables

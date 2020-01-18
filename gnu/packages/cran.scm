@@ -977,7 +977,7 @@ supports interactive trees, to enable rich, editable trees in Shiny.")
        ("r-shiny" ,r-shiny)))
     (native-inputs
      `(("uglify-js" ,uglify-js)))
-    (home-page "http://rstudio.github.io/shinydashboard/")
+    (home-page "https://rstudio.github.io/shinydashboard/")
     (synopsis "Create dashboards with shiny")
     (description "This package provides an extension to the Shiny web
 application framework for R, making it easy to create attractive dashboards.")
@@ -1028,7 +1028,7 @@ well as file saving is available.")
     (properties `((upstream-name . "shinythemes")))
     (build-system r-build-system)
     (propagated-inputs `(("r-shiny" ,r-shiny)))
-    (home-page "http://rstudio.github.io/shinythemes/")
+    (home-page "https://rstudio.github.io/shinythemes/")
     (synopsis "Themes for Shiny")
     (description
      "This package provides themes for use with Shiny.  It includes several
