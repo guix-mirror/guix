@@ -1498,7 +1498,7 @@ cohomology ring of a Grassmann variety.  The software package also includes
 a program that performs fast computation of the more general multiplicative
 structure constants of Schubert polynomials.")
     (license license:gpl2+)
-    (home-page "http://sites.math.rutgers.edu/~asbuch/lrcalc/")))
+    (home-page "https://sites.math.rutgers.edu/~asbuch/lrcalc/")))
 
 (define-public iml
   (package
