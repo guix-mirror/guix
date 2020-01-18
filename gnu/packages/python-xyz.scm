@@ -1393,7 +1393,7 @@ bug tracker.")
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2))
-    (home-page "http://pypi.python.org/pypi/enum/")
+    (home-page "https://pypi.python.org/pypi/enum/")
     (synopsis "Robust enumerated type support in Python")
     (description
      "This provides a module for robust enumerations in Python.  It has
