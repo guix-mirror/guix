@@ -781,7 +781,7 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
               (string-append (assoc-ref outputs "out")
                              "/share/emacs/site-lisp"))
              #t)))))
-    (home-page "http://www.djcbsoftware.nl/code/mu/")
+    (home-page "https://www.djcbsoftware.nl/code/mu/")
     (synopsis "Quickly find emails")
     (description
      "Mu is a tool for dealing with e-mail messages stored in the
