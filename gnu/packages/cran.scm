@@ -18345,7 +18345,7 @@ number embedded in the file rather than the file extension.")
        ("r-readbitmap" ,r-readbitmap)
        ("r-stringr" ,r-stringr)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://dahtah.github.io/imager")
+    (home-page "https://dahtah.github.io/imager/")
     (synopsis "Image processing library")
     (description
      "This is a package for fast image processing for images in up to 4
