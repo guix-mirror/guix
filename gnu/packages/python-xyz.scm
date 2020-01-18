@@ -6128,7 +6128,7 @@ SVG, EPS, PNG and terminal output.")
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("xorg-server" ,xorg-server-for-tests)))
-    (home-page "http://stanford.edu/~mwaskom/software/seaborn/")
+    (home-page "https://seaborn.pydata.org/")
     (synopsis "Statistical data visualization")
     (description
      "Seaborn is a library for making attractive and informative statistical
