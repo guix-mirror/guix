@@ -443,7 +443,7 @@ projections.")
        (list "CC=gcc"
              (string-append "PREFIX=" %output)
              (string-append "CUSTOM_LDFLAGS=-Wl,-rpath=" %output "/lib"))))
-    (home-page "http://mapnik.org/")
+    (home-page "https://mapnik.org/")
     (synopsis "Toolkit for developing mapping applications")
     (description "Mapnik is a toolkit for developing mapping applications.  It
 is basically a collection of geographic objects like maps, layers,
