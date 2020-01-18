@@ -2025,7 +2025,15 @@ key-value cache and store.")
                                   "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "17lrsdisa3kckh24q114vfmzdc4wkqa6ccwl4hdlrng5wpn1iman"))))
+                "17lrsdisa3kckh24q114vfmzdc4wkqa6ccwl4hdlrng5wpn1iman"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Allow builds with Guile 3.0.
+                  (substitute* "configure"
+                    (("2\\.2 2\\.0")
+                     "3.0 2.2 2.0"))
+                  #t))))
     (build-system gnu-build-system)
     (inputs
      `(("guile" ,guile-2.2)))
@@ -2040,6 +2048,12 @@ follow the @uref{http://commonmark.org/, CommonMark spec}, the main difference
 is no support for parsing block and inline level HTML.")
     (home-page "https://github.com/OrangeShark/guile-commonmark")
     (license license:lgpl3+)))
+
+(define-public guile3.0-commonmark
+  (package
+    (inherit guile-commonmark)
+    (name "guile3.0-commonmark")
+    (inputs `(("guile" ,guile-3.0)))))
 
 (define-public guile2.0-commonmark
   (package
