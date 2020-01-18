@@ -5968,7 +5968,7 @@ name and provides query methods such as @{RubyEngine.mri?}.")
 colorful and informative.  TURN displays each test on a separate line with
 failures being displayed immediately instead of at the end of the tests.  Note
 that TURN is no longer being maintained.")
-    (home-page "http://rubygems.org/gems/turn")
+    (home-page "https://rubygems.org/gems/turn")
     (license license:expat)))
 
 (define-public ruby-mimemagic
