@@ -3994,7 +3994,7 @@ Markdown documents.")
        ("r-registry" ,r-registry)
        ("r-tsp" ,r-tsp)))
     (native-inputs `(("gfortran" ,gfortran)))
-    (home-page "http://s2.smu.edu/IDA/seriation/")
+    (home-page "https://s2.smu.edu/IDA/seriation/")
     (synopsis "Infrastructure for ordering objects using seriation")
     (description
      "This package provides infrastructure for seriation with an
