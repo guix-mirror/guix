@@ -16288,7 +16288,7 @@ to XDG Base Directory specification")
        (("rust-linked-hash-map" ,rust-linked-hash-map-0.5))
        #:cargo-development-inputs
        (("rust-quickcheck" ,rust-quickcheck-0.8))))
-    (home-page "http://chyh1990.github.io/yaml-rust/")
+    (home-page "https://chyh1990.github.io/yaml-rust/")
     (synopsis "The missing YAML 1.2 parser for rust")
     (description
      "The missing YAML 1.2 parser for rust.")
