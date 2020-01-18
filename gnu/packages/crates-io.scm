@@ -29,6 +29,7 @@
   #:use-module (guix packages)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages pcre)
@@ -4300,6 +4301,34 @@ implementation that is more efficient for smaller hash keys.")
        (sha256
         (base32
          "0jxgzd04ra4imjv8jgkmdq59kj8fsz6w4zxsbmlai34h26225c00"))))))
+
+(define-public rust-freetype-sys-0.9
+  (package
+    (name "rust-freetype-sys")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "freetype-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1i309xc6gcsgdfiim3j5f0sk08imr4frlzfa185iaxqciysqgikx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-libz-sys" ,rust-libz-sys-1.0)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))
+    (inputs
+     `(("freetype" ,freetype)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/PistonDevelopers/freetype-sys")
+    (synopsis "Low level binding for FreeType font library")
+    (description
+     "This package provides low level binding for FreeType font library.")
+    (license license:expat)))
 
 (define-public rust-fs-extra-1.1
   (package
