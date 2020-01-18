@@ -1160,7 +1160,7 @@ MailCore 2.")
     (synopsis "Portrait image compressor")
     (description "This package takes your 48x48x1 portrait image and
 compresses it.")
-    (home-page "http://www.cs.indiana.edu/pub/faces/")
+    (home-page "https://legacy.cs.indiana.edu/ftp/faces/")
     (license (x11-style "file://README"))))
 
 (define-public claws-mail
