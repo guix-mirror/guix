@@ -4686,7 +4686,7 @@ not as a replacement for it.")
        ("cryptsetup" ,cryptsetup)
        ("lvm2" ,lvm2)
        ("nss" ,nss)))
-    (home-page "http://ecryptfs.org/")
+    (home-page "https://ecryptfs.org/")
     (synopsis "eCryptfs cryptographic file system utilities")
     (description
      "eCryptfs is a POSIX-compliant stacked cryptographic file system for Linux.
