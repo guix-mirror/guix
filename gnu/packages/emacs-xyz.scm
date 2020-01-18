@@ -1243,7 +1243,7 @@ or unexpected behavior inside an elisp configuration file (typically
               "wget" (string-append (assoc-ref outputs "out")
                                     "/share/emacs/site-lisp/"))
              #t)))))
-    (home-page "http://www.emacswiki.org/emacs/EmacsWget")
+    (home-page "https://www.emacswiki.org/emacs/EmacsWget")
     (synopsis "Simple file downloader for Emacs based on wget")
     (description
      "Emacs-wget is an emacs interface for the wget file downloader.")
@@ -5669,7 +5669,7 @@ highlighted.  Pressing that character will switch to that window.")
          (sha256
           (base32 "0wr3w2id95wx2rma8n1ifjrv9rx37ly26ijc5zi58id0yrip3hnc"))))
       (build-system emacs-build-system)
-      (home-page "http://www.emacswiki.org/emacs/Iedit")
+      (home-page "https://www.emacswiki.org/emacs/Iedit")
       (synopsis "Edit multiple regions in the same way simultaneously")
       (description
        "This package is an Emacs minor mode and allows you to edit one
@@ -9782,7 +9782,7 @@ with gnuplot.")
     (source
      (origin
        (method url-fetch)
-       (uri "http://www.emacswiki.org/emacs/download/transpose-frame.el")
+       (uri "https://www.emacswiki.org/emacs/download/transpose-frame.el")
        (file-name (string-append "transpose-frame-" version ".el"))
        (sha256
         (base32
