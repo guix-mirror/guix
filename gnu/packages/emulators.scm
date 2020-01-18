@@ -405,7 +405,7 @@ and a game metadata scraper.")
              (string-append "prefix=" (assoc-ref %outputs "out")))
        ;; There is no test suite.
        #:tests? #f))
-    (home-page "http://byuu.org/emulation/higan/")
+    (home-page "https://byuu.org/higan")
     (synopsis "Nintendo multi-system emulator")
     (description
      "higan (formerly bsnes) is an emulator for multiple Nintendo video game
