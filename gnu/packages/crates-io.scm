@@ -4380,6 +4380,34 @@ implementation that is more efficient for smaller hash keys.")
 process and much more.")
     (license license:expat)))
 
+(define-public rust-fs2-0.2
+  (package
+    (name "rust-fs2")
+    (version "0.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "fs2" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vsih93cvds3x6f3w9bc5rnkyv8haix1px4jpcqvjyd9l7ji9m5w"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f
+       #:cargo-inputs
+       (("rust-kernel32-sys" ,rust-kernel32-sys-0.2)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-winapi" ,rust-winapi-0.2))
+       #:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir-0.3))))
+    (home-page "https://github.com/danburkert/fs2-rs")
+    (synopsis "File locks and file duplication")
+    (description
+     "This package provides cross-platform file locks and file duplication.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-fuchsia-cprng-0.1
   (package
     (name "rust-fuchsia-cprng")
