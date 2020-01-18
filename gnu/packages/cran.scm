@@ -1592,7 +1592,7 @@ error stream.")
        (sha256
         (base32 "121byimd6bg7jbrq5wz5fpi0vxq0vh8g724vkhnjzszbvcv1xsb7"))))
     (build-system r-build-system)
-    (home-page "http://mevik.net/work/software/pls.html")
+    (home-page "https://mevik.net/work/software/pls.html")
     (synopsis "Partial Least Squares and Principal Component Regression")
     (description
      "The pls package implements multivariate regression methods: Partial Least
