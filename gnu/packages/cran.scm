@@ -3717,7 +3717,7 @@ normalizations, minimum variance matching, and so on.")
     (properties `((upstream-name . "SDMTools")))
     (build-system r-build-system)
     (propagated-inputs `(("r-r-utils" ,r-r-utils)))
-    (home-page "http://www.rforge.net/SDMTools/")
+    (home-page "https://www.rforge.net/SDMTools/")
     (synopsis "Species distribution modelling tools")
     (description "This package provides a set of tools for post processing
 the outcomes of species distribution modeling exercises.  It includes novel
