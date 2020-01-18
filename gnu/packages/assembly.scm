@@ -111,7 +111,7 @@ has strong support for macros.")
     (inputs
      `(("python" ,python-wrapper)
        ("xmlto" ,xmlto)))
-    (home-page "http://yasm.tortall.net/")
+    (home-page "https://yasm.tortall.net/")
     (synopsis "Rewrite of the NASM assembler")
     (description
      "Yasm is a complete rewrite of the NASM assembler.
