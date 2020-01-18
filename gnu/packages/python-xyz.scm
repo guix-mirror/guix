@@ -8312,7 +8312,7 @@ be set via config files and/or environment variables.")
         (base32
          "0j6ad6lwwyc9kv71skj098v5l7x5biyj2hs4lc5x1kcixqcr97sh"))))
     (build-system python-build-system)
-    (home-page "http://contextlib2.readthedocs.org/")
+    (home-page "https://contextlib2.readthedocs.org/")
     (synopsis "Tools for decorators and context managers")
     (description "This module is primarily a backport of the Python
 3.2 contextlib to earlier Python versions.  Like contextlib, it
