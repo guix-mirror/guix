@@ -52,7 +52,7 @@
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)))
-    (home-page "http://community.haskell.org/~ndm/tagsoup/")
+    (home-page "https://github.com/ndmitchell/tagsoup")
     (synopsis
      "Parsing and extracting information from (possibly malformed) HTML/XML
 documents")
