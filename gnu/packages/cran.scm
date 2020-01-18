@@ -12929,7 +12929,7 @@ Hubbell's @dfn{Unified Neutral Theory of Biodiversity} (UNTB).")
         (base32
          "1lbx1bxwkf9dw6q46w40pp7h5nkxgghmx8rkpaymm6iybc7gyir2"))))
     (build-system r-build-system)
-    (home-page "http://stat.sfu.ca/statgen/research/stepwise.html")
+    (home-page "https://stat.sfu.ca/statgen/research/stepwise.html")
     (synopsis "Stepwise detection of recombination breakpoints")
     (description
      "This package provides a stepwise approach to identifying recombination
