@@ -2389,7 +2389,7 @@ This game is based on the GPL version of the famous game TuxRacer.")
 (define-public supertuxkart
   (package
     (name "supertuxkart")
-    (version "1.0")
+    (version "1.1")
     (source
      (origin
        (method url-fetch)
@@ -2397,7 +2397,7 @@ This game is based on the GPL version of the famous game TuxRacer.")
                            version "/supertuxkart-" version "-src.tar.xz"))
        (sha256
         (base32
-         "106rlp99hq18b4q1kdri3pl06cc4v7iqfp1hp9k2f8751lzz923d"))
+         "1s0ai07g3sswck9mr0142989mrgzzq1njc1qxk5als5b245jpc79"))
        (modules '((guix build utils)))
        (snippet
         ;; Delete bundled library sources
@@ -2405,7 +2405,7 @@ This game is based on the GPL version of the famous game TuxRacer.")
            ;; Supertuxkart uses modified versions of the Irrlicht engine
            ;; and the bullet library.  The developers gave an explanation
            ;; here: http://forum.freegamedev.net/viewtopic.php?f=17&t=3906
-           ;; FIXME: try to unbundle angelscript
+           ;; FIXME: try to unbundle angelscript and libraqm
            (for-each delete-file-recursively
                      '("lib/zlib"
                        "lib/libpng"
@@ -2423,6 +2423,9 @@ This game is based on the GPL version of the famous game TuxRacer.")
              "-DNO_IRR_COMPILE_WITH_ZLIB_=TRUE"
              "-DUSE_SYSTEM_GLEW=TRUE"
              "-DUSE_SYSTEM_ENET=TRUE"
+             ;; In order to use the system ENet library, IPv6 support (added in
+             ;; SuperTuxKart version 1.1) must be disabled.
+             "-DUSE_IPV6=FALSE"
              ;; FIXME: needs libopenglrecorder
              "-DBUILD_RECORDER=0"
              ;; Irrlicht returns an integer instead of a boolean
@@ -2434,6 +2437,7 @@ This game is based on the GPL version of the famous game TuxRacer.")
        ("libvorbis" ,libvorbis)
        ("freetype" ,freetype)
        ("fribidi" ,fribidi)
+       ("harfbuzz" ,harfbuzz)
        ("mesa" ,mesa)
        ("libx11" ,libx11)
        ("libxrandr" ,libxrandr)
@@ -2445,7 +2449,7 @@ This game is based on the GPL version of the famous game TuxRacer.")
        ("enet" ,enet)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "https://supertuxkart.net/")
+    (home-page "https://supertuxkart.net/Main_Page")
     (synopsis "3D kart racing game")
     (description "SuperTuxKart is a 3D kart racing game, with a focus on
 having fun over realism.  You can play with up to 4 friends on one PC, racing
