@@ -9431,7 +9431,7 @@ way.")
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; no test suite
-    (home-page "http://software.clapper.org/munkres/")
+    (home-page "https://software.clapper.org/munkres/")
     (synopsis "Implementation of the Munkres algorithm")
     (description "The Munkres module provides an implementation of the Munkres
 algorithm (also called the Hungarian algorithm or the Kuhn-Munkres algorithm),
