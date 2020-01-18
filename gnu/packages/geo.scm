@@ -393,7 +393,7 @@ functionality of proj in their own software.")
              #t)))))
     (inputs
      `(("glib" ,glib)))
-    (home-page "http://proj4.org/")
+    (home-page "https://proj.org/")
     (synopsis "Cartographic Projections Library")
     (description
      "Proj.4 is a library for converting coordinates between cartographic
