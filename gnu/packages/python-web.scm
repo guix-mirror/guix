@@ -2672,7 +2672,7 @@ textual content for output generation on the web.")
     (native-inputs
      `(("python-flask" ,python-flask)
        ("python-nose" ,python-nose)))
-    (home-page "http://packages.python.org/Flask-Principal/")
+    (home-page "https://pythonhosted.org/Flask-Principal/")
     (synopsis "Identity management for Flask")
     (description "@code{flask_principal} is a identity management library for
 Flask.  It supports managing both authentication and authorization data in a
