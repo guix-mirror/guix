@@ -6903,7 +6903,7 @@ tree walking, and translation.")
     (native-inputs
      `(("antlr" ,antlr2)
        ("java-junit" ,java-junit)))
-    (home-page "http://www.stringtemplate.org")
+    (home-page "https://www.stringtemplate.org")
     (synopsis "Template engine to generate formatted text output")
     (description "StringTemplate is a java template engine (with ports for C#,
 Objective-C, JavaScript, Scala) for generating source code, web pages, emails,
