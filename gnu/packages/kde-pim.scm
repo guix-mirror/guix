@@ -848,6 +848,54 @@ standard protocols for e-mail transmission.")
     (description "Viewer for mail attachments using TNEF format")
     (license license:lgpl2.0+)))
 
+(define-public libkdepim
+  (package
+    (name "libkdepim")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/libkdepim-" version ".tar.xz"))
+       (sha256
+        (base32 "0ndh97w1bfii4snx9yc0qazqk5jhx22s810kj656967xd1w4bj9n"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("akonadi" ,akonadi)
+       ("akonadi-contacts" ,akonadi-contacts)
+       ("akonadi-mime" ,akonadi-mime)
+       ("akonadi-search" ,akonadi-search)
+       ("boost" ,boost)
+       ("kcmutils" ,kcmutils)
+       ("kcodecs" ,kcodecs)
+       ("kcalendarcore" ,kcalendarcore)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcontacts" ,kcontacts)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdesignerplugin" ,kdesignerplugin)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)
+       ("kitemmodels" ,kitemmodels)
+       ("kitemviews" ,kitemviews)
+       ("kjobwidgets" ,kjobwidgets)
+       ("kldap" ,kldap)
+       ("kmime" ,kmime)
+       ("kwallet" ,kwallet)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("qtbase" ,qtbase)))
+    (home-page "https://cgit.kde.org/libkdepim.git")
+    (synopsis "Libraries for common kdepim apps")
+    (description "Libraries for common kdepim apps.")
+    (license ;; GPL for programs, LGPL for libraries
+     (list license:gpl2+ license:lgpl2.0+))))
+
 (define-public libkgapi
   (package
     (name "libkgapi")
