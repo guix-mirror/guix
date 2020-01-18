@@ -1724,7 +1724,7 @@ speedtest.net.")
      "This is a tftp client derived from OpenBSD tftp with some extra options
 added and bugs fixed.  The source includes readline support but it is not
 enabled due to license conflicts between the BSD advertising clause and the GPL.")
-    (home-page "http://git.kernel.org/cgit/network/tftp/tftp-hpa.git/about/")
+    (home-page "https://git.kernel.org/cgit/network/tftp/tftp-hpa.git/about/")
     ;; Some source files are distributed under a 3-clause BSD license, and
     ;; others under a 4-clause BSD license. Refer to the files in the source
     ;; distribution for clarification.
