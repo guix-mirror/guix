@@ -1563,7 +1563,7 @@ special variant of additive synthesis.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
-    (home-page "http://amsynth.github.io")
+    (home-page "https://amsynth.github.io")
     (synopsis "Analog modeling synthesizer")
     (description
      "amsynth is an easy-to-use software synthesizer with a classic
