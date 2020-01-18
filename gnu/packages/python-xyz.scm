@@ -11551,7 +11551,7 @@ from Facebook.")
        ("python-six" ,python-six)))
     (arguments
      `(#:tests? #f))                    ; no tests/ in the PyPI tarball
-    (home-page "http://graphene-python.org/")
+    (home-page "https://graphene-python.org/")
     (synopsis "GraphQL Framework for Python")
     (description
      "Graphene is a Python library for building GraphQL schemas/types.
