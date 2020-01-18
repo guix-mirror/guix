@@ -7577,6 +7577,31 @@ drop-in replacement for miniz.")
      "This package provides asynchronous wrapper for Windows synchronous pipes.")
     (license license:expat)))
 
+(define-public rust-mio-extras-2
+  (package
+    (name "rust-mio-extras")
+    (version "2.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "mio-extras" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "069gfhlv0wlwfx1k2sriwfws490kjp490rv2qivyfb01j3i3yh2j"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-lazycell" ,rust-lazycell-1.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mio" ,rust-mio-0.6)
+        ("rust-slab" ,rust-slab-0.4))))
+    (home-page "https://github.com/dimbleby/mio-extras")
+    (synopsis "Extra components for use with Mio")
+    (description "Extra components for use with Mio.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-mio-named-pipes-0.1
   (package
     (name "rust-mio-named-pipes")
