@@ -17768,7 +17768,7 @@ errors.")
        ("r-rcpp" ,r-rcpp)
        ("r-stringr" ,r-stringr)
        ("r-xml" ,r-xml)))
-    (home-page "http://dusp.mit.edu/faculty/ezra-glenn")
+    (home-page "https://dusp.mit.edu/faculty/ezra-haber-glenn")
     (synopsis "Work with data from the US Census")
     (description
      "This package provides a general toolkit for downloading, managing,
