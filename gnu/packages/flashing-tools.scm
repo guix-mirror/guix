@@ -169,7 +169,7 @@ programming} technique.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("libusb" ,libusb)))
-    (home-page "http://dfu-programmer.github.io/")
+    (home-page "https://dfu-programmer.github.io/")
     (synopsis "Device firmware update programmer for Atmel chips")
     (description
      "Dfu-programmer is a multi-platform command-line programmer for
