@@ -199,7 +199,7 @@ tables, and it understands a variety of different formats.")
                (install-file "fixparts.8" man)
                (install-file "gdisk.8" man)
                (install-file "sgdisk.8" man)))))))
-    (home-page "http://www.rodsbooks.com/gdisk/")
+    (home-page "https://www.rodsbooks.com/gdisk/")
     (synopsis "Low-level GPT disk partitioning and formatting")
     (description "GPT fdisk (aka gdisk) is a text-mode partitioning tool that
 works on Globally Unique Identifier (@dfn{GUID}) Partition Table (@dfn{GPT})
