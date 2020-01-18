@@ -2942,7 +2942,7 @@ reasonable substitute.")
     (propagated-inputs
      `(("python-click" ,python-click)
        ("python-redis" ,python-redis)))
-    (home-page "http://python-rq.org/")
+    (home-page "https://python-rq.org/")
     (synopsis "Simple job queues for Python")
     (description
      "RQ (Redis Queue) is a simple Python library for queueing jobs and
