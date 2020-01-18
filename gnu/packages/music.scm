@@ -754,7 +754,7 @@ MusePack, Monkey's Audio, and WavPack files.")
        ("emacs" ,emacs-no-x)))
     ;; Extempore refuses to build on architectures other than x86_64
     (supported-systems '("x86_64-linux"))
-    (home-page "http://digego.github.io/extempore/")
+    (home-page "https://digego.github.io/extempore/")
     (synopsis "Programming environment for live coding of multimedia")
     (description
      "Extempore is a programming language and runtime environment designed
