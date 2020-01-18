@@ -6366,6 +6366,22 @@ requires non-const function calls to be computed.")
        (("rust-compiletest-rs" ,rust-compiletest-rs-0.3)
         ("rust-spin" ,rust-spin-0.4))))))
 
+(define-public rust-lazy-static-0.1
+  (package
+    (inherit rust-lazy-static-0.2)
+    (name "rust-lazy-static")
+    (version "0.1.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "lazy_static" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "05vl1h4b0iv800grsdyc3fg2bq29p70wjav6zpjvxxd5i8d6s66g"))))
+    (arguments '())))
+
 (define-public rust-lazycell-1.2
   (package
     (name "rust-lazycell")
