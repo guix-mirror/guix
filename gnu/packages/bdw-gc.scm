@@ -87,7 +87,7 @@ simple collector interface.
 
 Alternatively, the garbage collector may be used as a leak detector for
 C or C++ programs, though that is not its primary goal.")
-   (home-page "http://www.hboehm.info/gc/")
+   (home-page "https://www.hboehm.info/gc/")
 
    (license (x11-style (string-append home-page "license.txt")))))
 
