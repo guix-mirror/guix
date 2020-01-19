@@ -4322,7 +4322,7 @@ on the XPP3 API (XML Pull Parser).")))
            (install-jars "dist")))))
     (native-inputs
      `(("java-junit" ,java-junit)))
-    (home-page "http://asm.ow2.org/")
+    (home-page "https://asm.ow2.io/")
     (synopsis "Very small and fast Java bytecode manipulation framework")
     (description "ASM is an all purpose Java bytecode manipulation and
 analysis framework.  It can be used to modify existing classes or dynamically
