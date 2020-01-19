@@ -10397,6 +10397,28 @@ dependency to expose a precomputed hash.")
      "Procedural macros in expression position.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-proc-macro-hack-0.4
+  (package
+    (inherit rust-proc-macro-hack-0.5)
+    (name "rust-proc-macro-hack")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "proc-macro-hack" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fxn3qfhw76c518dfal2qqjwj5dbf0a1f7z0r5c4wd0igygg4fs6"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro-hack-impl" ,rust-proc-macro-hack-impl-0.4))
+       #:cargo-development-inputs
+       (("rust-demo-hack" ,rust-demo-hack-0.0)
+        ("rust-demo-hack-impl" ,rust-demo-hack-impl-0.0))))))
+
 (define-public rust-proc-macro-hack-impl-0.4
   (package
     (name "rust-proc-macro-hack-impl")
