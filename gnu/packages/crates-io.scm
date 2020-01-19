@@ -14469,6 +14469,32 @@ handle Unicode characters correctly.")
     (properties '((hidden? . #t)))
     (license license:expat)))
 
+(define-public rust-thiserror-impl-1.0
+  (package
+    (name "rust-thiserror-impl")
+    (version "1.0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "thiserror-impl" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vxzhb98pm5yrq9mmcz50bgpml35iyx7lwjgi4v89sq7ag92abpb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1.0)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-syn" ,rust-syn-1.0))))
+    (home-page "https://github.com/dtolnay/thiserror")
+    (synopsis "Implementation detail of the thiserror crate")
+    (description "This package provides an implementation detail of the
+@code{thiserror} crate.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-thread-id-3.3
   (package
     (name "rust-thread-id")
