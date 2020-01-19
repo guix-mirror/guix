@@ -5547,6 +5547,21 @@ reading and writing git repositories.")
      "Code generators for creating bindings to the Khronos OpenGL APIs.")
     (license license:asl2.0)))
 
+(define-public rust-gl-generator-0.13
+  (package
+    (inherit rust-gl-generator-0.14)
+    (name "rust-gl-generator")
+    (version "0.13.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "gl-generator" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0jpqjqpyrl73sf8y20p5rv50qz8glnsvv9infg8h4vi52zgbp66a"))))))
+
 (define-public rust-glob-0.3
   (package
     (name "rust-glob")
