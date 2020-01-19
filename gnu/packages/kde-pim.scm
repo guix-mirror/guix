@@ -665,6 +665,73 @@ and retrieving certificates from LDAP servers.")
     (license ;; GPL for programs, FDL for documentation
      (list license:gpl2+ license:fdl1.2+))))
 
+(define-public kmailcommon
+  (package
+    (name "kmailcommon")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/mailcommon-" version ".tar.xz"))
+       (sha256
+        (base32 "1gsj89kgq4457mnfjlys4wiixpzwlbwhj4zpd7r4fdhbyihz3k2m"))))
+    (properties `((upstream-name . "mailcommon")))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("dbus" ,dbus)
+       ("gnupg" ,gnupg)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("akonadi" ,akonadi)
+       ("akonadi-contacts" ,akonadi-contacts)
+       ("akonadi-mime" ,akonadi-mime)
+       ("boost" ,boost)
+       ("gpgme" ,gpgme)
+       ("karchive" ,karchive)
+       ("kcodecs" ,kcodecs)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcontacts" ,kcontacts)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdesignerplugin" ,kdesignerplugin)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kidentitymanagement" ,kidentitymanagement)
+       ("kimap" ,kimap)
+       ("kio" ,kio)
+       ("kitemmodels" ,kitemmodels)
+       ("kitemviews" ,kitemviews)
+       ("kldap" ,kldap)
+       ("kmailimporter" ,kmailimporter)
+       ("kmailtransport" ,kmailtransport)
+       ("kmessagelib" ,kmessagelib)
+       ("kmime" ,kmime)
+       ("kpimcommon" ,kpimcommon)
+       ("kpimtextedit" ,kpimtextedit)
+       ("ksyntaxhighlighting" ,ksyntaxhighlighting)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwallet" ,kwallet)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdepim" ,libkdepim)
+       ("libkleo" ,libkleo)
+       ("libxslt" ,libxslt)
+       ("phonon" ,phonon)
+       ("qgpgme" ,qgpgme)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:tests? #f))  ;; TODO: 4/56 tests fail, even with "offscreen" and dbus
+    (home-page "https://cgit.kde.org/mailcommon.git")
+    (synopsis "KDE email utility library")
+    (description "The mail common library provides utility functions for
+dealing with email.")
+    (license ;; GPL for programs, LGPL for libraries
+     (list license:gpl2+ license:lgpl2.0+))))
+
 (define-public kmailimporter
   (package
     (name "kmailimporter")
