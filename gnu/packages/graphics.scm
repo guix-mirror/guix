@@ -854,7 +854,7 @@ exec -a \"$0\" ~a/.brdf-real~%"
          ("glew" ,glew)
          ("freeglut" ,freeglut)
          ("zlib" ,zlib)))
-      (home-page "http://www.disneyanimation.com/technology/brdf.html")
+      (home-page "https://www.disneyanimation.com/technology/brdf.html")
       (synopsis
        "Analyze bidirectional reflectance distribution functions (BRDFs)")
       (description
