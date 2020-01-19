@@ -3335,7 +3335,7 @@ reporter.")
     (synopsis "Coloured output for Minitest")
     (description
      "@code{minitest-rg} changes the colour of the output from Minitest.")
-    (home-page "http://blowmage.com/minitest-rg")
+    (home-page "https://blowmage.com/minitest-rg/")
     (license license:expat)))
 
 (define-public ruby-minitest-hooks
