@@ -83,7 +83,7 @@
     (propagated-inputs
      `(("fontconfig" ,fontconfig)
        ("libjpeg" ,libjpeg)))
-    (home-page "http://www.libgd.org/")
+    (home-page "https://www.libgd.org/")
     (synopsis "Library for the dynamic creation of images by programmers")
     (description
      "GD is a library for the dynamic creation of images by programmers.  GD
