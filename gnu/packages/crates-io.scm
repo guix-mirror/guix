@@ -13441,6 +13441,32 @@ data type.")
                    license:expat
                    license:asl2.0))))
 
+(define-public rust-smallvec-1
+  (package
+    (name "rust-smallvec")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "smallvec" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1z6f47i3qpg9pdjzzvb0g5i1vvdm2ymk3kqc1mdnl8fdkgnb4bsw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-bincode" ,rust-bincode-1.1))))
+    (home-page "https://github.com/servo/rust-smallvec")
+    (synopsis "Small vector optimization")
+    (description
+     "'Small vector' optimization: store up to a small number of items on the
+stack.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-smallvec-0.6
   (package
     (name "rust-smallvec")
