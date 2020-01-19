@@ -578,7 +578,7 @@ served by AS112.  Stub and forward zones are supported.")
              "--enable-nsec"
              "--enable-nsec3"
              "--enable-tsig")))
-    (home-page "http://www.yadifa.eu/")
+    (home-page "https://www.yadifa.eu/")
     (synopsis "Authoritative DNS name server")
     (description "YADIFA is an authoritative name server for the @dfn{Domain
 Name System} (DNS).  It aims for both higher performance and a smaller memory
