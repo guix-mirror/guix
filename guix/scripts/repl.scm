@@ -20,11 +20,7 @@
 (define-module (guix scripts repl)
   #:use-module (guix ui)
   #:use-module (guix scripts)
-  #:use-module ((guix scripts build) #:select (%standard-build-options))
   #:use-module (guix repl)
-  #:use-module (guix utils)
-  #:use-module (guix packages)
-  #:use-module (gnu packages)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
@@ -58,9 +54,12 @@
         (option '(#\q) #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'ignore-dot-guile? #t result)))
-        (find (lambda (option)
-                (member "load-path" (option-names option)))
-              %standard-build-options)))
+        (option '(#\L "load-path") #t #f
+                (lambda (opt name arg result)
+                  ;; XXX: Imperatively modify the search paths.
+                  (set! %load-path (cons arg %load-path))
+                  (set! %load-compiled-path (cons arg %load-compiled-path))
+                  result))))
 
 
 (define (show-help)
