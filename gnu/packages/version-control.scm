@@ -2164,7 +2164,7 @@ be served with a HTTP file server of your choice.")
        ("mesa"      ,mesa)
        ("pcre"      ,pcre)
        ("sdl-union" ,(sdl-union (list sdl2 sdl2-image)))))
-    (home-page "http://gource.io/")
+    (home-page "https://gource.io/")
     (synopsis "3D visualisation tool for source control repositories")
     (description "@code{gource} provides a software version control
 visualization.  The repository is displayed as a tree where the root of the
