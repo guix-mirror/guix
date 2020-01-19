@@ -5582,6 +5582,21 @@ reading and writing git repositories.")
         (base32
          "0jpqjqpyrl73sf8y20p5rv50qz8glnsvv9infg8h4vi52zgbp66a"))))))
 
+(define-public rust-gl-generator-0.11
+ (package
+   (inherit rust-gl-generator-0.13)
+   (name "rust-gl-generator")
+   (version "0.11.0")
+   (source
+    (origin
+      (method url-fetch)
+      (uri (crate-uri "gl-generator" version))
+      (file-name
+       (string-append name "-" version ".tar.gz"))
+      (sha256
+       (base32
+        "1gdchvay0k0g931b2ki33mkfixcw4radk5b8sqsm29rahxg3v8ir"))))))
+
 (define-public rust-gleam-0.6
   (package
     (name "rust-gleam")
