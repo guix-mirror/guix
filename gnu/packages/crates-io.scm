@@ -3377,6 +3377,32 @@ floating-point primitives to an @code{io::Write}.")
 @code{Right} is a general purpose sum type with two cases.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-embed-resource-1.3
+  (package
+    (name "rust-embed-resource")
+    (version "1.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "embed-resource" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0v1adsw9mq7gjjjhx4hcjhqppdf4vm0gbcgh7sxirbxh99la9axv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-vswhom" ,rust-vswhom-0.1)
+        ("rust-winreg" ,rust-winreg-0.6))))
+    (home-page "https://github.com/nabijaczleweli/rust-embed-resource")
+    (synopsis
+     "Cargo library to handle compilation and inclusion of Windows resources")
+    (description
+     "This package provides a Cargo library to handle compilation and
+inclusion of Windows resources in the most resilient fashion imaginable.")
+    (license license:expat)))
+
 (define-public rust-encode-unicode-0.3
   (package
     (name "rust-encode-unicode")
