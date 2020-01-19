@@ -376,6 +376,7 @@ text or blue underlined text, on ANSI terminals.")
 
 (define-public rust-arc-swap-0.3
   (package
+    (inherit rust-arc-swap-0.4)
     (name "rust-arc-swap")
     (version "0.3.11")
     (source
@@ -387,7 +388,6 @@ text or blue underlined text, on ANSI terminals.")
        (sha256
         (base32
          "0ha8724dpki985v52ifq5sd98xvpa5q51hyma52di75dbqbn4imw"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-development-inputs
@@ -399,11 +399,7 @@ text or blue underlined text, on ANSI terminals.")
         ("rust-num-cpus" ,rust-num-cpus-1.10)
         ("rust-parking-lot" ,rust-parking-lot-0.8)
         ("rust-proptest" ,rust-proptest-0.9)
-        ("rust-version-sync" ,rust-version-sync-0.8))))
-    (home-page "https://github.com/vorner/arc-swap")
-    (synopsis "Atomically swappable Arc")
-    (description "This package provides an atomically swappable Arc.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-version-sync" ,rust-version-sync-0.8))))))
 
 (define-public rust-argon2rs-0.2
   (package
