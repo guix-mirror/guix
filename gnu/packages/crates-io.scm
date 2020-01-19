@@ -16287,6 +16287,30 @@ updated when the crate version changes.")
      "The uninhabited void type for use in statically impossible cases.")
     (license license:expat)))
 
+(define-public rust-vswhom-0.1
+  (package
+    (name "rust-vswhom")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "vswhom" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "12v0fjjzxdc3y5c0lcwycfhphz7zf2s06hl5krwhawah0xzrp5xy"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-vswhom-sys" ,rust-vswhom-sys-0.1))))
+    (home-page "https://github.com/nabijaczleweli/vswhom.rs")
+    (synopsis "FFI to Jon Blow's VS discovery script")
+    (description
+     "This package provides a pure FFI to Jon Blow's VS discovery script.")
+    (license license:expat)))
+
 (define-public rust-vswhom-sys-0.1
   (package
     (name "rust-vswhom-sys")
