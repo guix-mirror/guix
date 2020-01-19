@@ -11478,6 +11478,31 @@ functionality.")
      "Safely cast &T to &U where the struct U contains a single field of type T.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-ref-cast-impl-1.0
+  (package
+    (name "rust-ref-cast-impl")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ref-cast-impl" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "07rc752npmkyc5b8xcqk2ydbl3gxi1n4fzrq0wx9wz5qd4mvavn3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1.0)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-syn" ,rust-syn-1.0))))
+    (home-page "https://github.com/dtolnay/ref-cast")
+    (synopsis "Derive implementation for @code{ref_cast::RefCast}")
+    (description
+     "Derive implementation for @code{ref_cast::RefCast}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-ref-cast-impl-0.2
   (package
     (name "rust-ref-cast-impl")
