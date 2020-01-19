@@ -1306,7 +1306,7 @@ PS, and DAB+.")
              #t)))))
     (native-inputs
      `(("unzip" ,unzip)))
-    (home-page "http://faust.grame.fr/")
+    (home-page "https://faust.grame.fr/")
     (synopsis "Signal processing language")
     (description
      "Faust is a programming language for realtime audio signal processing.")
