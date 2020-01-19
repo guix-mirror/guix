@@ -6248,7 +6248,7 @@ to help insert or delete content at a specific location in the document.")
        ("r-rcpp" ,r-rcpp)
        ("r-rcpparmadillo" ,r-rcpparmadillo)
        ("r-rjags" ,r-rjags)))
-    (home-page "http://www.r-bayesian-networks.org")
+    (home-page "https://r-bayesian-networks.org/")
     (synopsis "Modelling multivariate data with additive bayesian networks")
     (description
      "Bayesian network analysis is a form of probabilistic graphical models
