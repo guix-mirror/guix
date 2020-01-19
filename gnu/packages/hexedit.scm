@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -80,3 +81,25 @@ low-level functionality of a debugger with the usability of an @dfn{Integrated
 Development Environment} (IDE).")
     (home-page "http://hte.sourceforge.net/")
     (license license:gpl2)))
+
+(define-public bvi
+  (package
+    (name "bvi")
+    (version "1.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/bvi/bvi/" version
+                    "/bvi-" version ".src.tar.gz"))
+              (sha256
+               (base32
+                "0a0yl0dcyff31k3dr4dpgqmlwygp8iaslnr5gmb6814ylxf2ad9h"))))
+    (build-system gnu-build-system)
+    (arguments '(#:tests? #f))          ; no check target
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (synopsis "Binary file editor")
+    (description "@command{bvi} is a display-oriented editor for binary files,
+based on the @command{vi} text editor.")
+    (home-page "http://bvi.sourceforge.net/")
+    (license license:gpl3+)))
