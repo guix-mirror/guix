@@ -1038,6 +1038,35 @@ behave like a set of bitflags.")
         (base32
          "0v8hh6wdkpk9my8z8442g4hqrqf05h0qj53dsay6mv18lqvqklda"))))))
 
+(define-public rust-blake2-0.8
+  (package
+    (name "rust-blake2")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "blake2" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0c4k11j04kqhkci6i9b7lz6p13kpcv228pdqixgrawvavaq0gjwl"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-byte-tools" ,rust-byte-tools-0.3)
+        ("rust-crypto-mac" ,rust-crypto-mac-0.7)
+        ("rust-digest" ,rust-digest-0.8)
+        ("rust-opaque-debug" ,rust-opaque-debug-0.2))
+       #:cargo-development-inputs
+       (("rust-crypto-mac" ,rust-crypto-mac-0.7)
+        ("rust-digest" ,rust-digest-0.8)
+        ("rust-hex-literal" ,rust-hex-literal-0.1))))
+    (home-page "https://github.com/RustCrypto/hashes")
+    (synopsis "BLAKE2 hash functions")
+    (description "This package provides BLAKE2 hash functions in Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-blake2-rfc-0.2
   (package
     (name "rust-blake2-rfc")
