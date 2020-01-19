@@ -3486,7 +3486,7 @@ Red Eclipse provides fast paced and accessible gameplay.")
               ("tar" ,tar)
               ("gzip" ,gzip)
               ("tarball" ,source)))
-    (home-page "http://jxself.org/grue-hunter.shtml")
+    (home-page "https://jxself.org/grue-hunter.shtml")
     (synopsis "Text adventure game")
     (description
      "Grue Hunter is a text adventure game written in Perl.  You must make
