@@ -537,7 +537,7 @@ particularly easy to create complete web applications using httpuv alone.")
                (base32
                 "0lyvhnr6n57h3a89bvipii7x17nvfaycm9j5j50bfrlr48jv9ic8"))))
     (build-system r-build-system)
-    (home-page "http://arxiv.org/abs/1403.2805")
+    (home-page "https://arxiv.org/abs/1403.2805")
     (synopsis "Robust, high performance JSON parser and generator for R")
     (description
      "The jsonlite package provides a fast JSON parser and generator optimized
