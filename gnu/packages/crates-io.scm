@@ -8641,6 +8641,35 @@ combinators library.")
       ;; This is an ancient version and all inputs are optional.
      `(#:skip-build? #t))))
 
+(define-public rust-num-0.2
+  (package
+    (name "rust-num")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "num" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0dhcvhprvvx1iaaq7sxlgxw5awmj8dibni8vhizi59zyz4q60lxq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num-bigint" ,rust-num-bigint-0.2)
+        ("rust-num-complex" ,rust-num-complex-0.2)
+        ("rust-num-integer" ,rust-num-integer-0.1)
+        ("rust-num-iter" ,rust-num-iter-0.1)
+        ("rust-num-rational" ,rust-num-rational-0.2)
+        ("rust-num-traits" ,rust-num-traits-0.2))))
+    (home-page "https://github.com/rust-num/num")
+    (synopsis "Collection of numeric types and traits for Rust")
+    (description
+     "This package provides a collection of numeric types and traits for Rust,
+including bigint, complex, rational, range iterators, generic integers, and more.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-num-bigint-0.2
   (package
     (name "rust-num-bigint")
