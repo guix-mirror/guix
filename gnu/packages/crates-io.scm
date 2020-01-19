@@ -9471,6 +9471,35 @@ normally prevent moving a type that has been borrowed from.")
       "This package provides a library for padding strings at runtime.")
     (license license:expat)))
 
+(define-public rust-parking-lot-0.10
+  (package
+    (name "rust-parking-lot")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "parking_lot" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1z0wgf2sd1266y768kxxs3313zjfzj9r3k7j4arfaz0bmd4qrscj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-lock-api" ,rust-lock-api-0.3)
+        ("rust-parking-lot-core" ,rust-parking-lot-core-0.7))
+       #:cargo-development-inputs
+       (("rust-bincode" ,rust-bincode-1.1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-rand" ,rust-rand-0.7))))
+    (home-page "https://github.com/Amanieu/parking_lot")
+    (synopsis "Compact standard synchronization primitives")
+    (description
+     "More compact and efficient implementations of the standard
+synchronization primitives.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-parking-lot-0.9
   (package
     (name "rust-parking-lot")
