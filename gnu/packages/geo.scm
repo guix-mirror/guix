@@ -776,7 +776,7 @@ extension.")
                               "cmd/tegola_lambda/main.go")
                  (("version not set") ,version)))
              #t)))))
-    (home-page "http://tegola.io")
+    (home-page "https://tegola.io")
     (synopsis "Vector tile server for maps")
     (description "Tegola is a free vector tile server written in Go.  Tegola
 takes geospatial data and slices it into vector tiles that can be efficiently
