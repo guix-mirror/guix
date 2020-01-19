@@ -5562,6 +5562,29 @@ reading and writing git repositories.")
         (base32
          "0jpqjqpyrl73sf8y20p5rv50qz8glnsvv9infg8h4vi52zgbp66a"))))))
 
+(define-public rust-gleam-0.6
+  (package
+    (name "rust-gleam")
+    (version "0.6.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "gleam" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1iazvk3kvw3620gm6x8hy2x1lz51k04acl78cr3ppryhk5y0vqfa"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-gl-generator" ,rust-gl-generator-0.13))))
+    (home-page "https://github.com/servo/gleam")
+    (synopsis "Generated OpenGL bindings and wrapper for Servo")
+    (description
+     "Generated OpenGL bindings and wrapper for Servo.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-glob-0.3
   (package
     (name "rust-glob")
