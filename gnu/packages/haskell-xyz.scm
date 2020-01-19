@@ -2797,7 +2797,7 @@ providing an @code{rnf} implementation.")
     (native-inputs
      `(("ghc-hspec" ,ghc-hspec)
        ("ghc-quickcheck" ,ghc-quickcheck)))
-    (home-page "http://hackage.haskell.org/package/dense-linear-algebra")
+    (home-page "https://hackage.haskell.org/package/dense-linear-algebra")
     (synopsis "Simple and incomplete implementation of linear algebra")
     (description "This library is simply a collection of linear-algebra
 related modules split from the statistics library.")
