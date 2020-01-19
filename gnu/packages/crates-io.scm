@@ -7963,12 +7963,18 @@ generator that uses the HC-128 algorithm.")
          (base32
           "0ab4h6s6x3py833jk61lwadq83qd1c8bih2hgi6yps9rnv0x1aqn"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-rand-core" ,rust-rand-core-0.5)
+        ("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-bincode" ,rust-bincode-1.1))))
     (home-page "https://crates.io/crates/rand_pcg")
     (synopsis
      "Selected PCG random number generators")
     (description
      "Implements a selection of PCG random number generators.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
@@ -7993,8 +7999,7 @@ generator that uses the HC-128 algorithm.")
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0))
        #:cargo-development-inputs
-       (("rust-bincode" ,rust-bincode-1.1))))
-    (properties '())))
+       (("rust-bincode" ,rust-bincode-1.1))))))
 
 (define-public rust-rand-xorshift-0.2
   (package
