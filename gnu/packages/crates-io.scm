@@ -5522,6 +5522,31 @@ reading and writing git repositories.")
         ("rust-thread-id" ,rust-thread-id-3.3)
         ("rust-time" ,rust-time-0.1))))))
 
+(define-public rust-gl-generator-0.14
+  (package
+    (name "rust-gl-generator")
+    (version "0.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "gl-generator" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0k8j1hmfnff312gy7x1aqjzcm8zxid7ij7dlb8prljib7b1dz58s"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-khronos-api" ,rust-khronos-api-3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-xml-rs" ,rust-xml-rs-0.8))))
+    (home-page "https://github.com/brendanzab/gl-rs/")
+    (synopsis "Code generators for bindings to the Khronos OpenGL APIs")
+    (description
+     "Code generators for creating bindings to the Khronos OpenGL APIs.")
+    (license license:asl2.0)))
+
 (define-public rust-glob-0.3
   (package
     (name "rust-glob")
