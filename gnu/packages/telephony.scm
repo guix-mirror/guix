@@ -261,7 +261,19 @@ internet.")
        ("procps" ,procps)))
     (build-system gnu-build-system)
     (arguments
-     '(#:test-target "runtest"))
+     '(#:test-target "runtest"
+       #:phases (modify-phases %standard-phases
+                  (add-after 'build 'build-shared
+                    (lambda* (#:key (make-flags '()) #:allow-other-keys)
+                      ;; Build the shared library separately because
+                      ;; the test runner requires a static build.
+                      (apply invoke "make" "shared_library" make-flags)
+                      #t))
+                  (add-after 'install 'remove-static-library
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (delete-file (string-append (assoc-ref outputs "out")
+                                                  "/lib/libsrtp2.a"))
+                      #t)))))
     (synopsis "Secure RTP (SRTP) Reference Implementation")
     (description
      "This package provides an implementation of the Secure Real-time Transport
