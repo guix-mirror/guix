@@ -11454,6 +11454,32 @@ system calls.")
 functionality.")
     (license license:expat)))
 
+(define-public rust-ref-cast-1.0
+  (package
+    (name "rust-ref-cast")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ref-cast" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vy378bdzb4kcz13kh96c5n5qw1jinhfrya5j4bf9rxz65x1jzq7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-ref-cast-impl" ,rust-ref-cast-impl-1.0))
+       #:cargo-development-inputs
+       (("rust-rustversion" ,rust-rustversion-1.0)
+        ("rust-trybuild" ,rust-trybuild-1.0))))
+    (home-page "https://github.com/dtolnay/ref-cast")
+    (synopsis "Safely cast &T to &U")
+    (description
+     "Safely cast &T to &U where the struct U contains a single field of type T.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-ref-cast-0.2
   (package
     (name "rust-ref-cast")
