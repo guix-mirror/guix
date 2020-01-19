@@ -1747,6 +1747,28 @@ depending on a large number of #[cfg] parameters.  Structured like an
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-cgl-0.3
+  (package
+    (name "rust-cgl")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cgl" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1zs7skrsyrsm759vfy2cygkx52fx91b567a12bpaz1sf4d8hbv8c"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t     ; only available on macOS
+       #:cargo-inputs (("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/servo/cgl-rs")
+    (synopsis "Rust bindings for CGL on Mac")
+    (description "Rust bindings for CGL on Mac.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-ci-info-0.3
   (package
     (name "rust-ci-info")
