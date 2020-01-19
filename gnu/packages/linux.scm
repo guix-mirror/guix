@@ -1956,7 +1956,7 @@ configuration (iptunnel, ipmaddr).")
 (define-public libcap
   (package
     (name "libcap")
-    (version "2.27")
+    (version "2.31")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1964,7 +1964,7 @@ configuration (iptunnel, ipmaddr).")
                    "libcap2/libcap-" version ".tar.xz"))
              (sha256
               (base32
-               "0sj8kidl7qgf2qwxcbw1vadnlb30y4zvjzxswsmfdghq04npkhfs"))))
+               "0ikwm0kngrqa4ci80lqnrkk17kg09q7dxrz28y0gm5qw3vj8s266"))))
     (build-system gnu-build-system)
     (arguments '(#:phases
                  (modify-phases %standard-phases
@@ -1982,7 +1982,6 @@ configuration (iptunnel, ipmaddr).")
                                                    (assoc-ref %outputs "out"))
                                     "RAISE_SETFCAP=no")))
     (native-inputs `(("perl" ,perl)))
-    (inputs `(("attr" ,attr)))
     (home-page "https://sites.google.com/site/fullycapable/")
     (synopsis "Library for working with POSIX capabilities")
     (description
