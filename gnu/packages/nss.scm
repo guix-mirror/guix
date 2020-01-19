@@ -70,7 +70,7 @@ in the Mozilla clients.")
 (define-public nss
   (package
     (name "nss")
-    (version "3.49")
+    (version "3.49.1")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -81,7 +81,7 @@ in the Mozilla clients.")
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "07g7pn0r29y2h5p2zibz273yhkx6k4wvy8m1308hcqzxqi6hjf37"))
+                "0vh23g16ldvnsrn2dnvdl2i133kizi660r7ilb00vfq2kvj45anr"))
               ;; Create nss.pc and nss-config.
               (patches (search-patches "nss-pkgconfig.patch"
                                        "nss-freebl-stubs.patch"
