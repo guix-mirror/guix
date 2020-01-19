@@ -16363,7 +16363,7 @@ long-term reliability under stochastic load profiles.")
      `(("r-slam" ,r-slam)))
     (inputs
      `(("glpk" ,glpk)))
-    (home-page "http://R-Forge.R-project.org/projects/rglp/")
+    (home-page "https://r-forge.r-project.org/projects/rglp/")
     (synopsis "R interface to the GNU Linear Programming Kit")
     (description
      "This package provides an R interface to the GNU Linear Programming Kit,
