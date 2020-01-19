@@ -35,6 +35,7 @@
              (url "https://github.com/nrnrnr/noweb")
              (commit (string-append "v" (string-join (string-split version #\.)
                                                      "_")))))
+       (file-name (git-file-name name version))
        (sha256
         (base32 "1160i2ghgzqvnb44kgwd6s3p4jnk9668rmc15jlcwl7pdf3xqm95"))))
     (build-system gnu-build-system)
