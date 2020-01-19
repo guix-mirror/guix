@@ -9585,6 +9585,7 @@ synchronization primitives.")
 
 (define-public rust-parking-lot-core-0.6
   (package
+    (inherit rust-parking-lot-core-0.7)
     (name "rust-parking-lot-core")
     (version "0.6.2")
     (source
@@ -9596,7 +9597,6 @@ synchronization primitives.")
        (sha256
         (base32
          "0ay67dpnrn68ryyvp720m9i8hzp189fd4d6slrs1lvmcwywv2xmq"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -9611,13 +9611,7 @@ synchronization primitives.")
         ("rust-thread-id" ,rust-thread-id-3.3)
         ("rust-winapi" ,rust-winapi-0.3))
        #:cargo-development-inputs
-       (("rust-rustc-version" ,rust-rustc-version-0.2))))
-    (home-page "https://github.com/Amanieu/parking_lot")
-    (synopsis
-     "Advanced API for creating custom synchronization primitives")
-    (description
-     "An advanced API for creating custom synchronization primitives.")
-    (license (list license:asl2.0 license:expat))))
+       (("rust-rustc-version" ,rust-rustc-version-0.2))))))
 
 (define-public rust-parking-lot-core-0.5
   (package
