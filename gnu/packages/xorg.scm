@@ -5073,7 +5073,7 @@ over Xlib, including:
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.20.6")
+    (version "1.20.7")
     (source
       (origin
         (method url-fetch)
@@ -5082,7 +5082,7 @@ over Xlib, including:
               "xorg-server-" version ".tar.bz2"))
         (sha256
          (base32
-          "1laib9z17jksgzb67z69blcmnpbvj7i7m604b5ns7s760iii85k3"))
+          "18bfl04ihw1jr3h0fs522nnxxq5ixjay77y9dcymnkzk23q8cndx"))
         (patches
          (list
           ;; See:
