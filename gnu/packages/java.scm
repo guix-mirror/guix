@@ -8969,7 +8969,7 @@ file when the JVM loads it.")
        #:jdk ,icedtea-8
        #:tests? #f; requires testng which depends on jcommander
        #:source-dir "src/main/java"))
-    (home-page "http://jcommander.org")
+    (home-page "https://jcommander.org")
     (synopsis "Command line parameters parser")
     (description "JCommander is a very small Java framework that makes it
 trivial to parse command line parameters.  Parameters are declared with
