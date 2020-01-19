@@ -4546,6 +4546,41 @@ pseudorandom number generator")
     (description "Handling fragments of UTF-8.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-futures-0.3
+  (package
+    (name "rust-futures")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "futures" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "11srrbc0hp7pgz142qjfx2z07kfhc98rbfwqyrgm4mxvxib61wdn"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f
+       #:cargo-inputs
+       (("rust-futures-channel" ,rust-futures-channel-0.3)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-executor" ,rust-futures-executor-0.3)
+        ("rust-futures-io" ,rust-futures-io-0.3)
+        ("rust-futures-sink" ,rust-futures-sink-0.3)
+        ("rust-futures-task" ,rust-futures-task-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3))
+       #:cargo-development-inputs
+       (("rust-assert-matches" ,rust-assert-matches-1.3)
+        ("rust-pin-utils" ,rust-pin-utils-0.1)
+        ("rust-tokio" ,rust-tokio-0.1))))
+    (home-page "https://rust-lang-nursery.github.io/futures-rs")
+    (synopsis "Rust implementation of futures and streams")
+    (description
+     "A Rust implementation of futures and streams featuring zero allocations,
+composability, and iterator-like interfaces.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-futures-0.1
   (package
     (name "rust-futures")
