@@ -2584,6 +2584,30 @@ important tasks for becoming a daemon process:
     ;; Only setup.py is gpl3+, everything else is apache 2.0 licensed.
     (license (list license:asl2.0 license:gpl3+))))
 
+(define-public python-anytree
+  (package
+    (name "python-anytree")
+    (version "2.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "anytree" version))
+              (sha256
+               (base32
+                "1aycpc387wqz7h9w2p53qxn43qsh3m6by6ak4kkc66x9aprr63rz"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (native-inputs
+     `(;; For tests.
+       ("graphviz" ,graphviz)           ;for 'dot'
+       ("python-nose" ,python-nose)))
+    (home-page "https://github.com/c0fec0de/anytree")
+    (synopsis "Lightweight tree data library")
+    (description
+     "@code{anytree} is a simple, lightweight, and extensible tree data
+structure for Python.")
+    (license license:asl2.0)))
+
 (define-public python-docutils
   (package
     (name "python-docutils")
