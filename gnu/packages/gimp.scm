@@ -255,7 +255,7 @@ that is extensible via a plugin system.")
        ("gtk+" ,gtk+-2)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://registry.gimp.org/node/19596")
+    (home-page "https://www.lprp.fr/gimp_plugin_en/#fourier")
     (synopsis "GIMP plug-in to edit image in fourier space")
     (description
      "This package provides a simple plug-in to apply the fourier transform on
