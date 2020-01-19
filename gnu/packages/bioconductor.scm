@@ -2455,7 +2455,7 @@ gene and isoform level using RNA-seq data")
        ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://r-forge.r-project.org/projects/rsymphony")
+    (home-page "https://r-forge.r-project.org/projects/rsymphony")
     (synopsis "Symphony integer linear programming solver in R")
     (description
      "This package was derived from Rsymphony.  The package provides an R
