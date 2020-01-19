@@ -16287,6 +16287,30 @@ updated when the crate version changes.")
      "The uninhabited void type for use in statically impossible cases.")
     (license license:expat)))
 
+(define-public rust-vte-0.3
+  (package
+    (name "rust-vte")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "vte" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1kz8svnqnxclllsgh0ck20rplw3qzp46b5v30yscnzrgw8vgahjg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; tests not included in release
+       #:cargo-inputs
+       (("rust-utf8parse" ,rust-utf8parse-0.1))))
+    (home-page "https://github.com/jwilm/vte")
+    (synopsis "Parser for implementing terminal emulators")
+    (description
+     "This package provides a parser for implementing terminal emulators.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-wait-timeout-0.2
   (package
     (name "rust-wait-timeout")
