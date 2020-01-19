@@ -1809,7 +1809,7 @@ intrinsics.")
   (package
     (inherit rust-crossbeam-channel-0.4)
     (name "rust-crossbeam-channel")
-    (version "0.3.8")
+    (version "0.3.9")
     (source
      (origin
        (method url-fetch)
@@ -1818,14 +1818,14 @@ intrinsics.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0azpymyk0ld4akrjfy69ck5pzfgz1f2gb3smm2ywld92vsjd23hg"))))
+         "1ylyzb1m9qbvd1nd3vy38x9073wdmcy295ncjs7wf7ap476pzv68"))))
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6)
-        ("rust-smallvec" ,rust-smallvec-0.6))
+       (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6))
        #:cargo-development-inputs
-       (("rust-rand" ,rust-rand-0.4)
+       (("rust-num-cpus" ,rust-num-cpus-1.10)
+        ("rust-rand" ,rust-rand-0.6)
         ("rust-signal-hook" ,rust-signal-hook-0.1))))))
 
 (define-public rust-crossbeam-deque-0.7
