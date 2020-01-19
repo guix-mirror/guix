@@ -6094,7 +6094,7 @@ original.")
        ("perl-test-runvalgrind" ,perl-test-runvalgrind)
        ("cmake-rules" ,shlomif-cmake-modules)
        ("rinutils" ,rinutils)))
-    (home-page "http://www.shlomifish.org/open-source/projects/fortune-mod/")
+    (home-page "https://www.shlomifish.org/open-source/projects/fortune-mod/")
     (synopsis "The Fortune Cookie program from BSD games")
     (description "Fortune is a command-line utility which displays a random
 quotation from a collection of quotes.")
