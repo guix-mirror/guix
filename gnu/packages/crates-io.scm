@@ -1769,6 +1769,26 @@ depending on a large number of #[cfg] parameters.  Structured like an
     (description "Rust bindings for CGL on Mac.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-cgl-0.2
+  (package
+    (inherit rust-cgl-0.3)
+    (name "rust-cgl")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cgl" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0j8ayr8pbwvyv6l8r7m5z197rs3pqn97085w9j4rfn7yfh5yrrsm"))))
+    (arguments
+     `(#:skip-build? #t     ; only available on macOS
+       #:cargo-inputs
+       (("rust-gleam" ,rust-gleam-0.6)
+        ("rust-libc" ,rust-libc-0.2))))))
+
 (define-public rust-ci-info-0.3
   (package
     (name "rust-ci-info")
