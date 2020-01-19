@@ -5420,7 +5420,7 @@ interface in sysfs, which can be accomplished with the included udev rules.")
                                                "wireless-tools"))))))
                          bin-files)
                #t))))))
-    (home-page "http://linrunner.de/en/tlp/tlp.html")
+    (home-page "https://linrunner.de/en/tlp/tlp.html")
     (synopsis "Power management tool for Linux")
     (description "TLP is a power management tool for Linux.  It comes with
 a default configuration already optimized for battery life.  Nevertheless,
