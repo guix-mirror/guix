@@ -5890,7 +5890,7 @@ affect gameplay).")
   (package
     (inherit chocolate-doom)
     (name "crispy-doom")
-    (version "5.6.3")
+    (version "5.6.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5898,7 +5898,7 @@ affect gameplay).")
                     (commit (string-append "crispy-doom-" version))))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "0f319979wqfgm4pvsa6y5clg30p55l441kmrr8db0p5smyv3x2s4"))))
+               (base32 "1ls4v2kpb7vi7xji5yqbmyc5lfkz497h1vvj9w86wkrw8k59hlg2"))))
     (native-inputs
      (append
       (package-native-inputs chocolate-doom)
@@ -5908,7 +5908,7 @@ affect gameplay).")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'bootstrap
-           ;; the autogen.sh script in the source tree doesn't work
+           ;; The bundled autogen.sh script unconditionally runs ./configure.
            (lambda _ (invoke "autoreconf" "-vif"))))))
     (synopsis "Limit-removing enhanced-resolution Doom source port based on
 Chocolate Doom")
