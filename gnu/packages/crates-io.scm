@@ -4407,6 +4407,35 @@ process and much more.")
      "This package provides cross-platform file locks and file duplication.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-fsevent-0.4
+  (package
+    (name "rust-fsevent")
+    (version "0.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "fsevent" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "1djxnc2fmv265xqf1iyfz56smh13v9r1p0w9125wjg6k3fyx3dss"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t     ; only available on macOS
+       #:cargo-inputs
+        (("rust-bitflags" ,rust-bitflags-1)
+         ("rust-fsevent-sys" ,rust-fsevent-sys-2))
+        #:cargo-development-inputs
+        (("rust-tempdir" ,rust-tempdir-0.3)
+         ("rust-time" ,rust-time-0.1))))
+    (home-page "https://github.com/octplane/fsevent-rust")
+    (synopsis "Rust bindings to the fsevent-sys macOS API")
+    (description
+     "This package provides Rust bindings to the @code{fsevent-sys} macOS API
+for file changes notifications")
+    (license license:expat)))
+
 (define-public rust-fsevent-sys-2
   (package
     (name "rust-fsevent-sys")
