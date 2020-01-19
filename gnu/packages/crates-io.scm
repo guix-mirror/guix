@@ -346,6 +346,34 @@ text or blue underlined text, on ANSI terminals.")
          "153awzwywmb61xg857b80l63b1x6hifx2pha7lxf6fck9qxwraq8"))))
     (arguments '())))
 
+(define-public rust-arc-swap-0.4
+  (package
+    (name "rust-arc-swap")
+    (version "0.4.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "arc-swap" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1zwswfi9n7n3hiq51w1xv34572k2diazx680rrxlc9w07c9akf6p"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6)
+        ("rust-itertools" ,rust-itertools-0.8)
+        ("rust-model" ,rust-model-0.1)
+        ("rust-num-cpus" ,rust-num-cpus-1.11)
+        ("rust-once-cell" ,rust-once-cell-1.2)
+        ("rust-proptest" ,rust-proptest-0.8)
+        ("rust-version-sync" ,rust-version-sync-0.8))))
+    (home-page "https://github.com/vorner/arc-swap")
+    (synopsis "Atomically swappable Arc")
+    (description "This package provides an atomically swappable Arc.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-arc-swap-0.3
   (package
     (name "rust-arc-swap")
