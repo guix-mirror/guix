@@ -14792,6 +14792,30 @@ directories.")
      "Compact buffer/string type for zero-copy parsing.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-term-0.6
+ (package
+   (name "rust-term")
+   (version "0.6.1")
+   (source
+    (origin
+      (method url-fetch)
+      (uri (crate-uri "term" version))
+      (file-name
+       (string-append name "-" version ".tar.gz"))
+      (sha256
+       (base32
+        "1ddqxq9hrk8zqq1f8pqhz72vrlfc8vh2xcza2gb623z78lrkm1n0"))))
+   (build-system cargo-build-system)
+   (arguments
+    `(#:cargo-inputs
+      (("rust-dirs" ,rust-dirs-2.0)
+       ("rust-winapi" ,rust-winapi-0.3))))
+   (home-page "https://github.com/Stebalien/term")
+   (synopsis "Terminal formatting library")
+   (description
+    "This package provides a terminal formatting library.")
+   (license (list license:expat license:asl2.0))))
+
 (define-public rust-term-0.5
   (package
     (name "rust-term")
