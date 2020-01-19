@@ -1316,7 +1316,7 @@ slabtop, and skill.")
 (define-public e2fsprogs
   (package
     (name "e2fsprogs")
-    (version "1.45.4")
+    (version "1.45.5")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1325,7 +1325,7 @@ slabtop, and skill.")
                    name "-" version ".tar.xz"))
              (sha256
               (base32
-               "00nwl1ppjalxbnx40dsm895r3q793p8nni6n81saj7faj2szdyk5"))))
+               "1pmf8inp736l587rqq7qsd8bv0mmg5cwrivxg5p5awqgv70crypr"))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
     (native-inputs `(("pkg-config" ,pkg-config)
