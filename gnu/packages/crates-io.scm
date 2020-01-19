@@ -4875,6 +4875,41 @@ futures-rs library.")
     (description "Tools for working with tasks.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-futures-util-0.3
+  (package
+    (name "rust-futures-util")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "futures-util" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0xlyqdn6lnpkw27lwxczihx91h64gbdd31n8c8y5v63nzds65mn0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-futures" ,rust-futures-0.1)
+        ("rust-futures-channel" ,rust-futures-channel-0.3)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-io" ,rust-futures-io-0.3)
+        ("rust-futures-macro" ,rust-futures-macro-0.3)
+        ("rust-futures-sink" ,rust-futures-sink-0.3)
+        ("rust-futures-task" ,rust-futures-task-0.3)
+        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-pin-utils" ,rust-pin-utils-0.1)
+        ("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5)
+        ("rust-proc-macro-nested" ,rust-proc-macro-nested-0.1)
+        ("rust-slab" ,rust-slab-0.4)
+        ("rust-tokio-io" ,rust-tokio-io-0.1))))
+    (home-page "https://rust-lang-nursery.github.io/futures-rs")
+    (synopsis "Common utilities and extension traits for the futures-rs library")
+    (description "This package provides common utilities and extension traits
+for the futures-rs library.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-futures-util-preview-0.3
   (package
     (name "rust-futures-util-preview")
