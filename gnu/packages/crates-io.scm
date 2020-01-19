@@ -4756,6 +4756,32 @@ for the futures-rs library.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-futures-macro-0.3
+  (package
+    (name "rust-futures-macro")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "futures-macro" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0r3px32wgqfbmfyb1lrj9wplvjris5magdyhfr7xnyjk2mncbrsj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5)
+        ("rust-proc-macro2" ,rust-proc-macro2-1.0)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-syn" ,rust-syn-1.0))))
+    (home-page "https://rust-lang-nursery.github.io/futures-rs")
+    (synopsis "Futures-rs procedural macro implementations")
+    (description
+     "This package provides the @code{futures-rs} procedural macro implementations.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-futures-select-macro-preview-0.3
   (package
     (name "rust-futures-select-macro-preview")
