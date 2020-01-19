@@ -2029,7 +2029,7 @@ match, cannon keep, and grave-itation pit.")
 (define-public minetest
   (package
     (name "minetest")
-    (version "5.1.0")
+    (version "5.1.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2038,16 +2038,10 @@ match, cannon keep, and grave-itation pit.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "184n9gxfa7yr0j85z2x736maaymsnppd5jzm326wlqri3c0qqy3z"))
+                "0cjj63333b7j4ydfq0h9yc6d2jvmyjd7n7zbd08yrf0rcibrj2k0"))
               (modules '((guix build utils)))
               (snippet
                '(begin
-                  ;; Mimic upstream commit 706b6aad06, for compatibility with
-                  ;; newer jsoncpp.  Remove this for > 5.1.0.
-                  (substitute* "cmake/Modules/FindJson.cmake"
-                    (("features\\.h")
-                     "allocator.h"))
-
                   ;; Delete bundled libraries.
                   (delete-file-recursively "lib")
                   #t))))
