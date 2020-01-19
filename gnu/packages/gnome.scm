@@ -8290,7 +8290,7 @@ functionality and behavior.")
        ("inkscape" ,inkscape)
        ("optipng" ,optipng)
        ("pkg-config" ,pkg-config)
-       ("sassc" ,sassc)))
+       ("sassc" ,sassc/libsass-3.5)))
     (synopsis "A flat GTK+ theme with transparent elements")
     (description "Arc is a flat theme with transparent elements for GTK 3, GTK
 2, and GNOME Shell which supports GTK 3 and GTK 2 based desktop environments

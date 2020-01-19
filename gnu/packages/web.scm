@@ -1516,6 +1516,7 @@ minimum to provide high performance operation.")
 (define-public libsass
   (package
     (name "libsass")
+    ;; When updating, check whether sassc/libsass-3.5 is still needed.
     (version "3.6.3")
     (source (origin
               (method git-fetch)
@@ -1594,6 +1595,29 @@ stylesheets, you'll need to use another program that uses this library,
 language known as SASS.")
     (home-page "https://sass-lang.com/libsass")
     (license license:expat)))
+
+(define-public sassc/libsass-3.5
+  ;; Newer libsass versions suffor from a memory leak when building (some?)
+  ;; GTK themes <https://github.com/sass/libsass/issues/3033>.
+  (package
+    (inherit sassc)
+    (name "sassc")
+    (inputs
+     `(("libsass" ,
+        (package
+          (inherit libsass)
+          (name "libsass")
+          (version "3.5.5")
+          (source
+           (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/sass/libsass.git")
+                   (commit version)))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32
+               "0830pjcvhzxh6yixj82x5k5r1xnadjqzi16kp53213icbly0r9ma"))))))))))
 
 
 (define-public perl-apache-logformat-compiler
