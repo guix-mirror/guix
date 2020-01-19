@@ -8775,6 +8775,33 @@ including bigint, complex, rational, range iterators, generic integers, and more
        #:cargo-development-inputs
        (("rust-doc-comment" ,rust-doc-comment-0.3))))))
 
+(define-public rust-num-derive-0.2
+  (package
+    (name "rust-num-derive")
+    (version "0.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "num-derive" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wnv7776fh4i40r3zfxcxcmm0dh029skx7gp4sjknz2kqm2hpzga"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-0.6)
+        ("rust-syn" ,rust-syn-0.15))
+       #:cargo-development-inputs
+       (("rust-num" ,rust-num-0.2)
+        ("rust-num-traits" ,rust-num-traits-0.2))))
+    (home-page "https://github.com/rust-num/num-derive")
+    (synopsis "Numeric syntax extensions")
+    (description "Numeric syntax extensions in Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-num-integer-0.1
   (package
     (name "rust-num-integer")
