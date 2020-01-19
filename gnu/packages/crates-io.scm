@@ -8458,6 +8458,41 @@ release (fork of debug_unreachable)")
 prove a function can't ever panic.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-notify-4
+  (package
+    (name "rust-notify")
+    (version "4.0.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "notify" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "12vpbg8j49196rxkm01hw2xfr0mk005ljmx0p9kwf6xj6gy2i5hr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-filetime" ,rust-filetime-0.2)
+        ("rust-fsevent" ,rust-fsevent-0.4)
+        ("rust-fsevent-sys" ,rust-fsevent-sys-2)
+        ("rust-inotify" ,rust-inotify-0.6)
+        ("rust-kernel32-sys" ,rust-kernel32-sys-0.2)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-mio" ,rust-mio-0.6)
+        ("rust-mio-extras" ,rust-mio-extras-2)
+        ("rust-walkdir" ,rust-walkdir-2.2)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir-0.3))))
+    (home-page "https://github.com/passcod/notify")
+    (synopsis "Cross-platform filesystem notification library")
+    (description
+     "Cross-platform filesystem notification library.")
+    (license license:cc0)))
+
 (define-public rust-nix-0.14
   (package
     (inherit rust-nix-0.15)
