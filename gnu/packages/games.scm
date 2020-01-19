@@ -1995,7 +1995,7 @@ match, cannon keep, and grave-itation pit.")
 (define minetest-data
   (package
     (name "minetest-data")
-    (version "5.1.0")
+    (version "5.1.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
