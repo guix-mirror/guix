@@ -1500,6 +1500,39 @@ little-endian.")
      "The ChaCha family of stream ciphers.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-calloop-0.4
+  (package
+    (name "rust-calloop")
+    (version "0.4.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "calloop" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0q6ic9lr0s86886mbyn4yncg68b2sykgwjf3iygdw01swmxhk8ks"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin
+            (substitute* "Cargo.toml"
+              (("=1.0.0") "^1.0.0"))
+            #t))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-mio" ,rust-mio-0.6)
+        ("rust-mio-extras" ,rust-mio-extras-2)
+        ("rust-nix" ,rust-nix-0.14))
+       #:cargo-development-inputs
+       (("rust-lazycell" ,rust-lazycell-1.2))))
+    (home-page "https://github.com/Smithay/calloop")
+    (synopsis "Callback-based event loop")
+    (description
+     "This package provides a callback-based event loop")
+    (license license:expat)))
+
 (define-public rust-caps-0.3
   (package
     (name "rust-caps")
