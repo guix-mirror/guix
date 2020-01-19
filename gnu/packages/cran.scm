@@ -6878,7 +6878,7 @@ containing one or more SNPs that evolved under directional selection.")
     (propagated-inputs
      `(("r-plyr" ,r-plyr)
        ("r-rcpp" ,r-rcpp)))
-    (home-page "http://expasy.org/tools/pROC/")
+    (home-page "https://web.expasy.org/pROC/")
     (synopsis "Display and analyze ROC curves")
     (description
      "This package provides tools for visualizing, smoothing and comparing
