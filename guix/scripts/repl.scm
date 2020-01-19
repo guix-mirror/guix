@@ -69,7 +69,7 @@ Start a Guile REPL in the Guix execution environment.\n"))
   (display (G_ "
   -t, --type=TYPE        start a REPL of the given TYPE"))
   (display (G_ "
-      --listen=ENDPOINT  listen ENDPOINT instead of standard I/O"))
+      --listen=ENDPOINT  listen to ENDPOINT instead of standard input"))
   (display (G_ "
   -q                     inhibit loading of ~/.guile"))
   (newline)
