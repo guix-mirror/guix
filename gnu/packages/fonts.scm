@@ -1270,13 +1270,14 @@ emphasis while still being readable.")
     (source
      (origin
        (method url-fetch/zipbomb)
-       (uri (string-append "http://www.impallari.com/media/releases/dosis-"
+       (uri (string-append "https://web.archive.org/web/20180228233737/"
+                           "https://www.impallari.com/media/releases/dosis-"
                            "v" version ".zip"))
        (sha256
-        (base32
-         "1qhci68f68mf87jd69vjf9qjq3wydgw1q7ivn3amjb65ls1s0c4s"))))
+        (base32 "1qhci68f68mf87jd69vjf9qjq3wydgw1q7ivn3amjb65ls1s0c4s"))))
     (build-system font-build-system)
-    (home-page "http://www.impallari.com/dosis")
+    (home-page (string-append "https://web.archive.org/web/20180228233737/"
+                              "https://www.impallari.com/dosis"))
     (synopsis "Very simple, rounded, sans serif family")
     (description
      "Dosis is a very simple, rounded, sans serif family.
