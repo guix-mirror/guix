@@ -778,6 +778,68 @@ mail transport.")
     (description "Kontact Interface library.")
     (license license:lgpl2.0+)))
 
+(define-public kpimcommon
+  (package
+    (name "kpimcommon")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/pimcommon-" version ".tar.xz"))
+       (sha256
+        (base32 "1jl40ymq46yjn9va78hklgg91ikrfahf3w4jl5ziiqbivcl7r9kn"))))
+    (properties `((upstream-name . "pimcommon")))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("karchive" ,karchive)
+       ("akonadi" ,akonadi)
+       ("akonadi-contacts" ,akonadi-contacts)
+       ("akonadi-mime" ,akonadi-mime)
+       ("boost" ,boost)
+       ("grantlee" ,grantlee)
+       ;; TODO: ("kaccounts" ,kaccounts)
+       ("kcodecs" ,kcodecs)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcontacts" ,kcontacts)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdesignerplugin" ,kdesignerplugin)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kimap" ,kimap)
+       ("kio" ,kio)
+       ("kirigami" ,kirigami) ;; run-time dependency
+       ("kitemmodels" ,kitemmodels)
+       ("kitemviews" ,kitemviews)
+       ("kjobwidgets" ,kjobwidgets)
+       ("kmime" ,kmime)
+       ("knewstuff" ,knewstuff)
+       ("kpimtextedit" ,kpimtextedit)
+       ("kservice" ,kservice)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwallet" ,kwallet)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdepim" ,libkdepim)
+       ("libxslt" ,libxslt)
+       ("purpose" ,purpose)
+       ("qtbase" ,qtbase)
+       ("qtwebengine" ,qtwebengine)))
+    (arguments
+     `(#:tests? #f)) ;; TODO tests hang
+    (home-page "https://cgit.kde.org/pimcommon.git")
+    (synopsis "Common library for KDE PIM")
+    (description "Common library for KDE PIM.")
+    (license ;; GPL for programs, LGPL for libraries
+     (list license:gpl2+ license:lgpl2.0+))))
+
 (define-public kpimtextedit
   (package
     (name "kpimtextedit")
