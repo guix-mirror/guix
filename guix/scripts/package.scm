@@ -137,9 +137,6 @@ denote ranges as interpreted by 'matching-generations'."
 specified in MANIFEST, a manifest object.  When ALLOW-COLLISIONS? is true,
 do not treat collisions in MANIFEST as an error.  HOOKS is a list of \"profile
 hooks\" run when building the profile."
-  (when (equal? profile %current-profile)
-    (ensure-default-profile))
-
   (let* ((prof-drv (run-with-store store
                      (profile-derivation manifest
                                          #:allow-collisions? allow-collisions?
@@ -865,6 +862,12 @@ processed, #f otherwise."
                      (package-version item)
                      (manifest-entry-version entry))))))
 
+  (when (equal? profile %current-profile)
+    ;; Normally the daemon created %CURRENT-PROFILE when we connected, unless
+    ;; it's a version that lacks the fix for <https://bugs.gnu.org/37744>
+    ;; (aka. CVE-2019-18192).  Ensure %CURRENT-PROFILE exists so that
+    ;; 'with-profile-lock' can create its lock file below.
+    (ensure-default-profile))
 
   ;; First, acquire a lock on the profile, to ensure only one guix process
   ;; is modifying it at a time.
