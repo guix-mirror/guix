@@ -2023,7 +2023,7 @@ match, cannon keep, and grave-itation pit.")
     (synopsis "Main game data for the Minetest game engine")
     (description
      "Game data for the Minetest infinite-world block sandbox game.")
-    (home-page "http://minetest.net")
+    (home-page "https://www.minetest.net/")
     (license license:lgpl2.1+)))
 
 (define-public minetest
@@ -2091,7 +2091,7 @@ various types of blocks in a three-dimensional open world.  This allows
 forming structures in every possible creation, on multiplayer servers or as a
 single player.  Mods and texture packs allow players to personalize the game
 in different ways.")
-    (home-page "http://minetest.net")
+    (home-page "https://www.minetest.net/")
     (license license:lgpl2.1+)))
 
 (define glkterm
