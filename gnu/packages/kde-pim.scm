@@ -523,6 +523,85 @@ for KDE PIM.")
     (license ;; GPL for programs, LGPL for libraries
      (list license:gpl2+ license:lgpl2.0+))))
 
+(define-public kdepim-runtime
+  (package
+    (name "kdepim-runtime")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/kdepim-runtime-" version ".tar.xz"))
+       (sha256
+        (base32 "1skid9v6viw379mwhmb4xjh6bylv8wg7cy56kkbcpsmpars9cwr6"))
+       (patches (search-patches
+                 "kdepim-runtime-Fix-missing-link-libraries.patch"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("dbus" ,dbus)
+       ("kdoctools" ,kdoctools)
+       ("libxslt" ,libxslt)
+       ("shared-mime-info" ,shared-mime-info)))
+    (inputs
+     `(("akonadi" ,akonadi)
+       ("akonadi-calendar" ,akonadi-calendar)
+       ("akonadi-contacts" ,akonadi-contacts)
+       ("akonadi-mime" ,akonadi-mime)
+       ("akonadi-notes" ,akonadi-notes)
+       ("boost" ,boost)
+       ("cyrus-sasl" ,cyrus-sasl)
+       ("kalarmcal" ,kalarmcal)
+       ("kcalendarcore" ,kcalendarcore)
+       ("kcalutils" ,kcalutils)
+       ("kcodecs" ,kcodecs)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcontacts" ,kcontacts)
+       ("kdav" ,kdav)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kholidays" ,kholidays)
+       ("kiconthemes" ,kiconthemes)
+       ("kidentitymanagement" ,kidentitymanagement)
+       ("kimap" ,kimap)
+       ("kio" ,kio)
+       ("kitemmodels" ,kitemmodels)
+       ("kmailtransport" ,kmailtransport)
+       ("kmbox" ,kmbox)
+       ("kmime" ,kmime)
+       ("knotifications" ,knotifications)
+       ("knotifyconfig" ,knotifyconfig)
+       ("kpimcommon" ,kpimcommon)
+       ("kpimtextedit" ,kpimtextedit)
+       ("kross" ,kross)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwallet" ,kwallet)
+       ("kwindowsystem" ,kwindowsystem)
+       ("libkgapi" ,libkgapi)
+       ;; TODO: libkolab
+       ("qca" ,qca)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtnetworkauth" ,qtnetworkauth)
+       ("qtspeech" ,qtspeech)
+       ("qtwebchannel" ,qtwebchannel)
+       ("qtwebengine" ,qtwebengine)
+       ("qtxmlpatterns" ,qtxmlpatterns)))
+    (arguments
+      ;; TODO: 5/45 tests fail for quite different reasons, even with
+      ;; "offscreen" and dbus
+     `(#:tests? #f))
+    (home-page "https://cgit.kde.org/kdepim-runtime.git")
+    (synopsis "Runtime components for Akonadi KDE")
+    (description "This package contains Akonadi agents written using KDE
+Development Platform libraries.  Any package that uses Akonadi should probably
+pull this in as a dependency.  The kres-bridges is also parts of this
+package.")
+    (license ;; Files vary a lot regarding the license. GPL2+ and LGPL2.1+
+     ;; have been used in those I checked. But the archive also includes
+     ;; license texts for GPL3 and AGPL3.
+     (list license:gpl2+ license:lgpl2.0+))))
+
 (define-public kgpg
   (package
     (name "kgpg")
