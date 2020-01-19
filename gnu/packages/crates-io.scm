@@ -13762,6 +13762,36 @@ words, like Python's shlex.")
        (("rust-signal-hook" ,rust-signal-hook-0.1)
         ("rust-version-sync" ,rust-version-sync-0.8))))))
 
+(define-public rust-simd-0.2
+  (package
+    (name "rust-simd")
+    (version "0.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "simd" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1dgpmfzd4favsckd5m0p6bna1dcgw19hjigkqcgwfhc4d05hxczj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t     ; Crate no longer builds on Rust 1.33+
+       #:cargo-inputs
+       (("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0))
+       #:cargo-development-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1))))
+    (home-page "https://github.com/hsivonen/simd")
+    (synopsis "Limited cross-platform access to SIMD instructions on CPUs")
+    (description
+     "@code{simd} offers limited cross-platform access to SIMD instructions on
+CPUs, as well as raw interfaces to platform-specific instructions.
+(To be obsoleted by the @code{std::simd} implementation RFC 2366.)
+")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-siphasher-0.2
   (package
     (name "rust-siphasher")
