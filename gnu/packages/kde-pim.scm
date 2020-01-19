@@ -863,6 +863,100 @@ and retrieving certificates from LDAP servers.")
     (license ;; GPL for programs, FDL for documentation
      (list license:gpl2+ license:fdl1.2+))))
 
+(define-public kmail
+  (package
+    (name "kmail")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/kmail-" version ".tar.xz"))
+       (sha256
+        (base32 "0gsdpv9pf4h031zcawc4qv78a5kl9hxp2amd0spjhs7wc7nl17fk"))
+       (patches (search-patches "kmail-Fix-missing-link-libraries.patch"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("dbus" ,dbus)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("akonadi" ,akonadi)
+       ("akonadi-contacts" ,akonadi-contacts)
+       ("akonadi-mime" ,akonadi-mime)
+       ("akonadi-search" ,akonadi-search)
+       ("boost" ,boost)
+       ("gpgme" ,gpgme)
+       ("kbookmarks" ,kbookmarks)
+       ("kcalendarcore" ,kcalendarcore)
+       ("kcalutils" ,kcalutils)
+       ("kcmutils" ,kcmutils)
+       ("kcodecs" ,kcodecs)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcontacts" ,kcontacts)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdepim-apps-libs" ,kdepim-apps-libs)
+       ("kguiaddons" ,kguiaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kidentitymanagement" ,kidentitymanagement)
+       ("kimap" ,kimap)
+       ("kio" ,kio)
+       ("kitemmodels" ,kitemmodels)
+       ("kitemviews" ,kitemviews)
+       ("kjobwidgets" ,kjobwidgets)
+       ("kldap" ,kldap)
+       ("kmailcommon" ,kmailcommon)
+       ("kmailtransport" ,kmailtransport)
+       ("kmessagelib" ,kmessagelib)
+       ("kmime" ,kmime)
+       ("kmime" ,kmime)
+       ("knotifications" ,knotifications)
+       ("knotifyconfig" ,knotifyconfig)
+       ("kontactinterface" ,kontactinterface)
+       ("kparts" ,kparts)
+       ("kpimcommon" ,kpimcommon)
+       ("kpimtextedit" ,kpimtextedit)
+       ("kservice" ,kservice)
+       ("ksyntaxhighlighting" ,ksyntaxhighlighting)
+       ("ktextwidgets" ,ktextwidgets)
+       ("ktnef" ,ktnef)
+       ("kwallet" ,kwallet)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kxmlgui" ,kxmlgui)
+       ("libgravatar" ,libgravatar)
+       ("libkdepim" ,libkdepim)
+       ("libkleo" ,libkleo)
+       ("libksieve" ,libksieve)
+       ("oxygen-icons" ,oxygen-icons) ; default icon set, required for tests
+       ("qgpgme" ,qgpgme)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtwebchannel" ,qtwebchannel)
+       ("qtwebengine" ,qtwebengine)
+       ("sonnet" ,sonnet)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "dbus-launch" "ctest" ".")
+             #t)))))
+    (home-page "https://kontact.kde.org/components/kmail.html")
+    (synopsis "Full featured graphical email client")
+    (description "KMail supports multiple accounts, mail filtering and email
+encryption.  The program let you configure your workflow and it has good
+integration into KDE (Plasma Desktop) but is also useable with other Desktop
+Envionments.
+
+KMail is the email component of Kontact, the integrated personal information
+manager from KDE.")
+    (license ;; GPL for programs, LGPL for libraries, FDL for documentation
+     (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
+
 (define-public kmailcommon
   (package
     (name "kmailcommon")

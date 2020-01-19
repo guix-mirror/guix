@@ -1,0 +1,41 @@
+From 6b0a3a60870499b20ce9ae2ea07cbc5ee53cbdd2 Mon Sep 17 00:00:00 2001
+From: Hartmut Goebel <h.goebel@crazy-compilers.com>
+Date: Tue, 21 Jan 2020 23:23:38 +0100
+Subject: [PATCH] Fix missing link libraries.
+
+See <https://phabricator.kde.org/D26821>
+
+These are only actually missing if the libraries reside in different
+prefixes, as it is the case in Guix or Nix.
+---
+ agents/archivemailagent/CMakeLists.txt      | 1 +
+ agents/followupreminderagent/CMakeLists.txt | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/agents/archivemailagent/CMakeLists.txt b/agents/archivemailagent/CMakeLists.txt
+index 95c6249de..d0ddcd475 100644
+--- a/agents/archivemailagent/CMakeLists.txt
++++ b/agents/archivemailagent/CMakeLists.txt
+@@ -22,6 +22,7 @@ ki18n_wrap_ui(libarchivemailagent_SRCS ui/archivemailwidget.ui )
+ add_library(archivemailagent STATIC ${libarchivemailagent_SRCS})
+ target_link_libraries(archivemailagent
+     KF5::MailCommon
++    KF5::Libkdepim
+     KF5::I18n
+     KF5::Notifications
+     KF5::KIOWidgets
+diff --git a/agents/followupreminderagent/CMakeLists.txt b/agents/followupreminderagent/CMakeLists.txt
+index 9ae7eaa29..527044807 100644
+--- a/agents/followupreminderagent/CMakeLists.txt
++++ b/agents/followupreminderagent/CMakeLists.txt
+@@ -27,6 +27,7 @@ target_link_libraries(followupreminderagent
+     KF5::AkonadiMime
+     KF5::AkonadiAgentBase
+     KF5::DBusAddons
++    KF5::FollowupReminder
+     KF5::XmlGui
+     KF5::KIOWidgets
+     KF5::Notifications
+-- 
+2.21.1
+
