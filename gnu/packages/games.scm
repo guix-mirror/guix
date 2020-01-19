@@ -710,7 +710,7 @@ real-time combat.")
 (define-public golly
   (package
     (name "golly")
-    (version "3.2")
+    (version "3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/golly/golly/golly-"
@@ -718,7 +718,7 @@ real-time combat.")
                                   "-src.tar.gz"))
               (sha256
                (base32
-                "0cg9mbwmf4q6qxhqlnzrxh9y047banxdb8pd3hgj3smmja2zf0jd"))))
+                "1j3ksnar4rdam4xiyspgyrs1pifbvxfxkrn65brkwxpx39mpgzc8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "CC=gcc"
