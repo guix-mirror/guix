@@ -10622,6 +10622,33 @@ integers, floats, tuples, booleans, lists, strings, options and results.")
         ("rust-rand" ,rust-rand-0.3))
        #:skip-build? #t))))  ; Package needs 'unicode' crate.
 
+(define-public rust-quickcheck-macros-0.8
+  (package
+    (name "rust-quickcheck-macros")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "quickcheck_macros" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0b3mhn0xcrdd3fkbkx3rghhivwzwil8w991ngp6gaj70l72c3pyp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-0.6)
+        ("rust-syn" ,rust-syn-0.15))
+       #:cargo-development-inputs
+       (("rust-quickcheck" ,rust-quickcheck-0.8))))
+    (home-page "https://github.com/BurntSushi/quickcheck")
+    (synopsis "Macro attribute for quickcheck")
+    (description
+     "This package provides a macro attribute for quickcheck.")
+    (license (list license:unlicense license:expat))))
+
 (define-public rust-quote-1.0
   (package
     (name "rust-quote")
