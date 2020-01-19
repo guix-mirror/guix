@@ -335,6 +335,63 @@ Akonadi PIM data server.  It uses Xapian for indexing and querying.")
     (license ;; GPL for programs, LGPL for libraries
      (list license:gpl2+ license:lgpl2.0+))))
 
+(define-public kaddressbook
+  (package
+    (name "kaddressbook")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/kaddressbook-" version ".tar.xz"))
+       (sha256
+        (base32 "1bpl9cqjv7s6pnsaa266jqmny2s6ldkylxviri162jxg51v1hhz3"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("akonadi" ,akonadi)
+       ("akonadi-contacts" ,akonadi-contacts)
+       ("akonadi-mime" ,akonadi-mime)
+       ("akonadi-search" ,akonadi-search)
+       ("boost" ,boost)
+       ("gpgme" ,gpgme)
+       ("grantlee" ,grantlee)
+       ("grantleetheme" ,grantleetheme)
+       ("kcalendarcore" ,kcalendarcore)
+       ("kcmutils" ,kcmutils)
+       ("kcompletion" ,kcompletion)
+       ("kcontacts" ,kcontacts)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdepim-apps-libs" ,kdepim-apps-libs)
+       ("kdoctools" ,kdoctools)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kimap" ,kimap)
+       ("kio" ,kio)
+       ("kitemmodels" ,kitemmodels)
+       ("kmime" ,kmime)
+       ("kontactinterface" ,kontactinterface)
+       ("kparts" ,kparts)
+       ("kpimcommon" ,kpimcommon)
+       ("kpimtextedit" ,kpimtextedit)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdepim" ,libkdepim)
+       ("libkleo" ,libkleo)
+       ("oxygen-icons" ,oxygen-icons) ; default icon set, required for tests
+       ("prison" ,prison)
+       ("qgpgme" ,qgpgme)
+       ("qtbase" ,qtbase)))
+    (home-page "https://kontact.kde.org/components/kaddressbook.html")
+    (synopsis "Address Book application to manage your contacts")
+    (description "KAddressBook stores all the personal details of your family,
+friends and other contacts.  It supports large variety of services, including
+NextCloud, Kolab, Google Contacts, Microsoft Exchange (EWS) or any standard
+CalDAV server.")
+    (license (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
+
 (define-public kalarmcal
   (package
     (name "kalarmcal")
