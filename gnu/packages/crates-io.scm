@@ -277,6 +277,33 @@ text or blue underlined text, on ANSI terminals.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-anyhow-1.0
+  (package
+    (name "rust-anyhow")
+    (version "1.0.26")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "anyhow" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0g6mzcxyj88k8bv8rr3zx4yczgimqvvgr12n14a29sqj6s1zc9bq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-development-inputs
+       (("rust-futures" ,rust-futures-0.3)
+        ("rust-rustversion" ,rust-rustversion-1.0)
+        ("rust-thiserror" ,rust-thiserror-1.0)
+        ("rust-trybuild" ,rust-trybuild-1.0))))
+    (home-page "https://github.com/dtolnay/anyhow")
+    (synopsis "Flexible concrete Error type")
+    (description "This package provides a flexible concrete Error type built on
+@code{std::error::Error}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-approx-0.3
   (package
     (name "rust-approx")
@@ -14513,6 +14540,34 @@ for display in commandline applications.  It is designed to be efficient and
 handle Unicode characters correctly.")
     (properties '((hidden? . #t)))
     (license license:expat)))
+
+(define-public rust-thiserror-1.0
+  (package
+    (name "rust-thiserror")
+    (version "1.0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "thiserror" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0zlp3kzjssl1ndqmn7cipqnyggq4851ghhqj4bfc4fxk2hc7sdbg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-thiserror-impl" ,rust-thiserror-impl-1.0))
+       #:cargo-development-inputs
+       (("rust-anyhow" ,rust-anyhow-1.0)
+        ("rust-ref-cast" ,rust-ref-cast-1.0)
+        ("rust-rustversion" ,rust-rustversion-1.0)
+        ("rust-trybuild" ,rust-trybuild-1.0))))
+    (home-page "https://github.com/dtolnay/thiserror")
+    (synopsis "derive(Error)")
+    (description "This package provides @code{derive(Error)} in Rust.")
+    (license (list license:expat license:asl2.0))))
 
 (define-public rust-thiserror-impl-1.0
   (package
