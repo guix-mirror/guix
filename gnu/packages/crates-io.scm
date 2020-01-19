@@ -6020,6 +6020,24 @@ compile time.")
      "Internal implementation of the hex-literal crate.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-hex-literal-impl-0.1
+  (package
+    (inherit rust-hex-literal-impl-0.2)
+    (name "rust-hex-literal-impl")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hex-literal-impl" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1nnxqhyn9l998ma04ip79bmpqv1as6003s03g26ynhrr471p022j"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro-hack" ,rust-proc-macro-hack-0.4))))))
+
 (define-public rust-html5ever-0.23
   (package
     (name "rust-html5ever")
