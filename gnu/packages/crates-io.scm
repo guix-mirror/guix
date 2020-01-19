@@ -10722,7 +10722,7 @@ fixed set of worker threads.")
 (define-public rust-time-0.1
   (package
     (name "rust-time")
-    (version "0.1.39")
+    (version "0.1.42")
     (source
       (origin
         (method url-fetch)
@@ -10730,7 +10730,7 @@ fixed set of worker threads.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "161hqx0gw722ikydanpahky447vaxqncwmkj66rny282vzqpalx1"))))
+          "0vsbvsz0ryxb35dy9j4anxvy8zlaplmjmi0a4z4l64bc135cz3fv"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -10740,7 +10740,7 @@ fixed set of worker threads.")
         ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
         ("rust-winapi" ,rust-winapi-0.3))
        #:cargo-development-inputs
-       (("rust-log" ,rust-log-0.3)
+       (("rust-log" ,rust-log-0.4)
         ("rust-winapi" ,rust-winapi-0.3))))
     (home-page "https://github.com/time-rs/time")
     (synopsis "Simple time handling in Rust")
