@@ -1623,7 +1623,7 @@ print, summary, plot, update, etc.
        (sha256
         (base32 "1lcq7r0q4jb8x6k023zr2ydj2dg925bqqbkhx1phpnyjrk897498"))))
     (build-system r-build-system)
-    (home-page "http://ps.r-lib.org")
+    (home-page "https://ps.r-lib.org")
     (synopsis "List, query, and manipulate system processes")
     (description
      "The ps package implements an API to list, query, and manipulate system
@@ -8695,7 +8695,7 @@ back to file after modifications.")
      `(("r-rcpp" ,r-rcpp)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://fs.r-lib.org")
+    (home-page "https://fs.r-lib.org")
     (synopsis "Cross-platform file system operations based on libuv")
     (description
      "This package provides a cross-platform interface to file system
