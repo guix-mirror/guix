@@ -4530,7 +4530,7 @@ small robot living in the nano world, repair its maker.")
 (define-public teeworlds
   (package
     (name "teeworlds")
-    (version "0.7.2")
+    (version "0.7.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4539,7 +4539,7 @@ small robot living in the nano world, repair its maker.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "15l988qcsqgb6rjais0qd5sd2rjanm2708jmzvkariqzz0d6pb93"))
+                "1lxdb1k2cdj2421vyz1z0ximzfnpkh2y4y84zpn2gqsa1nzwbryb"))
               (modules '((guix build utils)
                          (ice-9 ftw)
                          (ice-9 regex)
@@ -4551,9 +4551,7 @@ small robot living in the nano world, repair its maker.")
                                      (cut string-append base-dir <>))
                             (remove (cut string-match "(^.)|(^md5$)" <>)
                                     (scandir base-dir)))
-                  #t))
-              (patches
-               (search-patches "teeworlds-use-latest-wavpack.patch"))))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests included
@@ -4564,19 +4562,6 @@ small robot living in the nano world, repair its maker.")
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
-             ;; The bundled json-parser uses an old API.
-             ;; To use the latest non-bundled version, we need to pass the
-             ;; length of the data in all 'json_parse_ex' calls.
-             (define (use-latest-json-parser file)
-               (substitute* file
-                 (("engine/external/json-parser/json\\.h")
-                  "json-parser/json.h")
-                 (("json_parse_ex\\(&JsonSettings, pFileData, aError\\);")
-                  "json_parse_ex(&JsonSettings,
-                                 pFileData,
-                                 strlen(pFileData),
-                                 aError);")))
-
              ;; Embed path to assets.
              (substitute* "src/engine/shared/storage.cpp"
                (("#define DATA_DIR.*")
@@ -4608,13 +4593,6 @@ settings.link.libs:Add(\"wavpack\")")
              (substitute* "src/engine/client/sound.cpp"
                (("engine/external/wavpack/wavpack\\.h")
                 "wavpack/wavpack.h"))
-             (for-each use-latest-json-parser
-                       '("src/game/client/components/countryflags.cpp"
-                         "src/game/client/components/menus_settings.cpp"
-                         "src/game/client/components/skins.cpp"
-                         "src/game/client/localization.cpp"
-                         "src/game/editor/auto_map.h"
-                         "src/game/editor/editor.cpp"))
              #t))
          (replace 'build
            (lambda _
