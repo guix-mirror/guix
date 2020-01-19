@@ -376,6 +376,40 @@ Akonadi PIM data server.  It uses Xapian for indexing and querying.")
 calendar data.")
     (license  license:lgpl2.0+)))
 
+(define-public kblog
+  (package
+    (name "kblog")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/kblog-" version ".tar.xz"))
+       (sha256
+        (base32 "0r3ik3df444kzg2mnzckkh4kk6v08zil1f26dwmxsslsqw9hl0vv"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("kcalendarcore" ,kcalendarcore)
+       ("kcoreaddons" ,kcoreaddons)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("kxmlrpcclient" ,kxmlrpcclient)
+       ("qtbase" ,qtbase)
+       ("syndication" ,syndication)))
+    ;; Note: Some tests take up to 90 sec.
+    (home-page "https://cgit.kde.org/kblog.git")
+    (synopsis "Client-side support library for web application remote blogging
+APIs")
+    (description "KBlog is a library for calling functions on Blogger 1.0,
+MetaWeblog, MovableType and GData compatible blogs.  It calls the APIs using
+KXmlRpcClient and Syndication.  It supports asynchronous sending and fetching
+of posts and, if supported on the server, multimedia files.  Almost every
+modern blogging web application that provides an XML data interface supports
+one of the APIs mentioned above.")
+    (license license:lgpl2.0+)))
+
 (define-public kcalutils
   (package
     (name "kcalutils")
