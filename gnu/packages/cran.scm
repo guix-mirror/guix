@@ -5240,7 +5240,7 @@ regression and information measures are implemented.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ttr" ,r-ttr)))
-    (home-page "http://cran.r-project.org/web/packages/smoother")
+    (home-page "https://cran.r-project.org/web/packages/smoother")
     (synopsis "Functions relating to the smoothing of numerical data")
     (description
      "This package provides a collection of methods for smoothing numerical
