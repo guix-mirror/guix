@@ -1151,6 +1151,80 @@ US-ASCII, non-text attachments, multi-part message bodies, and header
 information in non-ASCII character sets.")
     (license license:lgpl2.0+)))
 
+(define-public knotes
+  (package
+    (name "knotes")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/knotes-" version ".tar.xz"))
+       (sha256
+        (base32 "128qpfqjn5zwl5550srmbjyxns242q6a3b0jy70jjx2yixy3rb87"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("libxslt" ,libxslt)))
+    (inputs
+     `(("akonadi" ,akonadi)
+       ("akonadi-contacts" ,akonadi-contacts)
+       ("akonadi-mime" ,akonadi-mime)
+       ("akonadi-notes" ,akonadi-notes)
+       ("akonadi-search" ,akonadi-search)
+       ("boost" ,boost)
+       ("grantlee" ,grantlee)
+       ("grantleetheme" ,grantleetheme)
+       ("kcalendarcore" ,kcalendarcore)
+       ("kcalutils" ,kcalutils)
+       ("kcmutils" ,kcmutils)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcontacts" ,kcontacts)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdnssd" ,kdnssd)
+       ("kdoctools" ,kdoctools)
+       ("kglobalaccel" ,kglobalaccel)
+       ("kiconthemes" ,kiconthemes)
+       ("kimap" ,kimap)
+       ("kitemmodels" ,kitemmodels)
+       ("kitemviews" ,kitemviews)
+       ("kmime" ,kmime)
+       ("kmime" ,kmime)
+       ("knewstuff" ,knewstuff)
+       ("knotifications" ,knotifications)
+       ("knotifyconfig" ,knotifyconfig)
+       ("kontactinterface" ,kontactinterface)
+       ("kparts" ,kparts)
+       ("kpimcommon" ,kpimcommon)
+       ("kpimtextedit" ,kpimtextedit)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kxmlgui" ,kxmlgui)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdepim" ,libkdepim)
+       ("oxygen-icons" ,oxygen-icons) ; default icon set, required for tests
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)))
+    (home-page "https://kontact.kde.org/components/knotes.html")
+    (synopsis "Note-taking utility")
+    (description "KNotes lets you write the computer equivalent of sticky
+notes.  The notes are saved automatically when you exit the program, and they
+display when you open the program.
+
+Features:
+@itemize
+@item Write notes in your choice of font and background color
+@item Use drag and drop to email your notes
+@item Can be dragged into Calendar to book a time-slot
+@item Notes can be printed
+@end itemize")
+    (license (list license:gpl2+ license:lgpl2.0+))))
+
 (define-public kontactinterface
   (package
     (name "kontactinterface")
