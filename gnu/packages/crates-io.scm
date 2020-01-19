@@ -13600,6 +13600,34 @@ deeply recursive algorithms that may accidentally blow the stack.")
 are met.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-stb-truetype-0.3
+  (package
+    (name "rust-stb-truetype")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "stb_truetype" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0lgvnh3ma6cz811bk8imj45djz76zs47b8327sgnmik2x03nnyzp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; tests not included in release
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-libm" ,rust-libm-0.2))
+       #:cargo-development-inputs
+       (("rust-approx" ,rust-approx-0.3))))
+    (home-page "https://gitlab.redox-os.org/redox-os/stb_truetype-rs")
+    (synopsis "Translation of the font loading code to Rust")
+    (description
+     "This package provides a straight translation of the font loading code
+in @code{stb_truetype.h} from C to Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-stdweb-0.4
   (package
     (name "rust-stdweb")
