@@ -4684,6 +4684,34 @@ the computation on the threads themselves.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-futures-executor-0.3
+  (package
+    (name "rust-futures-executor")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "futures-executor" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0cf24wbgxqh4kdjbb557vk1axzmbpmwb8s05ga1nls1zaqv4f9qy"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f
+       #:cargo-inputs
+       (("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-task" ,rust-futures-task-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-num-cpus" ,rust-num-cpus-1.11))))
+    (home-page "https://rust-lang-nursery.github.io/futures-rs")
+    (synopsis "Executors for asynchronous tasks based on the futures-rs library")
+    (description
+     "This package provides executors for asynchronous tasks based on the
+@code{futures-rs} library.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-futures-executor-preview-0.3
   (package
     (name "rust-futures-executor-preview")
