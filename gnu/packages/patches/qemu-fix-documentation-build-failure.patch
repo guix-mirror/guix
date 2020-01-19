@@ -1,0 +1,43 @@
+Fix a build failure caused by a texinfo bug:
+
+qemu-doc.texi:41: @menu reference to nonexistent node `QEMU Guest Agent'
+
+Patch copied from upstream source repository:
+
+https://git.qemu.org/?p=qemu.git;a=commitdiff;h=80bc935eaaf93e5b9a4efe97abd7c51d645f2612
+
+From 80bc935eaaf93e5b9a4efe97abd7c51d645f2612 Mon Sep 17 00:00:00 2001
+From: Thomas Huth <thuth@redhat.com>
+Date: Mon, 16 Dec 2019 14:29:41 +0100
+Subject: [PATCH] qemu-doc: Remove the unused "Guest Agent" node
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The node has been removed from the texi file some months ago, so we
+should remove it from the menu section, too.
+
+Fixes: 27a296fce982 ("qemu-ga: Convert invocation documentation to rST")
+Signed-off-by: Thomas Huth <thuth@redhat.com>
+Reviewed-by: Philippe Mathieu-Daudé <philmd@redhat.com>
+Message-Id: <20191216132941.25729-1-thuth@redhat.com>
+Signed-off-by: Laurent Vivier <laurent@vivier.eu>
+---
+ qemu-doc.texi | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/qemu-doc.texi b/qemu-doc.texi
+index eea91a2d1e..39f950471f 100644
+--- a/qemu-doc.texi
++++ b/qemu-doc.texi
+@@ -38,7 +38,6 @@
+ * Introduction::
+ * QEMU PC System emulator::
+ * QEMU System emulator for non PC targets::
+-* QEMU Guest Agent::
+ * QEMU User space emulator::
+ * System requirements::
+ * Security::
+-- 
+2.24.1
+
