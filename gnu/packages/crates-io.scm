@@ -5996,6 +5996,25 @@ hexadecimal representation.")
 compile time.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-hex-literal-0.1
+  (package
+    (inherit rust-hex-literal-0.2)
+    (name "rust-hex-literal")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hex-literal" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ffnn5g9q5xhdmzj2ic5hk9y18kyqflbmqcssqcya9gixs5r5hnx"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-hex-literal-impl" ,rust-hex-literal-impl-0.1)
+        ("rust-proc-macro-hack" ,rust-proc-macro-hack-0.4))))))
+
 (define-public rust-hex-literal-impl-0.2
   (package
     (name "rust-hex-literal-impl")
