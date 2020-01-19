@@ -580,25 +580,43 @@ but it works for any C/C++ project.")
 (define-public python-parameterized
   (package
     (name "python-parameterized")
-    (version "0.6.1")
+    (version "0.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "parameterized" version))
        (sha256
         (base32
-         "1qj1939shm48d9ql6fm1nrdy4p7sdyj8clz1szh5swwpf1qqxxfa"))))
+         "1vapry9lyfb2mlpgk2wh9079hzxzq5120bsczncxxay663mdp53a"))))
     (build-system python-build-system)
-    (arguments '(#:tests? #f)) ; there are no tests
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          (invoke "nosetests" "-v")
+                          (format #t "test suite not run~%"))
+                      #t)))))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)))
     (home-page "https://github.com/wolever/parameterized")
     (synopsis "Parameterized testing with any Python test framework")
     (description
      "Parameterized is a Python library that aims to fix parameterized testing
 for every Python test framework.  It supports nose, py.test, and unittest.")
+    (properties `((python2-variant . ,(delay python2-parameterized))))
     (license license:bsd-2)))
 
 (define-public python2-parameterized
-  (package-with-python2 python-parameterized))
+  (let ((base (package-with-python2 (strip-python2-variant
+                                     python-parameterized))))
+    (package/inherit
+     base
+     (source
+      (origin
+        (inherit (package-source base))
+        (patches (search-patches "python2-parameterized-docstring-test.patch")))))))
 
 (define-public python-minimock
   (package
