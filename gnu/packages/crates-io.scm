@@ -13469,6 +13469,7 @@ stack.")
 
 (define-public rust-smallvec-0.6
   (package
+    (inherit rust-smallvec-1)
     (name "rust-smallvec")
     (version "0.6.10")
     (source
@@ -13479,20 +13480,7 @@ stack.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1dyl43rgzny79jjpgzi07y0ly2ggx1xwsn64csxj0j91bsf6lq5b"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-serde" ,rust-serde-1.0))
-       #:cargo-development-inputs
-       (("rust-bincode" ,rust-bincode-1.1))))
-    (home-page "https://github.com/servo/rust-smallvec")
-    (synopsis "Small vector optimization")
-    (description
-     "'Small vector' optimization: store up to a small number of items on the
-stack.")
-    (license (list license:expat license:asl2.0))))
+         "1dyl43rgzny79jjpgzi07y0ly2ggx1xwsn64csxj0j91bsf6lq5b"))))))
 
 (define-public rust-socket2-0.3
   (package
