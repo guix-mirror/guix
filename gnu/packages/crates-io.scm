@@ -15180,6 +15180,25 @@ different for every thread.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-thread-id-2.0
+  (package
+    (inherit rust-thread-id-3.3)
+    (name "rust-thread-id")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "thread-id" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "00zzs2bx1xw8aqm5plqqgr7bc2zz6zkqrdxq8vpiqb8hc2srslx9"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-kernel32-sys" ,rust-kernel32-sys-0.2)
+        ("rust-libc" ,rust-libc-0.2))))))
+
 (define-public rust-thread-local-1.0
   (package
     (name "rust-thread-local")
