@@ -4753,7 +4753,7 @@ available in the Java programming language or Commons Lang.")
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://openjdk.java.net/projects/code-tools/jmh/")
+    (home-page "https://openjdk.java.net/projects/code-tools/jmh/")
     (synopsis "Benchmark harness for the JVM")
     (description "JMH is a Java harness for building, running, and analysing
 nano/micro/milli/macro benchmarks written in Java and other languages
