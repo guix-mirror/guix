@@ -15238,6 +15238,24 @@ different for every thread.")
      `(#:skip-build? #t
        #:cargo-inputs (("rust-lazy-static" ,rust-lazy-static-1))))))
 
+(define-public rust-thread-local-0.2
+  (package
+    (inherit rust-thread-local-0.3)
+    (name "rust-thread-local")
+    (version "0.2.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "thread_local" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1mgxikqvhpsic6xk7pan95lvgsky1sdxzw2w5m2l35pgrazxnxl5"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-thread-id" ,rust-thread-id-2.0))))))
+
 (define-public rust-threadpool-1.7
   (package
     (name "rust-threadpool")
