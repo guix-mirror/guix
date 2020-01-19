@@ -694,7 +694,7 @@ regular-expression notation.")
                                            (assoc-ref outputs "out"))))))))
     (native-inputs `(("unzip" ,unzip)
                      ("texinfo" ,texinfo)))
-    (home-page "http://people.csail.mit.edu/jaffer/SLIB.html")
+    (home-page "https://people.csail.mit.edu/jaffer/SLIB.html")
     (synopsis "Compatibility and utility library for Scheme")
     (description "SLIB is a portable Scheme library providing compatibility and
 utility functions for all standard Scheme implementations.")
