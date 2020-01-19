@@ -8008,6 +8008,10 @@ Add @var{directory} to the front of the package module search path
 
 This allows users to define their own packages and make them visible to
 the command-line tool.
+
+@item -q
+Inhibit loading of the @file{~/.guile} file.  By default, that
+configuration file is loaded when spawning a @code{guile} REPL.
 @end table
 
 @c *********************************************************************
