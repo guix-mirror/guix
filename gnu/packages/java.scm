@@ -3669,7 +3669,7 @@ these two libraries to vary independently of one another.")
        #:tests? #f));; FIXME: we need to generate some resources as in pom.xml
     (native-inputs
      `(("java-junit" ,java-junit)))
-    (home-page "http://codehaus-plexus.github.io/plexus-classworlds/")
+    (home-page "https://codehaus-plexus.github.io/plexus-classworlds/")
     (synopsis "Java class loader framework")
     (description "Plexus classworlds replaces the native @code{ClassLoader}
 mechanism of Java.  It is especially useful for dynamic loading of application
