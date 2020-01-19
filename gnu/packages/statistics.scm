@@ -1306,7 +1306,7 @@ adapted for other output formats, such as HTML or LaTeX.")
                (base32
                 "1nsxbrx31k3y6yql30qkrvdfyznlia2qfvwv95mfiy7m7wdn4rm3"))))
     (build-system r-build-system)
-    (home-page "http://yihui.name/formatR")
+    (home-page "https://yihui.org/formatr/")
     (synopsis "Format R code automatically")
     (description
      "This package provides a function to format R source code.  Spaces and
