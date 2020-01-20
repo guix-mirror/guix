@@ -284,7 +284,8 @@ without requiring the source code to be rewritten.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0x8ca6q1qdmk29lh12gj6ngvgn7kp79w42rxfgwrpxm9jmjqs4y9"))))
+                "0x8ca6q1qdmk29lh12gj6ngvgn7kp79w42rxfgwrpxm9jmjqs4y9"))
+              (patches (search-patches "guile-2.2-skip-oom-test.patch"))))
     (native-search-paths
      (list (search-path-specification
             (variable "GUILE_LOAD_PATH")
