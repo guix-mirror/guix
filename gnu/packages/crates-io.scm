@@ -38,6 +38,7 @@
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
 ;;;
@@ -4244,6 +4245,36 @@ is configured via an environment variable.")
     (synopsis "Geometry primitives")
     (description "Geometry primitives written in Rust.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-expat-sys-2.1
+  (package
+    (name "rust-expat-sys")
+    (version "2.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "expat-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1yj5pqynds776ay8wg9mhi3hvna4fv7vf244yr1864r0i5r1k3v5"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (delete-file-recursively "expat") #t))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cmake" ,rust-cmake-0.1)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("expat" ,expat)))
+    (home-page "http://www.libexpat.org/")
+    (synopsis "XML parser library written in C")
+    (description "XML parser library written in C")
+    (license license:expat)))
 
 (define-public rust-fake-simd-0.1
   (package
