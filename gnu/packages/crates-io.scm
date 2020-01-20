@@ -2122,6 +2122,27 @@ CMAKE environmental variable is set.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-color-quant-1.0
+  (package
+    (name "rust-color-quant")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "color-quant" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ga56jrafnjm80903nnqjkyii4bwd6a7visxh0g8hgi6cmrvbfqd"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/PistonDevelopers/color_quant.git")
+    (synopsis
+     "Color quantization library to reduce n colors to 256 colors")
+    (description
+     "Color quantization library to reduce n colors to 256 colors.")
+    (license license:expat)))
+
 ;; This package requires features which are unavailable
 ;; on the stable releases of Rust.
 (define-public rust-compiler-builtins-0.1
