@@ -171,8 +171,7 @@ This package provides the core library and elements.")
       (sha256
        (base32
         "0sl1hxlyq46r02k7z70v09vx1gi4rcypqmzra9jid93lzvi76gmi"))))
-    (build-system gnu-build-system)
-    (outputs '("out" "doc"))
+    (build-system meson-build-system)
     (propagated-inputs
      `(("glib" ,glib)              ;required by gstreamer-sdp-1.0.pc
        ("gstreamer" ,gstreamer)    ;required by gstreamer-plugins-base-1.0.pc
@@ -206,11 +205,10 @@ This package provides the core library and elements.")
         ("gobject-introspection" ,gobject-introspection)
         ("python-wrapper" ,python-wrapper)))
     (arguments
-     `(#:parallel-tests? #f ; 'pipelines/tcp' fails in parallel
-       #:configure-flags
-       (list (string-append "--with-html-dir="
-                            (assoc-ref %outputs "doc")
-                            "/share/gtk-doc/html"))
+     '(#:configure-flags '("-Dgl=disabled"
+                           ;; FIXME: Documentation fails to build without
+                           ;; enabling GL above, which causes other problems.
+                           "-Ddoc=false")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch
