@@ -2468,7 +2468,9 @@ functionality was designed to be as reusable and portable as possible.")
                 "0l3mhpyym9m5iz09fz0rgiqxl2ym6kpkwpsp1xrr4aa80nlh1jam"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags
+     `(;; The "timeout-server" test hangs when run in parallel.
+       #:parallel-tests? #f
+       #:configure-flags
        '(;; We don't need static libraries, plus they don't build reproducibly
          ;; (non-deterministic ordering of .o files in the archive.)
          "--disable-static"
