@@ -1091,14 +1091,14 @@ from the Python interpreter, or as a small part of a larger application.")
 (define-public python-six
   (package
     (name "python-six")
-    (version "1.13.0")
+    (version "1.14.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "six" version))
       (sha256
        (base32
-        "0rkby0kxlxj0kk2m6q5mh73ka5rk608p886vnv57h9cbkqki1xih"))))
+        "02lw67hprv57hyg3cfy02y3ixjk3nzwc0dx3c4ynlvkfwkfdnsr3"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
