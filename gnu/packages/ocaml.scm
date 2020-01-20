@@ -5128,7 +5128,7 @@ combinators.")
 (define-public ocaml-bisect-ppx
   (package
     (name "ocaml-bisect-ppx")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method git-fetch)
@@ -5138,7 +5138,7 @@ combinators.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1vp3qvrkz7q25nbmvd40vhsnz2k9aqh17bnd21i3q8q0xlr5hdag"))))
+         "0900vli5kw7s5kdam0n4cqsfsfqb7mdb3azn3i55595gilg1vyn8"))))
     (build-system dune-build-system)
     (propagated-inputs
      `(("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
