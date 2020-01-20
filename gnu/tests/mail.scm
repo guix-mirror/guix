@@ -572,5 +572,3 @@ Subject: Hello Nice to meet you!")
    (name "getmail")
    (description "Connect to a running Getmail server.")
    (value (run-getmail-test))))
-
-%getmail-os
