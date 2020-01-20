@@ -617,7 +617,7 @@ basis for almost any application.")
 
              ;; Tests rely on $USER being set.
              (setenv "USER" "guix"))))))
-    (home-page "http://www.lysator.liu.se/~nisse/lsh/")
+    (home-page "https://www.lysator.liu.se/~nisse/lsh/")
     (synopsis "GNU implementation of the Secure Shell (ssh) protocols")
     (description
      "GNU lsh is a free implementation of the SSH version 2 protocol.  It is
