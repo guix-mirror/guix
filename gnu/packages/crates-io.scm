@@ -8012,6 +8012,28 @@ to write.")
      "Automatic property based testing with shrinking.")
     (license (list license:expat license:unlicense))))
 
+(define-public rust-quickcheck-0.7
+  (package
+    (inherit rust-quickcheck-0.8)
+    (name "rust-quickcheck")
+    (version "0.7.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "quickcheck" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "05pqzja6fwdyrs1za5vmxb9ifb993knmpdsrs1fs2wyz9qz7slyl"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-env-logger" ,rust-env-logger-0.5)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-rand" ,rust-rand-0.5)
+        ("rust-rand-core" ,rust-rand-core-0.2))))))
+
 (define-public rust-quote-1.0
   (package
     (name "rust-quote")
