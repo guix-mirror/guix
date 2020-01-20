@@ -1140,7 +1140,7 @@ GNU CC attributes.  It provides also a C pretty printer as an example of use.")
 (define-public ocaml-qcheck
   (package
     (name "ocaml-qcheck")
-    (version "0.11")
+    (version "0.12")
     (source
      (origin
        (method git-fetch)
@@ -1149,14 +1149,22 @@ GNU CC attributes.  It provides also a C pretty printer as an example of use.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0d2wih4zxn2zm7kxd9dnf5nlp838km3vz6wv80fa3m51609fb24i"))))
+        (base32 "1llnfynhlndwyjig7wrayjnds2b3mggp5lw20dwxhn2i2lkkb22m"))))
     (build-system dune-build-system)
     (arguments
-     `(#:test-target "."))
-    (native-inputs
+     `(#:test-target "."
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-deprecated
+           (lambda _
+             (substitute* "src/core/QCheck.ml"
+               (("Pervasives.compare") "compare"))
+             #t)))))
+    (propagated-inputs
      `(("ocaml-alcotest" ,ocaml-alcotest)
-       ("ocaml-ounit" ,ocaml-ounit)
-       ("ocamlbuild" ,ocamlbuild)))
+       ("ocaml-ounit" ,ocaml-ounit)))
+    (native-inputs
+     `(("ocamlbuild" ,ocamlbuild)))
     (home-page "https://github.com/c-cube/qcheck")
     (synopsis "QuickCheck inspired property-based testing for OCaml")
     (description "QuickCheck inspired property-based testing for OCaml. This
