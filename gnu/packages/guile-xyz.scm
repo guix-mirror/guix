@@ -1569,6 +1569,22 @@ whitespace-significant language.  It may be easier on the eyes for some
 users and in some situations.")
     (license license:gpl3+)))
 
+(define-public guile3.0-wisp
+  (package
+    (inherit guile-wisp)
+    (name "guile3.0-wisp")
+    (inputs `(("guile" ,guile-3.0)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments guile-wisp)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'support-guile-3.0
+             (lambda _
+               (substitute* "configure"
+                 (("_guile_versions_to_search=\"2.2")
+                  "_guile_versions_to_search=\"3.0 2.2"))
+               #t))))))))
+
 (define-public guile-sly
   (package
     (name "guile-sly")
