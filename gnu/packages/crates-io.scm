@@ -13432,6 +13432,38 @@ proven statistical guarantees.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-sema-0.1
+  (package
+    (name "rust-sema")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sema" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ckq33sg84785p195m54h03jcn7fai8w08hjnb94nzaakgzibbz3"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (substitute* "Cargo.toml"
+                   (("libc.*") "libc = \"0.2\"\n"))
+                 #t))))
+    (build-system cargo-build-system)
+    (arguments
+     `( #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-rand" ,rust-rand-0.3)
+        ("rust-time" ,rust-time-0.1))
+       #:cargo-development-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-nix" ,rust-nix-0.15))))
+    (home-page "https://github.com/cpjreynolds/sema")
+    (synopsis "Rust semaphore library")
+    (description "Rust semaphore library.")
+    (license license:expat)))
+
 (define-public rust-semver-0.9
   (package
     (name "rust-semver")
