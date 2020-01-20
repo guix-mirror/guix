@@ -2916,7 +2916,7 @@ ChIP-Seq, and analysis of metagenomic data.")
               #t))))))
    (inputs
     `(("python" ,python-2)))
-   (home-page "http://kiwi.cs.dal.ca/Software/ExpressBetaDiversity")
+   (home-page "https://github.com/dparks1134/ExpressBetaDiversity")
    (synopsis "Taxon- and phylogenetic-based beta diversity measures")
    (description
     "Express Beta Diversity (EBD) calculates ecological beta diversity
