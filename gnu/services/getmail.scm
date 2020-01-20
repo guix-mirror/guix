@@ -203,11 +203,11 @@ session with the server.  A value of @samp{0} disables this feature.")
    "Getmail will record a log of its actions to the named file.  A value of
 @samp{\"\"} disables this feature.")
   (message-log-syslog
-   (boolean #t)
+   (boolean #f)
    "If true, getmail will record a log of its actions using the system
 logger.")
   (message-log-verbose
-   (boolean #t)
+   (boolean #f)
    "If true, getmail will log information about messages not retrieved and the
 reason for not retrieving them, as well as starting and ending information
 lines.")

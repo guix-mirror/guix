@@ -17902,7 +17902,7 @@ Defaults to @samp{""}.
 If true, getmail will record a log of its actions using the system
 logger.
 
-Defaults to @samp{#t}.
+Defaults to @samp{#f}.
 
 @end deftypevr
 
@@ -17911,7 +17911,7 @@ If true, getmail will log information about messages not retrieved and
 the reason for not retrieving them, as well as starting and ending
 information lines.
 
-Defaults to @samp{#t}.
+Defaults to @samp{#f}.
 
 @end deftypevr
 
