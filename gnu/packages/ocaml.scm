@@ -1762,7 +1762,7 @@ for mapping files in memory.  This function is the same as the
 (define-public ocaml-lwt
   (package
     (name "ocaml-lwt")
-    (version "4.1.0")
+    (version "5.1.1")
     (source
       (origin
         (method url-fetch)
@@ -1770,29 +1770,22 @@ for mapping files in memory.  This function is the same as the
                             ".tar.gz"))
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256 (base32
-                  "0mhh019bjkg5xfvpy1pxs4xdxb759fyydmgb6l4j0qww1qgr8klp"))))
+                  "0gwdmhn0qx03agc45dplj73ia5y1gb42aan64ywfxmll3lsnr2h7"))))
     (build-system dune-build-system)
     (arguments
-     `(#:tests? #f; require lwt_ppx
-       #:jbuild? #t
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'build 'configure
-           (lambda _
-             (invoke "ocaml" "src/util/configure.ml" "-use-libev" "true")
-             #t)))))
+     `(#:package "lwt"))
     (native-inputs
-     `(("ocaml-cppo" ,ocaml-cppo)
-       ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
-       ("pkg-config" ,pkg-config)
-       ("ppx-tools-versioned" ,ocaml-ppx-tools-versioned)))
+     `(("ocaml-bisect-ppx" ,ocaml-bisect-ppx)
+       ("ocaml-cppo" ,ocaml-cppo)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("libev" ,libev)
        ("glib" ,glib)))
     (propagated-inputs
-     `(("result" ,ocaml-result)
-       ("ocaml-ssl" ,ocaml-ssl)
-       ("ocaml-react" ,ocaml-react)))
+     `(("ocaml-mmap" ,ocaml-mmap)
+       ("ocaml-ocplib-endian" ,ocaml-ocplib-endian)
+       ("ocaml-result" ,ocaml-result)
+       ("ocaml-seq" ,ocaml-seq)))
     (home-page "https://github.com/ocsigen/lwt")
     (synopsis "Cooperative threads and I/O in monadic style")
     (description "Lwt provides typed, composable cooperative threads.  These
