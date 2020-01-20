@@ -767,6 +767,45 @@ Vicare Scheme and IronScheme.  Right now it contains:
 @end itemize\n")
     (license license:bsd-3)))
 
+(define-public guile3.0-pfds
+  (package
+    (inherit guile-pfds)
+    (name "guile3.0-pfds")
+    (native-inputs `(("guile" ,guile-3.0)))
+    (arguments
+     '(#:source-directory "src"
+       #:compile-flags '("--r6rs")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'move-files-around
+           (lambda _
+             ;; See bug #39210.
+             (substitute* '("fingertrees.sls"
+                            "queues/private/condition.sls"
+                            "deques/private/condition.sls")
+               (("&assertion") "&violation"))
+             ;; Move files under a pfds/ directory to reflect the module
+             ;; hierarchy.
+             (mkdir-p "src/pfds")
+             (for-each (lambda (file)
+                         (rename-file file
+                                      (string-append "src/pfds/"
+                                                     file)))
+                       '("bbtrees.sls"
+                         "deques"
+                         "deques.sls"
+                         "dlists.sls"
+                         "fingertrees.sls"
+                         "hamts.sls"
+                         "heaps.sls"
+                         "private"
+                         "psqs.sls"
+                         "queues"
+                         "queues.sls"
+                         "sequences.sls"
+                         "sets.sls"))
+             #t)))))))
+
 (define-public guile-aa-tree
   (package
     (name "guile-aa-tree")
