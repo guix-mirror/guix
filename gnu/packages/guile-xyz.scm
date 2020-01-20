@@ -2035,6 +2035,15 @@ key-value cache and store.")
                      "3.0 2.2 2.0"))
                   #t))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'support-guile-3.0
+           (lambda _
+             (substitute* "configure"
+               (("_guile_versions_to_search=\"2.2")
+                "_guile_versions_to_search=\"3.0 2.2"))
+             #t)))))
     (inputs
      `(("guile" ,guile-2.2)))
     (native-inputs
@@ -2060,6 +2069,12 @@ is no support for parsing block and inline level HTML.")
     (inherit guile-commonmark)
     (name "guile2.0-commonmark")
     (inputs `(("guile" ,guile-2.0)))))
+
+(define-public guile3.0-commonmark
+  (package
+    (inherit guile-commonmark)
+    (name "guile3.0-commonmark")
+    (inputs `(("guile" ,guile-3.0)))))
 
 (define-public mcron
   (package
