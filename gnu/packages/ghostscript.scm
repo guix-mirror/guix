@@ -170,7 +170,8 @@ printing, and psresize, for adjusting page sizes.")
         (sha256
          (base32
           "1m770dwc82afdgzgq2kar3120r1lbybm3mssdm79f8kggf0v16yv"))
-        (patches (search-patches "ghostscript-no-header-creationdate.patch"
+        (patches (search-patches "ghostscript-CVE-2019-14869.patch"
+                                 "ghostscript-no-header-creationdate.patch"
                                  "ghostscript-no-header-id.patch"
                                  "ghostscript-no-header-uuid.patch"))
         (modules '((guix build utils)))
