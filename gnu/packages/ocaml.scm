@@ -537,7 +537,7 @@ Git-friendly development workflow.")
 (define-public camlp5
   (package
     (name "camlp5")
-    (version "7.07")
+    (version "7.10")
     (source
      (origin
        (method git-fetch)
@@ -546,7 +546,7 @@ Git-friendly development workflow.")
              (commit (string-append "rel" (string-delete #\. version)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1c8v45553ccbqha2ypfranqlgw06rr5wjr2hlnrx5bf9jfq0h0dn"))))
+        (base32 "1a1lgsc8350afdwmsznsys7m0c0cks4nw6irqz2f92g8g4vkk9b7"))))
     (build-system gnu-build-system)
     (inputs
      `(("ocaml" ,ocaml)))
