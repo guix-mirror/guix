@@ -116,19 +116,27 @@ arrays of data.")
       (sha256
        (base32
         "0kp93622y29pck8asvil1fmzf55s2gx76wv475a6izc3cwj49w73"))))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
-     `(#:configure-flags
-       (list (string-append "--with-html-dir="
-                            (assoc-ref %outputs "doc")
-                            "/share/gtk-doc/html"))))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'move-docs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (doc (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc "/share"))
+               (copy-recursively (string-append out "/share/gtk-doc")
+                                 (string-append doc "/share/gtk-doc"))
+               (delete-file-recursively (string-append out "/share/gtk-doc"))
+               #t))))))
     (propagated-inputs `(("glib" ,glib))) ; required by gstreamer-1.0.pc.
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)
        ("glib" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python-wrapper" ,python-wrapper)))
