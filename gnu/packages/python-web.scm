@@ -1679,7 +1679,7 @@ and to spawn subprocesses to handle requests.")
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)))
-    (home-page "http://pythonpaste.org/deploy/")
+    (home-page "https://pylonsproject.org/")
     (synopsis
      "Load, configure, and compose WSGI applications and servers")
     (description
@@ -1712,7 +1712,7 @@ file.")
        ("python-webob" ,python-webob)
        ("python-six" ,python-six)
        ("python-beautifulsoup4" ,python-beautifulsoup4)))
-    (home-page "http://webtest.pythonpaste.org/")
+    (home-page "https://docs.pylonsproject.org/projects/webtest/")
     (synopsis "Helper to test WSGI applications")
     (description "Webtest allows you to test your Python web applications
 without starting an HTTP server.  It supports anything that supports the
@@ -2894,7 +2894,7 @@ available in Django, but is a standalone package.")
        ("python-nose" ,python-nose)))
     (propagated-inputs
      `(("python-six" ,python-six)))
-    (home-page "http://pythonpaste.org")
+    (home-page "https://pythonpaste.readthedocs.io/")
     (synopsis
      "Python web development tools, focusing on WSGI")
     (description
@@ -2923,7 +2923,8 @@ follows ideas flowing from WSGI (Web Standard Gateway Interface).")
     (propagated-inputs
      `(("python-paste" ,python-paste)
        ("python-pastedeploy" ,python-pastedeploy)))
-    (home-page "http://pythonpaste.org/script/")
+    (home-page (string-append "https://web.archive.org/web/20161025192515/"
+                              "http://pythonpaste.org/script/"))
     (arguments
      '(;; Unfortunately, this requires the latest unittest2,
        ;; but that requires traceback2 which requires linecache2 which requires

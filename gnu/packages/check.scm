@@ -1021,7 +1021,8 @@ timeout has been exceeded.")
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
-    (home-page "http://pythonpaste.org/scripttest/")
+    (home-page (string-append "https://web.archive.org/web/20161029233413/"
+                              "http://pythonpaste.org/scripttest/"))
     (synopsis "Python library to test command-line scripts")
     (description "Scripttest is a Python helper library for testing
 interactive command-line applications.  With it you can run a script in a
