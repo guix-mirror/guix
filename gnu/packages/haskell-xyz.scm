@@ -9890,7 +9890,7 @@ award winning Linux port of \"Civilization: Call To Power.\"")
     (native-inputs
      `(("ghc-weigh" ,ghc-weigh)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://hackage.haskell.org/package/sdl2")
+    (home-page "https://hackage.haskell.org/package/sdl2")
     (synopsis "High- and low-level bindings to the SDL library")
     (description
      "This package contains bindings to the SDL 2 library, in both high- and
