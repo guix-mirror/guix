@@ -26,7 +26,9 @@
   #:use-module (gnu packages kde)
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages qt)
-  #:use-module (gnu packages ruby))
+  #:use-module (gnu packages ruby)
+  #:use-module (gnu packages search)
+  #:use-module (gnu packages xml))
 
 (define-public dolphin
   (package
@@ -113,4 +115,46 @@ The main features of Dolphin are:
     (synopsis "VCS-Plugins for Dolphin")
     (description "This package contains plugins that offer integration in
 Dolphin with the version control systems: Bzr, Git, Mercurial, Subversion.")
+    (license license:gpl2+)))
+
+(define-public khelpcenter
+  (package
+    (name "khelpcenter")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/khelpcenter-" version ".tar.xz"))
+       (sha256
+        (base32 "0ympq1qm5h14mw18wry7l02ndg1f5kddwkf5bliip6vk2vxiff50"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("grantlee" ,grantlee)
+       ("karchive" ,karchive)
+       ("kbookmarks" ,kbookmarks)
+       ("kcodecs" ,kcodecs)
+       ("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kdbusaddons" ,kdbusaddons)
+       ("khtml" ,khtml)
+       ("ki18n" ,ki18n)
+       ("kinit" ,kinit)
+       ("kio" ,kio)
+       ("kjs" ,kjs)
+       ("kparts" ,kparts)
+       ("kservice" ,kservice)
+       ("kwindowsystem" ,kwindowsystem)
+       ("libxml2" ,libxml2)
+       ("oxygen-icons" ,oxygen-icons) ;; default icon set
+       ("qtbase" ,qtbase)
+       ("xapian" ,xapian)))
+    (arguments
+     `(#:tests? #f)) ;; 1/1 test fails
+    (home-page "https://kde.org/applications/system/org.kde.Help")
+    (synopsis "KDE documentation viewer")
+    (description "KDE documentation viewer")
     (license license:gpl2+)))
