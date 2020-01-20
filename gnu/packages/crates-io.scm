@@ -3160,6 +3160,30 @@ and arithmetic.")
          (base32
           "17giv0n0n1r64z0dahfvkjy3ys517jxyhs8sd9lmgvcljpjyryxa"))))))
 
+(define-public rust-dlib-0.4
+  (package
+    (name "rust-dlib")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "dlib" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0smp2cdvy12xfw26qyqms273w5anszfadv73g75s88yqm54i5rbp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libloading" ,rust-libloading-0.5))))
+    (home-page "https://github.com/vberger/dlib")
+    (synopsis "Helper macros for manually loading optional system libraries")
+    (description
+     "This package provides helper macros for handling manually loading optional
+system libraries.")
+    (license license:expat)))
+
 (define-public rust-cpp-demangle-0.2
   (package
     (name "rust-cpp-demangle")
