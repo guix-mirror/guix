@@ -1491,6 +1491,43 @@ little-endian.")
        #:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.3))))))
 
+(define-public rust-bzip2-sys-0.1
+  (package
+    (name "rust-bzip2-sys")
+    (version "0.1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bzip2-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0pz2mdhkk8yphiqdh2kghdxb60kqyd10lfrjym3r4k5dylvam135"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin
+            (delete-file-recursively "bzip2-1.0.6")
+            (delete-file "build.rs")
+            ;; Inspired by Debian's patch.
+            (with-output-to-file "build.rs"
+              (lambda _
+                (format #t "fn main() {~@
+                        println!(\"cargo:rustc-link-lib=bz2\");~@
+                        }~%")))
+            #t))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-cc" ,rust-cc-1.0))))
+    (home-page "https://github.com/alexcrichton/bzip2-rs")
+    (synopsis "Rust bindings to libbzip2")
+    (description
+     "Bindings to @code{libbzip2} for bzip2 compression and decompression
+exposed as Reader/Writer streams.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-c2-chacha-0.2
   (package
     (name "rust-c2-chacha")
