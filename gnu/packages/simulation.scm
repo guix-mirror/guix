@@ -379,14 +379,14 @@ FIAT is part of the FEniCS Project.")
 (define-public python-fenics-ffc
   (package
     (name "python-fenics-ffc")
-    (version "2018.1.0")
+    (version "2019.1.0.post0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "fenics-ffc" version))
         (sha256
           (base32
-            "1b2ia5vlkw298x7rf0k2p3ihlpwkwgc98p3s6sbpds3hqmfrzdz9"))))
+            "1f2a44ha65fg3a1prrbrsz4dgvibsv0j5c3pi2m52zi93bhwwgg9"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
