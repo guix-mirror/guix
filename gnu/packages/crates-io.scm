@@ -8333,6 +8333,25 @@ useful types and distributions, and some randomness-related algorithms.")
      `(#:skip-build? #t
        #:cargo-inputs (("rand-core" ,rust-rand-core-0.4))))))
 
+(define-public rust-rand-core-0.2
+  (package
+    (inherit rust-rand-core-0.5)
+    (name "rust-rand-core")
+    (version "0.2.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand-core" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0wikbw2a36bz8ywjyycjrd7db6ra3yzj14zs1ysxz2fiqhia8q8r"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-rand-core" ,rust-rand-core-0.3))))))
+
 (define-public rust-rand-hc-0.2
   (package
     (name "rust-rand-hc")
