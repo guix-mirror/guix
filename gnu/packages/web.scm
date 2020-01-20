@@ -24,7 +24,7 @@
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2017, 2019 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2017, 2019, 2020 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018, 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
@@ -4239,8 +4239,8 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
   (package-with-python2 python-feedparser))
 
 (define-public guix-data-service
-  (let ((commit "c7e3a1bd0b0648561211f52bd9f674358da59223")
-        (revision "16"))
+  (let ((commit "bf25a8db0278b49ef2149c69ef5d6dd2201fd413")
+        (revision "17"))
     (package
       (name "guix-data-service")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -4252,7 +4252,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "08c6bpzmsh62ng4bx008xcgayrrxz815jbpb96n98didk2zyzfg0"))))
+                  "0s6faybczdn10zwrkn22nfq5lvf538513hbmjfaqlkhfmwc4s1qd"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
