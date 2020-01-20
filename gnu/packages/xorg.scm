@@ -5282,16 +5282,7 @@ draggable titlebars and borders.")
 (define-public xorg-server-for-tests
   (hidden-package
    (package
-     (inherit xorg-server)
-     (version "1.20.5")
-     (source (origin
-               (inherit (package-source xorg-server))
-               (uri (string-append
-                     "mirror://xorg/individual/xserver/"
-                     "xorg-server-" version ".tar.bz2"))
-               (sha256
-                (base32
-                 "17dc3g8cc55nbkx3np64dsz04n621dnzjmcc9wys0xbyyd1q47d8")))))))
+     (inherit xorg-server))))
 
 (define-public xorg-server-xwayland
   (package
