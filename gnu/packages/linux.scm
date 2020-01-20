@@ -1976,7 +1976,7 @@ configuration (iptunnel, ipmaddr).")
                                  (string-append "LDFLAGS := -Wl,-rpath="
                                                 %output "/lib")))
                               #t)))
-                 #:tests? #f                      ; no 'check' target
+                 #:test-target "test"
                  #:make-flags (list "lib=lib"
                                     (string-append "prefix="
                                                    (assoc-ref %outputs "out"))
