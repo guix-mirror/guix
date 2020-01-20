@@ -1412,6 +1412,11 @@ exec " gcc "/bin/" program
        #:implicit-inputs? #f
        #:tests? #f                                ; cannot run "make check"
        ,@(substitute-keyword-arguments (package-arguments gnu-make)
+           ((#:configure-flags flags ''())
+            ;; The generated config.status has some problems due to the
+            ;; bootstrap environment.  Disable dependency tracking to work
+            ;; around it.
+            `(cons "--disable-dependency-tracking" ,flags))
            ((#:phases phases)
             `(modify-phases ,phases
                (replace 'build

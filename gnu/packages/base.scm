@@ -360,31 +360,27 @@ functionality beyond that which is outlined in the POSIX standard.")
 (define-public gnu-make
   (package
    (name "make")
-   (version "4.2.1")
+   (version "4.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/make/make-" version
-                                ".tar.bz2"))
+                                ".tar.gz"))
             (sha256
              (base32
-              "12f5zzyq2w56g95nni65hc0g5p7154033y2f3qmjvd016szn5qnn"))
-            (patches (search-patches "make-impure-dirs.patch"
-                                     "make-glibc-compat.patch"))))
+              "06cfqzpqsvdnsxbysl5p2fgdgxgl9y4p7scpnrfa8z2zgkjdspz0"))
+            (patches (search-patches "make-impure-dirs.patch"))))
    (build-system gnu-build-system)
    (native-inputs `(("pkg-config" ,pkg-config)))  ; to detect Guile
-   (inputs `(("guile" ,guile-2.0)))
+   (inputs `(("guile" ,guile-3.0)))
    (outputs '("out" "debug"))
    (arguments
-    '(;; Work around faulty glob detection with glibc 2.27.  See
-      ;; <https://lists.nongnu.org/archive/html/bug-make/2017-11/msg00027.html>.
-      #:configure-flags '("make_cv_sys_gnu_glob=yes")
-      #:phases
+    '(#:phases
       (modify-phases %standard-phases
         (add-before 'build 'set-default-shell
           (lambda* (#:key inputs #:allow-other-keys)
             ;; Change the default shell from /bin/sh.
             (let ((bash (assoc-ref inputs "bash")))
-              (substitute* "job.c"
+              (substitute* "src/job.c"
                 (("default_shell =.*$")
                  (format #f "default_shell = \"~a/bin/sh\";\n"
                          bash)))

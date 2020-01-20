@@ -4,9 +4,9 @@ don't look in /usr/include and friends.
 
 Patch from Nixpkgs, by Eelco Dolstra.
 
-diff -rc make-3.81-orig/read.c make-3.81/read.c
-*** make-3.81-orig/read.c	2006-03-17 15:24:20.000000000 +0100
---- make-3.81/read.c	2007-05-24 17:16:31.000000000 +0200
+diff -rc make-3.81-orig/src/read.c make-3.81/src/read.c
+*** make-3.81-orig/src/read.c	2006-03-17 15:24:20.000000000 +0100
+--- make-3.81/src/read.c	2007-05-24 17:16:31.000000000 +0200
 ***************
 *** 99,107 ****
 --- 99,109 ----
@@ -21,9 +21,9 @@ diff -rc make-3.81-orig/read.c make-3.81/read.c
   #endif
       0
     };
-diff -rc make-3.81-orig/remake.c make-3.81/remake.c
-*** make-3.81-orig/remake.c	2006-03-20 03:36:37.000000000 +0100
---- make-3.81/remake.c	2007-05-24 17:06:54.000000000 +0200
+diff -rc make-3.81-orig/src/remake.c make-3.81/src/remake.c
+*** make-3.81-orig/src/remake.c	2006-03-20 03:36:37.000000000 +0100
+--- make-3.81/src/remake.c	2007-05-24 17:06:54.000000000 +0200
 ***************
 *** 1452,1460 ****
 --- 1452,1462 ----
