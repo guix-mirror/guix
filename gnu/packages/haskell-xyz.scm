@@ -7194,7 +7194,7 @@ used both from lens and microlens).")
      `(("ghc-errorcall-eq-instance" ,ghc-errorcall-eq-instance)
        ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-hunit" ,ghc-hunit)))
-    (home-page "http://software.complete.org/missingh")
+    (home-page "https://software.complete.org/missingh")
     (synopsis "Large utility library")
     (description
      "MissingH is a library of all sorts of utility functions for Haskell
