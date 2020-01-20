@@ -5706,24 +5706,29 @@ You can save humanity and get programming skills!")
 (define-public gzdoom
   (package
     (name "gzdoom")
-    (version "3.7.2")
-    (source (origin
-              (method url-fetch)
-              (uri
-               (string-append "https://zdoom.org/files/gzdoom/src/gzdoom-src-g"
-                              version ".zip"))
-              (sha256
-               (base32
-                "0182f160m8d0c3nywjw3dxvnz93xjs4cn8akx7137cha4s05wdq7"))
-              (patches (search-patches "gzdoom-search-in-installed-share.patch"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  (delete-file-recursively "bzip2")
-                  (delete-file-recursively "game-music-emu")
-                  (delete-file-recursively "jpeg")
-                  (delete-file-recursively "zlib")
-                  #t))))
+    (version "4.3.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/coelckers/gzdoom.git")
+             (commit (string-append "g" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0i4hyg72z84fc6ca2ic9q82q5cbgrbd7bynl3kpkypxvyasq08wz"))
+       (patches (search-patches "gzdoom-search-in-installed-share.patch"
+                                "gzdoom-find-system-libgme.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove some bundled libraries.  XXX There are more, but removing
+           ;; them would require, at least, patching the build system.
+           (with-directory-excursion "libraries"
+             (delete-file-recursively "bzip2")
+             (delete-file-recursively "game-music-emu")
+             (delete-file-recursively "jpeg")
+             (delete-file-recursively "zlib"))
+           #t))))
     (arguments
      '(#:tests? #f
        #:configure-flags
@@ -5733,8 +5738,12 @@ You can save humanity and get programming skills!")
            "-DCMAKE_CXX_FLAGS:="
            "-DSHARE_DIR=\\\"" out "/share/\\\" "
            "-DGUIX_OUT_PK3=\\\"" out "/share/games/doom\\\"")
-          ;; look for libraries at buildtime instead of
-          ;; dynamically finding them at runtime
+
+          ;; The build requires some extra convincing not to use the bundled
+          ;; libgme previously deleted in the soure snippet.
+          "-DFORCE_INTERNAL_GME=OFF"
+
+          ;; Link libraries at build time instead of loading them at run time.
           "-DDYN_OPENAL=OFF"
           "-DDYN_FLUIDSYNTH=OFF"
           "-DDYN_GTK=OFF"
@@ -5754,19 +5763,19 @@ You can save humanity and get programming skills!")
                   (string-append "COMMAND " (which "sh"))))
 
                (substitute*
-                   "src/sound/mididevices/music_fluidsynth_mididevice.cpp"
+                   "libraries/zmusic/mididevices/music_fluidsynth_mididevice.cpp"
                  (("/usr/share/sounds/sf2/FluidR3_GM.sf2")
                   (string-append fluid-3 "/share/soundfonts/FluidR3Mono_GM.sf3")))
 
                (substitute*
-                   "src/sound/mididevices/music_timiditypp_mididevice.cpp"
+                   "libraries/zmusic/mididevices/music_timiditypp_mididevice.cpp"
                  (("exename = \"timidity\"")
                   (string-append "exename = \"" timidity++ "/bin/timidity\"")))
                #t))))))
     (build-system cmake-build-system)
     (inputs `(("bzip2" ,bzip2)
               ("fluid-3" ,fluid-3)
-              ("fluidsynth" ,fluidsynth-1)      ;XXX: try using 2.x when updating
+              ("fluidsynth" ,fluidsynth)
               ("gtk+3" ,gtk+)
               ("libgme" ,libgme)
               ("libjpeg" ,libjpeg)

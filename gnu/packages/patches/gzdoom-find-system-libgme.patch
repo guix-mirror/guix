@@ -1,0 +1,21 @@
+--- /CMakeLists.txt	2020-01-20 21:47:35.460119141 +0100
++++ /CMakeLists.txt	2020-01-20 21:47:47.690112400 +0100
+@@ -195,12 +195,12 @@
+ #endif()
+ 
+ # GME
+-#find_path( GME_INCLUDE_DIR gme/gme.h )
+-#find_library( GME_LIBRARIES gme )
+-#mark_as_advanced( GME_INCLUDE_DIR GME_LIBRARIES )
+-#FIND_PACKAGE_HANDLE_STANDARD_ARGS( GME
+-#	REQUIRED_VARS GME_LIBRARIES GME_INCLUDE_DIR
+-#)
++find_path( GME_INCLUDE_DIR gme/gme.h )
++find_library( GME_LIBRARIES gme )
++mark_as_advanced( GME_INCLUDE_DIR GME_LIBRARIES )
++FIND_PACKAGE_HANDLE_STANDARD_ARGS( GME
++	REQUIRED_VARS GME_LIBRARIES GME_INCLUDE_DIR
++)
+ 
+ if( MSVC )
+ 	# Eliminate unreferenced functions and data
