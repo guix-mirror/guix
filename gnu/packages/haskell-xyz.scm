@@ -5008,7 +5008,7 @@ combine hash values.")
      `(#:cabal-revision
        ("2" "006phc5y9rrvsshdcmjmhxzxh8dpgs685mpqbkjm9c40xb1ydjbz")))
     (inputs `(("ghc-hashable" ,ghc-hashable)))
-    (home-page "http://hackage.haskell.org/package/hashable-time")
+    (home-page "https://hackage.haskell.org/package/hashable-time")
     (synopsis "Hashable instances for Data.Time")
     (description
      "This package provides @code{Hashable} instances for types in
