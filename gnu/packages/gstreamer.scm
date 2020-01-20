@@ -447,15 +447,16 @@ compression formats through the use of the libav library.")
               (sha256
                (base32
                 "1a48ca66izmm8hnp608jv5isg3jxb0vlfmhns0bg9nbkilag7390"))))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (arguments
-     `(#:modules ((guix build gnu-build-system)
+     `(#:modules ((guix build meson-build-system)
+                  (guix build utils)
                   ((guix build python-build-system) #:prefix python:))
-       #:imported-modules (,@%gnu-build-system-modules
+       #:imported-modules (,@%meson-build-system-modules
                            (guix build python-build-system))
        #:configure-flags
        (list (string-append
-              "--with-pygi-overrides-dir="
+              "-Dpygi-overrides-dir="
               (python:site-packages %build-inputs %outputs) "gi/overrides"))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
