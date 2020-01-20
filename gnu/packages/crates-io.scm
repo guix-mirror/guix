@@ -2980,7 +2980,8 @@ is configured via an environment variable.")
          (base32
           "0f0c4i4c65jh8lci0afl5yg74ac0lbnpxcp81chj114zwg9a9c0m"))))
     (arguments
-     `(#:cargo-inputs
+     `(#:skip-build? #t
+       #:cargo-inputs
        (("rust-atty" ,rust-atty-0.2)
         ("rust-humantime" ,rust-humantime-1.2)
         ("rust-log" ,rust-log-0.4)
@@ -8055,6 +8056,27 @@ to write.")
         ("rust-log" ,rust-log-0.4)
         ("rust-rand" ,rust-rand-0.5)
         ("rust-rand-core" ,rust-rand-core-0.2))))))
+
+(define-public rust-quickcheck-0.6
+  (package
+    (inherit rust-quickcheck-0.8)
+    (name "rust-quickcheck")
+    (version "0.6.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "quickcheck" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1dyazm2fcq0v9fscq1a7597zsvdl9f0j8c2bfj1jm2nlzz2sn6y0"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-env-logger" ,rust-env-logger-0.5)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-rand" ,rust-rand-0.4))))))
 
 (define-public rust-quote-1.0
   (package
