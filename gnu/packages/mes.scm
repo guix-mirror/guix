@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018, 2019 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2017, 2018, 2019, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -143,15 +143,14 @@ Guile.")
 (define-public mes
   (package
     (inherit mes-0.19)
-    (version "0.21")
+    (version "0.22")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/mes/"
                                   "mes-" version ".tar.gz"))
-              (patches (search-patches "mes-remove-store-name.patch"))
               (sha256
                (base32
-                "104qxngxyl7pql8vqrnli3wfyx0ayfaqg8gjfhmk4qzrafs46slm"))))
+                "0p1jsrrmcbc0zrvbvnjbb6iyxr0in71km293q8qj6gnar6bw09av"))))
     (propagated-inputs
      `(("mescc-tools" ,mescc-tools)
        ("nyacc" ,nyacc)))
@@ -161,7 +160,11 @@ Guile.")
             (files '("include")))
            (search-path-specification
             (variable "LIBRARY_PATH")
-            (files '("lib")))))))
+            (files '("lib")))
+           (search-path-specification
+            (variable "MES_PREFIX")
+            (separator #f)
+            (files '("")))))))
 
 (define-public mes-rb5
   ;; This is the Reproducible-Builds summit 5's Mes, also built on Debian
@@ -176,6 +179,7 @@ Guile.")
        ("coreutils" ,coreutils)
        ("grep" ,grep)
        ("guile" ,guile-2.2)
+       ("gzip" ,gzip)
        ("libc" ,glibc)
        ("locales" ,glibc-utf8-locales)
        ("make" ,gnu-make)
@@ -183,8 +187,7 @@ Guile.")
        ("mescc-tools" ,mescc-tools)
        ("nyacc" ,nyacc)
        ("sed" ,sed)
-       ("tar" ,tar)
-       ("xz" ,xz)))
+       ("tar" ,tar)))
     (supported-systems '("i686-linux"))
     (arguments
      `(#:implicit-inputs? #f
@@ -215,10 +218,12 @@ Guile.")
              (invoke "sh" "bootstrap.sh")))
          (replace 'check
            (lambda _
+             (copy-file "bin/mes-mescc" "bin/mes-mescc-0.21")
+             (system* "sed" "-i" "s/0\\.22/0\\.21/" "bin/mes-mescc-0.21")
              (let ((sha256sum
                     (read-delimited
                      " "
-                     (open-pipe* OPEN_READ "sha256sum" "src/mes"))))
+                     (open-pipe* OPEN_READ "sha256sum" "bin/mes-mescc-0.21"))))
                (unless
                    (equal?
                     sha256sum
