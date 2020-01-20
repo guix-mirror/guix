@@ -5063,7 +5063,7 @@ the full Core is not available, such as in Javascript.")
 (define-public ocaml-markup
   (package
     (name "ocaml-markup")
-    (version "0.8.1")
+    (version "0.8.2")
     (home-page "https://github.com/aantron/markup.ml")
     (source
      (origin
@@ -5074,14 +5074,20 @@ the full Core is not available, such as in Javascript.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0gzdjfnkv56vhmpvi9xpv1p05z50y55izhn156bkmb35s6izxds3"))))
+         "13zcrwzjmifniv3bvjbkd2ah8wwa3ld75bxh1d8hrzdvfxzh9szn"))))
     (build-system dune-build-system)
+    (arguments
+     `(#:package "markup"))
+    (inputs
+     `(("libev" ,libev)))
     (propagated-inputs
      `(("ocaml-bisect-ppx" ,ocaml-bisect-ppx)
        ("ocaml-uchar" ,ocaml-uchar)
        ("ocaml-uutf" ,ocaml-uutf)
        ("ocaml-lwt" ,ocaml-lwt)))
-    (native-inputs `(("ocaml-ounit" ,ocaml-ounit)))
+    (native-inputs
+     `(("ocaml-ounit" ,ocaml-ounit)
+       ("pkg-config" ,pkg-config)))
     (synopsis "Error-recovering functional HTML5 and XML parsers and writers")
     (description "Markup.ml provides an HTML parser and an XML parser.  The
 parsers are wrapped in a simple interface: they are functions that transform
