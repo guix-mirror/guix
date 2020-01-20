@@ -13874,6 +13874,41 @@ for the serde framework.")
      "This package provides a Rust wrapper around the FreeType library.")
     (license license:mpl2.0)))  ; build.rs is mpl2.0
 
+(define-public rust-servo-fontconfig-sys-4
+  (package
+    (name "rust-servo-fontconfig-sys")
+    (version "4.0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "servo-fontconfig-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0v0mbicy74wd6cjd5jyqnm4nvrrr5lmg053cn16kylhg8mkf3cv2"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin
+            (for-each delete-file-recursively
+                      (find-files "." "[^Cargo.toml,^build\\.rs]"))
+            #t))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-expat-sys" ,rust-expat-sys-2.1)
+        ("rust-servo-freetype-sys" ,rust-servo-freetype-sys-4)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fontconfig" ,fontconfig)))
+    (home-page "https://crates.io/crates/servo-fontconfig-sys")
+    (synopsis "Rust wrapper around Fontconfig")
+    (description
+     "This package provides a Rust wrapper around Fontxonfig.")
+    (license license:mpl2.0)))  ; build.rs is mpl2.0
+
 (define-public rust-sha-1-0.8
   (package
     (name "rust-sha-1")
