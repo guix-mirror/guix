@@ -360,7 +360,8 @@ notifications.  This depends on the server supporting the IDLE extension.")
                      (list #$@environment-variables)
                      #:log-file
                      #$(string-append "/var/log/getmail-"
-                                      (symbol->string name)))))))
+                                      (symbol->string name))))
+           (stop #~(make-kill-destructor)))))
        configs))
 
 (define getmail-service-type
