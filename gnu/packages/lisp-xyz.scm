@@ -1669,7 +1669,7 @@ also be supported.")
 (define-public sbcl-ironclad
   (package
     (name "sbcl-ironclad")
-    (version "0.46")
+    (version "0.48")
     (source
      (origin
        (method git-fetch)
@@ -1678,7 +1678,7 @@ also be supported.")
              (commit (string-append "v" version))))
        (sha256
         (base32
-         "1s391awi2lsl7m1dbjirgpkm4p9p8wd076pakgvsvpn1rrznisnd"))
+         "1wzczpgvgjc5h8ghz75kxi7iykmqxqchdhgdhkif9j99kyqvbyam"))
        (file-name (git-file-name name version))))
     (build-system asdf-build-system/sbcl)
     (native-inputs
@@ -1686,8 +1686,7 @@ also be supported.")
      `(("rt" ,sbcl-rt)))
     (inputs
      `(("bordeaux-threads" ,sbcl-bordeaux-threads)
-       ("flexi-streams" ,sbcl-flexi-streams)
-       ("nibbles" ,sbcl-nibbles)))
+       ("flexi-streams" ,sbcl-flexi-streams)))
     (synopsis "Cryptographic toolkit written in Common Lisp")
     (description
      "Ironclad is a cryptography library written entirely in Common Lisp.
