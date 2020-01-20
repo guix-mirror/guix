@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016-2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2016-2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Peter Kreye <kreyepr@gmail.com>
@@ -444,7 +444,7 @@ the opam file fomat.")
 (define-public opam
   (package
     (name "opam")
-    (version "2.0.5")
+    (version "2.0.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -453,7 +453,7 @@ the opam file fomat.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0pf2smq2sdcxryq5i87hz3dv05pb3zasb1is3kxq1pi1s4cn55mx"))))
+                "1vyga2jllsfsikppxyzljm4isfnnnl8k0rb44h8xaddjzdg1d4m8"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:configure-flags
@@ -497,6 +497,10 @@ the opam file fomat.")
                           "add_sys_mounts /gnu /run/current-system /usr"))
                        (substitute* "src/client/opamInitDefaults.ml"
                          (("\"bwrap\"") (string-append "\"" bwrap "\"")))
+                       ;; Generating the documentation needs write access
+                       (for-each
+                         (lambda (f) (chmod f #o644))
+                         (find-files "doc" "."))
                        #t)))
                  (add-before 'check 'pre-check
                    (lambda _
