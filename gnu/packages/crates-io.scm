@@ -151,6 +151,33 @@ Rust, using gimli.")
      "Fast multiple substring searching.")
     (license (list license:unlicense license:expat))))
 
+(define-public rust-aho-corasick-0.6
+  (package
+    (inherit rust-aho-corasick-0.7)
+    (name "rust-aho-corasick")
+    (version "0.6.10")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "aho-corasick" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "19f8v503ibvlyr824g5ynicrh1lsmp2i0zmpszr8lqay0qw3vkl1"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-memchr" ,rust-memchr-2.2))
+       #:cargo-development-inputs
+       (("rust-csv" ,rust-csv-1.1)
+        ("rust-docopt" ,rust-docopt-1.1)
+        ("rust-memmap" ,rust-memmap-0.6)
+        ("rust-quickcheck" ,rust-quickcheck-0.7)
+        ("rust-rand" ,rust-rand-0.5)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0))))))
+
 (define-public rust-ansi-term-0.11
   (package
     (name "rust-ansi-term")
