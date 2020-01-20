@@ -9100,6 +9100,25 @@ uses finite automata and guarantees linear time matching on all inputs.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-regex-syntax-0.5
+  (package
+    (inherit rust-regex-syntax-0.6)
+    (name "rust-regex-syntax")
+    (version "0.5.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "regex-syntax" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "19zp25jr3dhmclg3qqjk3bh1yrn7bqi05zgr5v52szv3l97plw3x"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-ucd-util" ,rust-ucd-util-0.1))))))
+
 (define-public rust-remove-dir-all-0.5
   (package
     (name "rust-remove-dir-all")
