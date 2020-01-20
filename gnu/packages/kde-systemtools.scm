@@ -270,3 +270,43 @@ invited, and will ask for confirmation when a user attempts to connect.
 This package is part of the KDE networking module.")
     (license ;; GPL for programs, LGPL for libraries, FDL for documentation
      (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
+
+(define-public ksystemlog
+  (package
+    (name "ksystemlog")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/ksystemlog-" version ".tar.xz"))
+       (sha256
+        (base32 "079r2xnj168y9kz37rhxr3rcwh6fksljsj1ihmi7f7a8wmdabz4p"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     ;; Not including Journald since this is not used in guix
+     `(("karchive" ,karchive)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)
+       ("kitemviews" ,kitemviews)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("oxygen-icons" ,oxygen-icons) ;; default icon set
+       ("qtbase" ,qtbase)))
+    (home-page "https://kde.org/applications/system/org.kde.ksystemlog")
+    (synopsis "System log viewer")
+    (description "This program is developed for being used by beginner users,
+which don't know how to find information about their Linux system, and how the
+log files are in their computer.  But it is also designed for advanced users,
+who want to quickly see problems occuring on their server.
+
+This package is part of the KDE administration module.")
+    (license license:gpl2+)))
