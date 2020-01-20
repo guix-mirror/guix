@@ -2164,7 +2164,7 @@ using the @code{curses.h} library for screen control.")
               (install-file "glulxe" bin))
             #t))
         (delete 'configure))))          ; no configure script
-   (home-page "http://www.eblong.com/zarf/glulx/")
+   (home-page "https://www.eblong.com/zarf/glulx/")
    (synopsis "Interpreter for Glulx VM")
    (description
     "Glulx is a 32-bit portable virtual machine intended for writing and
