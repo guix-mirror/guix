@@ -236,7 +236,7 @@ for the GStreamer multimedia library.")
       (sha256
        (base32
         "068k3cbv1yf3gbllfdzqsg263kzwh21y8dpwr0wvgh15vapkpfs0"))))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (inputs
      `(("aalib" ,aalib)
        ("cairo" ,cairo)
