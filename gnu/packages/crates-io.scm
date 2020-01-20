@@ -6012,6 +6012,30 @@ standard printing of search results, similar to grep itself.")
      "Fast line oriented regex searching as a library.")
     (license (list license:unlicense license:expat))))
 
+(define-public rust-gzip-header-0.3
+  (package
+    (name "rust-gzip-header")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "gzip-header" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fg6vm8sgsm69szwqyz7abfbyziv6pv0jkcailimlamvsfrzwc81"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-crc32fast" ,rust-crc32fast-1.2))))
+    (home-page "https://github.com/oyvindln/gzip-header")
+    (synopsis "Decoding and encoding the header part of gzip files")
+    (description
+     "This package provides a crate for decoding and encoding the header part
+of gzip files based on the gzip header implementation in the @code{flate2} crate.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-half-1.3
   (package
     (name "rust-half")
