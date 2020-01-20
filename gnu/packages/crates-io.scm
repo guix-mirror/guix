@@ -11426,10 +11426,12 @@ different for every thread.")
          (base32
           "054vlrr1vsdy1h4b7n99mr24pnj8928ig9qwzg36wnkld4dns36l"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs (("rust-lazy-static" ,rust-lazy-static-1.4))))
     (home-page "https://github.com/Amanieu/thread_local-rs")
     (synopsis "Per-object thread-local storage")
-    (description "Per-object thread-local storage")
-    (properties '((hidden? . #t)))
+    (description "Per-object thread-local storage.")
     (license (list license:asl2.0
                    license:expat))))
 
@@ -11448,8 +11450,7 @@ different for every thread.")
           "06rzik99p8c5js8238yhc8rk6np543ylb1dy9nrw5v80j0r3xdf6"))))
     (arguments
      `(#:skip-build? #t
-       #:cargo-inputs (("rust-lazy-static" ,rust-lazy-static-1.4))))
-    (properties '())))
+       #:cargo-inputs (("rust-lazy-static" ,rust-lazy-static-1.4))))))
 
 (define-public rust-threadpool-1.7
   (package
