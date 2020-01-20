@@ -3577,52 +3577,41 @@ the following features:
 (define-public cli-visualizer
   (package
     (name "cli-visualizer")
-    (version "1.6")
+    (version "1.8")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/dpayne/cli-visualizer.git")
-             (commit version)))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0mirp8bk398di5xyq95iprmdyvplfghxqmrfj7jdnpy554vx7ppc"))))
-    (build-system gnu-build-system)
+        (base32 "003mbbwsz43mg3d7llphpypqa9g7rs1p1cdbqi1mbc2bfrc1gcq2"))))
+    (build-system cmake-build-system)
     (native-inputs
-     `(("which" ,which)))
+     ;; TODO: Try using the latest googletest for versions > 1.8.
+     `( ;; ("googletest" ,googletest-1.8)
+       ("which" ,which)))
     (inputs
      `(("fftw" ,fftw)
-       ;; TODO: Try using the latest googletest for versions > 1.6.
-       ("googletest" ,googletest-1.8)
        ("ncurses" ,ncurses)
        ("pulseaudio" ,pulseaudio)))
     (arguments
-     '(#:test-target "test"
-       #:make-flags
-       (list (string-append "PREFIX=" %output "/bin/") "ENABLE_PULSE=1")
+     '(#:tests? #f
+       ;; XXX Enable tests after patching them to use the system googletest.
+       ;; #:configure-flags (list "-DVIS_WITH_TESTS=true")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'remove-sudo
-           (lambda _
-             (substitute* "install.sh" (("sudo") ""))
-             #t))
-         (add-before 'check 'set-check-environment
-           (lambda _
-             (setenv "CXX" "g++")
-             (setenv "CC" "gcc")
-             #t))
-         (add-before 'install 'make-prefix
-           (lambda _
-             (mkdir-p (string-append (assoc-ref %outputs "out") "/bin"))
-             #t))
-         (add-after 'install 'data
-           (lambda _
-             (for-each (lambda (file)
-                         (install-file file
-                                       (string-append (assoc-ref %outputs "out")
-                                                      "/share/doc")))
-                       (find-files "examples"))
+         (add-after 'install 'install-examples
+           (lambda* (#:key outputs #:allow-other-keys)
+             (with-directory-excursion "../source/examples"
+               (delete-file "mac_osx_config")
+               (for-each (lambda (file)
+                           (install-file file
+                                         (string-append
+                                          (assoc-ref outputs "out")
+                                          "/share/doc")))
+                         (find-files ".")))
              #t)))))
     (home-page "https://github.com/dpayne/cli-visualizer/")
     (synopsis "Command-line audio visualizer")
