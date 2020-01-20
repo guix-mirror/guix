@@ -2938,6 +2938,27 @@ is configured via an environment variable.")
         ("rust-regex" ,rust-regex-1.1)
         ("rust-termcolor" ,rust-termcolor-1.0))))))
 
+(define-public rust-env-logger-0.4
+  (package
+    (inherit rust-env-logger-0.7)
+    (name "rust-env-logger")
+    (version "0.4.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "env-logger" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0nydz2lidsvx9gs0v2zcz68rzqx8in7fzmiprgsrhqh17vkj3prx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-log" ,rust-log-0.3)
+        ("rust-regex" ,rust-regex-0.2))))))
+
 (define-public rust-envmnt-0.6
   (package
     (name "rust-envmnt")
