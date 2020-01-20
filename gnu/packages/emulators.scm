@@ -1424,7 +1424,7 @@ play them on systems for which they were never designed!")
        ("flac" ,flac)
        ("fontconfig" ,fontconfig)
        ("glm" ,glm)
-       ("libjpeg" ,libjpeg-8)    ;jpeg_read_header argument error in libjpeg-9
+       ("libjpeg" ,libjpeg-turbo)
        ("libxi" ,libxi)
        ("libxinerama" ,libxinerama)
        ("lua" ,lua)
