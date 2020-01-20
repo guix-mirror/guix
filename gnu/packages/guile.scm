@@ -634,36 +634,19 @@ type system, elevating types to first-class status.")
 (define-public guile-git
   (package
     (name "guile-git")
-    (version "0.2.0")
+    (version "0.3.0")
     (home-page "https://gitlab.com/guile-git/guile-git.git")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference (url home-page)
-                                  (commit (string-append "v" version))))
+              (method url-fetch)
+              (uri (string-append "https://gitlab.com/guile-git/guile-git/uploads/"
+                                  "4c563d8e7e1ff84396abe8ca7011bcaf/guile-git-"
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "018hmfsh0rjwfvr4h7y10jc6k8a2k9xsirngghy3pjasin4nd2yz"))
-              (file-name (git-file-name name version))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Allow builds with Guile 3.0.
-                  (substitute* "configure.ac"
-                    (("^GUILE_PKG.*")
-                     "GUILE_PKG([3.0 2.2 2.0])\n"))
-
-                  ;; The 'guile.m4' that's shipped is too old and fails to
-                  ;; recognize Guile 2.9/3.0.  Delete it and pick the one
-                  ;; provided by the Guile we're using.
-                  (delete-file "m4/guile.m4")
-
-                  #t))))
+                "0c5i3d16hp7gp9rd78vk9zc45js8bphf92m4lbb5gyi4l1yl7kkm"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("texinfo" ,texinfo)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("guile" ,guile-2.2)
        ("libgit2" ,libgit2)))
