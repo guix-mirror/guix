@@ -1388,7 +1388,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/soundconverter-remove-gconf-dependency.patch	\
   %D%/packages/patches/spice-fix-test-armhf.patch		\
   %D%/packages/patches/steghide-fixes.patch			\
-  %D%/packages/patches/supercollider-boost-1.70-build-fix.patch	\
   %D%/packages/patches/superlu-dist-awpm-grid.patch		\
   %D%/packages/patches/superlu-dist-fix-mpi-deprecations.patch	\
   %D%/packages/patches/superlu-dist-scotchmetis.patch		\

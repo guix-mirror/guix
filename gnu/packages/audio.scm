@@ -2249,24 +2249,22 @@ background file post-processing.")
 (define-public supercollider
   (package
     (name "supercollider")
-    (version "3.10.3")
+    (version "3.10.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/supercollider/supercollider"
                     "/releases/download/Version-" version
                     "/SuperCollider-" version "-Source-linux.tar.bz2"))
-              (patches
-               (search-patches "supercollider-boost-1.70-build-fix.patch"))
               (sha256
                (base32
-                "0srm6wbazidkrd4ckjy4ypyhkdwcnx2i7k9msjyngalh0mrc9zz1"))))
+                "0x11g3pfw11m6v18qfpfl5w99dbmf73g4z7wvwhrj1a4qv2dn084"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DSYSTEM_BOOST=on" "-DSYSTEM_YAMLCPP=on"
                            "-DSC_QT=off"
                            "-DSC_EL=off") ;scel is packaged individually as
-                                          ;emacs-scel.
+                                          ;emacs-scel
        #:modules ((guix build utils)
                   (guix build cmake-build-system)
                   (ice-9 ftw))
@@ -2275,8 +2273,7 @@ background file post-processing.")
          (add-after 'unpack 'rm-bundled-libs
            (lambda _
              ;; The build system doesn't allow us to unbundle the following
-             ;; libraries.  hidapi is also heavily patched and upstream not
-             ;; actively maintained.
+             ;; libraries.  hidapi is also heavily patched.
              (let ((keep-dirs '("nova-simd" "nova-tt" "hidapi" "TLSF-2.4.6"
                                 "oscpack_1_1_0" "." "..")))
                (with-directory-excursion "./external_libraries"
