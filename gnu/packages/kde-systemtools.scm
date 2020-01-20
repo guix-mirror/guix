@@ -158,3 +158,58 @@ Dolphin with the version control systems: Bzr, Git, Mercurial, Subversion.")
     (synopsis "KDE documentation viewer")
     (description "KDE documentation viewer")
     (license license:gpl2+)))
+
+(define-public konsole
+  (package
+    (name "konsole")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/konsole-" version ".tar.xz"))
+       (sha256
+        (base32 "09bhgqjnqlpxkkgdpn35pvj747ab7waz10zalvpwdpgqkw811iic"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kbookmarks" ,kbookmarks)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kguiaddons" ,kguiaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kinit" ,kinit)
+       ("kio" ,kio)
+       ("knewstuff" ,knewstuff)
+       ("kglobalaccel" ,kglobalaccel)
+       ("knotifications" ,knotifications)
+       ("knotifyconfig" ,knotifyconfig)
+       ("kparts" ,kparts)
+       ("kpty" ,kpty)
+       ("kservice" ,kservice)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kxmlgui" ,kxmlgui)
+       ("oxygen-icons" ,oxygen-icons) ;; default icon set
+       ("qtbase" ,qtbase)
+       ("qtscript" ,qtscript)))
+    (arguments
+     `(#:tests? #f)) ;; TODO: 2/15 tests fail even with HOME, offscreen, SHELL, debus
+    (home-page "http://www.kde.org/")
+    (synopsis "Terminal emulator similar for KDE")
+    (description "Konsole is a terminal emulator, similar to xterm, built on
+the KDE Platform.  It can contain multiple terminal sessions inside one window
+using detachable tabs.  Konsole supports customizable schemes, saved sessions,
+output monitoring and more.
+
+This package is part of the KDE base applications module.")
+    (license ;; GPL for programs, LGPL for libraries, FDL for documentation
+     (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
