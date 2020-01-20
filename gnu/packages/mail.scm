@@ -141,14 +141,14 @@
 (define-public mailutils
   (package
     (name "mailutils")
-    (version "3.7")
+    (version "3.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/mailutils/mailutils-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1gwajsl39f1dkzrjld0dm9px8hrj7l7rwzazz00h5rwghk9mhwhq"))))
+               "1wkn9ch664477r4d8jk9153w5msljsbj99907k7zgzpmywbs6ba7"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -160,10 +160,10 @@
                (("/bin/cat")
                 (which "cat")))
 
-             ;; Tests try to invoke 'maidag' such that it looks up the
+             ;; Tests try to invoke 'mda' such that it looks up the
              ;; 'root' user, which does not exist in the build
              ;; environment.
-             (substitute* "maidag/tests/testsuite"
+             (substitute* "mda/tests/testsuite"
                (("root <")         "nobody <")
                (("spool/root")     "spool/nobody")
                (("root@localhost") "nobody@localhost"))
