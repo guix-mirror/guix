@@ -17636,7 +17636,7 @@ forest) is fit on the kernel matrix of a subset of the training data.")
          "01f84crqx17xd6xy55qxlvsj3knm8lhw7jl26p2rh2w3y0nvqlbm"))))
     (properties `((upstream-name . "dummies")))
     (build-system r-build-system)
-    (home-page "http://www.decisionpatterns.com")
+    (home-page "https://decisionpatterns.com")
     (synopsis "Create dummy/indicator variables flexibly and efficiently")
     (description
      "This package lets you expand factors, characters and other eligible
