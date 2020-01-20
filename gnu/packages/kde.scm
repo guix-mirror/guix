@@ -67,6 +67,39 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
+(define-public baloo-widgets
+  (package
+    (name "baloo-widgets")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/baloo-widgets-" version ".tar.xz"))
+       (sha256
+        (base32 "0bba8dgxd7rcjji809kwnw78hl1nb5ssh2ir4k4b0wvx395jifgd"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("baloo" ,baloo)
+       ("kconfig" ,kconfig)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
+    (home-page "https://community.kde.org/Baloo")
+    (synopsis "Wigets for use with Baloo")
+    (description "Baloo is a framework for searching and managing metadata.
+This package contains GUI widgets for baloo.")
+    (license license:lgpl2.0+)))
+
 (define-public grantleetheme
   (package
     (name "grantleetheme")
