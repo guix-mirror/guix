@@ -419,9 +419,7 @@ distribution problems in some jurisdictions, e.g. due to patent threats.")
                   ;; Drop bundled ffmpeg.
                   (delete-file-recursively "gst-libs/ext/libav")
                   #t))))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:configure-flags '("--with-system-libav")))
+    (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python" ,python)))
