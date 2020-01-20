@@ -378,7 +378,7 @@ par compared to the rest.")
        (sha256
         (base32
          "1jpvc32x6q01zjkfgh6gmq6aaikiyfwwnhj7bmvn52syhrdl202m"))))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (inputs
      `(("gst-plugins-base" ,gst-plugins-base)
        ("liba52" ,liba52)
