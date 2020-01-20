@@ -4199,6 +4199,32 @@ is configured via an environment variable.")
      "Yet another error boilerplate library.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-euclid-0.20
+  (package
+    (name "rust-euclid")
+    (version "0.20.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "euclid" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0pa8kxblvc0s9gia9n0966w7169aswpg7knw2pmwrqa204r2v19z"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-mint" ,rust-mint-0.5)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-serde-test" ,rust-serde-test-1.0))))
+    (home-page "https://github.com/servo/euclid")
+    (synopsis "Geometry primitives")
+    (description "Geometry primitives written in Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-fake-simd-0.1
   (package
     (name "rust-fake-simd")
