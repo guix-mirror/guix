@@ -285,6 +285,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/kde-frameworks.scm		\
   %D%/packages/kde-multimedia.scm		\
   %D%/packages/kde-plasma.scm			\
+  %D%/packages/kde-systemtools.scm		\
   %D%/packages/kde-utils.scm			\
   %D%/packages/kerberos.scm			\
   %D%/packages/key-mon.scm			\
