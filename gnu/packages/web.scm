@@ -16,7 +16,7 @@
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
@@ -5233,14 +5233,14 @@ tools like SSH (Secure Shell) to reach the outside world.")
 (define-public stunnel
   (package
   (name "stunnel")
-  (version "5.55")
+  (version "5.56")
   (source
     (origin
       (method url-fetch)
       (uri (string-append "https://www.stunnel.org/downloads/stunnel-"
                           version ".tar.gz"))
       (sha256
-       (base32 "0qjc0wkjf6bqz29fvwwsn9hnjhm6alsm10jcwx4jad2q3ks6kplh"))))
+       (base32 "08kb4gi9fzqngrczykvba6xhaxhq9m4wmdbhxvgrva5rasrvz13k"))))
   (build-system gnu-build-system)
   (native-inputs
    ;; For tests.
