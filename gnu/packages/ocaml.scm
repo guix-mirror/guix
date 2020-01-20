@@ -1739,6 +1739,26 @@ lets the client choose the concrete timeline.")
 through Transport Layer Security (@dfn{TLS}) encrypted connections.")
     (license license:lgpl2.1)))
 
+(define-public ocaml-mmap
+  (package
+    (name "ocaml-mmap")
+    (version "1.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/mirage/mmap")
+                     (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "1jaismy5d1bhbbanysmr2k79px0yv6ya265dri3949nha1l23i60"))))
+    (build-system dune-build-system)
+    (home-page "https://github.com/mirage/mmap")
+    (synopsis "File mapping for OCaml")
+    (description "This project provides a @command{Mmap.map_file} function
+for mapping files in memory.  This function is the same as the
+@command{Unix.map_file} funciton added in OCaml >= 4.06.")
+    (license (list license:qpl license:lgpl2.0))))
+
 (define-public ocaml-lwt
   (package
     (name "ocaml-lwt")
