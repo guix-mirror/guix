@@ -13843,6 +13843,37 @@ for the serde framework.")
     (description "YAML support for Serde.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-servo-freetype-sys-4
+  (package
+    (name "rust-servo-freetype-sys")
+    (version "4.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "servo-freetype-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1z0dvnakans4vn4vlpx4nxg984427lh8dskxxz9pglij1mnwnk1c"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (delete-file-recursively "freetype2") #t))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cmake" ,rust-cmake-0.1)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("freetype" ,freetype)))
+    (home-page "http://www.freetype.org/")
+    (synopsis "Rust wrapper around freetype")
+    (description
+     "This package provides a Rust wrapper around the FreeType library.")
+    (license license:mpl2.0)))  ; build.rs is mpl2.0
+
 (define-public rust-sha-1-0.8
   (package
     (name "rust-sha-1")
