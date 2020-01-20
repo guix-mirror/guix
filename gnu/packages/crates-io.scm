@@ -5581,6 +5581,33 @@ API library @code{gdi32}.")
 retrieving random data from system source.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-gif-0.10
+  (package
+    (name "rust-gif")
+    (version "0.10.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "gif" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1bw174f7civdfgryvc8pvyhicpr96hzdajnda4s3y8iv3ch907a7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; tests not included in release
+       #:cargo-inputs
+       (("rust-color-quant" ,rust-color-quant-1.0)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-lzw" ,rust-lzw-0.10))
+       #:cargo-development-inputs
+       (("rust-glob" ,rust-glob-0.3))))
+    (home-page "https://github.com/image-rs/image-gif")
+    (synopsis "GIF decoder and encoder")
+    (description "This package provides a GIF decoder and encoder in Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-gimli-0.18
   (package
     (name "rust-gimli")
