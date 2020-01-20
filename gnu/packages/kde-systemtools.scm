@@ -23,12 +23,17 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages kde)
   #:use-module (gnu packages kde-frameworks)
+  #:use-module (gnu packages libvnc)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages search)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg))
 
 (define-public dolphin
   (package
@@ -211,5 +216,57 @@ using detachable tabs.  Konsole supports customizable schemes, saved sessions,
 output monitoring and more.
 
 This package is part of the KDE base applications module.")
+    (license ;; GPL for programs, LGPL for libraries, FDL for documentation
+     (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
+
+(define-public krfb
+  (package
+    (name "krfb")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/krfb-" version ".tar.xz"))
+       (sha256
+        (base32 "079f4jlmd69a5nppmn7khsxrnswlfbdzjni0cbixwlcij05y2267"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdnssd" ,kdnssd)
+       ("ki18n" ,ki18n)
+       ("knotifications" ,knotifications)
+       ("kwallet" ,kwallet)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kxmlgui" ,kxmlgui)
+       ("libvnc" ,libvnc)
+       ("libxcb" ,libxcb)
+       ("libxtst" ,libxtst)
+       ("oxygen-icons" ,oxygen-icons) ;; default icon set
+       ("pipewire" ,pipewire)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)
+       ("xcb-util-image" ,xcb-util-image)
+       ("zlib" ,zlib)))
+    (home-page "https://kde.org/applications/internet/org.kde.krfb")
+    (synopsis "Desktop Sharing utility")
+    (description "KDE Desktop Sharing is a server application that allows you
+to share your current session with a user on another machine.  The desktop
+session can be viewed or even controlled remotely by any VNC or RFB client,
+such as the KDE Remote Desktop Connection client.
+
+KDE Desktop Sharing can restrict access to only users who are explicitly
+invited, and will ask for confirmation when a user attempts to connect.
+
+This package is part of the KDE networking module.")
     (license ;; GPL for programs, LGPL for libraries, FDL for documentation
      (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
