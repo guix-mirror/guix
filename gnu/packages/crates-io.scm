@@ -8200,6 +8200,29 @@ file IO.")
          (base32
           "1zy6s0ni0lx9rjzq3gq2zz9r8zgjmbp02332g3gsj4fyhv4s5zz2"))))))
 
+(define-public rust-memmap-0.2
+  (package
+    (inherit rust-memmap-0.6)
+    (name "rust-memmap")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "memmap" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0li737lakqcbbgd87x7h8d4vp0r1fqcbn5lb5vi746i9jgnp43zj"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-fs2" ,rust-fs2-0.2)
+        ("rust-kernel32-sys" ,rust-kernel32-sys-0.2)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-winapi" ,rust-winapi-0.2))
+       #:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir-0.3))))))
+
 (define-public rust-memoffset-0.5
   (package
     (name "rust-memoffset")
