@@ -1272,6 +1272,31 @@ extension of blocks.")
      "Padding and unpadding of messages divided into blocks.")
     (license (list license:asl1.1 license:expat))))
 
+(define-public rust-bumpalo-3
+  (package
+    (name "rust-bumpalo")
+    (version "3.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bumpalo" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hpp4wfcn04gnl1ji4a80b85xwknsci81xqyllq174gq9z0rsd8z"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; cargo_readme_up_to_date test fails
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-quickcheck" ,rust-quickcheck-0.9))))
+    (home-page "https://github.com/fitzgen/bumpalo")
+    (synopsis "Fast bump allocation arena for Rust")
+    (description
+     "This package provides a fast bump allocation arena for Rust.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-bumpalo-2.5
   (package
     (name "rust-bumpalo")
