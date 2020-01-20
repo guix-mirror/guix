@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Todor Kondić <tk.code@protonmail.com>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages cmake)
@@ -31,9 +33,12 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xorg))
 
@@ -232,3 +237,37 @@ applications.  It also provides extensions for advanced authentication methods
 and TLS encryption.  This package installs the VNC server, a program that will
 enable users with VNC clients to log into a graphical session on the machine
 where the server is installed.")))
+
+(define-public libvnc
+  (package
+    (name "libvnc")
+    (version "0.9.12")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/LibVNC/libvncserver.git")
+             (commit (string-append "LibVNCServer-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1226hb179l914919f5nm2mlf8rhaarqbf48aa649p4rwmghyx9vm"))
+       (patches (search-patches "libvnc-CVE-2018-20750.patch"
+                                "libvnc-CVE-2019-15681.patch"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gnutls" ,gnutls)
+       ("libgcrypt" ,libgcrypt)
+       ("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("lzo" ,lzo)
+       ("sdl2" ,sdl2)))
+    (home-page "https://libvnc.github.io/")
+    (synopsis "Cross-platform C libraries for implementing VNC server or
+client")
+    (description "This package provides @code{LibVNCServer} and
+@code{LibVNCClient}.  These are cross-platform C libraries that allow you to
+easily implement VNC server or client functionality in your program.")
+    (license ;; GPL for programs, FDL for documentation
+     (list license:gpl2+ license:fdl1.2+))))
