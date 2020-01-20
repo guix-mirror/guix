@@ -112,13 +112,13 @@
 @samp{passwd} and @samp{static}.")
   (server
    (string 'unset)
-   "Space separated list of arguments to the userdb driver.")
+   "Name or IP adddress of the server to retrieve mail from.")
   (username
    (string 'unset)
-   "Space separated list of arguments to the userdb driver.")
+   "Username to login to the mail server with.")
   (port
    (non-negative-integer #f)
-   "Space separated list of arguments to the userdb driver.")
+   "Port number to connect to.")
   (password
    (string "")
    "Override fields from passwd.")
@@ -127,16 +127,16 @@
    "Override fields from passwd.")
   (keyfile
    (string "")
-   "PEM-formatted key file to use for the TLS negotiation")
+   "PEM-formatted key file to use for the TLS negotiation.")
   (certfile
    (string "")
-   "PEM-formatted certificate file to use for the TLS negotiation")
+   "PEM-formatted certificate file to use for the TLS negotiation.")
   (ca-certs
    (string "")
-   "CA certificates to use")
+   "CA certificates to use.")
   (extra-parameters
    (parameter-alist '())
-   "Extra retriever parameters"))
+   "Extra retriever parameters."))
 
 (define (serialize-getmail-destination-configuration field-name val)
   (serialize-configuration val getmail-destination-configuration-fields))

@@ -17715,21 +17715,21 @@ Defaults to @samp{"SimpleIMAPSSLRetriever"}.
 @end deftypevr
 
 @deftypevr {@code{getmail-retriever-configuration} parameter} string server
-Space separated list of arguments to the userdb driver.
+Username to login to the mail server with.
 
 Defaults to @samp{unset}.
 
 @end deftypevr
 
 @deftypevr {@code{getmail-retriever-configuration} parameter} string username
-Space separated list of arguments to the userdb driver.
+Username to login to the mail server with.
 
 Defaults to @samp{unset}.
 
 @end deftypevr
 
 @deftypevr {@code{getmail-retriever-configuration} parameter} non-negative-integer port
-Space separated list of arguments to the userdb driver.
+Port number to connect to.
 
 Defaults to @samp{#f}.
 
@@ -17750,28 +17750,28 @@ Defaults to @samp{()}.
 @end deftypevr
 
 @deftypevr {@code{getmail-retriever-configuration} parameter} string keyfile
-PEM-formatted key file to use for the TLS negotiation
+PEM-formatted key file to use for the TLS negotiation.
 
 Defaults to @samp{""}.
 
 @end deftypevr
 
 @deftypevr {@code{getmail-retriever-configuration} parameter} string certfile
-PEM-formatted certificate file to use for the TLS negotiation
+PEM-formatted certificate file to use for the TLS negotiation.
 
 Defaults to @samp{""}.
 
 @end deftypevr
 
 @deftypevr {@code{getmail-retriever-configuration} parameter} string ca-certs
-CA certificates to use
+CA certificates to use.
 
 Defaults to @samp{""}.
 
 @end deftypevr
 
 @deftypevr {@code{getmail-retriever-configuration} parameter} parameter-alist extra-parameters
-Extra retriever parameters
+Extra retriever parameters.
 
 Defaults to @samp{()}.
 
