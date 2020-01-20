@@ -1492,6 +1492,93 @@ Features:
 application \"Parts\" to be embedded as a Kontact component (or plugin).")
     (license license:lgpl2.0+)))
 
+(define-public korganizer
+  (package
+    (name "korganizer")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/korganizer-" version ".tar.xz"))
+       (sha256
+        (base32 "1ixdmmczccvwr7a6vvzv0kyjay0mjnbwcwkq6yym32m2lb3vcxdn"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("dbus" ,dbus)
+       ("qttools" ,qttools)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("akonadi" ,akonadi)
+       ("akonadi-calendar" ,akonadi-calendar)
+       ("akonadi-contacts" ,akonadi-contacts)
+       ("akonadi-mime" ,akonadi-mime)
+       ("akonadi-notes" ,akonadi-notes)
+       ("akonadi-search" ,akonadi-search)
+       ("boost" ,boost)
+       ("kcalendarcore" ,kcalendarcore)
+       ("kcalendarsupport" ,kcalendarsupport)
+       ("kcalutils" ,kcalutils)
+       ("kcmutils" ,kcmutils)
+       ("kcodecs" ,kcodecs)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcontacts" ,kcontacts)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdepim-apps-libs" ,kdepim-apps-libs)
+       ("keventviews" ,keventviews)
+       ("kholidays" ,kholidays)
+       ("kiconthemes" ,kiconthemes)
+       ("kidentitymanagement" ,kidentitymanagement)
+       ("kimap" ,kimap)
+       ("kincidenceeditor" ,kincidenceeditor)
+       ("kitemmodels" ,kitemmodels)
+       ("kitemviews" ,kitemviews)
+       ("kjobwidgets" ,kjobwidgets)
+       ("kldap" ,kldap)
+       ("kmailtransport" ,kmailtransport)
+       ("kmime" ,kmime)
+       ("knewstuff" ,knewstuff)
+       ("knotifications" ,knotifications)
+       ("kontactinterface" ,kontactinterface)
+       ("kparts" ,kparts)
+       ("kpimcommon" ,kpimcommon)
+       ("kpimtextedit" ,kpimtextedit)
+       ("kservice" ,kservice)
+       ("kwallet" ,kwallet)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdepim" ,libkdepim)
+       ("oxygen-icons" ,oxygen-icons) ; default icon set, required for tests
+       ("phonon" ,phonon)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "dbus-launch" "ctest" ".")
+             #t)))))
+    (home-page "https://kontact.kde.org/components/korganizer.html")
+    (synopsis "Organizational assistant, providing calendars and other similar
+functionality to help you organize your life.")
+    (description "KOrganizer is the calendar and scheduling component of
+Kontact.  It provides management of events and tasks, alarm notification, web
+export, network transparent handling of data, group scheduling, import and
+export of calendar files and more.  It is able to work together with a wide
+variety of clanedaring services, including NextCloud, Kolab, Google Calendar
+and others.  KOrganizer is fully customizable to your needs and is an integral
+part of the Kontact suite, which aims to be a complete solution for organizing
+your personal data.  KOrganizer supports the two dominant standards for storing
+and exchanging calendar data, vCalendar and iCalendar.")
+    (license ;; GPL for programs, LGPL for libraries, FDL for documentation
+     (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
+
 (define-public kpimcommon
   (package
     (name "kpimcommon")
