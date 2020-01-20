@@ -8034,6 +8034,35 @@ useful types and distributions, and some randomness-related algorithms.")
        #:cargo-development-inputs
        (("rust-rand-xoshiro" ,rust-rand-xoshiro-0.1))))))
 
+(define-public rust-rand-0.5
+  (package
+    (inherit rust-rand-0.7)
+    (name "rust-rand")
+    (version "0.5.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "1fdcgja9167hlzkf4g5daqwp498lwiyq7aqm05whklpbsdyc8666"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cloudabi" ,rust-cloudabi-0.0)
+        ("rust-fuchsia-cprng" ,rust-fuchsia-cprng-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-rand-core" ,rust-rand-core-0.3)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0)
+        ("rust-stdweb" ,rust-stdweb-0.4)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-bincode" ,rust-bincode-1.1))))))
+
 (define-public rust-rand-0.4
   (package
     (inherit rust-rand-0.6)
