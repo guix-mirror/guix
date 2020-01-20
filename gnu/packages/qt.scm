@@ -215,7 +215,7 @@ system, and the core design of Django is reused in Grantlee.")
        ("xcb-util-renderutil" ,xcb-util-renderutil)
        ("xcb-util-wm" ,xcb-util-wm)
        ("zlib" ,zlib)
-       ("libjpeg" ,libjpeg-8)
+       ("libjpeg" ,libjpeg-turbo)
        ("libsm" ,libsm)
        ("openssl" ,openssl-1.0)))
     (native-inputs
