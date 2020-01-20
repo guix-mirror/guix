@@ -107,7 +107,7 @@ input box, such as FLAG-PASSWORD."
                          (list GRID-ELEMENT-COMPONENT input-visible-cb)
                          '())))
                 GRID-ELEMENT-COMPONENT ok-button))
-         (form (make-form)))
+         (form (make-form #:flags FLAG-NOF12)))
 
     (add-component-callback
      input-visible-cb
@@ -181,7 +181,7 @@ of the page is set to TITLE."
                 (horizontal-stacked-grid
                  GRID-ELEMENT-COMPONENT ok-button
                  GRID-ELEMENT-COMPONENT exit-button)))
-         (form (make-form)))
+         (form (make-form #:flags FLAG-NOF12)))
 
     (add-form-to-grid grid form #t)
     (make-wrapped-grid-window grid title)
@@ -315,7 +315,7 @@ the current listbox item has to be selected by key."
                            (if listbox-allow-multiple?
                                FLAG-MULTIPLE
                                0))))
-         (form (make-form))
+         (form (make-form #:flags FLAG-NOF12))
          (info-textbox
           (make-reflowed-textbox -1 -1 info-text
                                  info-textbox-width
@@ -516,7 +516,7 @@ ITEMS when 'Ok' is pressed."
                  GRID-ELEMENT-COMPONENT ok-button
                  GRID-ELEMENT-COMPONENT exit-button)))
          (keys (fill-checkbox-tree checkbox-tree items))
-         (form (make-form)))
+         (form (make-form #:flags FLAG-NOF12)))
 
     (add-form-to-grid grid form #t)
     (make-wrapped-grid-window grid title)
@@ -593,7 +593,7 @@ ITEMS when 'Ok' is pressed."
                      ,@(if exit-button?
                            (list GRID-ELEMENT-COMPONENT exit-button)
                            '())))))
-           (form (make-form)))
+           (form (make-form #:flags FLAG-NOF12)))
 
       (add-form-to-grid grid form #t)
       (make-wrapped-grid-window grid title)
