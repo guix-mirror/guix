@@ -335,6 +335,55 @@ Akonadi PIM data server.  It uses Xapian for indexing and querying.")
     (license ;; GPL for programs, LGPL for libraries
      (list license:gpl2+ license:lgpl2.0+))))
 
+(define-public kincidenceeditor
+  (package
+    (name "kincidenceeditor")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/incidenceeditor-" version ".tar.xz"))
+       (sha256
+        (base32 "0v962v2ihawndg39ypkfawa449vpbdyg00ib7avb19a153y3wxg6"))))
+    (properties `((upstream-name . "incidenceeditor")))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("akonadi" ,akonadi)
+       ("akonadi-calendar" ,akonadi-calendar)
+       ("akonadi-contacts" ,akonadi-contacts)
+       ("akonadi-mime" ,akonadi-mime)
+       ("boost" ,boost)
+       ("kcalendarcore" ,kcalendarcore)
+       ("kcalendarsupport" ,kcalendarsupport)
+       ("kcalutils" ,kcalutils)
+       ("kcodecs" ,kcodecs)
+       ("kcontacts" ,kcontacts)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdepim-apps-libs" ,kdepim-apps-libs)
+       ("kdiagram" ,kdiagram)
+       ("keventviews" ,keventviews)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kidentitymanagement" ,kidentitymanagement)
+       ("kio" ,kio)
+       ("kitemmodels" ,kitemmodels)
+       ("kldap" ,kldap)
+       ("kmailtransport" ,kmailtransport)
+       ("kmime" ,kmime)
+       ("kpimtextedit" ,kpimtextedit)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwallat" ,kwallet)
+       ("libkdepim" ,libkdepim)
+       ("qtbase" ,qtbase)))
+    (home-page "https://cgit.kde.org/incidenceeditor.git")
+    (synopsis "KDE PIM library for editing incidences")
+    (description "This library provides an incidence editor for KDE PIM.")
+    (license ;; GPL for programs, LGPL for libraries
+     (list license:gpl2+ license:lgpl2.0+))))
+
 (define-public kaddressbook
   (package
     (name "kaddressbook")
