@@ -2439,7 +2439,7 @@ accessing bigWig files.")
         (base32
          "097hfyv2kaf4x92i4rjx0paw2cncxap48qivv8zxng4z7nhid0x9"))))
     (build-system python-build-system)
-    (home-page "http://packages.python.org/DendroPy/")
+    (home-page "https://dendropy.org/")
     (synopsis "Library for phylogenetics and phylogenetic computing")
     (description
      "DendroPy is a library for phylogenetics and phylogenetic computing: reading,
