@@ -86,3 +86,31 @@ The main features of Dolphin are:
 @end itemize")
     (license ;; GPL for programs, FDL for documentation
      (list license:gpl2+ license:fdl1.2+))))
+
+(define-public dolphin-plugins
+  (package
+    (name "dolphin-plugins")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/dolphin-plugins-" version ".tar.xz"))
+       (sha256
+        (base32 "0m9sl5fybk60h7r91a5qfxvwzksg2kxn1bc2ygrr8klm2pv0x1l2"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("dolphin" ,dolphin)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("ktexteditor" ,ktexteditor)
+       ("kxmlgui" ,kxmlgui)
+       ("oxygen-icons" ,oxygen-icons) ;; default icon set
+       ("qtbase" ,qtbase)))
+    (home-page "http://www.kde.org/")
+    (synopsis "VCS-Plugins for Dolphin")
+    (description "This package contains plugins that offer integration in
+Dolphin with the version control systems: Bzr, Git, Mercurial, Subversion.")
+    (license license:gpl2+)))
