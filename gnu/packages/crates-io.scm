@@ -8927,6 +8927,34 @@ uses finite automata and guarantees linear time matching on all inputs.")
         ("rust-quickcheck" ,rust-quickcheck-0.8)
         ("rust-rand" ,rust-rand-0.4))))))
 
+(define-public rust-regex-0.2
+  (package
+    (inherit rust-regex-1.3)
+    (name "rust-regex")
+    (version "0.2.11")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "regex" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1163ir1k5zjspirfjl4wqbviwrxlhmfwy95xxb69y4irkv4snack"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-aho-corasick" ,rust-aho-corasick-0.6)
+        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-regex-syntax" ,rust-regex-syntax-0.5)
+        ("rust-thread-local" ,rust-thread-local-0.3)
+        ("rust-utf8-ranges" ,rust-utf8-ranges-1.0))
+       #:cargo-development-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-quickcheck" ,rust-quickcheck-0.6)
+        ("rust-rand" ,rust-rand-0.4))))))
+
 (define-public rust-regex-automata-0.1
   (package
     (name "rust-regex-automata")
