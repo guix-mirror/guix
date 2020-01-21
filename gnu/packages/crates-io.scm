@@ -6207,11 +6207,13 @@ for Rust structs.")
          (base32
           "09clbyvdkwflp8anwjhqdib0sw8191gphcchdp80nc8ayhhwl9ry"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs (("rust-unicase" ,rust-unicase-2.4))))
     (home-page "https://github.com/hyperium/mime")
     (synopsis "Strongly Typed Mimes")
     (description
      "Support MIME (HTTP Media Types) as strong types in Rust.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
