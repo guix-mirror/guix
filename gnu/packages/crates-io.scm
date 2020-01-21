@@ -185,8 +185,37 @@ Rust, using gimli.")
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0))))))
 
+(define-public rust-ansi-term-0.12
+  (package
+    (name "rust-ansi-term")
+    (version "0.12.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "ansi_term" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1ljmkbilxgmhavxvxqa7qvm6f3fjggi7q2l3a72q9x0cxjvrnanm"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-serde" ,rust-serde-1.0)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-doc-comment" ,rust-doc-comment-0.3)
+        ("rust-regex" ,rust-regex-1.3)
+        ("rust-serde-json" ,rust-serde-json-1.0))))
+    (home-page "https://github.com/ogham/rust-ansi-term")
+    (synopsis "Library for ANSI terminal colours and styles")
+    (description
+     "This is a library for controlling colours and formatting, such as red bold
+text or blue underlined text, on ANSI terminals.")
+    (license license:expat)))
+
 (define-public rust-ansi-term-0.11
   (package
+    (inherit rust-ansi-term-0.12)
     (name "rust-ansi-term")
     (version "0.11.0")
     (source
@@ -197,17 +226,10 @@ Rust, using gimli.")
         (sha256
          (base32
           "16wpvrghvd0353584i1idnsgm0r3vchg8fyrm0x8ayv1rgvbljgf"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-winapi" ,rust-winapi-0.3))))
-    (home-page "https://github.com/ogham/rust-ansi-term")
-    (synopsis "Library for ANSI terminal colours and styles")
-    (description
-     "This is a library for controlling colours and formatting, such as red bold
-text or blue underlined text, on ANSI terminals.")
-    (license license:expat)))
+       (("rust-winapi" ,rust-winapi-0.3))))))
 
 (define-public rust-antidote-1.0
   (package
