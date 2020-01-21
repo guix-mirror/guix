@@ -9679,7 +9679,7 @@ uses finite automata and guarantees linear time matching on all inputs.")
   (package
     (inherit rust-regex-1.3)
     (name "rust-regex")
-    (version "1.1.7")
+    (version "1.1.9")
     (source
      (origin
        (method url-fetch)
@@ -9688,7 +9688,7 @@ uses finite automata and guarantees linear time matching on all inputs.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1pabajpp0wzb7dm2x32gy8w7k0mwykr6zsvzn0fgpr6pww40hbqb"))))
+         "1ba47ivq8l1yikiwikjnq5barag6iqfgcpxlz2263fqbq9y2kn6r"))))
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -9701,7 +9701,7 @@ uses finite automata and guarantees linear time matching on all inputs.")
        (("rust-doc-comment" ,rust-doc-comment-0.3)
         ("rust-lazy-static" ,rust-lazy-static-1.3)
         ("rust-quickcheck" ,rust-quickcheck-0.8)
-        ("rust-rand" ,rust-rand-0.4))))))
+        ("rust-rand" ,rust-rand-0.6))))))
 
 (define-public rust-regex-0.2
   (package
