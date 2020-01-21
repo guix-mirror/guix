@@ -887,18 +887,18 @@ designed to work well in user interface environments.")
   (package
     (name "font-adobe-source-sans-pro")
     (version "2.040R-ro-1.090R-it")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/adobe-fonts/source-sans-pro/archive/"
-                    (regexp-substitute/global
-                     ;; The upstream tag uses "/" between the roman and italic
-                     ;; versions, so substitute our "-" separator here.
-                     #f "R-ro-" version 'pre "R-ro/" 'post) ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1wpbhd2idps53ph8rg1mhr3vz4lsgbpjprcq10nliwcxdz9d8lv0"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/adobe-fonts/source-sans-pro.git")
+             (commit (regexp-substitute/global
+                      ;; The upstream tag uses "/" between the roman and italic
+                      ;; versions, so substitute our "-" separator here.
+                      #f "R-ro-" version 'pre "R-ro/" 'post))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1lzin2hfwidbvhps7shs201p1bpxy6220xmhhprv9fc8bknd4c45"))))
     (build-system font-build-system)
     (home-page "https://github.com/adobe-fonts/source-sans-pro")
     (synopsis
