@@ -7035,22 +7035,30 @@ system for OpenSSL.")
         (sha256
          (base32 "0vvk8vzrc73y8n5rf4yj3x8ygyxjaz7wxrbxiwqi7qy0gyp1cpa6"))))
     (build-system cargo-build-system)
-    ;(arguments
-    ; `(#:phases
-    ;   (modify-phases %standard-phases
-    ;     (add-after 'unpack 'find-openssl
-    ;       (lambda* (#:key inputs #:allow-other-keys)
-    ;         (let ((openssl (assoc-ref inputs "openssl")))
-    ;           (setenv "OPENSSL_DIR" openssl))
-    ;         #t)))))
-    ;(inputs
-    ; `(("openssl" ,openssl)
-    ;   ("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:skip-build? #t ; it wants rust-openssl-src
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ;; Build dependencies:
+        ("rust-autocfg" ,rust-autocfg-0.1)
+        ("rust-cc" ,rust-cc-1.0)
+        ("rust-pkg-config" ,rust-pkg-config-0.3)
+        ;("rust-openssl-src" ,rust-openssl-src-111)
+        ("rust-vcpkg" ,rust-vcpkg-0.2))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'find-openssl
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((openssl (assoc-ref inputs "openssl")))
+               (setenv "OPENSSL_DIR" openssl))
+             #t)))))
+    (native-inputs
+     `(("openssl" ,openssl)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://github.com/sfackler/rust-openssl")
     (synopsis "FFI bindings to OpenSSL")
     (description
      "This package provides FFI bindings to OpenSSL for use in rust crates.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-ordermap-0.3
