@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,7 +36,7 @@
       (string-drop file (string-length prefix))
       file))
 
-(define (run-config-display-page)
+(define* (run-config-display-page #:key locale)
   (let ((width (%configuration-file-width))
         (height (nearest-exact-integer
                  (/ (screen-rows) 2))))
@@ -50,6 +50,8 @@ This will take a few minutes.")
                          (strip-prefix (%installer-configuration-file)))
      #:title (G_ "Configuration file")
      #:file (%installer-configuration-file)
+     #:edit-button? #t
+     #:editor-locale locale
      #:info-textbox-width width
      #:file-textbox-width width
      #:file-textbox-height height
@@ -95,7 +97,7 @@ last step, or restart the installer.")))
           (with-mounted-partitions
            user-partitions
            (configuration->file configuration)
-           (run-config-display-page)
+           (run-config-display-page #:locale locale)
            (run-install-shell locale #:users users))))
     (if install-ok?
         (run-install-success-page)

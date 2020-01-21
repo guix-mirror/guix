@@ -15,7 +15,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017, 2018, 2019 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2017, 2018, 2019, 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
@@ -29,7 +29,7 @@
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Eric Brown <brown@fastmail.com>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2018 Amin Bandali <bandali@gnu.org>
+;;; Copyright © 2018 Amin Bandali <mab@gnu.org>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Steve Sprang <scs@stevesprang.com>
 ;;; Copyright © 2019 Robert Smith <robertsmith@posteo.net>
@@ -908,12 +908,12 @@ incompatible with HDF5.")
                           (find-files ex ".*"))
                 (delete-file-recursively ex))
               #t)))))
-    (home-page "http://www.hdfgroup.org")
+    (home-page "https://www.hdfgroup.org")
     (synopsis "Management suite for extremely large and complex data")
     (description "HDF5 is a suite that makes possible the management of
 extremely large and complex data collections.")
     (license (license:x11-style
-              "http://www.hdfgroup.org/ftp/HDF5/current/src/unpacked/COPYING"))))
+              "https://www.hdfgroup.org/ftp/HDF5/current/src/unpacked/COPYING"))))
 
 (define-public hdf5-1.10
   (package (inherit hdf5)
@@ -942,7 +942,7 @@ extremely large and complex data collections.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://www.hdfgroup.org/ftp/HDF5/releases/HDF-JAVA/hdfjni-"
+             "https://www.hdfgroup.org/ftp/HDF5/releases/HDF-JAVA/hdfjni-"
              version "/src/CMake-hdfjava-" version ".tar.gz"))
        (sha256
         (base32 "0m1gp2aspcblqzmpqbdpfp6giskws85ds6p5gz8sx7asyp7wznpr"))
@@ -1175,7 +1175,7 @@ Swath).")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.hdfgroup.org/ftp/HDF5/tools/"
+       (uri (string-append "https://www.hdfgroup.org/ftp/HDF5/tools/"
                            "h5check/src/h5check-" version ".tar.gz"))
        (sha256
         (base32
@@ -1270,7 +1270,7 @@ similar to MATLAB, GNU Octave or SciPy.")
              #t)))
 
        #:parallel-tests? #f))           ;various race conditions
-    (home-page "http://www.unidata.ucar.edu/software/netcdf/")
+    (home-page "https://www.unidata.ucar.edu/software/netcdf/")
     (synopsis "Library for scientific data")
     (description "NetCDF is an interface for scientific data access and a
 software library that provides an implementation of the interface.  The netCDF
@@ -1921,13 +1921,13 @@ September 2004}")
               (copy-recursively exdir exdir')
               (delete-file-recursively exdir)
               #t))))))
-    (home-page "http://www.mcs.anl.gov/petsc")
+    (home-page "https://www.mcs.anl.gov/petsc")
     (synopsis "Library to solve PDEs")
     (description "PETSc, pronounced PET-see (the S is silent), is a suite of
 data structures and routines for the scalable (parallel) solution of
 scientific applications modeled by partial differential equations.")
     (license (license:non-copyleft
-              "http://www.mcs.anl.gov/petsc/documentation/copyright.html"))))
+              "https://www.mcs.anl.gov/petsc/documentation/copyright.html"))))
 
 (define-public petsc-complex
   (package (inherit petsc)
@@ -1994,14 +1994,14 @@ scientific applications modeled by partial differential equations.")
 (define-public python-petsc4py
   (package
     (name "python-petsc4py")
-    (version "3.10.1")
+    (version "3.11.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "petsc4py" version))
         (sha256
           (base32
-            "094hcnran0r2z1wlvmjswsz3ski1m9kqrl5l0ax8jjhnk55x0flh"))))
+            "1rm1qj5wlkhxl39by9n78lh3gbmii31wsnb8j1rr5hvfr5xgbx2q"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -2164,14 +2164,14 @@ arising after the discretization of partial differential equations.")
 (define-public python-slepc4py
   (package
     (name "python-slepc4py")
-    (version "3.10.0")
+    (version "3.11.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "slepc4py" version))
         (sha256
           (base32
-            "0x049dyc8frgh79fvvavf4vlbqp4mgm61nsaivzdav4316vvlv1j"))))
+            "1ksp08kxf4wg408b9nn39z3qfhy643j22d4rfbl30vzxk2rxh4lq"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -2644,7 +2644,7 @@ YACC = bison -pscotchyy -y -b y
                            (install-file f (string-append out "/lib")))
                          (find-files "../lib/" ".*metis\\..*"))
                #t))))))
-    (home-page "http://www.labri.fr/perso/pelegrin/scotch/")
+    (home-page "https://www.labri.fr/perso/pelegrin/scotch/")
     (synopsis "Programs and libraries for graph algorithms")
     (description "SCOTCH is a set of programs and libraries which implement
 the static mapping and sparse matrix reordering algorithms developed within
@@ -4278,7 +4278,7 @@ symmetric matrices.")
                (base32
                 "1687xpjjzig27y2pnqv7hv09smpijyfdpz7qjgmcxf4shfajlfkc"))))
     (build-system cmake-build-system)
-    (home-page "http://libelemental.org")
+    (home-page "https://github.com/elemental/Elemental")
     (native-inputs
      `(("gfortran" ,gfortran)))
     (inputs

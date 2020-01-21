@@ -77,6 +77,7 @@
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)
+       ("libuuid" ,util-linux)
        ("libx11" ,libx11)
        ("xorg-rgb" ,xorg-rgb)
        ("nanopass" ,nanopass)
@@ -87,8 +88,7 @@
      `(("texlive" ,(texlive-union (list texlive-latex-oberdiek
                                         texlive-generic-epsf)))
        ("ghostscript" ,ghostscript)
-       ("netpbm" ,netpbm)
-       ("util-linux" ,util-linux)))
+       ("netpbm" ,netpbm)))
     (native-search-paths
      (list (search-path-specification
             (variable "CHEZSCHEMELIBDIRS")

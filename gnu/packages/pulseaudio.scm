@@ -51,6 +51,7 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xiph)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
 (define-public libsndfile

@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,20 +28,42 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (json)
+  #:use-module (guix json)
   #:use-module (gcrypt hash)
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix base32)
   #:use-module (guix ui)
   #:use-module ((guix download) #:select (download-to-store url-fetch))
-  #:use-module ((guix import utils) #:select (factorize-uri
-                                              flatten assoc-ref*))
+  #:use-module ((guix import utils) #:select (factorize-uri))
   #:use-module (guix import json)
   #:use-module (guix packages)
   #:use-module (guix upstream)
   #:use-module (guix derivations)
-  #:export (cpan->guix-package
-            %cpan-updater))
+  #:export (cpan-dependency?
+            cpan-dependency-relationship
+            cpan-dependency-phase
+            cpan-dependency-module
+            cpan-dependency-version
+
+            cpan-release?
+            cpan-release-license
+            cpan-release-author
+            cpan-release-version
+            cpan-release-modle
+            cpan-release-distribution
+            cpan-release-download-url
+            cpan-release-abstract
+            cpan-release-home-page
+            cpan-release-dependencies
+            json->cpan-release
+
+            cpan-fetch
+            cpan->guix-package
+            metacpan-url->mirror-url
+            %cpan-updater
+
+            %metacpan-base-url))
 
 ;;; Commentary:
 ;;;
@@ -48,6 +71,49 @@
 ;;; module, using meta-data from metacpan.org.
 ;;;
 ;;; Code:
+
+(define %metacpan-base-url
+  ;; Base URL of the MetaCPAN API.
+  (make-parameter "https://fastapi.metacpan.org/v1/"))
+
+;; Dependency of a "release".
+(define-json-mapping <cpan-dependency> make-cpan-dependency cpan-dependency?
+  json->cpan-dependency
+  (relationship cpan-dependency-relationship "relationship"
+                string->symbol)                   ;requires | suggests
+  (phase        cpan-dependency-phase "phase"
+                string->symbol)          ;develop | configure | test | runtime
+  (module       cpan-dependency-module)           ;string
+  (version      cpan-dependency-version))         ;string
+
+;; Release as returned by <https://fastapi.metacpan.org/v1/release/PKG>.
+(define-json-mapping <cpan-release> make-cpan-release cpan-release?
+  json->cpan-release
+  (license      cpan-release-license)
+  (author       cpan-release-author)
+  (version      cpan-release-version "version"
+                (match-lambda
+                  ((? number? version)
+                   ;; Version is sometimes not quoted in the module json, so
+                   ;; it gets imported into Guile as a number, so convert it
+                   ;; to a string (example: "X11-Protocol-Other").
+                   (number->string version))
+                  ((? string? version)
+                   ;; Sometimes we get a "v" prefix.  Strip it.
+                   (if (string-prefix? "v" version)
+                       (string-drop version 1)
+                       version))))
+  (module       cpan-release-module "main_module") ;e.g., "Test::Script"
+  (distribution cpan-release-distribution)         ;e.g., "Test-Script"
+  (download-url cpan-release-download-url "download_url")
+  (abstract     cpan-release-abstract "abstract")
+  (home-page    cpan-release-home-page "resources"
+                (match-lambda
+                  (#f #f)
+                  ((lst ...) (assoc-ref lst "homepage"))))
+  (dependencies cpan-release-dependencies "dependency"
+                (lambda (vector)
+                  (map json->cpan-dependency (vector->list vector)))))
 
 (define string->license
   (match-lambda
@@ -89,7 +155,7 @@
 module is distributed with 'Test::Simple', so (module->dist-name \"ok\") would
 return \"Test-Simple\""
   (assoc-ref (json-fetch (string-append
-                          "https://fastapi.metacpan.org/v1/module/"
+                          (%metacpan-base-url) "/module/"
                           module
                           "?fields=distribution"))
              "distribution"))
@@ -111,32 +177,25 @@ return \"Test-Simple\""
           (_ #f)))))
 
 (define (cpan-fetch name)
-  "Return an alist representation of the CPAN metadata for the perl module MODULE,
-or #f on failure.  MODULE should be e.g. \"Test::Script\""
+  "Return a <cpan-release> record for Perl module MODULE,
+or #f on failure.  MODULE should be the distribution name, such as
+\"Test-Script\" for the \"Test::Script\" module."
   ;; This API always returns the latest release of the module.
-  (json-fetch (string-append "https://fastapi.metacpan.org/v1/release/" name)))
+  (json->cpan-release
+   (json-fetch (string-append (%metacpan-base-url) "/release/"
+                              name))))
 
 (define (cpan-home name)
   (string-append "https://metacpan.org/release/" name))
 
-(define (cpan-source-url meta)
-  "Return the download URL for a module's source tarball."
+(define (metacpan-url->mirror-url url)
+  "Replace 'https://cpan.metacpan.org' in URL with 'mirror://cpan'."
   (regexp-substitute/global #f "http[s]?://cpan.metacpan.org"
-                            (assoc-ref meta "download_url")
+                            url
                             'pre "mirror://cpan" 'post))
 
-(define (cpan-version meta)
-  "Return the version number from META."
-  (match (assoc-ref meta "version")
-    ((? number? version)
-     ;; version is sometimes not quoted in the module json, so it gets
-     ;; imported into Guile as a number, so convert it to a string.
-     (number->string version))
-    (version
-     ;; Sometimes we get a "v" prefix.  Strip it.
-     (if (string-prefix? "v" version)
-         (string-drop version 1)
-         version))))
+(define cpan-source-url
+  (compose metacpan-url->mirror-url cpan-release-download-url))
 
 (define (perl-package)
   "Return the 'perl' package.  This is a lazy reference so that we don't
@@ -179,42 +238,38 @@ depend on (gnu packages perl)."
                                        first perl-version last))))
                            (loop)))))))))))
 
-(define (cpan-module->sexp meta)
-  "Return the `package' s-expression for a CPAN module from the metadata in
-META."
+(define (cpan-module->sexp release)
+  "Return the 'package' s-expression for a CPAN module from the release data
+in RELEASE, a <cpan-release> record."
   (define name
-    (assoc-ref meta "distribution"))
+    (cpan-release-distribution release))
 
   (define (guix-name name)
     (if (string-prefix? "perl-" name)
         (string-downcase name)
         (string-append "perl-" (string-downcase name))))
 
-  (define version (cpan-version meta))
-  (define source-url (cpan-source-url meta))
+  (define version (cpan-release-version release))
+  (define source-url (cpan-source-url release))
 
   (define (convert-inputs phases)
     ;; Convert phase dependencies into a list of name/variable pairs.
-    (match (flatten
-            (map (lambda (ph)
-                   (filter-map (lambda (t)
-                                 (assoc-ref* meta "metadata" "prereqs" ph t))
-                               '("requires" "recommends" "suggests")))
-                 phases))
-      (#f
-       '())
+    (match (filter-map (lambda (dependency)
+                         (and (memq (cpan-dependency-phase dependency)
+                                    phases)
+                              (cpan-dependency-module dependency)))
+                       (cpan-release-dependencies release))
       ((inputs ...)
        (sort
         (delete-duplicates
          ;; Listed dependencies may include core modules.  Filter those out.
          (filter-map (match-lambda
-                      (("perl" . _)     ;implicit dependency
-                       #f)
-                      ((module . _)
-                       (and (not (core-module? module))
-                            (let ((name (guix-name (module->dist-name module))))
-                              (list name
-                                    (list 'unquote (string->symbol name)))))))
+                       ("perl" #f)                ;implicit dependency
+                       ((? core-module?) #f)
+                       (module
+                         (let ((name (guix-name (module->dist-name module))))
+                           (list name
+                                 (list 'unquote (string->symbol name))))))
                      inputs))
         (lambda args
           (match args
@@ -247,19 +302,19 @@ META."
                        ;; which says they are required during building.  We
                        ;; have not yet had a need for cross-compiled perl
                        ;; modules, however, so we leave it out.
-                       (convert-inputs '("configure" "build" "test")))
+                       (convert-inputs '(configure build test)))
        ,@(maybe-inputs 'propagated-inputs
-                       (convert-inputs '("runtime")))
+                       (convert-inputs '(runtime)))
        (home-page ,(cpan-home name))
-       (synopsis ,(assoc-ref meta "abstract"))
+       (synopsis ,(cpan-release-abstract release))
        (description fill-in-yourself!)
-       (license ,(string->license (assoc-ref meta "license"))))))
+       (license ,(string->license (cpan-release-license release))))))
 
 (define (cpan->guix-package module-name)
   "Fetch the metadata for PACKAGE-NAME from metacpan.org, and return the
 `package' s-expression corresponding to that package, or #f on failure."
-  (let ((module-meta (cpan-fetch (module->name module-name))))
-    (and=> module-meta cpan-module->sexp)))
+  (let ((release (cpan-fetch (module->name module-name))))
+    (and=> release cpan-module->sexp)))
 
 (define (cpan-package? package)
   "Return #t if PACKAGE is a package from CPAN."
@@ -285,7 +340,7 @@ META."
   "Return an <upstream-source> for the latest release of PACKAGE."
   (match (cpan-fetch (package->upstream-name package))
     (#f #f)
-    (meta
+    (release
      (let ((core-inputs
             (match (package-direct-inputs package)
               (((_ inputs _ ...) ...)
@@ -303,8 +358,8 @@ META."
                      (warning (G_ "input '~a' of ~a is in Perl core~%")
                               module (package-name package)))
                    core-inputs)))
-     (let ((version (cpan-version meta))
-           (url (cpan-source-url meta)))
+     (let ((version (cpan-release-version release))
+           (url     (cpan-source-url release)))
        (upstream-source
         (package (package-name package))
         (version version)

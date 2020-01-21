@@ -110,8 +110,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.0.1")
-        (commit "f38eabe952608478230895e380ef441d65ea625e")
-        (revision 11))
+        (commit "50299ade040e934fa5533768aacb081eb340af3f")
+        (revision 13))
     (package
       (name "guix")
 
@@ -127,7 +127,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "1wnm1wqa38dpd5bk6avyfm0rgx72vlx36a06scyg8d57kl47mzjf"))
+                  "0rbnyy0vqmsl7z350cdazm5xzx74cdia3nxp0msk8xalyb76hff4"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -396,6 +396,21 @@ the Nix package manager.")
 
 (define-public guile2.0-guix
   (deprecated-package "guile2.0-guix" guix))
+
+(define-public guile3.0-guix
+  (package
+    (inherit guix)
+    (name "guile3.0-guix")
+    (inputs
+     `(("guile" ,guile-3.0)
+       ,@(alist-delete "guile" (package-inputs guix))))
+    (propagated-inputs
+     `(("gnutls" ,guile3.0-gnutls)
+       ("guile-gcrypt" ,guile3.0-gcrypt)
+       ("guile-json" ,guile3.0-json)
+       ("guile-sqlite3" ,guile3.0-sqlite3)
+       ("guile-ssh" ,guile3.0-ssh)
+       ("guile-git" ,guile3.0-git)))))
 
 (define-public guix-minimal
   ;; A version of Guix which is built with the minimal set of dependencies, as

@@ -55,7 +55,9 @@
                 ;; in 5d669883ecc104403c5d3ba7d172e9c02234577c, #:hide
                 ;; unwanted bindings instead of #:select'ing the needed
                 ;; bindings.
-                #:hide (package-name->name+version))
+                #:hide (package-name->name+version
+                        ;; Avoid "overrides core binding" warning.
+                        delete))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
@@ -173,7 +175,11 @@ information, or #f if it could not be found."
                (previous frame))
       (if (not frame)
           previous
-          (if (frame-source frame)
+
+          ;; On Guile 3, the latest frame with source may be that of
+          ;; 'raise-exception' in boot-9.scm.  Skip it.
+          (if (and (frame-source frame)
+                   (not (eq? 'raise-exception (frame-procedure-name frame))))
               frame
               (loop (frame-previous frame) frame)))))
 
@@ -370,9 +376,10 @@ ARGS is the list of arguments received by the 'throw' handler."
            (format (current-error-port) (G_ "~amissing closing parenthesis~%")
                    location))
          (apply throw args)))
-    (('syntax-error proc message properties form . rest)
+    (('syntax-error proc message properties form subform . rest)
      (let ((loc (source-properties->location properties)))
-       (report-error loc (G_ "~a~%") message)))
+       (report-error loc (G_ "~s: ~a~%")
+                     (or subform form) message)))
     (('unbound-variable _ ...)
      (report-unbound-variable-error args #:frame frame))
     (((or 'srfi-34 '%exception) obj)

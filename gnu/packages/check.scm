@@ -99,6 +99,19 @@ faults or other signals.  The output from unit tests can be used within
 source code editors and IDEs.")
     (license license:lgpl2.1+)))
 
+;; Some packages require this older version.  Removed once no longer needed.
+(define-public check-0.12
+  (package/inherit
+   check
+   (version "0.12.0")
+   (source (origin
+             (method url-fetch)
+             (uri (string-append "https://github.com/libcheck/check/releases"
+                                 "/download/" version "/check-" version ".tar.gz"))
+             (sha256
+              (base32
+               "0d22h8xshmbpl9hba9ch3xj8vb9ybm5akpsbbh7yj07fic4h2hj6"))))))
+
 (define-public cunit
   (package
     (name "cunit")
@@ -567,25 +580,43 @@ but it works for any C/C++ project.")
 (define-public python-parameterized
   (package
     (name "python-parameterized")
-    (version "0.6.1")
+    (version "0.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "parameterized" version))
        (sha256
         (base32
-         "1qj1939shm48d9ql6fm1nrdy4p7sdyj8clz1szh5swwpf1qqxxfa"))))
+         "1vapry9lyfb2mlpgk2wh9079hzxzq5120bsczncxxay663mdp53a"))))
     (build-system python-build-system)
-    (arguments '(#:tests? #f)) ; there are no tests
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          (invoke "nosetests" "-v")
+                          (format #t "test suite not run~%"))
+                      #t)))))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)))
     (home-page "https://github.com/wolever/parameterized")
     (synopsis "Parameterized testing with any Python test framework")
     (description
      "Parameterized is a Python library that aims to fix parameterized testing
 for every Python test framework.  It supports nose, py.test, and unittest.")
+    (properties `((python2-variant . ,(delay python2-parameterized))))
     (license license:bsd-2)))
 
 (define-public python2-parameterized
-  (package-with-python2 python-parameterized))
+  (let ((base (package-with-python2 (strip-python2-variant
+                                     python-parameterized))))
+    (package/inherit
+     base
+     (source
+      (origin
+        (inherit (package-source base))
+        (patches (search-patches "python2-parameterized-docstring-test.patch")))))))
 
 (define-public python-minimock
   (package
@@ -1008,7 +1039,8 @@ timeout has been exceeded.")
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
-    (home-page "http://pythonpaste.org/scripttest/")
+    (home-page (string-append "https://web.archive.org/web/20161029233413/"
+                              "http://pythonpaste.org/scripttest/"))
     (synopsis "Python library to test command-line scripts")
     (description "Scripttest is a Python helper library for testing
 interactive command-line applications.  With it you can run a script in a

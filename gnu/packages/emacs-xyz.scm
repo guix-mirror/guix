@@ -51,7 +51,7 @@
 ;;; Copyright © 2019 Baptiste Strazzulla <bstrazzull@hotmail.fr>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
-;;; Copyright © 2019 Amin Bandali <bandali@gnu.org>
+;;; Copyright © 2019 Amin Bandali <mab@gnu.org>
 ;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2019 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2019 Stephen Webber <montokapro@gmail.com>
@@ -969,7 +969,7 @@ in certain cases.  It also enables recursion for anonymous functions.")
         (base32
          "1km4x92pii8c4bcimks4xzhmwpypdf183z0zh7raj062jz4jb74r"))))
     (build-system emacs-build-system)
-    (home-page "http://elpa.gnu.org/packages/xr.html")
+    (home-page "https://elpa.gnu.org/packages/xr.html")
     (synopsis "Convert string regexp to rx notation")
     (description
      "This is an inverse companion to the @code{rx} package for translating
@@ -1243,7 +1243,7 @@ or unexpected behavior inside an elisp configuration file (typically
               "wget" (string-append (assoc-ref outputs "out")
                                     "/share/emacs/site-lisp/"))
              #t)))))
-    (home-page "http://www.emacswiki.org/emacs/EmacsWget")
+    (home-page "https://www.emacswiki.org/emacs/EmacsWget")
     (synopsis "Simple file downloader for Emacs based on wget")
     (description
      "Emacs-wget is an emacs interface for the wget file downloader.")
@@ -1787,7 +1787,7 @@ environment set through Direnv.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://elpa.gnu.org/packages/ggtags-"
+       (uri (string-append "https://elpa.gnu.org/packages/ggtags-"
                            version ".el"))
        (sha256
         (base32
@@ -5382,7 +5382,7 @@ line program.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://elpa.gnu.org/packages/rudel-"
+       (uri (string-append "https://elpa.gnu.org/packages/rudel-"
                            version ".tar"))
        (sha256
         (base32
@@ -5669,7 +5669,7 @@ highlighted.  Pressing that character will switch to that window.")
          (sha256
           (base32 "0wr3w2id95wx2rma8n1ifjrv9rx37ly26ijc5zi58id0yrip3hnc"))))
       (build-system emacs-build-system)
-      (home-page "http://www.emacswiki.org/emacs/Iedit")
+      (home-page "https://www.emacswiki.org/emacs/Iedit")
       (synopsis "Edit multiple regions in the same way simultaneously")
       (description
        "This package is an Emacs minor mode and allows you to edit one
@@ -7998,7 +7998,7 @@ distribution, primarily targeting Clojure users")
         (base32
          "0zbqkk540rax32s8szp5zgz3a02zw88fc1dmjmyw6h3ls04m91kl"))))
     (build-system emacs-build-system)
-    (home-page "http://elpa.gnu.org/packages/orgalist.html")
+    (home-page "https://elpa.gnu.org/packages/orgalist.html")
     (synopsis "Manage Org-like lists in non-Org buffers")
     (description "Write Org mode's plain lists in non-Org buffers.  More
 specifically, Orgalist supports the syntax of Org mode for numbered,
@@ -9018,13 +9018,13 @@ consistent and well-integrated user interface.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://elpa.gnu.org/packages/adaptive-wrap-"
+                    "https://elpa.gnu.org/packages/adaptive-wrap-"
                     version ".el"))
               (sha256
                (base32
                 "0qi7gjprcpywk2daivnlavwsx53hl5wcqvpxbwinvigg42vxh3ll"))))
     (build-system emacs-build-system)
-    (home-page "http://elpa.gnu.org/packages/adaptive-wrap.html")
+    (home-page "https://elpa.gnu.org/packages/adaptive-wrap.html")
     (synopsis "Smart line-wrapping with wrap-prefix")
     (description
      "This Emacs package provides the @code{adaptive-wrap-prefix-mode}
@@ -9782,7 +9782,7 @@ with gnuplot.")
     (source
      (origin
        (method url-fetch)
-       (uri "http://www.emacswiki.org/emacs/download/transpose-frame.el")
+       (uri "https://www.emacswiki.org/emacs/download/transpose-frame.el")
        (file-name (string-append "transpose-frame-" version ".el"))
        (sha256
         (base32
@@ -10854,7 +10854,7 @@ database of references on life sciences.")
        #:test-command '("emacs" "--batch"
                         "-l" "websocket-test.el"
                         "-f" "ert-run-tests-batch-and-exit")))
-    (home-page "http://elpa.gnu.org/packages/websocket.html")
+    (home-page "https://elpa.gnu.org/packages/websocket.html")
     (synopsis "Emacs WebSocket client and server")
     (description "This is an Elisp library for WebSocket clients to talk to
 WebSocket servers, and for WebSocket servers to accept connections from
@@ -10876,7 +10876,7 @@ itself.")
         (base32
          "0ydkc9jazsnbbvfhd47mql52y7k06n3z7r0naqxkwb99j9blqsmp"))))
     (build-system emacs-build-system)
-    (home-page "http://elpa.gnu.org/packages/oauth2.html")
+    (home-page "https://elpa.gnu.org/packages/oauth2.html")
     (synopsis "OAuth 2.0 authorization protocol implementation")
     (description
      "This package provides an Elisp implementation of the OAuth 2.0 draft.
@@ -13004,12 +13004,12 @@ timestamps and date-time format strings library for Emacs.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://elpa.gnu.org/packages/seq-" version ".tar"))
+       (uri (string-append "https://elpa.gnu.org/packages/seq-" version ".tar"))
        (sha256
         (base32
          "0vrpx6nnyjb0gsypknzagimlhvcvi5y1rcdkpxyqr42415zr8d0n"))))
     (build-system emacs-build-system)
-    (home-page "http://elpa.gnu.org/packages/seq.html")
+    (home-page "https://elpa.gnu.org/packages/seq.html")
     (synopsis "Sequence manipulation functions")
     (description "Sequence-manipulation functions that complement basic
 functions provided by @file{subr.el}.")
@@ -14574,7 +14574,7 @@ using user-provided rules.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://elpa.gnu.org/packages/on-screen-" version ".el"))
+             "https://elpa.gnu.org/packages/on-screen-" version ".el"))
        (file-name (string-append name "-" version ".el"))
        (sha256
         (base32 "0ga4hw23ki583li2z2hr7l6hk1nc2kdg4afndg06cm9jn158wza7"))))
@@ -14677,12 +14677,12 @@ modes of SLIME.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://elpa.gnu.org/packages/sml-mode-"
+       (uri (string-append "https://elpa.gnu.org/packages/sml-mode-"
                            version ".el"))
        (sha256
         (base32 "1bdg9ywpvj85hxqah9w1raxlcrhkyx67nw22jwd1bd5j0fhmgqij"))))
     (build-system emacs-build-system)
-    (home-page "http://elpa.gnu.org/packages/sml-mode.html")
+    (home-page "https://elpa.gnu.org/packages/sml-mode.html")
     (synopsis "Major mode for editing (Standard) ML")
     (description "SML-MODE is a major Emacs mode for editing Standard ML.
 It provides syntax highlighting and automatic indentation and
@@ -19395,7 +19395,7 @@ between \"frame-width\" and \"frame-height\", between \"public\",
         (base32
          "039ffvp7c810mjyargmgw1i87g0z8qs8qicq826sd9aiz9hprfaz"))))
     (build-system emacs-build-system)
-    (home-page "http://elpa.gnu.org/packages/ediprolog.html")
+    (home-page "https://elpa.gnu.org/packages/ediprolog.html")
     (synopsis "Emacs Does Interactive Prolog")
     (description "This package provides a major mode that let the user
 interact with SWI-Prolog in all buffers.  For instance, one can consult Prolog
@@ -20422,8 +20422,8 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
   ;; This package has versions newer than indicated on MELPA.
   ;; Get the current version from `telega-version` in telega.el.
   ;; or by running M-x telega-version.
-  (let ((commit "4497a3c19d9806eb9edfe13d326d6d9cbb895f64")
-	(revision "3")
+  (let ((commit "69565cc4de72e28148c8041de8930a122a39b800")
+	(revision "4")
 	(version "0.5.4"))
     (package
       (name "emacs-telega")
@@ -20436,7 +20436,7 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
                (commit commit)))
          (sha256
           (base32
-           "1g0gbbgs8rbcip6kqjxdmnsjlq0ixgknb0qcda7siaha9gd7fjh2"))
+           "0blvj07f1sbdmp68qwlwgnhnv42ib0mjai5ndf8scbi12drn4rmk"))
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
@@ -20523,6 +20523,7 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
        `(("ffmpeg" ,ffmpeg))) ; mp4/gif support.
       (propagated-inputs
        `(("emacs-visual-fill-column" ,emacs-visual-fill-column)
+         ("emacs-company" ,emacs-company)
          ("libwebp" ,libwebp))) ; sticker support.
       (native-inputs
        `(("tdlib" ,tdlib)

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -70,14 +70,22 @@ interface\" (ABI) for TYPE is equal to COOKIE."
                  "~a: record ABI mismatch; recompilation needed"
                  (list #,type) '()))))
 
-  (define (report-invalid-field-specifier name bindings)
-    "Report the first invalid binding among BINDINGS."
+  (define* (report-invalid-field-specifier name bindings
+                                           #:optional parent-form)
+    "Report the first invalid binding among BINDINGS.  PARENT-FORM is used for
+error-reporting purposes."
     (let loop ((bindings bindings))
       (syntax-case bindings ()
         (((field value) rest ...)                   ;good
          (loop #'(rest ...)))
         ((weird _ ...)                              ;weird!
-         (syntax-violation name "invalid field specifier" #'weird)))))
+         ;; WEIRD may be an identifier, thus lacking source location info, and
+         ;; BINDINGS is a list, also lacking source location info.  Hopefully
+         ;; PARENT-FORM provides source location info.
+         (apply syntax-violation name "invalid field specifier"
+                (if parent-form
+                    (list parent-form #'weird)
+                    (list #'weird)))))))
 
   (define (report-duplicate-field-specifier name ctor)
     "Report the first duplicate identifier among the bindings in CTOR."
@@ -233,7 +241,8 @@ of TYPE matches the expansion-time ABI."
             ;; Report precisely which one is faulty, instead of letting the
             ;; "source expression failed to match any pattern" error.
             (report-invalid-field-specifier 'name
-                                            #'(bindings (... ...))))))))))
+                                            #'(bindings (... ...))
+                                            s))))))))
 
 (define-syntax-rule (define-field-property-predicate predicate property)
   "Define PREDICATE as a procedure that takes a syntax object and, when passed

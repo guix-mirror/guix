@@ -30,7 +30,7 @@
 ;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018 Madalin Ionel-Patrascu <madalinionel.patrascu@mdc-berlin.de>
@@ -42,8 +42,8 @@
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Jesse Gibbons <jgibbons2357+guix@gmail.com>
 ;;; Copyright © 2019 Dan Frumin <dfrumin@cs.ru.nl>
-;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
-;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
+;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019, 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2019 Josh Holland <josh@inv.alid.pw>
 ;;; Copyright © 2017, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
@@ -462,6 +462,62 @@ want what you have.")
 (define-public cataclysm-dark-days-ahead
   (deprecated-package "cataclysm-dark-days-ahead" cataclysm-dda))
 
+(define-public corsix-th
+  (package
+    (name "corsix-th")
+    (version "0.63")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/CorsixTH/CorsixTH.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1rkyk8g55xny276s0hr5k8mq6f4nzz56d3k2mp09dzfymrqb8hgi"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-binary
+           (lambda _
+             ;; Set Lua module paths and default MIDI soundfont on startup.
+             (let* ((out (assoc-ref %outputs "out"))
+                    (fluid (assoc-ref %build-inputs "fluid-3"))
+                    (lua-version ,(version-major+minor (package-version lua)))
+                    (lua-cpath
+                     (map (lambda (lib)
+                            (string-append
+                             (assoc-ref %build-inputs (string-append "lua-" lib))
+                             "/lib/lua/" lua-version "/?.so"))
+                          '("filesystem" "lpeg"))))
+               (wrap-program (string-append out "/bin/corsix-th")
+                 `("LUA_CPATH" ";" = ,lua-cpath)
+                 `("SDL_SOUNDFONTS" ":" suffix
+                   (,(string-append fluid "/share/soundfonts/FluidR3Mono_GM.sf3")))))
+             #t)))
+       #:tests? #f)) ; TODO need busted package to run tests
+    ;; Omit Lua-Socket dependency to disable automatic updates.
+    (inputs
+     `(("ffmpeg" ,ffmpeg)
+       ("fluid-3" ,fluid-3)
+       ("freetype" ,freetype)
+       ("lua" ,lua)
+       ("lua-filesystem" ,lua-filesystem)
+       ("lua-lpeg" ,lua-lpeg)
+       ("sdl2" ,sdl2)
+       ("sdl2-mixer" ,sdl2-mixer)))
+    (home-page "https://corsixth.com")
+    (synopsis "Implementation of the @i{Theme Hospital} game engine")
+    (description
+     "This package provides a reimplementation of the 1997 Bullfrog business
+simulation game @i{Theme Hospital}.  As well as faithfully recreating the
+original engine, CorsixTH adds support for high resolutions, custom levels and
+more.  This package does @emph{not} provide the game assets.")
+    (license (list
+              license:expat ; main license
+              license:bsd-3)))) ; CorsixTH/Src/random.c
+
 (define-public cowsay
   (package
     (name "cowsay")
@@ -654,7 +710,7 @@ real-time combat.")
 (define-public golly
   (package
     (name "golly")
-    (version "3.2")
+    (version "3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/golly/golly/golly-"
@@ -662,7 +718,7 @@ real-time combat.")
                                   "-src.tar.gz"))
               (sha256
                (base32
-                "0cg9mbwmf4q6qxhqlnzrxh9y047banxdb8pd3hgj3smmja2zf0jd"))))
+                "1j3ksnar4rdam4xiyspgyrs1pifbvxfxkrn65brkwxpx39mpgzc8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "CC=gcc"
@@ -738,6 +794,34 @@ automata.  The following features are available:
 @item Auto fit option to keep patterns within the view.
 @end enumerate")
     (license license:gpl2+)))
+
+(define-public julius
+  (package
+    (name "julius")
+    (version "1.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bvschaik/julius.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0kgyzfjii4dhpy2h05977alwdmxyxb4jxznnrhlgb21m0ybncmvp"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("sdl2" ,sdl2)
+       ("sdl2-mixer" ,sdl2-mixer)))
+    (home-page "https://github.com/bvschaik/julius")
+    (synopsis "Re-implementation of Caesar III game engine")
+    (description
+     "Engine for Caesar III, a city-building real-time strategy game.
+Julius includes some UI enhancements while preserving the logic (including
+bugs) of the original game, so that saved games are compatible.  This package
+does not include game data.")
+    (license (list license:agpl3
+                   license:expat        ; ext/dirent
+                   license:zlib))))     ; ext/tinyfiledialogs
 
 (define-public meandmyshadow
   (package
@@ -822,8 +906,8 @@ destroying an ancient book using a special wand.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://files.gnubg.org/media/sources/gnubg-release-"
-                           version "-sources." "tar.gz"))
+       (uri (string-append "mirror://gnu/gnubg/gnubg-release-"
+                           version "-sources.tar.gz"))
        (sha256
         (base32
          "11xwhcli1h12k6rnhhyq4jphzrhfik7i8ah3k32pqw803460n6yf"))))
@@ -838,7 +922,27 @@ destroying an ancient book using a special wand.")
               ("libcanberra" ,libcanberra)))
     (native-inputs `(("python-2" ,python-2)
                      ("pkg-config" ,pkg-config)))
-    (home-page "http://gnubg.org")
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-desktop-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (apps (string-append out "/share/applications")))
+               (mkdir-p apps)
+               (with-output-to-file (string-append apps "/gnubg.desktop")
+                 (lambda _
+                   (format #t
+                           "[Desktop Entry]~@
+                            Name=GNU Backgammon~@
+                            Exec=~a/bin/gnubg -w~@
+                            Icon=gnubg~@
+                            Categories=Game;~@
+                            Terminal=false~@
+                            Type=Application~%"
+                           out))))
+             #t)))))
+    (home-page "https://www.gnu.org/software/gnubg/")
     (synopsis "Backgammon game")
     (description "The GNU backgammon application (also known as \"gnubg\") can
 be used for playing, analyzing and teaching the game.  It has an advanced
@@ -1527,16 +1631,21 @@ a C library, so they can easily be integrated into other programs.")
 (define-public cmatrix
   (package
     (name "cmatrix")
-    (version "1.2a")
+    (version "2.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "http://www.asty.org/cmatrix/dist/cmatrix-" version
-                           ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/abishekvashok/cmatrix.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0k06fw2n8nzp1pcdynhajp5prba03gfgsbj91bknyjr5xb5fd9hz"))))
+         "1h9jz4m4s5l8c3figaq46ja0km1gimrkfxm4dg7mf4s84icmasbm"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -1886,7 +1995,7 @@ match, cannon keep, and grave-itation pit.")
 (define minetest-data
   (package
     (name "minetest-data")
-    (version "5.1.0")
+    (version "5.1.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1914,13 +2023,13 @@ match, cannon keep, and grave-itation pit.")
     (synopsis "Main game data for the Minetest game engine")
     (description
      "Game data for the Minetest infinite-world block sandbox game.")
-    (home-page "http://minetest.net")
+    (home-page "https://www.minetest.net/")
     (license license:lgpl2.1+)))
 
 (define-public minetest
   (package
     (name "minetest")
-    (version "5.1.0")
+    (version "5.1.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1929,16 +2038,10 @@ match, cannon keep, and grave-itation pit.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "184n9gxfa7yr0j85z2x736maaymsnppd5jzm326wlqri3c0qqy3z"))
+                "0cjj63333b7j4ydfq0h9yc6d2jvmyjd7n7zbd08yrf0rcibrj2k0"))
               (modules '((guix build utils)))
               (snippet
                '(begin
-                  ;; Mimic upstream commit 706b6aad06, for compatibility with
-                  ;; newer jsoncpp.  Remove this for > 5.1.0.
-                  (substitute* "cmake/Modules/FindJson.cmake"
-                    (("features\\.h")
-                     "allocator.h"))
-
                   ;; Delete bundled libraries.
                   (delete-file-recursively "lib")
                   #t))))
@@ -1988,7 +2091,7 @@ various types of blocks in a three-dimensional open world.  This allows
 forming structures in every possible creation, on multiplayer servers or as a
 single player.  Mods and texture packs allow players to personalize the game
 in different ways.")
-    (home-page "http://minetest.net")
+    (home-page "https://www.minetest.net/")
     (license license:lgpl2.1+)))
 
 (define glkterm
@@ -2061,7 +2164,7 @@ using the @code{curses.h} library for screen control.")
               (install-file "glulxe" bin))
             #t))
         (delete 'configure))))          ; no configure script
-   (home-page "http://www.eblong.com/zarf/glulx/")
+   (home-page "https://www.eblong.com/zarf/glulx/")
    (synopsis "Interpreter for Glulx VM")
    (description
     "Glulx is a 32-bit portable virtual machine intended for writing and
@@ -2285,7 +2388,7 @@ This game is based on the GPL version of the famous game TuxRacer.")
 (define-public supertuxkart
   (package
     (name "supertuxkart")
-    (version "1.0")
+    (version "1.1")
     (source
      (origin
        (method url-fetch)
@@ -2293,7 +2396,7 @@ This game is based on the GPL version of the famous game TuxRacer.")
                            version "/supertuxkart-" version "-src.tar.xz"))
        (sha256
         (base32
-         "106rlp99hq18b4q1kdri3pl06cc4v7iqfp1hp9k2f8751lzz923d"))
+         "1s0ai07g3sswck9mr0142989mrgzzq1njc1qxk5als5b245jpc79"))
        (modules '((guix build utils)))
        (snippet
         ;; Delete bundled library sources
@@ -2301,7 +2404,7 @@ This game is based on the GPL version of the famous game TuxRacer.")
            ;; Supertuxkart uses modified versions of the Irrlicht engine
            ;; and the bullet library.  The developers gave an explanation
            ;; here: http://forum.freegamedev.net/viewtopic.php?f=17&t=3906
-           ;; FIXME: try to unbundle angelscript
+           ;; FIXME: try to unbundle angelscript and libraqm
            (for-each delete-file-recursively
                      '("lib/zlib"
                        "lib/libpng"
@@ -2319,6 +2422,9 @@ This game is based on the GPL version of the famous game TuxRacer.")
              "-DNO_IRR_COMPILE_WITH_ZLIB_=TRUE"
              "-DUSE_SYSTEM_GLEW=TRUE"
              "-DUSE_SYSTEM_ENET=TRUE"
+             ;; In order to use the system ENet library, IPv6 support (added in
+             ;; SuperTuxKart version 1.1) must be disabled.
+             "-DUSE_IPV6=FALSE"
              ;; FIXME: needs libopenglrecorder
              "-DBUILD_RECORDER=0"
              ;; Irrlicht returns an integer instead of a boolean
@@ -2330,6 +2436,7 @@ This game is based on the GPL version of the famous game TuxRacer.")
        ("libvorbis" ,libvorbis)
        ("freetype" ,freetype)
        ("fribidi" ,fribidi)
+       ("harfbuzz" ,harfbuzz)
        ("mesa" ,mesa)
        ("libx11" ,libx11)
        ("libxrandr" ,libxrandr)
@@ -2341,7 +2448,7 @@ This game is based on the GPL version of the famous game TuxRacer.")
        ("enet" ,enet)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "https://supertuxkart.net/")
+    (home-page "https://supertuxkart.net/Main_Page")
     (synopsis "3D kart racing game")
     (description "SuperTuxKart is a 3D kart racing game, with a focus on
 having fun over realism.  You can play with up to 4 friends on one PC, racing
@@ -3141,45 +3248,8 @@ http://lavachat.symlynx.com/unix/")
     (license license:gpl2+)))
 
 (define-public red-eclipse
-  (let ((release "1.6.0")
-        (revision 0)
-        (data-sources
-         '(("acerspyro" "12b0bngl7hlxw4iwdbn99jp081yl6z1ic0s788nm349drbr2pck8")
-           ("actors" "0x7qqx67679q6ark9zz02skwhzgabid69kwi6zmhfpfgicn4927r")
-           ("appleflap" "08xslwqfqz3j4m03pv5ry2gdzj5k2ns51z8n6sln3sa94i9x8qkm")
-           ("blendbrush" "18zf5i2ax4p14x4c9nhk9fq6l1xgbxw62gm72vx59vbfdpjrw3cg")
-           ("caustics" "172fxwx7kbz5nmbjq98kr52ips505wb99fibgnpg8cj02syrya8k")
-           ("crosshairs" "14w8ysqzdsx9bzpfbl700jzngbh14rdghhjdf6zd6jlkvrl6754r")
-           ("dziq" "056imqszvp90j7cgz52ly0f31px64gsrmvm9k2c78ldbx87jnhc3")
-           ("elyvisions" "1bsgr0gr7njydj8fqclh0a27lrsyic3xfd5a4vwggw7g54azpgk2")
-           ("fonts" "00ibisza1qci0ghf2rynyf28l6r3nqhfzjf80k6gg76q4v7p1myx")
-           ("freezurbern" "07l9ldk9b82f12c13wcg5xxdf15bw0yjxk3vvk8v3ygrl2mwksyr")
-           ("john" "1jdmwkrdi5b9pivkm22rxhmkk1db9dx6l54wzcc23cvdz04ij93k")
-           ("jojo" "0f7kjy43fbk9kw8fip6bbw4gn3pryh0fndlahjfkaysrx98krdj3")
-           ("jwin" "0nc8dndnpqk2ad6316a8k6kgzsrkpwvk8s4gyh7aqfi4axfclril")
-           ("luckystrike" "04jiipqahphmvz5cd74dygr62dlvv6l4iglb8hzh4pp8frhls8bq")
-           ("maps" "0an46ipjvw4h0nxvb6qvnzp1cdkzlkiinqz4zh9lmxy1ds0gclim")
-           ("mayhem" "15k10imm2wr6c6fq35n4r99k7kz7n9zdnjlw6dmdq6fba67i6sbc")
-           ("mikeplus64" "0v4wiiivm3829j4phlavy22n4c6k6ib9ixxpdz7r6ysg5cdkaw33")
-           ("misc" "13rfgwrlfhflz6inbkg3fypyf8im0m49sw112b17qrw2zgp8i1rz")
-           ("nieb" "0z0h9jdn2gkkjil3vsvwidb1p2k09pi5n3wjxza12hhvqmcs7q8f")
-           ("nobiax" "08bfp4q6gbfis18bp1h4d0hqssk79jc4fhyjxnv21dbam4v4mnkn")
-           ("particles" "1vsx3fgg19xggxfhz3vlrh6nqhmw7kl9kmxrvb2j84blp00vd6z2")
-           ("philipk" "14irscg80607i5k5l2ci0n9nwibvda2f3xsykgv96d0vldrp5n5a")
-           ("projectiles" "09bnfsrywirwgjm6d7ff5nicx6w6b7w9568x9pb5q0ncaps3l85s")
-           ("props" "1dlabbprlkif8af3daf9nbgcwgxiymvj0yiphqhlri8ylfy2vpz4")
-           ("skyboxes" "14bi3md5y47cvb9ybipdvksz40gqsqw2r0lh3zzqb4acq367w18y")
-           ("snipergoth" "0m8rvvy5n8n9pm0b5cqvzsxsw51mqk8m7s1h3qc849b38isliwq2")
-           ("sounds" "0ivf3w5bphz5pzzx6kwcb67vbly1l19cgv3s0cyp8n87afiqj5rd")
-           ("textures" "0qdmgx7zbcqnb9rrga2izr93p5inirczhddfxs504rsnv0v8vyxm")
-           ("torley" "05ppyhghq859cbbxzj3dnl9fcx3ghy04ds1pylypwg2hsxzbjwcd")
-           ("trak" "0g3vq86q91a3syli38lwc8ca4ychfwsmmqf85kqzfzyd627ybclm")
-           ("ulukai" "0asa5fz400impklcg6dy2f7jiaqfc1sn1c36fpg8jd01gw66lw93")
-           ("unnamed" "0rz5683j7sfwkcycfypbv4b0ihp0qwn9rzskfsabwc1s5g324917")
-           ("vanities" "13f18783rc8cjf22p61zr8m5g1migzlx05fzl8xnbjdkqq4cdyix")
-           ("vegetation" "1y5d97nfmvax7y4fr0y5v0c8zb1ajkqwx76kjd4qc9n4spdsi5sc")
-           ("weapons" "103g1dhxv5ffz4ddg2xcbshbgv9606chsbas3pzk6h9ybqsyjrqh")
-           ("wicked" "1884rk34a2dj83gz82rc4zh3ch0dyj5221hvsr0a5h60578i7yj6"))))
+  (let ((release "2.0.0")
+        (revision 0))
     (package
       (name "red-eclipse")
       (version (if (zero? revision)
@@ -3190,13 +3260,18 @@ http://lavachat.symlynx.com/unix/")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/red-eclipse/base.git")
-               (commit (string-append "v" release))))
+               (url "https://github.com/redeclipse/base.git")
+               (commit (string-append "v" release))
+               (recursive? #t))) ; for game data
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0qy9kmq21wc4bdhwifasxc5dv1y5c53sn7dfmyc5y3zyz8wjyij4"))
-         (patches
-          (search-patches "red-eclipse-remove-gamma-name-hack.patch"))))
+          (base32 "0sz0mqhwx8r9n4mk3qrxw420nlsm3y0n48gd0lazgd64lfqjh3ab"))
+         (modules '((guix build utils)))
+         (snippet
+          ;; Remove proprietary libraries and other pre-compiled binaries.
+          '(begin
+             (delete-file-recursively "bin")
+             #t))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f            ; no check target
@@ -3207,34 +3282,13 @@ http://lavachat.symlynx.com/unix/")
                                            (assoc-ref %outputs "out")))
          #:phases
          (modify-phases %standard-phases
-           (add-after 'unpack 'unpack-data
-             (lambda* (#:key inputs #:allow-other-keys)
-               (delete-file-recursively "data")
-               (mkdir "data")
-               (with-directory-excursion "data"
-                 (for-each (lambda (name)
-                             (copy-recursively (assoc-ref inputs name) name))
-                           (list ,@(map car data-sources))))
-               #t))
-           (add-after 'unpack-data 'add-store-data-package-path-as-default
+           (add-after 'unpack 'add-store-data-package-path-as-default
              (lambda* (#:key outputs #:allow-other-keys)
                (substitute* "src/engine/server.cpp"
-                 (("(else[[:space:]]*)((addpackagedir\\()\"data\"(\\);))"
-                   _
-                   else_part
-                   addpackagedir_original
-                   addpackagedir_open
-                   addpackagedir_close)
-                  (string-append else_part
-                                 "{ "
-                                 addpackagedir_open
-                                 "\""
+                 (("data = \"data\"")
+                  (string-append "data = \""
                                  (assoc-ref outputs "out")
-                                 "/share/redeclipse/data\""
-                                 addpackagedir_close
-                                 " "
-                                 addpackagedir_original
-                                 " }")))
+                                 "/share/redeclipse/data\"")))
                #t))
            (delete 'configure)  ; no configure script
            (add-after 'set-paths 'set-sdl-paths
@@ -3291,37 +3345,27 @@ exec -a \"$0\" ~a/.redeclipse_server_linux-real~%"
        `(("pkg-config" ,pkg-config)))
       (inputs
        `(("curl" ,curl)
+         ("freetype" ,freetype)
          ("glu" ,glu)
          ("sdl-union" ,(sdl-union (list sdl2
                                         sdl2-image
-                                        sdl2-mixer)))
-         ;; Create origin records for the many separate data packages.
-         ,@(map (match-lambda
-                  ((name hash)
-                   (list name
-                         (origin
-                           (method git-fetch)
-                           (uri
-                            (git-reference
-                             (url (string-append "https://github.com/"
-                                                 "red-eclipse/" name ".git"))
-                             (commit (string-append "v" release))))
-                           (sha256 (base32 hash))
-                           (file-name (git-file-name name version))))))
-                data-sources)))
-      (home-page "http://redeclipse.net/")
+                                        sdl2-mixer)))))
+      (home-page "https://redeclipse.net/")
       (synopsis "Arena shooter derived from the Cube 2 engine")
       (description
        "Red Eclipse is an arena shooter, created from the Cube2 engine.
 Offering an innovative parkour system and distinct but all potent weapons,
 Red Eclipse provides fast paced and accessible gameplay.")
       ;; The engine is under Zlib; data files are covered by the other
-      ;; licenses.  More details at <http://redeclipse.net/wiki/License>.
+      ;; licenses.  More details at file:///doc/all-licenses.txt.
       (license (list license:expat
                      license:zlib
+                     license:cc-by-sa4.0
                      license:cc-by-sa3.0
                      license:cc-by3.0
-                     license:cc0)))))
+                     license:cc0
+                     license:public-domain
+                     license:silofl1.1)))))
 
 (define-public grue-hunter
   (package
@@ -3800,16 +3844,16 @@ a style similar to the original Super Mario games.")
 (define-public tintin++
   (package
     (name "tintin++")
-    (version "2.01.7")
+    (version "2.02.00")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/tintin/TinTin++ Source Code/"
-                           (version-major+minor version)
+                           (string-drop-right version 1)
                            "/tintin-" version ".tar.gz"))
        (sha256
         (base32
-         "033n84pyxml3n3gd4dq0497n9w331bnrr1gppwipz9ashmq8jz7v"))))
+         "02qmbhzhh2sdy5b37v54gihs9k4bxmlz3j96gyx7icvx2grkbg5i"))))
     (inputs
      `(("gnutls" ,gnutls)
        ("pcre" ,pcre)
@@ -3825,14 +3869,14 @@ a style similar to the original Super Mario games.")
              (chdir "src")
              #t)))))
     (build-system gnu-build-system)
-    (home-page "http://tintin.sourceforge.net/")
+    (home-page "https://tintin.mudhalla.net/")
     (synopsis "MUD client")
     (description
      "TinTin++ is a MUD client which supports MCCP (Mud Client Compression
 Protocol), MMCP (Mud Master Chat Protocol), xterm 256 colors, most TELNET
 options used by MUDs, as well as those required to login via telnet on
 Linux / Mac OS X servers, and an auto mapper with a VT100 map display.")
-    (license license:gpl2+)))
+    (license license:gpl3+)))
 
 (define-public laby
   (package
@@ -4486,7 +4530,7 @@ small robot living in the nano world, repair its maker.")
 (define-public teeworlds
   (package
     (name "teeworlds")
-    (version "0.7.2")
+    (version "0.7.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4495,7 +4539,7 @@ small robot living in the nano world, repair its maker.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "15l988qcsqgb6rjais0qd5sd2rjanm2708jmzvkariqzz0d6pb93"))
+                "1lxdb1k2cdj2421vyz1z0ximzfnpkh2y4y84zpn2gqsa1nzwbryb"))
               (modules '((guix build utils)
                          (ice-9 ftw)
                          (ice-9 regex)
@@ -4507,9 +4551,7 @@ small robot living in the nano world, repair its maker.")
                                      (cut string-append base-dir <>))
                             (remove (cut string-match "(^.)|(^md5$)" <>)
                                     (scandir base-dir)))
-                  #t))
-              (patches
-               (search-patches "teeworlds-use-latest-wavpack.patch"))))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests included
@@ -4520,19 +4562,6 @@ small robot living in the nano world, repair its maker.")
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
-             ;; The bundled json-parser uses an old API.
-             ;; To use the latest non-bundled version, we need to pass the
-             ;; length of the data in all 'json_parse_ex' calls.
-             (define (use-latest-json-parser file)
-               (substitute* file
-                 (("engine/external/json-parser/json\\.h")
-                  "json-parser/json.h")
-                 (("json_parse_ex\\(&JsonSettings, pFileData, aError\\);")
-                  "json_parse_ex(&JsonSettings,
-                                 pFileData,
-                                 strlen(pFileData),
-                                 aError);")))
-
              ;; Embed path to assets.
              (substitute* "src/engine/shared/storage.cpp"
                (("#define DATA_DIR.*")
@@ -4564,13 +4593,6 @@ settings.link.libs:Add(\"wavpack\")")
              (substitute* "src/engine/client/sound.cpp"
                (("engine/external/wavpack/wavpack\\.h")
                 "wavpack/wavpack.h"))
-             (for-each use-latest-json-parser
-                       '("src/game/client/components/countryflags.cpp"
-                         "src/game/client/components/menus_settings.cpp"
-                         "src/game/client/components/skins.cpp"
-                         "src/game/client/localization.cpp"
-                         "src/game/editor/auto_map.h"
-                         "src/game/editor/editor.cpp"))
              #t))
          (replace 'build
            (lambda _
@@ -5314,15 +5336,14 @@ Tales of Maj’Eyal offers engaging roguelike gameplay for the 21st century.")
 (define-public quakespasm
   (package
     (name "quakespasm")
-    (version "0.93.1")
+    (version "0.93.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/quakespasm/Source/quakespasm-"
                            version ".tgz"))
        (sha256
-        (base32
-         "1bimv18f6rzhyjz78yvw2vqr5n0kdqbcqmq7cb3m951xgsxfcgpd"))))
+        (base32 "0qm0j5drybvvq8xadfyppkpk3rxqsxbywzm6iwsjwdf0iia3gss5"))))
     (arguments
      `(#:tests? #f
        #:make-flags '("CC=gcc"
@@ -5685,24 +5706,29 @@ You can save humanity and get programming skills!")
 (define-public gzdoom
   (package
     (name "gzdoom")
-    (version "3.7.2")
-    (source (origin
-              (method url-fetch)
-              (uri
-               (string-append "https://zdoom.org/files/gzdoom/src/gzdoom-src-g"
-                              version ".zip"))
-              (sha256
-               (base32
-                "0182f160m8d0c3nywjw3dxvnz93xjs4cn8akx7137cha4s05wdq7"))
-              (patches (search-patches "gzdoom-search-in-installed-share.patch"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  (delete-file-recursively "bzip2")
-                  (delete-file-recursively "game-music-emu")
-                  (delete-file-recursively "jpeg")
-                  (delete-file-recursively "zlib")
-                  #t))))
+    (version "4.3.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/coelckers/gzdoom.git")
+             (commit (string-append "g" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0i4hyg72z84fc6ca2ic9q82q5cbgrbd7bynl3kpkypxvyasq08wz"))
+       (patches (search-patches "gzdoom-search-in-installed-share.patch"
+                                "gzdoom-find-system-libgme.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove some bundled libraries.  XXX There are more, but removing
+           ;; them would require, at least, patching the build system.
+           (with-directory-excursion "libraries"
+             (delete-file-recursively "bzip2")
+             (delete-file-recursively "game-music-emu")
+             (delete-file-recursively "jpeg")
+             (delete-file-recursively "zlib"))
+           #t))))
     (arguments
      '(#:tests? #f
        #:configure-flags
@@ -5712,8 +5738,12 @@ You can save humanity and get programming skills!")
            "-DCMAKE_CXX_FLAGS:="
            "-DSHARE_DIR=\\\"" out "/share/\\\" "
            "-DGUIX_OUT_PK3=\\\"" out "/share/games/doom\\\"")
-          ;; look for libraries at buildtime instead of
-          ;; dynamically finding them at runtime
+
+          ;; The build requires some extra convincing not to use the bundled
+          ;; libgme previously deleted in the soure snippet.
+          "-DFORCE_INTERNAL_GME=OFF"
+
+          ;; Link libraries at build time instead of loading them at run time.
           "-DDYN_OPENAL=OFF"
           "-DDYN_FLUIDSYNTH=OFF"
           "-DDYN_GTK=OFF"
@@ -5733,19 +5763,19 @@ You can save humanity and get programming skills!")
                   (string-append "COMMAND " (which "sh"))))
 
                (substitute*
-                   "src/sound/mididevices/music_fluidsynth_mididevice.cpp"
+                   "libraries/zmusic/mididevices/music_fluidsynth_mididevice.cpp"
                  (("/usr/share/sounds/sf2/FluidR3_GM.sf2")
                   (string-append fluid-3 "/share/soundfonts/FluidR3Mono_GM.sf3")))
 
                (substitute*
-                   "src/sound/mididevices/music_timiditypp_mididevice.cpp"
+                   "libraries/zmusic/mididevices/music_timiditypp_mididevice.cpp"
                  (("exename = \"timidity\"")
                   (string-append "exename = \"" timidity++ "/bin/timidity\"")))
                #t))))))
     (build-system cmake-build-system)
     (inputs `(("bzip2" ,bzip2)
               ("fluid-3" ,fluid-3)
-              ("fluidsynth" ,fluidsynth-1)      ;XXX: try using 2.x when updating
+              ("fluidsynth" ,fluidsynth)
               ("gtk+3" ,gtk+)
               ("libgme" ,libgme)
               ("libjpeg" ,libjpeg)
@@ -5776,7 +5806,7 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
 (define-public odamex
   (package
     (name "odamex")
-    (version "0.8.0")
+    (version "0.8.1")
     (source
      (origin
        (method url-fetch)
@@ -5784,10 +5814,9 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
              "mirror://sourceforge/odamex/Odamex/" version "/"
              "odamex-src-" version ".tar.gz"))
        (sha256
-        (base32
-         "1sh6lqj7vsdmnqz17hw0b6vy7xx6dp41k2sdw99ympsfa2xd1d2j"))))
+        (base32 "1ywbqkfacc9fc5di3dn95y5ah2ys9i241j64q3f37a73x92llw1i"))))
     (build-system cmake-build-system)
-    (arguments `(#:tests? #f)) ; no tests.
+    (arguments `(#:tests? #f))          ; no tests
     (inputs
      `(("sdl" ,sdl)
        ("sdl-mixer" ,sdl-mixer)
@@ -5840,7 +5869,7 @@ affect gameplay).")
   (package
     (inherit chocolate-doom)
     (name "crispy-doom")
-    (version "5.6.3")
+    (version "5.6.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5848,7 +5877,7 @@ affect gameplay).")
                     (commit (string-append "crispy-doom-" version))))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "0f319979wqfgm4pvsa6y5clg30p55l441kmrr8db0p5smyv3x2s4"))))
+               (base32 "1ls4v2kpb7vi7xji5yqbmyc5lfkz497h1vvj9w86wkrw8k59hlg2"))))
     (native-inputs
      (append
       (package-native-inputs chocolate-doom)
@@ -5858,7 +5887,7 @@ affect gameplay).")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'bootstrap
-           ;; the autogen.sh script in the source tree doesn't work
+           ;; The bundled autogen.sh script unconditionally runs ./configure.
            (lambda _ (invoke "autoreconf" "-vif"))))))
     (synopsis "Limit-removing enhanced-resolution Doom source port based on
 Chocolate Doom")
@@ -5870,10 +5899,79 @@ entirely config file, savegame, netplay and demo compatible with the
 original.")
     (home-page "https://www.chocolate-doom.org/wiki/index.php/Crispy_Doom")))
 
+(define shlomif-cmake-modules
+  (origin
+    (method url-fetch)
+    (uri (string-append "https://bitbucket.org/shlomif/shlomif-cmake-modules/"
+                        "raw/c505713d7a7cda608f97f01577e5868a711b883e/"
+                        "shlomif-cmake-modules/Shlomif_Common.cmake"))
+    (sha256
+     (base32 "0kx9s1qqhhzprp1w3b67xmsns0n0v506bg5hgrshxaxpy6lqiwb2"))))
+
+(define-public rinutils
+  (package
+    (name "rinutils")
+    (version "0.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/shlomif/rinutils.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1fpxyg86ggv0h7j8aarjjxrvwlj7jycd3bw066c0dwkq2fszxsf2"))))
+    (native-inputs
+     `(("perl" ,perl)
+       ;; The following is only needed for tests.
+       ("perl-file-find-object" ,perl-file-find-object)
+       ("perl-test-differences" ,perl-test-differences)
+       ("perl-class-xsaccessor" ,perl-class-xsaccessor)
+       ("perl-io-all" ,perl-io-all)
+       ("perl-test-runvalgrind" ,perl-test-runvalgrind)
+       ("cmake-rules" ,shlomif-cmake-modules)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cmocka" ,cmocka)
+       ("perl-env-path", perl-env-path)
+       ("perl-inline" ,perl-inline)
+       ("perl-inline-c" ,perl-inline-c)
+       ("perl-string-shellquote" ,perl-string-shellquote)
+       ("perl-test-trailingspace" ,perl-test-trailingspace)
+       ("perl-file-find-object-rule" ,perl-file-find-object-rule)
+       ("perl-text-glob" ,perl-text-glob)
+       ("perl-number-compare" ,perl-number-compare)
+       ("perl-moo" ,perl-moo)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-build-env
+           (lambda* (#:key inputs #:allow-other-keys)
+             (use-modules (guix build utils))
+             (let* ((cmake-rules (assoc-ref inputs "cmake-rules")))
+               (copy-file cmake-rules
+                          (string-append "cmake/"
+                                         (strip-store-file-name cmake-rules)))
+               #t)))
+         (replace 'check
+           (lambda _
+             (with-directory-excursion "../source"
+               (setenv "FCS_TEST_BUILD" "1")
+               (setenv "RINUTILS_TEST_BUILD" "1")
+               ;; TODO: Run tests after setting RINUTILS_TEST_TIDY to `1',
+               ;; which requires tidy-all.
+               ;; (setenv "RINUTILS_TEST_TIDY" "1")
+               (invoke "perl" "CI-testing/continuous-integration-testing.pl")))))))
+    (build-system cmake-build-system)
+    (home-page "https://www.shlomifish.org/open-source/projects/")
+    (synopsis "C11 / gnu11 utilities C library")
+    (description "This package provides C11 / gnu11 utilities C library")
+    (license license:expat)))
+
 (define-public fortune-mod
   (package
     (name "fortune-mod")
-    (version "2.6.2")
+    (version "2.12.0")
     (source
      (origin
        (method git-fetch)
@@ -5883,7 +5981,7 @@ original.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "11xff87s8ifw2dqs90n0rjq0psv4i7ykybygmibsqjj7id3xxw4c"))))
+         "0laxgqsdg7kvpvvm1f54b94ga9r0cr9g3ffii8avg8fy65x6pzc9"))))
     (build-system cmake-build-system)
     (arguments
      `(#:test-target "check"
@@ -5922,14 +6020,8 @@ original.")
        ("perl-class-xsaccessor" ,perl-class-xsaccessor)
        ("perl-io-all" ,perl-io-all)
        ("perl-test-runvalgrind" ,perl-test-runvalgrind)
-       ("cmake-rules"
-        ,(origin
-           (method url-fetch)
-           (uri (string-append "https://bitbucket.org/shlomif/shlomif-cmake-modules/"
-                               "raw/c505713d7a7cda608f97f01577e5868a711b883e/"
-                               "shlomif-cmake-modules/Shlomif_Common.cmake"))
-           (sha256
-            (base32 "0kx9s1qqhhzprp1w3b67xmsns0n0v506bg5hgrshxaxpy6lqiwb2"))))))
+       ("cmake-rules" ,shlomif-cmake-modules)
+       ("rinutils" ,rinutils)))
     (home-page "http://www.shlomifish.org/open-source/projects/fortune-mod/")
     (synopsis "The Fortune Cookie program from BSD games")
     (description "Fortune is a command-line utility which displays a random
@@ -6596,7 +6688,7 @@ civilized than your own.")
        ("gtk+" ,gtk+-2)
        ("jsoncpp" ,jsoncpp)
        ("libpng" ,libpng)
-       ("libjpeg" ,libjpeg-8)
+       ("libjpeg" ,libjpeg-turbo)
        ("libmad" ,libmad)
        ("libogg" ,libogg)
        ("libva" ,libva)
@@ -9487,3 +9579,88 @@ control of the board by capturing or adding to one square.
 
 This package is part of the KDE games module.")
     (license (list license:gpl2+ license:fdl1.2+))))
+
+(define-public xmoto
+  (package
+    (name "xmoto")
+    (version "0.5.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://download.tuxfamily.org/xmoto/xmoto/" version "/"
+             "xmoto-" version "-src.tar.gz"))
+       (sha256
+        (base32 "1ci6r8zd0l7z28cy92ddf9dmqbdqwinz2y1cny34c61b57wsd155"))
+       (patches
+        (search-patches
+         "xmoto-remove-glext.patch"     ;fixes licensing issue
+         "xmoto-reproducible.patch"
+         "xmoto-utf8.patch"))
+       ;; Unbundle ODE.
+       (modules '((guix build utils)))
+       (snippet
+        `(begin
+           (delete-file-recursively "src/ode")
+           #t))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; XXX: First flag prevents a build error with GCC7+.  The second
+     ;; flag works around missing text in game.  Both are fixed
+     ;; upstream.  Remove once xmoto 0.5.12+ is released.
+     `(#:make-flags '("CXXFLAGS=-fpermissive -D_GLIBCXX_USE_CXX11_ABI=0")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-desktop-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (apps (string-append out "/share/applications"))
+                    (pixmaps (string-append out "/share/pixmaps")))
+               (install-file "extra/xmoto.desktop" apps)
+               (install-file "extra/xmoto.xpm" pixmaps)
+               #t)))
+         (add-after 'install-desktop-file 'install-fonts
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let ((font-dir (string-append (assoc-ref inputs "font-dejavu")
+                                            "/share/fonts/truetype/"))
+                   (target-dir (string-append (assoc-ref outputs "out")
+                                              "/share/xmoto/Textures/Fonts/")))
+               (for-each (lambda (f)
+                           (let ((font (string-append font-dir f))
+                                 (target (string-append target-dir f)))
+                             (delete-file target)
+                             (symlink font target)))
+                         '("DejaVuSans.ttf" "DejaVuSansMono.ttf"))
+               #t)))
+         (add-after 'install-fonts 'install-man-page
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "xmoto.6"
+                           (string-append (assoc-ref outputs "out")
+                                          "/share/man/man6"))
+             #t)))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)))
+    (inputs
+     `(("curl" ,curl)
+       ("font-dejavu" ,font-dejavu)
+       ("glu" ,glu)
+       ("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("libxdg-basedir" ,libxdg-basedir)
+       ("libxml2" ,libxml2)
+       ("lua" ,lua-5.2)
+       ("ode" ,ode)
+       ("sdl" ,(sdl-union (list sdl sdl-mixer sdl-net sdl-ttf)))
+       ("sqlite" ,sqlite)
+       ("zlib" ,zlib)))
+    (home-page "https://xmoto.tuxfamily.org/")
+    (synopsis "2D motocross platform game")
+    (description "X-Moto is a challenging 2D motocross platform game, where
+physics play an all important role in the gameplay.  You need to control your
+bike to its limit, if you want to have a chance finishing the more difficult
+challenges.")
+    (license (list license:gpl2+        ;whole project
+                   license:bsd-4        ;src/bzip
+                   license:bsd-3        ;src/md5sum
+                   license:lgpl2.1+     ;src/iqsort.h
+                   license:expat))))

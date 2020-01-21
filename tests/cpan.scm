@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
+;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,9 +22,10 @@
   #:use-module (guix import cpan)
   #:use-module (guix base32)
   #:use-module (gcrypt hash)
-  #:use-module (guix tests)
+  #:use-module (guix tests http)
   #:use-module (guix grafts)
   #:use-module (srfi srfi-64)
+  #:use-module (web client)
   #:use-module (ice-9 match))
 
 ;; Globally disable grafts because they can trigger early builds.
@@ -32,13 +34,6 @@
 (define test-json
   "{
   \"metadata\" : {
-    \"prereqs\" : {
-      \"runtime\" : {
-        \"requires\" : {
-          \"Test::Script\" : \"1.05\",
-        }
-      }
-    }
     \"name\" : \"Foo-Bar\",
     \"version\" : \"0.1\"
   }
@@ -46,6 +41,13 @@
   \"distribution\" : \"Foo-Bar\",
   \"license\" : [
     \"perl_5\"
+  ],
+  \"dependency\": [
+     { \"relationship\": \"requires\",
+       \"phase\": \"runtime\",
+       \"version\": \"1.05\",
+       \"module\": \"Test::Script\"
+     }
   ],
   \"abstract\" : \"Fizzle Fuzz\",
   \"download_url\" : \"http://example.com/Foo-Bar-0.1.tar.gz\",
@@ -56,67 +58,51 @@
 (define test-source
   "foobar")
 
+;; Avoid collisions with other tests.
+(%http-server-port 10400)
+
 (test-begin "cpan")
 
 (test-assert "cpan->guix-package"
   ;; Replace network resources with sample data.
-  (mock ((guix build download) url-fetch
-         (lambda* (url file-name
-                       #:key
-                       (mirrors '()) verify-certificate?)
-           (with-output-to-file file-name
-             (lambda ()
-               (display
-                (match url
-                  ("http://example.com/Foo-Bar-0.1.tar.gz"
-                   test-source)
-                  (_ (error "Unexpected URL: " url))))))))
-        (mock ((guix http-client) http-fetch
-               (lambda (url . rest)
-                 (match url
-                   ("https://fastapi.metacpan.org/v1/release/Foo-Bar"
-                    (values (open-input-string test-json)
-                            (string-length test-json)))
-                   ("https://fastapi.metacpan.org/v1/module/Test::Script?fields=distribution"
-                    (let ((result "{ \"distribution\" : \"Test-Script\" }"))
-                      (values (open-input-string result)
-                              (string-length result))))
-                   (_ (error "Unexpected URL: " url)))))
-              (match (cpan->guix-package "Foo::Bar")
-                (('package
-                   ('name "perl-foo-bar")
-                   ('version "0.1")
-                   ('source ('origin
-                              ('method 'url-fetch)
-                              ('uri ('string-append "http://example.com/Foo-Bar-"
-                                                    'version ".tar.gz"))
-                              ('sha256
-                               ('base32
-                                (? string? hash)))))
-                   ('build-system 'perl-build-system)
-                   ('propagated-inputs
-                    ('quasiquote
-                     (("perl-test-script" ('unquote 'perl-test-script)))))
-                   ('home-page "https://metacpan.org/release/Foo-Bar")
-                   ('synopsis "Fizzle Fuzz")
-                   ('description 'fill-in-yourself!)
-                   ('license 'perl-license))
-                 (string=? (bytevector->nix-base32-string
-                            (call-with-input-string test-source port-sha256))
-                           hash))
-                (x
-                 (pk 'fail x #f))))))
+  (with-http-server `((200 ,test-json)
+                      (200 ,test-source)
+                      (200 "{ \"distribution\" : \"Test-Script\" }"))
+    (parameterize ((%metacpan-base-url (%local-url))
+                   (current-http-proxy (%local-url)))
+      (match (cpan->guix-package "Foo::Bar")
+        (('package
+           ('name "perl-foo-bar")
+           ('version "0.1")
+           ('source ('origin
+                      ('method 'url-fetch)
+                      ('uri ('string-append "http://example.com/Foo-Bar-"
+                                            'version ".tar.gz"))
+                      ('sha256
+                       ('base32
+                        (? string? hash)))))
+           ('build-system 'perl-build-system)
+           ('propagated-inputs
+            ('quasiquote
+             (("perl-test-script" ('unquote 'perl-test-script)))))
+           ('home-page "https://metacpan.org/release/Foo-Bar")
+           ('synopsis "Fizzle Fuzz")
+           ('description 'fill-in-yourself!)
+           ('license 'perl-license))
+         (string=? (bytevector->nix-base32-string
+                    (call-with-input-string test-source port-sha256))
+                   hash))
+        (x
+         (pk 'fail x #f))))))
 
-(test-equal "source-url-http"
-  ((@@ (guix import cpan) cpan-source-url)
-   `(("download_url" .
-      "http://cpan.metacpan.org/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz")))
-  "mirror://cpan/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz")
+(test-equal "metacpan-url->mirror-url, http"
+  "mirror://cpan/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz"
+  (metacpan-url->mirror-url
+   "http://cpan.metacpan.org/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz"))
 
-(test-equal "source-url-https"
-  ((@@ (guix import cpan) cpan-source-url)
-   `(("download_url" .
-      "https://cpan.metacpan.org/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz")))
-  "mirror://cpan/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz")
+(test-equal "metacpan-url->mirror-url, https"
+  "mirror://cpan/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz"
+  (metacpan-url->mirror-url
+   "https://cpan.metacpan.org/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz"))
 
 (test-end "cpan")

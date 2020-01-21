@@ -87,8 +87,7 @@
 (test-assert* "Bytevector of size relative to Lzip internal buffers (2 * dictionary)"
   (compress-and-decompress
    (random-bytevector
-    (* 2 (car (car (assoc-ref (@@ (guix lzlib) %compression-levels)
-                              (@@ (guix lzlib) %default-compression-level))))))))
+    (* 2 (dictionary-size+match-length-limit %default-compression-level)))))
 
 (test-assert* "Bytevector of size relative to Lzip internal buffers (64KiB)"
   (compress-and-decompress (random-bytevector (* 64 1024))))

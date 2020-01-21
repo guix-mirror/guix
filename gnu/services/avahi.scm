@@ -175,7 +175,7 @@ service switch (NSS) with support for @code{.local} host name resolution.")
   avahi-service-type
   "Return a service that runs @command{avahi-daemon}, a system-wide
 mDNS/DNS-SD responder that allows for service discovery and
-\"zero-configuration\" host name lookups (see @uref{http://avahi.org/}), and
+\"zero-configuration\" host name lookups (see @uref{https://avahi.org/}), and
 extends the name service cache daemon (nscd) so that it can resolve
 @code{.local} host names using
 @uref{http://0pointer.de/lennart/projects/nss-mdns/, nss-mdns}.  Additionally,

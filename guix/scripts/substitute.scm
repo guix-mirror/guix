@@ -557,7 +557,7 @@ initial connection on which HTTP requests are sent."
                (('connection 'close)
                 (close-port p)
                 (connect #f                       ;try again
-                         (append tail (drop requests processed))
+                         (drop requests (+ 1 processed))
                          result))
                (_
                 (loop tail (+ 1 processed) result)))))))))) ;keep going

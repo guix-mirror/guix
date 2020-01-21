@@ -11,7 +11,7 @@
 ;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 André <eu@euandre.org>
@@ -73,6 +73,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages mail)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages nano)
   #:use-module (gnu packages ncurses)
@@ -147,14 +148,14 @@ as well as the classic centralized workflow.")
    (name "git")
    ;; XXX When updating Git, check if the special 'git-source' input to cgit
    ;; needs to be updated as well.
-   (version "2.24.1")
+   (version "2.25.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0ql5z31vgl7b785gwrf00m129mg7zi9pa65n12ij3mpxx3f28gvj"))))
+              "1l58v42aazj0x9276gk8r9mwyl9pgp9w99aakz4xfhzv7wd2jq60"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -167,7 +168,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "1yzy5jikkv67ynp576j926kg8zdldh8j4b57l0ixcnjdcyr4lc17"))))
+            "1gf8b1k6i4dlwskwq7dd2vz9bzc3m1qnknj9daq2vp39vmxpg5nk"))))
       ;; For subtree documentation.
       ("asciidoc" ,asciidoc)
       ("docbook-xsl" ,docbook-xsl)
@@ -678,7 +679,8 @@ collaboration using typical untrusted file hosts or services.")
 (define-public cgit
   (package
     (name "cgit")
-    (version "1.2.1")
+    ;; Update the ‘git-source’ input as well.
+    (version "1.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -686,7 +688,7 @@ collaboration using typical untrusted file hosts or services.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1gw2j5xc5qdx2hwiwkr8h6kgya7v9d9ff9j32ga1dys0cca7qm1w"))))
+                "0dmjsisigjz5k4gw7gm55qhm3wazzbm4cg7a5dwf0gqg9nacx5rz"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; XXX: fail to build the in-source git.
@@ -764,11 +766,11 @@ collaboration using typical untrusted file hosts or services.")
        ("git-source"
         ,(origin
            (method url-fetch)
-           ;; XXX CGit is currently incompatible with Git > 2.18.
-           (uri "mirror://kernel.org/software/scm/git/git-2.18.2.tar.xz")
+           ;; cgit is tightly bound to git.  Use GIT_VER from the Makefile,
+           ;; which may not match the current (package-version git).
+           (uri "mirror://kernel.org/software/scm/git/git-2.25.0.tar.xz")
            (sha256
-            (base32
-             "1gmcz5k8sa6phzhhv6zjl8izbyqnxcdb8ns8kd2czyak0g409vrq"))))
+            (base32 "1l58v42aazj0x9276gk8r9mwyl9pgp9w99aakz4xfhzv7wd2jq60"))))
        ("openssl" ,openssl)
        ("groff" ,groff)
        ("python" ,python)
@@ -781,6 +783,47 @@ collaboration using typical untrusted file hosts or services.")
     (description
      "CGit is an attempt to create a fast web interface for the Git SCM, using
 a built-in cache to decrease server I/O pressure.")
+    (license license:gpl2)))
+
+(define-public python-git-multimail
+  (package
+    (name "python-git-multimail")
+    (version "1.5.0.post1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "git-multimail" version))
+       (sha256
+        (base32
+         "1zkrbsa70anwpw86ysfwalrb7nsr064kygfiyikyq1pl9pcl969y"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "git-multimail/git_multimail.py"
+               (("GIT_EXECUTABLE = 'git'")
+                (string-append "GIT_EXECUTABLE = '"
+                               (assoc-ref inputs "git") "/bin/git"
+                               "'"))
+               (("/usr/sbin/sendmail")
+                (string-append (assoc-ref inputs "sendmail")
+                               "/usr/sbin/sendmail")))
+             #t)))))
+    (inputs
+     `(("git" ,git)
+       ("sendmail" ,sendmail)))
+    (home-page "https://github.com/git-multimail/git-multimail")
+    (synopsis "Send notification emails for Git pushes")
+    (description
+     "This hook sends emails describing changes introduced by pushes to a Git
+repository.  For each reference that was changed, it emits one ReferenceChange
+email summarizing how the reference was changed, followed by one Revision
+email for each new commit that was introduced by the reference change.
+
+This script is designed to be used as a post-receive hook in a Git
+repository")
     (license license:gpl2)))
 
 (define-public python-ghp-import
@@ -1006,7 +1049,7 @@ lot easier.")
 (define-public stgit
   (package
     (name "stgit")
-    (version "0.18")
+    (version "0.21")
     (source
      (origin
        (method git-fetch)
@@ -1015,20 +1058,36 @@ lot easier.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ydgg744m671nkhg7h4q2z3b9vpbc9914rbc0wcgimqfqsxkxx2y"))))
+        (base32 "00pmz93znl418lsjwy4mr0chp8i2w27h1xjysa05f62smsv91yyc"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("perl" ,perl)))
     (inputs
      `(("git" ,git)))
     (arguments
-     `(#:python ,python-2
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'hard-code-version
+           (lambda _
+             ;; setup.py tries to cleverly extract the version number from the
+             ;; git history, which the source checkout lacks.  Hard-code one.
+             (substitute* "setup.py"
+               (("get_ver\\(\\)")
+                (format #f "'~a'" ,version)))
+             #t))
+         (add-before 'check 'patch-tests
+           (lambda _
+             (substitute* (list "t/t1900-mail.sh"
+                                "t/t7504-commit-msg-hook.sh")
+               (("/bin/sh")
+                (which "bash")))
+             #t))
          (replace 'check
            (lambda _
-             ;; Two tests will fail -> disable them. TODO: fix the failing tests
-             (delete-file "t/t3300-edit.sh")
-             (delete-file "t/t7504-commit-msg-hook.sh")
-             (invoke "make" "test"))))))
+             (invoke "make"
+                     "PERL_PATH=perl"
+                     (string-append "SHELL_PATH=" (which "bash"))
+                     "test"))))))
     (home-page "http://procode.org/stgit/")
     (synopsis "Stacked Git")
     (description
@@ -1244,26 +1303,39 @@ control to Git repositories.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             ;; The following tests are known to fail.
-             (for-each (lambda (file)
-                         (delete-file (string-append "tests/" file)))
-                       '("test-extdiff.t"
-                         "test-hghave.t"
-                         "test-hgwebdir.t"
-                         "test-http-branchmap.t"
-                         "test-logtoprocess.t"
-                         "test-merge-combination.t"
-                         "test-nointerrupt.t"
-                         "test-patchbomb.t"
-                         "test-pull-bundle.t"
-                         "test-push-http.t"
-                         "test-run-tests.t"
-                         "test-serve.t"
-                         "test-subrepo-deep-nested-change.t"
-                         "test-subrepo-recursion.t"
-                         "test-transplant.t"))
-             (invoke "make" "check"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (with-directory-excursion "tests"
+               ;; The following tests are known to fail.
+               (for-each (lambda (file)
+                           (delete-file file))
+                         '("test-extdiff.t"
+                           "test-hghave.t"
+                           "test-hgwebdir.t"
+                           "test-http-branchmap.t"
+                           "test-logtoprocess.t"
+                           "test-merge-combination.t"
+                           "test-nointerrupt.t"
+                           "test-patchbomb.t"
+                           "test-pull-bundle.t"
+                           "test-push-http.t"
+                           "test-run-tests.t"
+                           "test-serve.t"
+                           "test-subrepo-deep-nested-change.t"
+                           "test-subrepo-recursion.t"
+                           "test-transplant.t"))
+               (when tests?
+                 (invoke "./run-tests.py"
+                         ;; ‘make check’ does not respect ‘-j’.
+                         (string-append "-j" (number->string
+                                              (parallel-job-count)))
+                         ;; The default time-outs are too low for many systems.
+                         ;; Raise them generously: Guix enforces its own.
+                         "--timeout" "86400"
+                         "--slowtimeout" "86400"
+                         ;; The test suite takes a long time and produces little
+                         ;; output by default.  Prevent timeouts due to silence.
+                         "-v"))
+               #t))))))
     ;; The following inputs are only needed to run the tests.
     (native-inputs
      `(("python-nose" ,python-nose)

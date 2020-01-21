@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,7 +25,7 @@
   #:use-module (guix monads)
   #:use-module (guix base32)
   #:use-module (guix packages)
-  #:use-module (guix progress)
+  #:use-module ((guix progress) #:hide (dump-port*))
   #:use-module (guix serialization)
   #:use-module (guix scripts substitute)
   #:use-module (rnrs bytevectors)
@@ -192,9 +192,6 @@ taken since we do not import the archives."
 ;;;
 ;;; Reporting.
 ;;;
-
-(define dump-port*                                ;FIXME: deduplicate
-  (@@ (guix serialization) dump))
 
 (define (port-sha256* port size)
   ;; Like 'port-sha256', but limited to SIZE bytes.

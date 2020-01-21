@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -286,16 +286,44 @@
       (lambda ()
         (eval exp (test-module))
         #f)
-      (lambda (key proc message location form . args)
+      (lambda (key proc message location form subform . _)
         (and (eq? proc 'foo)
              (string-match "invalid field" message)
-             (equal? form '(baz 1 2 3 4 5))
+             (equal? subform '(baz 1 2 3 4 5))
+             (equal? form '(foo (baz 1 2 3 4 5)))
 
              ;; Make sure the location is that of the field specifier.
              ;; See <http://bugs.gnu.org/23969>.
              (lset= equal?
                     (pk 'expected-loc
                         `((line . ,(- (assq-ref loc 'line) 1))
+                          ,@(alist-delete 'line loc)))
+                    (pk 'actual-loc location)))))))
+
+(test-assert "define-record-type* & wrong field specifier, identifier"
+  (let ((exp '(begin
+                (define-record-type* <foo> foo make-foo
+                  foo?
+                  (bar foo-bar (default 42))
+                  (baz foo-baz))
+
+                (foo
+                 baz)))                           ;syntax error
+        (loc    (current-source-location)))       ;keep this alignment!
+    (catch 'syntax-error
+      (lambda ()
+        (eval exp (test-module))
+        #f)
+      (lambda (key proc message location form subform . _)
+        (and (eq? proc 'foo)
+             (string-match "invalid field" message)
+             (equal? subform 'baz)
+             (equal? form '(foo baz))
+
+             ;; Here the location is that of the parent form.
+             (lset= equal?
+                    (pk 'expected-loc
+                        `((line . ,(- (assq-ref loc 'line) 2))
                           ,@(alist-delete 'line loc)))
                     (pk 'actual-loc location)))))))
 

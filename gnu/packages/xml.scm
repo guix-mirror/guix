@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
@@ -21,6 +21,7 @@
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Jack Hill <jackhill@jackhill.us>
+;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2049,6 +2050,98 @@ It converts the procedure call into an XML document, sends it to a remote
 server using HTTP, and gets back the response as XML.  This library provides a
 modular implementation of XML-RPC for C and C++.")
     (license (list license:psfl license:expat))))
+
+(define-public python-elementpath
+  (package
+    (name "python-elementpath")
+    (version "1.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "elementpath" version))
+       (sha256
+        (base32
+         "1rb8892zli74wk1c4hyg77ja9wglq9hplgxwak1rmj3s9p6xnf0p"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/sissaschool/elementpath")
+    (synopsis
+     "XPath 1.0/2.0 parsers and selectors for ElementTree and lxml")
+    (description
+     "The proposal of this package is to provide XPath 1.0 and 2.0 selectors
+for Python's ElementTree XML data structures, both for the standard
+ElementTree library and for the @uref{http://lxml.de, lxml.etree} library.
+
+For lxml.etree this package can be useful for providing XPath 2.0 selectors,
+because lxml.etree already has it's own implementation of XPath 1.0.")
+    (license license:expat)))
+
+(define-public python-lxml
+  (package
+    (name "python-lxml")
+    (version "4.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "lxml" version))
+       (sha256
+        (base32 "01nvb5j8vs9nk4z5s3250b1m22b4d08kffa36if3g1mdygdrvxpg"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "make" "test"))))))
+    (inputs
+     `(("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)))
+    (home-page "https://lxml.de/")
+    (synopsis "Python XML processing library")
+    (description
+     "The lxml XML toolkit is a Pythonic binding for the C libraries
+libxml2 and libxslt.")
+    (license license:bsd-3))) ; and a few more, see LICENSES.txt
+
+(define-public python2-lxml
+  (package-with-python2 python-lxml))
+
+(define-public python-xmlschema
+  (package
+    (name "python-xmlschema")
+    (version "1.0.18")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "xmlschema" version))
+              (sha256
+               (base32
+                "1inwqwr7d3qah9xf9rfzkpva433jpr4n7n43zybf2gdpz4q1g0ry"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key (tests? #t) #:allow-other-keys)
+             (if tests?
+                 (begin
+                   (setenv "PYTHONPATH"
+                           (string-append "./build/lib:"
+                                          (getenv "PYTHONPATH")))
+                   (invoke "python" "xmlschema/tests/test_all.py"))
+                 (format #t "test suite not run~%"))
+             #t)))))
+    (native-inputs
+     `(("python-lxml" ,python-lxml)))   ;for tests
+    (propagated-inputs
+     `(("python-elementpath" ,python-elementpath)))
+    (home-page "https://github.com/sissaschool/xmlschema")
+    (synopsis "XML Schema validator and data conversion library")
+    (description
+     "The @code{xmlschema} library is an implementation of
+@url{https://www.w3.org/2001/XMLSchema, XML Schema} for Python.  It has
+full support for the XSD 1.0 and 1.1 standards, an XPath-based API for
+finding schema's elements and attributes; and can encode and decode
+XML data to JSON and other formats.")
+    (license license:expat)))
 
 (define-public python-xmltodict
   (package

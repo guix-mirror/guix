@@ -20,10 +20,12 @@
   #:use-module (gnu packages tex)
   #:use-module (guix import texlive)
   #:use-module (guix tests)
+  #:use-module (guix tests http)
   #:use-module (guix build utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-64)
   #:use-module (srfi srfi-26)
+  #:use-module (web client)
   #:use-module (ice-9 match))
 
 (test-begin "texlive")
@@ -67,12 +69,14 @@
                  (keyval (@ (value "tests") (key "topic")))
                  "\n  null\n")))
 
+;; Avoid collisions with other tests.
+(%http-server-port 10200)
+
 (test-equal "fetch-sxml: returns SXML for valid XML"
   sxml
-  (mock ((guix http-client) http-fetch
-         (lambda (url)
-           xml))
-        ((@@ (guix import texlive) fetch-sxml) "foo")))
+  (with-http-server `((200 ,xml))
+    (parameterize ((current-http-proxy (%local-url)))
+      (fetch-sxml "foo"))))
 
 ;; TODO:
 (test-assert "sxml->package"
@@ -86,7 +90,7 @@
            (with-output-to-file (string-append directory "/foo")
              (lambda ()
                (display "source")))))
-        (let ((result ((@@ (guix import texlive) sxml->package) sxml)))
+        (let ((result (sxml->package sxml)))
           (match result
             (('package
                ('name "texlive-latex-foo")

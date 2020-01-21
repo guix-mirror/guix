@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -546,8 +546,8 @@ where /gnu lives on a separate partition.")
                  (target "/dev/vdb")))
     (kernel-arguments '("console=ttyS0"))
 
-    ;; Add a kernel module for RAID-0 (aka. "stripe").
-    (initrd-modules (cons "raid0" %base-initrd-modules))
+    ;; Add a kernel module for RAID-1 (aka. "mirror").
+    (initrd-modules (cons "raid1" %base-initrd-modules))
 
     (mapped-devices (list (mapped-device
                            (source (list "/dev/vda2" "/dev/vda3"))
@@ -578,11 +578,11 @@ guix --version
 export GUIX_BUILD_OPTIONS=--no-grafts
 parted --script /dev/vdb mklabel gpt \\
   mkpart primary ext2 1M 3M \\
-  mkpart primary ext2 3M 600M \\
-  mkpart primary ext2 600M 1200M \\
+  mkpart primary ext2 3M 1.4G \\
+  mkpart primary ext2 1.4G 2.8G \\
   set 1 boot on \\
   set 1 bios_grub on
-mdadm --create /dev/md0 --verbose --level=stripe --raid-devices=2 \\
+yes | mdadm --create /dev/md0 --verbose --level=mirror --raid-devices=2 \\
   /dev/vdb2 /dev/vdb3
 mkfs.ext4 -L root-fs /dev/md0
 mount /dev/md0 /mnt
@@ -605,7 +605,7 @@ by 'mdadm'.")
                                                %raid-root-os-source
                                                #:script
                                                %raid-root-installation-script
-                                               #:target-size (* 1300 MiB)))
+                                               #:target-size (* 2800 MiB)))
                          (command (qemu-command/writable-image image)))
       (run-basic-test %raid-root-os
                       `(,@command) "raid-root-os")))))

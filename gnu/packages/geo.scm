@@ -7,7 +7,7 @@
 ;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018, 2019 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -36,6 +36,7 @@
   #:use-module (guix build-system go)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system qt)
   #:use-module (guix build-system scons)
   #:use-module (guix build-system r)
   #:use-module (guix download)
@@ -1307,7 +1308,7 @@ associated with an address.")
      `(#:tests? #f)) ;; Tests require a copy of the maxmind database
     (inputs
      `(("libmaxminddb" ,libmaxminddb)))
-    (home-page "http://www.maxmind.com/")
+    (home-page "https://www.maxmind.com/")
     (synopsis "Reader for the MaxMind DB format")
     (description "MaxMind DB is a binary file format that stores data indexed
 by IP address subnets (IPv4 or IPv6).  This is a Python module for reading
@@ -1331,8 +1332,130 @@ MaxMind DB files.")
     (inputs
      `(("python-maxminddb" ,python-maxminddb)
        ("python-requests" ,python-requests)))
-    (home-page "http://www.maxmind.com/")
+    (home-page "https://www.maxmind.com/")
     (synopsis "MaxMind GeoIP2 API")
     (description "Provides an API for the GeoIP2 web services and databases.
 The API also works with MaxMind’s free GeoLite2 databases.")
     (license license:asl2.0)))
+
+(define-public routino
+  (package
+   (name "routino")
+   (version "3.3.2")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "http://www.routino.org/download/routino-"
+                         version ".tgz"))
+     (sha256
+      (base32
+       "1ccx3s99j8syxc1gqkzsaqkmyf44l7h3adildnc5iq2md7bp8wab"))))
+   (build-system gnu-build-system)
+   (native-inputs
+    `(("perl" ,perl)))
+   (inputs
+    `(("bzip2" ,bzip2)
+      ("xz" ,xz)
+      ("zlib" ,zlib)))
+   (arguments
+    `(#:test-target "test"
+      #:phases
+      (modify-phases %standard-phases
+        (replace 'configure
+          (lambda* (#:key outputs #:allow-other-keys)
+            (substitute* "Makefile.conf"
+              (("prefix=/usr/local")
+               (string-append "prefix=" (assoc-ref outputs "out")))
+              (("LDFLAGS_LDSO=-Wl,-R\\.")
+               "LDFLAGS_LDSO=-Wl,-R$(libdir)")
+              (("#CFLAGS\\+=-DUSE_XZ")
+               "CFLAGS+=-DUSE_XZ")
+              (("#LDFLAGS\\+=-llzma")
+               "LDFLAGS+=-llzma"))
+            #t)))))
+   (synopsis "Routing application for OpenStreetMap data")
+   (description
+    "Routino is an application for finding a route between two points
+using the dataset of topographical information collected by
+@url{https://www.OpenStreetMap.org}.")
+   (home-page "https://www.routino.org/")
+   (license license:agpl3+)))
+
+(define-public qmapshack
+  (package
+    (name "qmapshack")
+    (version "1.14.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Maproom/qmapshack.git")
+             (commit (string-append "V_" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "07c2hrq9sn456w7l3gdr599rmjfv2k6mh159zza7p1py8r7ywksa"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("gdal" ,gdal)
+       ("libjpeg-turbo" ,libjpeg-turbo)
+       ("proj" ,proj)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtlocation" ,qtlocation)
+       ("qtwebchannel" ,qtwebchannel)
+       ("qtwebengine" ,qtwebengine)
+       ("quazip" ,quazip)
+       ("routino" ,routino)
+       ("sqlite" ,sqlite-with-column-metadata) ; See wrap phase
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-cmake-modules
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+               (("find_package\\(Qt5PrintSupport        REQUIRED\\)" all)
+                (string-append all "\nfind_package(Qt5Positioning REQUIRED)")))
+             (substitute* "cmake/Modules/FindROUTINO.cmake"
+               (("/usr/local")
+                (assoc-ref inputs "routino")))
+             ;; The following fixes are included as patches in the sources
+             ;; of QMapShack, but they are not applied by default, for
+             ;; some reason...
+             (invoke "patch" "-p1" "-i" "FindPROJ4.patch")
+             (invoke "patch" "-p1" "-i" "FindQuaZip5.patch")
+             #t))
+         (add-after 'install 'wrap
+           ;; The program fails to run with the error:
+           ;;   undefined symbol: sqlite3_column_table_name16
+           ;; Forcing the program to use sqlite-with-column-metadata instead
+           ;; of sqlite using LD_LIBRARY_PATH solves the problem.
+           ;;
+           ;; The program also fails to find the QtWebEngineProcess program,
+           ;; so we set QTWEBENGINEPROCESS_PATH to help it.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin"))
+                   (qtwebengineprocess (string-append
+                                        (assoc-ref inputs "qtwebengine")
+                                        "/lib/qt5/libexec/QtWebEngineProcess"))
+                   (sqlite-lib (string-append (assoc-ref inputs "sqlite")
+                                              "/lib")))
+               (for-each (lambda (program)
+                           (wrap-program program
+                             `("LD_LIBRARY_PATH" ":" prefix (,sqlite-lib))
+                             `("QTWEBENGINEPROCESS_PATH" =
+                               (,qtwebengineprocess))))
+                         (find-files bin ".*")))
+             #t)))))
+    (synopsis "GPS mapping application")
+    (description
+     "QMapShack can be used to plan your next outdoor trip or to visualize and
+archive all the GPS recordings of your past trips.  It is the successor of the
+QLandkarte GT application.")
+    (home-page "https://github.com/Maproom/qmapshack/wiki")
+    (license license:gpl3+)))

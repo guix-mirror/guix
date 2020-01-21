@@ -37,6 +37,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages finance)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
@@ -76,6 +77,7 @@
        ("libdbi" ,libdbi)
        ("libdbi-drivers" ,libdbi-drivers)
        ("libgnomecanvas" ,libgnomecanvas)
+       ("libofx" ,libofx)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
        ("webkitgtk" ,webkitgtk)
@@ -90,11 +92,12 @@
        ("googletest" ,googletest)
        ("gnucash-docs" ,gnucash-docs)
        ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     ;; dconf is required at runtime according to README.dependencies.
+     `(("dconf" ,dconf)))
     (outputs '("out" "doc" "debug"))
     (arguments
      `(#:test-target "check"
-       #:configure-flags
-       (list "-DWITH_OFX=OFF")          ; libofx is not available yet
        #:make-flags '("GUILE_AUTO_COMPILE=0")
        #:modules ((guix build cmake-build-system)
                   ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)

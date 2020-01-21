@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
 ;;;
@@ -42,14 +42,14 @@
 (define-public miniupnpc
   (package
     (name "miniupnpc")
-    (version "2.1.20190824")
+    (version "2.1.20191224")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://miniupnp.tuxfamily.org/files/"
                            "miniupnpc-" version ".tar.gz"))
        (sha256
-        (base32 "0rg1i51lnyq8zgflhcg981kq4348vgq03ndmbgiv7knd1vmfzb8z"))))
+        (base32 "1kv6dpj93gckvwvgzxl4vdqpwnicb0c8p0xw53m2gh5naiw44ys4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))

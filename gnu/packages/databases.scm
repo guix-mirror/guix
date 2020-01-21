@@ -23,7 +23,7 @@
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
@@ -38,6 +38,7 @@
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -126,7 +127,6 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system scons)
   #:use-module (guix build-system trivial)
-  #:use-module ((guix build utils) #:hide (which))
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -919,6 +919,31 @@ Language.")
 as a drop-in replacement of MySQL.")
     (license license:gpl2)))
 
+(define-public mariadb-connector-c
+  (package
+    (name "mariadb-connector-c")
+    (version "3.1.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://downloads.mariadb.org/f/connector-c-"
+                    version "/mariadb-connector-c-"
+                    version "-src.tar.gz"))
+              (sha256
+               (base32
+                "083724f5daaqyzdcx508caz6fk2hs89jff85zg28ih43vxkvnrnj"))))
+    (inputs
+     `(("openssl" ,openssl)))
+    (build-system cmake-build-system)
+    (arguments
+     ;; No tests.
+     '(#:tests? #f))
+    (home-page "https://mariadb.com/kb/en/mariadb-connector-c/")
+    (synopsis "Client library to connect to MySQL or MariaDB")
+    (description "The MariaDB Connector/C is used to connect applications
+developed in C/C++ to MariaDB and MySQL databases.")
+    (license license:lgpl2.1+)))
+
 ;; Don't forget to update the other postgresql packages when upgrading this one.
 (define-public postgresql
   (package
@@ -970,27 +995,27 @@ pictures, sounds, or video.")
   (package
     (inherit postgresql)
     (name "postgresql")
-    (version "11.5")
+    (version "11.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "106ikalvrilihlvhq7xj7snq98hgbgq6qsgjrd252wgw1c327pvz"))))))
+                "0w1iq488kpzfgfnlw4k32lz5by695mpnkq461jrgsr99z5zlz4j9"))))))
 
 (define-public postgresql-9.6
   (package
     (inherit postgresql)
     (name "postgresql")
-    (version "9.6.15")
+    (version "9.6.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "02hp69h2p02asfblkaahblzdz2zmawd2r11h6237y5j7yadgxn9w"))))))
+                "1rr2dgv4ams8r2lp13w85c77rkmzpb88fjlc28mvlw6zq2fblv2w"))))))
 
 (define-public python-pymysql
   (package
@@ -1836,14 +1861,14 @@ similar to BerkeleyDB, LevelDB, etc.")
 (define-public redis
   (package
     (name "redis")
-    (version "4.0.10")
+    (version "5.0.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.redis.io/releases/redis-"
                                   version".tar.gz"))
               (sha256
                (base32
-                "194cydhv3hf4v95ifvjvsqrs4jn3ffrkg5lvxj5d3y04lwsp9dhx"))))
+                "0ax8sf3vw0yadr41kzc04917scrg5wir1d94zmbz00b8pzm79nv1"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; tests related to master/slave and replication fail
@@ -2043,7 +2068,7 @@ database.")
 (define-public lmdb
   (package
     (name "lmdb")
-    (version "0.9.23")
+    (version "0.9.24")
     (source
      (origin
        (method git-fetch)
@@ -2052,7 +2077,7 @@ database.")
              (commit (string-append "LMDB_" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ag7l5180ajvm73y59m7sn3p52xm8m972d08cshxhpwgwa4v35k6"))))
+        (base32 "088q6m8fvr12w43s461h7cvpg5hj8csaqj6n9pci150dz7bk5lxm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"

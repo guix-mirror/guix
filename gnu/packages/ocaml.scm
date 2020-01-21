@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016-2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2016-2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Peter Kreye <kreyepr@gmail.com>
@@ -131,10 +131,10 @@
                          "/lib/ocaml/site-lib"))
     #:phases (modify-phases %standard-phases (delete 'configure))))
 
-(define-public ocaml-4.07
+(define-public ocaml-4.09
   (package
     (name "ocaml")
-    (version "4.07.1")
+    (version "4.09.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -143,7 +143,7 @@
                     "/ocaml-" version ".tar.xz"))
               (sha256
                (base32
-                "1f07hgj5k45cylj1q3k5mk8yi02cwzx849b1fwnwia8xlcfqpr6z"))))
+                "1v3z5ar326f3hzvpfljg4xj8b9lmbrl53fn57yih1bkbx3gr3yzj"))))
     (build-system gnu-build-system)
     (native-search-paths
      (list (search-path-specification
@@ -162,10 +162,7 @@
        ("gcc:lib" ,(canonical-package gcc) "lib")
        ("zlib" ,zlib)))                       ;also needed for objdump support
     (arguments
-     `(#:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (web server))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-/bin/sh-references
            (lambda* (#:key inputs #:allow-other-keys)
@@ -184,21 +181,11 @@ patch-/bin/sh-references: ~a: changing `\"/bin/sh\"' to `~a'~%"
                          quoted-sh))))
                   (find-files "." "\\.ml$"))
                  #t))))
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (mandir (string-append out "/share/man")))
-               ;; Custom configure script doesn't recognize
-               ;; --prefix=<PREFIX> syntax (with equals sign).
-               (invoke "./configure"
-                       "--prefix" out
-                       "--mandir" mandir))))
          (replace 'build
            (lambda _
              (invoke "make" "-j" (number->string (parallel-job-count))
                      "world.opt")))
-         (delete 'check)
-         (add-after 'install 'check
+         (replace 'check
            (lambda _
              (with-directory-excursion "testsuite"
                (invoke "make" "all")))))))
@@ -213,6 +200,33 @@ functional, imperative and object-oriented styles of programming.")
     ;; law: the license is governed by the laws of France.  The library is
     ;; distributed under lgpl2.0.
     (license (list license:qpl license:lgpl2.0))))
+
+(define-public ocaml-4.07
+  (package
+    (inherit ocaml-4.09)
+    (version "4.07.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://caml.inria.fr/pub/distrib/ocaml-"
+                    (version-major+minor version)
+                    "/ocaml-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1f07hgj5k45cylj1q3k5mk8yi02cwzx849b1fwnwia8xlcfqpr6z"))))
+    (arguments
+      (substitute-keyword-arguments (package-arguments ocaml-4.09)
+        ((#:phases phases)
+         `(modify-phases ,phases
+            (replace 'configure
+              (lambda* (#:key outputs #:allow-other-keys)
+                (let* ((out (assoc-ref outputs "out"))
+                       (mandir (string-append out "/share/man")))
+                  ;; Custom configure script doesn't recognize
+                  ;; --prefix=<PREFIX> syntax (with equals sign).
+                  (invoke "./configure"
+                          "--prefix" out
+                          "--mandir" mandir))))))))))
 
 (define-public ocaml ocaml-4.07)
 
@@ -430,7 +444,7 @@ the opam file fomat.")
 (define-public opam
   (package
     (name "opam")
-    (version "2.0.5")
+    (version "2.0.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -439,7 +453,7 @@ the opam file fomat.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0pf2smq2sdcxryq5i87hz3dv05pb3zasb1is3kxq1pi1s4cn55mx"))))
+                "1vyga2jllsfsikppxyzljm4isfnnnl8k0rb44h8xaddjzdg1d4m8"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:configure-flags
@@ -483,6 +497,10 @@ the opam file fomat.")
                           "add_sys_mounts /gnu /run/current-system /usr"))
                        (substitute* "src/client/opamInitDefaults.ml"
                          (("\"bwrap\"") (string-append "\"" bwrap "\"")))
+                       ;; Generating the documentation needs write access
+                       (for-each
+                         (lambda (f) (chmod f #o644))
+                         (find-files "doc" "."))
                        #t)))
                  (add-before 'check 'pre-check
                    (lambda _
@@ -519,7 +537,7 @@ Git-friendly development workflow.")
 (define-public camlp5
   (package
     (name "camlp5")
-    (version "7.07")
+    (version "7.10")
     (source
      (origin
        (method git-fetch)
@@ -528,7 +546,7 @@ Git-friendly development workflow.")
              (commit (string-append "rel" (string-delete #\. version)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1c8v45553ccbqha2ypfranqlgw06rr5wjr2hlnrx5bf9jfq0h0dn"))))
+        (base32 "1a1lgsc8350afdwmsznsys7m0c0cks4nw6irqz2f92g8g4vkk9b7"))))
     (build-system gnu-build-system)
     (inputs
      `(("ocaml" ,ocaml)))
@@ -1122,7 +1140,7 @@ GNU CC attributes.  It provides also a C pretty printer as an example of use.")
 (define-public ocaml-qcheck
   (package
     (name "ocaml-qcheck")
-    (version "0.11")
+    (version "0.12")
     (source
      (origin
        (method git-fetch)
@@ -1131,14 +1149,22 @@ GNU CC attributes.  It provides also a C pretty printer as an example of use.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0d2wih4zxn2zm7kxd9dnf5nlp838km3vz6wv80fa3m51609fb24i"))))
+        (base32 "1llnfynhlndwyjig7wrayjnds2b3mggp5lw20dwxhn2i2lkkb22m"))))
     (build-system dune-build-system)
     (arguments
-     `(#:test-target "."))
-    (native-inputs
+     `(#:test-target "."
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-deprecated
+           (lambda _
+             (substitute* "src/core/QCheck.ml"
+               (("Pervasives.compare") "compare"))
+             #t)))))
+    (propagated-inputs
      `(("ocaml-alcotest" ,ocaml-alcotest)
-       ("ocaml-ounit" ,ocaml-ounit)
-       ("ocamlbuild" ,ocamlbuild)))
+       ("ocaml-ounit" ,ocaml-ounit)))
+    (native-inputs
+     `(("ocamlbuild" ,ocamlbuild)))
     (home-page "https://github.com/c-cube/qcheck")
     (synopsis "QuickCheck inspired property-based testing for OCaml")
     (description "QuickCheck inspired property-based testing for OCaml. This
@@ -1150,7 +1176,7 @@ instances and printing them.")
 (define-public ocaml-qtest
   (package
     (name "ocaml-qtest")
-    (version "2.9")
+    (version "2.10.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1159,7 +1185,7 @@ instances and printing them.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ifxc8jndwah82g5k8xaa7jskbv866j4zpd0w41f0pskg4y0z9g1"))))
+                "0gddzan4vzs0vklsxhirdjrvx3rp7hhh2yr20vi13nq8rwkn9w29"))))
     (build-system dune-build-system)
     (arguments
      `(#:jbuild? #t
@@ -1713,10 +1739,30 @@ lets the client choose the concrete timeline.")
 through Transport Layer Security (@dfn{TLS}) encrypted connections.")
     (license license:lgpl2.1)))
 
+(define-public ocaml-mmap
+  (package
+    (name "ocaml-mmap")
+    (version "1.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/mirage/mmap")
+                     (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "1jaismy5d1bhbbanysmr2k79px0yv6ya265dri3949nha1l23i60"))))
+    (build-system dune-build-system)
+    (home-page "https://github.com/mirage/mmap")
+    (synopsis "File mapping for OCaml")
+    (description "This project provides a @command{Mmap.map_file} function
+for mapping files in memory.  This function is the same as the
+@command{Unix.map_file} funciton added in OCaml >= 4.06.")
+    (license (list license:qpl license:lgpl2.0))))
+
 (define-public ocaml-lwt
   (package
     (name "ocaml-lwt")
-    (version "4.1.0")
+    (version "5.1.1")
     (source
       (origin
         (method url-fetch)
@@ -1724,29 +1770,22 @@ through Transport Layer Security (@dfn{TLS}) encrypted connections.")
                             ".tar.gz"))
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256 (base32
-                  "0mhh019bjkg5xfvpy1pxs4xdxb759fyydmgb6l4j0qww1qgr8klp"))))
+                  "0gwdmhn0qx03agc45dplj73ia5y1gb42aan64ywfxmll3lsnr2h7"))))
     (build-system dune-build-system)
     (arguments
-     `(#:tests? #f; require lwt_ppx
-       #:jbuild? #t
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'build 'configure
-           (lambda _
-             (invoke "ocaml" "src/util/configure.ml" "-use-libev" "true")
-             #t)))))
+     `(#:package "lwt"))
     (native-inputs
-     `(("ocaml-cppo" ,ocaml-cppo)
-       ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
-       ("pkg-config" ,pkg-config)
-       ("ppx-tools-versioned" ,ocaml-ppx-tools-versioned)))
+     `(("ocaml-bisect-ppx" ,ocaml-bisect-ppx)
+       ("ocaml-cppo" ,ocaml-cppo)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("libev" ,libev)
        ("glib" ,glib)))
     (propagated-inputs
-     `(("result" ,ocaml-result)
-       ("ocaml-ssl" ,ocaml-ssl)
-       ("ocaml-react" ,ocaml-react)))
+     `(("ocaml-mmap" ,ocaml-mmap)
+       ("ocaml-ocplib-endian" ,ocaml-ocplib-endian)
+       ("ocaml-result" ,ocaml-result)
+       ("ocaml-seq" ,ocaml-seq)))
     (home-page "https://github.com/ocsigen/lwt")
     (synopsis "Cooperative threads and I/O in monadic style")
     (description "Lwt provides typed, composable cooperative threads.  These
@@ -5024,7 +5063,7 @@ the full Core is not available, such as in Javascript.")
 (define-public ocaml-markup
   (package
     (name "ocaml-markup")
-    (version "0.8.1")
+    (version "0.8.2")
     (home-page "https://github.com/aantron/markup.ml")
     (source
      (origin
@@ -5035,14 +5074,20 @@ the full Core is not available, such as in Javascript.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0gzdjfnkv56vhmpvi9xpv1p05z50y55izhn156bkmb35s6izxds3"))))
+         "13zcrwzjmifniv3bvjbkd2ah8wwa3ld75bxh1d8hrzdvfxzh9szn"))))
     (build-system dune-build-system)
+    (arguments
+     `(#:package "markup"))
+    (inputs
+     `(("libev" ,libev)))
     (propagated-inputs
      `(("ocaml-bisect-ppx" ,ocaml-bisect-ppx)
        ("ocaml-uchar" ,ocaml-uchar)
        ("ocaml-uutf" ,ocaml-uutf)
        ("ocaml-lwt" ,ocaml-lwt)))
-    (native-inputs `(("ocaml-ounit" ,ocaml-ounit)))
+    (native-inputs
+     `(("ocaml-ounit" ,ocaml-ounit)
+       ("pkg-config" ,pkg-config)))
     (synopsis "Error-recovering functional HTML5 and XML parsers and writers")
     (description "Markup.ml provides an HTML parser and an XML parser.  The
 parsers are wrapped in a simple interface: they are functions that transform
@@ -5102,7 +5147,7 @@ combinators.")
 (define-public ocaml-bisect-ppx
   (package
     (name "ocaml-bisect-ppx")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method git-fetch)
@@ -5112,7 +5157,7 @@ combinators.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1vp3qvrkz7q25nbmvd40vhsnz2k9aqh17bnd21i3q8q0xlr5hdag"))))
+         "0900vli5kw7s5kdam0n4cqsfsfqb7mdb3azn3i55595gilg1vyn8"))))
     (build-system dune-build-system)
     (propagated-inputs
      `(("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)

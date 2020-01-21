@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016, 2017, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016, 2017, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -37,7 +37,9 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages compression)
@@ -180,14 +182,14 @@ colors, styles, options and details.")
 (define-public asymptote
   (package
     (name "asymptote")
-    (version "2.61")
+    (version "2.62")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/asymptote/"
                                   version "/asymptote-" version ".src.tgz"))
               (sha256
                (base32
-                "0gcd75yixn67lpiky70yhaa0ylr8g1cn65bpr9zx78h2vrpsmk7k"))))
+                "0510vnlpfyrvshsxr5lh3klwyhmn2cf4ba1ja476mbv5dcqqbc30"))))
     (build-system gnu-build-system)
     ;; Note: The 'asy' binary retains a reference to docdir for use with its
     ;; "help" command in interactive mode, so adding a "doc" output is not
@@ -196,7 +198,7 @@ colors, styles, options and details.")
      `(("emacs" ,emacs-minimal)
        ("gs" ,ghostscript)              ;For tests
        ("perl" ,perl)
-       ("texinfo" ,texinfo)           ;For generating documentation
+       ("texinfo" ,texinfo)             ;For generating documentation
        ;; For the manual and the tests.
        ("texlive" ,(texlive-union (list texlive-amsfonts
                                         texlive-epsf
@@ -214,6 +216,9 @@ colors, styles, options and details.")
        ("gsl" ,gsl)
        ("libgc" ,libgc)
        ("python" ,python)
+       ("python-cson" ,python-cson)
+       ("python-numpy" ,python-numpy)
+       ("python-pyqt" ,python-pyqt)
        ("readline" ,readline)
        ("zlib" ,zlib)))
     (arguments
@@ -271,6 +276,14 @@ colors, styles, options and details.")
                (for-each (cut install-file <> lisp-dir)
                          (find-files "." "\\.el$"))
                (emacs-generate-autoloads ,name lisp-dir))
+             #t))
+         (add-after 'install-Emacs-data 'wrap-python-script
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Make sure 'xasy' runs with the correct PYTHONPATH.
+             (let* ((out (assoc-ref outputs "out"))
+                    (path (getenv "PYTHONPATH")))
+               (wrap-program (string-append out "/share/asymptote/GUI/xasy.py")
+                 `("PYTHONPATH" ":" prefix (,path))))
              #t)))))
     (home-page "http://asymptote.sourceforge.net")
     (synopsis "Script-based vector graphics language")

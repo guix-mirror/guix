@@ -246,7 +246,7 @@ internet.")
 (define-public libsrtp
   (package
     (name "libsrtp")
-    (version "2.2.0")
+    (version "2.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -255,13 +255,25 @@ internet.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ac7xs1djb03j131f1gmqyfmrplblid9qqyxahs0shdy707r5ll6"))))
+                "1f7i3jdh1wzdv7zjlz7gs3xw5jqig9zw8z9awsqqcp54f94xdpvd"))))
     (native-inputs
      `(("psmisc" ,psmisc)               ;some tests require 'killall'
        ("procps" ,procps)))
     (build-system gnu-build-system)
     (arguments
-     '(#:test-target "runtest"))
+     '(#:test-target "runtest"
+       #:phases (modify-phases %standard-phases
+                  (add-after 'build 'build-shared
+                    (lambda* (#:key (make-flags '()) #:allow-other-keys)
+                      ;; Build the shared library separately because
+                      ;; the test runner requires a static build.
+                      (apply invoke "make" "shared_library" make-flags)
+                      #t))
+                  (add-after 'install 'remove-static-library
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (delete-file (string-append (assoc-ref outputs "out")
+                                                  "/lib/libsrtp2.a"))
+                      #t)))))
     (synopsis "Secure RTP (SRTP) Reference Implementation")
     (description
      "This package provides an implementation of the Secure Real-time Transport

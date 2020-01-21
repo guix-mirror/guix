@@ -1001,7 +1001,7 @@ The core is 12 builtin special forms and 33 builtin functions.")
 (define-public gauche
   (package
     (name "gauche")
-    (version "0.9.7")
+    (version "0.9.9")
     (home-page "http://practical-scheme.net/gauche/index.html")
     (source
      (origin
@@ -1010,11 +1010,10 @@ The core is 12 builtin special forms and 33 builtin functions.")
              "mirror://sourceforge/gauche/Gauche/Gauche-"
              version ".tgz"))
        (sha256
-        (base32
-         "181nycikma0rwrb1h6mi3kys11f8628pq8g5r3fg5hiz5sabscrd"))
+        (base32 "1yzpszhw52vkpr65r5d4khf3489mnnvnw58dd2wsvvx7499k5aac"))
        (modules '((guix build utils)))
        (snippet '(begin
-                   ;; Remove libatomic-ops
+                   ;; Remove libatomic-ops.
                    (delete-file-recursively "gc/libatomic_ops")
                    #t))))
     (build-system gnu-build-system)
@@ -1023,13 +1022,13 @@ The core is 12 builtin special forms and 33 builtin functions.")
        ("zlib" ,zlib)))
     (native-inputs
      `(("texinfo" ,texinfo)
-       ("openssl" ,openssl) ; needed for tests
-       ("pkg-config" ,pkg-config))) ; needed to find external libatomic-ops
+       ("openssl" ,openssl)            ; needed for tests
+       ("pkg-config" ,pkg-config)))    ; needed to find external libatomic-ops
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-/bin/sh
-           ;; needed only for tests
+           ;; Needed only for tests.
            (lambda _
              (substitute* '("configure"
                             "test/www.scm"
@@ -1046,14 +1045,14 @@ The core is 12 builtin special forms and 33 builtin functions.")
                (invoke "make" "info"))
              #t))
          (add-before 'check 'patch-normalize-test
-           ;; neutralize sys-normalize-pathname test as it relies on
-           ;; the home directory; (setenv "HOME" xx) isn't enough)
+           ;; Neutralize sys-normalize-pathname test as it relies on
+           ;; the home directory; (setenv "HOME" xx) isn't enough).
            (lambda _
              (substitute* "test/system.scm"
                (("~/abc") "//abc"))
              #t))
          (add-before 'check 'patch-network-tests
-           ;; remove net checks
+           ;; Remove net checks.
            (lambda _
              (substitute* "ext/Makefile"
                (("binary net termios") "binary termios"))

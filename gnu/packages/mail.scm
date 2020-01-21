@@ -141,14 +141,14 @@
 (define-public mailutils
   (package
     (name "mailutils")
-    (version "3.7")
+    (version "3.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/mailutils/mailutils-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1gwajsl39f1dkzrjld0dm9px8hrj7l7rwzazz00h5rwghk9mhwhq"))))
+               "1wkn9ch664477r4d8jk9153w5msljsbj99907k7zgzpmywbs6ba7"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -160,10 +160,10 @@
                (("/bin/cat")
                 (which "cat")))
 
-             ;; Tests try to invoke 'maidag' such that it looks up the
+             ;; Tests try to invoke 'mda' such that it looks up the
              ;; 'root' user, which does not exist in the build
              ;; environment.
-             (substitute* "maidag/tests/testsuite"
+             (substitute* "mda/tests/testsuite"
                (("root <")         "nobody <")
                (("spool/root")     "spool/nobody")
                (("root@localhost") "nobody@localhost"))
@@ -405,7 +405,7 @@ operating systems.")
 (define-public neomutt
   (package
     (name "neomutt")
-    (version "20191102")
+    (version "20191207")
     (source
      (origin
        (method git-fetch)
@@ -414,7 +414,7 @@ operating systems.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0x5f9zbvxsxg5y2ir4xq4xw1q2snaxkidhdyhcxw5ljw3qqwhlyq"))))
+        (base32 "147yjpqnsbfy01fhsflxlixk0985r91a6bjmqq3cwmf7gka3sihm"))))
     (build-system gnu-build-system)
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
@@ -489,7 +489,7 @@ operating systems.")
                (apply invoke bash
                       (string-append (getcwd) "/configure")
                       flags)))))))
-    (home-page "https://www.neomutt.org/")
+    (home-page "https://neomutt.org/")
     (synopsis "Command-line mail reader based on Mutt")
     (description
      "NeoMutt is a command-line mail reader which is based on mutt.
@@ -2152,18 +2152,17 @@ converts them to maildir format directories.")
 (define-public mpop
   (package
     (name "mpop")
-    (version "1.4.6")
+    (version "1.4.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://marlam.de/mpop/releases/"
                            "mpop-" version ".tar.xz"))
        (sha256
-        (base32 "0q4ifzvl1gcndvqqqk7n9mc599r4s2knxjc7alflwb366fql58gv"))))
+        (base32 "0c6n5afn9pr4p7gxkv462lysrw52w9fhvavzm99c78dcp9dj5xnk"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gnutls" ,gnutls)
-       ("libidn" ,libidn)))
+     `(("gnutls" ,gnutls)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://marlam.de/mpop/")
@@ -2172,9 +2171,9 @@ converts them to maildir format directories.")
 fetchmail replacement.
 
 mpop supports multiple accounts, header based mail filtering, delivery
-to mbox files, maildir folders or a Mail Delivery Agent (MDA),
-TLS/SSL, several authentication methods, Internationalized Domain
-Names (IDN) and SOCKS proxies.")
+to mbox files, maildir folders or an @acronym{MDA, Mail Delivery Agent},
+TLS/SSL, several authentication methods, @acronym{IDN, Internationalized Domain
+Names} and SOCKS proxies.")
     (license gpl3+)))
 
 (define-public mhonarc

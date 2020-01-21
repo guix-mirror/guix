@@ -300,6 +300,7 @@ of a package, and INPUT-NAMES, a list of package specifications such as
             "gobject-introspection"
             "googletest-source"
             "groff"
+            "gtk-doc"
             "help2man"
             "intltool"
             "itstool"
@@ -904,16 +905,31 @@ descriptions maintained upstream."
          (origin-uris origin))
         '())))
 
+(cond-expand
+  (guile-3
+   ;; Guile 3.0.0 does not export this predicate.
+   (define exception-with-kind-and-args?
+     (exception-predicate &exception-with-kind-and-args)))
+  (else                                           ;Guile 2
+   (define exception-with-kind-and-args?
+     (const #f))))
+
 (define (check-derivation package)
   "Emit a warning if we fail to compile PACKAGE to a derivation."
   (define (try system)
-    (catch #t
+    (catch #t     ;TODO: Remove 'catch' when Guile 2.x is no longer supported.
       (lambda ()
         (guard (c ((store-protocol-error? c)
                    (make-warning package
                                  (G_ "failed to create ~a derivation: ~a")
                                  (list system
                                        (store-protocol-error-message c))))
+                  ((exception-with-kind-and-args? c)
+                   (make-warning package
+                                 (G_ "failed to create ~a derivation: ~s")
+                                 (list system
+                                       (cons (exception-kind c)
+                                             (exception-args c)))))
                   ((message-condition? c)
                    (make-warning package
                                  (G_ "failed to create ~a derivation: ~a")
@@ -1013,8 +1029,11 @@ the NIST server non-fatal."
                          (package-version package))))
         ((force lookup) name version)))))
 
-(define (check-vulnerabilities package)
-  "Check for known vulnerabilities for PACKAGE."
+(define* (check-vulnerabilities package
+                                #:optional (package-vulnerabilities
+                                            package-vulnerabilities))
+  "Check for known vulnerabilities for PACKAGE.  Obtain the list of
+vulnerability records for PACKAGE by calling PACKAGE-VULNERABILITIES."
   (let ((package (or (package-replacement package) package)))
     (match (package-vulnerabilities package)
       (()

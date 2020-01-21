@@ -69,10 +69,7 @@
 
 (define-with-docs %doc-regex
   "Default regex for matching the base name of top-level documentation files."
-  (format #f
-          "(~a)|(\\.(html|markdown|md|txt)$)"
-          (@@ (guix build guile-build-system)
-              %documentation-file-regexp)))
+  "^(README.*|.*\\.html|.*\\.org|.*\\.md|\\.markdown|\\.txt)$")
 
 (define* (install-doc #:key
                       doc-dirs
@@ -185,10 +182,12 @@ canonicalized."
          (apply find-files "./" args))))
 
 ;;; FIXME: should be moved to (guix build utils)
-(define-with-docs file-sans-extension
-  "Strip extension from path, if any."
-  (@@ (guix build guile-build-system)
-      file-sans-extension))
+(define (file-sans-extension file)                ;TODO: factorize
+  "Return the substring of FILE without its extension, if any."
+  (let ((dot (string-rindex file #\.)))
+    (if dot
+        (substring file 0 dot)
+        file)))
 
 (define (relative-path->clojure-lib-string path)
   "Convert PATH to a clojure library string."

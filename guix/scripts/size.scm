@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,6 +20,7 @@
 (define-module (guix scripts size)
   #:use-module (guix ui)
   #:use-module (guix scripts)
+  #:use-module (guix scripts build)
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (guix combinators)
@@ -242,6 +244,9 @@ Report the size of PACKAGE and its dependencies.\n"))
   -m, --map-file=FILE    write to FILE a graphical map of disk usage"))
   (newline)
   (display (G_ "
+  -L, --load-path=DIR    prepend DIR to the package module search path"))
+  (newline)
+  (display (G_ "
   -h, --help             display this help and exit"))
   (display (G_ "
   -V, --version          display version information and exit"))
@@ -273,6 +278,9 @@ Report the size of PACKAGE and its dependencies.\n"))
         (option '(#\m "map-file") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'map-file arg result)))
+        (find (lambda (option)
+                (member "load-path" (option-names option)))
+              %standard-build-options)
         (option '(#\h "help") #f #f
                 (lambda args
                   (show-help)

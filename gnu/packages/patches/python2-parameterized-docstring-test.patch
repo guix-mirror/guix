@@ -1,0 +1,18 @@
+Skip unicode docstring test, required when running on Python 2.
+
+See <https://github.com/wolever/parameterized/issues/44>.
+
+--- a/parameterized/test.py
++++ b/parameterized/test.py
+@@ -284,11 +284,6 @@
+             "        More" %(foo, )
+         )
+ 
+-    @parameterized.expand([param("foo")])
+-    def test_unicode_docstring(self, foo):
+-        u"""Döcumentation."""
+-        self._assert_docstring(u"Döcumentation [with foo=%r]." %(foo, ))
+-
+     @parameterized.expand([param("foo", )])
+     def test_default_values_get_correct_value(self, foo, bar=12):
+         """Documentation"""

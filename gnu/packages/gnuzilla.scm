@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
@@ -10,6 +10,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
+;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,6 +42,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cargo)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
@@ -756,6 +758,7 @@ from forcing GEXP-PROMISE."
        ;;   and related comments in the 'remove-bundled-libraries' phase.
        ;; UNBUNDLE-ME! ("nspr" ,nspr)
        ;; UNBUNDLE-ME! ("nss" ,nss)
+       ("shared-mime-info" ,shared-mime-info)
        ("sqlite" ,sqlite)
        ("startup-notification" ,startup-notification)
        ("unzip" ,unzip)
@@ -882,6 +885,10 @@ from forcing GEXP-PROMISE."
                   (ice-9 match)
                   (srfi srfi-34)
                   (srfi srfi-35)
+                  (rnrs bytevectors)
+                  (rnrs io ports)
+                  (guix elf)
+                  (guix build gremlin)
                   ,@%gnu-build-system-modules)
        #:phases
        (modify-phases %standard-phases
@@ -966,11 +973,31 @@ from forcing GEXP-PROMISE."
              #t))
          (add-after 'link-libxul-with-libraries 'fix-ffmpeg-runtime-linker
            (lambda* (#:key inputs #:allow-other-keys)
-             ;; Arrange to load libavcodec.so by its absolute file name.
-             (substitute* "dom/media/platforms/ffmpeg/FFmpegRuntimeLinker.cpp"
-               (("libavcodec\\.so")
-                (string-append (assoc-ref inputs "ffmpeg") "/lib/libavcodec.so")))
-             #t))
+             (let* ((ffmpeg (assoc-ref inputs "ffmpeg"))
+                    (libavcodec (string-append ffmpeg "/lib/libavcodec.so")))
+               ;; Arrange to load libavcodec.so by its absolute file name.
+               (substitute* "dom/media/platforms/ffmpeg/FFmpegRuntimeLinker.cpp"
+                 (("libavcodec\\.so")
+                  libavcodec))
+               ;; Populate the sandbox read-path whitelist as needed by ffmpeg.
+               (let* ((mime-info (assoc-ref inputs "shared-mime-info"))
+                      (libavcodec-runpath (call-with-input-file libavcodec
+                                            (compose elf-dynamic-info-runpath
+                                                     elf-dynamic-info
+                                                     parse-elf
+                                                     get-bytevector-all)))
+                      (whitelist (cons (string-append mime-info "/share/mime/")
+                                       (map (lambda (dir)
+                                              (string-append dir "/"))
+                                            libavcodec-runpath)))
+                      (whitelist-string (string-join whitelist ","))
+                      (port (open-file "browser/app/profile/icecat.js" "a")))
+                 (format #t "setting 'security.sandbox.content.read_path_whitelist' to '~a'~%"
+                         whitelist-string)
+                 (format port "~%pref(\"security.sandbox.content.read_path_whitelist\", ~S);~%"
+                         whitelist-string)
+                 (close-output-port port))
+               #t)))
          (replace 'bootstrap
            (lambda _
              (invoke "sh" "-c" "autoconf old-configure.in > old-configure")
@@ -1102,3 +1129,43 @@ standards of the IceCat project.")
   ;; The Conkeror web browser relied on XULRunner, which IceCat > 50 no longer
   ;; provides.  See <http://conkeror.org> for the original web page.
   (deprecated-package "conkeror" icecat))
+
+(define-public firefox-decrypt
+  (package
+    (name "firefox-decrypt")
+    (version "0.7.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Unode/firefox_decrypt.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "17yyyxp47z4m8hnflcq34rc1y871515kr3f1y42j1l0yx3g0il07"))))
+    (build-system trivial-build-system)
+    (inputs
+     `(("nss" ,nss)
+       ("python" ,python)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (setenv "PATH"
+                 (string-append
+                  (assoc-ref %build-inputs "python") "/bin"))
+         (copy-file (string-append (assoc-ref %build-inputs "source")
+                                   "/firefox_decrypt.py")
+                    "firefox_decrypt.py")
+         (substitute* "firefox_decrypt.py"
+           (("/usr/bin/env python") (which "python3"))
+           (("libnss3.so") (string-append (assoc-ref %build-inputs "nss")
+                                          "/lib/nss/libnss3.so")))
+         (install-file "firefox_decrypt.py" (string-append %output "/bin"))
+         #t)))
+    (home-page "https://github.com/Unode/firefox_decrypt/")
+    (synopsis "Tool to extract passwords from Mozilla profiles")
+    (description "Firefox Decrypt is a tool to extract passwords from
+Mozilla (Firefox, Waterfox, Thunderbird, SeaMonkey) profiles.")
+    (license license:gpl3+)))

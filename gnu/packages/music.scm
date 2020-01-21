@@ -2978,7 +2978,7 @@ for improved Amiga ProTracker 2/3 compatibility.")
 (define-public schismtracker
   (package
     (name "schismtracker")
-    (version "20190614")
+    (version "20190805")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2987,7 +2987,7 @@ for improved Amiga ProTracker 2/3 compatibility.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0cg0q5bkn8a06v03vmj69xyhi4xxpl729k4008q4hiakh9gy2x49"))
+                "0qqps20vvn3rgpg8174bjrrm38gqcci2z5z4c1r1vhbccclahgsd"))
               (modules '((guix build utils)))
               (snippet
                ;; Remove use of __DATE__ and __TIME__ for reproducibility.
@@ -3838,7 +3838,8 @@ are a C compiler and glib.  Full API documentation and examples are included.")
        ("libsndfile1" ,libsndfile)
        ("libxft" ,libxft)
        ("freetype2" ,freetype)
-       ("fftw3f" ,fftwf)))
+       ("fftw3f" ,fftwf)
+       ("jack" ,jack-1)))
     (home-page "https://lmms.io/")
     (synopsis "Music composition tool")
     (description "LMMS is a digital audio workstation.  It includes tools for sequencing

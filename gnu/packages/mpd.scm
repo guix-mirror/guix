@@ -4,7 +4,7 @@
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2016, 2018, 2019 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2018, 2019, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Evan Straw <evan.straw99@gmail.com>
 ;;;
@@ -92,7 +92,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
 (define-public mpd
   (package
     (name "mpd")
-    (version "0.21.17")
+    (version "0.21.18")
     (source (origin
               (method url-fetch)
               (uri
@@ -101,7 +101,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
                               "/mpd-" version ".tar.xz"))
               (sha256
                (base32
-                "0qka4g4dd6a6fxi03jnrd8ya70vfijmsxz642adfjqa626gam644"))))
+                "0hllkq426hql1s80xxvy28ypvw3dbfrrclbjc0lckmmgsmnfd0l7"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Ddocumentation=true"))) ;the default is 'false'...
@@ -237,7 +237,7 @@ terminal using ncurses.")
      `(("pkg-config" ,pkg-config)))
     (arguments
      '(#:configure-flags
-       '("BOOST_LIB_SUFFIX=" "--with-taglib")))
+       '("BOOST_LIB_SUFFIX=" "--with-taglib" "--enable-clock")))
     (synopsis "Featureful ncurses based MPD client inspired by ncmpc")
     (description "Ncmpcpp is an mpd client with a UI very similar to ncmpc,
 but it provides new useful features such as support for regular expressions

@@ -1328,6 +1328,16 @@ produces identical output on all those targets.")
      `(("gtk+" ,gtk+-2)))
     (propagated-inputs
      `(("perl-pango" ,perl-pango)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'remove-broken-test
+           ;; See https://gitlab.gnome.org/GNOME/perl-gtk2/issues/3.
+           (lambda _
+             (substitute* "t/GdkPixbuf.t"
+               (("tests => 112") "tests => 111")
+               (("ok \\(defined \\$pixbuf, \"Don't crash on partial pixmap data\"\\);")
+                "# ok (defined $pixbuf, \"Don't crash on partial pixmap data\");")))))))
     (home-page "https://metacpan.org/release/Gtk2")
     (synopsis "Perl interface to the 2.x series of the Gimp Toolkit library")
     (description "Perl bindings to the 2.x series of the Gtk+ widget set.

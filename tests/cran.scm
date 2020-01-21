@@ -53,7 +53,7 @@ Date/Publication: 2015-07-14 14:15:16
 ")
 
 (define description-alist
-  ((@@ (guix import cran) description->alist) description))
+  (description->alist description))
 
 (define simple-alist
   '(("Key"        . "Value")
@@ -72,7 +72,7 @@ Date/Publication: 2015-07-14 14:15:16
                 "Date/Publication")))
     (lset= string=? keys (map car description-alist))))
 
-(test-equal "listify: return empty list if key cannot be found"
+(test-equal "listifyx: return empty list if key cannot be found"
   '()
   ((@@ (guix import cran) listify) simple-alist "Letters"))
 
@@ -105,7 +105,7 @@ Date/Publication: 2015-07-14 14:15:16
                   ("mirror://cran/src/contrib/My-Example_1.2.3.tar.gz"
                    "source")
                   (_ (error "Unexpected URL: " url))))))))
-    (match ((@@ (guix import cran) description->package) 'cran description-alist)
+    (match (description->package 'cran description-alist)
       (('package
          ('name "r-my-example")
          ('version "1.2.3")

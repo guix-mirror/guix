@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
-;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,7 +39,7 @@
 (define-public liblcf
   (package
     (name "liblcf")
-    (version "0.6.0")
+    (version "0.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -47,7 +47,7 @@
                     "/liblcf-" version ".tar.gz"))
               (sha256
                (base32
-                "0dcw9l800314f5c29mqrcg64rkcb6cwqjfnpvwsmvc2l2q5hwlag"))))
+                "1qz387r4shbx48r3z7k8llkzz4b039zmak98wxpiwn6a23cssdn5"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -75,7 +75,7 @@ It can read and write LCF and XML files.")
 (define-public easyrpg-player
   (package
     (name "easyrpg-player")
-    (version "0.6.0")
+    (version "0.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -83,7 +83,7 @@ It can read and write LCF and XML files.")
                     "/easyrpg-player-" version ".tar.gz"))
               (sha256
                (base32
-                "0zdzp64sshjdl943jklsvzwzzja1fnapslvbd7xss51ym9ra4r6k"))))
+                "1x81d1952w6vb939155bvs5p3shgsncxy305770izpp4pva1a8z0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags

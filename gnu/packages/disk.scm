@@ -582,12 +582,12 @@ automatically finding out which program to use for what file type.")
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("util-linux" ,util-linux)
        ("swig" ,swig)
        ("python" ,python-3)))           ; used to generate the Python bindings
     (inputs
      `(("cryptsetup" ,cryptsetup)
        ("nss" ,nss)
+       ("libblkid" ,util-linux)
        ("lvm2" ,lvm2)                   ; for "-ldevmapper"
        ("glib" ,glib)
        ("gpgme" ,gpgme)))

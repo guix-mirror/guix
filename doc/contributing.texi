@@ -240,7 +240,7 @@ that it finds source files from your checkout:
 
 To actually edit the code, Emacs already has a neat Scheme mode.  But in
 addition to that, you must not miss
-@url{http://www.emacswiki.org/emacs/ParEdit, Paredit}.  It provides
+@url{https://www.emacswiki.org/emacs/ParEdit, Paredit}.  It provides
 facilities to directly operate on the syntax tree, such as raising an
 s-expression or wrapping it, swallowing or rejecting the following
 s-expression, etc.

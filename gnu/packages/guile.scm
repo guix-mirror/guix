@@ -283,19 +283,19 @@ without requiring the source code to be rewritten.")
               (base32
                "07p3g0v2ba2vlfbfidqzlgbhnzdx46wh2rgc5gszq1mjyx5bks6r"))))))
 
-(define-public guile-next
-  ;; This is the upcoming Guile 3.0, with JIT support.
+(define-public guile-3.0
+  ;; This is the latest Guile stable version.
   (package
     (inherit guile-2.2)
-    (name "guile-next")
-    (version "2.9.8")
+    (name "guile-next")                           ;to be renamed to "guile"
+    (version "3.0.0")
     (source (origin
               (inherit (package-source guile-2.2))
-              (uri (string-append "ftp://alpha.gnu.org/gnu/guile/guile-"
+              (uri (string-append "ftp://ftp.gnu.org/gnu/guile/guile-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "09icv9ymdb7hchn34c32s7x8ycilqj74mirmi4b3bm5zp1izd32a"))))
+                "0x8ca6q1qdmk29lh12gj6ngvgn7kp79w42rxfgwrpxm9jmjqs4y9"))))
     (native-search-paths
      (list (search-path-specification
             (variable "GUILE_LOAD_PATH")
@@ -303,13 +303,13 @@ without requiring the source code to be rewritten.")
            (search-path-specification
             (variable "GUILE_LOAD_COMPILED_PATH")
             (files '("lib/guile/3.0/site-ccache"
-                     "share/guile/site/3.0")))))
-    (properties '((ftp-server . "alpha.gnu.org")
-                  (upstream-name . "guile")))))
+                     "share/guile/site/3.0")))))))
 
-(define (make-guile-readline guile)
+(define-public guile-next guile-3.0)
+
+(define* (make-guile-readline guile #:optional (name "guile-readline"))
   (package
-    (name "guile-readline")
+    (name name)
     (version (package-version guile))
     (source (package-source guile))
     (build-system gnu-build-system)
@@ -365,6 +365,9 @@ GNU@tie{}Guile.  Use the @code{(ice-9 readline)} module and call its
 
 (define-public guile-readline
   (make-guile-readline guile-2.2))
+
+(define-public guile3.0-readline
+  (make-guile-readline guile-next "guile3.0-readline"))
 
 (define (guile-variant-package-name prefix)
   (lambda (name)
@@ -595,8 +598,16 @@ Guile's foreign function interface.")
                 "0q0habjiy3h9cigb7q1br9kz6z212dn2ab31f6dgd3rrmsfn5rvb"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags
-       '("GUILE_AUTO_COMPILE=0"))) ;to prevent guild warnings
+     `(#:make-flags '("GUILE_AUTO_COMPILE=0")     ;to prevent guild warnings
+
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'install-doc
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (package ,(package-full-name this-package "-"))
+                             (doc (string-append out "/share/doc/" package)))
+                        (install-file "README.md" doc)
+                        #t))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -623,36 +634,19 @@ type system, elevating types to first-class status.")
 (define-public guile-git
   (package
     (name "guile-git")
-    (version "0.2.0")
+    (version "0.3.0")
     (home-page "https://gitlab.com/guile-git/guile-git.git")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference (url home-page)
-                                  (commit (string-append "v" version))))
+              (method url-fetch)
+              (uri (string-append "https://gitlab.com/guile-git/guile-git/uploads/"
+                                  "4c563d8e7e1ff84396abe8ca7011bcaf/guile-git-"
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "018hmfsh0rjwfvr4h7y10jc6k8a2k9xsirngghy3pjasin4nd2yz"))
-              (file-name (git-file-name name version))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Allow builds with Guile 3.0.
-                  (substitute* "configure.ac"
-                    (("^GUILE_PKG.*")
-                     "GUILE_PKG([3.0 2.2 2.0])\n"))
-
-                  ;; The 'guile.m4' that's shipped is too old and fails to
-                  ;; recognize Guile 2.9/3.0.  Delete it and pick the one
-                  ;; provided by the Guile we're using.
-                  (delete-file "m4/guile.m4")
-
-                  #t))))
+                "0c5i3d16hp7gp9rd78vk9zc45js8bphf92m4lbb5gyi4l1yl7kkm"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("texinfo" ,texinfo)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("guile" ,guile-2.2)
        ("libgit2" ,libgit2)))

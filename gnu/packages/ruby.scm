@@ -5968,7 +5968,7 @@ name and provides query methods such as @{RubyEngine.mri?}.")
 colorful and informative.  TURN displays each test on a separate line with
 failures being displayed immediately instead of at the end of the tests.  Note
 that TURN is no longer being maintained.")
-    (home-page "http://rubygems.org/gems/turn")
+    (home-page "https://rubygems.org/gems/turn")
     (license license:expat)))
 
 (define-public ruby-mimemagic
@@ -7755,7 +7755,7 @@ the @file{spec} directory.")
     (native-inputs
      `(("ruby-sass-spec" ,ruby-sass-spec)
        ("ruby-mathn" ,ruby-mathn)))
-    (home-page "http://sass-lang.com/")
+    (home-page "https://sass-lang.com/")
     (synopsis "CSS extension language")
     (description "Sass is a CSS extension language.  It extends CSS with
 features that don't exist yet like variables, nesting, mixins and inheritance.")

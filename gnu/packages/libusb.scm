@@ -525,14 +525,16 @@ devices.")
 (define-public hidapi
   (package
     (name "hidapi")
-    (version "0.8.0-rc1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/signal11/hidapi/archive/hidapi-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0qdgyj9rgb7n0nk3ghfswrhzzknxqn4ibn3wj8g4r828pw07451w"))))
+    (version "0.9.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/libusb/hidapi.git")
+             (commit (string-append "hidapi-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1p4g8lgwj4rki6lbn5l6rvwj0xlbn1xfh4d255bg5pvgczmwmc4i"))))
     (build-system gnu-build-system)
     (inputs
      `(("libusb" ,libusb)
@@ -542,7 +544,7 @@ devices.")
        ("automake" ,automake)
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://www.signal11.us/oss/hidapi/")
+    (home-page "https://github.com/libusb/hidapi")
     (synopsis "HID API library")
     (description
      "HIDAPI is a library which allows an application to interface with USB and Bluetooth

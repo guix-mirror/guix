@@ -393,6 +393,26 @@ sys_authorize_build_farms()
     done
 }
 
+sys_create_init_profile()
+{ # Create /etc/profile.d/guix.sh for better desktop integration
+    cat <<"EOF" > /etc/profile.d/guix.sh
+# _GUIX_PROFILE: `guix pull` profile
+_GUIX_PROFILE="$HOME/.config/guix/current"
+[ -L $_GUIX_PROFILE ] && export PATH="$_GUIX_PROFILE/bin${PATH:+:}$PATH"
+
+# GUIX_PROFILE: User's default profile
+GUIX_PROFILE="$HOME/.guix-profile"
+[ -L $GUIX_PROFILE ] || return
+GUIX_LOCPATH="$GUIX_PROFILE/lib/locale"
+export GUIX_PROFILE GUIX_LOCPATH
+
+eval `guix package --search-paths=prefix 2> /dev/null`
+
+# set XDG_DATA_DIRS to include Guix installations
+export XDG_DATA_DIRS="$GUIX_PROFILE/share${XDG_DATA_DIRS:+:}$XDG_DATA_DIRS"
+EOF
+}
+
 welcome()
 {
     cat<<"EOF"
@@ -449,6 +469,7 @@ main()
     sys_create_build_user
     sys_enable_guix_daemon
     sys_authorize_build_farms
+    sys_create_init_profile
 
     _msg "${INF}cleaning up ${tmp_path}"
     rm -r "${tmp_path}"

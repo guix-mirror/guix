@@ -9,7 +9,7 @@
 ;;; Copyright © 2014, 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
@@ -321,7 +321,7 @@ and other PNG optimizers.")
 (define-public pngquant
   (package
     (name "pngquant")
-    (version "2.12.3")
+    (version "2.12.6")
     (source
      (origin
        (method git-fetch)
@@ -330,7 +330,7 @@ and other PNG optimizers.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1yiwbcihn4311fpfd568gg8zmmhqwg80jmhbhkb5msiipgd9xv33"))))
+        (base32 "15hanshahxqs6s9fyc3aym02251dcys7bf78g3inp0y233amdbl3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"

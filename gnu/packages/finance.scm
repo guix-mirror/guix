@@ -15,6 +15,7 @@
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2019 Sebastian Schott <sschott@mailbox.org>
+;;; Copyright © 2020 Kei Kebreau <kkebreau@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,11 +52,14 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages dns)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages dbm)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
@@ -67,9 +71,11 @@
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages popt)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
@@ -1202,3 +1208,96 @@ offers confimations after less than 5 seconds and have significantly lower
 fees that BTC.  Bitcoin ABC is the reference implementation of the Bitcoin
 Cash protocol.  This package provides the Bitcoin Cash command line client and
 a client based on Qt.  This is a fork of Bitcoin Core.")))
+
+(define-public libofx
+  (package
+    (name "libofx")
+    (version "0.9.15")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/libofx/libofx")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1jx56ma351p8af8dvavygjwf6ipa7qbgq7bpdsymwj27apdnixfy"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (list (string-append "--with-opensp-includes="
+                            (assoc-ref %build-inputs "opensp")
+                            "/include/OpenSP"))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gengetopt" ,gengetopt)
+       ("help2man" ,help2man)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl)
+       ("libxml++-2" ,libxml++-2)
+       ("opensp" ,opensp)))
+    (home-page "http://libofx.sourceforge.net/")
+    (synopsis "Library supporting the Open Financial Exchange format")
+    (description
+     "The LibOFX library is an API designed to allow applications to very easily
+support OFX command responses, usually provided by financial institutions.  The
+following three utilities are included with the library:
+@enumerate
+@item @code{ofxdump}
+@item @code{ofx2qif}
+@item @code{ofxconnect}
+@end enumerate")
+    (license license:gpl2+)))
+
+(define-public opensp
+  (package
+    (name "opensp")
+    (version "1.5.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/openjade/opensp/"
+                                  version "/OpenSP-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1khpasr6l0a8nfz6kcf3s81vgdab8fm2dj291n5r2s53k228kx2p"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)))
+    (inputs
+     `(("docbook-xml" ,docbook-xml-4.1.2)
+       ("docbook-xsl" ,docbook-xsl)
+       ("xmlto" ,xmlto)))
+    (arguments
+     `(;; TODO: Fix and enable tests.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-docbook-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xmldoc (string-append (assoc-ref inputs "docbook-xml")
+                                          "/xml/dtd/docbook"))
+                   (xsldoc (string-append (assoc-ref inputs "docbook-xsl")
+                                          "/xml/xsl/docbook-xsl-"
+                                          ,(package-version docbook-xsl))))
+               (substitute* (find-files "docsrc" "\\.xml$")
+                 (("/usr/share/sgml/docbook/xml-dtd-4.1.2") xmldoc)
+                 (("http://.*/docbookx\\.dtd")
+                  (string-append xmldoc "/docbookx.dtd")))
+               ;; Directly pass the path to the stylesheet to xmlto.
+               (substitute* "docsrc/Makefile.in"
+                 (("\\$\\(XMLTO\\)")
+                  (string-append "$(XMLTO) -x " xsldoc
+                                 "/manpages/docbook.xsl")))
+               #t))))))
+    (home-page "http://openjade.sourceforge.net/")
+    (synopsis "Suite of SGML/XML processing tools")
+    (description "OpenSP is an object-oriented toolkit for SGML parsing and
+entity management.")
+    (license
+     ;; expat license with added clause regarding advertising
+     (license:non-copyleft
+      "file://COPYING"
+      "See COPYING in the distribution."))))

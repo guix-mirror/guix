@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,7 @@
   #:use-module (guix ui)
   #:use-module (gcrypt hash)
   #:use-module (guix scripts)
+  #:use-module ((guix scripts build) #:select (%standard-build-options))
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix packages)
@@ -116,6 +118,19 @@
                      (leave (G_ "unsupported policy: ~a~%")
                             arg)))))
 
+        ;; The short option -L is already used by --list-updaters, therefore
+        ;; it needs to be removed from %standard-build-options.
+        (let ((load-path-option (find (lambda (option)
+                                         (member "load-path"
+                                                 (option-names option)))
+                                       %standard-build-options)))
+          (option
+           (filter (lambda (name) (not (equal? #\L name)))
+                   (option-names load-path-option))
+           (option-required-arg? load-path-option)
+           (option-optional-arg? load-path-option)
+           (option-processor     load-path-option)))
+
         (option '(#\h "help") #f #f
                 (lambda args
                   (show-help)
@@ -164,6 +179,9 @@ specified with `--select'.\n"))
                          handle missing OpenPGP keys according to POLICY:
                          'always', 'never', and 'interactive', which is also
                          used when 'key-download' is not specified"))
+  (newline)
+  (display (G_ "
+      --load-path=DIR    prepend DIR to the package module search path"))
   (newline)
   (display (G_ "
   -h, --help             display this help and exit"))
