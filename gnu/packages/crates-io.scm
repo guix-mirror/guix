@@ -6197,7 +6197,7 @@ for Rust structs.")
 (define-public rust-mime-0.3
   (package
     (name "rust-mime")
-    (version "0.3.13")
+    (version "0.3.16")
     (source
       (origin
         (method url-fetch)
@@ -6205,11 +6205,9 @@ for Rust structs.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "09clbyvdkwflp8anwjhqdib0sw8191gphcchdp80nc8ayhhwl9ry"))))
+          "13dcm9lh01hdwfjcg74ppljyjfj1c6w3a3cwkhxf0w8wa37cfq1a"))))
     (build-system cargo-build-system)
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs (("rust-unicase" ,rust-unicase-2.4))))
+    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/hyperium/mime")
     (synopsis "Strongly Typed Mimes")
     (description
