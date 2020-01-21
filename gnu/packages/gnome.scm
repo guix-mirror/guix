@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
@@ -4175,7 +4175,20 @@ faster results and to avoid unnecessary server load.")
               (sha256
                (base32
                 "1vxxvmz2cxb1qy6ibszaz5bskqdy9nd9fxspj9fv3gfmrjzzzdb4"))
-              (patches (search-patches "upower-builddir.patch"))))
+              (patches (search-patches "upower-builddir.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Upstream commit
+                  ;; <https://cgit.freedesktop.org/upower/commit/?id=18457c99b68786cd729b315723d680e6860d9cfa>
+                  ;; moved 'dbus-1/system.d' from etc/ to share/.  However,
+                  ;; 'dbus-configuration-directory' in (gnu services dbus)
+                  ;; expects it in etc/.  Thus, move it back to its previous
+                  ;; location.
+                  (substitute* "src/Makefile.in"
+                    (("^dbusconfdir =.*$")
+                     "dbusconfdir = $(sysconfdir)/dbus-1/system.d\n"))
+                  #t))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '( ;; The tests want to contact the system bus, which can't be done in the
