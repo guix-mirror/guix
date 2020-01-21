@@ -6013,11 +6013,11 @@ implementation of LZMA and xz stream encoding/decoding.")
          (base32
           "020axl4q7rk9vz90phs7f8jas4imxal9y9kxl4z4v7a6719mrz3z"))))
     (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/SimonSapin/rust-std-candidates")
-    (synopsis "Macro to evaluate whether an expression matches a pattern.")
+    (synopsis "Macro to evaluate whether an expression matches a pattern")
     (description "This package provides a macro to evaluate, as a boolean,
 whether an expression matches a pattern.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-matrixmultiply-0.1
