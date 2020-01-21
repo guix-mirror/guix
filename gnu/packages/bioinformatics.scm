@@ -4596,7 +4596,7 @@ assembled metagenomic sequence.")
                             ;; Use setuptools, or else the executables are not
                             ;; installed.
                             (("distutils.core") "setuptools")
-                            ;; use "gcc" instead of "cc" for compilation
+                            ;; Use "gcc" instead of "cc" for compilation.
                             (("^defines")
                              "cc.set_executables(
 compiler='gcc',
@@ -4606,8 +4606,8 @@ linker_so='gcc -shared'); defines"))
                           #t))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2 ; only Python 2 is supported
-       #:tests? #f)) ; no "test" target
+     `(#:python ,python-2               ; only Python 2 is supported
+       #:tests? #f))                    ; no "test" target
     (inputs
      `(("samtools" ,samtools)
        ("python-numpy" ,python2-numpy)
@@ -4615,9 +4615,9 @@ linker_so='gcc -shared'); defines"))
        ("python-scipy" ,python2-scipy)
        ("python-matplotlib" ,python2-matplotlib)))
     (native-inputs
-     `(("python-mock" ,python2-mock)   ;for tests
-       ("python-pytz" ,python2-pytz))) ;for tests
-    (home-page "http://genes.mit.edu/burgelab/miso/index.html")
+     `(("python-mock" ,python2-mock)    ; for tests
+       ("python-pytz" ,python2-pytz)))  ; for tests
+    (home-page "https://www.genes.mit.edu/burgelab/miso/index.html")
     (synopsis "Mixture of Isoforms model for RNA-Seq isoform quantitation")
     (description
      "MISO (Mixture-of-Isoforms) is a probabilistic framework that quantitates
