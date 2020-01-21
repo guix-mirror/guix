@@ -22,7 +22,11 @@
   #:use-module (guix build-system cargo)
   #:use-module (guix download)
   #:use-module (guix packages)
-  #:use-module (gnu packages crates-io))
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages crates-io)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages version-control))
 
 (define-public ripgrep
   (package
@@ -125,11 +129,7 @@ gitignore rules.")
         ("rust-serde-json" ,rust-serde-json-1.0)
         ("rust-serde-yaml" ,rust-serde-yaml-0.8)
         ("rust-term-size" ,rust-term-size-0.3)
-        ("rust-toml" ,rust-toml-0.5)
-        ;; Transitive build dependencies:
-        ("rust-cc" ,rust-cc-1.0)
-        ("rust-pkg-config" ,rust-pkg-config-0.3)
-        ("rust-vcpkg" ,rust-vcpkg-0.2))
+        ("rust-toml" ,rust-toml-0.5))
        #:cargo-development-inputs
        (("rust-git2" ,rust-git2-0.11)
         ("rust-handlebars" ,rust-handlebars-2.0)
@@ -137,7 +137,33 @@ gitignore rules.")
         ("rust-lazy-static" ,rust-lazy-static-1.4)
         ("rust-regex" ,rust-regex-1.3)
         ("rust-serde-json" ,rust-serde-json-1.0)
-        ("rust-tempfile" ,rust-tempfile-3.0))))
+        ("rust-tempfile" ,rust-tempfile-3.0))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'unvendor-libraries-from-crates
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((openssl (assoc-ref inputs "openssl")))
+               (setenv "OPENSSL_DIR" openssl)
+               (setenv "LIBGIT2_SYS_USE_PKG_CONFIG" "1")
+               (setenv "LIBSSH2_SYS_USE_PKG_CONFIG" "1")
+               (delete-file-recursively
+                 (string-append "guix-vendor/rust-libgit2-sys-"
+                                ,(package-version rust-libgit2-sys-0.10)
+                                ".crate/libgit2"))
+               (delete-file-recursively
+                 (string-append "guix-vendor/rust-libssh2-sys-"
+                                ,(package-version rust-libssh2-sys-0.2)
+                                ".crate/libssh2"))
+               (delete-file-recursively
+                 (string-append "guix-vendor/rust-libz-sys-"
+                                ,(package-version rust-libz-sys-1.0)
+                                ".crate/src/zlib")))
+             #t)))))
+    (native-inputs
+     `(("libgit2" ,libgit2)
+       ("openssl" ,openssl)
+       ("pkg-config" ,pkg-config)
+       ("zlib" ,zlib)))
     (home-page "https://tokei.rs")
     (synopsis "Count code, quickly")
     (description
