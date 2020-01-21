@@ -6442,8 +6442,15 @@ IOCP and Async I/O abstractions.")
         (sha256
          (base32
           "06g9b8sqlh5gxakwqq4rrib07afwanfnxgxajrldwcgk3hxjy7wc"))))
-    (arguments '())
-    (properties '((hidden? . #t)))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-kernel32-sys" ,rust-kernel32-sys-0.2)
+        ("rust-net2" ,rust-net2-0.2)
+        ("rust-winapi" ,rust-winapi-0.2)
+        ("rust-ws2-32-sys" ,rust-ws2-32-sys-0.2))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.3))))))
 
 (define-public rust-model-0.1
   (package
