@@ -6586,22 +6586,31 @@ types as proposed in RFC 1158.")
          (base32
           "1gjycyl2283525abks98bhxa4r259m617xfm5z52p3p3c8ry9d9f"))))
     (build-system cargo-build-system)
-    ;(arguments
-    ; `(#:phases
-    ;   (modify-phases %standard-phases
-    ;     (add-after 'unpack 'delete-vendored-zlib
-    ;       (lambda _
-    ;         (delete-file-recursively "src/zlib")
-    ;         #t)))))
-    ;(inputs
-    ; `(("pkg-config" ,pkg-config)
-    ;   ("zlib" ,zlib)))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ;; Build dependencies:
+        ("rust-cc" ,rust-cc-1.0)
+        ("rust-pkg-config" ,rust-pkg-config-0.3)
+        ("rust-vcpkg" ,rust-vcpkg-0.2))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'delete-vendored-zlib
+           (lambda _
+             (delete-file-recursively "src/zlib")
+             (delete-file-recursively
+               (string-append "guix-vendor/rust-libz-sys-"
+                              ,(package-version rust-libz-sys-1.0)
+                              ".crate/src/zlib"))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("zlib" ,zlib)))
     (home-page "https://github.com/rust-lang/libz-sys")
     (synopsis "Bindings to the system libz library")
     (description
      "This package provides bindings to the system @code{libz} library (also
 known as zlib).")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
