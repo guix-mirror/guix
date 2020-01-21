@@ -10161,7 +10161,7 @@ the earlier snpMatrix package, allowing for uncertainty in genotypes.")
               (method url-fetch)
               ;; We cannot use bioconductor-uri here because this tarball is
               ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "http://www.bioconductor.org/packages/"
+              (uri (string-append "https://www.bioconductor.org/packages/"
                                   "release/data/annotation/src/contrib/"
                                   "Homo.sapiens_"
                                   version ".tar.gz"))

@@ -297,7 +297,7 @@ provided by UCSC (mm9, July 2007) and stored in Biostrings objects.")
      `(("r-bsgenome" ,r-bsgenome)
        ("r-bsgenome-mmusculus-ucsc-mm9"
         ,r-bsgenome-mmusculus-ucsc-mm9)))
-    (home-page "http://bioconductor.org/packages/BSgenome.Mmusculus.UCSC.mm9.masked/")
+    (home-page "https://bioconductor.org/packages/BSgenome.Mmusculus.UCSC.mm9.masked/")
     (synopsis "Full masked genome sequences for Mouse")
     (description
      "This package provides full genome sequences for Mus musculus (Mouse) as
@@ -1400,7 +1400,7 @@ problems in genomics, brain imaging, astrophysics, and data mining.")
        ("r-s4vectors" ,r-s4vectors)
        ("r-summarizedexperiment" ,r-summarizedexperiment)
        ("r-systempiper" ,r-systempiper)))
-    (home-page "http://bioconductor.org/packages/DiffBind")
+    (home-page "https://bioconductor.org/packages/DiffBind")
     (synopsis "Differential binding analysis of ChIP-Seq peak data")
     (description
      "This package computes differentially bound sites from multiple
@@ -1429,7 +1429,7 @@ occupancy (overlap) analysis and plotting functions.")
        ("r-rsamtools" ,r-rsamtools)
        ("r-genomicalignments" ,r-genomicalignments)
        ("r-rtracklayer" ,r-rtracklayer)))
-    (home-page "http://bioconductor.org/packages/RIPSeeker")
+    (home-page "https://bioconductor.org/packages/RIPSeeker")
     (synopsis
      "Identifying protein-associated transcripts from RIP-seq experiments")
     (description
@@ -1458,7 +1458,7 @@ processing to visualization and annotation.")
        ("r-biocgenerics" ,r-biocgenerics)
        ("r-biobase" ,r-biobase)
        ("r-mass" ,r-mass)))
-    (home-page "http://bioconductor.org/packages/multtest")
+    (home-page "https://bioconductor.org/packages/multtest")
     (synopsis "Resampling-based multiple hypothesis testing")
     (description
      "This package can do non-parametric bootstrap and permutation
@@ -1569,7 +1569,7 @@ determining dependencies between variables, code improvement suggestions.")
        ("r-seqinr" ,r-seqinr)
        ("r-summarizedexperiment" ,r-summarizedexperiment)
        ("r-venndiagram" ,r-venndiagram)))
-    (home-page "http://bioconductor.org/packages/ChIPpeakAnno")
+    (home-page "https://bioconductor.org/packages/ChIPpeakAnno")
     (synopsis "Peaks annotation from ChIP-seq and ChIP-chip experiments")
     (description
      "The package includes functions to retrieve the sequences around the peak,
@@ -1594,7 +1594,7 @@ enrichedGO (addGeneIDs).")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-limma" ,r-limma)))
-    (home-page "http://bioconductor.org/packages/marray")
+    (home-page "https://bioconductor.org/packages/marray")
     (synopsis "Exploratory analysis for two-color spotted microarray data")
     (description "This package contains class definitions for two-color spotted
 microarray data.  It also includes functions for data input, diagnostic plots,
@@ -1615,7 +1615,7 @@ normalization and quality checking.")
    (propagated-inputs
     `(("r-biobase" ,r-biobase)
       ("r-marray" ,r-marray)))
-   (home-page "http://bioconductor.org/packages/CGHbase")
+   (home-page "https://bioconductor.org/packages/CGHbase")
    (synopsis "Base functions and classes for arrayCGH data analysis")
    (description "This package contains functions and classes that are needed by
 the @code{arrayCGH} packages.")
@@ -1638,7 +1638,7 @@ the @code{arrayCGH} packages.")
       ("r-impute" ,r-impute)
       ("r-dnacopy" ,r-dnacopy)
       ("r-snowfall" ,r-snowfall)))
-   (home-page "http://bioconductor.org/packages/CGHcall")
+   (home-page "https://bioconductor.org/packages/CGHcall")
    (synopsis "Base functions and classes for arrayCGH data analysis")
    (description "This package contains functions and classes that are needed by
 @code{arrayCGH} packages.")
@@ -1667,7 +1667,7 @@ the @code{arrayCGH} packages.")
        ("r-matrixstats" ,r-matrixstats)
        ("r-r-utils" ,r-r-utils)
        ("r-rsamtools" ,r-rsamtools)))
-    (home-page "http://bioconductor.org/packages/QDNAseq")
+    (home-page "https://bioconductor.org/packages/QDNAseq")
     (synopsis "Quantitative DNA sequencing for chromosomal aberrations")
     (description "The genome is divided into non-overlapping fixed-sized bins,
 number of sequence reads in each counted, adjusted with a simultaneous
