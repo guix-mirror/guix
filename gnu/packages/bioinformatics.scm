@@ -5171,7 +5171,7 @@ extremely diverse sets of genomes.")
              #t)))))
     (inputs
      `(("openmpi" ,openmpi)))
-    (home-page "http://sco.h-its.org/exelixis/web/software/raxml/index.html")
+    (home-page "https://cme.h-its.org/exelixis/web/software/raxml/index.html")
     (synopsis "Randomized Axelerated Maximum Likelihood phylogenetic trees")
     (description
      "RAxML is a tool for phylogenetic analysis and post-analysis of large
