@@ -313,8 +313,19 @@ developers consider to have good quality code and correct functionality.")
                 "0x0y0hm0ga3zqi5q4090hw5sjh59y1ry9ak16qsaascm72i7mjzi"))))
     (build-system meson-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
+         ,@(if (string-prefix? "arm" (or (%current-target-system)
+                                         (%current-system)))
+               ;; Disable test that fails on ARMv7.
+               ;; https://gitlab.freedesktop.org/gstreamer/gst-plugins-bad/issues/1188
+               `((add-after 'unpack 'disable-asfmux-test
+                   (lambda _
+                     (substitute* "tests/check/meson.build"
+                       (("\\[\\['elements/asfmux\\.c'\\]\\],")
+                        ""))
+                     #t)))
+               '())
          (add-after 'unpack 'disable-failing-test
            (lambda _
              ;; FIXME: Why is this failing.
