@@ -6042,7 +6042,8 @@ sequence itself can be retrieved from these databases.")
        ("fuse" ,fuse)
        ("hdf5" ,hdf5)
        ("zlib" ,zlib)))
-    (home-page "http://www.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=software")
+    (home-page
+     "https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=software")
     (synopsis "Tools and libraries for reading and writing sequencing data")
     (description
      "The SRA Toolkit from NCBI is a collection of tools and libraries for
