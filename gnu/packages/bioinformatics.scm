@@ -4992,6 +4992,8 @@ different command-line tools:
 (define-public prodigal
   (package
     (name "prodigal")
+    ;; Check for a new home page when updating this package:
+    ;; https://github.com/hyattpd/Prodigal/issues/36#issuecomment-536617588
     (version "2.6.3")
     (source (origin
               (method git-fetch)
@@ -5004,14 +5006,14 @@ different command-line tools:
                 "1fs1hqk83qjbjhrvhw6ni75zakx5ki1ayy3v6wwkn3xvahc9hi5s"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ;no check target
+     `(#:tests? #f                      ; no check target
        #:make-flags (list (string-append "INSTALLDIR="
                                          (assoc-ref %outputs "out")
                                          "/bin"))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
-    (home-page "http://prodigal.ornl.gov")
+    (home-page "https://github.com/hyattpd/Prodigal")
     (synopsis "Protein-coding gene prediction for Archaea and Bacteria")
     (description
      "Prodigal runs smoothly on finished genomes, draft genomes, and
