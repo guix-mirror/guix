@@ -25,7 +25,11 @@
   #:use-module (guix build-system cargo)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages))
+  #:use-module (guix packages)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages version-control))
 
 ;;;
 ;;; Please: Try to add new module packages in alphabetic order.
@@ -5567,28 +5571,46 @@ values of all the exported APIs match the platform that libc is compiled for.")
          (base32
           "0l9fvki7qxsl97vgzqwlv75nl213a5vxw7b1jaik97ala356pv6r"))))
     (build-system cargo-build-system)
-    ;(arguments
-    ; `(#:phases
-    ;  (modify-phases %standard-phases
-    ;    (add-after 'unpack 'find-openssl
-    ;      (lambda* (#:key inputs #:allow-other-keys)
-    ;        (let ((openssl (assoc-ref inputs "openssl")))
-    ;          (setenv "OPENSSL_DIR" openssl))
-    ;        (delete-file-recursively "libgit2")
-    ;        (setenv "LIBGIT2_SYS_USE_PKG_CONFIG" "1")
-    ;        (setenv "LIBSSH2_SYS_USE_PKG_CONFIG" "1")
-    ;        #t)))))
-    ;(native-inputs
-    ; `(("pkg-config" ,pkg-config)))
-    ;(inputs
-    ; `(("libgit2" ,libgit2)
-    ;   ("openssl" ,openssl)
-    ;   ("zlib" ,zlib)))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-libz-sys" ,rust-libz-sys-1.0)
+        ("rust-libssh2-sys" ,rust-libssh2-sys-0.2)
+        ("rust-openssl-sys" ,rust-openssl-sys-0.9)
+        ;; Build dependencies:
+        ("rust-cc" ,rust-cc-1.0)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'dont-vendor-sources
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((openssl (assoc-ref inputs "openssl")))
+               (setenv "OPENSSL_DIR" openssl))
+             (delete-file-recursively "libgit2")
+             (delete-file-recursively
+               (string-append "guix-vendor/rust-libgit2-sys-"
+                              ,(package-version rust-libgit2-sys-0.10)
+                              ".crate/libgit2"))
+             (delete-file-recursively
+               (string-append "guix-vendor/rust-libz-sys-"
+                              ,(package-version rust-libz-sys-1.0)
+                              ".crate/src/zlib"))
+             (delete-file-recursively
+               (string-append "guix-vendor/rust-libssh2-sys-"
+                              ,(package-version rust-libssh2-sys-0.2)
+                              ".crate/libssh2"))
+             (setenv "LIBGIT2_SYS_USE_PKG_CONFIG" "1")
+             (setenv "LIBSSH2_SYS_USE_PKG_CONFIG" "1")
+             #t)))))
+    (native-inputs
+     `(("libgit2" ,libgit2)
+       ("openssl" ,openssl)
+       ("pkg-config" ,pkg-config)
+       ("zlib" ,zlib)))
     (home-page "https://github.com/rust-lang/git2-rs")
     (synopsis "Native bindings to the libgit2 library")
     (description
      "This package provides native rust bindings to the @code{libgit2} library.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
@@ -5604,7 +5626,9 @@ values of all the exported APIs match the platform that libc is compiled for.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0y2mibmx7wy91s2kmb2gfb29mrqlqaxpy5wcwr8s1lwws7b9w5sc"))))))
+          "0y2mibmx7wy91s2kmb2gfb29mrqlqaxpy5wcwr8s1lwws7b9w5sc"))))
+    (arguments '())
+    (properties '((hidden? . #t)))))
 
 (define-public rust-libgit2-sys-0.7
   (package
@@ -5618,7 +5642,9 @@ values of all the exported APIs match the platform that libc is compiled for.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1wcvg2qqra2aviasvqcscl8gb2rnjnd6h998wy5dlmf2bnriqi28"))))))
+          "1wcvg2qqra2aviasvqcscl8gb2rnjnd6h998wy5dlmf2bnriqi28"))))
+    (arguments '())
+    (properties '((hidden? . #t)))))
 
 (define-public rust-libloading-0.5
   (package
