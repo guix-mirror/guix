@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Simon Tournier <zimon.toutoune@gmail.com>
@@ -297,7 +297,7 @@ provided by UCSC (mm9, July 2007) and stored in Biostrings objects.")
      `(("r-bsgenome" ,r-bsgenome)
        ("r-bsgenome-mmusculus-ucsc-mm9"
         ,r-bsgenome-mmusculus-ucsc-mm9)))
-    (home-page "http://bioconductor.org/packages/BSgenome.Mmusculus.UCSC.mm9.masked/")
+    (home-page "https://bioconductor.org/packages/BSgenome.Mmusculus.UCSC.mm9.masked/")
     (synopsis "Full masked genome sequences for Mouse")
     (description
      "This package provides full genome sequences for Mus musculus (Mouse) as
@@ -1053,14 +1053,14 @@ problems in CEL-level data to help evaluate performance of quality metrics.")
 (define-public r-affycoretools
   (package
     (name "r-affycoretools")
-    (version "1.58.3")
+    (version "1.58.4")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "affycoretools" version))
        (sha256
         (base32
-         "12r9ljkp3xix0xq8d1488c8wb3a4whb805v48ynmv985bs3phc71"))))
+         "1p283ysib04qzaayxmrpsmk5bq0jdq2rlky180jrlskpyg6risfw"))))
     (properties `((upstream-name . "affycoretools")))
     (build-system r-build-system)
     (propagated-inputs
@@ -1071,6 +1071,7 @@ problems in CEL-level data to help evaluate performance of quality metrics.")
        ("r-dbi" ,r-dbi)
        ("r-edger" ,r-edger)
        ("r-gcrma" ,r-gcrma)
+       ("r-glimma" ,r-glimma)
        ("r-ggplot2" ,r-ggplot2)
        ("r-gostats" ,r-gostats)
        ("r-gplots" ,r-gplots)
@@ -1165,14 +1166,14 @@ the Human Protein Atlas project.")
 (define-public r-regioner
   (package
     (name "r-regioner")
-    (version "1.18.0")
+    (version "1.18.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "regioneR" version))
        (sha256
         (base32
-         "0m073hrqp62zpd2blnqm5ka539hcilir05m8av14vdhzhjzp13ya"))))
+         "0if7r6njz3ahm545383z5mzmzw8fdvw80a9lfz160j5pcgpx2dq9"))))
     (properties `((upstream-name . "regioneR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -1399,7 +1400,7 @@ problems in genomics, brain imaging, astrophysics, and data mining.")
        ("r-s4vectors" ,r-s4vectors)
        ("r-summarizedexperiment" ,r-summarizedexperiment)
        ("r-systempiper" ,r-systempiper)))
-    (home-page "http://bioconductor.org/packages/DiffBind")
+    (home-page "https://bioconductor.org/packages/DiffBind")
     (synopsis "Differential binding analysis of ChIP-Seq peak data")
     (description
      "This package computes differentially bound sites from multiple
@@ -1428,7 +1429,7 @@ occupancy (overlap) analysis and plotting functions.")
        ("r-rsamtools" ,r-rsamtools)
        ("r-genomicalignments" ,r-genomicalignments)
        ("r-rtracklayer" ,r-rtracklayer)))
-    (home-page "http://bioconductor.org/packages/RIPSeeker")
+    (home-page "https://bioconductor.org/packages/RIPSeeker")
     (synopsis
      "Identifying protein-associated transcripts from RIP-seq experiments")
     (description
@@ -1457,7 +1458,7 @@ processing to visualization and annotation.")
        ("r-biocgenerics" ,r-biocgenerics)
        ("r-biobase" ,r-biobase)
        ("r-mass" ,r-mass)))
-    (home-page "http://bioconductor.org/packages/multtest")
+    (home-page "https://bioconductor.org/packages/multtest")
     (synopsis "Resampling-based multiple hypothesis testing")
     (description
      "This package can do non-parametric bootstrap and permutation
@@ -1568,7 +1569,7 @@ determining dependencies between variables, code improvement suggestions.")
        ("r-seqinr" ,r-seqinr)
        ("r-summarizedexperiment" ,r-summarizedexperiment)
        ("r-venndiagram" ,r-venndiagram)))
-    (home-page "http://bioconductor.org/packages/ChIPpeakAnno")
+    (home-page "https://bioconductor.org/packages/ChIPpeakAnno")
     (synopsis "Peaks annotation from ChIP-seq and ChIP-chip experiments")
     (description
      "The package includes functions to retrieve the sequences around the peak,
@@ -1593,7 +1594,7 @@ enrichedGO (addGeneIDs).")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-limma" ,r-limma)))
-    (home-page "http://bioconductor.org/packages/marray")
+    (home-page "https://bioconductor.org/packages/marray")
     (synopsis "Exploratory analysis for two-color spotted microarray data")
     (description "This package contains class definitions for two-color spotted
 microarray data.  It also includes functions for data input, diagnostic plots,
@@ -1614,7 +1615,7 @@ normalization and quality checking.")
    (propagated-inputs
     `(("r-biobase" ,r-biobase)
       ("r-marray" ,r-marray)))
-   (home-page "http://bioconductor.org/packages/CGHbase")
+   (home-page "https://bioconductor.org/packages/CGHbase")
    (synopsis "Base functions and classes for arrayCGH data analysis")
    (description "This package contains functions and classes that are needed by
 the @code{arrayCGH} packages.")
@@ -1637,7 +1638,7 @@ the @code{arrayCGH} packages.")
       ("r-impute" ,r-impute)
       ("r-dnacopy" ,r-dnacopy)
       ("r-snowfall" ,r-snowfall)))
-   (home-page "http://bioconductor.org/packages/CGHcall")
+   (home-page "https://bioconductor.org/packages/CGHcall")
    (synopsis "Base functions and classes for arrayCGH data analysis")
    (description "This package contains functions and classes that are needed by
 @code{arrayCGH} packages.")
@@ -1666,7 +1667,7 @@ the @code{arrayCGH} packages.")
        ("r-matrixstats" ,r-matrixstats)
        ("r-r-utils" ,r-r-utils)
        ("r-rsamtools" ,r-rsamtools)))
-    (home-page "http://bioconductor.org/packages/QDNAseq")
+    (home-page "https://bioconductor.org/packages/QDNAseq")
     (synopsis "Quantitative DNA sequencing for chromosomal aberrations")
     (description "The genome is divided into non-overlapping fixed-sized bins,
 number of sequence reads in each counted, adjusted with a simultaneous
@@ -1999,14 +2000,14 @@ genes or proteins in these datasets.")
 (define-public r-inspect
   (package
     (name "r-inspect")
-    (version "1.16.1")
+    (version "1.16.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "INSPEcT" version))
        (sha256
         (base32
-         "03cf9c94ra4f847ndlf8sn2cq1kl1055514wjq0lqbvlbfdj1dq3"))))
+         "1g8la7k4pnyr2hvk4yjd1bwvjy6nqbbb0fwxrrh2ifgqf4h21x2p"))))
     (properties `((upstream-name . "INSPEcT")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3459,14 +3460,14 @@ All the visualization methods are developed based on ggplot2 graphics.")
 (define-public r-clusterprofiler
   (package
     (name "r-clusterprofiler")
-    (version "3.14.2")
+    (version "3.14.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "clusterProfiler" version))
        (sha256
         (base32
-         "1y1l3yf1r1ykl9ngipvyzl5hbxxsfz7z5q5rcywkyss2b2b6gsg8"))))
+         "08pd7bmqmyxncj09ilz8yb9sf1pv9ni98y8b93pz2giy7pl407hg"))))
     (properties
      `((upstream-name . "clusterProfiler")))
     (build-system r-build-system)
@@ -3492,14 +3493,14 @@ profiles (GO and KEGG) of gene and gene clusters.")
 (define-public r-mlinterfaces
   (package
     (name "r-mlinterfaces")
-    (version "1.66.0")
+    (version "1.66.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MLInterfaces" version))
        (sha256
         (base32
-         "1vnzqd3y3jk1wgxybckzrcgwk0ly7zgcz5ki1ib0bk1jwv6xk5x8"))))
+         "1wc280iw9vllg6f58vsdj895yaqs8w42kl7jk8sgii009gwlaj8d"))))
     (properties `((upstream-name . "MLInterfaces")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3517,7 +3518,6 @@ profiles (GO and KEGG) of gene and gene clusters.")
        ("r-mlbench" ,r-mlbench)
        ("r-pls" ,r-pls)
        ("r-rcolorbrewer" ,r-rcolorbrewer)
-       ("r-rda" ,r-rda)
        ("r-rpart" ,r-rpart)
        ("r-sfsmisc" ,r-sfsmisc)
        ("r-shiny" ,r-shiny)
@@ -5164,14 +5164,14 @@ packages.")
 (define-public r-ropls
   (package
     (name "r-ropls")
-    (version "1.18.0")
+    (version "1.18.6")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ropls" version))
        (sha256
         (base32
-         "05w1zrq92w3jfwq5sdyj27m5qjg4zv7acywia8vd6y5fbgcnyzlp"))))
+         "1sm2fmygrra9gdcs90lmk5y1ag6arga6159kggx4ij8bkhyc66vb"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
@@ -5586,14 +5586,14 @@ for other R packages to compile and link against.")
 (define-public r-flowworkspace
   (package
     (name "r-flowworkspace")
-    (version "3.34.0")
+    (version "3.34.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "flowWorkspace" version))
        (sha256
         (base32
-         "0hvbkxyylsygra31l1lxyvbsr5hc50lqy1y7gwrfgrfil4a2m762"))))
+         "1ijbc6z9ljhrw3cqr02smgplhrfg44gzrb1dq4gbrpq3nj4khhpn"))))
     (properties `((upstream-name . "flowWorkspace")))
     (build-system r-build-system)
     (propagated-inputs
@@ -6451,14 +6451,14 @@ arrays based on fast wavelet-based functional models.")
 (define-public r-variancepartition
   (package
     (name "r-variancepartition")
-    (version "1.16.0")
+    (version "1.16.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "variancePartition" version))
        (sha256
         (base32
-         "1ygx7f2sp4b7ilgspm6vqcbjxs7br9s6g3gwcdb978kx03ymp4i8"))))
+         "02pzsff14j4am2d949mh8xgi0c7k44g09q4lr6nqm08vf92brb6g"))))
     (properties
      `((upstream-name . "variancePartition")))
     (build-system r-build-system)

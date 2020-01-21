@@ -118,7 +118,7 @@ shared-secret IPSec authentication with Xauth, AES (256, 192, 128), 3DES,
 1DES, MD5, SHA1, DH1/2/5 and IP tunneling.  It runs entirely in userspace.
 Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
    (license license:gpl2+) ; some file are bsd-2, see COPYING
-   (home-page "http://www.unix-ag.uni-kl.de/~massar/vpnc/")))
+   (home-page "https://www.unix-ag.uni-kl.de/~massar/vpnc/")))
 
 (define-public vpnc-scripts
   (let ((commit "1000e0f6dd7d6bff163169a46359211c1fc3a6d2"))

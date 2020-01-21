@@ -1139,14 +1139,10 @@ For the other build systems, such as ASDF, Emacs, Perl, Ruby and many more, the
 process is very similar to the GNU build system except for a few specialized
 arguments.
 
-Learn more about build systems in
-@itemize
-@item
-@uref{https://www.gnu.org/software/guix/manual/en/html_node/Build-Systems.html#Build-Systems, the manual, section 4.2 Build systems},
-@item
-the source code in the @samp{$GUIX_CHECKOUT/guix/build} and
+@xref{Build Systems,,, guix, GNU Guix Reference Manual}, for more
+information on build systems, or check the source code in the
+@samp{$GUIX_CHECKOUT/guix/build} and
 @samp{$GUIX_CHECKOUT/guix/build-system} directories.
-@end itemize
 
 @node Programmable and automated package definition
 @subsection Programmable and automated package definition

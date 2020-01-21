@@ -1,4 +1,3 @@
-
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
@@ -6809,7 +6808,7 @@ printed.")
     (version "2.7.7")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.antlr2.org/download/antlr-"
+              (uri (string-append "https://www.antlr2.org/download/antlr-"
                                   version ".tar.gz"))
               (sha256
                (base32
@@ -6856,7 +6855,7 @@ printed.")
        ("java" ,icedtea "jdk")))
     (inputs
      `(("java" ,icedtea)))
-    (home-page "http://www.antlr2.org")
+    (home-page "https://www.antlr2.org")
     (synopsis "Framework for constructing recognizers, compilers, and translators")
     (description "ANTLR, ANother Tool for Language Recognition, (formerly PCCTS)
 is a language tool that provides a framework for constructing recognizers,
@@ -7080,7 +7079,7 @@ import org.antlr.grammar.v3.ANTLRTreePrinter;"))
      `(("stringtemplate" ,java-stringtemplate-3)
        ("antlr" ,antlr2)
        ("stringtemplate4" ,java-stringtemplate-4.0.6)))
-    (home-page "http://www.antlr3.org")
+    (home-page "https://www.antlr3.org")
     (synopsis "Framework for constructing recognizers, compilers, and translators")
     (description "ANTLR, ANother Tool for Language Recognition, (formerly PCCTS)
 is a language tool that provides a framework for constructing recognizers,
@@ -8970,7 +8969,7 @@ file when the JVM loads it.")
        #:jdk ,icedtea-8
        #:tests? #f; requires testng which depends on jcommander
        #:source-dir "src/main/java"))
-    (home-page "http://jcommander.org")
+    (home-page "https://jcommander.org")
     (synopsis "Command line parameters parser")
     (description "JCommander is a very small Java framework that makes it
 trivial to parse command line parameters.  Parameters are declared with

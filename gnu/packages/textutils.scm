@@ -462,7 +462,7 @@ application code.")
                (base32
                 "1nxkfm7zliq3rmr7yp871sppwfnz71iz364m2sgazny71pzykggc"))))
     (build-system cmake-build-system)
-    (home-page "http://biit.cs.ut.ee/pfff/")
+    (home-page "https://biit.cs.ut.ee/pfff/")
     (synopsis "Probabilistic fast file fingerprinting tool")
     (description
      "pfff is a tool for calculating a compact digital fingerprint of a file

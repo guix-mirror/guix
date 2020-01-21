@@ -1084,7 +1084,7 @@ well as bzip2.")
 (define-public snappy
   (package
     (name "snappy")
-    (version "1.1.7")
+    (version "1.1.8")
     (source
      (origin
        (method git-fetch)
@@ -1093,7 +1093,7 @@ well as bzip2.")
               (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1x7r8sjmdqlqjz0xfiwdyrqpgaj5yrvrgb28ivgpvnxgar5qv6m2"))
+        (base32 "1j0kslq2dvxgkcxl1gakhvsa731yrcvcaipcp5k8k7ayicvkv9jv"))
        (patches (search-patches "snappy-add-O2-flag-in-CmakeLists.txt.patch"))))
     (build-system cmake-build-system)
     (arguments

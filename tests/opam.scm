@@ -85,36 +85,33 @@ url {
         (with-output-to-file (string-append my-package "/opam")
           (lambda _
             (format #t "~a" test-opam-file))))
-      (mock ((guix import opam) get-opam-repository
-             (lambda _
-               test-repo))
-        (match (opam->guix-package "foo")
-          (('package
-             ('name "ocaml-foo")
-             ('version "1.0.0")
-             ('source ('origin
-                        ('method 'url-fetch)
-                        ('uri "https://example.org/foo-1.0.0.tar.gz")
-                        ('sha256
-                         ('base32
-                          (? string? hash)))))
-             ('build-system 'ocaml-build-system)
-             ('propagated-inputs
-              ('quasiquote
-               (("ocaml-zarith" ('unquote 'ocaml-zarith)))))
-             ('native-inputs
-              ('quasiquote
-               (("ocaml-alcotest" ('unquote 'ocaml-alcotest))
-                ("ocamlbuild" ('unquote 'ocamlbuild)))))
-             ('home-page "https://example.org/")
-             ('synopsis "Some example package")
-             ('description "This package is just an example.")
-             ('license #f))
-           (string=? (bytevector->nix-base32-string
-                      test-source-hash)
-                     hash))
-          (x
-           (pk 'fail x #f))))))
+      (match (opam->guix-package "foo" #:repository test-repo)
+        (('package
+           ('name "ocaml-foo")
+           ('version "1.0.0")
+           ('source ('origin
+                      ('method 'url-fetch)
+                      ('uri "https://example.org/foo-1.0.0.tar.gz")
+                      ('sha256
+                       ('base32
+                        (? string? hash)))))
+           ('build-system 'ocaml-build-system)
+           ('propagated-inputs
+            ('quasiquote
+             (("ocaml-zarith" ('unquote 'ocaml-zarith)))))
+           ('native-inputs
+            ('quasiquote
+             (("ocaml-alcotest" ('unquote 'ocaml-alcotest))
+              ("ocamlbuild" ('unquote 'ocamlbuild)))))
+           ('home-page "https://example.org/")
+           ('synopsis "Some example package")
+           ('description "This package is just an example.")
+           ('license #f))
+         (string=? (bytevector->nix-base32-string
+                    test-source-hash)
+                   hash))
+        (x
+         (pk 'fail x #f)))))
 
 ;; Test the opam file parser
 ;; We fold over some test cases. Each case is a pair of the string to parse and the
@@ -123,7 +120,7 @@ url {
   (fold (lambda (test acc)
           (display test) (newline)
           (and acc
-               (let ((result (peg:tree (match-pattern (@@ (guix import opam) string-pat) (car test)))))
+               (let ((result (peg:tree (match-pattern string-pat (car test)))))
                  (if (equal? result (cdr test))
                    #t
                    (pk 'fail (list (car test) result (cdr test)) #f)))))
@@ -138,7 +135,7 @@ url {
   (fold (lambda (test acc)
           (display test) (newline)
           (and acc
-               (let ((result (peg:tree (match-pattern (@@ (guix import opam) multiline-string) (car test)))))
+               (let ((result (peg:tree (match-pattern multiline-string (car test)))))
                  (if (equal? result (cdr test))
                    #t
                    (pk 'fail (list (car test) result (cdr test)) #f)))))
@@ -150,7 +147,7 @@ url {
 (test-assert "parse-lists"
   (fold (lambda (test acc)
           (and acc
-               (let ((result (peg:tree (match-pattern (@@ (guix import opam) list-pat) (car test)))))
+               (let ((result (peg:tree (match-pattern list-pat (car test)))))
                  (if (equal? result (cdr test))
                    #t
                    (pk 'fail (list (car test) result (cdr test)) #f)))))
@@ -164,7 +161,7 @@ url {
 (test-assert "parse-dicts"
   (fold (lambda (test acc)
           (and acc
-               (let ((result (peg:tree (match-pattern (@@ (guix import opam) dict) (car test)))))
+               (let ((result (peg:tree (match-pattern dict (car test)))))
                  (if (equal? result (cdr test))
                    #t
                    (pk 'fail (list (car test) result (cdr test)) #f)))))
@@ -176,7 +173,7 @@ url {
 (test-assert "parse-conditions"
   (fold (lambda (test acc)
           (and acc
-               (let ((result (peg:tree (match-pattern (@@ (guix import opam) condition) (car test)))))
+               (let ((result (peg:tree (match-pattern condition (car test)))))
                  (if (equal? result (cdr test))
                    #t
                    (pk 'fail (list (car test) result (cdr test)) #f)))))

@@ -40,7 +40,7 @@
     (version "4.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.docbook.org/xml/" version
+              (uri (string-append "https://www.docbook.org/xml/" version
                                   "/docbook-xml-" version ".zip"))
               (sha256
                (base32
@@ -66,7 +66,7 @@
                      #t))
                  #:modules ((guix build utils))))
     (native-inputs `(("unzip" ,unzip)))
-    (home-page "http://docbook.org")
+    (home-page "https://docbook.org")
     (synopsis "DocBook XML DTDs for document authoring")
     (description
      "DocBook is general purpose XML and SGML document type particularly well
@@ -79,7 +79,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
     (version "4.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.docbook.org/xml/" version
+              (uri (string-append "https://www.docbook.org/xml/" version
                                   "/docbook-xml-" version ".zip"))
               (sha256
                (base32
@@ -90,7 +90,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
     (version "4.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.docbook.org/xml/" version
+              (uri (string-append "https://www.docbook.org/xml/" version
                                   "/docbook-xml-" version ".zip"))
               (sha256
                (base32
@@ -101,7 +101,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
     (version "4.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.docbook.org/xml/" version
+              (uri (string-append "https://www.docbook.org/xml/" version
                                   "/docbook-xml-" version ".zip"))
               (sha256
                (base32
@@ -112,7 +112,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
     (version "4.1.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.docbook.org/xml/" version
+              (uri (string-append "https://www.docbook.org/xml/" version
                                   "/docbkx412.zip"))
               (sha256
                (base32
@@ -174,7 +174,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
     (native-inputs `(("bzip2" ,bzip2)
                      ("xz" ,xz)         ;needed for repacked tarballs
                      ("tar" ,tar)))
-    (home-page "http://docbook.org")
+    (home-page "https://docbook.org")
     (synopsis "DocBook XSL style sheets for document authoring")
     (description
      "This package provides XSL style sheets for DocBook.")

@@ -70,6 +70,8 @@ Copyright @copyright{} 2019 Kyle Andrews@*
 Copyright @copyright{} 2019 Alex Griffin@*
 Copyright @copyright{} 2019 Guillaume Le Vaillant@*
 Copyright @copyright{} 2020 Leo Prikler@*
+Copyright @copyright{} 2019, 2020 Simon Tournier@*
+Copyright @copyright{} 2020 Wiktor Żelazny@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -743,7 +745,8 @@ GNU Guix is available for download from its website at
 GNU Guix depends on the following packages:
 
 @itemize
-@item @url{https://gnu.org/software/guile/, GNU Guile}, version 2.2.x;
+@item @url{https://gnu.org/software/guile/, GNU Guile}, version 3.0.x or
+2.2.x;
 @item @url{https://notabug.org/cwebber/guile-gcrypt, Guile-Gcrypt}, version
 0.1.0 or later;
 @item
@@ -1095,7 +1098,7 @@ similar file.  It can be converted to the OpenSSH format using
 @command{lsh-export-key} (@pxref{Converting keys,,, lsh, LSH Manual}):
 
 @example
-$ lsh-export-key --openssh < /etc/lsh/host-key.pub 
+$ lsh-export-key --openssh < /etc/lsh/host-key.pub
 ssh-rsa AAAAB3NzaC1yc2EAAAAEOp8FoQAAAQEAs1eB46LV@dots{}
 @end example
 
@@ -2002,6 +2005,8 @@ Access to @file{/dev/srX} usually requires root privileges.
 Once this is done, you should be able to reboot the system and boot from
 the USB stick or DVD.  The latter usually requires you to get in the
 BIOS or UEFI boot menu, where you can choose to boot from the USB stick.
+In order to boot from Libreboot, switch to the command mode by pressing
+the @kbd{c} key and type @command{search_grub usb}.
 
 @xref{Installing Guix in a VM}, if, instead, you would like to install
 Guix System in a virtual machine (VM).
@@ -5929,12 +5934,12 @@ Guile Reference Manual}).  The value of these arguments is usually
 evaluated in the @dfn{build stratum}---i.e., by a Guile process launched
 by the daemon (@pxref{Derivations}).
 
-The main build system is @var{gnu-build-system}, which implements the
+The main build system is @code{gnu-build-system}, which implements the
 standard build procedure for GNU and many other packages.  It
 is provided by the @code{(guix build-system gnu)} module.
 
 @defvr {Scheme Variable} gnu-build-system
-@var{gnu-build-system} represents the GNU Build System, and variants
+@code{gnu-build-system} represents the GNU Build System, and variants
 thereof (@pxref{Configuration, configuration and makefile conventions,,
 standards, GNU Coding Standards}).
 
@@ -5987,8 +5992,8 @@ is false), copying them to the @code{debug} output when available
 
 @vindex %standard-phases
 The build-side module @code{(guix build gnu-build-system)} defines
-@var{%standard-phases} as the default list of build phases.
-@var{%standard-phases} is a list of symbol/procedure pairs, where the
+@code{%standard-phases} as the default list of build phases.
+@code{%standard-phases} is a list of symbol/procedure pairs, where the
 procedure implements the actual phase.
 
 The list of phases used for a particular package can be changed with the
@@ -6011,7 +6016,7 @@ have to mention them.
 
 Other @code{<build-system>} objects are defined to support other
 conventions and tools used by free software packages.  They inherit most
-of @var{gnu-build-system}, and differ mainly in the set of inputs
+of @code{gnu-build-system}, and differ mainly in the set of inputs
 implicitly added to the build process, and in the list of phases
 executed.  Some of these build systems are listed below.
 
@@ -6031,9 +6036,9 @@ build file @file{build.xml} with tasks to build the specified jar
 archive.  In this case the parameter @code{#:source-dir} can be used to
 specify the source sub-directory, defaulting to ``src''.
 
-The @code{#:main-class} parameter can be used with the minimal ant 
-buildfile to specify the main class of the resulting jar.  This makes the 
-jar file executable.  The @code{#:test-include} parameter can be used to 
+The @code{#:main-class} parameter can be used with the minimal ant
+buildfile to specify the main class of the resulting jar.  This makes the
+jar file executable.  The @code{#:test-include} parameter can be used to
 specify the list of junit tests to run. It defaults to
 @code{(list "**/*Test.java")}.  The @code{#:test-exclude} can be used to
 disable some tests. It defaults to @code{(list "**/Abstract*.java")},
@@ -6159,7 +6164,7 @@ parameters, respectively.  Compile directory and main class can be specified
 with the @code{#:compile-dir} and @code{#:main-class} parameters, respectively.
 Other parameters are documented below.
 
-This build system is an extension of @var{ant-build-system}, but with the
+This build system is an extension of @code{ant-build-system}, but with the
 following phases changed:
 
 @table @code
@@ -6192,7 +6197,7 @@ Apart from the above, this build system also contains an additional phase:
 
 @item install-doc
 This phase installs all top-level files with base name matching
-@var{%doc-regex}.  A different regex can be specified with the
+@code{%doc-regex}.  A different regex can be specified with the
 @code{#:doc-regex} parameter.  All files (recursively) inside the documentation
 directories specified in @code{#:doc-dirs} are installed as well.
 @end table
@@ -6269,7 +6274,7 @@ This variable is exported by @code{(guix build-system glib-or-gtk)}.  It
 is intended for use with packages making use of GLib or GTK+.
 
 This build system adds the following two phases to the ones defined by
-@var{gnu-build-system}:
+@code{gnu-build-system}:
 
 @table @code
 @item glib-or-gtk-wrap
@@ -6443,7 +6448,7 @@ This variable is exported by @code{(guix build-system qt)}.  It
 is intended for use with applications using Qt or KDE.
 
 This build system adds the phase @code{qt-wrap} to the ones defined by
-@var{cmake-build-system}, after the @code{install} phase.
+@code{cmake-build-system}, after the @code{install} phase.
 
 This phase searches for Qt5 plugin paths, QML paths and some XDG in the inputs
 and output.  In case some path is found, all programs in the output's
@@ -6583,7 +6588,7 @@ This variable is exported by @code{(guix build-system emacs)}.  It
 implements an installation procedure similar to the packaging system
 of Emacs itself (@pxref{Packages,,, emacs, The GNU Emacs Manual}).
 
-It first creates the @code{@var{package}-autoloads.el} file, then it
+It first creates the @code{@code{package}-autoloads.el} file, then it
 byte compiles all Emacs Lisp files.  Differently from the Emacs
 packaging system, the Info documentation files are moved to the standard
 documentation directory and the @file{dir} file is deleted.  Each
@@ -6610,7 +6615,7 @@ and @code{#:ninja} if needed.  The default Meson is
 @code{meson-for-build}, which is special because it doesn't clear the
 @code{RUNPATH} of binaries and libraries when they are installed.
 
-This build system is an extension of @var{gnu-build-system}, but with the
+This build system is an extension of @code{gnu-build-system}, but with the
 following phases changed to some specific for Meson:
 
 @table @code
@@ -6655,10 +6660,10 @@ is not enabled by default.  It can be enabled with @code{#:glib-or-gtk?}.
 @end defvr
 
 @defvr {Scheme Variable} linux-module-build-system
-@var{linux-module-build-system} allows building Linux kernel modules.
+@code{linux-module-build-system} allows building Linux kernel modules.
 
 @cindex build phases
-This build system is an extension of @var{gnu-build-system}, but with the
+This build system is an extension of @code{gnu-build-system}, but with the
 following phases changed:
 
 @table @code
@@ -7995,6 +8000,18 @@ Accept connections on localhost on port 37146.
 @item --listen=unix:/tmp/socket
 Accept connections on the Unix-domain socket @file{/tmp/socket}.
 @end table
+
+@item --load-path=@var{directory}
+@itemx -L @var{directory}
+Add @var{directory} to the front of the package module search path
+(@pxref{Package Modules}).
+
+This allows users to define their own packages and make them visible to
+the command-line tool.
+
+@item -q
+Inhibit loading of the @file{~/.guile} file.  By default, that
+configuration file is loaded when spawning a @code{guile} REPL.
 @end table
 
 @c *********************************************************************
@@ -8705,6 +8722,10 @@ have created your own packages on @code{GUIX_PACKAGE_PATH}
 recipes.  In other cases, you will be able to examine the read-only recipes
 for packages currently in the store.
 
+Instead of @code{GUIX_PACKAGE_PATH}, the command-line option
+@code{--load-path=@var{directory}} (or in short @code{-L
+@var{directory}}) allows you to add @var{directory} to the front of the
+package module search path and so make your own packages visible.
 
 @node Invoking guix download
 @section Invoking @command{guix download}
@@ -9552,6 +9573,13 @@ the user whether to download it or not.  This is the default behavior.
 @item --key-server=@var{host}
 Use @var{host} as the OpenPGP key server when importing a public key.
 
+@item --load-path=@var{directory}
+Add @var{directory} to the front of the package module search path
+(@pxref{Package Modules}).
+
+This allows users to define their own packages and make them visible to
+the command-line tools.
+
 @end table
 
 The @code{github} updater uses the
@@ -9837,6 +9865,13 @@ the case, @command{guix size} fails as it tries to load it.
 @itemx -s @var{system}
 Consider packages for @var{system}---e.g., @code{x86_64-linux}.
 
+@item --load-path=@var{directory}
+@itemx -L @var{directory}
+Add @var{directory} to the front of the package module search path
+(@pxref{Package Modules}).
+
+This allows users to define their own packages and make them visible to
+the command-line tools.
 @end table
 
 @node Invoking guix graph
@@ -10038,6 +10073,14 @@ Display the graph for @var{system}---e.g., @code{i686-linux}.
 
 The package dependency graph is largely architecture-independent, but there
 are some architecture-dependent bits that this option allows you to visualize.
+
+@item --load-path=@var{directory}
+@itemx -L @var{directory}
+Add @var{directory} to the front of the package module search path
+(@pxref{Package Modules}).
+
+This allows users to define their own packages and make them visible to
+the command-line tools.
 @end table
 
 On top of that, @command{guix graph} supports all the usual package
@@ -15802,6 +15845,13 @@ this application is allowed location info access.  An empty users list
 means that all users are allowed.
 @end deffn
 
+@cindex scanner access
+@deffn {Scheme Procedure} sane-service-type
+This service provides access to scanners @i{via}
+@uref{http://www.sane-project.org, SANE} by installing the necessary udev
+rules.
+@end deffn
+
 @defvr {Scheme Variable} %standard-geoclue-applications
 The standard list of well-known GeoClue application configurations,
 granting authority to the GNOME date-and-time utility to ask for the
@@ -17672,21 +17722,21 @@ Defaults to @samp{"SimpleIMAPSSLRetriever"}.
 @end deftypevr
 
 @deftypevr {@code{getmail-retriever-configuration} parameter} string server
-Space separated list of arguments to the userdb driver.
+Username to login to the mail server with.
 
 Defaults to @samp{unset}.
 
 @end deftypevr
 
 @deftypevr {@code{getmail-retriever-configuration} parameter} string username
-Space separated list of arguments to the userdb driver.
+Username to login to the mail server with.
 
 Defaults to @samp{unset}.
 
 @end deftypevr
 
 @deftypevr {@code{getmail-retriever-configuration} parameter} non-negative-integer port
-Space separated list of arguments to the userdb driver.
+Port number to connect to.
 
 Defaults to @samp{#f}.
 
@@ -17707,28 +17757,28 @@ Defaults to @samp{()}.
 @end deftypevr
 
 @deftypevr {@code{getmail-retriever-configuration} parameter} string keyfile
-PEM-formatted key file to use for the TLS negotiation
+PEM-formatted key file to use for the TLS negotiation.
 
 Defaults to @samp{""}.
 
 @end deftypevr
 
 @deftypevr {@code{getmail-retriever-configuration} parameter} string certfile
-PEM-formatted certificate file to use for the TLS negotiation
+PEM-formatted certificate file to use for the TLS negotiation.
 
 Defaults to @samp{""}.
 
 @end deftypevr
 
 @deftypevr {@code{getmail-retriever-configuration} parameter} string ca-certs
-CA certificates to use
+CA certificates to use.
 
 Defaults to @samp{""}.
 
 @end deftypevr
 
 @deftypevr {@code{getmail-retriever-configuration} parameter} parameter-alist extra-parameters
-Extra retriever parameters
+Extra retriever parameters.
 
 Defaults to @samp{()}.
 
@@ -17859,7 +17909,7 @@ Defaults to @samp{""}.
 If true, getmail will record a log of its actions using the system
 logger.
 
-Defaults to @samp{#t}.
+Defaults to @samp{#f}.
 
 @end deftypevr
 
@@ -17868,7 +17918,7 @@ If true, getmail will log information about messages not retrieved and
 the reason for not retrieving them, as well as starting and ending
 information lines.
 
-Defaults to @samp{#t}.
+Defaults to @samp{#f}.
 
 @end deftypevr
 
@@ -26098,7 +26148,7 @@ description: Install the given fonts on the specified ttys (fonts are per
 + virtual console on GNU/Linux).  The value of this service is a list of
 + tty/font pairs.  The font can be the name of a font provided by the `kbd'
 + package or any valid argument to `setfont', as in this example:
-+ 
++
 +      '(("tty1" . "LatGrkCyr-8x16")
 +        ("tty2" . (file-append
 +                      font-tamzen

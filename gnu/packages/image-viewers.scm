@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
@@ -12,6 +12,7 @@
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2020 Peng Mei Yu <pengmeiyu@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,11 +41,15 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
@@ -59,6 +64,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages))
 
@@ -455,16 +461,16 @@ including CBZ, CB7, CBT, LHA.")
 (define-public qview
   (package
     (name "qview")
-    (version "2.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/jurplel/qView.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1s29hz44rb5dwzq8d4i4bfg77dr0v3ywpvidpa6xzg7hnnv3mhi5"))))
+    (version "3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jurplel/qView.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "15a91bs3wcqhgf76wzigbn10hayg628j84pq4j2vaxar94ak0vk7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -524,3 +530,69 @@ including animated GIFs, into ANSI/Unicode character output that can be
 displayed in a terminal.")
     (home-page "https://hpjansson.org/chafa/")
     (license license:lgpl3+)))
+
+(define-public imv
+  (package
+    (name "imv")
+    (version "4.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/eXeC64/imv")
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "0gk8g178i961nn3bls75a8qpv6wvfvav6hd9lxca1skaikd33zdx"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'install 'record-absolute-file-names
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; 'imv' is a script that execs 'imv-x11' or 'imv-wayland'.
+             ;; Record their absolute file name.
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (substitute* (string-append bin "/imv")
+                 (("imv-")
+                  (string-append bin "/imv-")))
+               #t))))
+       #:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "CONFIGPREFIX="
+                            (assoc-ref %outputs "out") "/etc"))))
+    (inputs
+     `(("asciidoc" ,asciidoc)
+       ("freeimage" ,freeimage)
+       ("glu" ,glu)
+       ("librsvg" ,librsvg)
+       ("libxkbcommon" ,libxkbcommon)
+       ("pango" ,pango)
+       ("wayland" ,wayland)))
+    (native-inputs
+     `(("cmocka" ,cmocka)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Image viewer for tiling window managers")
+    (description "@code{imv} is a command line image viewer intended for use
+with tiling window managers.  Features include:
+
+@itemize
+@item Native Wayland and X11 support.
+@item Support for dozens of image formats including:
+@itemize
+@item PNG
+@item JPEG
+@item Animated GIFs
+@item SVG
+@item TIFF
+@item Various RAW formats
+@item Photoshop PSD files
+@end itemize
+@item Configurable key bindings and behavior.
+@item Highly scriptable with IPC via imv-msg.
+@end itemize\n")
+    (home-page "https://github.com/eXeC64/imv")
+    (license license:expat)))

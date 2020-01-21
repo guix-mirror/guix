@@ -53,10 +53,12 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages less)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages perl-compression)
   #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages textutils))
 
 ;;;
@@ -8480,6 +8482,40 @@ so the input modes can be changed (thus allowing reads of a single character
 at a time), and also provides non-blocking reads of stdin, as well as several
 other terminal related features, including retrieval/modification of the
 screen size, and retrieval/modification of the control characters.")
+    (license (package-license perl))))
+
+(define-public perl-term-readline-gnu
+  (package
+    (name "perl-term-readline-gnu")
+    (version "1.36")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/H/HA/HAYASHI/"
+                           "Term-ReadLine-Gnu-" version ".tar.gz"))
+       (sha256
+        (base32
+         "09b9mcmp09kdfh5jaqdr528yny8746hvn3f185aqd6rw06jgf24s"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("readline" ,readline)
+       ("ncurses" ,ncurses)))
+    (arguments
+     `(#:tests? #f ; Tests fail without other Term::ReadLine interfaces present
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'patch-search-lib
+                    (lambda _
+                      (substitute* "Makefile.PL"
+                        ;; The configuration provides no way to pass
+                        ;; additional directories to search for the ncurses
+                        ;; library, so just skip the search.
+                        (("&search_lib\\('-lncurses'\\)") "'-lncurses'")))))))
+    (home-page "https://metacpan.org/release/Term-ReadLine-Gnu")
+    (synopsis "GNU Readline/History Library interface for Perl")
+    (description "This module implements an interface to the GNU Readline
+library.  It gives you input line editing facilities, input history management
+facilities, completion facilities, etc.  Term::ReadLine::Gnu is upwards
+compatible with Term::ReadLine.")
     (license (package-license perl))))
 
 (define-public perl-term-size-any

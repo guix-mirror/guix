@@ -496,7 +496,29 @@ Unix-style DSV format and RFC 4180 format.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0vjkg72ghgdgphzbjz9ig8al8271rq8974viknb2r1rg4lz92ld0"))))
+                "0vjkg72ghgdgphzbjz9ig8al8271rq8974viknb2r1rg4lz92ld0"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Allow builds with Guile 3.0.
+                  (substitute* "configure"
+                    (("search=\"2\\.2\"")
+                     "search=\"3.0 2.2\""))
+
+                  ;; Explicitly include system headers rather than relying on
+                  ;; <libguile.h> to do it for us.
+                  (substitute* "epoll.c"
+                    (("#include.*libguile\\.h.*$" all)
+                     (string-append "#include <unistd.h>\n"
+                                    "#include <string.h>\n"
+                                    all "\n")))
+
+                  ;; Import (ice-9 threads) for 'current-processor-count'.
+                  (substitute* "tests/channels.scm"
+                    (("#:use-module \\(fibers\\)")
+                     (string-append "#:use-module (fibers)\n"
+                                    "#:use-module (ice-9 threads)\n")))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -532,6 +554,16 @@ is not available for Guile 2.0.")
     (home-page "https://github.com/wingo/fibers")
     (license license:lgpl3+)))
 
+(define-public guile3.0-fibers
+  (package
+    (inherit guile-fibers)
+    (name "guile3.0-fibers")
+    (arguments
+     ;; The code uses 'scm_t_uint64' et al., which are deprecated in 3.0.
+     `(#:configure-flags '("CFLAGS=-Wno-error=deprecated-declarations")
+       ,@(package-arguments guile-fibers)))
+    (inputs `(("guile" ,guile-3.0)))))
+
 (define-public guile-syntax-highlight
   (package
     (name "guile-syntax-highlight")
@@ -544,7 +576,15 @@ is not available for Guile 2.0.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1p771kq15x83483m23bhah1sz6vkalg3drm7x279f4j1cxligkzi"))))
+                "1p771kq15x83483m23bhah1sz6vkalg3drm7x279f4j1cxligkzi"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Allow builds with Guile 3.0.
+                  (substitute* "configure"
+                    (("2\\.2 2\\.0")
+                     "3.0 2.2 2.0"))
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -557,6 +597,12 @@ programming languages into a simple s-expression that can be converted to
 HTML (via SXML) or any other format for rendering.")
     (home-page "http://dthompson.us/projects/guile-syntax-highlight.html")
     (license license:lgpl3+)))
+
+(define-public guile3.0-syntax-highlight
+  (package
+    (inherit guile-syntax-highlight)
+    (name "guile3.0-syntax-highlight")
+    (inputs `(("guile" ,guile-3.0)))))
 
 (define-public guile-sjson
   (package
@@ -720,6 +766,45 @@ Vicare Scheme and IronScheme.  Right now it contains:
 @item hash array mapped tries (HAMTs).
 @end itemize\n")
     (license license:bsd-3)))
+
+(define-public guile3.0-pfds
+  (package
+    (inherit guile-pfds)
+    (name "guile3.0-pfds")
+    (native-inputs `(("guile" ,guile-3.0)))
+    (arguments
+     '(#:source-directory "src"
+       #:compile-flags '("--r6rs")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'move-files-around
+           (lambda _
+             ;; See bug #39210.
+             (substitute* '("fingertrees.sls"
+                            "queues/private/condition.sls"
+                            "deques/private/condition.sls")
+               (("&assertion") "&violation"))
+             ;; Move files under a pfds/ directory to reflect the module
+             ;; hierarchy.
+             (mkdir-p "src/pfds")
+             (for-each (lambda (file)
+                         (rename-file file
+                                      (string-append "src/pfds/"
+                                                     file)))
+                       '("bbtrees.sls"
+                         "deques"
+                         "deques.sls"
+                         "dlists.sls"
+                         "fingertrees.sls"
+                         "hamts.sls"
+                         "heaps.sls"
+                         "private"
+                         "psqs.sls"
+                         "queues"
+                         "queues.sls"
+                         "sequences.sls"
+                         "sets.sls"))
+             #t)))))))
 
 (define-public guile-aa-tree
   (package
@@ -1290,15 +1375,16 @@ PostgreSQL.")
 (define-public guile-config
   (package
     (name "guile-config")
-    (version "0.3")
+    (version "0.3.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://gitlab.com/a-sassmannshausen/guile-config")
-             (commit "ce12de3f438c6b2b59c43ee21bcd58251835fdf3")))
-       (file-name "guile-config-0.3-checkout")
-       (sha256 (base32 "02zbpin0r9m2vxmr7mv68v3xdn247dcck56kbzjn0gj4c2rhih85"))))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256 (base32
+                "0gglsqwpw77gvrqcny8irpqfl7qdf2v8n9ggwrswanxalj4vcbvf"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -1320,10 +1406,17 @@ above command-line parameters.")
      "https://gitlab.com/a-sassmannshausen/guile-config")
     (license license:gpl3+)))
 
+(define-public guile3.0-config
+  (package
+    (inherit guile-config)
+    (name "guile3.0-config")
+    (inputs `(("guile" ,guile-next)
+              ,@(alist-delete "guile" (package-inputs guile-config))))))
+
 (define-public guile-hall
   (package
     (name "guile-hall")
-    (version "0.2")
+    (version "0.2.1")
     (source
      (origin
        (method git-fetch)
@@ -1332,7 +1425,7 @@ above command-line parameters.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256 (base32
-                "1bkbqgj24xh5b65sw2m98iggpi67b72szx1dsiq3cpzlcxplmgaz"))))
+                "0dwx5iyg0dmdf64wq0b4w306bapr86jwnw35npgbjq4cqm8qbzqn"))))
     (build-system gnu-build-system)
     (arguments
       `(#:modules
@@ -1397,6 +1490,17 @@ transparently support the GNU build system, manage a project hierarchy &
 provides tight coupling to Guix.")
     (home-page "https://gitlab.com/a-sassmannshausen/guile-hall")
     (license license:gpl3+)))
+
+(define-public guile3.0-hall
+  (package
+    (inherit guile-hall)
+    (name "guile3.0-hall")
+    (inputs `(("guile" ,guile-next)
+              ,@(alist-delete "guile" (package-inputs guile-hall))))
+    (propagated-inputs
+     `(("guile-config" ,guile3.0-config)
+       ,@(alist-delete "guile-config"
+                       (package-propagated-inputs guile-hall))))))
 
 (define-public guile-ics
   (package
@@ -1503,6 +1607,22 @@ The library is shipped with documentation in Info format and usage examples.")
 whitespace-significant language.  It may be easier on the eyes for some
 users and in some situations.")
     (license license:gpl3+)))
+
+(define-public guile3.0-wisp
+  (package
+    (inherit guile-wisp)
+    (name "guile3.0-wisp")
+    (inputs `(("guile" ,guile-3.0)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments guile-wisp)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'support-guile-3.0
+             (lambda _
+               (substitute* "configure"
+                 (("_guile_versions_to_search=\"2.2")
+                  "_guile_versions_to_search=\"3.0 2.2"))
+               #t))))))))
 
 (define-public guile-sly
   (package
@@ -1960,7 +2080,15 @@ key-value cache and store.")
                                   "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "17lrsdisa3kckh24q114vfmzdc4wkqa6ccwl4hdlrng5wpn1iman"))))
+                "17lrsdisa3kckh24q114vfmzdc4wkqa6ccwl4hdlrng5wpn1iman"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Allow builds with Guile 3.0.
+                  (substitute* "configure"
+                    (("2\\.2 2\\.0")
+                     "3.0 2.2 2.0"))
+                  #t))))
     (build-system gnu-build-system)
     (inputs
      `(("guile" ,guile-2.2)))
@@ -1975,6 +2103,12 @@ follow the @uref{http://commonmark.org/, CommonMark spec}, the main difference
 is no support for parsing block and inline level HTML.")
     (home-page "https://github.com/OrangeShark/guile-commonmark")
     (license license:lgpl3+)))
+
+(define-public guile3.0-commonmark
+  (package
+    (inherit guile-commonmark)
+    (name "guile3.0-commonmark")
+    (inputs `(("guile" ,guile-3.0)))))
 
 (define-public guile2.0-commonmark
   (package
@@ -2063,6 +2197,12 @@ format is also supported.")
        "This package provides a simple SVG-based picture language for Guile.
 The picture values can directly be displayed in Geiser.")
       (license license:lgpl3+))))
+
+(define-public guile3.0-picture-language
+  (package
+    (inherit guile-picture-language)
+    (name "guile3.0-picture-language")
+    (inputs `(("guile" ,guile-3.0)))))
 
 (define-public guile-studio
   (package

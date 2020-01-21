@@ -70,7 +70,6 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
-  #:use-module (guix build utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
 

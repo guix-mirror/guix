@@ -14,7 +14,7 @@
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2015, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
@@ -1679,7 +1679,7 @@ and to spawn subprocesses to handle requests.")
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)))
-    (home-page "http://pythonpaste.org/deploy/")
+    (home-page "https://pylonsproject.org/")
     (synopsis
      "Load, configure, and compose WSGI applications and servers")
     (description
@@ -1712,7 +1712,7 @@ file.")
        ("python-webob" ,python-webob)
        ("python-six" ,python-six)
        ("python-beautifulsoup4" ,python-beautifulsoup4)))
-    (home-page "http://webtest.pythonpaste.org/")
+    (home-page "https://docs.pylonsproject.org/projects/webtest/")
     (synopsis "Helper to test WSGI applications")
     (description "Webtest allows you to test your Python web applications
 without starting an HTTP server.  It supports anything that supports the
@@ -2748,17 +2748,26 @@ List.")
 (define-public python-publicsuffix2
   (package
     (name "python-publicsuffix2")
-    (version "2.20160818")
+    (version "2.20191221")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "publicsuffix2" version ".tar.bz2"))
+       (uri (pypi-uri "publicsuffix2" version))
        (sha256
-        (base32
-         "1bb55yka9vkn7i6y1kjzxa516kh6v4gsrxa90w5wdz5p5n968r68"))))
+        (base32 "0yzysvfj1najr1mb4pcqrbmjir3xpb69rlffln95a3cdm8qwry00"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f)) ; The test suite requires network access.
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'ignore-maintainer-inputs
+           (lambda _
+             ;; Comment out a demand for python-requests, which is used only by
+             ;; the unused ‘update_psl’ helper command.
+             (substitute* "setup.py"
+               (("'requests " match)
+                (format "# ~a" match)))
+             #t)))
+       #:tests? #f))                  ; the test suite requires network access
     (home-page "https://github.com/pombredanne/python-publicsuffix2")
     (synopsis "Get a public suffix for a domain name using the Public Suffix List")
     (description "Get a public suffix for a domain name using the Public Suffix
@@ -2885,7 +2894,7 @@ available in Django, but is a standalone package.")
        ("python-nose" ,python-nose)))
     (propagated-inputs
      `(("python-six" ,python-six)))
-    (home-page "http://pythonpaste.org")
+    (home-page "https://pythonpaste.readthedocs.io/")
     (synopsis
      "Python web development tools, focusing on WSGI")
     (description
@@ -2914,7 +2923,8 @@ follows ideas flowing from WSGI (Web Standard Gateway Interface).")
     (propagated-inputs
      `(("python-paste" ,python-paste)
        ("python-pastedeploy" ,python-pastedeploy)))
-    (home-page "http://pythonpaste.org/script/")
+    (home-page (string-append "https://web.archive.org/web/20161025192515/"
+                              "http://pythonpaste.org/script/"))
     (arguments
      '(;; Unfortunately, this requires the latest unittest2,
        ;; but that requires traceback2 which requires linecache2 which requires
@@ -3413,7 +3423,7 @@ hard or impossible to fix in cssselect.")
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-sphinx" ,python-sphinx)
        ("texinfo" ,texinfo)))
-    (home-page "http://gunicorn.org/")
+    (home-page "https://gunicorn.org/")
     (synopsis "Python WSGI HTTP Server for UNIX")
     (description "Gunicorn ‘Green Unicorn’ is a Python WSGI HTTP
 Server for UNIX.  It’s a pre-fork worker model ported from Ruby’s

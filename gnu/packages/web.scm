@@ -16,7 +16,7 @@
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
@@ -24,7 +24,7 @@
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2017, 2019 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2017, 2019, 2020 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018, 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
@@ -1518,6 +1518,7 @@ minimum to provide high performance operation.")
 (define-public libsass
   (package
     (name "libsass")
+    ;; When updating, check whether sassc/libsass-3.5 is still needed.
     (version "3.6.3")
     (source (origin
               (method git-fetch)
@@ -1567,8 +1568,7 @@ stylesheets, you'll need to use another program that uses this library,
      `(#:make-flags
        (list "CC=gcc"
              (string-append "PREFIX=" (assoc-ref %outputs "out")))
-       ;; I don't believe sassc contains any tests
-       #:tests? #f
+       #:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-Makefile
@@ -1581,9 +1581,9 @@ stylesheets, you'll need to use another program that uses this library,
                (("install: libsass-install-\\$\\(BUILD\\) \\\\")
                 "install: \\"))
              #t))
-         ;; This phase fails for some reason
+         ;; This phase fails for some reason.
          (delete 'bootstrap)
-         ;; There is no configure script
+         ;; There is no configure script.
          (delete 'configure)
          (add-before 'build 'setup-environment
            (lambda _
@@ -1595,8 +1595,31 @@ stylesheets, you'll need to use another program that uses this library,
     (synopsis "CSS pre-processor")
     (description "SassC is a compiler written in C for the CSS pre-processor
 language known as SASS.")
-    (home-page "http://sass-lang.com/libsass")
+    (home-page "https://sass-lang.com/libsass")
     (license license:expat)))
+
+(define-public sassc/libsass-3.5
+  ;; Newer libsass versions suffor from a memory leak when building (some?)
+  ;; GTK themes <https://github.com/sass/libsass/issues/3033>.
+  (package
+    (inherit sassc)
+    (name "sassc")
+    (inputs
+     `(("libsass" ,
+        (package
+          (inherit libsass)
+          (name "libsass")
+          (version "3.5.5")
+          (source
+           (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/sass/libsass.git")
+                   (commit version)))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32
+               "0830pjcvhzxh6yixj82x5k5r1xnadjqzi16kp53213icbly0r9ma"))))))))))
 
 
 (define-public perl-apache-logformat-compiler
@@ -3489,6 +3512,28 @@ exists it is used instead.")
 https schemed URLs with LWP.")
     (license license:perl-license)))
 
+(define-public perl-lwp-useragent-cached
+  (package
+    (name "perl-lwp-useragent-cached")
+    (version "0.08")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/O/OL/OLEG/"
+                           "LWP-UserAgent-Cached-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1hw7wy7f82kl61xjwkgmhv1ixgg56dhgfr45wxn6ahc0qys5mkix"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-libwww" ,perl-libwww)))
+    (home-page "https://metacpan.org/release/LWP-UserAgent-Cached")
+    (synopsis "Simple caching for LWP::UserAgent")
+    (description "LWP::UserAgent::Cached is an LWP::UserAgent subclass with
+cache support.  It returns responses from the local filesystem if available
+instead of making an HTTP request.")
+    (license license:perl-license)))
+
 (define-public perl-lwp-useragent-determined
   (package
     (name "perl-lwp-useragent-determined")
@@ -4196,8 +4241,8 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
   (package-with-python2 python-feedparser))
 
 (define-public guix-data-service
-  (let ((commit "c7e3a1bd0b0648561211f52bd9f674358da59223")
-        (revision "16"))
+  (let ((commit "bf25a8db0278b49ef2149c69ef5d6dd2201fd413")
+        (revision "17"))
     (package
       (name "guix-data-service")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -4209,7 +4254,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "08c6bpzmsh62ng4bx008xcgayrrxz815jbpb96n98didk2zyzfg0"))))
+                  "0s6faybczdn10zwrkn22nfq5lvf538513hbmjfaqlkhfmwc4s1qd"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
@@ -5190,14 +5235,14 @@ tools like SSH (Secure Shell) to reach the outside world.")
 (define-public stunnel
   (package
   (name "stunnel")
-  (version "5.55")
+  (version "5.56")
   (source
     (origin
       (method url-fetch)
       (uri (string-append "https://www.stunnel.org/downloads/stunnel-"
                           version ".tar.gz"))
       (sha256
-       (base32 "0qjc0wkjf6bqz29fvwwsn9hnjhm6alsm10jcwx4jad2q3ks6kplh"))))
+       (base32 "08kb4gi9fzqngrczykvba6xhaxhq9m4wmdbhxvgrva5rasrvz13k"))))
   (build-system gnu-build-system)
   (native-inputs
    ;; For tests.

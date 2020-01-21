@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019 Florian Pelz <pelzflorian@pelzflorian.de>
+;;; Copyright © 2019, 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,15 +32,15 @@
 (define-public usb-modeswitch-data
   (package
     (name "usb-modeswitch-data")
-    (version "20170806")
+    (version "20191128")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.draisberghof.de/usb_modeswitch/"
+                    "https://www.draisberghof.de/usb_modeswitch/"
                     "usb-modeswitch-data-" version ".tar.bz2"))
               (sha256
                (base32
-                "0b1wari3aza6qjggqd0hk2zsh93k1q8scgmwh6f8wr0flpr3whff"))))
+                "1ygahl3r26r38ai8yyblq9nhf3v5i6n6r6672p5wf88wg5h9n0rz"))))
     (build-system trivial-build-system)
     (native-inputs `(("tar" ,tar)
                      ("bzip2" ,bzip2)))
@@ -67,7 +67,7 @@
            (install-file (string-append files "/40-usb_modeswitch.rules")
                          udev-dir)
            (install-file (string-append files "/COPYING") license-dir)))))
-    (home-page "http://www.draisberghof.de/usb_modeswitch/")
+    (home-page "https://www.draisberghof.de/usb_modeswitch/")
     (synopsis "Data package for USB_ModeSwitch")
     (description "This package contains data about devices and a UDEV rules
 file for use with USB_ModeSwitch.")
@@ -76,23 +76,15 @@ file for use with USB_ModeSwitch.")
 (define-public usb-modeswitch
   (package
     (name "usb-modeswitch")
-    (version "2.5.2")
+    (version "2.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.draisberghof.de/usb_modeswitch/"
+                    "https://www.draisberghof.de/usb_modeswitch/"
                     "usb-modeswitch-" version ".tar.bz2"))
               (sha256
                (base32
-                "19ifi80g9ns5dmspchjvfj4ykxssq9yrci8m227dgb3yr04srzxb"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Remove bundled jimtcl.
-               '(begin
-                  (delete-file-recursively "jim")
-                  #t))
-              (patches
-               (search-patches "usb-modeswitch-accept-config-arg.patch"))))
+                "18wbbxc5cfsmikba0msdvd5qlaga27b32nhrzicyd9mdddp265f2"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("libusb" ,libusb)
               ("jimtcl" ,jimtcl)
@@ -145,7 +137,7 @@ file for use with USB_ModeSwitch.")
                  (rename-file "usb_modeswitch.sh" "usb_modeswitch")
                  (install-file "usb_modeswitch" udev)
 
-                 (rename-file "usb_modeswitch.tcl" "usb_modeswitch_dispatcher")
+                 (rename-file "usb_modeswitch_dispatcher.tcl" "usb_modeswitch_dispatcher")
                  (substitute* "usb_modeswitch_dispatcher"
                    (("/usr/bin/tclsh")
                     (string-append jimtcl "/bin/jimsh"))
@@ -155,7 +147,7 @@ file for use with USB_ModeSwitch.")
                  (install-file "usb_modeswitch_dispatcher"
                                dispatcher-bin)
                  #t)))))))
-    (home-page "http://www.draisberghof.de/usb_modeswitch/")
+    (home-page "https://www.draisberghof.de/usb_modeswitch/")
     (synopsis "Mode switching tool for controlling `multi-mode' USB devices")
     (description "USB_ModeSwitch is a mode switching tool for controlling USB
 devices with multiple @dfn{modes}.  When plugged in for the first time many
@@ -163,4 +155,5 @@ USB devices (primarily high-speed WAN modems) act like a flash storage
 containing installers for Windows drivers.  USB_ModeSwitch replays the
 sequence the Windows drivers would send to switch their mode from storage to
 modem (or whatever the thing is supposed to do).")
-    (license license:gpl2+)))
+    (license (list license:gpl2+ ;"this program" according to home page
+                   license:bsd-2)))) ;dispatcher.c

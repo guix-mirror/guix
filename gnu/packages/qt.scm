@@ -14,6 +14,7 @@
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Mike Rosset <mike.rosset@gmail.com>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,6 +39,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
+  #:use-module (guix build-system python)
   #:use-module (guix packages)
   #:use-module (guix deprecation)
   #:use-module (guix utils)
@@ -214,7 +216,7 @@ system, and the core design of Django is reused in Grantlee.")
        ("xcb-util-renderutil" ,xcb-util-renderutil)
        ("xcb-util-wm" ,xcb-util-wm)
        ("zlib" ,zlib)
-       ("libjpeg" ,libjpeg-8)
+       ("libjpeg" ,libjpeg-turbo)
        ("libsm" ,libsm)
        ("openssl" ,openssl-1.0)))
     (native-inputs
@@ -363,6 +365,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
     (build-system gnu-build-system)
     (propagated-inputs
      `(("mesa" ,mesa)
+       ;; Use which the package, not the function
        ("which" ,(@ (gnu packages base) which))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -407,6 +410,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ("xcb-util-keysyms" ,xcb-util-keysyms)
        ("xcb-util-renderutil" ,xcb-util-renderutil)
        ("xcb-util-wm" ,xcb-util-wm)
+       ("xdg-utils" ,xdg-utils)
        ("zlib" ,zlib)))
     (native-inputs
      `(("bison" ,bison)
@@ -427,6 +431,14 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                             "mkspecs/features/qt_functions.prf"
                             "qmake/library/qmakebuiltins.cpp")
                           (("/bin/sh") (which "sh")))
+             #t))
+         (add-after 'configure 'patch-xdg-open
+           (lambda _
+             (substitute* '("src/platformsupport/services/genericunix/qgenericunixservices.cpp")
+                          (("^.*const char \\*browsers.*$" all)
+                           (string-append "*browser = QStringLiteral(\""
+                                          (which "xdg-open")
+                                          "\"); return true; \n" all)))
              #t))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
@@ -1947,6 +1959,17 @@ module provides support functions to the automatically generated code.")
                   ,@%gnu-build-system-modules)
        #:phases
        (modify-phases %standard-phases
+         ;; When building python-pyqtwebengine, <qprinter.h> can not be
+         ;; included.  Here we substitute the full path to the header in the
+         ;; store.
+         (add-before 'configure 'substitute-source
+           (lambda* (#:key inputs  #:allow-other-keys)
+             (let* ((qtbase (assoc-ref inputs "qtbase"))
+                    (qtprinter.h (string-append "\"" qtbase "/include/qt5/QtPrintSupport/qprinter.h\"")))
+               (substitute* "sip/QtPrintSupport/qprinter.sip"
+                 (("<qprinter.h>")
+                  qtprinter.h))
+               #t)))
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1984,6 +2007,88 @@ module provides support functions to the automatically generated code.")
      "PyQt is a set of Python v2 and v3 bindings for the Qt application
 framework.  The bindings are implemented as a set of Python modules and
 contain over 620 classes.")
+    (license license:gpl3)))
+
+(define-public python-pyqtwebengine
+  (package
+    (name "python-pyqtwebengine")
+    (version "5.12.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://www.riverbankcomputing.com/static/Downloads/PyQtWebEngine/"
+            version "/PyQtWebEngine_gpl-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0wylkd7fh2g27y3710rpxmj9wx0wpi3z7qbv6khiddm15rkh81w6"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("python" ,python)
+       ("python-sip" ,python-sip)
+       ;; qtbase is required for qmake
+       ("qtbase" ,qtbase)))
+    (inputs
+     `(("python" ,python-wrapper)
+       ("python-sip" ,python-sip)
+       ("python-pyqt" ,python-pyqt)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtwebchannel" ,qtwebchannel)
+       ("python-pyqt" ,python-pyqt)
+       ("qtwebengine" ,qtwebengine)))
+    (arguments
+     `(#:modules ((srfi srfi-1)
+                  ,@%gnu-build-system-modules)
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (sipdir (string-append out "/share/sip"))
+                    (pyqt-sipdir (string-append
+                                  (assoc-ref inputs "python-pyqt") "/share/sip"))
+                    (python (assoc-ref inputs "python"))
+                    (python-version
+                     (last (string-split python #\-)))
+                    (python-major+minor
+                     (string-join
+                      (take (string-split python-version #\.) 2) "."))
+                    (lib (string-append out "/lib/python"
+                                        python-major+minor
+                                        "/site-packages/PyQt5"))
+                    (stubs (string-append lib "/PyQt5")))
+
+               (mkdir-p sipdir)
+               (invoke "python" "configure.py"
+                       "-w"
+                       "--no-dist-info"
+                       "--destdir" lib
+                       "--no-qsci-api"
+                       "--stubsdir" stubs
+                       "--sipdir" sipdir
+                       "--pyqt-sipdir" pyqt-sipdir))))
+         ;; Because this has a different prefix than python-pyqt then we need
+         ;; to make this a namespace of it's own
+         (add-after 'install 'make-namespace
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((__init__.py (string-append
+                                  (assoc-ref outputs "out")
+                                  "/lib/python3.7/site-packages/PyQt5/__init__.py")))
+               (with-output-to-file __init__.py
+                 (lambda _ (display "
+from pkgutil import extend_path
+__path__ = extend_path(__path__, __name__)
+")))
+               #t))))))
+    (home-page "https://www.riverbankcomputing.com/software/pyqtwebengine/intro")
+    (synopsis "Python bindings for QtWebEngine")
+    (description
+     "PyQtWebEngine is a set of Python bindings for The Qt Company's Qt
+WebEngine libraries.  The bindings sit on top of PyQt5 and are implemented as a
+set of three modules.  Prior to v5.12 these bindings were part of PyQt
+itself.")
     (license license:gpl3)))
 
 ;; XXX: This is useful because qtwebkit does not build reliably at this time.

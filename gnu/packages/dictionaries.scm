@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -283,8 +283,7 @@ and a Python library.")
          (add-after 'install 'emacs-install
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out   (assoc-ref outputs "out"))
-                    (dest  (string-append out "/share/emacs/site-lisp/guix.d/"
-                                          ,name "-" ,version))
+                    (dest  (string-append out "/share/emacs/site-lisp"))
                     (emacs (string-append (assoc-ref inputs "emacs") "/bin/emacs")))
                (install-file "google-translate-mode.el" dest)
                (emacs-generate-autoloads ,name dest)))))

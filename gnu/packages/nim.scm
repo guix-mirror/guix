@@ -50,10 +50,12 @@
                  #t)))
            (add-after 'patch-source-shebangs 'patch-more-shebangs
              (lambda _
-               (substitute* (append '("tests/stdlib/tosprocterminate.nim"
-                                      "lib/pure/osproc.nim")
-                                    (find-files "c_code" "stdlib_osproc.c"))
-                 (("/bin/sh") (which "sh")))
+               (let ((sh (which "sh")))
+                 (substitute* '("tests/stdlib/tosprocterminate.nim"
+                                        "lib/pure/osproc.nim")
+                   (("/bin/sh") sh))
+                 (substitute* (find-files "c_code" "stdlib_osproc.c")
+                   (("\"/bin/sh\", 7") (format "~s, ~s" sh (string-length sh)))))
                #t))
            (replace 'build
              (lambda _

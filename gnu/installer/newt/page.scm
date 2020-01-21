@@ -107,7 +107,7 @@ input box, such as FLAG-PASSWORD."
                          (list GRID-ELEMENT-COMPONENT input-visible-cb)
                          '())))
                 GRID-ELEMENT-COMPONENT ok-button))
-         (form (make-form)))
+         (form (make-form #:flags FLAG-NOF12)))
 
     (add-component-callback
      input-visible-cb
@@ -181,7 +181,7 @@ of the page is set to TITLE."
                 (horizontal-stacked-grid
                  GRID-ELEMENT-COMPONENT ok-button
                  GRID-ELEMENT-COMPONENT exit-button)))
-         (form (make-form)))
+         (form (make-form #:flags FLAG-NOF12)))
 
     (add-form-to-grid grid form #t)
     (make-wrapped-grid-window grid title)
@@ -315,7 +315,7 @@ the current listbox item has to be selected by key."
                            (if listbox-allow-multiple?
                                FLAG-MULTIPLE
                                0))))
-         (form (make-form))
+         (form (make-form #:flags FLAG-NOF12))
          (info-textbox
           (make-reflowed-textbox -1 -1 info-text
                                  info-textbox-width
@@ -516,7 +516,7 @@ ITEMS when 'Ok' is pressed."
                  GRID-ELEMENT-COMPONENT ok-button
                  GRID-ELEMENT-COMPONENT exit-button)))
          (keys (fill-checkbox-tree checkbox-tree items))
-         (form (make-form)))
+         (form (make-form #:flags FLAG-NOF12)))
 
     (add-form-to-grid grid form #t)
     (make-wrapped-grid-window grid title)
@@ -566,35 +566,38 @@ ITEMS when 'Ok' is pressed."
                                  (const #t))
                                 (exit-button-callback-procedure
                                  (const #t)))
-  (let* ((info-textbox
-          (make-reflowed-textbox -1 -1 info-text
-                                 info-textbox-width
-                                 #:flags FLAG-BORDER))
-         (file-textbox
-          (make-textbox -1 -1
-                        file-textbox-width
-                        file-textbox-height
-                        (logior FLAG-SCROLL FLAG-BORDER)))
-         (ok-button (make-button -1 -1 (G_ "OK")))
-         (exit-button (make-button -1 -1 (G_ "Exit")))
-         (edit-button (and edit-button?
-                           (make-button -1 -1 (G_ "Edit"))))
-         (grid (vertically-stacked-grid
-                GRID-ELEMENT-COMPONENT info-textbox
-                GRID-ELEMENT-COMPONENT file-textbox
-                GRID-ELEMENT-SUBGRID
-                (apply
-                 horizontal-stacked-grid
-                 GRID-ELEMENT-COMPONENT ok-button
-                 `(,@(if edit-button?
-                         (list GRID-ELEMENT-COMPONENT edit-button)
-                         '())
-                   ,@(if exit-button?
-                         (list GRID-ELEMENT-COMPONENT exit-button)
-                         '())))))
-         (form (make-form)))
+  (let loop ()
+    (let* ((info-textbox
+            (make-reflowed-textbox -1 -1 info-text
+                                   info-textbox-width
+                                   #:flags FLAG-BORDER))
+           (file-textbox
+            (make-textbox -1 -1
+                          file-textbox-width
+                          file-textbox-height
+                          (logior FLAG-SCROLL FLAG-BORDER)))
+           (ok-button (make-button -1 -1 (G_ "OK")))
+           (exit-button (make-button -1 -1 (G_ "Exit")))
+           (edit-button (and edit-button?
+                             (make-button -1 -1 (G_ "Edit"))))
+           (grid (vertically-stacked-grid
+                  GRID-ELEMENT-COMPONENT info-textbox
+                  GRID-ELEMENT-COMPONENT file-textbox
+                  GRID-ELEMENT-SUBGRID
+                  (apply
+                   horizontal-stacked-grid
+                   GRID-ELEMENT-COMPONENT ok-button
+                   `(,@(if edit-button?
+                           (list GRID-ELEMENT-COMPONENT edit-button)
+                           '())
+                     ,@(if exit-button?
+                           (list GRID-ELEMENT-COMPONENT exit-button)
+                           '())))))
+           (form (make-form #:flags FLAG-NOF12)))
 
-    (let loop ()
+      (add-form-to-grid grid form #t)
+      (make-wrapped-grid-window grid title)
+
       (set-textbox-text file-textbox
                         (receive (_w _h text)
                             (reflow-text (read-all file)
@@ -602,26 +605,26 @@ ITEMS when 'Ok' is pressed."
                                          0 0)
                           text))
 
-      (add-form-to-grid grid form #t)
-      (make-wrapped-grid-window grid title)
-
       (receive (exit-reason argument)
           (run-form form)
-        (dynamic-wind
-          (const #t)
-          (lambda ()
-            (case exit-reason
-              ((exit-component)
-               (cond
-                ((components=? argument ok-button)
-                 (ok-button-callback-procedure))
-                ((and exit-button?
-                      (components=? argument exit-button))
-                 (exit-button-callback-procedure))
-                ((and edit-button?
-                      (components=? argument edit-button))
-                 (edit-file file))))))
-          (lambda ()
-            (if (components=? argument edit-button)
-                (loop)
-                (destroy-form-and-pop form))))))))
+        (define result
+          (dynamic-wind
+            (const #t)
+            (lambda ()
+              (case exit-reason
+                ((exit-component)
+                 (cond
+                  ((components=? argument ok-button)
+                   (ok-button-callback-procedure))
+                  ((and exit-button?
+                        (components=? argument exit-button))
+                   (exit-button-callback-procedure))
+                  ((and edit-button?
+                        (components=? argument edit-button))
+                   (edit-file file))))))
+            (lambda ()
+              (destroy-form-and-pop form))))
+
+        (if (components=? argument edit-button)
+            (loop)                                ;recurse in tail position
+            result)))))

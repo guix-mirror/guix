@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
-;;; Copyright © 2016, 2018, 2019 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016, 2018, 2019, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -738,7 +738,7 @@ libebml is a C++ library to read and write EBML files.")
 (define-public libva
   (package
     (name "libva")
-    (version "2.5.0")
+    (version "2.6.1")
     (source
      (origin
        (method url-fetch)
@@ -750,7 +750,7 @@ libebml is a C++ library to read and write EBML files.")
              (string-append "https://www.freedesktop.org/software/vaapi/releases/"
                             "libva/libva-" version "/libva-" version ".tar.bz2")))
        (sha256
-        (base32 "0y38mw1ggxm15zq06r4qpwhd5wx4bppw1rsxpr6sq1m5d79rra1s"))))
+        (base32 "19df3r02k1p4cbyvifkdjyc8q7hi23f5b3x3390z52l25mjfnmvc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -828,14 +828,14 @@ operate properly.")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "4.2.1")
+    (version "4.2.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1m5nkc61ihgcf0b2wabm0zyqa8sj3c0w8fi6kr879lb0kdzciiyf"))))
+               "176jn1lcdf0gk7sa5l2mv0faqp5dsqdhx1gqcrgymqhfmdal4xfb"))))
     (build-system gnu-build-system)
     (inputs
      `(("dav1d" ,dav1d)
@@ -1349,7 +1349,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.30.0")
+    (version "0.31.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1358,7 +1358,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "17mxjgcfljlv6h0ik3332xsqbs0ybvk6dkwflyl0cjh15vl1iv6f"))))
+                "138m09l4wi6ifbi15z76j578plmxkclhlzfryasfcdp8hswhs59r"))))
     (build-system waf-build-system)
     (native-inputs
      `(("perl" ,perl) ; for zsh completion file
@@ -1484,7 +1484,7 @@ To load this plugin, specify the following option when starting mpv:
 (define-public libvpx
   (package
     (name "libvpx")
-    (version "1.8.1")
+    (version "1.8.2")
     (source (origin
               ;; XXX: Upstream does not provide tarballs for > 1.6.1.
               (method git-fetch)
@@ -1494,7 +1494,7 @@ To load this plugin, specify the following option when starting mpv:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0mm1dcfa268rwsrgzqpbbgq4lwrvdzgp90h9dxsnkhai70l7gipq"))
+                "0gyq4fkbd2fv7m1mm9xrvn6rk6f4jsmbv8bnlhingmnrvyncnmnr"))
               (patches (search-patches "libvpx-CVE-2016-2818.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -1543,7 +1543,7 @@ To load this plugin, specify the following option when starting mpv:
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2020.01.01")
+    (version "2020.01.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ytdl-org/youtube-dl/"
@@ -1551,7 +1551,7 @@ To load this plugin, specify the following option when starting mpv:
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0p8v18jpf0ijpqlgavqs5vky9v956dhhck7drsv7gkzfw2y6mc0a"))))
+                "0dyjc8nxyg9ry2ylmblh3fwavpais3mdfj6ndw4i0yc2vkw12rsm"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1721,7 +1721,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
 (define-public youtube-viewer
   (package
     (name "youtube-viewer")
-    (version "3.5.8")
+    (version "3.7.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1730,12 +1730,10 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0zz0r3vd2pg9zzykhrq0vnvqp5842dbgsg8cfygw9vzb9j8mlq0a"))))
+                "1h0m8rn7najdrzvg5md9albiax287273b40ncrihh9amsvvb47c9"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
-    ;; FIXME: Add optional dependencies once available:
-    ;; perl-lwp-useragent-cached and perl-term-readline-gnu
     (inputs
      `(("perl-data-dump" ,perl-data-dump)
        ("perl-file-sharedir" ,perl-file-sharedir)
@@ -1743,8 +1741,11 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
        ("perl-json" ,perl-json)
        ("perl-libwww" ,perl-libwww)
        ("perl-lwp-protocol-https" ,perl-lwp-protocol-https)
+       ("perl-lwp-useragent-cached" ,perl-lwp-useragent-cached)
        ("perl-mozilla-ca" ,perl-mozilla-ca)
+       ("perl-term-readline-gnu" ,perl-term-readline-gnu)
        ("perl-unicode-linebreak" ,perl-unicode-linebreak)
+       ("xdg-utils" ,xdg-utils)
 
        ;; Some videos play without youtube-dl, but others silently fail to.
        ("youtube-dl" ,youtube-dl)))
@@ -1761,6 +1762,11 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
                (("'youtube-dl'")
                 (format #f "'~a/bin/youtube-dl'"
                         (assoc-ref inputs "youtube-dl"))))
+             (substitute* '("bin/gtk2-youtube-viewer"
+                            "bin/gtk3-youtube-viewer")
+               (("'xdg-open'")
+                (format #f "'~a/bin/xdg-open'"
+                        (assoc-ref inputs "xdg-utils"))))
              #t))
          (add-after 'install 'install-desktop
            (lambda* (#:key outputs #:allow-other-keys)
@@ -2682,14 +2688,14 @@ supported players in addition to this package.")
 (define-public handbrake
   (package
     (name "handbrake")
-    (version "1.3.0")
+    (version "1.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.handbrake.fr/releases/"
                                   version "/HandBrake-" version "-source.tar.bz2"))
               (sha256
                (base32
-                "15hxncswmaj62hb40fxixsa6d519zb712z9xbdq979q4rasjxa59"))
+                "09rcrq0kjs1lc1as7w3glbpbfvzldwpx3xv0pfmkn4pl7acxw1f0"))
               (modules '((guix build utils)))
               (snippet
                ;; Remove "contrib" and source not necessary for
@@ -2803,7 +2809,7 @@ of modern, widely supported codecs.")
 (define-public intel-vaapi-driver
   (package
     (name "intel-vaapi-driver")
-    (version "2.3.0")
+    (version "2.4.0")
     (source
      (origin
        (method url-fetch)
@@ -2811,7 +2817,7 @@ of modern, widely supported codecs.")
                            "releases/download/" version "/intel-vaapi-driver-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "1qyzxh3p8cw4fv8bz9zd4kc8hajlaps7xryzh6pad814n3m5sbjw"))))
+        (base32 "12fhydgwpvyh97gxqlgv77wsf9yax321h46vi49j4sxghpcxvqki"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

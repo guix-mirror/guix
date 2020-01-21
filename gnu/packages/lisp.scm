@@ -12,7 +12,7 @@
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2019 Katherine Cox-Buday <cox.katherine.e@gmail.com>
+;;; Copyright © 2019, 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright © 2019 Jesse Gildersleve <jessejohngildersleve@protonmail.com>
 ;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
@@ -87,6 +87,41 @@
       ,@(loop :for dir :in (xdg-data-dirs \"common-lisp/\")
               :collect `(:directory (,dir \"systems\"))"
              ,lisp))))
+
+(define-public cl-asdf
+  (package
+    (name "cl-asdf")
+    (version "3.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://common-lisp.net/project/asdf/archives/asdf-"
+                       version ".lisp"))
+       (sha256
+        (base32 "18lr6kxvzhr79c9rx3sdricz30aby866fj0m24w27zxsqlyvn3rd"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build lisp-utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (guix build lisp-utils))
+         (let* ((out (string-append (assoc-ref %outputs "out")))
+                (asdf-install (string-append out %source-install-prefix
+                                             "/source/asdf/"))
+                (asdf (string-append (assoc-ref %build-inputs "source"))))
+           (mkdir-p asdf-install)
+           (copy-file asdf (string-append asdf-install "asdf.lisp"))))))
+    (home-page "https://common-lisp.net/project/asdf/")
+    (synopsis "Another System Definition Facility")
+    (description
+     "ASDF is what Common Lisp hackers use to build and load software.  It is
+the successor of the Lisp DEFSYSTEM of yore.  ASDF stands for Another System
+Definition Facility.")
+    ;; MIT License
+    (license license:expat)))
 
 (define-public gcl
   (let ((commit "d3335e2b3deb63f930eb0328e9b05377744c9512")
@@ -195,28 +230,36 @@ interface to the Tk widget system.")
              "https://common-lisp.net/project/ecl/static/files/release/"
              name "-" version ".tgz"))
        (sha256
-        (base32 "0m0j24w5d5a9dwwqyrg0d35c0nys16ijb4r0nyk87yp82v38b9bn"))
-       (modules '((guix build utils)))
-       (snippet
-        ;; Add ecl-bundle-systems to 'default-system-source-registry'.
-        `(begin
-           (substitute* "contrib/asdf/asdf.lisp"
-             ,@(asdf-substitutions name))
-           #t))))
+        (base32 "0m0j24w5d5a9dwwqyrg0d35c0nys16ijb4r0nyk87yp82v38b9bn"))))
     (build-system gnu-build-system)
     ;; src/configure uses 'which' to confirm the existence of 'gzip'.
-    (native-inputs `(("which" ,which)))
+    (native-inputs `(("cl-asdf" ,cl-asdf)
+                     ("which" ,which)))
     (inputs `(("gmp" ,gmp)
               ("libatomic-ops" ,libatomic-ops)
               ("libgc" ,libgc)
               ("libffi" ,libffi)))
     (arguments
-     '(#:configure-flags '("--without-rt")
+     `(#:configure-flags '("--without-rt")
        #:tests? #t
        #:parallel-tests? #f
        #:phases
        (modify-phases %standard-phases
          (delete 'check)
+         (add-after 'unpack 'replace-asdf
+           ;; Use system ASDF instead of bundled one.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((cl-asdf (assoc-ref inputs "cl-asdf"))
+                    (guix-asdf (string-append
+                                cl-asdf
+                                "/share/common-lisp/source/asdf/asdf.lisp"))
+                    (out (string-append (assoc-ref outputs "out")))
+                    (contrib-asdf "contrib/asdf/asdf.lisp"))
+               (copy-file guix-asdf contrib-asdf)
+               ;; Add ecl-bundle-systems to 'default-system-source-registry'.
+               (substitute* contrib-asdf
+                 ,@(asdf-substitutions name)))
+             #t))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((ecl (assoc-ref outputs "out"))
@@ -329,14 +372,7 @@ an interpreter, a compiler, a debugger, and much more.")
        (uri (string-append "mirror://sourceforge/sbcl/sbcl/" version "/sbcl-"
                            version "-source.tar.bz2"))
        (sha256
-        (base32 "1krgd69cirp4ili2pfsh1a0mfvq722jbknlvmf17qhsxh1b94dlh"))
-       (modules '((guix build utils)))
-       (snippet
-        ;; Add sbcl-bundle-systems to 'default-system-source-registry'.
-        `(begin
-           (substitute* "contrib/asdf/asdf.lisp"
-             ,@(asdf-substitutions name))
-           #t))))
+        (base32 "1krgd69cirp4ili2pfsh1a0mfvq722jbknlvmf17qhsxh1b94dlh"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (native-inputs
@@ -365,11 +401,12 @@ an interpreter, a compiler, a debugger, and much more.")
             `(("clisp" ,clisp)))
            (_
             `(("clisp" ,clisp))))
-       ("which" ,which)
-       ("inetutils" ,inetutils)         ;for hostname(1)
+       ("cl-asdf" ,cl-asdf)
        ("ed" ,ed)
-       ("texlive" ,(texlive-union (list texlive-tex-texinfo)))
+       ("inetutils" ,inetutils)         ;for hostname(1)
        ("texinfo" ,texinfo)
+       ("texlive" ,(texlive-union (list texlive-tex-texinfo)))
+       ("which" ,which)
        ("zlib" ,zlib)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -378,6 +415,24 @@ an interpreter, a compiler, a debugger, and much more.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
+         (add-after 'unpack 'replace-asdf
+           ;; SBCL developers have not committed to keeping ASDF up to date
+           ;; due to breaking changes [1]. Guix can handle this situation
+           ;; easily, and it behooves us to have more control over what version
+           ;; of ASDF we use to build software; therefore, replace the contrib
+           ;; ASDF with the version packaged into Guix.
+           ;; [1] - https://bugs.launchpad.net/sbcl/+bug/1823442
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((cl-asdf (assoc-ref inputs "cl-asdf"))
+                    (guix-asdf (string-append
+                                cl-asdf
+                                "/share/common-lisp/source/asdf/asdf.lisp"))
+                    (out (string-append (assoc-ref outputs "out")))
+                    (contrib-asdf "contrib/asdf/asdf.lisp"))
+               (copy-file guix-asdf contrib-asdf)
+               (substitute* contrib-asdf
+                 ,@(asdf-substitutions name)))
+             #t))
          (add-before 'build 'patch-unix-tool-paths
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
@@ -477,8 +532,8 @@ an interpreter, a compiler, a debugger, and much more.")
                                  new-doc/sbcl-dir)
                (delete-file-recursively old-doc-dir)
                #t))))
-         ;; No 'check' target, though "make.sh" (build phase) runs tests.
-         #:tests? #f))
+       ;; No 'check' target, though "make.sh" (build phase) runs tests.
+       #:tests? #f))
     (native-search-paths
      (list (search-path-specification
             (variable "XDG_DATA_DIRS")

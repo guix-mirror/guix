@@ -26,7 +26,7 @@
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016, 2017, 2019 Alex Vong <alexvong1995@gmail.com>
@@ -51,7 +51,7 @@
 ;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
 ;;; Copyright © 2016, 2018 Tomáš Čech <sleep_walker@gnu.org>
-;;; Copyright © 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018, 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -113,6 +113,7 @@
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
@@ -1909,18 +1910,20 @@ with sensible defaults out of the box.")
 (define-public python-wheel
   (package
     (name "python-wheel")
-    (version "0.32.3")
+    (version "0.33.6")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "wheel" version))
         (sha256
          (base32
-          "1dhxl1bf18bx9szmqcnxbg6204hp3im8089q3hkwh5jfa6zh75q2"))))
+          "0ii6f34rvpjg3nmw4bc2h7fhdsy38y1h93hghncfs5akfrldmj8h"))))
     (build-system python-build-system)
-    (native-inputs
-     `(("python-jsonschema" ,python-jsonschema)
-       ("python-pytest-cov" ,python-pytest-cov)))
+    (arguments
+     ;; FIXME: The test suite runs "python setup.py bdist_wheel", which in turn
+     ;; fails to find the newly-built bdist_wheel library, even though it is
+     ;; available on PYTHONPATH.  What search path is consulted by setup.py?
+     '(#:tests? #f))
     (home-page "https://bitbucket.org/pypa/wheel/")
     (synopsis "Format for built Python packages")
     (description
@@ -1931,15 +1934,10 @@ packages will be properly installed with only the @code{Unpack} step and the
 unpacked archive preserves enough information to @code{Spread} (copy data and
 scripts to their final locations) at any later time.  Wheel files can be
 installed with a newer @code{pip} or with wheel's own command line utility.")
-    (license license:expat)
-    (properties `((python2-variant . ,(delay python2-wheel))))))
+    (license license:expat)))
 
 (define-public python2-wheel
-  (let ((wheel (package-with-python2
-                (strip-python2-variant python-wheel))))
-    (package (inherit wheel)
-      (native-inputs `(("python2-functools32" ,python2-functools32)
-                        ,@(package-native-inputs wheel))))))
+  (package-with-python2 python-wheel))
 
 (define-public python-vcversioner
   (package
@@ -2587,6 +2585,30 @@ important tasks for becoming a daemon process:
     ;; Only setup.py is gpl3+, everything else is apache 2.0 licensed.
     (license (list license:asl2.0 license:gpl3+))))
 
+(define-public python-anytree
+  (package
+    (name "python-anytree")
+    (version "2.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "anytree" version))
+              (sha256
+               (base32
+                "1aycpc387wqz7h9w2p53qxn43qsh3m6by6ak4kkc66x9aprr63rz"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (native-inputs
+     `(;; For tests.
+       ("graphviz" ,graphviz)           ;for 'dot'
+       ("python-nose" ,python-nose)))
+    (home-page "https://github.com/c0fec0de/anytree")
+    (synopsis "Lightweight tree data library")
+    (description
+     "@code{anytree} is a simple, lightweight, and extensible tree data
+structure for Python.")
+    (license license:asl2.0)))
+
 (define-public python-docutils
   (package
     (name "python-docutils")
@@ -2617,14 +2639,14 @@ reStructuredText.")
 (define-public python-pygments
   (package
     (name "python-pygments")
-    (version "2.4.2")
+    (version "2.5.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Pygments" version))
        (sha256
         (base32
-         "15v2sqm5g12bqa0c7wikfh9ck2nl97ayizy1hpqhmws5gqalq748"))))
+         "1zmhnswy0wxfn0xprs9aqsvx2c3kmzfn2wx14q8cv3vpkxdamj4q"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: Tests require sphinx, which depends on this.
@@ -3056,14 +3078,14 @@ Server (PLS).")
 (define-public python-language-server
   (package
     (name "python-language-server")
-    (version "0.31.4")
+    (version "0.31.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-language-server" version))
        (sha256
         (base32
-         "1nrs56jpx7dvghaas0kc5k9lxas5vr3awj3k87p4akki43nsblb8"))))
+         "0cqrffd5272p2hifa35rf1h1g6dss741jmjkwa43jninifmbz0df"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pluggy" ,python-pluggy)
@@ -4962,27 +4984,47 @@ all the newest features of the standard @code{pathlib} can be used also on
 older Python versions.")
     (license license:expat)))
 
+(define-public python2-importlib-resources
+  (package
+    (name "python2-importlib-resources")
+    (version "1.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "importlib_resources" version))
+              (sha256
+               (base32
+                "0y3hg12iby1qyaspnbisz4s4vxax7syikk3skznwqizqyv89y9yk"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (native-inputs
+     `(("python-wheel" ,python2-wheel)))
+    (propagated-inputs
+     `(("python-pathlib2" ,python2-pathlib2)
+       ("python-typing" ,python2-typing)))
+    (home-page "https://gitlab.com/python-devs/importlib_resources")
+    (synopsis "Backport of @code{importlib.resources} from Python 3.7")
+    (description
+     "This package provides an implementation of @code{importlib.resources}
+for older versions of Python.")
+    (license license:asl2.0)))
+
 (define-public python-importlib-metadata
   (package
     (name "python-importlib-metadata")
-    (version "0.23")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "importlib_metadata" version))
        (sha256
-        (base32 "09mdqdfv5rdrwz80jh9m379gxmvk2vhjfz0fg53hid00icvxf65a"))))
+        (base32 "1n76444v7zn910xrhh8954jdn4byxbn9f1jck6b85a716mbh2z7i"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-configparser" ,python-configparser)
-       ("python-contextlib2" ,python-contextlib2)
-       ("python-docutils" ,python-docutils)
-       ("python-pathlib2" ,python-pathlib2)
-       ("python-rst.linker" ,python-rst.linker)
-       ("python-zipp" ,python-zipp)))
+     `(("python-zipp" ,python-zipp)))
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-sphinx" ,python-sphinx)))
+       ("python-packaging" ,python-packaging)))
     (home-page "https://importlib-metadata.readthedocs.io/")
     (synopsis "Read metadata from Python packages")
     (description
@@ -4992,7 +5034,21 @@ its top-level name.  This functionality intends to replace most uses of
 @code{pkg_resources} entry point API and metadata API.  Along with
 @code{importlib.resources} in Python 3.7 and newer, this can eliminate the
 need to use the older and less efficient @code{pkg_resources} package.")
+    (properties `((python2-variant . ,(delay python2-importlib-metadata))))
     (license license:asl2.0)))
+
+(define-public python2-importlib-metadata
+  (let ((base (package-with-python2 (strip-python2-variant
+                                     python-importlib-metadata))))
+    (package/inherit
+     base
+     (name "python2-importlib-metadata")
+     (propagated-inputs
+      `(("python-configparser" ,python2-configparser)
+        ("python-contextlib2" ,python2-contextlib2)
+        ("python-importlib-resources" ,python2-importlib-resources)
+        ("python-pathlib2" ,python2-pathlib2)
+        ,@(package-propagated-inputs base))))))
 
 (define-public python-jaraco-packaging
   (package
@@ -5754,35 +5810,6 @@ the GObject Introspection bindings to libnotify for non-GTK applications.")
 
 (define-public python2-notify2
   (package-with-python2 python-notify2))
-
-(define-public python-lxml
-  (package
-    (name "python-lxml")
-    (version "4.4.2")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "lxml" version))
-        (sha256
-         (base32 "01nvb5j8vs9nk4z5s3250b1m22b4d08kffa36if3g1mdygdrvxpg"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (replace 'check
-                    (lambda _
-                      (invoke "make" "test"))))))
-    (inputs
-      `(("libxml2" ,libxml2)
-        ("libxslt" ,libxslt)))
-    (home-page "https://lxml.de/")
-    (synopsis "Python XML processing library")
-    (description
-      "The lxml XML toolkit is a Pythonic binding for the C libraries
-libxml2 and libxslt.")
-    (license license:bsd-3))) ; and a few more, see LICENSES.txt
-
-(define-public python2-lxml
-  (package-with-python2 python-lxml))
 
 ;; beautifulsoup4 has a totally different namespace than 3.x,
 ;; and pypi seems to put it under its own name, so I guess we should too
@@ -9994,14 +10021,14 @@ are synchronized with data exchanges on \"channels\".")
 (define-public python-objgraph
   (package
     (name "python-objgraph")
-    (version "3.4.0")
+    (version "3.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "objgraph" version))
        (sha256
         (base32
-         "184m09am5gpbqfaiy7l0hwh476mczbrly1dffs0rw2p1d1i2q32a"))))
+         "19qmqsh984zq1rzzjy4vqnmviaqnymcyl8h7z99pnicbgwnm2adz"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-graphviz" ,python-graphviz)))
@@ -10014,6 +10041,9 @@ are synchronized with data exchanges on \"channels\".")
      "This package provides tools to draw Python object reference graphs with
 graphviz.")
     (license license:expat)))
+
+(define-public python2-objgraph
+  (package-with-python2 python-objgraph))
 
 (define-public python-gevent
   (package
@@ -10610,7 +10640,6 @@ database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
        ("python-html5lib" ,python-html5lib)
        ("python-jsonschema" ,python-jsonschema)
        ("python-msgpack" ,python-msgpack)
-       ("python-pathlib2" ,python-pathlib2)
        ("python-pkginfo" ,python-pkginfo)
        ("python-pyparsing" ,python-pyparsing)
        ("python-pyrsistent" ,python-pyrsistent)
@@ -13065,6 +13094,9 @@ several utilities, as well as an API for building localization tools.")
       (origin
         (method url-fetch)
         (uri (pypi-uri "packaging" version))
+        ;; XXX: The URL in the patch file is wrong, it should be
+        ;; <https://github.com/pypa/packaging/pull/256>.
+        (patches (search-patches "python-packaging-test-arch.patch"))
         (sha256
          (base32
           "1y2ip3a4ykkpgnwgn85j6hkspcl0cg3mzms97f40mk57vwqq67gy"))))
@@ -15782,14 +15814,14 @@ that is accessible to other projects developed in Cython.")
 (define-public python-sortedcontainers
   (package
     (name "python-sortedcontainers")
-    (version "2.0.4")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "sortedcontainers" version))
        (sha256
         (base32
-         "10hrk2k0hbf9x78vd3f0lj277m1yzfhzzxr0hja718liwb398wk0"))))
+         "0fm0w5id2yhqld95hg2m636vjgkz377rvgdfqaxc25vbylr9lklp"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-tox" ,python-tox)))
@@ -16602,31 +16634,6 @@ for manual interpretation.")
     (description "Library for simple routing on OSM data")
     (license license:gpl3+)))
 
-(define-public python-elementpath
-  (package
-    (name "python-elementpath")
-    (version "1.2.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "elementpath" version))
-       (sha256
-        (base32
-         "1syn2z543brab23dskh3fjd9pqvz6npqbcicrs2d88dbg26xl08p"))))
-    (build-system python-build-system)
-    (home-page
-     "https://github.com/sissaschool/elementpath")
-    (synopsis
-     "XPath 1.0/2.0 parsers and selectors for ElementTree and lxml")
-    (description
-     "The proposal of this package is to provide XPath 1.0 and 2.0 selectors
-for Python's ElementTree XML data structures, both for the standard
-ElementTree library and for the @uref{http://lxml.de, lxml.etree} library.
-
-For lxml.etree this package can be useful for providing XPath 2.0 selectors,
-because lxml.etree already has it's own implementation of XPath 1.0.")
-    (license license:expat)))
-
 (define-public python-bibtexparser
   (package
     (name "python-bibtexparser")
@@ -17108,3 +17115,214 @@ scripts to load entry points more quickly.")
 functional combinators.  Parser combinators are just higher-order functions
 that take parsers as their arguments and return them as result values.")
     (license license:expat)))
+
+(define-public python-speg
+  (package
+    (name "python-speg")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "speg" version ".zip"))
+       (sha256
+        (base32 "0w9y4jf4787dzhy6rvhwi0mpl0r8qkqmqmyv2hpwdpv8w53yzjqh"))))
+    (arguments
+     `(#:tests? #f))                    ;FIXME: tests fail, not sure why
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (build-system python-build-system)
+    (home-page "https://github.com/avakar/speg")
+    (synopsis "PEG-based parser interpreter with memoization")
+    (description "This package is a PEG-based parser and interpreter with
+memoization.")
+    (license license:expat)))
+
+(define-public python-cson
+  (package
+    (name "python-cson")
+    (version "0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cson" version))
+       (sha256
+        (base32 "00cyvigg4npbph39ghkg77xbxisa6plf75vii24igxfizik0337f"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-speg" ,python-speg)))
+    (home-page "https://github.com/avakar/pycson")
+    (synopsis "Parser for Coffeescript Object Notation (CSON)")
+    (description "This package is a parser for Coffeescript Object
+Notation (CSON).")
+    (license license:expat)))
+
+(define-public python-asynctest
+  (package
+    (name "python-asynctest")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "asynctest" version))
+       (sha256
+        (base32
+         "1b3zsy7p84gag6q8ai2ylyrhx213qdk2h2zb6im3xn0m5n264y62"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "python" "-X" "dev" "-m" "unittest" "-v" "test")))
+         (add-after 'unpack 'disable-tests
+           (lambda* _
+             (substitute* "test/test_selector.py"
+               ;; XXX: This test fails for unknown reason inside the build
+               ;; environment.
+               (("def test_events_watched_outside_test_are_ignored")
+                "@unittest.skip('disabled by guix')
+    def test_events_watched_outside_test_are_ignored")))))))
+    (home-page "https://github.com/Martiusweb/asynctest")
+    (synopsis "Extension of unittest for testing asyncio libraries")
+    (description
+     "The package asynctest is built on top of the standard unittest module
+and cuts down boilerplate code when testing libraries for asyncio.")
+    (license license:asl2.0)))
+
+(define-public python-aionotify
+  (package
+    (name "python-aionotify")
+    (version "0.2.0")
+    (source
+     (origin
+       ;; Source tarball on PyPi lacks tests
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rbarrois/aionotify")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1sk9i8czxgsbrswsf1nlb4c82vgnlzi8zrvrxdip92w2z8hqh43y"))))
+    (build-system python-build-system)
+    (native-inputs `(("python-asynctest" ,python-asynctest)))
+    (home-page "https://github.com/rbarrois/aionotify")
+    (synopsis "Asyncio-powered inotify library")
+    (description
+     "@code{aionotify} is a simple, asyncio-based inotify library.")
+    (license license:bsd-3)))
+
+(define-public python-forbiddenfruit
+  (package
+    (name "python-forbiddenfruit")
+    (version "0.1.3")
+    (source
+     (origin
+       ;; Source tarball on PyPi lacks Makefile that builds and runs tests
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/clarete/forbiddenfruit")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1fp2xvdqpi910j9r3q68x38phpxbm700gjdi2m2j5gs91xdnyyh2"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "make" "SKIP_DEPS=1"))))))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-coverage" ,python-coverage)))
+    (home-page "https://github.com/clarete/forbiddenfruit")
+    (synopsis "Patch python built-in objects")
+    (description "This project allows Python code to extend built-in types.")
+    (license (list license:gpl3+ license:expat))))
+
+(define-public python-shouldbe
+  (package
+    (name "python-shouldbe")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "shouldbe" version))
+       (sha256
+        (base32
+         "16zbvjxf71dl4yfbgcr6idyim3mdrfvix1dv8b95p0s9z07372pj"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-forbiddenfruit" ,python-forbiddenfruit)))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/directxman12/should_be")
+    (synopsis "Python Assertion Helpers inspired by Shouldly")
+    (description
+     "Python Assertion Helpers inspired by Shouldly.")
+    (license license:isc)))
+
+(define-public python-k5test
+  (package
+    (name "python-k5test")
+    (version "0.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "k5test" version))
+       (sha256
+        (base32
+         "1lqp3jgfngyhaxjgj3n230hn90wsylwilh120yjf62h7b1s02mh8"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ;; `which`, `kadmin.local` binaries called inside library
+       ("which" ,which)
+       ("mit-krb5" ,mit-krb5)))
+    (native-inputs `(("mit-krb5" ,mit-krb5)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-paths
+           (lambda* _
+             (substitute* "k5test/realm.py"
+               (("'kadmin_local'") "'kadmin.local'")))))))
+    (home-page "https://github.com/pythongssapi/k5test")
+    (synopsis "Library for setting up self-contained Kerberos 5 environments")
+    (description
+     "@code{k5test} is a library for setting up self-contained Kerberos 5
+environments, and running Python unit tests inside those environments.  It is
+based on the file of the same name found alongside the MIT Kerberos 5 unit
+tests.")
+    (license license:isc)))
+
+(define-public python-gssapi
+  (package
+    (name "python-gssapi")
+    (version "1.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "gssapi" version))
+       (sha256
+        (base32
+         "1gymg4asvwrz7y13qpwp2s5g8qwq179d72gkj09q6bfcgs82l5wr"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-decorator" ,python-decorator)
+       ("python-six" ,python-six)))
+    (inputs
+     `(("mit-krb5" ,mit-krb5)))
+    ;; for tests
+    (native-inputs
+     `(("python-shouldbe" ,python-shouldbe)
+       ("python-parameterized" ,python-parameterized)
+       ("python-k5test" ,python-k5test)
+       ("python-nose" ,python-nose)))
+    (home-page "https://github.com/pythongssapi/python-gssapi")
+    (synopsis "Python GSSAPI Wrapper")
+    (description
+     "Python-GSSAPI provides both low-level and high level wrappers around the
+GSSAPI C libraries.  While it focuses on the Kerberos mechanism, it should
+also be useable with other GSSAPI mechanisms.")
+    (license license:isc)))

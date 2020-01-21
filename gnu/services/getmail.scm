@@ -112,13 +112,13 @@
 @samp{passwd} and @samp{static}.")
   (server
    (string 'unset)
-   "Space separated list of arguments to the userdb driver.")
+   "Name or IP adddress of the server to retrieve mail from.")
   (username
    (string 'unset)
-   "Space separated list of arguments to the userdb driver.")
+   "Username to login to the mail server with.")
   (port
    (non-negative-integer #f)
-   "Space separated list of arguments to the userdb driver.")
+   "Port number to connect to.")
   (password
    (string "")
    "Override fields from passwd.")
@@ -127,16 +127,16 @@
    "Override fields from passwd.")
   (keyfile
    (string "")
-   "PEM-formatted key file to use for the TLS negotiation")
+   "PEM-formatted key file to use for the TLS negotiation.")
   (certfile
    (string "")
-   "PEM-formatted certificate file to use for the TLS negotiation")
+   "PEM-formatted certificate file to use for the TLS negotiation.")
   (ca-certs
    (string "")
-   "CA certificates to use")
+   "CA certificates to use.")
   (extra-parameters
    (parameter-alist '())
-   "Extra retriever parameters"))
+   "Extra retriever parameters."))
 
 (define (serialize-getmail-destination-configuration field-name val)
   (serialize-configuration val getmail-destination-configuration-fields))
@@ -203,11 +203,11 @@ session with the server.  A value of @samp{0} disables this feature.")
    "Getmail will record a log of its actions to the named file.  A value of
 @samp{\"\"} disables this feature.")
   (message-log-syslog
-   (boolean #t)
+   (boolean #f)
    "If true, getmail will record a log of its actions using the system
 logger.")
   (message-log-verbose
-   (boolean #t)
+   (boolean #f)
    "If true, getmail will log information about messages not retrieved and the
 reason for not retrieving them, as well as starting and ending information
 lines.")
@@ -360,7 +360,8 @@ notifications.  This depends on the server supporting the IDLE extension.")
                      (list #$@environment-variables)
                      #:log-file
                      #$(string-append "/var/log/getmail-"
-                                      (symbol->string name)))))))
+                                      (symbol->string name))))
+           (stop #~(make-kill-destructor)))))
        configs))
 
 (define getmail-service-type

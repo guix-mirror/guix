@@ -2249,24 +2249,22 @@ background file post-processing.")
 (define-public supercollider
   (package
     (name "supercollider")
-    (version "3.10.3")
+    (version "3.10.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/supercollider/supercollider"
                     "/releases/download/Version-" version
                     "/SuperCollider-" version "-Source-linux.tar.bz2"))
-              (patches
-               (search-patches "supercollider-boost-1.70-build-fix.patch"))
               (sha256
                (base32
-                "0srm6wbazidkrd4ckjy4ypyhkdwcnx2i7k9msjyngalh0mrc9zz1"))))
+                "0x11g3pfw11m6v18qfpfl5w99dbmf73g4z7wvwhrj1a4qv2dn084"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DSYSTEM_BOOST=on" "-DSYSTEM_YAMLCPP=on"
                            "-DSC_QT=off"
                            "-DSC_EL=off") ;scel is packaged individually as
-                                          ;emacs-scel.
+                                          ;emacs-scel
        #:modules ((guix build utils)
                   (guix build cmake-build-system)
                   (ice-9 ftw))
@@ -2275,8 +2273,7 @@ background file post-processing.")
          (add-after 'unpack 'rm-bundled-libs
            (lambda _
              ;; The build system doesn't allow us to unbundle the following
-             ;; libraries.  hidapi is also heavily patched and upstream not
-             ;; actively maintained.
+             ;; libraries.  hidapi is also heavily patched.
              (let ((keep-dirs '("nova-simd" "nova-tt" "hidapi" "TLSF-2.4.6"
                                 "oscpack_1_1_0" "." "..")))
                (with-directory-excursion "./external_libraries"
@@ -2621,7 +2618,7 @@ disks as various audio file formats.")
      `(("libsndfile" ,libsndfile)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://vamp-plugins.org")
+    (home-page "https://vamp-plugins.org")
     (synopsis "Modular and extensible audio processing system")
     (description
      "Vamp is an audio processing plugin system for plugins that extract
@@ -3577,52 +3574,41 @@ the following features:
 (define-public cli-visualizer
   (package
     (name "cli-visualizer")
-    (version "1.6")
+    (version "1.8")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/dpayne/cli-visualizer.git")
-             (commit version)))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0mirp8bk398di5xyq95iprmdyvplfghxqmrfj7jdnpy554vx7ppc"))))
-    (build-system gnu-build-system)
+        (base32 "003mbbwsz43mg3d7llphpypqa9g7rs1p1cdbqi1mbc2bfrc1gcq2"))))
+    (build-system cmake-build-system)
     (native-inputs
-     `(("which" ,which)))
+     ;; TODO: Try using the latest googletest for versions > 1.8.
+     `( ;; ("googletest" ,googletest-1.8)
+       ("which" ,which)))
     (inputs
      `(("fftw" ,fftw)
-       ;; TODO: Try using the latest googletest for versions > 1.6.
-       ("googletest" ,googletest-1.8)
        ("ncurses" ,ncurses)
        ("pulseaudio" ,pulseaudio)))
     (arguments
-     '(#:test-target "test"
-       #:make-flags
-       (list (string-append "PREFIX=" %output "/bin/") "ENABLE_PULSE=1")
+     '(#:tests? #f
+       ;; XXX Enable tests after patching them to use the system googletest.
+       ;; #:configure-flags (list "-DVIS_WITH_TESTS=true")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'remove-sudo
-           (lambda _
-             (substitute* "install.sh" (("sudo") ""))
-             #t))
-         (add-before 'check 'set-check-environment
-           (lambda _
-             (setenv "CXX" "g++")
-             (setenv "CC" "gcc")
-             #t))
-         (add-before 'install 'make-prefix
-           (lambda _
-             (mkdir-p (string-append (assoc-ref %outputs "out") "/bin"))
-             #t))
-         (add-after 'install 'data
-           (lambda _
-             (for-each (lambda (file)
-                         (install-file file
-                                       (string-append (assoc-ref %outputs "out")
-                                                      "/share/doc")))
-                       (find-files "examples"))
+         (add-after 'install 'install-examples
+           (lambda* (#:key outputs #:allow-other-keys)
+             (with-directory-excursion "../source/examples"
+               (delete-file "mac_osx_config")
+               (for-each (lambda (file)
+                           (install-file file
+                                         (string-append
+                                          (assoc-ref outputs "out")
+                                          "/share/doc")))
+                         (find-files ".")))
              #t)))))
     (home-page "https://github.com/dpayne/cli-visualizer/")
     (synopsis "Command-line audio visualizer")
@@ -3988,17 +3974,17 @@ default and preferred audio driver but also supports native drivers like ALSA.")
 (define-public ecasound
   (package
     (name "ecasound")
-    (version "2.9.2")
+    (version "2.9.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://nosignal.fi/download/ecasound-"
+              (uri (string-append "https://nosignal.fi/download/ecasound-"
                                   version ".tar.gz"))
               (sha256
-               (base32 "15rcs28fq2wfvfs66p5na7adq88b55qszbhshpizgdbyqzgr2jf1"))))
+               (base32 "1m7njfjdb7sqf0lhgc4swihgdr4snkg8v02wcly08wb5ar2fr2s6"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    ;; would be nice to add mikmod to inputs if that gets packaged
-    ;; eventually
+    ;; It would be nice to add mikmod to inputs if that gets packaged
+    ;; eventually.
     (inputs `(("alsa-lib" ,alsa-lib)
               ("jack" ,jack-1)
               ("mpg123" ,mpg123)
@@ -4012,7 +3998,7 @@ default and preferred audio driver but also supports native drivers like ALSA.")
               ("ncurses" ,ncurses)
               ("ladspa" ,ladspa)
               ("lilv" ,lilv)))
-    (home-page "http://nosignal.fi/ecasound/index.php")
+    (home-page "https://nosignal.fi/ecasound/index.php")
     (synopsis "Multitrack audio processing")
     (description "Ecasound is a software package designed for multitrack audio
 processing. It can be used for simple tasks like audio playback, recording and

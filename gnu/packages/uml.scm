@@ -82,7 +82,7 @@
     (inputs
      `(("graphviz" ,graphviz)
        ("jre" ,icedtea)))
-    (home-page "http://plantuml.com/")
+    (home-page "https://plantuml.com/")
     (synopsis "Draw UML diagrams from simple textual description")
     (description
      "Plantuml is a tool to generate sequence, usecase, class, activity,

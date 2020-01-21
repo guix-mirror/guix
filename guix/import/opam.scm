@@ -1,3 +1,4 @@
+;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -38,7 +39,14 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:export (opam->guix-package
             opam-recursive-import
-            %opam-updater))
+            %opam-updater
+
+            ;; The following patterns are exported for testing purposes.
+            string-pat
+            multiline-string
+            list-pat
+            dict
+            condition))
 
 ;; Define a PEG parser for the opam format
 (define-peg-pattern comment none (and "#" (* STRCHR) "\n"))
@@ -233,8 +241,8 @@ path to the repository."
       (list dependency (list 'unquote (string->symbol dependency))))
     (ocaml-names->guix-names lst)))
 
-(define (opam-fetch name)
-  (and-let* ((repository (get-opam-repository))
+(define* (opam-fetch name #:optional (repository (get-opam-repository)))
+  (and-let* ((repository repository)
              (version (find-latest-version name repository))
              (file (string-append repository "/packages/" name "/" name "." version "/opam")))
     `(("metadata" ,@(get-metadata file))
@@ -242,8 +250,11 @@ path to the repository."
                         (substring version 1)
                         version)))))
 
-(define (opam->guix-package name)
-  (and-let* ((opam-file (opam-fetch name))
+(define* (opam->guix-package name #:key repository)
+  "Import OPAM package NAME from REPOSITORY (a directory name) or, if
+REPOSITORY is #f, from the official OPAM repository.  Return a 'package' sexp
+or #f on failure."
+  (and-let* ((opam-file (opam-fetch name repository))
              (version (assoc-ref opam-file "version"))
              (opam-content (assoc-ref opam-file "metadata"))
              (url-dict (metadata-ref opam-content "url"))

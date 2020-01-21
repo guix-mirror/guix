@@ -302,14 +302,14 @@ avoiding password prompts when X11 forwarding has already been setup.")
 (define-public libxkbcommon
   (package
     (name "libxkbcommon")
-    (version "0.9.1")
+    (version "0.10.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://xkbcommon.org/download/libxkbcommon-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1q4v378sr9ad8fy9znl7k8xpf0wch655r9m6z0bcc7sw1azsminl"))))
+               "1wmnl0hngn6vrqrya4r8hvimlkr4jag39yjprls4gyrqvh667hsp"))))
     (build-system meson-build-system)
     (inputs
      `(("libx11" ,libx11)
@@ -1618,8 +1618,8 @@ or playing a PCM encoded WAVE file.")
     (version "2.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.ibiblio.org/pub/linux/X11/screensavers/"
-                                  name "-" version ".tgz"))
+              (uri (string-append "https://www.ibiblio.org/pub/linux/X11/"
+                                  "screensavers/xautolock-" version ".tgz"))
               (sha256
                (base32
                 "18jd3k3pvlm5x1adyqw63z2b3f4ixh9mfvz9asvnskk3fm8jgw0i"))))
@@ -1655,7 +1655,7 @@ or playing a PCM encoded WAVE file.")
          (add-after 'install 'install/man
            (lambda _
              (invoke "make" "install.man"))))))
-    (home-page "http://ibiblio.org/pub/Linux/X11/screensavers/")
+    (home-page "https://ibiblio.org/pub/Linux/X11/screensavers/")
     (synopsis "Program launcher for idle X sessions")
     (description "Xautolock monitors input devices under the X Window
 System, and launches a program of your choice if there is no activity after

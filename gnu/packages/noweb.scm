@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,25 +19,41 @@
 
 (define-module (gnu packages noweb)
   #:use-module (guix packages)
-  #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
-  #:use-module (guix licenses))
+  #:use-module (guix licenses)
+  #:use-module (gnu packages perl))
 
 (define-public noweb
   (package
     (name "noweb")
-    (version "2.11b")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "ftp://www.eecs.harvard.edu/pub/nr/noweb-"
-                                 version ".tgz"))
-             (sha256
-              (base32
-               "10hdd6mrk26kyh4bnng4ah5h1pnanhsrhqa7qwqy6dyv3rng44y9"))))
+    (version "2.12")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nrnrnr/noweb")
+             (commit (string-append "v" (string-join (string-split version #\.)
+                                                     "_")))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1160i2ghgzqvnb44kgwd6s3p4jnk9668rmc15jlcwl7pdf3xqm95"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'bind-early
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (substitute* (list "src/lib/nwmtime"
+                                  "src/shell/htmltoc")
+                 (("exec perl ")
+                  (format #f "exec ~a " (which "perl"))))
+               (substitute* "src/shell/noweb"
+                 ((" cpif ")
+                  (format #f " ~a/cpif " bin)))
+               #t)))
          (add-before 'install 'pre-install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -69,11 +86,6 @@
            (lambda _
              ;; Jump in the source.
              (chdir "src")
-
-             ;; The makefile reads "source: FAQ", but FAQ isn't
-             ;; available.
-             (substitute* "Makefile"
-               (("FAQ") ""))
              #t)))
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list (string-append "BIN=" out "/bin")
@@ -82,7 +94,9 @@
                             (string-append "TEXINPUTS=" out
                                            "/share/texmf/tex/latex")))
        #:tests? #f))                              ; no tests
-    (home-page "http://www.cs.tufts.edu/~nr/noweb/")
+    (inputs
+     `(("perl" ,perl)))
+    (home-page "https://www.cs.tufts.edu/~nr/noweb/")
     (synopsis "Literate programming tool")
     (description
      "Noweb is designed to meet the needs of literate programmers while
@@ -92,4 +106,6 @@ with other literate-programming tools.  noweb uses 5 control sequences to
 WEB's 27.  The noweb manual is only 4 pages; an additional page explains how
 to customize its LaTeX output.  noweb works “out of the box” with any
 programming language, and supports TeX, LaTeX, HTML, and troff back ends.")
-    (license (fsf-free "http://www.cs.tufts.edu/~nr/noweb/#copyright"))))
+    (license
+     (list bsd-2                        ; dual-licenced under this and…
+           (fsf-free "https://www.cs.tufts.edu/~nr/noweb/#copyright")))))

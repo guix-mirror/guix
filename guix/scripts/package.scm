@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2016 Alex Kost <alezost@gmail.com>
@@ -39,7 +39,7 @@
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
   #:use-module (guix describe)
-  #:autoload   (guix store roots) (gc-roots)
+  #:autoload   (guix store roots) (gc-roots user-owned?)
   #:use-module ((guix build utils)
                 #:select (directory-exists? mkdir-p))
   #:use-module ((guix build syscalls)
@@ -62,6 +62,8 @@
             delete-generations
             delete-matching-generations
             guix-package
+
+            transaction-upgrade-entry             ;mostly for testing
 
             (%options . %package-options)
             (%default-options . %package-default-options)
@@ -135,9 +137,6 @@ denote ranges as interpreted by 'matching-generations'."
 specified in MANIFEST, a manifest object.  When ALLOW-COLLISIONS? is true,
 do not treat collisions in MANIFEST as an error.  HOOKS is a list of \"profile
 hooks\" run when building the profile."
-  (when (equal? profile %current-profile)
-    (ensure-default-profile))
-
   (let* ((prof-drv (run-with-store store
                      (profile-derivation manifest
                                          #:allow-collisions? allow-collisions?
@@ -205,7 +204,7 @@ non-zero relevance score."
                                 (package-full-name package2))
                       (> score1 score2))))))))))
 
-(define (transaction-upgrade-entry entry transaction)
+(define (transaction-upgrade-entry store entry transaction)
   "Return a variant of TRANSACTION that accounts for the upgrade of ENTRY, a
 <manifest-entry>."
   (define (supersede old new)
@@ -242,7 +241,7 @@ non-zero relevance score."
                 transaction)
                ((=)
                 (let ((candidate-path (derivation->output-path
-                                       (package-derivation (%store) pkg))))
+                                       (package-derivation store pkg))))
                   ;; XXX: When there are propagated inputs, assume we need to
                   ;; upgrade the whole entry.
                   (if (and (string=? path candidate-path)
@@ -600,7 +599,7 @@ and upgrades."
   (define upgraded
     (fold (lambda (entry transaction)
             (if (upgrade? (manifest-entry-name entry))
-                (transaction-upgrade-entry entry transaction)
+                (transaction-upgrade-entry (%store) entry transaction)
                 transaction))
           transaction
           (manifest-entries manifest)))
@@ -863,6 +862,12 @@ processed, #f otherwise."
                      (package-version item)
                      (manifest-entry-version entry))))))
 
+  (when (equal? profile %current-profile)
+    ;; Normally the daemon created %CURRENT-PROFILE when we connected, unless
+    ;; it's a version that lacks the fix for <https://bugs.gnu.org/37744>
+    ;; (aka. CVE-2019-18192).  Ensure %CURRENT-PROFILE exists so that
+    ;; 'with-profile-lock' can create its lock file below.
+    (ensure-default-profile))
 
   ;; First, acquire a lock on the profile, to ensure only one guix process
   ;; is modifying it at a time.

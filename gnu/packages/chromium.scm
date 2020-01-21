@@ -242,9 +242,9 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %chromium-version "78.0.3904.108")
-(define %ungoogled-revision "8f065138317a6152b20decc224027a5192ba76b1")
-(define %debian-revision "e43d74632091324774a5049668782dba7b09cf72")
+(define %chromium-version "79.0.3945.130")
+(define %ungoogled-revision "e2fae994d786b6716fb473a47b0c880bcfdc2497")
+(define %debian-revision "debian/79.0.3945.130-2")
 (define package-revision "0")
 (define %package-version (string-append %chromium-version "-"
                                         package-revision "."
@@ -258,7 +258,7 @@ from forcing GEXP-PROMISE."
                         %chromium-version ".tar.xz"))
     (sha256
      (base32
-      "03jvfz68nvmmrplygf96sh0l347p4h03c8vpw8yrglh6ycwkiigr"))))
+      "183vz3lf1588cr9s5vlnj65qvbmz36s8cg8k7dvr64cxmcqk86an"))))
 
 (define %ungoogled-origin
   (origin
@@ -269,7 +269,7 @@ from forcing GEXP-PROMISE."
                               (string-take %ungoogled-revision 7)))
     (sha256
      (base32
-      "0zix90jz82hpym9jmyf99yw19swaf13ps6szi60wccmz1gccv77g"))))
+      "15vmc07iba1zmzn4j7c5n2hyvyxzwwf9hc3kyym0m4jajlsyxr5f"))))
 
 (define %debian-origin
   (origin
@@ -283,15 +283,7 @@ from forcing GEXP-PROMISE."
                                   (string-take %debian-revision 7))))
     (sha256
      (base32
-      "1l1ajjkn1y7ql5w4zb3c3vw57hkydvy1mac7y81rycx4g5djasaz"))))
-
-(define (gentoo-patch name hash revision)
-  (origin
-    (method url-fetch)
-    (uri (string-append "https://gitweb.gentoo.org/repo/gentoo.git/plain"
-                        "/www-client/chromium/files/" name "?id=" revision))
-    (file-name name)
-    (sha256 (base32 hash))))
+      "1rbzxcwfp7v0c6rkvn9jl9by7p363cnbdyqazwiak1z03kmw3nkz"))))
 
 ;; This is a "computed" origin that does the following:
 ;; *) Runs the Ungoogled scripts on a pristine Chromium tarball.
@@ -336,7 +328,7 @@ from forcing GEXP-PROMISE."
                    ;; Ungoogled-Chromium contains a forked subset of the Debian
                    ;; patches.  Disable those, as we apply newer versions later.
                    (substitute* "patches/series"
-                     ((".*/debian_buster/.*")
+                     ((".*/debian/.*")
                       ""))
 
                    (format #t "Ungooglifying...~%")
@@ -361,6 +353,7 @@ from forcing GEXP-PROMISE."
                            (let loop ((line (read-line)))
                              (unless (eof-object? line)
                                (when (and (> (string-length line) 1)
+                                          (not (string-prefix? "#" line))
                                           ;; Skip the Debian-specific ones.
                                           (not (string-prefix? "debianization/" line))
                                           (not (string-prefix? "buster/" line))
@@ -428,21 +421,6 @@ from forcing GEXP-PROMISE."
         ;; sizes.  Chromium requires that this is enabled.
         `(cons "--enable-custom-modes"
                ,flags))))))
-
-;; Chromium 78 requires libvpx features that are not in any release.
-(define libvpx/chromium
-  (package/inherit
-   libvpx
-   (version "m78-3904")
-   (source (origin
-             (inherit (package-source libvpx))
-             (uri (git-reference
-                   (url "https://chromium.googlesource.com/webm/libvpx")
-                   (commit version)))
-             (file-name (git-file-name "libvpx" version))
-             (sha256
-              (base32
-               "1pphjfmg0aqq93n5cq790884v1h84di8p9mk3r28sm053wszhm7g"))))))
 
 (define-public ungoogled-chromium
   (package
@@ -808,7 +786,7 @@ from forcing GEXP-PROMISE."
        ("libjpeg-turbo" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libva" ,libva)
-       ("libvpx" ,libvpx/chromium)
+       ("libvpx" ,libvpx)
        ("libwebp" ,libwebp)
        ("libx11" ,libx11)
        ("libxcb" ,libxcb)
@@ -871,13 +849,13 @@ disabled in order to protect the users privacy.")
      `(("wayland" ,wayland)
        ("wayland-protocols" ,wayland-protocols)
        ,@(package-inputs ungoogled-chromium)))
-
     (arguments
      (substitute-keyword-arguments (package-arguments ungoogled-chromium)
        ((#:configure-flags flags)
         `(append (list "use_ozone=true"
                        "ozone_platform_wayland=true"
                        "ozone_auto_platforms=false"
+                       "ozone_platform=\"wayland\""
                        "use_xkbcommon=true"
                        "use_system_minigbm=true"
                        "use_system_libwayland=true"

@@ -7,7 +7,7 @@
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
@@ -1194,15 +1194,14 @@ multi-system game/emulator system.")
 (define-public scummvm
   (package
     (name "scummvm")
-    (version "2.1.0")
+    (version "2.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.scummvm.org/frs/scummvm/" version
                            "/scummvm-" version ".tar.xz"))
        (sha256
-        (base32
-         "09zp2mxmida6sz5vrr5bzyv8c3yjvq2xqmpmcllbadhmd9cwcl3b"))))
+        (base32 "1a6waf1ybp91nwva8g650cljlfb1di4l0jv13vg6yfgkas9pclsp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                 ;require "git"
@@ -1213,7 +1212,7 @@ multi-system game/emulator system.")
            ;; XXX: The following works around a build failure introduced when
            ;; Fluidsynth was updated to version 2.1.  It has been applied
            ;; upstream as 68758a879e0c8ecc0d40962516d4e808aa4e15e5 and can be
-           ;; removed once ScummVM 2.1.1+ is out.
+           ;; removed once this commit makes it into a release.
            (lambda _
              (substitute* "audio/softsynth/fluidsynth.cpp"
                (("#include <fluidsynth.h>") "")
@@ -1425,7 +1424,7 @@ play them on systems for which they were never designed!")
        ("flac" ,flac)
        ("fontconfig" ,fontconfig)
        ("glm" ,glm)
-       ("libjpeg" ,libjpeg-8)    ;jpeg_read_header argument error in libjpeg-9
+       ("libjpeg" ,libjpeg-turbo)
        ("libxi" ,libxi)
        ("libxinerama" ,libxinerama)
        ("lua" ,lua)

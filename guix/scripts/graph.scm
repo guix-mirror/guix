@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,7 @@
   #:use-module ((guix scripts build)
                 #:select (show-transformation-options-help
                           options->transformation
+                          %standard-build-options
                           %transformation-options))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -473,6 +475,9 @@ package modules, while attempting to retain user package modules."
                  (lambda (opt name arg result)
                    (alist-cons 'system arg
                                (alist-delete 'system result eq?))))
+         (find (lambda (option)
+                (member "load-path" (option-names option)))
+              %standard-build-options)
          (option '(#\h "help") #f #f
                  (lambda args
                    (show-help)
@@ -500,6 +505,9 @@ Emit a representation of the dependency graph of PACKAGE...\n"))
   -e, --expression=EXPR  consider the package EXPR evaluates to"))
   (display (G_ "
   -s, --system=SYSTEM    consider the graph for SYSTEM--e.g., \"i686-linux\""))
+  (newline)
+  (display (G_ "
+  -L, --load-path=DIR    prepend DIR to the package module search path"))
   (newline)
   (show-transformation-options-help)
   (newline)

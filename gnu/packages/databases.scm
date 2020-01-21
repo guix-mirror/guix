@@ -23,7 +23,7 @@
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
@@ -38,6 +38,7 @@
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -126,7 +127,6 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system scons)
   #:use-module (guix build-system trivial)
-  #:use-module ((guix build utils) #:hide (which))
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -879,6 +879,11 @@ Language.")
               (rename-file (string-append out "/bin/mysql_config")
                            (string-append dev "/bin/mysql_config"))
 
+
+              (substitute*  (string-append out "/bin/mysql_install_db")
+                (("\\$basedir/share/mysql")
+                 (string-append lib "/share/mysql")))
+
               ;; Embed an absolute reference to OpenSSL in mysql_config
               ;; and the pkg-config file to avoid propagation.
               (substitute* (list (string-append dev "/bin/mysql_config")
@@ -914,32 +919,30 @@ Language.")
 as a drop-in replacement of MySQL.")
     (license license:gpl2)))
 
-;; TODO: mysql_install_db is broken in MariaDB.  This package is here as
-;; a workaround for packages that need it.  Merge with 'mariadb' in the next
-;; rebuild cycle.
-(define-public mariadb/fixed-install-db
-  (hidden-package
-   (package/inherit
-    mariadb
-    (name "mariadb-fixed")
-    (native-inputs '())
+(define-public mariadb-connector-c
+  (package
+    (name "mariadb-connector-c")
+    (version "3.1.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://downloads.mariadb.org/f/connector-c-"
+                    version "/mariadb-connector-c-"
+                    version "-src.tar.gz"))
+              (sha256
+               (base32
+                "083724f5daaqyzdcx508caz6fk2hs89jff85zg28ih43vxkvnrnj"))))
     (inputs
-     `(("mariadb" ,mariadb)
-       ("mariadb:lib" ,mariadb "lib")))
-    (outputs '("out"))
-    (build-system trivial-build-system)
+     `(("openssl" ,openssl)))
+    (build-system cmake-build-system)
     (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules ((guix build utils)))
-         (let ((out (assoc-ref %outputs "out")))
-           (copy-recursively (assoc-ref %build-inputs "mariadb") out)
-           (substitute*  (string-append out "/bin/mysql_install_db")
-             (("\\$basedir/share/mysql")
-              (string-append (assoc-ref %build-inputs "mariadb:lib")
-                             "/share/mysql")))
-           #t)))))))
+     ;; No tests.
+     '(#:tests? #f))
+    (home-page "https://mariadb.com/kb/en/mariadb-connector-c/")
+    (synopsis "Client library to connect to MySQL or MariaDB")
+    (description "The MariaDB Connector/C is used to connect applications
+developed in C/C++ to MariaDB and MySQL databases.")
+    (license license:lgpl2.1+)))
 
 ;; Don't forget to update the other postgresql packages when upgrading this one.
 (define-public postgresql
@@ -2065,7 +2068,7 @@ database.")
 (define-public lmdb
   (package
     (name "lmdb")
-    (version "0.9.23")
+    (version "0.9.24")
     (source
      (origin
        (method git-fetch)
@@ -2074,7 +2077,7 @@ database.")
              (commit (string-append "LMDB_" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ag7l5180ajvm73y59m7sn3p52xm8m972d08cshxhpwgwa4v35k6"))))
+        (base32 "088q6m8fvr12w43s461h7cvpg5hj8csaqj6n9pci150dz7bk5lxm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -3278,7 +3281,7 @@ simultaneous database connections by using this framework.")
      `(;; For tests.
        ("inetutils" ,inetutils)
        ("glibc-locales" ,glibc-locales)
-       ("mariadb" ,mariadb/fixed-install-db)))
+       ("mariadb" ,mariadb)))
     (inputs
      `(("libdbi" ,libdbi)
        ("mariadb:dev" ,mariadb "dev")

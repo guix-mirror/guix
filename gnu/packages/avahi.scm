@@ -35,7 +35,7 @@
   (package
     (name "avahi")
     (version "0.7")
-    (home-page "http://avahi.org")
+    (home-page "https://avahi.org")
     (source (origin
              (method url-fetch)
              (uri (string-append home-page "/download/avahi-"

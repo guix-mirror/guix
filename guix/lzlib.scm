@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,7 +32,8 @@
             call-with-lzip-input-port
             call-with-lzip-output-port
             %default-member-length-limit
-            %default-compression-level))
+            %default-compression-level
+            dictionary-size+match-length-limit))
 
 ;;; Commentary:
 ;;;
@@ -569,19 +570,26 @@ the number of uncompressed bytes written, a non-negative integer."
 ;; Alist of (levels (dictionary-size match-length-limit)).  0 is the fastest.
 ;; See bbexample.c in lzlib's source.
 (define %compression-levels
-  `((0 (65535 16))
-    (1 (,(bitwise-arithmetic-shift-left 1 20) 5))
-    (2 (,(bitwise-arithmetic-shift-left 3 19) 6))
-    (3 (,(bitwise-arithmetic-shift-left 1 21) 8))
-    (4 (,(bitwise-arithmetic-shift-left 3 20) 12))
-    (5 (,(bitwise-arithmetic-shift-left 1 22) 20))
-    (6 (,(bitwise-arithmetic-shift-left 1 23) 36))
-    (7 (,(bitwise-arithmetic-shift-left 1 24) 68))
-    (8 (,(bitwise-arithmetic-shift-left 3 23) 132))
-    (9 (,(bitwise-arithmetic-shift-left 1 25) 273))))
+  `((0 65535 16)
+    (1 ,(bitwise-arithmetic-shift-left 1 20) 5)
+    (2 ,(bitwise-arithmetic-shift-left 3 19) 6)
+    (3 ,(bitwise-arithmetic-shift-left 1 21) 8)
+    (4 ,(bitwise-arithmetic-shift-left 3 20) 12)
+    (5 ,(bitwise-arithmetic-shift-left 1 22) 20)
+    (6 ,(bitwise-arithmetic-shift-left 1 23) 36)
+    (7 ,(bitwise-arithmetic-shift-left 1 24) 68)
+    (8 ,(bitwise-arithmetic-shift-left 3 23) 132)
+    (9 ,(bitwise-arithmetic-shift-left 1 25) 273)))
 
 (define %default-compression-level
   6)
+
+(define (dictionary-size+match-length-limit level)
+  "Return two values: the dictionary size for LEVEL, and its match-length
+limit.  LEVEL must be a compression level, an integer between 0 and 9."
+  (match (assv-ref %compression-levels level)
+    ((dictionary-size match-length-limit)
+     (values dictionary-size match-length-limit))))
 
 (define* (make-lzip-input-port port)
   "Return an input port that decompresses data read from PORT, a file port.
@@ -602,8 +610,9 @@ PORT is automatically closed when the resulting port is closed."
   "Return an output port that compresses data at the given LEVEL, using PORT,
 a file port, as its sink.  PORT is automatically closed when the resulting
 port is closed."
-  (define encoder (apply lz-compress-open
-                         (car (assoc-ref %compression-levels level))))
+  (define encoder
+    (call-with-values (lambda () (dictionary-size+match-length-limit level))
+      lz-compress-open))
 
   (define (write! bv start count)
     (lzwrite encoder bv port start count))
@@ -626,8 +635,9 @@ port is closed."
                                           (level %default-compression-level))
   "Return an input port that compresses data read from PORT, with the given LEVEL.
 PORT is automatically closed when the resulting port is closed."
-  (define encoder (apply lz-compress-open
-                         (car (assoc-ref %compression-levels level))))
+  (define encoder
+    (call-with-values (lambda () (dictionary-size+match-length-limit level))
+      lz-compress-open))
 
   (define input-buffer (make-bytevector 8192))
   (define input-len 0)

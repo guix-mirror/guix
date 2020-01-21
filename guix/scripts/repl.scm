@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,9 +21,6 @@
   #:use-module (guix ui)
   #:use-module (guix scripts)
   #:use-module (guix repl)
-  #:use-module (guix utils)
-  #:use-module (guix packages)
-  #:use-module (gnu packages)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
@@ -52,7 +50,16 @@
                   (alist-cons 'type (string->symbol arg) result)))
         (option '("listen") #t #f
                 (lambda (opt name arg result)
-                  (alist-cons 'listen arg result)))))
+                  (alist-cons 'listen arg result)))
+        (option '(#\q) #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'ignore-dot-guile? #t result)))
+        (option '(#\L "load-path") #t #f
+                (lambda (opt name arg result)
+                  ;; XXX: Imperatively modify the search paths.
+                  (set! %load-path (cons arg %load-path))
+                  (set! %load-compiled-path (cons arg %load-compiled-path))
+                  result))))
 
 
 (define (show-help)
@@ -60,6 +67,13 @@
 Start a Guile REPL in the Guix execution environment.\n"))
   (display (G_ "
   -t, --type=TYPE        start a REPL of the given TYPE"))
+  (display (G_ "
+      --listen=ENDPOINT  listen to ENDPOINT instead of standard input"))
+  (display (G_ "
+  -q                     inhibit loading of ~/.guile"))
+  (newline)
+  (display (G_ "
+  -L, --load-path=DIR    prepend DIR to the package module search path"))
   (newline)
   (display (G_ "
   -h, --help             display this help and exit"))
@@ -129,6 +143,11 @@ call THUNK."
                   (leave (G_ "~A: extraneous argument~%") arg))
                 %default-options))
 
+  (define user-config
+    (and=> (getenv "HOME")
+           (lambda (home)
+             (string-append home "/.guile"))))
+
   (with-error-handling
     (let ((type (assoc-ref opts 'type)))
       (call-with-connection (assoc-ref opts 'listen)
@@ -138,11 +157,11 @@ call THUNK."
              (save-module-excursion
               (lambda ()
                 (set-current-module user-module)
-                (and=> (getenv "HOME")
-                       (lambda (home)
-                         (let ((guile (string-append home "/.guile")))
-                           (when (file-exists? guile)
-                             (load guile)))))
+                (when (and (not (assoc-ref opts 'ignore-dot-guile?))
+                           user-config
+                           (file-exists? user-config))
+                  (load user-config))
+
                 ;; Do not exit repl on SIGINT.
                 ((@@ (ice-9 top-repl) call-with-sigint)
                  (lambda ()

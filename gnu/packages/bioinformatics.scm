@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
@@ -261,7 +261,7 @@ structure of the predicted RNA.")
        ("coreutils" ,coreutils)))
     (propagated-inputs
      `(("python-numpy" ,python2-numpy)))
-    (home-page "http://ecogenomics.github.io/BamM/")
+    (home-page "https://ecogenomics.github.io/BamM/")
     (synopsis "Metagenomics-focused BAM file manipulator")
     (description
      "BamM is a C library, wrapped in python, to efficiently generate and
@@ -726,7 +726,7 @@ provides the Ribotaper pipeline.")
     (native-inputs
      `(("python-mock" ,python2-mock)
        ("python-nose" ,python2-nose)))
-    (home-page "http://public.bmi.inf.ethz.ch/user/zhongy/RiboDiff/")
+    (home-page "https://public.bmi.inf.ethz.ch/user/zhongy/RiboDiff/")
     (synopsis "Detect translation efficiency changes from ribosome footprints")
     (description "RiboDiff is a statistical tool that detects the protein
 translational efficiency change from Ribo-Seq (ribosome footprinting) and
@@ -1056,7 +1056,7 @@ provide a coordinated and extensible framework to do computational biology.")
            (lambda _ (setenv "HOME" "/tmp") #t)))))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)))
-    (home-page "http://biopython.org/")
+    (home-page "https://biopython.org/")
     (synopsis "Tools for biological computation in Python")
     (description
      "Biopython is a set of tools for biological computation including parsers
@@ -2439,7 +2439,7 @@ accessing bigWig files.")
         (base32
          "097hfyv2kaf4x92i4rjx0paw2cncxap48qivv8zxng4z7nhid0x9"))))
     (build-system python-build-system)
-    (home-page "http://packages.python.org/DendroPy/")
+    (home-page "https://dendropy.org/")
     (synopsis "Library for phylogenetics and phylogenetic computing")
     (description
      "DendroPy is a library for phylogenetics and phylogenetic computing: reading,
@@ -2676,7 +2676,7 @@ data and settings.")
                                         texlive-latex-pgf      ; tikz
                                         texlive-latex-verbatimbox)))
        ("imagemagick" ,imagemagick)))
-    (home-page "http://dorina.mdc-berlin.de/public/rajewsky/discrover/")
+    (home-page "https://dorina.mdc-berlin.de/public/rajewsky/discrover/")
     (synopsis "Discover discriminative nucleotide sequence motifs")
     (description "Discrover is a motif discovery method to find binding sites
 of nucleic acid binding proteins.")
@@ -2796,7 +2796,7 @@ quantitative phenotypes.")
        ("perl-www-robotrules" ,perl-www-robotrules)
        ("perl-xml-simple" ,perl-xml-simple)
        ("perl" ,perl)))
-    (home-page "http://www.ncbi.nlm.nih.gov/books/NBK179288/")
+    (home-page "https://www.ncbi.nlm.nih.gov/books/NBK179288/")
     (synopsis "Tools for accessing the NCBI's set of databases")
     (description
      "Entrez Direct (EDirect) is a method for accessing the National Center
@@ -2916,7 +2916,7 @@ ChIP-Seq, and analysis of metagenomic data.")
               #t))))))
    (inputs
     `(("python" ,python-2)))
-   (home-page "http://kiwi.cs.dal.ca/Software/ExpressBetaDiversity")
+   (home-page "https://github.com/dparks1134/ExpressBetaDiversity")
    (synopsis "Taxon- and phylogenetic-based beta diversity measures")
    (description
     "Express Beta Diversity (EBD) calculates ecological beta diversity
@@ -3313,7 +3313,8 @@ association studies (GWAS).")
        ("python-networkx" ,python2-networkx)))
     (native-inputs
      `(("python-cython" ,python2-cython)))
-    (home-page "http://grit-bio.org")
+    ;; The canonical <http://grit-bio.org> home page times out as of 2020-01-21.
+    (home-page "https://github.com/nboley/grit")
     (synopsis "Tool for integrative analysis of RNA-seq type assays")
     (description
      "GRIT is designed to use RNA-seq, TES, and TSS data to build and quantify
@@ -3380,7 +3381,7 @@ estimates transcript expression.")
     ;; Non-portable SSE instructions are used so building fails on platforms
     ;; other than x86_64.
     (supported-systems '("x86_64-linux"))
-    (home-page "http://ccb.jhu.edu/software/hisat/index.shtml")
+    (home-page "https://ccb.jhu.edu/software/hisat/index.shtml")
     (synopsis "Hierarchical indexing for spliced alignment of transcripts")
     (description
      "HISAT is a fast and sensitive spliced alignment program for mapping
@@ -3434,7 +3435,7 @@ particular, reads spanning multiple exons.")
      `(("unzip" ,unzip)                 ; needed for archive from ftp
        ("perl" ,perl)
        ("pandoc" ,ghc-pandoc)))         ; for documentation
-    (home-page "http://ccb.jhu.edu/software/hisat2/index.shtml")
+    (home-page "https://ccb.jhu.edu/software/hisat2/index.shtml")
     (synopsis "Graph-based alignment of genomic sequencing reads")
     (description "HISAT2 is a fast and sensitive alignment program for mapping
 next-generation sequencing reads (both DNA and RNA) to a population of human
@@ -3494,7 +3495,7 @@ HMMs).")
     (inputs
      `(("python-pysam" ,python-pysam)
        ("python-matplotlib" ,python-matplotlib)))
-    (home-page "http://www-huber.embl.de/users/anders/HTSeq/")
+    (home-page "https://htseq.readthedocs.io/")
     (synopsis "Analysing high-throughput sequencing data with Python")
     (description
      "HTSeq is a Python package that provides infrastructure to process data
@@ -3969,7 +3970,7 @@ VCF.")
        ("java-jbzip2" ,java-jbzip2)))
     (native-inputs
      `(("unzip" ,unzip)))
-    (home-page "http://www.bioinformatics.babraham.ac.uk/projects/fastqc/")
+    (home-page "https://www.bioinformatics.babraham.ac.uk/projects/fastqc/")
     (synopsis "Quality control tool for high throughput sequence data")
     (description
      "FastQC aims to provide a simple way to do some quality control
@@ -4048,7 +4049,7 @@ performance.")
      `(("zlib" ,zlib)))
     (native-inputs
      `(("perl" ,perl)))
-    (home-page "http://www.htslib.org")
+    (home-page "https://www.htslib.org")
     (synopsis "C library for reading/writing high-throughput sequencing data")
     (description
      "HTSlib is a C library for reading/writing high-throughput sequencing
@@ -4595,7 +4596,7 @@ assembled metagenomic sequence.")
                             ;; Use setuptools, or else the executables are not
                             ;; installed.
                             (("distutils.core") "setuptools")
-                            ;; use "gcc" instead of "cc" for compilation
+                            ;; Use "gcc" instead of "cc" for compilation.
                             (("^defines")
                              "cc.set_executables(
 compiler='gcc',
@@ -4605,8 +4606,8 @@ linker_so='gcc -shared'); defines"))
                           #t))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2 ; only Python 2 is supported
-       #:tests? #f)) ; no "test" target
+     `(#:python ,python-2               ; only Python 2 is supported
+       #:tests? #f))                    ; no "test" target
     (inputs
      `(("samtools" ,samtools)
        ("python-numpy" ,python2-numpy)
@@ -4614,9 +4615,9 @@ linker_so='gcc -shared'); defines"))
        ("python-scipy" ,python2-scipy)
        ("python-matplotlib" ,python2-matplotlib)))
     (native-inputs
-     `(("python-mock" ,python2-mock)   ;for tests
-       ("python-pytz" ,python2-pytz))) ;for tests
-    (home-page "http://genes.mit.edu/burgelab/miso/index.html")
+     `(("python-mock" ,python2-mock)    ; for tests
+       ("python-pytz" ,python2-pytz)))  ; for tests
+    (home-page "https://www.genes.mit.edu/burgelab/miso/index.html")
     (synopsis "Mixture of Isoforms model for RNA-Seq isoform quantitation")
     (description
      "MISO (Mixture-of-Isoforms) is a probabilistic framework that quantitates
@@ -4742,7 +4743,7 @@ interrupted by stop codons.  OrfM finds and prints these ORFs.")
      `(("python-nose" ,python2-nose)
        ("python-sphinx" ,python2-sphinx)
        ("python-pyxb" ,python2-pyxb)))
-    (home-page "http://pacificbiosciences.github.io/pbcore/")
+    (home-page "https://pacificbiosciences.github.io/pbcore/")
     (synopsis "Library for reading and writing PacBio data files")
     (description
      "The pbcore package provides Python APIs for interacting with PacBio data
@@ -4991,6 +4992,8 @@ different command-line tools:
 (define-public prodigal
   (package
     (name "prodigal")
+    ;; Check for a new home page when updating this package:
+    ;; https://github.com/hyattpd/Prodigal/issues/36#issuecomment-536617588
     (version "2.6.3")
     (source (origin
               (method git-fetch)
@@ -5003,14 +5006,14 @@ different command-line tools:
                 "1fs1hqk83qjbjhrvhw6ni75zakx5ki1ayy3v6wwkn3xvahc9hi5s"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ;no check target
+     `(#:tests? #f                      ; no check target
        #:make-flags (list (string-append "INSTALLDIR="
                                          (assoc-ref %outputs "out")
                                          "/bin"))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
-    (home-page "http://prodigal.ornl.gov")
+    (home-page "https://github.com/hyattpd/Prodigal")
     (synopsis "Protein-coding gene prediction for Archaea and Bacteria")
     (description
      "Prodigal runs smoothly on finished genomes, draft genomes, and
@@ -5124,7 +5127,7 @@ partial genes, and identifies translation initiation sites.")
        ("r-minimal" ,r-minimal)
        ("r-ggplot2" ,r-ggplot2)
        ("coreutils" ,coreutils)))
-    (home-page "http://sanger-pathogens.github.io/Roary")
+    (home-page "https://sanger-pathogens.github.io/Roary/")
     (synopsis "High speed stand-alone pan genome pipeline")
     (description
      "Roary is a high speed stand alone pan genome pipeline, which takes
@@ -5168,7 +5171,7 @@ extremely diverse sets of genomes.")
              #t)))))
     (inputs
      `(("openmpi" ,openmpi)))
-    (home-page "http://sco.h-its.org/exelixis/web/software/raxml/index.html")
+    (home-page "https://cme.h-its.org/exelixis/web/software/raxml/index.html")
     (synopsis "Randomized Axelerated Maximum Likelihood phylogenetic trees")
     (description
      "RAxML is a tool for phylogenetic analysis and post-analysis of large
@@ -6039,7 +6042,8 @@ sequence itself can be retrieved from these databases.")
        ("fuse" ,fuse)
        ("hdf5" ,hdf5)
        ("zlib" ,zlib)))
-    (home-page "http://www.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=software")
+    (home-page
+     "https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=software")
     (synopsis "Tools and libraries for reading and writing sequencing data")
     (description
      "The SRA Toolkit from NCBI is a collection of tools and libraries for
@@ -6265,7 +6269,7 @@ of these reads to align data quickly through a hash-based indexing scheme.")
                #t))))))
     (inputs
      `(("zlib" ,zlib)))
-    (home-page "http://bioinfo.lifl.fr/RNA/sortmerna")
+    (home-page "https://bioinfo.lifl.fr/RNA/sortmerna/")
     (synopsis "Biological sequence analysis tool for NGS reads")
     (description
      "SortMeRNA is a biological sequence analysis tool for filtering, mapping
@@ -7272,13 +7276,13 @@ also known as views, in a controlled vocabulary.")
 (define-public r-biocstyle
   (package
     (name "r-biocstyle")
-    (version "2.14.2")
+    (version "2.14.4")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "BiocStyle" version))
               (sha256
                (base32
-                "0nc1cbzp5zdwc0rss4r6v7cpgynmmnj3sczwmajr58nabkndwsvf"))))
+                "1x71in059zql40f4c87bd1gf96r945kdvwbq61jmch9d3d8nwxbb"))))
     (properties
      `((upstream-name . "BiocStyle")))
     (build-system r-build-system)
@@ -7345,13 +7349,13 @@ checks on R packages that are to be submitted to the Bioconductor repository.")
 (define-public r-s4vectors
   (package
     (name "r-s4vectors")
-    (version "0.24.1")
+    (version "0.24.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "S4Vectors" version))
               (sha256
                (base32
-                "1rr7ml3gn83g8fbvhgvryyzlh4p3qgpwcrsz6ii4y7gh1hqxggpx"))))
+                "1s1h00k2ki7sd0hz4l8n41xr6ixszag7lm0ryrbb08idgcy16ipn"))))
     (properties
      `((upstream-name . "S4Vectors")))
     (build-system r-build-system)
@@ -7372,13 +7376,13 @@ S4Vectors package itself.")
 (define-public r-iranges
   (package
     (name "r-iranges")
-    (version "2.20.1")
+    (version "2.20.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "IRanges" version))
               (sha256
                (base32
-                "0qssp04wfrc1r92hd3szy03n8sdz8vrqjdxa2mcrsc0k0n9bchz5"))))
+                "1jhnxb9yacmj2z82b6992gihjvj1a0gnjwbjiagyyx03fqnv23kg"))))
     (properties
      `((upstream-name . "IRanges")))
     (build-system r-build-system)
@@ -7783,13 +7787,13 @@ tab-delimited (tabix) files.")
 (define-public r-delayedarray
   (package
     (name "r-delayedarray")
-    (version "0.12.1")
+    (version "0.12.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "DelayedArray" version))
               (sha256
                (base32
-                "1yr4i2x127v814nxg53aibp77p3vg76f3n3hgknpwx3snfhc81xs"))))
+                "09lackgix5jpm16k0mz2zkibflfb4wzidbz4q32mlxmklf40037q"))))
     (properties
      `((upstream-name . "DelayedArray")))
     (build-system r-build-system)
@@ -8233,7 +8237,7 @@ throughput genetic sequencing data sets using regression methods.")
      (base32
       "03lmvydln8b7666b6w46qbryhf83vsd11d4y2v95rfgvqgq66l1i"))))
   (build-system r-build-system)
-  (home-page "http://rqtl.org/")
+  (home-page "https://rqtl.org/")
   (synopsis "R package for analyzing QTL experiments in genetics")
   (description "R/qtl is an extension library for the R statistics
 system.  It is used to analyze experimental crosses for identifying
@@ -8309,7 +8313,7 @@ libraries for systems that do not have these available via other means.")
     (propagated-inputs
      `(("r-optparse" ,r-optparse)
        ("r-rcolorbrewer" ,r-rcolorbrewer)))
-    (home-page "http://www.e-rna.org/r-chie/index.cgi")
+    (home-page "https://www.e-rna.org/r-chie/index.cgi")
     (synopsis "Analysis framework for RNA secondary structure")
     (description
      "The R4RNA package aims to be a general framework for the analysis of RNA
@@ -8929,7 +8933,7 @@ replacement for strverscmp.")
                (("['\"]matplotlib.*?['\"]")
                 "'matplotlib'"))
              #t)))))
-    (home-page "http://multiqc.info")
+    (home-page "https://multiqc.info")
     (synopsis "Aggregate bioinformatics analysis reports")
     (description
      "MultiQC is a tool to aggregate bioinformatics results across many
@@ -9599,7 +9603,7 @@ classes.")
        ("r-locfit" ,r-locfit)
        ("r-mass" ,r-mass)
        ("r-rcolorbrewer" ,r-rcolorbrewer)))
-    (home-page "http://www-huber.embl.de/users/anders/DESeq")
+    (home-page "https://www-huber.embl.de/users/anders/DESeq/")
     (synopsis "Differential gene expression analysis")
     (description
      "This package provides tools for estimating variance-mean dependence in
@@ -9728,7 +9732,7 @@ by the user, helping with quick and reproducible access.")
        ("r-genomicranges" ,r-genomicranges)
        ("r-iranges" ,r-iranges)
        ("r-s4vectors" ,r-s4vectors)))
-    (home-page "http://www.bioinf.jku.at/software/fastseg/index.html")
+    (home-page "https://www.bioinf.jku.at/software/fastseg/index.html")
     (synopsis "Fast segmentation algorithm for genetic sequencing data")
     (description
      "Fastseg implements a very fast and efficient segmentation algorithm.
@@ -9780,7 +9784,8 @@ microarrays or GRanges for sequencing data.")
      `(("r-annotationdbi" ,r-annotationdbi)
        ("r-graph" ,r-graph)
        ("r-keggrest" ,r-keggrest)))
-    (home-page "http://www.biomedcentral.com/1471-2105/10/161")
+    (home-page (string-append "https://bmcbioinformatics.biomedcentral.com/"
+                              "articles/10.1186/1471-2105-10-161"))
     (synopsis "Generally applicable gene-set enrichment for pathway analysis")
     (description
      "GAGE is a published method for gene set (enrichment or GSEA) or pathway
@@ -10161,7 +10166,7 @@ the earlier snpMatrix package, allowing for uncertainty in genotypes.")
               (method url-fetch)
               ;; We cannot use bioconductor-uri here because this tarball is
               ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "http://www.bioconductor.org/packages/"
+              (uri (string-append "https://www.bioconductor.org/packages/"
                                   "release/data/annotation/src/contrib/"
                                   "Homo.sapiens_"
                                   version ".tar.gz"))
@@ -10892,7 +10897,7 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
     (inputs
      `(("lz4" ,lz4)
        ("htslib" ,htslib-for-sambamba)))
-    (home-page "http://lomereiter.github.io/sambamba")
+    (home-page "https://lomereiter.github.io/sambamba/")
     (synopsis "Tools for working with SAM/BAM data")
     (description "Sambamba is a high performance modern robust and
 fast tool (and library), written in the D programming language, for
@@ -11009,7 +11014,7 @@ with narrow binding events such as transcription factor ChIP-seq.")
        ("cutadapt" ,cutadapt)))
     (native-inputs
      `(("unzip" ,unzip)))
-    (home-page "http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/")
+    (home-page "https://www.bioinformatics.babraham.ac.uk/projects/trim_galore/")
     (synopsis "Wrapper around Cutadapt and FastQC")
     (description "Trim Galore! is a wrapper script to automate quality and
 adapter trimming as well as quality control, with some added functionality to
@@ -11071,7 +11076,7 @@ matplotlib.use('Agg')
        ("python2-numpy" ,python2-numpy)
        ("python2-networkx" ,python2-networkx)
        ("python2-biopython" ,python2-biopython)))
-    (home-page "http://compbio.uthscsa.edu/GESS_Web/")
+    (home-page "https://compbio.uthscsa.edu/GESS_Web/")
     (synopsis "Detect exon-skipping events from raw RNA-seq data")
     (description
      "GESS is an implementation of a novel computational method to detect de
@@ -11322,8 +11327,8 @@ models.  TADbit is complemented by TADkit for visualizing 3D models.")
        ("libpng" ,libpng)
        ("mariadb" ,mariadb "lib")
        ("mariadb-dev" ,mariadb "dev")
-       ("openssl" ,openssl)))
-    (home-page "http://genome.cse.ucsc.edu/index.html")
+       ("openssl" ,openssl-1.0)))
+    (home-page "https://genome.cse.ucsc.edu/index.html")
     (synopsis "Assorted bioinformatics utilities")
     (description "This package provides the kentUtils, a selection of
 bioinformatics utilities used in combination with the UCSC genome
@@ -11483,7 +11488,7 @@ Browser.")
            (sha256
             (base32 "138mwsr4nf5qif4mrxx286mpnagxd1xwl6k8aidrjgknaqg88zyr"))))
        ("uglify-js" ,uglify-js)))
-    (home-page "http://www.bioinformatics.babraham.ac.uk/projects/bismark/")
+    (home-page "https://www.bioinformatics.babraham.ac.uk/projects/bismark/")
     (synopsis "Map bisulfite treated sequence reads and analyze methylation")
     (description "Bismark is a program to map bisulfite treated sequencing
 reads to a genome of interest and perform methylation calls in a single step.
@@ -11586,7 +11591,7 @@ using nucleotide or amino-acid sequence data.")
      `(("hdf5" ,hdf5)
        ("htslib" ,htslib)
        ("zlib" ,zlib)))
-    (home-page "http://pachterlab.github.io/kallisto/")
+    (home-page "https://pachterlab.github.io/kallisto/")
     (synopsis "Near-optimal RNA-Seq quantification")
     (description
      "Kallisto is a program for quantifying abundances of transcripts from
@@ -11761,7 +11766,7 @@ dependency like SeqAn.")
        ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.cs.cmu.edu/~ckingsf/software/sailfish")
+    (home-page "https://www.cs.cmu.edu/~ckingsf/software/sailfish/")
     (synopsis "Mapping-based isoform quantification from RNA-Seq reads")
     (description "Sailfish is a tool for genomic transcript quantification
 from RNA-seq data.  It requires a set of target transcripts (either from a
@@ -13564,7 +13569,7 @@ such as Hi-C contact matrices.")
        ("python-six" ,python-six)
        ("python-tables" ,python-tables)
        ("python-unidecode" ,python-unidecode)))
-    (home-page "http://hicexplorer.readthedocs.io")
+    (home-page "https://hicexplorer.readthedocs.io")
     (synopsis "Process, analyze and visualize Hi-C data")
     (description
      "HiCExplorer is a powerful and easy to use set of tools to process,
@@ -14646,7 +14651,7 @@ to maximize phylogenetic likelihood or posterior probability according to a
 reference alignment.  Pplacer is designed to be fast, to give useful
 information about uncertainty, and to offer advanced visualization and
 downstream analysis.")
-      (home-page "http://matsen.fhcrc.org/pplacer")
+      (home-page "https://matsen.fhcrc.org/pplacer/")
       (license license:gpl3))))
 
 ;; This package is installed alongside 'pplacer'.  It is a separate package so
@@ -14702,14 +14707,14 @@ downstream analysis.")
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
-       #:tests? #f)) ; some tests are interactive
+       #:tests? #f))                    ; some tests are interactive
     (propagated-inputs
      `(("python-dendropy" ,python2-dendropy)
        ("python-matplotlib" ,python2-matplotlib)
        ("python-numpy" ,python2-numpy)
        ("python-pysam" ,python2-pysam)
        ("python-scipy" ,python2-scipy)))
-    (home-page "http://pypi.python.org/pypi/checkm/")
+    (home-page "https://pypi.org/project/Checkm/")
     (synopsis "Assess the quality of putative genome bins")
     (description
      "CheckM provides a set of tools for assessing the quality of genomes
@@ -15361,7 +15366,7 @@ pairs.")
          ("r-rsamtools" ,r-rsamtools)
          ("r-edger" ,r-edger)
          ("r-igraph" ,r-igraph)))
-      (home-page "http://velocyto.org")
+      (home-page "https://velocyto.org")
       (synopsis "RNA velocity estimation in R")
       (description
        "This package provides basic routines for estimation of gene-specific

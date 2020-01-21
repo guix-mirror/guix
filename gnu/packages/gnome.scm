@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
@@ -34,7 +34,7 @@
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2018, 2019 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2019 Danny Milosavljevic <dannym@scratchpost.org>
-;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
@@ -165,12 +165,10 @@
   #:use-module (gnu packages virtualization)
   #:use-module (gnu packages vpn)
   #:use-module (gnu packages web)
-  #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages xorg)
   #:use-module (gnu packages xorg)
   #:use-module (gnu artwork)
   #:use-module (guix build-system cargo)
@@ -580,6 +578,148 @@ tour of all gnome components and allows the user to set them up.")
 various free software projects to bring easy to use user-level file
 sharing to the masses.")
    (home-page "https://gitlab.gnome.org/GNOME/gnome-user-share")
+   (license license:gpl2+)))
+
+(define-public sushi
+  (package
+    (name "sushi")
+    (version "3.32.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "02idvqjk76lii9xyg3b1yz4rw721709bdm5j8ikjym6amcghl0aj"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'glib-or-gtk-wrap 'wrap-typelib
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((prog (string-append (assoc-ref outputs "out")
+                                        "/bin/sushi")))
+               ;; Put existing typelibs before sushi's deps, so as to correctly
+               ;; infer gdk-pixbuf
+               (wrap-program prog
+                 `("GI_TYPELIB_PATH" suffix (,(getenv "GI_TYPELIB_PATH"))))
+               #t))))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("gettext" ,gettext-minimal)
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("clutter" ,clutter)
+       ("clutter-gst" ,clutter-gst)
+       ("clutter-gtk" ,clutter-gtk)
+       ("evince" ,evince)                         ; For file previewing.
+       ("freetype" ,freetype)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("gjs" ,gjs)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gstreamer" ,gstreamer)
+       ("gtksourceview" ,gtksourceview-3)
+       ("harfbuzz" ,harfbuzz)
+       ("libepoxy" ,libepoxy)
+       ("libmusicbrainz" ,libmusicbrainz)
+       ("libxml2" ,libxml2)
+       ("neon" ,neon)
+       ("webkitgtk" ,webkitgtk)))
+    (synopsis "File previewer for the GNOME desktop")
+    (description "Sushi is a DBus-activated service that allows applications to
+preview files on the GNOME desktop.")
+    (home-page "https://gitlab.gnome.org/GNOME/sushi")
+    (license license:gpl2+)))
+
+(define-public rygel
+  (package
+    (name "rygel")
+    (version "0.38.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "003xficqb08r1dgid20i7cn889lbfwrglpx78rjd5nkvgxbimhh8"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (inputs
+     `(("gdk-pixbuf" ,gdk-pixbuf)
+       ("gssdp" ,gssdp)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gtk+" ,gtk+)
+       ("gupnp" ,gupnp)
+       ("gupnp-av" ,gupnp-av)
+       ("gupnp-dlna" ,gupnp-dlna)
+       ("libgee" ,libgee)
+       ("libmediaart" ,libmediaart)
+       ("libsoup" ,libsoup)
+       ("libxslt" ,libxslt)
+       ("libunistring" ,libunistring)
+       ("tracker" ,tracker)))
+    (synopsis "Share audio, video, and pictures with other devices")
+    (description
+     "Rygel is a home media solution (@dfn{UPnP AV MediaServer and
+MediaRenderer}) for GNOME that allows you to easily share audio, video, and
+pictures, and to control a media player on your home network.
+
+Rygel achieves interoperability with other devices by trying to conform to the
+strict requirements of DLNA and by converting media on-the-fly to formats that
+client devices can handle.")
+    (home-page "https://wiki.gnome.org/Projects/Rygel")
+    (license (list
+              ;; For logo (data/icons/*).
+              license:cc-by-sa3.0
+              ;; For all others.
+              license:lgpl2.1+))))
+
+(define-public libnma
+  (package
+   (name "libnma")
+   (version "1.8.26")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/" name "/"
+                                (version-major+minor version) "/"
+                                name "-" version ".tar.xz"))
+            (sha256
+             (base32
+              "1w9lld38risnk1krknfwln24kabdxnj274pyz4jhndphwigrshaf"))))
+   (build-system meson-build-system)
+   (arguments
+    `(#:glib-or-gtk? #t))
+   (native-inputs
+    `(("gettext" ,gettext-minimal)
+      ("glib:bin" ,glib "bin")
+      ("gtk-doc" ,gtk-doc)
+      ("gobject-introspection" ,gobject-introspection)
+      ("pkg-config" ,pkg-config)))
+   (inputs
+    `(("adwaita-icon-theme" ,adwaita-icon-theme)
+      ("gcr" ,gcr)
+      ("gtk+" ,gtk+)
+      ("iso-codes" ,iso-codes)
+      ("mobile-broadband-provider-info" ,mobile-broadband-provider-info)
+      ("network-manager" ,network-manager)))
+   (synopsis "Network Manager's applet library")
+   (description "Libnma is an applet library for Network Manager.  It was
+initially part of network-manager-applet and has now become a separate
+project.")
+   (home-page "https://gitlab.gnome.org/GNOME/libnma")
+
+   ;; Some files carry the "GPL-2.0+" SPDX identifier while others say
+   ;; "LGPL-2.1+".
    (license license:gpl2+)))
 
 (define-public gnome-menus
@@ -1741,7 +1881,7 @@ some form of information without getting in the user's way.")
 (define-public libpeas
   (package
     (name "libpeas")
-    (version "1.22.0")
+    (version "1.24.1")
     (source
      (origin
       (method url-fetch)
@@ -1750,8 +1890,19 @@ some form of information without getting in the user's way.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "0qm908kisyjzjxvygdl18hjqxvvgkq9w0phs2g55pck277sw0bsv"))))
-    (build-system gnu-build-system)
+        "1162dr7smmfb02czmhshr0f93hqj7w0nw29bys5lzfvwarxcyflw"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'start-xserver
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xorg-server (assoc-ref inputs "xorg-server"))
+                   (disp ":1"))
+               (setenv "DISPLAY" disp)
+               ;; Tests require a running X server.
+               (system (format #f "~a/bin/Xvfb ~a &" xorg-server disp))
+               #t))))))
     (inputs
      `(("gtk+" ,gtk+)
        ("glade" ,glade3)
@@ -1759,9 +1910,10 @@ some form of information without getting in the user's way.")
        ("python-pygobject" ,python-pygobject)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
-       ("intltool" ,intltool)))
+       ("xorg-server" ,xorg-server-for-tests)))
     (propagated-inputs
      ;; The .pc file "Requires" gobject-introspection.
      `(("gobject-introspection" ,gobject-introspection)))
@@ -2032,7 +2184,7 @@ from forcing GEXP-PROMISE."
                   (lambda (crate)
                     (delete-file-recursively (string-append "vendor/" (car crate)))
                     (invoke "tar" "xvf" (cdr crate) "-C" "vendor"))
-                  '(;("aho-corasick" . #+(package-source rust-aho-corasick-0.7))
+                  '(("aho-corasick" . #+(package-source rust-aho-corasick-0.7))
 ;; alga 0.9
                     ("approx" . #+(package-source rust-approx-0.3))
                     ("arrayvec" . #+(package-source rust-arrayvec-0.4))
@@ -2051,9 +2203,9 @@ from forcing GEXP-PROMISE."
                     ("criterion" . #+(package-source rust-criterion-0.2))
                     ("criterion-plot" . #+(package-source rust-criterion-plot-0.3))
                     ("crossbeam-deque" . #+(package-source rust-crossbeam-deque-0.7))
-                    ;("crossbeam-epoch" . #+(package-source rust-crossbeam-epoch-0.7))
-                    ("crossbeam-queue" . #+(package-source rust-crossbeam-queue-0.1))
-                    ("crossbeam-utils" . #+(package-source rust-crossbeam-utils-0.6))
+                    ("crossbeam-epoch" . #+(package-source rust-crossbeam-epoch-0.8))
+                    ("crossbeam-queue" . #+(package-source rust-crossbeam-queue-0.2))
+                    ("crossbeam-utils" . #+(package-source rust-crossbeam-utils-0.7))
 ;; cssparser 0.25
 ;; cssparser-macros 0.3
                     ("csv" . #+(package-source rust-csv-1.1))
@@ -2082,7 +2234,7 @@ from forcing GEXP-PROMISE."
 ;; glib 0.8
 ;; glib-sys 0.9
 ;; gobject-sys 0.9
-;; idna 0.2
+                    ("idna" . #+(package-source rust-idna-0.2))
                     ("itertools" . #+(package-source rust-itertools-0.8))
                     ("itoa" . #+(package-source rust-itoa-0.4))
                     ("language-tags" . #+(package-source rust-language-tags-0.2))
@@ -2096,8 +2248,8 @@ from forcing GEXP-PROMISE."
 ;; markup5ever 0.9
                     ("matches" . #+(package-source rust-matches-0.1))
 ;; matrixmultiply 0.2
-                    ;("memchr" . #+(package-source rust-memchr-2.2))
-;; memoffset 0.5
+                    ("memchr" . #+(package-source rust-memchr-2.2))
+                    ("memoffset" . #+(package-source rust-memoffset-0.5))
 ;; nalgebra 0.18
                     ("new_debug_unreachable" . #+(package-source rust-new-debug-unreachable-1.0))
                     ("nodrop" . #+(package-source rust-nodrop-0.1))
@@ -2133,15 +2285,15 @@ from forcing GEXP-PROMISE."
                     ("rand_os" . #+(package-source rust-rand-os-0.1))
                     ("rand_pcg" . #+(package-source rust-rand-pcg-0.1))
                     ("rand_xorshift" . #+(package-source rust-rand-xorshift-0.1))
-;; rand_xoshiro 0.1
+                    ("rand_xoshiro" . #+(package-source rust-rand-xoshiro-0.1))
 ;; rawpointer 0.2
-;; rayon 1.2
-;; rayon-core 1.6
+                    ("rayon" . #+(package-source rust-rayon-1.3))
+                    ("rayon-core" . #+(package-source rust-rayon-core-1.7))
 ;; rctree 0.3
                     ("rdrand" . #+(package-source rust-rdrand-0.4))
-;; regex 1.3
+                    ("regex" . #+(package-source rust-regex-1.3))
                     ("regex-automata" . #+(package-source rust-regex-automata-0.1))
-                    ;("regex-syntax" . #+(package-source rust-regex-syntax-0.6))
+                    ("regex-syntax" . #+(package-source rust-regex-syntax-0.6))
                     ("rustc_version" . #+(package-source rust-rustc-version-0.2))
                     ("ryu" . #+(package-source rust-ryu-1.0))
                     ("same-file" . #+(package-source rust-same-file-1.0))
@@ -2159,14 +2311,14 @@ from forcing GEXP-PROMISE."
                     ("syn" . #+(package-source rust-syn-1.0))
                     ("tendril" . #+(package-source rust-tendril-0.4))
                     ("textwrap" . #+(package-source rust-textwrap-0.11))
-                    ("thread_local" . #+(package-source rust-thread-local-0.3))
+                    ("thread_local" . #+(package-source rust-thread-local-1.0))
                     ("tinytemplate" . #+(package-source rust-tinytemplate-1.0))
                     ("typenum" . #+(package-source rust-typenum-1.10))
                     ("unicode-bidi" . #+(package-source rust-unicode-bidi-0.3))
                     ("unicode-normalization" . #+(package-source rust-unicode-normalization-0.1))
                     ("unicode-width" . #+(package-source rust-unicode-width-0.1))
                     ("unicode-xid" . #+(package-source rust-unicode-xid-0.2))
-;; url 2.1
+                    ("url" . #+(package-source rust-url-2.1))
                     ("utf-8" . #+(package-source rust-utf-8-0.7))
                     ("walkdir" . #+(package-source rust-walkdir-2.2))
                     ("winapi" . #+(package-source rust-winapi-0.3))
@@ -4026,7 +4178,20 @@ faster results and to avoid unnecessary server load.")
               (sha256
                (base32
                 "1vxxvmz2cxb1qy6ibszaz5bskqdy9nd9fxspj9fv3gfmrjzzzdb4"))
-              (patches (search-patches "upower-builddir.patch"))))
+              (patches (search-patches "upower-builddir.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Upstream commit
+                  ;; <https://cgit.freedesktop.org/upower/commit/?id=18457c99b68786cd729b315723d680e6860d9cfa>
+                  ;; moved 'dbus-1/system.d' from etc/ to share/.  However,
+                  ;; 'dbus-configuration-directory' in (gnu services dbus)
+                  ;; expects it in etc/.  Thus, move it back to its previous
+                  ;; location.
+                  (substitute* "src/Makefile.in"
+                    (("^dbusconfdir =.*$")
+                     "dbusconfdir = $(sysconfdir)/dbus-1/system.d\n"))
+                  #t))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '( ;; The tests want to contact the system bus, which can't be done in the
@@ -6214,7 +6379,7 @@ Evolution (hence the name), but is now used by other packages as well.")
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
-       ("python" ,python-2) ; incompatible with Python 3 (print syntax)
+       ("python" ,python)
        ("vala" ,vala)
        ("xsltproc" ,libxslt)))
     (propagated-inputs
@@ -6227,7 +6392,7 @@ Evolution (hence the name), but is now used by other packages as well.")
      `(("clutter" ,clutter)
        ("dconf" ,dconf)
        ("gtk+-2" ,gtk+-2)
-       ("python-pygobject" ,python2-pygobject)))
+       ("python-pygobject" ,python-pygobject)))
     (synopsis "Text entry and UI navigation application")
     (home-page "https://wiki.gnome.org/Projects/Caribou")
     (description
@@ -8130,7 +8295,7 @@ functionality and behavior.")
        ("inkscape" ,inkscape)
        ("optipng" ,optipng)
        ("pkg-config" ,pkg-config)
-       ("sassc" ,sassc)))
+       ("sassc" ,sassc/libsass-3.5)))
     (synopsis "A flat GTK+ theme with transparent elements")
     (description "Arc is a flat theme with transparent elements for GTK 3, GTK
 2, and GNOME Shell which supports GTK 3 and GTK 2 based desktop environments

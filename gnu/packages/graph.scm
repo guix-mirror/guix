@@ -183,7 +183,7 @@ model.")
      `(("r-graph" ,r-graph)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://bioconductor.org/packages/Rgraphviz")
+    (home-page "https://bioconductor.org/packages/Rgraphviz")
     (synopsis "Plotting capabilities for R graph objects")
     (description
      "This package interfaces R with the graphviz library for plotting R graph

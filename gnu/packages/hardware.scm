@@ -238,7 +238,7 @@ be dangerous and may void your CPU or system board's warranty.")
 (define-public wavemon
   (package
     (name "wavemon")
-    (version "0.9.0")
+    (version "0.9.1")
     (source
      (origin
        (method git-fetch)
@@ -247,7 +247,7 @@ be dangerous and may void your CPU or system board's warranty.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "07cid0h3mcyr74nnrzzf8k5n1p9a4y3wij43jbiaqmkpxilcc1i6"))))
+        (base32 "109ycwnjjqc2vpnd8b86njfifczlxglnyv4rh2qmbn2i5nw2wryg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags

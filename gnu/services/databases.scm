@@ -463,7 +463,8 @@ storage:
   mysql-configuration make-mysql-configuration
   mysql-configuration?
   (mysql mysql-configuration-mysql (default mariadb))
-  (port mysql-configuration-port (default 3306)))
+  (port mysql-configuration-port (default 3306))
+  (extra-content mysql-configuration-extra-content (default "")))
 
 (define %mysql-accounts
   (list (user-group
@@ -478,11 +479,12 @@ storage:
 
 (define mysql-configuration-file
   (match-lambda
-    (($ <mysql-configuration> mysql port)
+    (($ <mysql-configuration> mysql port extra-content)
      (mixed-text-file "my.cnf" "[mysqld]
 datadir=/var/lib/mysql
 socket=/run/mysqld/mysqld.sock
 port=" (number->string port) "
+" extra-content "
 "))))
 
 (define (%mysql-activation config)

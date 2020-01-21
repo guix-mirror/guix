@@ -2797,7 +2797,7 @@ providing an @code{rnf} implementation.")
     (native-inputs
      `(("ghc-hspec" ,ghc-hspec)
        ("ghc-quickcheck" ,ghc-quickcheck)))
-    (home-page "http://hackage.haskell.org/package/dense-linear-algebra")
+    (home-page "https://hackage.haskell.org/package/dense-linear-algebra")
     (synopsis "Simple and incomplete implementation of linear algebra")
     (description "This library is simply a collection of linear-algebra
 related modules split from the statistics library.")
@@ -5008,7 +5008,7 @@ combine hash values.")
      `(#:cabal-revision
        ("2" "006phc5y9rrvsshdcmjmhxzxh8dpgs685mpqbkjm9c40xb1ydjbz")))
     (inputs `(("ghc-hashable" ,ghc-hashable)))
-    (home-page "http://hackage.haskell.org/package/hashable-time")
+    (home-page "https://hackage.haskell.org/package/hashable-time")
     (synopsis "Hashable instances for Data.Time")
     (description
      "This package provides @code{Hashable} instances for types in
@@ -7194,7 +7194,7 @@ used both from lens and microlens).")
      `(("ghc-errorcall-eq-instance" ,ghc-errorcall-eq-instance)
        ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-hunit" ,ghc-hunit)))
-    (home-page "http://software.complete.org/missingh")
+    (home-page "https://software.complete.org/missingh")
     (synopsis "Large utility library")
     (description
      "MissingH is a library of all sorts of utility functions for Haskell
@@ -9890,7 +9890,7 @@ award winning Linux port of \"Civilization: Call To Power.\"")
     (native-inputs
      `(("ghc-weigh" ,ghc-weigh)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://hackage.haskell.org/package/sdl2")
+    (home-page "https://hackage.haskell.org/package/sdl2")
     (synopsis "High- and low-level bindings to the SDL library")
     (description
      "This package contains bindings to the SDL 2 library, in both high- and

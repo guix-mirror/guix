@@ -64,6 +64,7 @@
   #:use-module ((guix build syscalls) #:select (set-thread-name))
   #:export (%public-key
             %private-key
+            signed-string
 
             guix-publish))
 
@@ -237,7 +238,8 @@ if ITEM is already compressed."
     ("Priority" . 100)))
 
 (define (signed-string s)
-  "Sign the hash of the string S with the daemon's key."
+  "Sign the hash of the string S with the daemon's key.  Return a canonical
+sexp for the signature."
   (let* ((public-key (%public-key))
          (hash (bytevector->hash-data (sha256 (string->utf8 s))
                                       #:key-type (key-type public-key))))
