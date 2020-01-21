@@ -12715,7 +12715,7 @@ described in Unicode Standard Annex #15.")
     (arguments
      `(#:skip-build? #t
        #:cargo-development-inputs
-       (("rust-quickcheck" ,rust-quickcheck-0.8))))
+       (("rust-quickcheck" ,rust-quickcheck-0.7))))
     (home-page "https://github.com/unicode-rs/unicode-segmentation")
     (synopsis "Grapheme Cluster, Word and Sentence boundaries")
     (description
