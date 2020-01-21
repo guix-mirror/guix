@@ -6512,12 +6512,17 @@ checking.")
          (base32
           "126g3fgfxp06zimc1l9iyxnn9cif1hjsg7sd81nlls5nnyghsma2"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-winapi" ,rust-winapi-0.3))))
     (home-page "https://github.com/rust-lang-nursery/net2-rs")
     (synopsis "Extensions to the standard library's networking types")
     (description
      "This library contains extensions to the standard library's networking
 types as proposed in RFC 1158.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
