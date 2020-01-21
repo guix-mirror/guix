@@ -395,6 +395,7 @@ sys_authorize_build_farms()
 
 sys_create_init_profile()
 { # Create /etc/profile.d/guix.sh for better desktop integration
+    [ -d "/etc/profile.d" ] || mkdir /etc/profile.d # Just in case
     cat <<"EOF" > /etc/profile.d/guix.sh
 # _GUIX_PROFILE: `guix pull` profile
 _GUIX_PROFILE="$HOME/.config/guix/current"
