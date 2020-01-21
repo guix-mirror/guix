@@ -773,38 +773,17 @@ Vicare Scheme and IronScheme.  Right now it contains:
     (name "guile3.0-pfds")
     (native-inputs `(("guile" ,guile-3.0)))
     (arguments
-     '(#:source-directory "src"
-       #:compile-flags '("--r6rs")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'move-files-around
-           (lambda _
-             ;; See bug #39210.
-             (substitute* '("fingertrees.sls"
-                            "queues/private/condition.sls"
-                            "deques/private/condition.sls")
-               (("&assertion") "&violation"))
-             ;; Move files under a pfds/ directory to reflect the module
-             ;; hierarchy.
-             (mkdir-p "src/pfds")
-             (for-each (lambda (file)
-                         (rename-file file
-                                      (string-append "src/pfds/"
-                                                     file)))
-                       '("bbtrees.sls"
-                         "deques"
-                         "deques.sls"
-                         "dlists.sls"
-                         "fingertrees.sls"
-                         "hamts.sls"
-                         "heaps.sls"
-                         "private"
-                         "psqs.sls"
-                         "queues"
-                         "queues.sls"
-                         "sequences.sls"
-                         "sets.sls"))
-             #t)))))))
+     (substitute-keyword-arguments (package-arguments guile-pfds)
+       ((#:phases phases)
+        `(modify-phases ,phases
+          (add-after 'unpack 'work-around-guile-bug
+            (lambda _
+              ;; See bug #39210.
+              (substitute* '("fingertrees.sls"
+                             "queues/private/condition.sls"
+                             "deques/private/condition.sls")
+                (("&assertion") "&violation"))
+              #t))))))))
 
 (define-public guile-aa-tree
   (package
