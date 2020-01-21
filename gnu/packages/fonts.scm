@@ -912,18 +912,18 @@ work well in user interface (UI) environments.")
   (package
     (name "font-adobe-source-serif-pro")
     (version "2.007R-ro-1.007R-it")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/adobe-fonts/source-serif-pro/archive/"
-                    (regexp-substitute/global
-                     ;; The upstream tag uses "/" between the roman and italic
-                     ;; versions, so substitute our "-" separator here.
-                     #f "R-ro-" version 'pre "R-ro/" 'post) ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1sws9k26ldqk375qsigk1zv8cq1xlvadjwvv3dqrcc3qzm1c7hwc"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/adobe-fonts/source-serif-pro.git")
+             (commit (regexp-substitute/global
+                      ;; The upstream tag uses "/" between the roman and italic
+                      ;; versions, so substitute our "-" separator here.
+                      #f "R-ro-" version 'pre "R-ro/" 'post))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1vvzfhjpi47m84bzkapylkd5fri8bdm8qng2hiylmmlw0wk4gpas"))))
     (build-system font-build-system)
     (home-page "https://github.com/adobe-fonts/source-serif-pro")
     (synopsis
