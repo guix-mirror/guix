@@ -104,52 +104,45 @@
       (outputs '("out" "cargo"))
       (build-system gnu-build-system)
       (inputs
-       `(("llvm" ,llvm-3.9.1)))
+       `(("zlib" ,zlib)))
       (native-inputs
        `(("bison" ,bison)
          ("flex" ,flex)
          ;; Required for the libstd sources.
-         ("rustc" ,(package-source rust-1.19))
-         ("zlib" ,zlib)))
+         ("rustc" ,(package-source rust-1.19))))
       (arguments
        `(#:test-target "local_tests"
-         #:make-flags (list (string-append "LLVM_CONFIG="
-                                           (assoc-ref %build-inputs "llvm")
-                                           "/bin/llvm-config"))
+         #:make-flags
+         (list ,(string-append "RUSTC_TARGET="
+                               (or (%current-target-system)
+                                   (nix-system->gnu-triplet-for-rust))))
          #:phases
          (modify-phases %standard-phases
           (add-after 'unpack 'patch-date
             (lambda _
               (substitute* "Makefile"
                (("shell date") "shell date -d @1"))
+              (substitute* "run_rustc/Makefile"
+               (("[$]Vtime ") "$V "))
               #t))
            (add-after 'patch-date 'unpack-target-compiler
              (lambda* (#:key inputs outputs #:allow-other-keys)
-               (substitute* "minicargo.mk"
-                 ;; Don't try to build LLVM.
-                 (("^[$][(]LLVM_CONFIG[)]:") "xxx:")
-                 ;; Build for the correct target architecture.
-                 (("^RUSTC_TARGET := x86_64-unknown-linux-gnu")
-                  (string-append "RUSTC_TARGET := "
-                                 ,(or (%current-target-system)
-                                      (nix-system->gnu-triplet-for-rust)))))
                (invoke "tar" "xf" (assoc-ref inputs "rustc"))
-               (chdir "rustc-1.19.0-src")
+               (chdir ,(string-append "rustc-" rustc-version "-src"))
                (invoke "patch" "-p0" "../rust_src.patch")
                (chdir "..")
                #t))
            (replace 'configure
              (lambda* (#:key inputs #:allow-other-keys)
-               (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
+               (setenv "CC" (string-append (assoc-ref inputs "gcc")
+                                           "/bin/gcc"))
+               (setenv "CXX" (string-append (assoc-ref inputs "gcc")
+                                            "/bin/g++"))
                #t))
            (add-after 'build 'build-minicargo
-             (lambda _
-               (for-each (lambda (target)
-                           (invoke "make" "-f" "minicargo.mk" target))
-                         '("output/libstd.hir" "output/libpanic_unwind.hir"
-                           "output/libproc_macro.hir" "output/libtest.hir"))
-               ;; Technically the above already does it - but we want to be clear.
-               (invoke "make" "-C" "tools/minicargo")))
+             (lambda* (#:key make-flags #:allow-other-keys)
+               (apply invoke "make" "-f" "minicargo.mk" "LIBS" make-flags)
+               (apply invoke "make" "-C" "tools/minicargo" make-flags)))
            (replace 'install
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
@@ -159,7 +152,8 @@
                       (cargo-bin (string-append cargo-out "/bin"))
                       (lib (string-append out "/lib"))
                       (lib/rust (string-append lib "/mrust"))
-                      (gcc (assoc-ref inputs "gcc")))
+                      (gcc (assoc-ref inputs "gcc"))
+                      (run_rustc (string-append out "/share/mrustc/run_rustc")))
                  ;; These files are not reproducible.
                  (for-each delete-file (find-files "output" "\\.txt$"))
                  (delete-file-recursively "output/local_tests")
@@ -171,6 +165,9 @@
                  ;; minicargo uses relative paths to resolve mrustc.
                  (install-file "tools/bin/minicargo" tools-bin)
                  (install-file "tools/bin/minicargo" cargo-bin)
+                 (mkdir-p run_rustc)
+                 (copy-file "run_rustc/Makefile"
+                            (string-append run_rustc "/Makefile"))
                  #t))))))
       (synopsis "Compiler for the Rust progamming language")
       (description "Rust is a systems programming language that provides memory
