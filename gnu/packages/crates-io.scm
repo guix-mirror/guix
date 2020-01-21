@@ -5679,7 +5679,7 @@ functions and static variables these libraries contain.")
 (define-public rust-libssh2-sys-0.2
   (package
     (name "rust-libssh2-sys")
-    (version "0.2.12")
+    (version "0.2.14")
     (source
       (origin
         (method url-fetch)
@@ -5687,7 +5687,7 @@ functions and static variables these libraries contain.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1zb6gsw795nq848nk5x2smzpfnn1s15wjlzjnvr8ihlz2l5x2549"))))
+          "042gsgbvxgm5by4mk906j3zm4qdvzcfhjxrb55is1lrr6f0nxain"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t ; it wants rust-openssl-src
