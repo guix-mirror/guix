@@ -3313,7 +3313,8 @@ association studies (GWAS).")
        ("python-networkx" ,python2-networkx)))
     (native-inputs
      `(("python-cython" ,python2-cython)))
-    (home-page "http://grit-bio.org")
+    ;; The canonical <http://grit-bio.org> home page times out as of 2020-01-21.
+    (home-page "https://github.com/nboley/grit")
     (synopsis "Tool for integrative analysis of RNA-seq type assays")
     (description
      "GRIT is designed to use RNA-seq, TES, and TSS data to build and quantify
