@@ -5958,11 +5958,11 @@ implementation of LZMA and xz stream encoding/decoding.")
          (base32
           "0hsczmvd6zkqgzqdjp5hfyg7f339n68w83n4pxvnsszrzssbdjq8"))))
     (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/bluss/maplit")
     (synopsis "Collection of Map macros")
     (description "This crate provides a collection of @code{literal} macros for
 @code{HashMap}, @code{HashSet}, @code{BTreeMap}, and @code{BTreeSet.}")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
