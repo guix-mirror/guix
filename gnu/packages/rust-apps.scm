@@ -24,6 +24,7 @@
   #:use-module (guix packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crates-io)
+  #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control))
@@ -124,6 +125,76 @@
 program @code{ls}.  It uses colours to distinguish file types and metadata.  It
 also knows about symlinks, extended attributes, and Git.")
     (license license:expat)))
+
+(define-public fd
+  (package
+    (name "fd")
+    (version "7.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "fd-find" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "147m872zff0srwq9vaxkkbab06g3fkklbk1g2lx90vdhgs37f5xj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-ansi-term" ,rust-ansi-term-0.12)
+        ("rust-atty" ,rust-atty-0.2)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-ctrlc" ,rust-ctrlc-3.1)
+        ("rust-globset" ,rust-globset-0.4)
+        ("rust-humantime" ,rust-humantime-1.3)
+        ("rust-ignore" ,rust-ignore-0.4)
+        ("rust-jemallocator" ,rust-jemallocator-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1.4)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-lscolors" ,rust-lscolors-0.6)
+        ("rust-num-cpus" ,rust-num-cpus-1.10)
+        ("rust-regex" ,rust-regex-1.3)
+        ("rust-regex-syntax" ,rust-regex-syntax-0.6)
+        ("rust-version-check" ,rust-version-check-0.9))
+       #:cargo-development-inputs
+       (("rust-diff" ,rust-diff-0.1)
+        ("rust-filetime" ,rust-filetime-0.2)
+        ("rust-tempdir" ,rust-tempdir-0.3))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-jemalloc
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((jemalloc (assoc-ref inputs "jemalloc")))
+               (setenv "JEMALLOC_OVERRIDE"
+                       (string-append jemalloc "/lib/libjemalloc.so")))
+             #t))
+         (add-after 'install 'install-extra
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (install-completion
+                     (lambda (completion out-dir)
+                       (for-each
+                        (lambda (f)
+                          (install-file f (string-append out out-dir)))
+                        (find-files "target/release/build/" completion)))))
+               ;; Manpages
+               (install-file "doc/fd.1" (string-append out "/share/man/man1"))
+               ;; Completions
+               (install-completion "^fd.bash$" "/etc/bash-completion.d")
+               (install-completion "^fd.fish$" "/share/fish/vendor_completions.d")
+               (install-completion "^_fd$" "/share/zsh/site-functions")
+               (rename-file (string-append out "/etc/bash-completion.d/fd.bash")
+                            (string-append out "/etc/bash-completion.d/fd"))
+               #t))))))
+    (inputs `(("jemalloc" ,jemalloc)))
+    (home-page "https://github.com/sharkdp/fd")
+    (synopsis "Simple, fast and user-friendly alternative to find")
+    (description
+     "@code{fd} is a simple, fast and user-friendly alternative to @code{find}.
+While it does not seek to mirror all of find's powerful functionality, it
+provides defaults for 80% of the use cases.")
+    (license (list license:expat license:asl2.0))))
 
 (define-public ripgrep
   (package
