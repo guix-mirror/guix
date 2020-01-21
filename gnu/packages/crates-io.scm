@@ -28,6 +28,7 @@
   #:use-module (guix packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages jemalloc)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)
@@ -7548,11 +7549,23 @@ deserialization, and interpreter in Rust.")
          "0nwdvc43dkb89qmm5q8gw1zyll0wsfqw7kczpn23mljra3874v47"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
         ("rust-pkg-config" ,rust-pkg-config-0.3)
-        ("rust-cc" ,rust-cc-1.0))))
+        ("rust-cc" ,rust-cc-1.0))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'unbundle-sources
+           (lambda _
+             (delete-file-recursively "pcre2")
+             (delete-file-recursively
+               (string-append "guix-vendor/rust-pcre2-sys-"
+                              ,(package-version rust-pcre2-sys-0.2)
+                              ".tar.gz/pcre2"))
+             #t)))))
+    (native-inputs
+     `(("pcre2" ,pcre2)
+       ("pkg-config" ,pkg-config)))
     (home-page
      "https://github.com/BurntSushi/rust-pcre2")
     (synopsis "Low level bindings to PCRE2")
