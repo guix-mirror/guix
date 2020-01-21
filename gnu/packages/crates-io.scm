@@ -5898,23 +5898,29 @@ functions and static variables these libraries contain.")
          (base32
           "14gyj256yh0wm77jbvmlc39v7lfn0navpfrja4alczarzlc8ir2k"))))
     (build-system cargo-build-system)
-    ;(arguments
-    ; `(#:phases
-    ;   (modify-phases %standard-phases
-    ;     (add-after 'unpack 'unbundle-xz
-    ;       (lambda* (#:key inputs #:allow-other-keys)
-    ;         (let ((xz (assoc-ref inputs "xz")))
-    ;           (delete-file-recursively "xz-5.2"))
-    ;         #t)))))
-    ;(inputs
-    ; `(("pkg-config" ,pkg-config)
-    ;   ("xz" ,xz)))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-cc" ,rust-cc-1.0)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'unbundle-xz
+           (lambda _
+             (delete-file-recursively "xz-5.2")
+             (delete-file-recursively
+               (string-append "guix-vendor/rust-lzma-sys-"
+                              ,(package-version rust-lzma-sys-0.1)
+                              ".crate/xz-5.2"))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("xz" ,xz)))
     (home-page "https://github.com/alexcrichton/xz2-rs")
     (synopsis "Bindings to liblzma for lzma and xz stream encoding/decoding")
     (description
      "This package contains the raw bindings to liblzma which contains an
 implementation of LZMA and xz stream encoding/decoding.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
