@@ -415,7 +415,7 @@ export GUIX_PROFILE GUIX_LOCPATH
 eval `guix package --search-paths=prefix 2> /dev/null`
 
 # set XDG_DATA_DIRS to include Guix installations
-export XDG_DATA_DIRS="$GUIX_PROFILE/share${XDG_DATA_DIRS:+:}$XDG_DATA_DIRS"
+export XDG_DATA_DIRS="$GUIX_PROFILE/share:${XDG_DATA_DIRS:-/usr/local/share/:/usr/share/}"
 EOF
 }
 
