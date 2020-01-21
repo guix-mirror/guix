@@ -7571,13 +7571,13 @@ the @code{take_while} predicate returned false after dropping the @code{by_ref}.
          (base32
           "0b1pzh48j86v46wxngch6k1kx9cdw3jr3lwa86gd6jd4bmxzz1xn"))))
     (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/bluss/permutohedron")
     (synopsis "Generate permutations of sequences")
     (description
      "Generate permutations of sequences.  Either lexicographical order
 permutations, or a minimal swaps permutation sequence implemented using Heap's
 algorithm.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
