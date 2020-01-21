@@ -6414,12 +6414,18 @@ drop-in replacement for miniz.")
          (base32
           "09ljvx6wg30f2xlv7b7hhpkw7k312n3hjgmrbhwzhz9x03ra0sir"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-socket2" ,rust-socket2-0.3)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.4))))
     (home-page "https://github.com/alexcrichton/miow")
     (synopsis "Rust I/O library for Windows")
     (description
      "This package provides a zero overhead I/O library for Windows, focusing on
 IOCP and Async I/O abstractions.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
@@ -6435,7 +6441,9 @@ IOCP and Async I/O abstractions.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "06g9b8sqlh5gxakwqq4rrib07afwanfnxgxajrldwcgk3hxjy7wc"))))))
+          "06g9b8sqlh5gxakwqq4rrib07afwanfnxgxajrldwcgk3hxjy7wc"))))
+    (arguments '())
+    (properties '((hidden? . #t)))))
 
 (define-public rust-model-0.1
   (package
