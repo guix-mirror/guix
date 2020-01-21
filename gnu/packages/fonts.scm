@@ -862,18 +862,18 @@ Powerline support.")
   (package
     (name "font-adobe-source-code-pro")
     (version "2.030R-ro-1.050R-it")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/adobe-fonts/source-code-pro/archive/"
-                    (regexp-substitute/global
-                     ;; The upstream tag uses "/" between the roman and italic
-                     ;; versions, so substitute our "-" separator here.
-                     #f "R-ro-" version 'pre "R-ro/" 'post) ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0arhhsf3i7ss39ykn73d1j8k4n8vx7115xph6jwkd970p1cxvr54"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/adobe-fonts/source-code-pro.git")
+             (commit (regexp-substitute/global
+                      ;; The upstream tag uses "/" between the roman and italic
+                      ;; versions, so substitute our "-" separator here.
+                      #f "R-ro-" version 'pre "R-ro/" 'post))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0hc5kflr8xzqgdm0c3gbgb1paygznxmnivkylid69ipc7wnicx1n"))))
     (build-system font-build-system)
     (home-page "https://github.com/adobe-fonts/source-code-pro")
     (synopsis
