@@ -6295,11 +6295,15 @@ drop-in replacement for miniz.")
          (base32
           "00l2r4anm8g35x0js2zfdnwfbrih9m43vphdpb77c5ga3kjkm7hy"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ;; Build dependencies:
+        ("rust-cc" ,rust-cc-1.0))))
     (home-page "https://github.com/alexcrichton/flate2-rs")
     (synopsis "Bindings to the miniz.c library")
     (description
      "This package provides bindings to the @code{miniz.c} library.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
