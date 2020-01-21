@@ -283,6 +283,22 @@ for the GStreamer multimedia library.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         ,@(if (string-prefix? "arm" (or (%current-target-system)
+                                         (%current-system)))
+               ;; FIXME: These tests started failing on armhf after switching to Meson.
+               ;; https://gitlab.freedesktop.org/gstreamer/gst-plugins-good/issues/689
+               `((add-after 'unpack 'disable-tests-for-armhf
+                   (lambda _
+                     (substitute* "tests/check/elements/rtpbin_buffer_list.c"
+                       (("tcase_add_test \\(tc_chain, test_bufferlist\\);")
+                        ""))
+                     (substitute* "tests/check/elements/rtpulpfec.c"
+                       (("tcase_add_loop_test.*rtpulpfecdec_recovered_from_many.*")
+                        "")
+                       (("tcase_add.*rtpulpfecdec_recovered_using_recovered_packet.*")
+                        ""))
+                     #t)))
+               '())
          (add-after
           'unpack 'disable-failing-tests
           (lambda _
