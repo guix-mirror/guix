@@ -15845,6 +15845,13 @@ this application is allowed location info access.  An empty users list
 means that all users are allowed.
 @end deffn
 
+@cindex scanner access
+@deffn {Scheme Procedure} sane-service-type
+This service provides access to scanners @i{via}
+@uref{http://www.sane-project.org, SANE} by installing the necessary udev
+rules.
+@end deffn
+
 @defvr {Scheme Variable} %standard-geoclue-applications
 The standard list of well-known GeoClue application configurations,
 granting authority to the GNOME date-and-time utility to ask for the

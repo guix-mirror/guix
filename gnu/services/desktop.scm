@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
@@ -110,6 +110,7 @@
             accountsservice-service
 
             cups-pk-helper-service-type
+            sane-service-type
 
             gnome-desktop-configuration
             gnome-desktop-configuration?
@@ -838,6 +839,29 @@ accountsservice web site} for more information."
 
 
 ;;;
+;;; Scanner access via SANE.
+;;;
+
+(define %sane-accounts
+  ;; The '60-libsane.rules' udev rules refers to the "scanner" group.
+  (list (user-group (name "scanner") (system? #t))))
+
+(define sane-service-type
+  (service-type
+   (name 'sane)
+   (description
+    "This service provides access to scanners @i{via}
+@uref{http://www.sane-project.org, SANE} by installing the necessary udev
+rules.")
+   (default-value sane-backends-minimal)
+   (extensions
+    (list (service-extension udev-service-type list)
+          (service-extension account-service-type
+                             (const %sane-accounts))))))
+
+
+
+;;;
 ;;; GNOME desktop service.
 ;;;
 
@@ -1156,7 +1180,7 @@ or setting its password with passwd.")))
          ;; them.
          (simple-service 'mtp udev-service-type (list libmtp))
          ;; Add udev rules for scanners.
-         (simple-service 'sane udev-service-type (list sane-backends-minimal))
+         (service sane-service-type)
          ;; Add polkit rules, so that non-root users in the wheel group can
          ;; perform administrative tasks (similar to "sudo").
          polkit-wheel-service
