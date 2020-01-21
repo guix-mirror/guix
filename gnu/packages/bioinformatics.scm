@@ -9784,7 +9784,8 @@ microarrays or GRanges for sequencing data.")
      `(("r-annotationdbi" ,r-annotationdbi)
        ("r-graph" ,r-graph)
        ("r-keggrest" ,r-keggrest)))
-    (home-page "http://www.biomedcentral.com/1471-2105/10/161")
+    (home-page (string-append "https://bmcbioinformatics.biomedcentral.com/"
+                              "articles/10.1186/1471-2105-10-161"))
     (synopsis "Generally applicable gene-set enrichment for pathway analysis")
     (description
      "GAGE is a published method for gene set (enrichment or GSEA) or pathway
