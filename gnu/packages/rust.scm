@@ -91,7 +91,7 @@
   (let ((rustc-version "1.19.0"))
     (package
       (name "mrustc")
-      (version "0.8.1")
+      (version "0.9")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -100,7 +100,7 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "00800zckq009kf9v3hb8kp1svryvq3jpg4439ksm3wcidjvszdzc"))))
+                  "194ny7vsks5ygiw7d8yxjmp1qwigd71ilchis6xjl6bb2sj97rd2"))))
       (outputs '("out" "cargo"))
       (build-system gnu-build-system)
       (inputs
@@ -111,7 +111,7 @@
          ;; Required for the libstd sources.
          ("rustc" ,(package-source rust-1.19))))
       (arguments
-       `(#:test-target "local_tests"
+       `(#:test-target "test"
          #:make-flags
          (list ,(string-append "RUSTC_TARGET="
                                (or (%current-target-system)
@@ -129,8 +129,13 @@
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (invoke "tar" "xf" (assoc-ref inputs "rustc"))
                (chdir ,(string-append "rustc-" rustc-version "-src"))
-               (invoke "patch" "-p0" "../rust_src.patch")
+               (invoke "patch" "-p0" ,(string-append "../rustc-" rustc-version
+                                                     "-src.patch"))
                (chdir "..")
+               (setenv "RUSTC_VERSION" ,rustc-version)
+               (setenv "MRUSTC_TARGET_VER"
+                ,(version-major+minor rustc-version))
+               (setenv "OUTDIR_SUF" "")
                #t))
            (replace 'configure
              (lambda* (#:key inputs #:allow-other-keys)
@@ -141,8 +146,15 @@
                #t))
            (add-after 'build 'build-minicargo
              (lambda* (#:key make-flags #:allow-other-keys)
+               ;; TODO: minicargo.mk: RUSTC_VERSION=$(RUSTC_VERSION) RUSTC_CHANNEL=$(RUSTC_SRC_TY) OUTDIR_SUF=$(OUTDIR_SUF)
                (apply invoke "make" "-f" "minicargo.mk" "LIBS" make-flags)
                (apply invoke "make" "-C" "tools/minicargo" make-flags)))
+           ;(add-after 'check 'check-locally
+           ;  (lambda* (#:key make-flags #:allow-other-keys)
+           ;    ;; The enum test wouldn't work otherwise.
+           ;    ;; See <https://github.com/thepowersgang/mrustc/issues/137>.
+           ;    (setenv "MRUSTC_TARGET_VER" ,(version-major+minor rustc-version))
+           ;    (apply invoke "make" "local_tests" make-flags)))
            (replace 'install
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
@@ -153,11 +165,12 @@
                       (lib (string-append out "/lib"))
                       (lib/rust (string-append lib "/mrust"))
                       (gcc (assoc-ref inputs "gcc"))
-                      (run_rustc (string-append out "/share/mrustc/run_rustc")))
+                      (run_rustc (string-append out
+                                                "/share/mrustc/run_rustc")))
                  ;; These files are not reproducible.
                  (for-each delete-file (find-files "output" "\\.txt$"))
-                 (delete-file-recursively "output/local_tests")
-                 (mkdir-p lib)
+                 ;(delete-file-recursively "output/local_tests")
+                 (mkdir-p (dirname lib/rust))
                  (copy-recursively "output" lib/rust)
                  (mkdir-p bin)
                  (mkdir-p tools-bin)
@@ -285,8 +298,12 @@ test = { path = \"../libtest\" }
                (setenv "CFG_RELEASE_CHANNEL" "stable")
                (setenv "CFG_LIBDIR_RELATIVE" "lib")
                (setenv "CFG_VERSION" "1.19.0-stable-mrustc")
+               (setenv "MRUSTC_TARGET_VER" ,(version-major+minor version))
                ; bad: (setenv "CFG_PREFIX" "mrustc") ; FIXME output path.
                (mkdir-p "output")
+               ;; mrustc 0.9 doesn't check the search paths for crates anymore.
+               (copy-recursively (string-append rustc-bootstrap "/lib/mrust")
+                                 "output")
                (invoke (string-append rustc-bootstrap "/tools/bin/minicargo")
                        "src/rustc" "--vendor-dir" "src/vendor"
                        "--output-dir" "output/rustc-build"
