@@ -91,7 +91,7 @@
   (let ((rustc-version "1.19.0"))
     (package
       (name "mrustc")
-      (version "0.8.0")
+      (version "0.8.1")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -100,9 +100,7 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0a7v8ccyzp1sdkwni8h1698hxpfz2sxhcpx42n6l2pbm0rbjp08i"))
-                (patches
-                 (search-patches "mrustc-0.8.0-fix-variable-length-integer-receiving.patch"))))
+                  "00800zckq009kf9v3hb8kp1svryvq3jpg4439ksm3wcidjvszdzc"))))
       (outputs '("out" "cargo"))
       (build-system gnu-build-system)
       (inputs
@@ -111,7 +109,8 @@
        `(("bison" ,bison)
          ("flex" ,flex)
          ;; Required for the libstd sources.
-         ("rustc" ,(package-source rust-1.19))))
+         ("rustc" ,(package-source rust-1.19))
+         ("zlib" ,zlib)))
       (arguments
        `(#:test-target "local_tests"
          #:make-flags (list (string-append "LLVM_CONFIG="
