@@ -3276,7 +3276,7 @@ is configured via an environment variable.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-proc-macro2" ,rust-proc-macro2-0.4)
-        ("rust-quote" ,rust-quote-1.0)
+        ("rust-quote" ,rust-quote-0.6)
         ("rust-syn" ,rust-syn-0.15)
         ("rust-synstructure" ,rust-synstructure-0.10))
        #:cargo-development-inputs
