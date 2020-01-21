@@ -6122,12 +6122,18 @@ for searching bytes.")
          (base32
           "0ns7kkd1h4pijdkwfvw4qlbbmqmlmzwlq3g2676dcl5vwyazv1b5"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir-0.3))))
     (home-page "https://github.com/danburkert/memmap-rs")
     (synopsis "Rust library for cross-platform memory mapped IO")
     (description
      "This package provides a cross-platform Rust API for memory-mapped
 file IO.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
