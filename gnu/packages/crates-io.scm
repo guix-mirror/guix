@@ -27,6 +27,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)
@@ -5331,22 +5332,30 @@ wasm-bindgen crate.")
          (base32
           "0ify9vlql01qhfxlj7d4p9jvcp90mj2h69nkbq7slccvbhzryfqd"))))
     (build-system cargo-build-system)
-    ;(arguments
-    ; `(#:phases
-    ;   (modify-phases %standard-phases
-    ;     (add-after 'unpack 'override-jemalloc
-    ;       (lambda* (#:key inputs #:allow-other-keys)
-    ;         (let ((jemalloc (assoc-ref inputs "jemalloc")))
-    ;           (delete-file-recursively "jemalloc")
-    ;           (setenv "JEMALLOC_OVERRIDE"
-    ;                   (string-append jemalloc "/lib/libjemalloc_pic.a")))
-    ;         #t)))))
-    ;(inputs
-    ; `(("jemalloc" ,jemalloc)))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ;; Build dependencies:
+        ("rust-cc" ,rust-cc-1.0)
+        ("rust-fs-extra" ,rust-fs-extra-1.1))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'override-jemalloc
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((jemalloc (assoc-ref inputs "jemalloc")))
+               (delete-file-recursively "jemalloc")
+               (delete-file-recursively
+                 (string-append "guix-vendor/rust-jemalloc-sys-"
+                                ,(package-version rust-jemalloc-sys-0.3)
+                                ".crate/jemalloc"))
+               (setenv "JEMALLOC_OVERRIDE"
+                       (string-append jemalloc "/lib/libjemalloc_pic.a")))
+             #t)))))
+    (native-inputs
+     `(("jemalloc" ,jemalloc)))
     (home-page "https://github.com/gnzlbg/jemallocator")
     (synopsis "Rust FFI bindings to jemalloc")
     (description "This package provides Rust FFI bindings to jemalloc.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
