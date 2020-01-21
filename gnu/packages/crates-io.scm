@@ -5948,7 +5948,7 @@ implementation of LZMA and xz stream encoding/decoding.")
 (define-public rust-maplit-1.0
   (package
     (name "rust-maplit")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
       (origin
         (method url-fetch)
@@ -5956,7 +5956,7 @@ implementation of LZMA and xz stream encoding/decoding.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0hsczmvd6zkqgzqdjp5hfyg7f339n68w83n4pxvnsszrzssbdjq8"))))
+          "07b5kjnhrrmfhgqm9wprjw8adx6i225lqp49gasgqg74lahnabiy"))))
     (build-system cargo-build-system)
     (arguments '(#:skip-build? #t))
     (home-page "https://github.com/bluss/maplit")
