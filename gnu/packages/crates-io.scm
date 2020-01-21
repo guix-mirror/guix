@@ -2292,6 +2292,32 @@ intrinsics.")
      "Bare bones CSV parsing with no_std support.")
     (license (list license:unlicense license:expat))))
 
+(define-public rust-ctrlc-3.1
+  (package
+    (name "rust-ctrlc")
+    (version "3.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ctrlc" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0zz8ad4bk28s111af5vy1c5kii4zw0cgh87ivzgj28f8nkcd5py7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-nix" ,rust-nix-0.14)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/Detegr/rust-ctrlc")
+    (synopsis "Easy Ctrl-C handler for Rust projects")
+    (description
+     "This package provides an easy Ctrl-C handler for Rust projects.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-curl-sys-0.4
   (package
     (name "rust-curl-sys")
