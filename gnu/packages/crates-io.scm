@@ -6060,10 +6060,10 @@ parallelize and optimize.")
          (base32
           "17b2xm4h4cvxsdjsf3kdrzqv2za60kak961xzi5kmw6g6djcssvy"))))
     (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/stainless-steel/md5")
     (synopsis "MD5 hash function in Rust")
     (description "The package provides the MD5 hash function.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
