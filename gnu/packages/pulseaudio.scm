@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
@@ -251,13 +251,14 @@ easily control the volume of all clients, sinks, etc.")
     (name "ponymix")
     (version "5")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "https://github.com/falconindy/ponymix/"
-                                 "archive/" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                    (url "https://github.com/falconindy/ponymix/")
+                    (commit version)))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "1c0ch98zry3c4ixywwynjid1n1nh4xl4l1p548giq2w3zwflaghn"))
-             (file-name (string-append name "-" version ".tar.gz"))))
+               "08yp7fprmzm6px5yx2rvzri0l60bra5h59l26pn0k071a37ks1rb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There is no test suite.
