@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@suse.cz>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
@@ -93,13 +93,20 @@
            (separator #f)                         ;single entry
            (files '("etc/ssl/certs/ca-certificates.crt")))))
    (arguments
-    `(#:configure-flags (list "--with-gnutls"
+    `(#:disallowed-references ("doc")
+      #:configure-flags (list "--with-gnutls"
                               (string-append "--with-gssapi="
                                              (assoc-ref %build-inputs "mit-krb5"))
                               "--disable-static")
-      ;; Add a phase to patch '/bin/sh' occurances in tests/runtests.pl
       #:phases
       (modify-phases %standard-phases
+        (add-after 'unpack 'do-not-record-configure-flags
+          (lambda _
+            ;; Do not save the configure options to avoid unnecessary references.
+            (substitute* "curl-config.in"
+              (("@CONFIGURE_OPTIONS@")
+               "\"not available\""))
+            #t))
         (add-after
          'install 'move-man3-pages
          (lambda* (#:key outputs #:allow-other-keys)
