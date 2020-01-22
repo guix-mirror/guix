@@ -418,7 +418,7 @@ Note that 8sync is only available for Guile 2.2.")
 (define-public guile-daemon
   (package
     (name "guile-daemon")
-    (version "0.1.2")
+    (version "0.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/alezost/" name
@@ -426,7 +426,7 @@ Note that 8sync is only available for Guile 2.2.")
                                   "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0hh6gq6b6phpxm0b1dkxyzj3f4sxdf7dji63609lzypa5v1ad2gv"))))
+                "08gaqrgjlly9k5si72vvpbr4xhq5v52l5ma5y6a7spid5dd057cy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
