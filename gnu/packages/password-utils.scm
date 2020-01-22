@@ -703,7 +703,7 @@ using password-store through rofi interface:
 (define-public argon2
   (package
     (name "argon2")
-    (version "20171227")
+    (version "20190702")
     (source
      (origin
        (method git-fetch)
@@ -713,31 +713,18 @@ using password-store through rofi interface:
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1rzayv4ydxwb5fqyr1y8nz0wsb9r45mwl1wrq8hmikjrlqhhjn6f"))))
+         "01rwanr4wmr9vm6c712x411wig543q195z2icn388z892a93lc7p"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
-       #:make-flags '("CC=gcc"
-                      "OPTTEST=1")     ;disable CPU optimization
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                          "LIBRARY_REL=lib"
+                          (string-append "ARGON2_VERSION=" ,version)
+                          "OPTTEST=1")  ; disable CPU optimization
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-Makefile
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (substitute* "Makefile"
-                 (("PREFIX = /usr") (string-append "PREFIX = " out)))
-               (substitute* "libargon2.pc"
-                 (("prefix=/usr") (string-append "prefix=" out))
-                 (("@HOST_MULTIARCH@") "")
-                 (("@UPSTREAM_VER@") ,version))
-               #t)))
-         (delete 'configure)
-         (add-after 'install 'install-argon2.pc
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (install-file "libargon2.pc"
-                             (string-append out "/lib/pkgconfig"))
-               #t))))))
+         (delete 'configure))))         ; No configure script.
     (home-page "https://www.argon2.com/")
     (synopsis "Password hashing library")
     (description "Argon2 provides a key derivation function that was declared
