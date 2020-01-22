@@ -71,12 +71,10 @@
              ("zlib" ,zlib)))
    (native-inputs
      `(("perl" ,perl)
-       ;; to enable the --manual option and make test 1026 pass
-       ("groff" ,groff)
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)))
    (native-search-paths
-    ;; These variables are introduced by libcurl-use-ssl-cert-env.patch.
+    ;; These variables are introduced by curl-use-ssl-cert-env.patch.
     (list (search-path-specification
            (variable "SSL_CERT_DIR")
            (separator #f)                        ;single entry
