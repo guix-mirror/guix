@@ -3117,9 +3117,12 @@ connect an engine to your inputs and rendering functions to get an editor.")
      `(#:build-flags (list "--profile" "release")
        #:tests? #f))
     (propagated-inputs
-     `(("lwt" ,ocaml-lwt)
-       ("lwt-log" ,ocaml-lwt-log)
-       ("zed" ,ocaml-zed)))
+     `(("ocaml-lwt" ,ocaml-lwt)
+       ("ocaml-lwt-log" ,ocaml-lwt-log)
+       ("ocaml-lwt-react" ,ocaml-lwt-react)
+       ("ocaml-zed" ,ocaml-zed)))
+    (inputs
+     `(("libev" ,libev)))
     (home-page "https://github.com/diml/lambda-term")
     (synopsis "Terminal manipulation library for OCaml")
     (description "Lambda-Term is a cross-platform library for manipulating the
