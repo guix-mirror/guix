@@ -89,7 +89,7 @@ provided, as well as a framework to add new color models and data types.")
 (define-public gegl
   (package
     (name "gegl")
-    (version "0.4.18")
+    (version "0.4.20")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://download.gimp.org/pub/gegl/"
@@ -103,7 +103,7 @@ provided, as well as a framework to add new color models and data types.")
                                         "/gegl-" version ".tar.xz")))
               (sha256
                (base32
-                "0r6akqnrkvxizyhyi8sv40mxm7j4bcwjb6mqjpxy0zzbbfsdyin9"))))
+                "1zrxnxlhn0jmshg4n2m2xlgi886w059ynkiiihm7rpi05fs8pg93"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
