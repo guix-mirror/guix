@@ -705,6 +705,56 @@ package.")
      ;; license texts for GPL3 and AGPL3.
      (list license:gpl2+ license:lgpl2.0+))))
 
+(define-public keventviews
+  (package
+    (name "keventviews")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/eventviews-" version ".tar.xz"))
+       (sha256
+        (base32 "190vx074ligzysc9w5pf2b51dfy0i4v9mc53m9jdcw8y02shy49w"))))
+    (properties `((upstream-name . "eventviews")))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("akonadi" ,akonadi)
+       ("akonadi-calendar" ,akonadi-calendar)
+       ("akonadi-contacts" ,akonadi-contacts)
+       ("boost" ,boost)
+       ("kcalendarcore" ,kcalendarcore)
+       ("kcalendarsupport" ,kcalendarsupport)
+       ("kcalutils" ,kcalutils)
+       ("kcodecs", kcodecs)
+       ("kcompletion" ,kcompletion)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcontacts" ,kcontacts)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdiagram" ,kdiagram)
+       ("kguiaddons" ,kguiaddons)
+       ("kholidays" ,kholidays)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kidentitymanagement" ,kidentitymanagement)
+       ("kio" ,kio)
+       ("kitemmodels" ,kitemmodels)
+       ("kmime" ,kmime)
+       ("kpimtextedit" ,kpimtextedit)
+       ("kservice" ,kservice)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kxmlgui" ,kxmlgui)
+       ("libkdepim" ,libkdepim)
+       ("qtbase" ,qtbase)))
+    (home-page "https://cgit.kde.org/eventviews.git")
+    (synopsis "KDE PIM library for creating events")
+    (description "This library provides an event creator for KDE PIM.")
+    (license ;; GPL for programs, LGPL for libraries
+     (list license:gpl2+ license:lgpl2.0+))))
+
 (define-public kgpg
   (package
     (name "kgpg")
