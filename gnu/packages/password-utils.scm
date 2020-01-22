@@ -752,12 +752,14 @@ winner of the 2015 Password Hashing Competition.")
     (version "0.3.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/languitar/pass-git-helper/archive/release-"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/languitar/pass-git-helper")
+              (commit (string-append "release-" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0lz5ncy44pz7z1j2nnyildx8sq33zi3xvg5nkwg25n11nasqh2xn"))))
+         "0vyzmfzyr6ghaglr09px2q6k38zyv1hw25j14z7if7nncj1i4i5d"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
