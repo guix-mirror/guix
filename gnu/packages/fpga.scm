@@ -301,7 +301,7 @@ Includes the actual FTDI connector.")
 (define-public gtkwave
   (package
     (name "gtkwave")
-    (version "3.3.101")
+    (version "3.3.103")
     (source
      (origin
        (method url-fetch)
@@ -311,7 +311,7 @@ Includes the actual FTDI connector.")
                   (string-append "http://gtkwave.sourceforge.net/"
                                  "gtkwave-" version ".tar.gz")))
        (sha256
-        (base32 "1j6capxwgi8aj3sgqg1r7161icni9y8y93g1rl3bzd3s40jcyhsz"))))
+        (base32 "1xzaxqbabj4sb4n10yki5acglx3736pwl3kwlq4k7i96rzvsn9f3"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gperf" ,gperf)
