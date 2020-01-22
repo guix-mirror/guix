@@ -287,13 +287,14 @@ sinks.")
     (name "pulsemixer")
     (version "1.4.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/GeorgeFilipkin/"
-                                  "pulsemixer/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/GeorgeFilipkin/pulsemixer")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1lpad90ifr2xfldyf39sbwx1v85rif2gm9w774gwwpjv53zfgk1g"))))
+                "0l5zawv36d46sj3k31k5w6imnnxzyn62r83wdhr7fp5mi3ls1h5x"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
