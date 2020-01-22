@@ -3671,7 +3671,7 @@ build jobs.")
     (description
      "Company is a modular completion mechanism.  Modules for retrieving
 completion candidates are called back-ends, modules for displaying them are
-front-ends.  Company comes with many back-ends, e.g. @code{company-elisp}.
+front-ends.  Company comes with many back-ends, e.g., @code{company-elisp}.
 These are distributed in separate files and can be used individually.")
     (license license:gpl3+)))
 
