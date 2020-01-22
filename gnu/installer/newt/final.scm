@@ -63,28 +63,38 @@ This will take a few minutes.")
          (&installer-step-abort)))))))
 
 (define (run-install-success-page)
-  (message-window
-   (G_ "Installation complete")
-   (G_ "Reboot")
-   (G_ "Congratulations!  Installation is now complete.  \
+  (match (current-clients)
+    (()
+     (message-window
+      (G_ "Installation complete")
+      (G_ "Reboot")
+      (G_ "Congratulations!  Installation is now complete.  \
 You may remove the device containing the installation image and \
-press the button to reboot."))
+press the button to reboot.")))
+    (_
+     ;; When there are clients connected, send them a message and keep going.
+     (send-to-clients '(installation-complete))))
 
   ;; Return success so that the installer happily reboots.
   'success)
 
 (define (run-install-failed-page)
-  (match (choice-window
-          (G_ "Installation failed")
-          (G_ "Resume")
-          (G_ "Restart the installer")
-          (G_ "The final system installation step failed.  You can resume from \
+  (match (current-clients)
+    (()
+     (match (choice-window
+             (G_ "Installation failed")
+             (G_ "Resume")
+             (G_ "Restart the installer")
+             (G_ "The final system installation step failed.  You can resume from \
 a specific step, or restart the installer."))
-    (1 (raise
-        (condition
-         (&installer-step-abort))))
-    (2
-     ;; Keep going, the installer will be restarted later on.
+       (1 (raise
+           (condition
+            (&installer-step-abort))))
+       (2
+        ;; Keep going, the installer will be restarted later on.
+        #t)))
+    (_
+     (send-to-clients '(installation-failure))
      #t)))
 
 (define* (run-install-shell locale

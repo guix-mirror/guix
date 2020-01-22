@@ -21,7 +21,9 @@
   #:use-module (guix utils)
   #:use-module (guix build utils)
   #:use-module (guix i18n)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-34)
+  #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 format)
@@ -33,7 +35,12 @@
             run-shell-command
 
             syslog-port
-            syslog))
+            syslog
+
+            with-server-socket
+            current-server-socket
+            current-clients
+            send-to-clients))
 
 (define* (read-lines #:optional (port (current-input-port)))
   "Read lines from PORT and return them as a list."
@@ -66,7 +73,11 @@ number. If no percentage is found, return #f"
 COMMAND exited successfully, #f otherwise."
   (define (pause)
     (format #t (G_ "Press Enter to continue.~%"))
-    (read-line (current-input-port)))
+    (send-to-clients '(pause))
+    (match (select (cons (current-input-port) (current-clients))
+             '() '())
+      (((port _ ...) _ _)
+       (read-line port))))
 
   (call-with-temporary-output-file
    (lambda (file port)
@@ -134,3 +145,76 @@ COMMAND exited successfully, #f otherwise."
        (with-syntax ((fmt (string-append "installer[~d]: "
                                          (syntax->datum #'fmt))))
          #'(format (syslog-port) fmt (getpid) args ...))))))
+
+
+;;;
+;;; Client protocol.
+;;;
+
+(define %client-socket-file
+  ;; Unix-domain socket where the installer accepts connections.
+  "/var/guix/installer-socket")
+
+(define current-server-socket
+  ;; Socket on which the installer is currently accepting connections, or #f.
+  (make-parameter #f))
+
+(define current-clients
+  ;; List of currently connected clients.
+  (make-parameter '()))
+
+(define* (open-server-socket
+          #:optional (socket-file %client-socket-file))
+  "Open SOCKET-FILE as a Unix-domain socket to accept incoming connections and
+return it."
+  (mkdir-p (dirname socket-file))
+  (when (file-exists? socket-file)
+    (delete-file socket-file))
+  (let ((sock (socket AF_UNIX SOCK_STREAM 0)))
+    (bind sock AF_UNIX socket-file)
+    (listen sock 0)
+    sock))
+
+(define (call-with-server-socket thunk)
+  (if (current-server-socket)
+      (thunk)
+      (let ((socket (open-server-socket)))
+        (dynamic-wind
+          (const #t)
+          (lambda ()
+            (parameterize ((current-server-socket socket))
+              (thunk)))
+          (lambda ()
+            (close-port socket))))))
+
+(define-syntax-rule (with-server-socket exp ...)
+  "Evaluate EXP with 'current-server-socket' parameterized to a currently
+accepting socket."
+  (call-with-server-socket (lambda () exp ...)))
+
+(define* (send-to-clients exp)
+  "Send EXP to all the current clients."
+  (define remainder
+    (fold (lambda (client remainder)
+            (catch 'system-error
+              (lambda ()
+                (write exp client)
+                (newline client)
+                (force-output client)
+                (cons client remainder))
+              (lambda args
+                ;; We might get EPIPE if the client disconnects; when that
+                ;; happens, remove CLIENT from the set of available clients.
+                (let ((errno (system-error-errno args)))
+                  (if (memv errno (list EPIPE ECONNRESET ECONNABORTED))
+                      (begin
+                        (syslog "removing client ~s due to ~s while replying~%"
+                                (fileno client) (strerror errno))
+                        (false-if-exception (close-port client))
+                        remainder)
+                      (cons client remainder))))))
+          '()
+          (current-clients)))
+
+  (current-clients (reverse remainder))
+  exp)

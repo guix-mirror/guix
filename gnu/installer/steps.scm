@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,6 +20,7 @@
 (define-module (gnu installer steps)
   #:use-module (guix records)
   #:use-module (guix build utils)
+  #:use-module (gnu installer utils)
   #:use-module (ice-9 match)
   #:use-module (ice-9 pretty-print)
   #:use-module (srfi srfi-1)
@@ -185,13 +187,18 @@ return the accumalated result so far."
                 #:todo-steps rest-steps
                 #:done-steps (append done-steps (list step))))))))
 
-  (call-with-prompt 'raise-above
-    (lambda ()
-      (run '()
-           #:todo-steps steps
-           #:done-steps '()))
-    (lambda (k condition)
-      (raise condition))))
+  ;; Ignore SIGPIPE so that we don't die if a client closes the connection
+  ;; prematurely.
+  (sigaction SIGPIPE SIG_IGN)
+
+  (with-server-socket
+    (call-with-prompt 'raise-above
+      (lambda ()
+        (run '()
+             #:todo-steps steps
+             #:done-steps '()))
+      (lambda (k condition)
+        (raise condition)))))
 
 (define (find-step-by-id steps id)
   "Find and return the step in STEPS whose id is equal to ID."
@@ -249,3 +256,7 @@ found in RESULTS."
                       (pretty-print part port)))
                 configuration)
       (flush-output-port port))))
+
+;;; Local Variables:
+;;; eval: (put 'with-server-socket 'scheme-indent-function 0)
+;;; End:
