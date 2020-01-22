@@ -431,7 +431,7 @@ FFC is part of the FEniCS Project.")
 (define-public fenics-dolfin
   (package
     (name "fenics-dolfin")
-    (version "2018.1.0.post1")
+    (version "2019.1.0.post0")
     (source
       (origin
         (method url-fetch)
@@ -441,7 +441,7 @@ FFC is part of the FEniCS Project.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
           (base32
-           "12zkk8j3xsg6l8p0ggwsl03084vlcivw4h99b7z9kndg7k89b3ya"))
+           "1m91hwcq5gfj4qqswp8l8kj58nia48f0n4kq13w0xqj4biq7rla0"))
         (modules '((guix build utils)))
         (snippet
          '(begin
@@ -452,30 +452,10 @@ FFC is part of the FEniCS Project.")
               (("#include.*")
                "#include <catch.hpp>\n"))
             (substitute* "test/unit/cpp/CMakeLists.txt"
-              ;; Add extra include directories required by the unit tests.
-              (("(^target_link_libraries.*)" line)
-               (string-append line "\n"
-                              "target_include_directories("
-                              "unittests PRIVATE "
-                              "${DOLFIN_SOURCE_DIR} "
-                              "${DOLFIN_SOURCE_DIR}/dolfin "
-                              "${DOLFIN_BINARY_DIR})\n"))
+              ;; Specify directory to find the header file.
               (("(^set\\(CATCH_INCLUDE_DIR ).*(/catch\\))" _ front back)
                (string-append front
-                              "$ENV{CATCH_DIR}"
-                              "/include" back "\n")))
-            (substitute* "demo/CMakeLists.txt"
-              ;; Add extra include directories required by the demo tests.
-              (("(^#find_package.*)" line)
-               (string-append line "\n"
-                              "include_directories("
-                              "${DOLFIN_SOURCE_DIR} "
-                              "${DOLFIN_SOURCE_DIR}/dolfin "
-                              "${DOLFIN_BINARY_DIR})\n")))
-            (substitute* "dolfin/nls/PETScSNESSolver.cpp"
-              ;; Remove SNESTEST mapping.  The SNESTEST symbol was removed
-              ;; from PETSc at version 3.10.3.
-              ((".*SNESTEST.*") "" ))
+                              "$ENV{CATCH_DIR}/include" back "\n")))
             #t))))
     (build-system cmake-build-system)
     (inputs
@@ -492,14 +472,15 @@ FFC is part of the FEniCS Project.")
        ("sundials" ,sundials-openmpi)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("catch" ,catch-framework2)
+     `(("catch" ,catch-framework2-1)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("ffc" ,python-fenics-ffc)
        ("petsc" ,petsc-openmpi)
        ("slepc" ,slepc-openmpi)))
     (arguments
-     `(#:configure-flags
+     `(#:cmake ,cmake-3.15.5
+       #:configure-flags
        `("-DDOLFIN_ENABLE_DOCS:BOOL=OFF"
          "-DDOLFIN_ENABLE_HDF5:BOOL=ON"
          "-DDOLFIN_ENABLE_MPI:BOOL=ON"
