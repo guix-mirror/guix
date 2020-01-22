@@ -9133,15 +9133,15 @@ still work as expected.")
 (define-public perl-timedate
   (package
     (name "perl-timedate")
-    (version "2.30")
+    (version "2.31")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/G/GB/GBARR/"
+       (uri (string-append "mirror://cpan/authors/id/A/AT/ATOOMIC/"
                            "TimeDate-" version ".tar.gz"))
        (sha256
         (base32
-         "11lf54akr9nbivqkjrhvkmfdgkbhw85sq0q4mak56n6bf542bgbm"))))
+         "10ad6l4ii2iahdpw8h0xqwasc1jblan31h597q3js4j5nbnhywjw"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/TimeDate")
     (synopsis "Date parsing/formatting subroutines")
