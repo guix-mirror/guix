@@ -1,0 +1,28 @@
+Author: Tobias Geerinckx-Rice <me@tobias.gr>
+Date: Wed 22 Jan 22:58:13 CET 2020
+Subject: gnu: memcached: Fix build with GCC 7.
+
+Taken verbating from this bug report:
+<https://bugs.launchpad.net/libmemcached/+bug/1663985>.
+
+diff -up ./clients/memflush.cc.old ./clients/memflush.cc
+--- ./clients/memflush.cc.old	2017-02-12 10:12:59.615209225 +0100
++++ ./clients/memflush.cc	2017-02-12 10:13:39.998382783 +0100
+@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
+ {
+   options_parse(argc, argv);
+ 
+-  if (opt_servers == false)
++  if (!opt_servers)
+   {
+     char *temp;
+ 
+@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
+       opt_servers= strdup(temp);
+     }
+ 
+-    if (opt_servers == false)
++    if (!opt_servers)
+     {
+       std::cerr << "No Servers provided" << std::endl;
+       exit(EXIT_FAILURE);

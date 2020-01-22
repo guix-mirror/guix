@@ -370,7 +370,9 @@ applications.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1842s4dxdh21gdr46q4dgxigidcs6dkqnbnqjwb9l8r0bqx5nb10"))))
+                "1842s4dxdh21gdr46q4dgxigidcs6dkqnbnqjwb9l8r0bqx5nb10"))
+              (patches
+               (search-patches "libmemcached-build-with-gcc7.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("memcached" ,memcached)
