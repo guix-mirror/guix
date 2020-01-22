@@ -1479,22 +1479,16 @@ formatting.")
 (define-public font-public-sans
   (package
     (name "font-public-sans")
-    (version "1.0.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/uswds/public-sans.git")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "12ccj7ph3pg962d52d3slbvd44gwfm6bb2846dxyf1xc5h2iwhdv"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; remove versions of predecessor font
-                  (delete-file-recursively "fonts/_archive")
-                  #t))))
+    (version "1.008")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/uswds/public-sans.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1qhyxbjv1rnydfpqzd18fbiyz75p4sabphy8yj07hyq0hidp5xsf"))))
     (build-system font-build-system)
     (home-page "https://public-sans.digital.gov/")
     (synopsis "Neutral typeface for interfaces, text, and headings")
