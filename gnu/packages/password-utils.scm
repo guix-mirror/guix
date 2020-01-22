@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Steve Sprang <scs@stevesprang.com>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Aljosha Papsch <misc@rpapsch.de>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Jessica Tallon <tsyesika@tsyesika.se>
@@ -962,14 +962,15 @@ to use a different password manager.")
     (name "pass-rotate")
     (version "0.1")
     (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/SirCmpwn/pass-rotate/archive/"
-                           version ".tar.gz"))
-       (sha256
-        (base32
-         "1svm5nj8bczv2dg8lh2zqqhbsrljqsw9680r03qwgl9vlci90210"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/SirCmpwn/pass-rotate")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1m067vvdlc85csbpkp8aw4s3ags7q8s3jszrr32kmj9qhk5c254f"))))
     (build-system python-build-system)
     (inputs
      `(("python-beautifulsoup4" ,python-beautifulsoup4)
