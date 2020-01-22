@@ -768,13 +768,14 @@ winner of the 2015 Password Hashing Competition.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let* ((password-store (assoc-ref inputs "password-store"))
                     (pass (string-append password-store "/bin/pass")))
-               (substitute* "passgithelper.py"
+               (substitute* '("passgithelper.py"
+                              "test_passgithelper.py")
                  (("'pass'") (string-append "'" pass "'")))
                #t)))
-         (add-before 'check 'pre-check
+         (replace 'check
            (lambda _
              (setenv "HOME" (getcwd))
-             #t)))))
+             (invoke "pytest"))))))
     (inputs
      `(("python-pyxdg" ,python-pyxdg)
        ("password-store" ,password-store)))
