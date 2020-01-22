@@ -706,14 +706,14 @@ using password-store through rofi interface:
     (version "20171227")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://github.com/P-H-C/phc-winner-argon2/archive/"
-                       version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/P-H-C/phc-winner-argon2")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1n6w5y3va7lrcym7cxr0nikapldqm80wxjdns584bvplq5r03spa"))))
+         "1rzayv4ydxwb5fqyr1y8nz0wsb9r45mwl1wrq8hmikjrlqhhjn6f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
