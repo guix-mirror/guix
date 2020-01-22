@@ -493,7 +493,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/tex.scm				\
   %D%/packages/textutils.scm			\
   %D%/packages/text-editors.scm			\
-  %D%/packages/tigervnc.scm			\
   %D%/packages/time.scm				\
   %D%/packages/tls.scm				\
   %D%/packages/tmux.scm				\
@@ -509,6 +508,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/video.scm			\
   %D%/packages/vim.scm				\
   %D%/packages/virtualization.scm		\
+  %D%/packages/vnc.scm				\
   %D%/packages/vpn.scm				\
   %D%/packages/vulkan.scm			\
   %D%/packages/w3m.scm				\
