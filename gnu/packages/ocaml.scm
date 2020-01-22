@@ -1794,6 +1794,28 @@ process.  Also, in many cases, Lwt threads can interact without the need for
 locks or other synchronization primitives.")
     (license license:lgpl2.1)))
 
+(define-public ocaml-lwt-react
+  (package
+    (inherit ocaml-lwt)
+    (name "ocaml-lwt-react")
+    (version "1.1.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/ocsigen/lwt")
+                     ;; Version from opam
+                     (commit "4.3.0")))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0f7036srqz7zmnz0n164734smgkrqz78r1i35cg30x31kkr3pnn4"))))
+    (arguments
+     `(#:package "lwt_react"))
+    (properties `((upstream-name . "lwt_react")))
+    (propagated-inputs
+     `(("ocaml-lwt" ,ocaml-lwt)
+       ("ocaml-react" ,ocaml-react)))))
+
 (define-public ocaml-lwt-log
   (package
     (name "ocaml-lwt-log")
