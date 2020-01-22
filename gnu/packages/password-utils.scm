@@ -749,17 +749,17 @@ winner of the 2015 Password Hashing Competition.")
 (define-public pass-git-helper
   (package
     (name "pass-git-helper")
-    (version "0.3.1")
+    (version "1.1.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
               (url "https://github.com/languitar/pass-git-helper")
-              (commit (string-append "release-" version))))
+              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0vyzmfzyr6ghaglr09px2q6k38zyv1hw25j14z7if7nncj1i4i5d"))))
+         "18nvwlp0w4aqj268wly60rnjzqw2d8jl0hbs6bkwp3hpzzz5g6yd"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -768,12 +768,19 @@ winner of the 2015 Password Hashing Competition.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let* ((password-store (assoc-ref inputs "password-store"))
                     (pass (string-append password-store "/bin/pass")))
-               (substitute* "pass-git-helper"
+               (substitute* "passgithelper.py"
                  (("'pass'") (string-append "'" pass "'")))
-               #t))))))
+               #t)))
+         (add-before 'check 'pre-check
+           (lambda _
+             (setenv "HOME" (getcwd))
+             #t)))))
     (inputs
      `(("python-pyxdg" ,python-pyxdg)
        ("password-store" ,password-store)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-mock" ,python-pytest-mock)))
     (home-page "https://github.com/languitar/pass-git-helper")
     (synopsis "Git credential helper interfacing with pass")
     (description "pass-git-helper is a git credential helper which allows to
