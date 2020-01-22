@@ -2,7 +2,7 @@
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 202 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;;
@@ -50,7 +50,7 @@
 (define-public babl
   (package
     (name "babl")
-    (version "0.1.72")
+    (version "0.1.74")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://download.gimp.org/pub/babl/"
@@ -64,7 +64,7 @@
                                         "/babl-" version ".tar.xz")))
               (sha256
                (base32
-                "0hkagjrnza77aasa1kss5hvy37ndm50y6i7hkdn2z8hzgc4i3qb4"))))
+                "03nfcvy3453xkfvsfcnsfcjf2vg2pin09qnr9jlssdysa1lhnwcs"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
