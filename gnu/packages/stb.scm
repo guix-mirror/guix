@@ -106,3 +106,9 @@ C@tie{}@code{stdio} interface."))
   (make-stb-header-package
    "stb-sprintf" "1.06"
    "stb-sprintf implements fast @code{sprintf}, @code{snprintf} for C/C++."))
+
+(define-public stb-truetype
+  (make-stb-header-package
+   "stb-truetype" "1.22"
+   "stb-truetype is a library for parsing, decoding, and rasterizing
+characters from TrueType fonts."))
