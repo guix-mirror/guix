@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016, 2017, 2019 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2016, 2017, 2019, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
@@ -8513,12 +8513,16 @@ screen size, and retrieval/modification of the control characters.")
      `(#:tests? #f ; Tests fail without other Term::ReadLine interfaces present
        #:phases (modify-phases %standard-phases
                   (add-before 'configure 'patch-search-lib
-                    (lambda _
+                    (lambda* (#:key inputs #:allow-other-keys)
                       (substitute* "Makefile.PL"
-                        ;; The configuration provides no way to pass
-                        ;; additional directories to search for the ncurses
-                        ;; library, so just skip the search.
-                        (("&search_lib\\('-lncurses'\\)") "'-lncurses'")))))))
+                        ;; The configuration provides no way easy was to pass
+                        ;; additional directories to search for libraries, so
+                        ;; just patch in the flags.
+                        (("-lreadline" &)
+                         (format #f "-L~a/lib ~a" (assoc-ref inputs "readline") &))
+                        (("&search_lib\\('-lncurses'\\)")
+                         (string-append "'-L" (assoc-ref inputs "ncurses") "/lib"
+                                        " -lncurses'"))))))))
     (home-page "https://metacpan.org/release/Term-ReadLine-Gnu")
     (synopsis "GNU Readline/History Library interface for Perl")
     (description "This module implements an interface to the GNU Readline
