@@ -924,6 +924,17 @@ images onto Cairo surfaces.")
       (home-page "http://wingolog.org/projects/guile-rsvg/")
       (license license:lgpl2.1+))))
 
+(define-public guile3.0-rsvg
+  (package
+    (inherit guile-rsvg)
+    (name "guile3.0-rsvg")
+    (inputs
+     `(("guile" ,guile-3.0)
+       ("guile-lib" ,guile3.0-lib)
+       ,@(fold alist-delete (package-inputs guile-rsvg)
+               '("guile" "guile-lib"))))
+    (propagated-inputs `(("guile-cairo" ,guile3.0-cairo)))))
+
 (define-public guile-present
   (package
     (name "guile-present")
