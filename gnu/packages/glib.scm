@@ -165,7 +165,7 @@ shared NFS home directories.")
 (define glib
   (package
    (name "glib")
-   (version "2.60.6")
+   (version "2.62.4")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
@@ -173,7 +173,7 @@ shared NFS home directories.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0v7vpx2md1gn0wwiirn7g4bhf2csfvcr03y96q2zv97ain6sp3zz"))
+              "1g2vj9lyh032kcwij7avx5d6a99rcsnkd07sbl9i55zsfw6h712c"))
             (patches (search-patches "glib-tests-timer.patch"))
             (modules '((guix build utils)))
             (snippet
@@ -300,7 +300,7 @@ shared NFS home directories.")
                       (;; Requires /etc/machine-id.
                        "/gdbus/codegen-peer-to-peer"))
 
-                     ("gio/tests/gdbus-unix-addresses.c"
+                     ("gio/tests/gdbus-address-get-session.c"
                       (;; Requires /etc/machine-id.
                        "/gdbus/x11-autolaunch"))
 
