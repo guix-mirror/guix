@@ -1814,7 +1814,18 @@ library.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0aizxdif5dpch9cvs8zz5g8ds5s4xhfnwza2il5ji7fv2h7ks7bd"))))
+                "0aizxdif5dpch9cvs8zz5g8ds5s4xhfnwza2il5ji7fv2h7ks7bd"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Work around miscompilation on Guile 3.0.0 at -O2:
+                  ;; <https://bugs.gnu.org/39251>.
+                  (substitute* "src/md5.scm"
+                    (("\\(define f-ash ash\\)")
+                     "(define f-ash (@ (guile) ash))\n")
+                    (("\\(define f-add \\+\\)")
+                     "(define f-add (@ (guile) +))\n"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
@@ -1850,6 +1861,12 @@ for Guile\".")
     (inherit guile-lib)
     (name "guile2.0-lib")
     (inputs `(("guile" ,guile-2.0)))))
+
+(define-public guile3.0-lib
+  (package
+    (inherit guile-lib)
+    (name "guile3.0-lib")
+    (inputs `(("guile" ,guile-3.0)))))
 
 (define-public guile-minikanren
   (package
