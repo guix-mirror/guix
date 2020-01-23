@@ -951,6 +951,11 @@ images onto Cairo surfaces.")
               (modules '((guix build utils)))
               (snippet
                '(begin
+                  ;; Allow builds with Guile 3.0.
+                  (substitute* "configure"
+                    (("2\\.2 2\\.0")
+                     "3.0 2.2 2.0"))
+
                   ;; Install .go files in the right place.
                   (substitute* "Makefile.in"
                     (("/ccache") "/site-ccache"))
@@ -990,6 +995,16 @@ Guile-Present can be used to make presentations programmatically, but also
 includes a tools to generate PDF presentations out of Org mode and Texinfo
 documents.")
     (license license:lgpl3+)))
+
+(define-public guile3.0-present
+  (package
+    (inherit guile-present)
+    (name "guile3.0-present")
+    (inputs `(("guile" ,guile-3.0)))
+    (propagated-inputs
+     `(("guile-lib" ,guile3.0-lib)
+       ("guile-cairo" ,guile3.0-cairo)
+       ("guile-rsvg" ,guile3.0-rsvg)))))
 
 (define-public guile-gnome
    (package
