@@ -811,6 +811,7 @@ Knuth’s LR(1) parser construction technique.")
                  (substitute* "config.make"
                    ((ocaml) out))
                  #t))))))
+    (properties `((ocaml4.07-variant . ,(delay ocaml4.07-lablgtk))))
     (home-page "http://lablgtk.forge.ocamlcore.org/")
     (synopsis "GTK+ bindings for OCaml")
     (description
@@ -823,6 +824,16 @@ gnomeui, gtksourceview, gtkspell,
 libglade (and it an generate OCaml code from .glade files),
 libpanel, librsvg and quartz.")
     (license license:lgpl2.1)))
+
+(define-public ocaml4.07-lablgtk
+  (package
+    (inherit lablgtk)
+    (name "ocaml4.07-lablgtk")
+    (native-inputs
+     `(("ocaml" ,ocaml-4.07)
+       ("findlib" ,ocaml4.07-findlib)
+       ("pkg-config" ,pkg-config)))
+    (properties '())))
 
 (define-public unison
   (package
