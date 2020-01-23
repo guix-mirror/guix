@@ -1278,7 +1278,7 @@ printing and other features typical of a source code editor.")
 (define-public python-pycairo
   (package
     (name "python-pycairo")
-    (version "1.18.2")
+    (version "1.19.0")
     (source
      (origin
       (method url-fetch)
@@ -1286,7 +1286,7 @@ printing and other features typical of a source code editor.")
                           version "/pycairo-" version ".tar.gz"))
       (sha256
        (base32
-        "0cb5n4r4nl0k1g90b1gz9iyk4lp7hi03db98i1p52a870bym7f6w"))))
+        "176i283glkpycka8wwyndwld0zp1yn9xj9rpvllqgja698vsjnsg"))))
     (build-system python-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1300,11 +1300,21 @@ printing and other features typical of a source code editor.")
     (license license:lgpl3+)
     (properties `((python2-variant . ,(delay python2-pycairo))))))
 
+;; Pycairo no longer supports Python 2 since version 1.19.0, so we stick
+;; with this older version here.
 (define-public python2-pycairo
   (let ((pycairo (package-with-python2
                   (strip-python2-variant python-pycairo))))
     (package
       (inherit pycairo)
+      (version "1.18.2")
+      (source (origin
+                (method url-fetch)
+                (uri (string-append "https://github.com/pygobject/pycairo/releases"
+                                    "/download/v" version "/pycairo-" version ".tar.gz"))
+                (sha256
+                 (base32
+                  "0cb5n4r4nl0k1g90b1gz9iyk4lp7hi03db98i1p52a870bym7f6w"))))
       ;; Dual-licensed under LGPL 2.1 or Mozilla Public License 1.1
       (license (list license:lgpl2.1 license:mpl1.1)))))
 
