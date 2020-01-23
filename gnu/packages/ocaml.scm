@@ -233,7 +233,7 @@ functional, imperative and object-oriented styles of programming.")
 (define-public ocamlbuild
   (package
     (name "ocamlbuild")
-    (version "0.13.1")
+    (version "0.14.0")
     (source
      (origin
        (method git-fetch)
@@ -242,31 +242,22 @@ functional, imperative and object-oriented styles of programming.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0v37vjvdqw35yvj8ipmlzmwf1jhip0hbsmcbdcn9cnj12p3mr6k7"))))
-    (build-system gnu-build-system)
+        (base32 "1hb5mcdz4wv7sh1pj7dq9q4fgz5h3zg7frpiya6s8zd3ypwzq0kh"))))
+    (build-system ocaml-build-system)
     (arguments
-     `(#:test-target "test"
-       #:tests? #f; tests require findlib
-       #:make-flags
+     `(#:make-flags
        (list (string-append "OCAMLBUILD_PREFIX=" (assoc-ref %outputs "out"))
              (string-append "OCAMLBUILD_BINDIR=" (assoc-ref %outputs "out")
-                        "/bin")
+                            "/bin")
              (string-append "OCAMLBUILD_LIBDIR=" (assoc-ref %outputs "out")
-                        "/lib/ocaml/site-lib")
+                            "/lib/ocaml/site-lib")
              (string-append "OCAMLBUILD_MANDIR=" (assoc-ref %outputs "out")
-                        "/share/man"))
+                            "/share/man"))
        #:phases
        (modify-phases %standard-phases
-         (delete 'bootstrap)
-         (delete 'configure)
-         (add-before 'build 'findlib-environment
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out")))
-               (setenv "OCAMLFIND_DESTDIR" (string-append out "/lib/ocaml/site-lib"))
-               (setenv "OCAMLFIND_LDCONF" "ignore")
-               #t))))))
-    (native-inputs
-     `(("ocaml" ,ocaml)))
+         (delete 'configure))
+       ; some failures because of changes in OCaml's error message formating
+       #:tests? #f))
     (home-page "https://github.com/ocaml/ocamlbuild")
     (synopsis "OCaml build tool")
     (description "OCamlbuild is a generic build tool, that has built-in rules
