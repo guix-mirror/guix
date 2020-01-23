@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2017, 2018, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
@@ -833,6 +833,12 @@ application suites.")
                        (string-append name "dir = " prefix
                                       "/guile/site/@GUILE_EFFECTIVE_VERSION@"
                                       suffix)))
+
+                    ;; Guile 2.x <libguile.h> used to pull in <string.h> and
+                    ;; other headers but this is no longer the case in 3.0.
+                    (substitute* (find-files "." "\\.[ch]$")
+                      (("^ *# *include.*libguile\\.h.*$")
+                       "#include <libguile.h>\n#include <string.h>\n"))
                     #t)))))
     (build-system gnu-build-system)
     (inputs
@@ -854,6 +860,22 @@ importantly, it is pleasant to use.  You get a powerful and well-maintained
 graphics library with all of the benefits of Scheme: memory management,
 exceptions, macros, and a dynamic programming environment.")
     (license license:lgpl3+)))
+
+(define-public guile3.0-cairo
+  (package
+    (inherit guile-cairo)
+    (name "guile3.0-cairo")
+    (arguments
+     (substitute-keyword-arguments (package-arguments guile-cairo)
+       ((#:configure-flags flags ''())
+        ;; Uses of 'scm_t_uint8' & co. are deprecated; don't stop the build
+        ;; because of them.
+        `(cons "--disable-Werror" ,flags))))
+    (inputs
+     `(("guile" ,guile-3.0)
+       ("guile-lib" ,guile3.0-lib)
+       ,@(fold alist-delete (package-inputs guile-cairo)
+               '("guile" "guile-lib"))))))
 
 (define-public guile-rsvg
   ;; Use a recent snapshot that supports Guile 2.2 and beyond.
