@@ -4881,7 +4881,7 @@ C.  It is developed as part of the NetSurf project.")
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
        ("pkg-config" ,pkg-config)
-       ("check" ,check)                 ;for tests
+       ("check" ,check-0.12)            ; For tests
        ("bison" ,bison)
        ("flex" ,flex)))
     (arguments netsurf-buildsystem-arguments)
