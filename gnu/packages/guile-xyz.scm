@@ -2132,7 +2132,7 @@ is no support for parsing block and inline level HTML.")
                   (add-after 'unpack 'fix-finding-guile
                     (lambda _
                       (substitute* "configure"
-                        (("2\\.0") "2.2 2.0"))
+                        (("2\\.0") "3.0 2.2 2.0"))
                       #t))
                   (add-before 'check 'adjust-tests
                     (lambda _
@@ -2161,6 +2161,12 @@ tasks on a schedule, such as every hour or every Monday.  Mcron is written in
 Guile, so its configuration can be written in Scheme; the original cron
 format is also supported.")
     (license license:gpl3+)))
+
+(define-public guile3.0-mcron
+  (package
+    (inherit mcron)
+    (name "guile3.0-mcron")
+    (inputs `(("guile" ,guile-3.0)))))
 
 (define-public mcron2
   ;; This was mthl's mcron development branch, and it became mcron 1.1.
