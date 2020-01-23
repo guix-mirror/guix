@@ -15,7 +15,7 @@
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Stefan Stefanović <stefanx2ovic@gmail.com>
 ;;; Copyright © 2019 Reza Alizadeh Majd <r.majd@pantherx.org>
-;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -1472,14 +1472,14 @@ encoding names are iconv-compatible.")
 (define-public udiskie
   (package
     (name "udiskie")
-    (version "1.7.7")
+    (version "2.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "udiskie" version))
        (sha256
         (base32
-         "121g9dkr7drv9igpdbcbkj59x15mm72rzp3198bp50zj0lr4wbvi"))
+         "0gjjzz0k8dlsk03fl2882lbl88hbv031ww72qj02gr65yph0jqgc"))
        ;; Remove support for the libappindicator library of the
        ;; Unity desktop environment which is not in Guix.
        (patches (search-patches "udiskie-no-appindicator.patch"))))
