@@ -191,8 +191,6 @@ shared NFS home directories.")
       ("util-linux" ,util-linux "lib")  ;for libmount
       ("libselinux" ,libselinux)
       ("zlib" ,zlib)))
-   (inputs
-    `(("coreutils" ,coreutils)))
    (native-inputs
     `(("gettext" ,gettext-minimal)
       ("m4" ,m4) ; for installing m4 macros
