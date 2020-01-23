@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2017, 2018, 2019, 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -241,14 +241,14 @@ problems for efficient solution on parallel systems.")
 (define-public python-fenics-dijitso
   (package
     (name "python-fenics-dijitso")
-    (version "2018.1.0")
+    (version "2019.1.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "fenics-dijitso" version))
         (sha256
           (base32
-            "1qax2f52qsjbd1h5lk5i5shp448qlakxabjjybrfc1w823p0yql9"))))
+            "0lhqsq8ypdak0ahr2jnyvg07yrqp6wicjxi6k56zx24wp3qg60sc"))))
     (build-system python-build-system)
     (inputs
      `(("openmpi" ,openmpi)
@@ -292,14 +292,14 @@ the complexity of that interface.  Parallel support depends on the
 (define-public python-fenics-ufl
   (package
     (name "python-fenics-ufl")
-    (version "2018.1.0")
+    (version "2019.1.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "fenics-ufl" version))
         (sha256
           (base32
-            "1fq8yc86s1s3c8c0b1rc2vf265q0hrkzg57100fg1nghcz0p4vla"))))
+            "10dz8x3lm68x2w3kkqcjask38h0zkhhak26jdbkppr8g9y8wny7p"))))
     (build-system python-build-system)
     (inputs
      `(("python-numpy" ,python-numpy)))
@@ -329,14 +329,14 @@ UFL is part of the FEniCS Project.")
 (define-public python-fenics-fiat
   (package
     (name "python-fenics-fiat")
-    (version "2018.1.0")
+    (version "2019.1.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "fenics-fiat" version))
         (sha256
           (base32
-            "0fmjd93r6bwf6xs8csw86qzphrnr66xwv7f372w59gmq8mg6rljc"))))
+            "13sc7lma3d2mh43an7i4kkdbbk4cmvxjk45wi43xnjd7qc38zg4b"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
@@ -351,7 +351,15 @@ UFL is part of the FEniCS Project.")
              (setenv "PYTHONPATH"
                      (string-append (getcwd) ":" (getenv "PYTHONPATH")))
              (with-directory-excursion "test"
-               (invoke "py.test" "unit/"))
+               ;; FIXME: three FIAT test modules are known to fail
+               ;; with recent versions of pytest (>= 4).  These are
+               ;; skipped for FIAT version 2019.1.0 pending an
+               ;; upstream pull request. For details see request #59
+               ;; at https://bitbucket.org/fenics-project/fiat/.
+               (invoke "py.test" "unit/"
+                       "--ignore=unit/test_fiat.py"
+                       "--ignore=unit/test_quadrature.py"
+                       "--ignore=unit/test_reference_element.py"))
              #t)))))
     (home-page "https://bitbucket.org/fenics-project/fiat/")
     (synopsis "Tabulation of finite element function spaces")
@@ -371,14 +379,14 @@ FIAT is part of the FEniCS Project.")
 (define-public python-fenics-ffc
   (package
     (name "python-fenics-ffc")
-    (version "2018.1.0")
+    (version "2019.1.0.post0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "fenics-ffc" version))
         (sha256
           (base32
-            "1b2ia5vlkw298x7rf0k2p3ihlpwkwgc98p3s6sbpds3hqmfrzdz9"))))
+            "1f2a44ha65fg3a1prrbrsz4dgvibsv0j5c3pi2m52zi93bhwwgg9"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
@@ -423,7 +431,7 @@ FFC is part of the FEniCS Project.")
 (define-public fenics-dolfin
   (package
     (name "fenics-dolfin")
-    (version "2018.1.0.post1")
+    (version "2019.1.0.post0")
     (source
       (origin
         (method url-fetch)
@@ -433,7 +441,7 @@ FFC is part of the FEniCS Project.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
           (base32
-           "12zkk8j3xsg6l8p0ggwsl03084vlcivw4h99b7z9kndg7k89b3ya"))
+           "1m91hwcq5gfj4qqswp8l8kj58nia48f0n4kq13w0xqj4biq7rla0"))
         (modules '((guix build utils)))
         (snippet
          '(begin
@@ -444,30 +452,10 @@ FFC is part of the FEniCS Project.")
               (("#include.*")
                "#include <catch.hpp>\n"))
             (substitute* "test/unit/cpp/CMakeLists.txt"
-              ;; Add extra include directories required by the unit tests.
-              (("(^target_link_libraries.*)" line)
-               (string-append line "\n"
-                              "target_include_directories("
-                              "unittests PRIVATE "
-                              "${DOLFIN_SOURCE_DIR} "
-                              "${DOLFIN_SOURCE_DIR}/dolfin "
-                              "${DOLFIN_BINARY_DIR})\n"))
+              ;; Specify directory to find the header file.
               (("(^set\\(CATCH_INCLUDE_DIR ).*(/catch\\))" _ front back)
                (string-append front
-                              "$ENV{CATCH_DIR}"
-                              "/include" back "\n")))
-            (substitute* "demo/CMakeLists.txt"
-              ;; Add extra include directories required by the demo tests.
-              (("(^#find_package.*)" line)
-               (string-append line "\n"
-                              "include_directories("
-                              "${DOLFIN_SOURCE_DIR} "
-                              "${DOLFIN_SOURCE_DIR}/dolfin "
-                              "${DOLFIN_BINARY_DIR})\n")))
-            (substitute* "dolfin/nls/PETScSNESSolver.cpp"
-              ;; Remove SNESTEST mapping.  The SNESTEST symbol was removed
-              ;; from PETSc at version 3.10.3.
-              ((".*SNESTEST.*") "" ))
+                              "$ENV{CATCH_DIR}/include" back "\n")))
             #t))))
     (build-system cmake-build-system)
     (inputs
@@ -484,7 +472,7 @@ FFC is part of the FEniCS Project.")
        ("sundials" ,sundials-openmpi)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("catch" ,catch-framework2)
+     `(("catch" ,catch-framework2-1)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("ffc" ,python-fenics-ffc)
@@ -644,12 +632,20 @@ user interface to the FEniCS core components and external libraries.")
            ,%openmpi-setup)
          (add-before 'check 'pre-check
            (lambda _
-             ;; Exclude tests that require meshes supplied by git-lfs.
+             ;; Exclude three tests that generate
+             ;; 'NotImplementedError' in matplotlib version 3.1.2.
+             ;; See
+             ;; <https://github.com/matplotlib/matplotlib/issues/15382>.
+             ;; Also exclude tests that require meshes supplied by
+             ;; git-lfs.
              (substitute* "demo/test.py"
                (("(.*stem !.*)" line)
                 (string-append
                  line "\n"
                  "excludeList = [\n"
+                 "'built-in-meshes', \n"
+                 "'hyperelasticity', \n"
+                 "'elasticity', \n"
                  "'multimesh-quadrature', \n"
                  "'multimesh-marking', \n"
                  "'mixed-poisson-sphere', \n"

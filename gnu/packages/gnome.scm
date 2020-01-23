@@ -42,7 +42,7 @@
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
-;;; Copyright © 2019 Raghav Gururajan <raghavgururajan@disroot.org>
+;;; Copyright © 2019, 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
@@ -6250,7 +6250,8 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
-              (patches (search-patches "evolution-data-server-locales.patch"))
+              (patches (search-patches "evolution-data-server-locales.patch"
+                                       "evolution-data-server-libical-compat.patch"))
               (sha256
                (base32
                 "0zsc9xwy6ixk3x0dx69ax5isrdw8qxjdxg2i5fr95s40nss7rxl3"))))
@@ -7855,9 +7856,11 @@ world.")
        ("glib-networking" ,glib-networking)
        ("gnome-backgrounds" ,gnome-backgrounds)
        ("gnome-bluetooth" ,gnome-bluetooth)
+       ("gnome-color-manager" ,gnome-color-manager)
        ("gnome-control-center" ,gnome-control-center)
        ("gnome-desktop" ,gnome-desktop)
        ("gnome-getting-started-docs" ,gnome-getting-started-docs)
+       ("gnome-initial-setup" ,gnome-initial-setup)
        ("gnome-keyring" ,gnome-keyring)
        ("gnome-menus" ,gnome-menus)
        ("gnome-session" ,gnome-session)
@@ -7866,10 +7869,13 @@ world.")
        ("gnome-shell" ,gnome-shell)
        ("gnome-themes-extra" ,gnome-themes-extra)
        ("gnome-user-docs" ,gnome-user-docs)
+       ("gnome-user-share" ,gnome-user-share)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gvfs" ,gvfs)
        ("mutter" ,mutter)
        ("orca" ,orca)
+       ("rygel" ,rygel)
+       ("sushi" ,sushi)
      ;; GNOME-Core-Utilities
        ("baobab" ,baobab)
        ("cheese" ,cheese)
@@ -7878,6 +7884,7 @@ world.")
        ("evince" ,evince)
        ("file-roller" ,file-roller)
        ("gedit" ,gedit)
+       ; TODO: ("gnome-boxes" ,gnome-boxes)
        ("gnome-calculator" ,gnome-calculator)
        ("gnome-calendar" ,gnome-calendar)
        ("gnome-characters" ,gnome-characters)
@@ -7886,9 +7893,12 @@ world.")
        ("gnome-disk-utility" ,gnome-disk-utility)
        ("gnome-font-viewer" ,gnome-font-viewer)
        ("gnome-maps" ,gnome-maps)
+       ; TODO: ("gnome-music" ,gnome-music)
+       ; TODO: ("gnome-photos" ,gnome-photos)
        ("gnome-screenshot" ,gnome-screenshot)
        ("gnome-system-monitor" ,gnome-system-monitor)
        ("gnome-terminal" ,gnome-terminal)
+       ("gnome-weather" ,gnome-weather)
        ("nautilus" ,nautilus)
        ("simple-scan" ,simple-scan)
        ("totem" ,totem)

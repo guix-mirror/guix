@@ -658,6 +658,7 @@
 
 (define %kresd.conf
   (plain-file "kresd.conf" "-- -*- mode: lua -*-
+trust_anchors.add_file('/var/cache/knot-resolver/root.keys')
 net = { '127.0.0.1', '::1' }
 user('knot-resolver', 'knot-resolver')
 modules = { 'hints > iterate', 'stats', 'predict' }

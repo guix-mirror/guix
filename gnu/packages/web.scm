@@ -1619,7 +1619,8 @@ language known as SASS.")
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "0830pjcvhzxh6yixj82x5k5r1xnadjqzi16kp53213icbly0r9ma"))))))))))
+               "0830pjcvhzxh6yixj82x5k5r1xnadjqzi16kp53213icbly0r9ma"))))))))
+    (properties '((hidden? . #t)))))
 
 
 (define-public perl-apache-logformat-compiler
@@ -4883,7 +4884,7 @@ C.  It is developed as part of the NetSurf project.")
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
        ("pkg-config" ,pkg-config)
-       ("check" ,check)                 ;for tests
+       ("check" ,check-0.12)            ; For tests
        ("bison" ,bison)
        ("flex" ,flex)))
     (arguments netsurf-buildsystem-arguments)

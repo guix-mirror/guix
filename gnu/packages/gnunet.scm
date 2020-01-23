@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
 ;;; Copyright © 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017, 2018, 2019 ng0 <ng0@n0.is>
@@ -179,31 +179,44 @@ authentication and support for SSL3 and TLS.")
 (define-public gnurl
   (package
    (name "gnurl")
-   (version "7.63.0")
+   (version "7.67.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/gnunet/" name "-" version ".tar.Z"))
             (sha256
              (base32
-              "021b3pdfnqywk5q07y48kxyz7g4jjg35dk3cv0ps0x50qjr4ix33"))))
+              "0ssjz2npr2zjvcpfz9qbaj92xc9ayg8wx4hyl132snl94qr2v670"))))
    (build-system gnu-build-system)
    (outputs '("out"
-              "doc"))                             ; 1.7 MiB of man3 pages
+              "doc"))                             ; 1.8 MiB of man3 pages
    (inputs `(("gnutls" ,gnutls/dane)
-             ("libidn" ,libidn)
+             ("libidn2" ,libidn2)
              ("zlib" ,zlib)))
    (native-inputs
     `(("libtool" ,libtool)
-      ("groff" ,groff)
       ("perl" ,perl)
       ("pkg-config" ,pkg-config)
-      ("python" ,python-2)))
+      ("python" ,python)))
    (arguments
-    `(#:configure-flags (list "--disable-ntlm-wb")
-      #:test-target "test"
-      #:parallel-tests? #f
+    `(#:configure-flags
+      ;; All of these produce errors during configure.
+      (list "--disable-ftp"
+            "--disable-file"
+            "--disable-ldap"
+            "--disable-rtsp"
+            "--disable-dict"
+            "--disable-telnet"
+            "--disable-tftp"
+            "--disable-pop3"
+            "--disable-imap"
+            "--disable-smb"
+            "--disable-smtp"
+            "--disable-gopher"
+            "--without-ssl"
+            "--without-libpsl"
+            "--without-librtmp"
+            "--disable-ntlm-wb")
       #:phases
-      ;; We have to patch runtests.pl in tests/ directory
       (modify-phases %standard-phases
         (add-after 'install 'move-man3-pages
           (lambda* (#:key outputs #:allow-other-keys)
@@ -214,6 +227,7 @@ authentication and support for SSL3 and TLS.")
               (rename-file (string-append out "/share/man/man3")
                            (string-append doc "/share/man/man3"))
               #t)))
+        ;; We have to patch runtests.pl in tests/ directory
         (replace 'check
           (lambda _
             (substitute* "tests/runtests.pl"

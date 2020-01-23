@@ -15,7 +15,7 @@
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Stefan Stefanović <stefanx2ovic@gmail.com>
 ;;; Copyright © 2019 Reza Alizadeh Majd <r.majd@pantherx.org>
-;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -986,7 +986,7 @@ which speak the Mobile Interface Broadband Model (MBIM) protocol.")
 (define-public libqmi
   (package
     (name "libqmi")
-    (version "1.22.4")
+    (version "1.24.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -994,7 +994,7 @@ which speak the Mobile Interface Broadband Model (MBIM) protocol.")
                     "libqmi-" version ".tar.xz"))
               (sha256
                (base32
-                "1wgrrb9vb3myl8xgck8ik86876ycbg8crylybs3ssi21vrxqwnsc"))))
+                "12licfsszr6qxpg9b2b04qm2glk8d42fcy32zr8jzwrgr7gbl5h3"))))
     (build-system gnu-build-system)
     (inputs
      `(("libgudev" ,libgudev)))
@@ -1472,14 +1472,14 @@ encoding names are iconv-compatible.")
 (define-public udiskie
   (package
     (name "udiskie")
-    (version "1.7.7")
+    (version "2.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "udiskie" version))
        (sha256
         (base32
-         "121g9dkr7drv9igpdbcbkj59x15mm72rzp3198bp50zj0lr4wbvi"))
+         "0gjjzz0k8dlsk03fl2882lbl88hbv031ww72qj02gr65yph0jqgc"))
        ;; Remove support for the libappindicator library of the
        ;; Unity desktop environment which is not in Guix.
        (patches (search-patches "udiskie-no-appindicator.patch"))))

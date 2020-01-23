@@ -1961,21 +1961,20 @@ simulator backends @code{Qucsator}, @code{ngspice} and @code{Xyce}.")
 (define-public librepcb
   (package
     (name "librepcb")
-    (version "0.1.2")
+    (version "0.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.librepcb.org/releases/"
                            version "/librepcb-" version "-source.zip"))
        (sha256
-        (base32
-         "1xgk0r3nxdd2cy7d1k165d005gsngnz1v2wbwivacw7gis0i8ip7"))))
+        (base32 "1ich849dsx2hmcwlwbry4mkg374n940l3hy6srh4qms2rm7vd7x0"))))
     (build-system gnu-build-system)
     (inputs
      `(("qtbase" ,qtbase)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("qttools" ,qttools) ; for lrelease
+     `(("qttools" ,qttools)             ; for lrelease
        ("unzip" ,unzip)))
     (arguments
      `(#:phases

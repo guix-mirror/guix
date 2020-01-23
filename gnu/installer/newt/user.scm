@@ -168,9 +168,9 @@ a thunk, if the confirmation doesn't match PASSWORD, and return its result."
         (try-again))))
 
 (define (run-root-password-page)
-  ;; TRANSLATORS: Leave "root" untranslated: it refers to the name of the
-  ;; system administrator account.
   (define password
+    ;; TRANSLATORS: Leave "root" untranslated: it refers to the name of the
+    ;; system administrator account.
     (run-input-page (G_ "Please choose a password for the system \
 administrator (\"root\").")
                     (G_ "System administrator password")

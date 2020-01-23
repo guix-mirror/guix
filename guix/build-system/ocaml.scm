@@ -27,8 +27,8 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:export (%ocaml-build-system-modules
-            package-with-ocaml4.01
-            strip-ocaml4.01-variant
+            package-with-ocaml4.07
+            strip-ocaml4.07-variant
             default-findlib
             default-ocaml
             lower
@@ -84,13 +84,13 @@
   (let ((module (resolve-interface '(guix build-system dune))))
     (module-ref module 'dune-build-system)))
 
-(define (default-ocaml4.01)
+(define (default-ocaml4.07)
   (let ((ocaml (resolve-interface '(gnu packages ocaml))))
-    (module-ref ocaml 'ocaml-4.01)))
+    (module-ref ocaml 'ocaml-4.07)))
 
-(define (default-ocaml4.01-findlib)
+(define (default-ocaml4.07-findlib)
   (let ((module (resolve-interface '(gnu packages ocaml))))
-    (module-ref module 'ocaml4.01-findlib)))
+    (module-ref module 'ocaml4.07-findlib)))
 
 (define* (package-with-explicit-ocaml ocaml findlib old-prefix new-prefix
                                        #:key variant-property)
@@ -145,17 +145,17 @@ pre-defined variants."
 
   (package-mapping transform cut?))
 
-(define package-with-ocaml4.01
-  (package-with-explicit-ocaml (delay (default-ocaml4.01))
-                               (delay (default-ocaml4.01-findlib))
-                               "ocaml-" "ocaml4.01-"
-                               #:variant-property 'ocaml4.01-variant))
+(define package-with-ocaml4.07
+  (package-with-explicit-ocaml (delay (default-ocaml4.07))
+                               (delay (default-ocaml4.07-findlib))
+                               "ocaml-" "ocaml4.07-"
+                               #:variant-property 'ocaml4.07-variant))
 
-(define (strip-ocaml4.01-variant p)
-  "Remove the 'ocaml4.01-variant' property from P."
+(define (strip-ocaml4.07-variant p)
+  "Remove the 'ocaml4.07-variant' property from P."
   (package
     (inherit p)
-    (properties (alist-delete 'ocaml4.01-variant (package-properties p)))))
+    (properties (alist-delete 'ocaml4.07-variant (package-properties p)))))
 
 (define* (lower name
                 #:key source inputs native-inputs outputs system target

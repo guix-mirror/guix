@@ -114,7 +114,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
 (define-public isc-bind
   (package
     (name "bind")
-    (version "9.14.9")
+    (version "9.14.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -122,7 +122,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
                     "/bind-" version ".tar.gz"))
               (sha256
                (base32
-                "0g2ph3hlw86yib8hv13qgkb4i84s9zv22r4k6yqlycm2izamwmr9"))))
+                "0nkkc2phkkzwgl922xg41gx5pc5f4safabqslaw3880hwdf8vfaa"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs
@@ -680,11 +680,16 @@ synthesis, and on-the-fly re-configuration.")
                 "09ffmqx79lv5psr433x4n946njgsn071b9b7161pcb9bmrqz380c"))))
     (build-system meson-build-system)
     (arguments
-     '(#:configure-flags
-       '("-Dmanaged_ta=disabled"      ; we'll manage the DNS root data ourself
-         "-Ddoc=enabled")
+     '(#:configure-flags '("-Ddoc=enabled")
        #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'disable-default-ta
+           (lambda _
+             ;;  Disable the default managed root TA, since we don't have
+             ;;  write access to the keyfile and its directory in store.
+             (substitute* "daemon/lua/sandbox.lua.in"
+               (("^trust_anchors\\.add_file.*") ""))
+             #t))
          (add-after 'build 'build-doc
            (lambda _
              (invoke "ninja" "doc")))

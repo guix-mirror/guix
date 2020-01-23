@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2017, 2018, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
@@ -84,7 +84,8 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
   #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-26))
+  #:use-module (srfi srfi-26)
+  #:use-module (ice-9 match))
 
 (define-public atk
   (package
@@ -865,6 +866,12 @@ application suites.")
                        (string-append name "dir = " prefix
                                       "/guile/site/@GUILE_EFFECTIVE_VERSION@"
                                       suffix)))
+
+                    ;; Guile 2.x <libguile.h> used to pull in <string.h> and
+                    ;; other headers but this is no longer the case in 3.0.
+                    (substitute* (find-files "." "\\.[ch]$")
+                      (("^ *# *include.*libguile\\.h.*$")
+                       "#include <libguile.h>\n#include <string.h>\n"))
                     #t)))))
     (build-system gnu-build-system)
     (inputs
@@ -886,6 +893,22 @@ importantly, it is pleasant to use.  You get a powerful and well-maintained
 graphics library with all of the benefits of Scheme: memory management,
 exceptions, macros, and a dynamic programming environment.")
     (license license:lgpl3+)))
+
+(define-public guile3.0-cairo
+  (package
+    (inherit guile-cairo)
+    (name "guile3.0-cairo")
+    (arguments
+     (substitute-keyword-arguments (package-arguments guile-cairo)
+       ((#:configure-flags flags ''())
+        ;; Uses of 'scm_t_uint8' & co. are deprecated; don't stop the build
+        ;; because of them.
+        `(cons "--disable-Werror" ,flags))))
+    (inputs
+     `(("guile" ,guile-3.0)
+       ("guile-lib" ,guile3.0-lib)
+       ,@(fold alist-delete (package-inputs guile-cairo)
+               '("guile" "guile-lib"))))))
 
 (define-public guile-rsvg
   ;; Use a recent snapshot that supports Guile 2.2 and beyond.
@@ -934,6 +957,17 @@ images onto Cairo surfaces.")
       (home-page "http://wingolog.org/projects/guile-rsvg/")
       (license license:lgpl2.1+))))
 
+(define-public guile3.0-rsvg
+  (package
+    (inherit guile-rsvg)
+    (name "guile3.0-rsvg")
+    (inputs
+     `(("guile" ,guile-3.0)
+       ("guile-lib" ,guile3.0-lib)
+       ,@(fold alist-delete (package-inputs guile-rsvg)
+               '("guile" "guile-lib"))))
+    (propagated-inputs `(("guile-cairo" ,guile3.0-cairo)))))
+
 (define-public guile-present
   (package
     (name "guile-present")
@@ -945,21 +979,37 @@ images onto Cairo surfaces.")
               (sha256
                (base32
                 "1qam447m05sxxv6x8dlzg7qnyfc4dh8apjw1idpfhpns671gfr6m"))
-              (patches (search-patches "guile-present-coding.patch"))))
+              (patches (search-patches "guile-present-coding.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Allow builds with Guile 3.0.
+                  (substitute* "configure"
+                    (("2\\.2 2\\.0")
+                     "3.0 2.2 2.0"))
+
+                  ;; Install .go files in the right place.
+                  (substitute* "Makefile.in"
+                    (("/ccache") "/site-ccache"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'install 'post-install
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out   (assoc-ref outputs "out"))
                     (bin   (string-append out "/bin"))
-                    (guile (assoc-ref inputs "guile")))
+                    (guile (assoc-ref inputs "guile"))
+                    (version
+                     ,(match (assoc "guile" (package-inputs this-package))
+                        (("guile" guile)
+                         (version-major+minor (package-version guile))))))
                (substitute* (find-files bin ".*")
                  (("guile")
                   (string-append guile "/bin/guile -L "
-                                 out "/share/guile/site/2.0 -C "
-                                 out "/share/guile/site/2.0 "))))
+                                 out "/share/guile/site/" version " -C "
+                                 out "/lib/guile/" version "/site-ccache "))))
              #t)))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("guile" ,guile-2.2)))
@@ -977,6 +1027,16 @@ Guile-Present can be used to make presentations programmatically, but also
 includes a tools to generate PDF presentations out of Org mode and Texinfo
 documents.")
     (license license:lgpl3+)))
+
+(define-public guile3.0-present
+  (package
+    (inherit guile-present)
+    (name "guile3.0-present")
+    (inputs `(("guile" ,guile-3.0)))
+    (propagated-inputs
+     `(("guile-lib" ,guile3.0-lib)
+       ("guile-cairo" ,guile3.0-cairo)
+       ("guile-rsvg" ,guile3.0-rsvg)))))
 
 (define-public guile-gnome
    (package

@@ -286,6 +286,14 @@ without requiring the source code to be rewritten.")
                (base32
                 "0x8ca6q1qdmk29lh12gj6ngvgn7kp79w42rxfgwrpxm9jmjqs4y9"))
               (patches (search-patches "guile-2.2-skip-oom-test.patch"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments guile-2.2)
+       ;; XXX: On ARMv7, work around <https://bugs.gnu.org/39208> by disabling
+       ;; JIT.
+       ((#:configure-flags flags '())
+        (if (target-arm32?)
+            `(cons "--disable-jit" ,flags)
+            flags))))
     (native-search-paths
      (list (search-path-specification
             (variable "GUILE_LOAD_PATH")

@@ -220,7 +220,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
   (package
     (inherit go-1.4)
     (name "go")
-    (version "1.12.13")
+    (version "1.12.15")
     (source
      (origin
        (method url-fetch)
@@ -228,7 +228,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                            name version ".src.tar.gz"))
        (sha256
         (base32
-         "19zmrhydd52vhdnzlhxqklzg1mnav434dcgw9wl4iajbvfwd70sk"))))
+         "1hw4xjywcl883dnvfbb92w85sy8n231fdri4aynj8xajgr0p9fla"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.4)
        ((#:phases phases)
@@ -265,9 +265,6 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                    (("/usr/bin") (getcwd))
                    (("/bin/pwd") (which "pwd"))
                    (("/bin/sh") (which "sh")))
-
-                 (substitute* "cmd/vendor/golang.org/x/sys/unix/syscall_unix_test.go"
-                   (("/usr/bin") "/tmp"))
 
                  ;; Add libgcc to runpath
                  (substitute* "cmd/link/internal/ld/lib.go"

@@ -2981,7 +2981,7 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "19.11.1")
+    (version "20.01.3")
     (source
      (origin
        (method git-fetch)
@@ -2990,7 +2990,7 @@ point numbers.")
              (commit (string-append "Version-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "16xizaddb27432n1083y89ir5zdqvllsgbwrzzk4jc2rw1ldxfsv"))))
+        (base32 "18fj2m1qwlbavivpixph112wq9hxy3hh7c8q07djc3bhrzf2a7v7"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)))
@@ -3024,7 +3024,7 @@ point numbers.")
                   ,(string-append
                     (assoc-ref inputs "adwaita-icon-theme") "/share"))))
              #t)))))
-    (home-page "https://andrejv.github.io/wxmaxima/")
+    (home-page "https://wxmaxima-developers.github.io/wxmaxima/")
     (synopsis "Graphical user interface for the Maxima computer algebra system")
     (description
      "wxMaxima is a graphical user interface for the Maxima computer algebra

@@ -61,7 +61,7 @@
 ;;;
 ;;; This module provides the infrastructure to run operating system tests.
 ;;; The most important part of that is tools to instrument the OS under test,
-;;; essentially allowing to run in a virtual machine controlled by the host
+;;; essentially allowing it to run in a virtual machine controlled by the host
 ;;; system--hence the name "marionette".
 ;;;
 ;;; Code:
