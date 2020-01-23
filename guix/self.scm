@@ -48,13 +48,13 @@
   (let ((ref (lambda (module variable)
                (module-ref (resolve-interface module) variable))))
     (match-lambda
-      ("guile"      (ref '(gnu packages commencement) 'guile-final))
-      ("guile-json" (ref '(gnu packages guile) 'guile-json-3))
-      ("guile-ssh"  (ref '(gnu packages ssh)   'guile-ssh))
-      ("guile-git"  (ref '(gnu packages guile) 'guile-git))
-      ("guile-sqlite3" (ref '(gnu packages guile) 'guile-sqlite3))
-      ("guile-gcrypt"  (ref '(gnu packages gnupg) 'guile-gcrypt))
-      ("gnutls"     (ref '(gnu packages tls) 'gnutls))
+      ("guile"      (ref '(gnu packages guile) 'guile-3.0))
+      ("guile-json" (ref '(gnu packages guile) 'guile3.0-json))
+      ("guile-ssh"  (ref '(gnu packages ssh)   'guile3.0-ssh))
+      ("guile-git"  (ref '(gnu packages guile) 'guile3.0-git))
+      ("guile-sqlite3" (ref '(gnu packages guile) 'guile3.0-sqlite3))
+      ("guile-gcrypt"  (ref '(gnu packages gnupg) 'guile3.0-gcrypt))
+      ("gnutls"     (ref '(gnu packages tls) 'guile3.0-gnutls))
       ("zlib"       (ref '(gnu packages compression) 'zlib))
       ("lzlib"      (ref '(gnu packages compression) 'lzlib))
       ("gzip"       (ref '(gnu packages compression) 'gzip))
@@ -1120,9 +1120,9 @@ is not supported."
         version))
 
   (define guile
-    ;; When PULL-VERSION >= 1, produce a self-contained Guix and use Guile 2.2
-    ;; unconditionally.
-    (default-guile))
+    ;; When PULL-VERSION >= 1, produce a self-contained Guix and use the
+    ;; current Guile unconditionally.
+    (specification->package "guile"))
 
   (when (and (< pull-version 1)
              (not (string=? (package-version guile) guile-version)))
@@ -1141,7 +1141,7 @@ is not supported."
                                                      (shorten version))
                                #:pull-version pull-version
                                #:guile-version (if (>= pull-version 1)
-                                                   "2.2" guile-version)
+                                                   "3.0" guile-version)
                                #:guile-for-build guile)))
       (if guix
           (lower-object guix)
