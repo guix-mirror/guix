@@ -84,7 +84,8 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
   #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-26))
+  #:use-module (srfi srfi-26)
+  #:use-module (ice-9 match))
 
 (define-public atk
   (package
@@ -956,18 +957,22 @@ images onto Cairo surfaces.")
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'install 'post-install
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out   (assoc-ref outputs "out"))
                     (bin   (string-append out "/bin"))
-                    (guile (assoc-ref inputs "guile")))
+                    (guile (assoc-ref inputs "guile"))
+                    (version
+                     ,(match (assoc "guile" (package-inputs this-package))
+                        (("guile" guile)
+                         (version-major+minor (package-version guile))))))
                (substitute* (find-files bin ".*")
                  (("guile")
                   (string-append guile "/bin/guile -L "
-                                 out "/share/guile/site/2.0 -C "
-                                 out "/share/guile/site/2.0 "))))
+                                 out "/share/guile/site/" version " -C "
+                                 out "/lib/guile/" version "/site-ccache "))))
              #t)))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("guile" ,guile-2.2)))
