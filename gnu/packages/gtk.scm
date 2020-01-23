@@ -946,7 +946,14 @@ images onto Cairo surfaces.")
               (sha256
                (base32
                 "1qam447m05sxxv6x8dlzg7qnyfc4dh8apjw1idpfhpns671gfr6m"))
-              (patches (search-patches "guile-present-coding.patch"))))
+              (patches (search-patches "guile-present-coding.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Install .go files in the right place.
+                  (substitute* "Makefile.in"
+                    (("/ccache") "/site-ccache"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
