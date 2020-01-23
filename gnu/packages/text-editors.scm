@@ -60,6 +60,7 @@
   #:use-module (gnu packages regex)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages terminals)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages xml))
 
 (define-public vis
@@ -717,3 +718,45 @@ card.  It offers:
 @item Compose function for Latin 1 characters
 @end itemize")
     (license license:gpl2+)))
+
+(define-public ne
+  (package
+    (name "ne")
+    (version "3.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/vigna/ne.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0h6d08cnwrk96ss83i9bragwwanph6x54sm3ak1z81146dsqsiif"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("perl" ,perl)
+       ("texinfo" ,texinfo)))
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (arguments
+     `(#:tests? #f
+       #:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "LDFLAGS=-L" (assoc-ref %build-inputs "ncurses")
+                            "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (substitute* "src/makefile"
+              (("-lcurses") "-lncurses"))
+             #t)))))
+    (home-page "http://ne.di.unimi.it/")
+    (synopsis "Text editor with menu bar")
+    (description "This package provides a modeless text editor with menu bar.
+It supports syntax highlighting, regular expressions, configurable menus,
+keybindings, autocomplete and unlimited undo.  It can pipe a marked block
+of text through any command line filter.  It can also open very large binary
+files.  It was originally developed on the Amiga 3000T.")
+    (license license:gpl3+)))
