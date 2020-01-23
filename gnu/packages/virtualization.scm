@@ -75,6 +75,7 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages selinux)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages spice)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
@@ -125,6 +126,7 @@
        ;; boot_sector_test: assertion failed (signature == SIGNATURE): (0x00000000 == 0x0000dead)
        #:parallel-tests? #f
        #:configure-flags (list "--enable-usb-redir" "--enable-opengl"
+                               "--enable-docs"
                                (string-append "--smbd="
                                               (assoc-ref %outputs "out")
                                               "/libexec/samba-wrapper")
@@ -234,6 +236,7 @@ exec smbd $@")))
                      ("bison" ,bison)
                      ("pkg-config" ,pkg-config)
                      ("python-wrapper" ,python-wrapper)
+                     ("python-sphinx" ,python-sphinx)
                      ("texinfo" ,texinfo)))
     (home-page "https://www.qemu.org")
     (synopsis "Machine emulator and virtualizer")
@@ -295,7 +298,7 @@ server and embedded PowerPC, and S390 guests.")
     ;; qemu-minimal-2.10 needs Python 2. Remove below once no longer necessary.
     (native-inputs `(("python-2" ,python-2)
                      ,@(fold alist-delete (package-native-inputs qemu)
-                             '("python-wrapper"))))
+                             '("python-wrapper" "python-sphinx"))))
     (inputs
      (fold alist-delete (package-inputs qemu)
            ;; Disable seccomp support, because it's not required for the GRUB
