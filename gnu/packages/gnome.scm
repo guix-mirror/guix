@@ -1709,14 +1709,16 @@ guidelines.")
 (define-public shared-mime-info
   (package
     (name "shared-mime-info")
-    (version "1.10")
+    (version "1.15")
     (source (origin
              (method url-fetch)
-             (uri (string-append "https://freedesktop.org/~hadess/"
-                                 "shared-mime-info-" version ".tar.xz"))
+             (uri (string-append
+                   "https://gitlab.freedesktop.org/xdg/shared-mime-info/uploads/"
+                   "b27eb88e4155d8fccb8bb3cd12025d5b/shared-mime-info-" version
+                   ".tar.xz"))
              (sha256
               (base32
-               "1gxyvwym3xgpmp262gfn8jg5sla6k5hy6m6dmy6grgiq90xsh9f6"))))
+               "146vynj78wcwdq0ms52jzm1r4m6dzi1rhyh3h4xyb6bw8ckv10pl"))))
     (build-system gnu-build-system)
     (arguments
      ;; The build system appears not to be parallel-safe.
@@ -1725,7 +1727,8 @@ guidelines.")
      `(("glib" ,glib)
        ("libxml2" ,libxml2)))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("gettext" ,gettext-minimal)
+       ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)))
     (home-page "https://www.freedesktop.org/wiki/Software/shared-mime-info")
     (synopsis "Database of common MIME types")
