@@ -972,7 +972,7 @@ compilers that can directly deal with packages.")
   (package
     (inherit ocaml-findlib)
     (name "ocaml4.07-findlib")
-    (inputs
+    (native-inputs
      `(("m4" ,m4)
        ("ocaml" ,ocaml-4.07)))))
 
