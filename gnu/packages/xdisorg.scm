@@ -1895,7 +1895,7 @@ temperature of the screen.")
     (home-page "https://github.com/google/xsecurelock")
     (synopsis "X11 screen lock utility with the primary goal of security")
     (description "@code{xsecurelock} is an X11 screen locker which uses
-a modular design to avoid the usual pitfalls of screen locking utility design.
+a modular design to avoid the usual pitfalls of screen locking utility design.
 
 As a consequence of the modular design, the usual screen locker service
 shouldn't be used with @code{xsecurelock}.  Instead, you need to add a helper
