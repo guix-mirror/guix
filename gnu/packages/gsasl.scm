@@ -88,7 +88,8 @@ the underlying security implementation.")
               "1lnqfbaajkj1r2fx1db1qgcxy69pfgbyq7xd2kpvyxhra4m1dnjd"))))
    (build-system gnu-build-system)
    (arguments
-    `(#:configure-flags '("--with-gssapi-impl=mit")))
+    `(#:configure-flags '("--with-gssapi-impl=mit"
+                          "--disable-static")))
    (inputs
     `(("libgcrypt" ,libgcrypt)
       ("libidn" ,libidn)
