@@ -1271,6 +1271,9 @@ release of Jane Street packages.  It reads metadata from @file{dune} files
 following a very simple s-expression syntax.")
     (license license:expat)))
 
+(define-public ocaml4.07-dune
+  (package-with-ocaml4.07 dune))
+
 (define-public ocaml-migrate-parsetree
   (package
     (name "ocaml-migrate-parsetree")
