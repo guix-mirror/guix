@@ -1617,7 +1617,8 @@ language known as SASS.")
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "0830pjcvhzxh6yixj82x5k5r1xnadjqzi16kp53213icbly0r9ma"))))))))))
+               "0830pjcvhzxh6yixj82x5k5r1xnadjqzi16kp53213icbly0r9ma"))))))))
+    (properties '((hidden? . #t)))))
 
 
 (define-public perl-apache-logformat-compiler
