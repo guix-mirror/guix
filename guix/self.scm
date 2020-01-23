@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,7 +28,6 @@
   #:use-module (guix sets)
   #:use-module (guix modules)
   #:use-module ((guix build utils) #:select (find-files))
-  #:use-module ((guix build compile) #:select (%lightweight-optimizations))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-35)
