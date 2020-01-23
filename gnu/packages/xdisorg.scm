@@ -1960,7 +1960,7 @@ The cutbuffer and clipboard selection are always synchronized.")
 (define-public jgmenu
   (package
     (name "jgmenu")
-    (version "3.5")
+    (version "4.0.1")
     (source
      (origin
        (method git-fetch)
@@ -1970,34 +1970,35 @@ The cutbuffer and clipboard selection are always synchronized.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0q0m3sskgmjv28gzvjkphgg3yhwzc9w9fj9i342pibb50impjazy"))))
+         "1q0rpg2d96sn3rrdi8m7bngnxxqyxilpjxi7skiw4gvpiv1akxjp"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("perl" ,perl)
+     `(("cppcheck" ,cppcheck)
+       ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("cairo" ,cairo)
+       ("glib" ,glib)
        ("librsvg" ,librsvg)
        ("libx11" ,libx11)
        ("libxml2" ,libxml2)
        ("libxrandr" ,libxrandr)
-       ("pango" ,pango)
-       ("python" ,python)))
+       ("pango" ,pango)))
     (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'fix-paths
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (let ((python (assoc-ref inputs "python")))
-                        (substitute* "src/jgmenu-pmenu.py"
-                          (("#!/usr/bin/env python3")
-                           (string-append "#!" python "/bin/python3")))
-                        #t)))
-                  (replace 'configure
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((out (assoc-ref outputs "out")))
-                        (setenv "prefix" out)
-                        (setenv "CC" "gcc")
-                        #t))))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             (substitute* "scripts/cppcheck-wrapper.sh"
+               (("--library=/usr/share/cppcheck/cfg/gnu\\.cfg")
+                ""))
+             #t))
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (setenv "CC" "gcc")
+             (invoke "./configure"
+                     (string-append "--prefix=" (assoc-ref outputs "out")))
+             #t)))))
     (synopsis "Simple X11 menu")
     (description
      "This is a simple menu for X11 designed for scripting and tweaking.  It
