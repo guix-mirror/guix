@@ -920,18 +920,28 @@ supports coverage of subprocesses.")
 (define-public python-pytest-runner
   (package
     (name "python-pytest-runner")
-    (version "4.4")
+    (version "5.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-runner" version))
        (sha256
         (base32
-         "1x0d9n40lsiphblbs61rdc0d5r31f6vh0vcahqdv0mffakbnrb80"))))
+         "0awll1bva5zy8cspsxcpv7pjcrdf5c6pf56nqn4f74vvmlzfgiwn"))))
     (build-system python-build-system)
+    (arguments
+     '(;; FIXME: The test suite requires 'python-flake8' and 'python-black',
+       ;; but that introduces a circular dependency.
+       #:tests? #f
+       #:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          (invoke "pytest" "-vv")
+                          (format #t "test suite not run~%"))
+                      #t)))))
     (native-inputs
-     `(("python-pytest" ,python-pytest-bootstrap)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://github.com/pytest-dev/pytest-runner")
     (synopsis "Invoke py.test as a distutils command")
     (description
