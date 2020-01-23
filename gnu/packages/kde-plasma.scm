@@ -25,6 +25,7 @@
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system qt)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
@@ -45,17 +46,12 @@
               (sha256
                (base32
                 "0rljpywpaqmar13jijphkpc9k1crma476j9my0d00hfrjil5xlnn"))))
-    (build-system cmake-build-system)
+    (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
      `(("ki18n" ,ki18n)
        ("qtbase" ,qtbase)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'check-setup
-           (lambda _ (setenv "QT_QPA_PLATFORM" "offscreen") #t)))))
     (home-page "https://cgit.kde.org/kdecoration.git")
     (synopsis "Plugin based library to create window decorations")
     (description "KDecoration is a library to create window decorations.
@@ -137,7 +133,7 @@ manager which re-parents a Client window to a window decoration frame.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32 "0znxfqqyyij6i4dp95gf5g4vrhg4jsshgh2k13ldy294kby2mxw0"))))
-    (build-system cmake-build-system)
+    (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ;; For testing.
@@ -148,16 +144,7 @@ manager which re-parents a Client window to a window decoration frame.")
        ("qtbase" ,qtbase)
        ("qtx11extras" ,qtx11extras)))
     (arguments
-     '(#:tests? #f         ; FIXME: 55% tests passed, 5 tests failed out of 11
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'pre-check
-           (lambda _
-             ;; For the missing '/etc/machine-id'.
-             (setenv "DBUS_FATAL_WARNINGS" "0")
-             ;; Run the tests offscreen.
-             (setenv "QT_QPA_PLATFORM" "offscreen")
-             #t)))))
+     '(#:tests? #f)) ; FIXME: 55% tests passed, 5 tests failed out of 11
     (home-page "https://community.kde.org/Solid/Projects/ScreenManagement")
     (synopsis "KDE's screen management software")
     (description "KScreen is the new screen management software for KDE Plasma
@@ -199,7 +186,7 @@ basic needs and easy to configure for those who want special setups.")
        ("qtx11extras" ,qtx11extras)
        ("plasma" ,plasma-framework)
        ("zlib" ,zlib)))
-    (build-system cmake-build-system)
+    (build-system qt-build-system)
     (arguments
      `(#:configure-flags
        `(,(string-append "-DKDE_INSTALL_DATADIR="
@@ -212,10 +199,6 @@ basic needs and easy to configure for those who want special setups.")
              ;; KF5AuthConfig.cmake.in contains this already.
              (substitute* "processcore/CMakeLists.txt"
                (("KAUTH_HELPER_INSTALL_DIR") "KDE_INSTALL_LIBEXECDIR"))))
-         (add-before 'check 'check-setup
-           (lambda _
-             ;; make Qt render "offscreen", required for tests
-             (setenv "QT_QPA_PLATFORM" "offscreen")))
          (replace 'check
            (lambda _
              ;; TODO: Fix this failing test-case
