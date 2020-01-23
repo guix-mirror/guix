@@ -862,18 +862,18 @@ Powerline support.")
   (package
     (name "font-adobe-source-code-pro")
     (version "2.030R-ro-1.050R-it")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/adobe-fonts/source-code-pro/archive/"
-                    (regexp-substitute/global
-                     ;; The upstream tag uses "/" between the roman and italic
-                     ;; versions, so substitute our "-" separator here.
-                     #f "R-ro-" version 'pre "R-ro/" 'post) ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0arhhsf3i7ss39ykn73d1j8k4n8vx7115xph6jwkd970p1cxvr54"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/adobe-fonts/source-code-pro.git")
+             (commit (regexp-substitute/global
+                      ;; The upstream tag uses "/" between the roman and italic
+                      ;; versions, so substitute our "-" separator here.
+                      #f "R-ro-" version 'pre "R-ro/" 'post))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0hc5kflr8xzqgdm0c3gbgb1paygznxmnivkylid69ipc7wnicx1n"))))
     (build-system font-build-system)
     (home-page "https://github.com/adobe-fonts/source-code-pro")
     (synopsis
@@ -887,18 +887,18 @@ designed to work well in user interface environments.")
   (package
     (name "font-adobe-source-sans-pro")
     (version "2.040R-ro-1.090R-it")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/adobe-fonts/source-sans-pro/archive/"
-                    (regexp-substitute/global
-                     ;; The upstream tag uses "/" between the roman and italic
-                     ;; versions, so substitute our "-" separator here.
-                     #f "R-ro-" version 'pre "R-ro/" 'post) ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1wpbhd2idps53ph8rg1mhr3vz4lsgbpjprcq10nliwcxdz9d8lv0"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/adobe-fonts/source-sans-pro.git")
+             (commit (regexp-substitute/global
+                      ;; The upstream tag uses "/" between the roman and italic
+                      ;; versions, so substitute our "-" separator here.
+                      #f "R-ro-" version 'pre "R-ro/" 'post))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1lzin2hfwidbvhps7shs201p1bpxy6220xmhhprv9fc8bknd4c45"))))
     (build-system font-build-system)
     (home-page "https://github.com/adobe-fonts/source-sans-pro")
     (synopsis
@@ -912,18 +912,18 @@ work well in user interface (UI) environments.")
   (package
     (name "font-adobe-source-serif-pro")
     (version "2.007R-ro-1.007R-it")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/adobe-fonts/source-serif-pro/archive/"
-                    (regexp-substitute/global
-                     ;; The upstream tag uses "/" between the roman and italic
-                     ;; versions, so substitute our "-" separator here.
-                     #f "R-ro-" version 'pre "R-ro/" 'post) ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1sws9k26ldqk375qsigk1zv8cq1xlvadjwvv3dqrcc3qzm1c7hwc"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/adobe-fonts/source-serif-pro.git")
+             (commit (regexp-substitute/global
+                      ;; The upstream tag uses "/" between the roman and italic
+                      ;; versions, so substitute our "-" separator here.
+                      #f "R-ro-" version 'pre "R-ro/" 'post))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1vvzfhjpi47m84bzkapylkd5fri8bdm8qng2hiylmmlw0wk4gpas"))))
     (build-system font-build-system)
     (home-page "https://github.com/adobe-fonts/source-serif-pro")
     (synopsis
@@ -1479,22 +1479,16 @@ formatting.")
 (define-public font-public-sans
   (package
     (name "font-public-sans")
-    (version "1.0.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/uswds/public-sans.git")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "12ccj7ph3pg962d52d3slbvd44gwfm6bb2846dxyf1xc5h2iwhdv"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; remove versions of predecessor font
-                  (delete-file-recursively "fonts/_archive")
-                  #t))))
+    (version "1.008")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/uswds/public-sans.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1qhyxbjv1rnydfpqzd18fbiyz75p4sabphy8yj07hyq0hidp5xsf"))))
     (build-system font-build-system)
     (home-page "https://public-sans.digital.gov/")
     (synopsis "Neutral typeface for interfaces, text, and headings")

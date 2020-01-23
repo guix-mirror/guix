@@ -3641,7 +3641,7 @@ build jobs.")
 (define-public emacs-company
   (package
     (name "emacs-company")
-    (version "0.9.10")
+    (version "0.9.11")
     (source
      (origin
        (method git-fetch)
@@ -3650,7 +3650,7 @@ build jobs.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0shmv48bq9l5xm60dwx9lqyq6b39y3d7qjxdlah7dpipv5vhra42"))))
+        (base32 "0x7ag716jp4xb7kmcmr8pqlxx1v0f2gkjx5gx34wxxqfrndwyx8i"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -3671,7 +3671,7 @@ build jobs.")
     (description
      "Company is a modular completion mechanism.  Modules for retrieving
 completion candidates are called back-ends, modules for displaying them are
-front-ends.  Company comes with many back-ends, e.g. @code{company-elisp}.
+front-ends.  Company comes with many back-ends, e.g., @code{company-elisp}.
 These are distributed in separate files and can be used individually.")
     (license license:gpl3+)))
 

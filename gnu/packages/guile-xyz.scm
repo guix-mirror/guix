@@ -418,7 +418,7 @@ Note that 8sync is only available for Guile 2.2.")
 (define-public guile-daemon
   (package
     (name "guile-daemon")
-    (version "0.1.2")
+    (version "0.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/alezost/" name
@@ -426,7 +426,7 @@ Note that 8sync is only available for Guile 2.2.")
                                   "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0hh6gq6b6phpxm0b1dkxyzj3f4sxdf7dji63609lzypa5v1ad2gv"))))
+                "08gaqrgjlly9k5si72vvpbr4xhq5v52l5ma5y6a7spid5dd057cy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -773,38 +773,17 @@ Vicare Scheme and IronScheme.  Right now it contains:
     (name "guile3.0-pfds")
     (native-inputs `(("guile" ,guile-3.0)))
     (arguments
-     '(#:source-directory "src"
-       #:compile-flags '("--r6rs")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'move-files-around
-           (lambda _
-             ;; See bug #39210.
-             (substitute* '("fingertrees.sls"
-                            "queues/private/condition.sls"
-                            "deques/private/condition.sls")
-               (("&assertion") "&violation"))
-             ;; Move files under a pfds/ directory to reflect the module
-             ;; hierarchy.
-             (mkdir-p "src/pfds")
-             (for-each (lambda (file)
-                         (rename-file file
-                                      (string-append "src/pfds/"
-                                                     file)))
-                       '("bbtrees.sls"
-                         "deques"
-                         "deques.sls"
-                         "dlists.sls"
-                         "fingertrees.sls"
-                         "hamts.sls"
-                         "heaps.sls"
-                         "private"
-                         "psqs.sls"
-                         "queues"
-                         "queues.sls"
-                         "sequences.sls"
-                         "sets.sls"))
-             #t)))))))
+     (substitute-keyword-arguments (package-arguments guile-pfds)
+       ((#:phases phases)
+        `(modify-phases ,phases
+          (add-after 'unpack 'work-around-guile-bug
+            (lambda _
+              ;; See bug #39210.
+              (substitute* '("fingertrees.sls"
+                             "queues/private/condition.sls"
+                             "deques/private/condition.sls")
+                (("&assertion") "&violation"))
+              #t))))))))
 
 (define-public guile-aa-tree
   (package
@@ -1835,7 +1814,18 @@ library.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0aizxdif5dpch9cvs8zz5g8ds5s4xhfnwza2il5ji7fv2h7ks7bd"))))
+                "0aizxdif5dpch9cvs8zz5g8ds5s4xhfnwza2il5ji7fv2h7ks7bd"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Work around miscompilation on Guile 3.0.0 at -O2:
+                  ;; <https://bugs.gnu.org/39251>.
+                  (substitute* "src/md5.scm"
+                    (("\\(define f-ash ash\\)")
+                     "(define f-ash (@ (guile) ash))\n")
+                    (("\\(define f-add \\+\\)")
+                     "(define f-add (@ (guile) +))\n"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
@@ -1871,6 +1861,12 @@ for Guile\".")
     (inherit guile-lib)
     (name "guile2.0-lib")
     (inputs `(("guile" ,guile-2.0)))))
+
+(define-public guile3.0-lib
+  (package
+    (inherit guile-lib)
+    (name "guile3.0-lib")
+    (inputs `(("guile" ,guile-3.0)))))
 
 (define-public guile-minikanren
   (package
@@ -1976,7 +1972,15 @@ inspired by the SCSH regular expression system.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "056z4znikk83nr5mr0x2ac3iinqbywa2bvb37mhr566a1q50isfc"))))
+                "056z4znikk83nr5mr0x2ac3iinqbywa2bvb37mhr566a1q50isfc"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Allow builds with Guile 3.0.
+                  (substitute* "configure"
+                    (("2\\.2 2\\.0")
+                     "3.0 2.2 2.0"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 match) (ice-9 ftw)
@@ -1991,8 +1995,11 @@ inspired by the SCSH regular expression system.")
                              (bin  (string-append out "/bin"))
                              (site (string-append
                                     out "/share/guile/site"))
-                             (deps (list (assoc-ref inputs "guile-reader")
-                                         (assoc-ref inputs "guile-commonmark"))))
+                             (guile-reader (assoc-ref inputs "guile-reader"))
+                             (deps `(,@(if guile-reader
+                                           (list guile-reader)
+                                           '())
+                                     ,(assoc-ref inputs "guile-commonmark"))))
                         (match (scandir site)
                           (("." ".." version)
                            (let ((modules (string-append site "/" version))
@@ -2029,6 +2036,15 @@ Scheme.  Haunt features a functional build system and an extensible
 interface for reading articles in any format.")
     (home-page "http://haunt.dthompson.us")
     (license license:gpl3+)))
+
+(define-public guile3.0-haunt
+  (package
+    (inherit haunt)
+    (name "guile3.0-haunt")
+    (inputs `(("guile" ,guile-3.0)))
+    (propagated-inputs
+     ;; XXX: Guile-Reader is currently unavailable for Guile 3.0 so strip it.
+     `(("guile-commonmark" ,guile3.0-commonmark)))))
 
 (define-public guile2.0-haunt
   (package
@@ -2133,7 +2149,7 @@ is no support for parsing block and inline level HTML.")
                   (add-after 'unpack 'fix-finding-guile
                     (lambda _
                       (substitute* "configure"
-                        (("2\\.0") "2.2 2.0"))
+                        (("2\\.0") "3.0 2.2 2.0"))
                       #t))
                   (add-before 'check 'adjust-tests
                     (lambda _
@@ -2162,6 +2178,12 @@ tasks on a schedule, such as every hour or every Monday.  Mcron is written in
 Guile, so its configuration can be written in Scheme; the original cron
 format is also supported.")
     (license license:gpl3+)))
+
+(define-public guile3.0-mcron
+  (package
+    (inherit mcron)
+    (name "guile3.0-mcron")
+    (inputs `(("guile" ,guile-3.0)))))
 
 (define-public mcron2
   ;; This was mthl's mcron development branch, and it became mcron 1.1.

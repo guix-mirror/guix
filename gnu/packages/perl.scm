@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016, 2017, 2019 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2016, 2017, 2019, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
@@ -1614,14 +1614,14 @@ CPAN::Meta object are present.")
 (define-public perl-cpanel-json-xs
   (package
     (name "perl-cpanel-json-xs")
-    (version "4.17")
+    (version "4.18")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RU/RURBAN/"
                            "Cpanel-JSON-XS-" version ".tar.gz"))
        (sha256
-        (base32 "1yq6hwd6hayqrhaa2h90svqqvsc28k0g4bdip5nyxgm9r93sx07s"))))
+        (base32 "1dnnf6bjz0fi9hk8gzmsklmh5y0z137vk62k3d7s88q30maf3rk3"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-common-sense" ,perl-common-sense)))
@@ -8513,12 +8513,16 @@ screen size, and retrieval/modification of the control characters.")
      `(#:tests? #f ; Tests fail without other Term::ReadLine interfaces present
        #:phases (modify-phases %standard-phases
                   (add-before 'configure 'patch-search-lib
-                    (lambda _
+                    (lambda* (#:key inputs #:allow-other-keys)
                       (substitute* "Makefile.PL"
-                        ;; The configuration provides no way to pass
-                        ;; additional directories to search for the ncurses
-                        ;; library, so just skip the search.
-                        (("&search_lib\\('-lncurses'\\)") "'-lncurses'")))))))
+                        ;; The configuration provides no way easy was to pass
+                        ;; additional directories to search for libraries, so
+                        ;; just patch in the flags.
+                        (("-lreadline" &)
+                         (format #f "-L~a/lib ~a" (assoc-ref inputs "readline") &))
+                        (("&search_lib\\('-lncurses'\\)")
+                         (string-append "'-L" (assoc-ref inputs "ncurses") "/lib"
+                                        " -lncurses'"))))))))
     (home-page "https://metacpan.org/release/Term-ReadLine-Gnu")
     (synopsis "GNU Readline/History Library interface for Perl")
     (description "This module implements an interface to the GNU Readline
@@ -9090,7 +9094,7 @@ duration strings like \"2 minutes\" and \"3 seconds\" to seconds.")
 (define-public perl-time-local
   (package
     (name "perl-time-local")
-    (version "1.2300")
+    (version "1.28")
     (source
      (origin
        (method url-fetch)
@@ -9098,7 +9102,7 @@ duration strings like \"2 minutes\" and \"3 seconds\" to seconds.")
                            "Time-Local-" version ".tar.gz"))
        (sha256
         (base32
-         "0jgvd6v93hlrcmy56yxbm4yrhzi8yvrq8c3xffpgh28af01wmb5j"))))
+         "03p1mxk75vmmi4l0ibpd05b6hncbh8afjhvss87vpp4rrkjvjy4j"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Time-Local")
     (synopsis "Efficiently compute time from local and GMT time")
@@ -9133,15 +9137,15 @@ still work as expected.")
 (define-public perl-timedate
   (package
     (name "perl-timedate")
-    (version "2.30")
+    (version "2.31")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/G/GB/GBARR/"
+       (uri (string-append "mirror://cpan/authors/id/A/AT/ATOOMIC/"
                            "TimeDate-" version ".tar.gz"))
        (sha256
         (base32
-         "11lf54akr9nbivqkjrhvkmfdgkbhw85sq0q4mak56n6bf542bgbm"))))
+         "10ad6l4ii2iahdpw8h0xqwasc1jblan31h597q3js4j5nbnhywjw"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/TimeDate")
     (synopsis "Date parsing/formatting subroutines")
@@ -9268,14 +9272,14 @@ variable conform.")
 (define-public perl-type-tiny
   (package
     (name "perl-type-tiny")
-    (version "1.006000")
+    (version "1.008003")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/T/TO/TOBYINK/"
                            "Type-Tiny-" version ".tar.gz"))
        (sha256
-        (base32 "007xsx78cnjillbny7x9sjn1w6z8m22fmksmay710jhbvw9h19nm"))))
+        (base32 "1x80rlnh7kl4xgm4qvyfbgahcyla4wbyh3b759nm21czn8x6wkm4"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-warnings" ,perl-test-warnings)))

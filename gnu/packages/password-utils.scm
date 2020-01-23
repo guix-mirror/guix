@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Steve Sprang <scs@stevesprang.com>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Aljosha Papsch <misc@rpapsch.de>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Jessica Tallon <tsyesika@tsyesika.se>
@@ -703,41 +703,28 @@ using password-store through rofi interface:
 (define-public argon2
   (package
     (name "argon2")
-    (version "20171227")
+    (version "20190702")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://github.com/P-H-C/phc-winner-argon2/archive/"
-                       version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/P-H-C/phc-winner-argon2")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1n6w5y3va7lrcym7cxr0nikapldqm80wxjdns584bvplq5r03spa"))))
+         "01rwanr4wmr9vm6c712x411wig543q195z2icn388z892a93lc7p"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
-       #:make-flags '("CC=gcc"
-                      "OPTTEST=1")     ;disable CPU optimization
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                          "LIBRARY_REL=lib"
+                          (string-append "ARGON2_VERSION=" ,version)
+                          "OPTTEST=1")  ; disable CPU optimization
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-Makefile
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (substitute* "Makefile"
-                 (("PREFIX = /usr") (string-append "PREFIX = " out)))
-               (substitute* "libargon2.pc"
-                 (("prefix=/usr") (string-append "prefix=" out))
-                 (("@HOST_MULTIARCH@") "")
-                 (("@UPSTREAM_VER@") ,version))
-               #t)))
-         (delete 'configure)
-         (add-after 'install 'install-argon2.pc
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (install-file "libargon2.pc"
-                             (string-append out "/lib/pkgconfig"))
-               #t))))))
+         (delete 'configure))))         ; No configure script.
     (home-page "https://www.argon2.com/")
     (synopsis "Password hashing library")
     (description "Argon2 provides a key derivation function that was declared
@@ -749,15 +736,17 @@ winner of the 2015 Password Hashing Competition.")
 (define-public pass-git-helper
   (package
     (name "pass-git-helper")
-    (version "0.3.1")
+    (version "1.1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/languitar/pass-git-helper/archive/release-"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/languitar/pass-git-helper")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0lz5ncy44pz7z1j2nnyildx8sq33zi3xvg5nkwg25n11nasqh2xn"))))
+         "18nvwlp0w4aqj268wly60rnjzqw2d8jl0hbs6bkwp3hpzzz5g6yd"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -766,12 +755,20 @@ winner of the 2015 Password Hashing Competition.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let* ((password-store (assoc-ref inputs "password-store"))
                     (pass (string-append password-store "/bin/pass")))
-               (substitute* "pass-git-helper"
+               (substitute* '("passgithelper.py"
+                              "test_passgithelper.py")
                  (("'pass'") (string-append "'" pass "'")))
-               #t))))))
+               #t)))
+         (replace 'check
+           (lambda _
+             (setenv "HOME" (getcwd))
+             (invoke "pytest"))))))
     (inputs
      `(("python-pyxdg" ,python-pyxdg)
        ("password-store" ,password-store)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-mock" ,python-pytest-mock)))
     (home-page "https://github.com/languitar/pass-git-helper")
     (synopsis "Git credential helper interfacing with pass")
     (description "pass-git-helper is a git credential helper which allows to
@@ -962,21 +959,22 @@ to use a different password manager.")
     (name "pass-rotate")
     (version "0.1")
     (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/SirCmpwn/pass-rotate/archive/"
-                           version ".tar.gz"))
-       (sha256
-        (base32
-         "1svm5nj8bczv2dg8lh2zqqhbsrljqsw9680r03qwgl9vlci90210"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/ddevault/pass-rotate")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1m067vvdlc85csbpkp8aw4s3ags7q8s3jszrr32kmj9qhk5c254f"))))
     (build-system python-build-system)
     (inputs
      `(("python-beautifulsoup4" ,python-beautifulsoup4)
        ("python-docopt" ,python-docopt)
        ("python-html5lib" ,python-html5lib)
        ("python-requests" ,python-requests)))
-    (home-page "https://github.com/SirCmpwn/pass-rotate")
+    (home-page "https://github.com/ddevault/pass-rotate")
     (synopsis "Rotate password on online services")
     (description "pass-rotate is a command line utility and python library for
 rotating passwords on various web services.  It makes it easier to rotate your

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017 Theodoros Foradis <theodoros@foradis.org>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Amin Bandali <mab@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -301,14 +301,17 @@ Includes the actual FTDI connector.")
 (define-public gtkwave
   (package
     (name "gtkwave")
-    (version "3.3.101")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://gtkwave.sourceforge.net/"
-                                  "gtkwave-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1j6capxwgi8aj3sgqg1r7161icni9y8y93g1rl3bzd3s40jcyhsz"))))
+    (version "3.3.103")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (list (string-append "mirror://sourceforge/gtkwave/"
+                                 "gtkwave-" version "/"
+                                 "gtkwave-" version ".tar.gz")
+                  (string-append "http://gtkwave.sourceforge.net/"
+                                 "gtkwave-" version ".tar.gz")))
+       (sha256
+        (base32 "1xzaxqbabj4sb4n10yki5acglx3736pwl3kwlq4k7i96rzvsn9f3"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gperf" ,gperf)

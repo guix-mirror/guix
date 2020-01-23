@@ -2748,7 +2748,13 @@ operators and scripters.")
              (commit "abeb2c25935ef8c75f1e5deef0f81276754dc975")))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0rqgbw08a5lj41dkp82aq480lqkc4bnxagna7wpqffi821n8gkwz"))))
+        (base32 "0rqgbw08a5lj41dkp82aq480lqkc4bnxagna7wpqffi821n8gkwz"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove pre-built binaries scattered across the source repository.
+           (for-each delete-file (find-files "." "\\.(dll|exe)"))
+           #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "CC=gcc")

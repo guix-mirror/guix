@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016-2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -968,6 +968,14 @@ compilation and linkage, there are new frontends of the various OCaml
 compilers that can directly deal with packages.")
     (license license:x11)))
 
+(define-public ocaml4.07-findlib
+  (package
+    (inherit ocaml-findlib)
+    (name "ocaml4.07-findlib")
+    (native-inputs
+     `(("m4" ,m4)
+       ("ocaml" ,ocaml-4.07)))))
+
 ;; note that some tests may hang for no obvious reason.
 (define-public ocaml-ounit
   (package
@@ -1748,6 +1756,7 @@ through Transport Layer Security (@dfn{TLS}) encrypted connections.")
               (uri (git-reference
                      (url "https://github.com/mirage/mmap")
                      (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1jaismy5d1bhbbanysmr2k79px0yv6ya265dri3949nha1l23i60"))))
@@ -1793,6 +1802,28 @@ make it easy to run normally-blocking I/O operations concurrently in a single
 process.  Also, in many cases, Lwt threads can interact without the need for
 locks or other synchronization primitives.")
     (license license:lgpl2.1)))
+
+(define-public ocaml-lwt-react
+  (package
+    (inherit ocaml-lwt)
+    (name "ocaml-lwt-react")
+    (version "1.1.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/ocsigen/lwt")
+                     ;; Version from opam
+                     (commit "4.3.0")))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0f7036srqz7zmnz0n164734smgkrqz78r1i35cg30x31kkr3pnn4"))))
+    (arguments
+     `(#:package "lwt_react"))
+    (properties `((upstream-name . "lwt_react")))
+    (propagated-inputs
+     `(("ocaml-lwt" ,ocaml-lwt)
+       ("ocaml-react" ,ocaml-react)))))
 
 (define-public ocaml-lwt-log
   (package
@@ -3095,9 +3126,12 @@ connect an engine to your inputs and rendering functions to get an editor.")
      `(#:build-flags (list "--profile" "release")
        #:tests? #f))
     (propagated-inputs
-     `(("lwt" ,ocaml-lwt)
-       ("lwt-log" ,ocaml-lwt-log)
-       ("zed" ,ocaml-zed)))
+     `(("ocaml-lwt" ,ocaml-lwt)
+       ("ocaml-lwt-log" ,ocaml-lwt-log)
+       ("ocaml-lwt-react" ,ocaml-lwt-react)
+       ("ocaml-zed" ,ocaml-zed)))
+    (inputs
+     `(("libev" ,libev)))
     (home-page "https://github.com/diml/lambda-term")
     (synopsis "Terminal manipulation library for OCaml")
     (description "Lambda-Term is a cross-platform library for manipulating the
