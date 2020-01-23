@@ -1955,7 +1955,15 @@ inspired by the SCSH regular expression system.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "056z4znikk83nr5mr0x2ac3iinqbywa2bvb37mhr566a1q50isfc"))))
+                "056z4znikk83nr5mr0x2ac3iinqbywa2bvb37mhr566a1q50isfc"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Allow builds with Guile 3.0.
+                  (substitute* "configure"
+                    (("2\\.2 2\\.0")
+                     "3.0 2.2 2.0"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 match) (ice-9 ftw)
@@ -1970,8 +1978,11 @@ inspired by the SCSH regular expression system.")
                              (bin  (string-append out "/bin"))
                              (site (string-append
                                     out "/share/guile/site"))
-                             (deps (list (assoc-ref inputs "guile-reader")
-                                         (assoc-ref inputs "guile-commonmark"))))
+                             (guile-reader (assoc-ref inputs "guile-reader"))
+                             (deps `(,@(if guile-reader
+                                           (list guile-reader)
+                                           '())
+                                     ,(assoc-ref inputs "guile-commonmark"))))
                         (match (scandir site)
                           (("." ".." version)
                            (let ((modules (string-append site "/" version))
@@ -2008,6 +2019,15 @@ Scheme.  Haunt features a functional build system and an extensible
 interface for reading articles in any format.")
     (home-page "http://haunt.dthompson.us")
     (license license:gpl3+)))
+
+(define-public guile3.0-haunt
+  (package
+    (inherit haunt)
+    (name "guile3.0-haunt")
+    (inputs `(("guile" ,guile-3.0)))
+    (propagated-inputs
+     ;; XXX: Guile-Reader is currently unavailable for Guile 3.0 so strip it.
+     `(("guile-commonmark" ,guile3.0-commonmark)))))
 
 (define-public guile2.0-haunt
   (package
