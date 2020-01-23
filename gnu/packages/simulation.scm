@@ -633,12 +633,20 @@ user interface to the FEniCS core components and external libraries.")
            ,%openmpi-setup)
          (add-before 'check 'pre-check
            (lambda _
-             ;; Exclude tests that require meshes supplied by git-lfs.
+             ;; Exclude three tests that generate
+             ;; 'NotImplementedError' in matplotlib version 3.1.2.
+             ;; See
+             ;; <https://github.com/matplotlib/matplotlib/issues/15382>.
+             ;; Also exclude tests that require meshes supplied by
+             ;; git-lfs.
              (substitute* "demo/test.py"
                (("(.*stem !.*)" line)
                 (string-append
                  line "\n"
                  "excludeList = [\n"
+                 "'built-in-meshes', \n"
+                 "'hyperelasticity', \n"
+                 "'elasticity', \n"
                  "'multimesh-quadrature', \n"
                  "'multimesh-marking', \n"
                  "'mixed-poisson-sphere', \n"
