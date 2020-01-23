@@ -1316,7 +1316,7 @@ the font would look under various sizes.")
 (define-public gcr
   (package
     (name "gcr")
-    (version "3.28.1")
+    (version "3.34.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1324,20 +1324,7 @@ the font would look under various sizes.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "12qn7mcmxb45lz1gq3s3b34rimiyrrshkrpvxdw1fc0w26i4l84m"))
-              (patches
-               (list
-                ;; This patch solves an ordering issue that showed up when
-                ;; running the test suite against newer Glib 2.60.  See
-                ;; <https://gitlab.gnome.org/GNOME/gcr/merge_requests/9>.
-                (origin
-                  (method url-fetch)
-                  (uri (string-append "https://gitlab.gnome.org/GNOME/gcr/commit/"
-                                      "45d637578d7643ff96c0183ac267497a0b4c6344.diff"))
-                  (file-name "gcr-hashtable-ordering.patch")
-                  (sha256
-                   (base32
-                    "1vsqiys8fsm1f1vvds783wwf7zwi5v282rhsai8jrsm6x7h79gbi")))))))
+                "0925snsixzkwh49xiayqmj6fcrmklqk8kyy0jkv7m64h9abm1pr9"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1346,9 +1333,9 @@ the font would look under various sizes.")
          ;; build environment.
          (add-after 'unpack 'disable-failing-tests
            (lambda _
-             (substitute* "gcr/test-system-prompt.c"
-               (("g_test_add") "//")
-               (("return.*") "return 0;"))
+             (substitute* "Makefile.in"
+               (("[[:blank:]]+test-system-prompt\\$\\(EXEEXT\\)")
+                ""))
              #t))
          (add-before 'check 'pre-check
            (lambda _
@@ -1360,11 +1347,11 @@ the font would look under various sizes.")
        ("gnupg" ,gnupg)                ;called as a child process during tests
        ("libgcrypt" ,libgcrypt)))
     (native-inputs
-     `(("python" ,python-2)             ;for tests
+     `(("python" ,python-wrapper)       ;for tests
        ("pkg-config" ,pkg-config)
+       ("gettext" ,gettext-minimal)
        ("glib" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
-       ("intltool" ,intltool)
        ("libxml2" ,libxml2)
        ("vala" ,vala)
        ("xsltproc" ,libxslt)))
