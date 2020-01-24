@@ -1096,7 +1096,7 @@ providing the system administrator with some help in common tasks.")
 (define-public util-linux
   (package
     (name "util-linux")
-    (version "2.34")
+    (version "2.35")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/"
@@ -1104,7 +1104,7 @@ providing the system administrator with some help in common tasks.")
                                   "util-linux-" version ".tar.xz"))
               (sha256
                (base32
-                "1db2kydkwjmvgd1glkcba3adhidxw0f1x735dcjdpdjjf869sgvl"))
+                "1jg2vywxi9m2h0f2pz0a7a9afvv1j5726dg0cwryrhb809b1n25k"))
               (patches (search-patches "util-linux-tests.patch"))
               (modules '((guix build utils)))
               (snippet
@@ -1160,6 +1160,10 @@ providing the system administrator with some help in common tasks.")
                         (substitute* "tests/ts/misc/mcookie"
                           (("/etc/services")
                            (string-append net "/etc/services")))
+
+                        ;; The C.UTF-8 locale does not exist in our libc.
+                        (substitute* "tests/ts/column/invalid-multibyte"
+                          (("C\\.UTF-8") "en_US.utf8"))
                         #t)))
                   (add-after 'install 'move-static-libraries
                     (lambda* (#:key outputs #:allow-other-keys)
