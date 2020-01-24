@@ -3,7 +3,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
@@ -76,15 +76,15 @@
 (define-public wine
   (package
     (name "wine")
-    (version "4.0.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://dl.winehq.org/wine/source/"
-                                  (version-major+minor version)
-                                  "/wine-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1nhgw1wm613ln9dhjm0d03zs5adcmnqr2b50p21jbmm5k2gns0i5"))))
+    (version "5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dl.winehq.org/wine/source/"
+                           (version-major+minor version)
+                           "/wine-" version ".tar.xz"))
+       (sha256
+        (base32 "1d0kcy338radq07hrnzcpc9lc9j2fvzjh37q673002x8d6x5058q"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gettext-minimal)
