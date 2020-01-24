@@ -14,6 +14,7 @@
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@member.fsf.org>
+;;; Copyright © 2020 Brian Leung <bkleung89@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,6 +50,42 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages version-control))
+
+(define-public apply-refact
+  (package
+    (name "apply-refact")
+    (version "0.6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/apply-refact/apply-refact-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0p2mqgjcqr1zcmk8zgr0yq7g8z1agsa6l493lkj6g3ya9lyhxgig"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-refact" ,ghc-refact)
+       ("ghc-exactprint" ,ghc-exactprint)
+       ("ghc-syb" ,ghc-syb)
+       ("ghc-temporary" ,ghc-temporary)
+       ("ghc-filemanip" ,ghc-filemanip)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-optparse-applicative"
+        ,ghc-optparse-applicative)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-golden" ,ghc-tasty-golden)
+       ("ghc-tasty-expected-failure"
+        ,ghc-tasty-expected-failure)
+       ("ghc-silently" ,ghc-silently)))
+    (home-page "https://hackage.haskell.org/package/apply-refact")
+    (synopsis "Perform refactorings specified by the refact library")
+    (description
+     "This package lets you perform refactorings specified by the refact
+library.  It is primarily used with HLint's @code{--refactor} flag.")
+    (license license:bsd-3)))
 
 ;; In Stackage LTS 14, this package is at 2.4.1.0.  However, that
 ;; version requires version 2.4.1.0 of the 'Cabal' package, which is
