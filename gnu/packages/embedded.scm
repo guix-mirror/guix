@@ -461,14 +461,14 @@ SEGGER J-Link and compatible devices.")
     (name "jimtcl")
     (version "0.77")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/msteveb/jimtcl"
-                    "/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/msteveb/jimtcl")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1cmk3qscqckg70chjyimzxa2qcka4qac0j4wq908kiijp45cax08"))))
+                "06d9gdgvi6cwd6pjg3xig0kkjqm6kgq3am8yq1xnksyz2n09f0kp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
