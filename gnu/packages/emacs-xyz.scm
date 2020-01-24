@@ -43,7 +43,7 @@
 ;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018, 2019, 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019, 2020 Dimakakos Dimos <bendersteed@teknik.io>
-;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
+;;; Copyright © 2019, 2020 Brian Leung <bkleung89@gmail.com>
 ;;; Copyright © 2019 mikadoZero <mikadozero@yandex.com>
 ;;; Copyright © 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2019, 2020 Joseph LaFreniere <joseph@lafreniere.xyz>
@@ -108,6 +108,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages haskell-apps)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
@@ -16030,6 +16031,32 @@ text in neighboring sections.")
     (description "This package provides a Hydra menu for interacting with the
 Pandoc, the document-conversion tool.")
     (license license:bsd-3)))
+
+(define-public emacs-hlint-refactor-mode
+  (let ((commit "c4307f86aad6d02e32e9b30cb6edc115584c791c")
+        (revision "1"))
+    (package
+      (name "emacs-hlint-refactor-mode")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mpickering/hlint-refactor-mode")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1c71w9s34n0i7mm4njchxn6s3ri1y6mh3akgbg4nq41d42h8iap3"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("apply-refact" ,apply-refact)
+         ("hlint" ,hlint)))
+      (home-page "https://github.com/mpickering/hlint-refactor-mode")
+      (synopsis "Emacs bindings for @code{hlint}'s @code{--refactor} option")
+      (description "This package applies refactoring suggestions from
+@code{hlint}.")
+      (license license:expat))))
 
 (define-public emacs-ccls
   (let ((commit "aab3e31fd716daf59f9794e62d473357263e8cc0")
