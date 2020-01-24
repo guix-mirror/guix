@@ -40,7 +40,7 @@
 ;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2019 Jonathan Frederickson <jonathan@terracrypt.net>
 ;;; Copyright © 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
-;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2019, 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;; Copyright © 2019, 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
@@ -4078,43 +4078,34 @@ output devices.")
 (define-public geoclue
   (package
     (name "geoclue")
-    (version "2.4.8")
+    (version "2.5.5")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://www.freedesktop.org/software/" name
-                           "/releases/" (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
+       (uri
+        (string-append "https://gitlab.freedesktop.org/geoclue/geoclue/-/archive/"
+                       version "/geoclue-" version ".tar.bz2"))
        (sha256
         (base32
-         "08yg1r7m0n9hwyvcy769qkmkf8lslqwv69cjfffwnc3zm5km25qj"))
+         "1b7jqrsn4x7mxjxj8hvb2dl2cmhrpb9vibs4rvkkanky5nsx3sai"))
        (patches (search-patches "geoclue-config.patch"))))
-    (build-system glib-or-gtk-build-system)
+    (build-system meson-build-system)
     (arguments
-     '(;; The tests want to run the system bus.
-       #:tests? #f
-       #:configure-flags (list ;; Disable bits requiring ModemManager.
-                               "--disable-3g-source"
-                               "--disable-cdma-source"
-                               "--disable-modem-gps-source"
-                               "--with-dbus-service-user=geoclue")
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'patch-/bin/true
-                     (lambda _
-                       (substitute* "configure"
-                         (("/bin/true") (which "true")))
-                       #t)))))
+     '(#:configure-flags (list "-Dbus-srv-user=geoclue")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("gobject-introspection" ,gobject-introspection)
+       ("modem-manager" ,modem-manager)
+       ("libnotify" ,libnotify)
+       ("gtk-doc", gtk-doc)
        ("intltool" ,intltool)))
     (inputs
      `(("avahi" ,avahi)
-       ("glib" ,glib)
+       ("glib:bin" ,glib "bin")
+       ("glib-networking" ,glib-networking)
        ("json-glib" ,json-glib)
        ("libsoup" ,libsoup)))
-    (home-page "https://www.freedesktop.org/wiki/Software/GeoClue/")
+    (home-page "https://gitlab.freedesktop.org/geoclue/geoclue/-/wikis/home")
     (synopsis "Geolocation service")
     (description "Geoclue is a D-Bus service that provides location
 information.  The primary goal of the Geoclue project is to make creating
