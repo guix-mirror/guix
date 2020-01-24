@@ -10219,7 +10219,7 @@ proven statistical guarantees.")
         ("rust-serde-test" ,rust-serde-test-1.0))))
     (home-page "https://github.com/serde-rs/bytes")
     (synopsis
-     "Hanlde of integer arrays and vectors for Serde")
+     "Handle of integer arrays and vectors for Serde")
     (description
      "Optimized handling of @code{&[u8]} and @code{Vec<u8>} for Serde.")
     (license (list license:expat license:asl2.0))))
