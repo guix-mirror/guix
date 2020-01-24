@@ -1262,13 +1262,14 @@ and displaying decoded target responses.
     (version "1.5.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/texane/stlink/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/texane/stlink")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "01z1cz1a5xbbhd163qrqcgp4bi1k145pb80jmwdz50g7sfzmy570"))))
+         "1d5gxiqpsm8fc105cxlp27af9fk339fap5h6nay21x5a7n61jgyc"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no tests
