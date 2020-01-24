@@ -96,6 +96,7 @@
        ("dbus" ,dbus)
        ("cups" ,cups)
        ("eudev" ,eudev)
+       ("faudio" ,faudio)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("glu" ,glu)
