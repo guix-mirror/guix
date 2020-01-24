@@ -1493,7 +1493,15 @@ provides tight coupling to Guix.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0qjjvadr7gibdq9jvwkmlkb4afsw9n2shfj9phpiadinxk3p4m2g"))))
+                "0qjjvadr7gibdq9jvwkmlkb4afsw9n2shfj9phpiadinxk3p4m2g"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Allow builds with Guile 3.0.
+                  (substitute* "configure.ac"
+                    (("^GUILE_PKG.*")
+                     "GUILE_PKG([3.0 2.2 2.0])\n"))
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf-wrapper)
@@ -1512,6 +1520,14 @@ pure Scheme.  The library can be used to read and write iCalendar data.
 
 The library is shipped with documentation in Info format and usage examples.")
     (license license:gpl3+)))
+
+(define-public guile3.0-ics
+  (package
+    (inherit guile-ics)
+    (name "guile3.0-ics")
+    (inputs `(("guile" ,guile-3.0)
+              ,@(alist-delete "guile" (package-inputs guile-ics))))
+    (propagated-inputs `(("guile-lib" ,guile3.0-lib)))))
 
 (define-public guile-wisp
   (package
