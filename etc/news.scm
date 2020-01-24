@@ -10,12 +10,20 @@
  (version 0)
 
  (entry (commit "8234fe653e61d0090138cbd4c48d877568355439")
-        (title (en "Guix now runs on Guile 3.0"))
+        (title (en "Guix now runs on Guile 3.0")
+               (de "Guix läuft jetzt auf Guile 3.0"))
         (body (en "The Guix revision you just pulled runs on version 3.0 of
 GNU@tie{}Guile (previously it would run on version 2.2).  Guile 3.0 improves
 performance through the use of just-in-time (JIT) native code generation.  The
 switch should be entirely transparent to you.  See
-@uref{https://gnu.org/software/guile} for more information on Guile 3.0.")))
+@uref{https://gnu.org/software/guile} for more information on Guile 3.0.")
+              (de "Die Guix-Version, die Sie gerade gepullt haben, läuft auf
+Version 3.0 von GNU@tie{}Guile (und nicht mehr auf Version 2.2).  Guile 3.0
+verbessert die Rechenleistung, indem native Maschinenbefehle „just in time“
+erzeugt werden (JIT-Kompilierung).  Der Wechsel sollte für Sie völlig
+transparent sein und Guix verhält sich gleich.  Siehe
+@uref{https://gnu.org/software/guile} für weitere Informationen zu Guile
+3.0.")))
 
  (entry (commit "828a39da68a9169ef1d9f9ff02a1c66b1bcbe884")
         (title (en "New @option{--diff} option for @command{guix challenge}")
