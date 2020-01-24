@@ -827,13 +827,14 @@ upload binaries to a Parallax Propeller micro-controller.")
     (name "spin2cpp")
     (version "3.6.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/totalspectrum/spin2cpp/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/totalspectrum/spin2cpp")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "05qak187sn0xg7vhrxw27b19xhmid1b8ab8kax3gv0faavzablfw"))))
+                "0wznqvsckzzz4hdy2rpvj6jqpxw4yn7i0c7zxfm6i46k8gg9327b"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;; The tests assume that a micro-controller is connected.
