@@ -2,7 +2,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Clément Lassieur <clement@lassieur.org>
 ;;;
@@ -753,13 +753,14 @@ Propeller micro-controller development.")
     (name "openspin")
     (version "1.00.78")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/parallaxinc/"
-                                  "OpenSpin/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/parallaxinc/OpenSpin")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1k2dbz1v604g4r2d9qhckg2m8dnhiya760mbsqfsg4waxal87yb7"))))
+                "0ghk8hj4717ydhqzx2pfs6737s1cxng6sgg2xgbkwvcfclxdbrd0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests
