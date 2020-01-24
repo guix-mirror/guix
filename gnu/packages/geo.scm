@@ -1431,23 +1431,15 @@ using the dataset of topographical information collected by
              (invoke "patch" "-p1" "-i" "FindQuaZip5.patch")
              #t))
          (add-after 'install 'wrap
-           ;; The program fails to run with the error:
-           ;;   undefined symbol: sqlite3_column_table_name16
-           ;; Forcing the program to use sqlite-with-column-metadata instead
-           ;; of sqlite using LD_LIBRARY_PATH solves the problem.
-           ;;
-           ;; The program also fails to find the QtWebEngineProcess program,
+           ;; The program fails to find the QtWebEngineProcess program,
            ;; so we set QTWEBENGINEPROCESS_PATH to help it.
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((bin (string-append (assoc-ref outputs "out") "/bin"))
                    (qtwebengineprocess (string-append
                                         (assoc-ref inputs "qtwebengine")
-                                        "/lib/qt5/libexec/QtWebEngineProcess"))
-                   (sqlite-lib (string-append (assoc-ref inputs "sqlite")
-                                              "/lib")))
+                                        "/lib/qt5/libexec/QtWebEngineProcess")))
                (for-each (lambda (program)
                            (wrap-program program
-                             `("LD_LIBRARY_PATH" ":" prefix (,sqlite-lib))
                              `("QTWEBENGINEPROCESS_PATH" =
                                (,qtwebengineprocess))))
                          (find-files bin ".*")))
