@@ -959,15 +959,13 @@ in certain cases.  It also enables recursion for anonymous functions.")
 (define-public emacs-xr
   (package
     (name "emacs-xr")
-    (version "1.13")
+    (version "1.14")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://elpa.gnu.org/packages/xr-" version ".tar"))
+       (uri (string-append "https://elpa.gnu.org/packages/xr-" version ".tar"))
        (sha256
-        (base32
-         "1km4x92pii8c4bcimks4xzhmwpypdf183z0zh7raj062jz4jb74r"))))
+        (base32 "1hfl7jvimgdgi2mwsx9laxcywp4n6k6vfkanjwm3sf27awqz7ngs"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/xr.html")
     (synopsis "Convert string regexp to rx notation")
