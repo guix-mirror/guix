@@ -46,7 +46,7 @@
 (define-public sqlite
   (package
    (name "sqlite")
-   (version "3.30.1")
+   (version "3.31.0")
    (source (origin
             (method url-fetch)
             (uri (let ((numeric-version
@@ -58,11 +58,11 @@
                                             (map (cut string-pad <> 2 #\0)
                                                  other-digits))
                                            6 #\0))))))
-                   (string-append "https://sqlite.org/2019/sqlite-autoconf-"
+                   (string-append "https://sqlite.org/2020/sqlite-autoconf-"
                                   numeric-version ".tar.gz")))
             (sha256
              (base32
-              "0q4f57a5995wz9c7dfiqy9zwl0kn0b900nxwinqa3llv13dm0nlc"))))
+              "1w7i954349sjd5a6rvy118prra43k07y9hy8rpajs6vmjmnnx7bw"))))
    (build-system gnu-build-system)
    (inputs `(("readline" ,readline)))
    (outputs '("out" "static"))
