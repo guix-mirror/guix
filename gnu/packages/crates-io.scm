@@ -9544,7 +9544,7 @@ uses finite automata and guarantees linear time matching on all inputs.")
        (("rust-hex" ,rust-hex-0.3))))
     (home-page "https://github.com/sru-systems/rust-argon2")
     (synopsis "Rust implementation of the Argon2 password hashing function")
-    (description "This package contans a rust implementation of the Argon2
+    (description "This package contains a rust implementation of the Argon2
 password hashing function.")
     (license (list license:expat license:asl2.0))))
 
