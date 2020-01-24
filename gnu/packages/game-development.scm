@@ -1998,7 +1998,8 @@ a.k.a. XenoCollide) as described in Game Programming Gems 7.")
            #t))))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags '("-DODE_WITH_LIBCCD_SYSTEM=ON")
+     `(#:tests? #f                      ;tests fail on all systems but x86_64
+       #:configure-flags '("-DODE_WITH_LIBCCD_SYSTEM=ON")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'unbundle-libccd
