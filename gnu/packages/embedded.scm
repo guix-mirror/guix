@@ -459,7 +459,7 @@ SEGGER J-Link and compatible devices.")
 (define-public jimtcl
   (package
     (name "jimtcl")
-    (version "0.77")
+    (version "0.79")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -468,7 +468,7 @@ SEGGER J-Link and compatible devices.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "06d9gdgvi6cwd6pjg3xig0kkjqm6kgq3am8yq1xnksyz2n09f0kp"))))
+                "1k88hz0v3bi19xdvlp0i9nsx38imzwpjh632w7326zwbv2wldf0h"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -479,7 +479,7 @@ SEGGER J-Link and compatible devices.")
              (let ((out (assoc-ref outputs "out")))
                (invoke "./configure"
                        (string-append "--prefix=" out))))))))
-    (home-page "http://jim.tcl.tk")
+    (home-page "http://jim.tcl.tk/index.html")
     (synopsis "Small footprint Tcl implementation")
     (description "Jim is a small footprint implementation of the Tcl programming
 language.")
