@@ -1338,6 +1338,11 @@ printing and other features typical of a source code editor.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("python" ,python-2)
+
+       ;; XXX: The package fails to build with the latest Pango (propagated
+       ;; from GTK+2), so we provide it with this older version.
+       ("pango" ,pango-1.42)
+
        ("libglade" ,libglade)
        ("glib"   ,glib)))
     (propagated-inputs
