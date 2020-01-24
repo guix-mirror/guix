@@ -20998,7 +20998,7 @@ data format @code{edn}.  See @url{https://github.com/edn-format/edn}.")
        `(("emacs-helm" ,emacs-helm)
          ("emacs-edn" ,emacs-edn)))
       (synopsis "Search help on clojuredocs.org with Helm")
-      (description "This packages provides a Helm interface to lookup Clojure
+      (description "This package provides a Helm interface to lookup Clojure
 documentation on @url{https://clojuredocs.org} with Helm.
 
 Two function are exposed:
