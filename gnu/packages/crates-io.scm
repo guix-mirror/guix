@@ -13582,7 +13582,7 @@ attribute that is not in the shared backend crate.")
     (synopsis "Rust equivalent of Unix command \"which\"")
     (description
      "This package provides a Rust equivalent of Unix command \"which\".
-Locate installed execuable in cross platforms.")
+Locate installed executable in cross platforms.")
     (license license:expat)))
 
 (define-public rust-widestring-0.4
