@@ -20632,6 +20632,31 @@ each slide with left/right keys.")
 execution of buffer-exposing commands.")
     (license license:gpl3+)))
 
+(define-public emacs-eshell-toggle
+  (let ((commit "ddfbe0a693497c4d4bc5494a19970ba4f6ab9033")
+        (revision "1"))
+    (package
+      (name "emacs-eshell-toggle")
+      (version (git-version "0.10.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/4DA/eshell-toggle.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "0xqrp8pwbmfxjdqipgpw5nw633mvhjjjm3k3j9sh9xdpmw05hhws"))
+         (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)))
+      (home-page "https://github.com/4DA/eshell-toggle")
+      (synopsis "Show and hide an @code{eshell} instance")
+      (description "This package toggles an @code{eshell} instance for the
+current buffer.")
+      (license license:gpl3+))))
+
 (define-public emacs-repl-toggle
   (package
     (name "emacs-repl-toggle")
