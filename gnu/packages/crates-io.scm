@@ -4408,10 +4408,12 @@ the regex engine it uses pluggable.")
          "1wjc3gsan20gapga8nji6jcrmwn9n85q5zf2yfq6g50c7abkc2ql"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-grep-matcher" ,rust-grep-matcher-0.1)
         ("rust-pcre2" ,rust-pcre2-0.2))))
+    (native-inputs
+     `(("pcre2" ,pcre2)
+       ("pkg-config" ,pkg-config)))
     (home-page
      "https://github.com/BurntSushi/ripgrep")
     (synopsis "Use PCRE2 with the grep crate")
@@ -7490,12 +7492,14 @@ deserialization, and interpreter in Rust.")
          "103i66a998g1fjrqf9sdyvi8qi83hwglz3pjdcq9n2r207hsagb0"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
         ("rust-log" ,rust-log-0.4)
         ("rust-pcre2-sys" ,rust-pcre2-sys-0.2)
         ("rust-thread-local" ,rust-thread-local-0.3))))
+    (native-inputs
+     `(("pcre2" ,pcre2)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://github.com/BurntSushi/rust-pcre2")
     (synopsis "High level wrapper library for PCRE2")
     (description
@@ -7514,23 +7518,16 @@ deserialization, and interpreter in Rust.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0nwdvc43dkb89qmm5q8gw1zyll0wsfqw7kczpn23mljra3874v47"))))
+         "0nwdvc43dkb89qmm5q8gw1zyll0wsfqw7kczpn23mljra3874v47"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin (delete-file-recursively "pcre2") #t))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
         ("rust-pkg-config" ,rust-pkg-config-0.3)
-        ("rust-cc" ,rust-cc-1.0))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'configure 'unbundle-sources
-           (lambda _
-             (delete-file-recursively "pcre2")
-             (delete-file-recursively
-               (string-append "guix-vendor/rust-pcre2-sys-"
-                              ,(package-version rust-pcre2-sys-0.2)
-                              ".tar.gz/pcre2"))
-             #t)))))
+        ("rust-cc" ,rust-cc-1.0))))
     (native-inputs
      `(("pcre2" ,pcre2)
        ("pkg-config" ,pkg-config)))
