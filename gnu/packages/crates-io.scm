@@ -10874,6 +10874,34 @@ used in Cargo build scripts.")
         ("rust-rand" ,rust-rand-0.5)
         ("rust-term" ,rust-term-0.4))))))
 
+(define-public rust-png-0.12
+  (package
+    (inherit rust-png-0.14)
+    (name "rust-png")
+    (version "0.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "png" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0nqlc8lqf8ncv3kj0gzlxwli61dbbxcjlrp176kvilw4sl09cjzm"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-deflate" ,rust-deflate-0.7)
+        ("rust-inflate" ,rust-inflate-0.4)
+        ("rust-num-iter" ,rust-num-iter-0.1))
+       #:cargo-development-inputs
+       (("rust-getopts" ,rust-getopts-0.2)
+        ;; TODO: gluum has many cyclic dependencies with other packages
+        ;; ("rust-glium" ,rust-glium-0.21)
+        ("rust-glob" ,rust-glob-0.2)
+        ("rust-term" ,rust-term-0.4))))))
+
 (define-public rust-pocket-resources-0.3
   (package
     (name "rust-pocket-resources")
