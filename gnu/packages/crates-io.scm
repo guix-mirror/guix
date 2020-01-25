@@ -16036,6 +16036,36 @@ fixed set of worker threads.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-tiff-0.3
+  (package
+    (name "rust-tiff")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tiff" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0zgmbny2f8rssqmjdfvnysy0vqwcvlwl6q9f5yixhavlqk7w5dyp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; Tests images not included with release.
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-lzw" ,rust-lzw-0.10)
+        ("rust-num-derive" ,rust-num-derive-0.2)
+        ("rust-num-traits" ,rust-num-traits-0.2))
+       #:cargo-development-inputs
+       (("rust-tempfile" ,rust-tempfile-3.0))))
+    (home-page "https://github.com/image-rs/image-tiff")
+    (synopsis
+     "TIFF decoding and encoding library in pure Rust")
+    (description
+     "TIFF decoding and encoding library in pure Rust.")
+    (license license:expat)))
+
 (define-public rust-time-0.1
   (package
     (name "rust-time")
