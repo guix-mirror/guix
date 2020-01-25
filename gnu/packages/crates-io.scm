@@ -16066,6 +16066,27 @@ fixed set of worker threads.")
      "TIFF decoding and encoding library in pure Rust.")
     (license license:expat)))
 
+(define-public rust-tiff-0.2
+  (package
+    (inherit rust-tiff-0.3)
+    (name "rust-tiff")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tiff" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1kn7psgpacns337vvqh272rkqwnakmjd51rc7ygwnc03ibr38j0y"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-lzw" ,rust-lzw-0.10)
+        ("rust-num-derive" ,rust-num-derive-0.2)
+        ("rust-num-traits" ,rust-num-traits-0.2))))))
+
 (define-public rust-time-0.1
   (package
     (name "rust-time")
