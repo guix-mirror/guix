@@ -5628,10 +5628,6 @@ values of all the exported APIs match the platform that libc is compiled for.")
                (string-append "guix-vendor/rust-libz-sys-"
                               ,(package-version rust-libz-sys-1.0)
                               ".crate/src/zlib"))
-             (delete-file-recursively
-               (string-append "guix-vendor/rust-libssh2-sys-"
-                              ,(package-version rust-libssh2-sys-0.2)
-                              ".crate/libssh2"))
              (setenv "LIBGIT2_SYS_USE_PKG_CONFIG" "1")
              (setenv "LIBSSH2_SYS_USE_PKG_CONFIG" "1")
              #t)))))
@@ -5716,10 +5712,13 @@ functions and static variables these libraries contain.")
       (origin
         (method url-fetch)
         (uri (crate-uri "libssh2-sys" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "042gsgbvxgm5by4mk906j3zm4qdvzcfhjxrb55is1lrr6f0nxain"))))
+          "042gsgbvxgm5by4mk906j3zm4qdvzcfhjxrb55is1lrr6f0nxain"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (delete-file-recursively "libssh2") #t))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t ; it wants rust-openssl-src
@@ -5737,11 +5736,6 @@ functions and static variables these libraries contain.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((openssl (assoc-ref inputs "openssl")))
                (setenv "OPENSSL_DIR" openssl))
-             (delete-file-recursively "libssh2")
-             (delete-file-recursively
-               (string-append "guix-vendor/rust-libssh2-sys-"
-                              ,(package-version rust-libssh2-sys-0.2)
-                              ".crate/libssh2"))
              (delete-file-recursively
                (string-append "guix-vendor/rust-libz-sys-"
                               ,(package-version rust-libz-sys-1.0)
