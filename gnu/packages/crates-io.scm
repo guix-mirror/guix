@@ -5328,10 +5328,13 @@ wasm-bindgen crate.")
       (origin
         (method url-fetch)
         (uri (crate-uri "jemalloc-sys" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0ify9vlql01qhfxlj7d4p9jvcp90mj2h69nkbq7slccvbhzryfqd"))))
+          "0ify9vlql01qhfxlj7d4p9jvcp90mj2h69nkbq7slccvbhzryfqd"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (delete-file-recursively "jemalloc") #t))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -5344,11 +5347,6 @@ wasm-bindgen crate.")
          (add-after 'configure 'override-jemalloc
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((jemalloc (assoc-ref inputs "jemalloc")))
-               (delete-file-recursively "jemalloc")
-               (delete-file-recursively
-                 (string-append "guix-vendor/rust-jemalloc-sys-"
-                                ,(package-version rust-jemalloc-sys-0.3)
-                                ".crate/jemalloc"))
                (setenv "JEMALLOC_OVERRIDE"
                        (string-append jemalloc "/lib/libjemalloc_pic.a")))
              #t)))))
