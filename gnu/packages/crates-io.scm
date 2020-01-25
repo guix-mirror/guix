@@ -10845,6 +10845,35 @@ used in Cargo build scripts.")
      "PNG decoding and encoding library in pure Rust.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-png-0.14
+  (package
+    (inherit rust-png-0.15)
+    (name "rust-png")
+    (version "0.14.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "png" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0nf3a8r9p9zrj4x30b48f7yv18dz9xkmrq9b3lnzmpnhzn0z9nk3"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-deflate" ,rust-deflate-0.7)
+        ("rust-inflate" ,rust-inflate-0.4)
+        ("rust-num-iter" ,rust-num-iter-0.1))
+       #:cargo-development-inputs
+       (("rust-getopts" ,rust-getopts-0.2)
+        ;; TODO: glium has many cyclic dependencies with other packages
+        ;; ("rust-glium" ,rust-glium-0.22)
+        ("rust-glob" ,rust-glob-0.2)
+        ("rust-rand" ,rust-rand-0.5)
+        ("rust-term" ,rust-term-0.4))))))
+
 (define-public rust-pocket-resources-0.3
   (package
     (name "rust-pocket-resources")
