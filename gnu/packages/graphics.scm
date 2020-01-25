@@ -43,6 +43,7 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
@@ -52,6 +53,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
@@ -145,6 +147,61 @@ such as status line help, and tooltips.  Tooltips may even be used for 3D
 objects!")
     (home-page "http://www.fox-toolkit.org")
     (license license:lgpl2.1+)))
+
+(define-public autotrace
+  (let ((commit "travis-20190624.59")
+        (version-base "0.40.0"))
+    (package
+      (name "autotrace")
+      (version (string-append version-base "-"
+                              (if (string-prefix? "travis-" commit)
+                                  (string-drop commit 7)
+                                  commit)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/autotrace/autotrace.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0mk4yavy42dj0pszr1ggnggpvmzs4ds46caa9wr55cqsypn7bq6s"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases (modify-phases %standard-phases
+                    ;; See: https://github.com/autotrace/autotrace/issues/27.
+                    (add-after 'unpack 'include-spline.h-header
+                      (lambda _
+                        (substitute* "Makefile.am"
+                          ((".*src/types.h.*" all)
+                           (string-append all "\t\tsrc/spline.h \\\n")))
+                        #t))
+                    ;; See: https://github.com/autotrace/autotrace/issues/26.
+                    (replace 'check
+                      (lambda _
+                        (invoke "sh" "tests/runtests.sh"))))))
+      (native-inputs
+       `(("which" ,which)
+         ("pkg-config" ,pkg-config)
+         ("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("intltool" ,intltool)
+         ("libtool" ,libtool)
+         ("gettext" ,gettext-minimal)))
+      (inputs
+       `(("glib" ,glib)
+         ("libjpeg" ,libjpeg-turbo)
+         ("libpng" ,libpng)
+         ("imagemagick" ,imagemagick)
+         ("pstoedit" ,pstoedit)))
+      (home-page "https://github.com/autotrace/autotrace")
+      (synopsis "Bitmap to vector graphics converter")
+      (description "AutoTrace is a utility for converting bitmap into vector
+graphics.  It can trace outlines and midlines, effect color reduction or
+despeckling and has support for many input and output formats.  It can be used
+with the @command{autotrace} utility or as a C library, @code{libautotrace}.")
+      (license (list license:gpl2+         ;for the utility itself
+                     license:lgpl2.1+))))) ;for use as a library
 
 (define-public blender
   (package
