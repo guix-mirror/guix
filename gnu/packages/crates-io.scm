@@ -5616,6 +5616,30 @@ API library @code{gdi32}.")
         (base32
          "1v5jg7djicq34nbiv1dwaki71gkny002wyy9qfn3y0hfmrs053y6"))))))
 
+(define-public rust-genmesh-0.6
+  (package
+    (name "rust-genmesh")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "genmesh" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17qybydyblf3hjiw7mq181jpi4vrbb8dmsj0wi347r8k0m354g89"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cgmath" ,rust-cgmath-0.16)
+        ("rust-mint" ,rust-mint-0.5))))
+    (home-page "https://github.com/gfx-rs/genmesh")
+    (synopsis "Package for generating 3D meshes")
+    (description
+     "This package provides a package for generating 3D meshes/")
+    (license license:asl2.0)))
+
 (define-public rust-getopts-0.2
   (package
     (name "rust-getopts")
