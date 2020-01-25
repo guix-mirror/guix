@@ -63,21 +63,34 @@
               (sha256
                (base32
                 "0s06wrp0jnw2l4yq94skj53hwnz7lqrmhh96sq7w7njkkggickz5"))
-              (modules '((guix build utils)))
+              (modules '((guix build utils)
+                         (ice-9 ftw)))
               (snippet
                '(begin
-                  ;; Drop bundled software.
                   (with-directory-excursion "Utilities"
+                    ;; CMake bundles its dependencies below "Utilities" with a
+                    ;; "cm" prefix in the directory name.  Delete those to ensure
+                    ;; the system libraries are used.
                     (for-each delete-file-recursively
-                              '("cmbzip2"
-                                ;; "cmcompress"
-                                "cmcurl"
-                                "cmexpat"
-                                ;; "cmlibarchive"
-                                "cmliblzma"
-                                ;; "cmlibuv"
-                                "cmzlib"))
-                    #t)))
+                              (scandir
+                               "."
+                               (lambda (file)
+                                 (and (string-prefix? "cm" file)
+                                      (eq? 'directory (stat:type (stat file)))
+
+                                      ;; jsoncpp must be kept around for now to
+                                      ;; work around a circular dependency.  It
+                                      ;; gets deleted once we reach "cmake-minimal".
+                                      ;; TODO: Consider building jsoncpp with
+                                      ;; Meson instead, once meson-build-system
+                                      ;; learns cross-compilation.
+                                      (not (string=? "cmjsoncpp" file))
+
+                                      ;; XXX: cmake's bootstrap script appears to
+                                      ;; rquire libuv, even though it detects and
+                                      ;; uses the system version eventually.
+                                      (not (string=? "cmlibuv" file)))))))
+                  #t))
               (patches (search-patches "cmake-curl-certificates.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -127,6 +140,24 @@
              (substitute* "Auxiliary/CMakeLists.txt"
                ((".*cmake-mode.el.*") ""))
              #t))
+         (add-after 'unpack 'use-system-libarchive
+           (lambda* (#:key native-inputs inputs #:allow-other-keys)
+             (let ((libarchive-source (assoc-ref (or native-inputs inputs)
+                                                 "libarchive:source"))
+                   (libarchive-version ,(package-version libarchive))
+                   (files-to-unpack '("libarchive/archive_getdate.c"
+                                      "libarchive/archive_getdate.h")))
+               ;; XXX: Source/cm_get_date.c includes archive_getdate.c wholesale,
+               ;; so it needs to be available along with the header file.
+               (mkdir-p "Utilities/cmlibarchive")
+               (apply invoke "tar" "-xvf" libarchive-source
+                      "--strip-components=1"
+                      "-C" "Utilities/cmlibarchive"
+                      (map (lambda (file)
+                             (string-append "libarchive-" libarchive-version
+                                            "/" file))
+                           files-to-unpack))
+               #t)))
          (add-before 'configure 'patch-bin-sh
            (lambda _
              ;; Replace "/bin/sh" by the right path in... a lot of
@@ -138,7 +169,6 @@
                    "Source/cmLocalUnixMakefileGenerator3.cxx"
                    "Source/cmExecProgramCommand.cxx"
                    "Utilities/Release/release_cmake.cmake"
-                   "Utilities/cmlibarchive/libarchive/archive_write_set_format_shar.c"
                    "Tests/CMakeLists.txt"
                    "Tests/RunCMake/File_Generate/RunCMakeTest.cmake")
                (("/bin/sh") (which "sh")))
@@ -163,6 +193,7 @@
        ("expat" ,expat)
        ("file" ,file)
        ("libarchive" ,libarchive)
+       ("libarchive:source" ,(package-source libarchive))
        ("libuv" ,libuv)
        ("rhash" ,rhash)
        ("zlib" ,zlib)))
@@ -192,8 +223,6 @@ and compiler independent configuration files.  CMake generates native makefiles
 and workspaces that can be used in the compiler environment of your choice.")
     (properties '((hidden? . #t)))
     (license (list license:bsd-3        ; cmake
-                   license:bsd-4        ; cmcompress
-                   license:bsd-2        ; cmlibarchive
                    license:expat        ; cmjsoncpp is dual MIT/public domain
                    license:public-domain)))) ; cmlibarchive/archive_getdate.c
 
