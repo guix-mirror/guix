@@ -7156,6 +7156,34 @@ primitives to an @code{io::Write}.")
      "An implementation of the GNU make jobserver for Rust.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-jpeg-decoder-0.1
+  (package
+    (name "rust-jpeg-decoder")
+    (version "0.1.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "jpeg-decoder" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0lc428qgffh2a1agkq0p26mvf9rjaiswpywy5883j99mqypg0mh2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; Some test files missing.
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-rayon" ,rust-rayon-1.1))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-png" ,rust-png-0.14)
+        ("rust-walkdir" ,rust-walkdir-2.2))))
+    (home-page "https://github.com/image-rs/jpeg-decoder")
+    (synopsis "JPEG decoder")
+    (description "JPEG decoder written in Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-js-sys-0.3
   (package
     (name "rust-js-sys")
