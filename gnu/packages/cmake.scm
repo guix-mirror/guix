@@ -97,7 +97,11 @@
                ;; to --mandir and --docdir.
                "--mandir=share/man"
                ,(string-append "--docdir=share/doc/cmake-"
-                               (version-major+minor version))))
+                               (version-major+minor version))
+
+               ;; By default CMake is built without any optimizations.  Use
+               ;; the recommended Release target for a ~2.5x speedup.
+               "--" "-DCMAKE_BUILD_TYPE=Release"))
        #:make-flags
        (let ((skipped-tests
               (list "BundleUtilities" ; This test fails on Guix.
