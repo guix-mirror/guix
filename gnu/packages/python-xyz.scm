@@ -7599,9 +7599,6 @@ Debian-related files, such as:
     ;; Modules are either GPLv2+ or GPLv3+.
     (license license:gpl3+)))
 
-(define-public python2-debian
-  (package-with-python2 python-debian))
-
 (define-public python-nbformat
   (package
     (name "python-nbformat")
