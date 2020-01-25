@@ -47,11 +47,11 @@
   #:use-module (gnu packages xml)
   #:use-module (srfi srfi-1))
 
-;;; This minimal variant of CMake does not include the documentation. It is
-;;; used by the cmake-build-system.
-(define-public cmake-minimal
+;;; The "bootstrap" CMake.  It is used to build the inputs of 'cmake-minimal'
+;;; below, to prevent a cyclic dependency on cmake-build-system.
+(define-public cmake-bootstrap
   (package
-    (name "cmake-minimal")
+    (name "cmake-bootstrap")
     (version "3.16.3")
     (source (origin
               (method url-fetch)
@@ -156,7 +156,9 @@
              (apply invoke "./configure" configure-flags))))))
     (native-inputs
      `(("bzip2" ,bzip2)
-       ("curl" ,curl)
+       ;; cURL depends on ghostscript (via groff and OpenLDAP), which depends on
+       ;; 'cmake-build-system' through libtiff and ultimately libjpeg-turbo.
+       ("curl" ,curl-minimal)
        ("expat" ,expat)
        ("file" ,file)
        ("libarchive" ,libarchive)
@@ -194,6 +196,17 @@ and workspaces that can be used in the compiler environment of your choice.")
                    license:expat        ; cmjsoncpp is dual MIT/public domain
                    license:public-domain)))) ; cmlibarchive/archive_getdate.c
 
+;;; This minimal variant of CMake does not include the documentation.  It is
+;;; used by the cmake-build-system.
+(define-public cmake-minimal
+  (package
+    (inherit cmake-bootstrap)
+    (name "cmake-minimal")
+    (native-inputs
+     `(("curl" ,curl)
+       ,@(alist-delete "curl" (package-native-inputs cmake-bootstrap))))))
+
+;;; The "user-facing" CMake, now with manuals and HTML documentation.
 (define-public cmake
   (package
     (inherit cmake-minimal)
@@ -235,18 +248,6 @@ and workspaces that can be used in the compiler environment of your choice.")
     (native-search-paths '())
     (search-paths
      (package-native-search-paths cmake-minimal))))
-
-;; The purpose of this package is to solve a circular dependency between
-;; packages that use cmake-build-system and CMakes own dependencies.
-(define-public cmake-minimal-bootstrap
-  (package
-    (inherit cmake-minimal)
-    (name "cmake-minimal-bootstrap")
-    (native-inputs
-     `(;; cURL depends on ghostscript (via groff and OpenLDAP), which depends on
-       ;; 'cmake-build-system' through libtiff and ultimately libjpeg-turbo.
-       ("curl" ,curl-minimal)
-       ,@(alist-delete "curl" (package-native-inputs cmake-minimal))))))
 
 (define-public emacs-cmake-mode
   (package

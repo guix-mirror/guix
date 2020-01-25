@@ -1512,7 +1512,7 @@ is hereby granted."))))
              '()
              ;; Use a special "bootstrap" CMake for the native build to work
              ;; around a circular dependency between CMake and this package.
-             `(#:cmake ,cmake-minimal-bootstrap))))
+             `(#:cmake ,cmake-bootstrap))))
     (home-page "https://libjpeg-turbo.org/")
     (synopsis "SIMD-accelerated JPEG image handling library")
     (description "libjpeg-turbo is a JPEG image codec that accelerates baseline
