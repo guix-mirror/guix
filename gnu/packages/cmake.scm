@@ -42,9 +42,11 @@
   #:use-module (gnu packages file)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages xml)
+  #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
 ;;; The "bootstrap" CMake.  It is used to build the inputs of 'cmake-minimal'
@@ -71,7 +73,6 @@
                                 ;; "cmcompress"
                                 "cmcurl"
                                 "cmexpat"
-                                ;; "cmjsoncpp"
                                 ;; "cmlibarchive"
                                 "cmliblzma"
                                 ;; "cmlibuv"
@@ -88,7 +89,7 @@
                (string-append "--parallel=" parallel-job-count)
                (string-append "--prefix=" out)
                "--system-libs"
-               "--no-system-jsoncpp"    ; FIXME: Circular dependency.
+               "--no-system-jsoncpp"
                ;; By default, the man pages and other docs land
                ;; in PREFIX/man and PREFIX/doc, but we want them
                ;; in share/{man,doc}.  Note that unlike
@@ -202,9 +203,21 @@ and workspaces that can be used in the compiler environment of your choice.")
   (package
     (inherit cmake-bootstrap)
     (name "cmake-minimal")
+    (source (origin
+              (inherit (package-source cmake-bootstrap))
+              (snippet
+               (match (origin-snippet (package-source cmake-bootstrap))
+                 ((begin exp ...)
+                  (append '(begin (delete-file-recursively "Utilities/cmjsoncpp"))
+                          exp))))))
     (native-inputs
      `(("curl" ,curl)
-       ,@(alist-delete "curl" (package-native-inputs cmake-bootstrap))))))
+       ("jsoncpp" ,jsoncpp)
+       ,@(alist-delete "curl" (package-native-inputs cmake-bootstrap))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments cmake-bootstrap)
+       ((#:configure-flags flags ''())
+        `(delete "--no-system-jsoncpp" ,flags))))))
 
 ;;; The "user-facing" CMake, now with manuals and HTML documentation.
 (define-public cmake
