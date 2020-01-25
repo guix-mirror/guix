@@ -5624,10 +5624,6 @@ values of all the exported APIs match the platform that libc is compiled for.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((openssl (assoc-ref inputs "openssl")))
                (setenv "OPENSSL_DIR" openssl))
-             (delete-file-recursively
-               (string-append "guix-vendor/rust-libz-sys-"
-                              ,(package-version rust-libz-sys-1.0)
-                              ".crate/src/zlib"))
              (setenv "LIBGIT2_SYS_USE_PKG_CONFIG" "1")
              (setenv "LIBSSH2_SYS_USE_PKG_CONFIG" "1")
              #t)))))
@@ -5736,10 +5732,6 @@ functions and static variables these libraries contain.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((openssl (assoc-ref inputs "openssl")))
                (setenv "OPENSSL_DIR" openssl))
-             (delete-file-recursively
-               (string-append "guix-vendor/rust-libz-sys-"
-                              ,(package-version rust-libz-sys-1.0)
-                              ".crate/src/zlib"))
              (setenv "LIBSSH2_SYS_USE_PKG_CONFIG" "1")
              #t)))))
     (native-inputs
@@ -6574,10 +6566,13 @@ types as proposed in RFC 1158.")
       (origin
         (method url-fetch)
         (uri (crate-uri "libz-sys" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1gjycyl2283525abks98bhxa4r259m617xfm5z52p3p3c8ry9d9f"))))
+          "1gjycyl2283525abks98bhxa4r259m617xfm5z52p3p3c8ry9d9f"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (delete-file-recursively "src/zlib") #t))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -6585,17 +6580,7 @@ types as proposed in RFC 1158.")
         ;; Build dependencies:
         ("rust-cc" ,rust-cc-1.0)
         ("rust-pkg-config" ,rust-pkg-config-0.3)
-        ("rust-vcpkg" ,rust-vcpkg-0.2))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'configure 'delete-vendored-zlib
-           (lambda _
-             (delete-file-recursively "src/zlib")
-             (delete-file-recursively
-               (string-append "guix-vendor/rust-libz-sys-"
-                              ,(package-version rust-libz-sys-1.0)
-                              ".crate/src/zlib"))
-             #t)))))
+        ("rust-vcpkg" ,rust-vcpkg-0.2))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("zlib" ,zlib)))

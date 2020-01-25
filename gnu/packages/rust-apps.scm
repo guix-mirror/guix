@@ -145,11 +145,7 @@ gitignore rules.")
              (let ((openssl (assoc-ref inputs "openssl")))
                (setenv "OPENSSL_DIR" openssl)
                (setenv "LIBGIT2_SYS_USE_PKG_CONFIG" "1")
-               (setenv "LIBSSH2_SYS_USE_PKG_CONFIG" "1")
-               (delete-file-recursively
-                 (string-append "guix-vendor/rust-libz-sys-"
-                                ,(package-version rust-libz-sys-1.0)
-                                ".crate/src/zlib")))
+               (setenv "LIBSSH2_SYS_USE_PKG_CONFIG" "1"))
              #t)))))
     (native-inputs
      `(("libgit2" ,libgit2)
