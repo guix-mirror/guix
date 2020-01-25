@@ -10,7 +10,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Rodger Fox <thylakoid@openmailbox.org>
-;;; Copyright © 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017, 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -3878,34 +3878,30 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
 (define-public musescore
   (package
     (name "musescore")
-    (version "3.3.4")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/musescore/MuseScore.git")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1jwj89v69nhyawj8x7niwznm1vgvp51dhzw6ggnarc3wdvp6qq8y"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Un-bundle OpenSSL and remove unused libraries.
-               '(begin
-                  (substitute* "thirdparty/kQOAuth/CMakeLists.txt"
-                    (("-I \\$\\{PROJECT_SOURCE_DIR\\}/thirdparty/openssl/include ")
-                     ""))
-                  (substitute* "thirdparty/kQOAuth/kqoauthutils.cpp"
-                    (("#include <openssl/.*") ""))
-                  (for-each delete-file-recursively
-                            '("thirdparty/freetype"
-                              "thirdparty/openssl"
-                              "thirdparty/portmidi"))
-                  #t))))
+    (version "3.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/musescore/MuseScore.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "16rx4x0czhwjg8vppcc7iw0cvii9q2l730cqhmhvip9r8wwamsvj"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Un-bundle OpenSSL and remove unused libraries.
+        '(begin
+           (for-each delete-file-recursively
+                     '("thirdparty/freetype"
+                       "thirdparty/openssl"
+                       "thirdparty/portmidi"))
+           #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
-       `("-DBUILD_WEBENGINE=OFF"
+       `("-DBUILD_TELEMETRY_MODULE=OFF" ;don't phone home
+         "-DBUILD_WEBENGINE=OFF"
          "-DDOWNLOAD_SOUNDFONT=OFF"
          "-DUSE_SYSTEM_FREETYPE=ON")
        ;; There are tests, but no simple target to run.  The command used to
