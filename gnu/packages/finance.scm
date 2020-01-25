@@ -1056,17 +1056,13 @@ main features are:
 (define-public silkaj
   (package
     (name "silkaj")
-    (version "0.7.3")
+    (version "0.7.6")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://git.duniter.org/clients/python/silkaj.git")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (pypi-uri "silkaj" version))
        (sha256
-        (base32
-         "0yk2574yb0d0k0rg7qf0pkmjidblsad04x8hhqpy9k80rvgjcr5w"))))
+        (base32 "0hrn0jwg415z7wjkp0myvw85wszlfi18f56j03075xxakr4dmi2j"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ;no test
@@ -1077,7 +1073,7 @@ main features are:
        ("pynacl" ,python-pynacl)
        ("tabulate" ,python-tabulate)
        ("texttable" ,python-texttable)))
-    (home-page "https://silkaj.duniter.org/")
+    (home-page "https://git.duniter.org/clients/python/silkaj")
     (synopsis "Command line client for Duniter network")
     (description "@code{Silkaj} is a command line client for the
 @uref{https://github.com/duniter/duniter/, Duniter} network.
