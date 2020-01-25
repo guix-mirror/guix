@@ -5603,10 +5603,13 @@ values of all the exported APIs match the platform that libc is compiled for.")
       (origin
         (method url-fetch)
         (uri (crate-uri "libgit2-sys" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0l9fvki7qxsl97vgzqwlv75nl213a5vxw7b1jaik97ala356pv6r"))))
+          "0l9fvki7qxsl97vgzqwlv75nl213a5vxw7b1jaik97ala356pv6r"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (delete-file-recursively "libgit2") #t))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -5623,11 +5626,6 @@ values of all the exported APIs match the platform that libc is compiled for.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((openssl (assoc-ref inputs "openssl")))
                (setenv "OPENSSL_DIR" openssl))
-             (delete-file-recursively "libgit2")
-             (delete-file-recursively
-               (string-append "guix-vendor/rust-libgit2-sys-"
-                              ,(package-version rust-libgit2-sys-0.10)
-                              ".crate/libgit2"))
              (delete-file-recursively
                (string-append "guix-vendor/rust-libz-sys-"
                               ,(package-version rust-libz-sys-1.0)

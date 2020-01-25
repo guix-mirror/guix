@@ -147,10 +147,6 @@ gitignore rules.")
                (setenv "LIBGIT2_SYS_USE_PKG_CONFIG" "1")
                (setenv "LIBSSH2_SYS_USE_PKG_CONFIG" "1")
                (delete-file-recursively
-                 (string-append "guix-vendor/rust-libgit2-sys-"
-                                ,(package-version rust-libgit2-sys-0.10)
-                                ".crate/libgit2"))
-               (delete-file-recursively
                  (string-append "guix-vendor/rust-libssh2-sys-"
                                 ,(package-version rust-libssh2-sys-0.2)
                                 ".crate/libssh2"))
