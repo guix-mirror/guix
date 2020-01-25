@@ -9,7 +9,7 @@
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Adriano Peluso <catonano@gmail.com>
-;;; Copyright © 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
@@ -1009,40 +1009,29 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
 (define-public python-duniterpy
   (package
     (name "python-duniterpy")
-    (version "0.55.1")
+    (version "0.56.0")
     (source
      (origin
-       (method git-fetch)
-       ;; Pypi's default URI is missing "requirements.txt" file.
-       (uri (git-reference
-             (url "https://git.duniter.org/clients/python/duniterpy.git")
-             (commit version)))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (pypi-uri "duniterpy" version))
        (sha256
-        (base32
-         "07zsbbkzmnvyv5v0vw2d42vw3ar4iqhlidy9376ysk4ldlj1igf7"))))
+        (base32 "1h8d8cnr6k5sw4cqy8r82zy4ldzpvn4nlk2221lz2haqq7xm4s5z"))))
     (build-system python-build-system)
     (arguments
-     ;; Tests fail with "AttributeError: module 'attr' has no attribute 's'".
+     ;; FIXME: Tests fail with: "ModuleNotFoundError: No module named
+     ;; 'tests'".  Not sure how to handle this.
      `(#:tests? #f
        #:phases
        (modify-phases %standard-phases
-         (add-after 'build 'build-documentation
+         ;; "setup.py" tries to open missing "requirements.txt".
+         (add-after 'unpack 'ignore-missing-file
            (lambda _
-             (invoke "make" "docs")))
-         (add-after 'build-documentation 'install-documentation
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (doc (string-append out "/share/doc/" ,name)))
-               (mkdir-p doc)
-               (copy-recursively "docs/_build/html" doc))
+             (substitute* "setup.py"
+               (("open\\('requirements\\.txt'\\)") "[]"))
              #t)))))
-    (native-inputs
-     `(("sphinx" ,python-sphinx)
-       ("sphinx-rtd-theme" ,python-sphinx-rtd-theme)))
     (propagated-inputs
      `(("aiohttp" ,python-aiohttp)
-       ("attr" ,python-attr)
+       ("attrs" ,python-attrs)
        ("base58" ,python-base58)
        ("jsonschema" ,python-jsonschema)
        ("libnacl" ,python-libnacl)
