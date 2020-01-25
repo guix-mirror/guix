@@ -9759,6 +9759,28 @@ giga, kibi.")
      "This package can convert numbers into stack-allocated byte arrays.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-obj-0.9
+  (package
+    (name "rust-obj")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "obj" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10z1r2r0xyhr4j1n07135kz4bc0zhqy98vabs99vz0x171bi8gy0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-genmesh" ,rust-genmesh-0.6))))
+    (home-page "https://github.com/kvark/obj")
+    (synopsis "Package for loading Wavefront .obj files")
+    (description
+     "This package provides a package for loading Wavefront @code{.obj} files.")
+    (license license:asl2.0)))
+
 (define-public rust-objc-0.2
   (package
     (name "rust-objc")
