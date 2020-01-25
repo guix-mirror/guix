@@ -68,6 +68,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages plotutils)
   #:use-module (gnu packages pth)
   #:use-module (gnu packages pulseaudio)  ; libsndfile, libsamplerate
   #:use-module (gnu packages python)
@@ -404,6 +405,45 @@ basic geometries.")
       ;; (GPLv3+), the combined work must be licensed as GPLv3+ (see:
       ;; https://gitlab.com/inkscape/inkscape/issues/784).
       (license license:gpl3+))))
+
+(define-public pstoedit
+  (package
+    (name "pstoedit")
+    (version "3.75")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/pstoedit/pstoedit/"
+                                  version "/pstoedit-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1kv46g2wsvsvcngkavxl5gnw3l6g5xqnh4kmyx4b39a01d8xiddp"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("ghostscript" ,ghostscript)
+       ("imagemagick" ,imagemagick)
+       ("libplot" ,plotutils)
+       ("libjpeg" ,libjpeg-turbo)
+       ("zlib" ,zlib)))               ;else libp2edrvmagick++.so fails to link
+    (home-page "http://www.pstoedit.net/")
+    (synopsis "Converter for PostScript and PDF graphics")
+    (description "The @code{pstoedit} utility allows translating graphics
+in the PostScript or PDF (Portable Document Format) formats to various
+other vector formats such as:
+@itemize
+@item Tgif (.obj)
+@item gnuplot
+@item xfig (.fig)
+@item Flattened PostScript
+@item DXF, a CAD (Computed-Aided Design) exchange format
+@item PIC (for troff/groff)
+@item MetaPost (for usage with TeX/LaTeX)
+@item LaTeX2e picture
+@item GNU Metafile (for use with plotutils/libplot)
+@item Any format supported by ImageMagick
+@end itemize")
+    (license license:gpl2+)))
 
 (define-public ogre
   (package
