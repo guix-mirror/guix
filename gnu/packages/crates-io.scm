@@ -6844,6 +6844,37 @@ for the most common image formats.")
         ("rust-num-complex" ,rust-num-complex-0.2)
         ("rust-quickcheck" ,rust-quickcheck-0.6))))))
 
+(define-public rust-image-0.20
+  (package
+    (inherit rust-image-0.21)
+    (name "rust-image")
+    (version "0.20.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "image" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "01058n0jcw25pq5shn7lkvywv8c28xsxb3nwwyb4r16ijm1mnrj4"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-gif" ,rust-gif-0.10)
+        ("rust-jpeg-decoder" ,rust-jpeg-decoder-0.1)
+        ("rust-lzw" ,rust-lzw-0.10)
+        ("rust-num-iter" ,rust-num-iter-0.1)
+        ("rust-num-rational" ,rust-num-rational-0.2)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-png" ,rust-png-0.12)
+        ("rust-scoped-threadpool" ,rust-scoped-threadpool-0.1)
+        ("rust-tiff" ,rust-tiff-0.2))
+       #:cargo-development-inputs
+       (("rust-glob" ,rust-glob-0.2)
+        ("rust-num-complex" ,rust-num-complex-0.2)
+        ("rust-quickcheck" ,rust-quickcheck-0.6))))))
+
 (define-public rust-indexmap-1.0
   (package
     (name "rust-indexmap")
