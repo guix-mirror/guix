@@ -2068,6 +2068,38 @@ for computer graphics.")
                        (string-append clang "/lib")))
              #t)))))))
 
+(define-public rust-clang-sys-0.11
+  (package
+    (inherit rust-clang-sys-0.22)
+    (name "rust-clang-sys")
+    (version "0.11.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "clang-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17i47skqp1d9svil2m1wspnhz7ci1x0fipia70ns0qffciwiz48r"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-0.7)
+        ("rust-clippy" ,rust-clippy-0.0)
+        ("rust-glob" ,rust-glob-0.2)
+        ("rust-lazy-static" ,rust-lazy-static-0.2)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-libloading" ,rust-libloading-0.3))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-environmental-variable
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((clang (assoc-ref inputs "libclang")))
+               (setenv "LIBCLANG_PATH"
+                       (string-append clang "/lib")))
+             #t)))))))
+
 (define-public rust-clap-2
   (package
     (name "rust-clap")
