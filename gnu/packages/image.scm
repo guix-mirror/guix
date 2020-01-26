@@ -1507,7 +1507,22 @@ is hereby granted."))))
      `(("nasm" ,nasm)))
     (arguments
      `(#:configure-flags '("-DCMAKE_INSTALL_LIBDIR:PATH=lib"
-                           "-DENABLE_STATIC=0")
+                           "-DENABLE_STATIC=0"
+                           ;; The build system probes for the current CPU, but
+                           ;; that fails when cross-compiling.
+                           ,@(let ((target (%current-target-system)))
+                               (if target
+                                   (cond
+                                    ((string-prefix? "arm" target)
+                                     `("-DCMAKE_SYSTEM_PROCESSOR=arm"))
+                                    ((string-prefix? "aarch64" target)
+                                     `("-DCMAKE_SYSTEM_PROCESSOR=aarch64"))
+                                    ((string-prefix? "i686" target)
+                                     `("-DCMAKE_SYSTEM_PROCESSOR=x86"))
+                                    ((string-prefix? "x86_64" target)
+                                     `("-DCMAKE_SYSTEM_PROCESSOR=x86_64"))
+                                    (else '()))
+                                   '())))
        ,@(if (%current-target-system)
              '()
              ;; Use a special "bootstrap" CMake for the native build to work
