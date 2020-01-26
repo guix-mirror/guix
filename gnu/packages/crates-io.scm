@@ -2357,6 +2357,35 @@ CMAKE environmental variable is set.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-cocoa-0.19
+  (package
+    (name "rust-cocoa")
+    (version "0.19.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cocoa" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0034vahbfv574q4b63rj241b8rnka5cjiqsqc6wiggnin9l7g7zj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t     ; only for macOS
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-block" ,rust-block-0.1)
+        ("rust-core-foundation" ,rust-core-foundation-0.6)
+        ("rust-core-graphics" ,rust-core-graphics-0.17)
+        ("rust-foreign-types" ,rust-foreign-types-0.3)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-objc" ,rust-objc-0.2))))
+    (home-page "https://github.com/servo/core-foundation-rs")
+    (synopsis "Bindings to Cocoa for macOS")
+    (description "Bindings to Cocoa for macOS.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-color-quant-1.0
   (package
     (name "rust-color-quant")
