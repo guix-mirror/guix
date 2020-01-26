@@ -2386,6 +2386,21 @@ CMAKE environmental variable is set.")
     (description "Bindings to Cocoa for macOS.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-cocoa-0.18
+  (package
+    (inherit rust-cocoa-0.19)
+    (name "rust-cocoa")
+    (version "0.18.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cocoa" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0m6fgdr4d2fp8jhkqvwr23hrqqqjv72g0j9vdgijc58k05j9j1hp"))))))
+
 (define-public rust-color-quant-1.0
   (package
     (name "rust-color-quant")
