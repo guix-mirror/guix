@@ -14298,6 +14298,33 @@ for the serde framework.")
       "Macros 1.1 implementation of #[derive(Serialize, Deserialize)]")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-serde-derive-0.9
+  (package
+    (inherit rust-serde-derive-1.0)
+    (name "rust-serde-derive")
+    (version "0.9.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serde-derive" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1fkldf0lnl6pwxs00qpyp79m30qmfpi3bk0wm22211ylyikdi3wp"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-cargo-toml
+           (lambda _
+             (substitute* "Cargo.toml"
+               ((", path =.*}") "}"))
+             #t)))
+       #:cargo-inputs
+       (("rust-quote" ,rust-quote-0.3)
+        ("rust-serde-codegen-internals" ,rust-serde-codegen-internals-0.14)
+        ("rust-syn" ,rust-syn-0.11))))))
+
 (define-public rust-serde-json-1.0
   (package
     (name "rust-serde-json")
