@@ -2675,6 +2675,33 @@ intrinsics.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-core-graphics-0.17
+  (package
+    (name "rust-core-graphics")
+    (version "0.17.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "core-graphics" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1acm3vygngnilzlr6klym5ywh7kfzh2xxrh2l41152hwmdl0jyan"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t     ; only for macOS
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-core-foundation" ,rust-core-foundation-0.6)
+        ("rust-foreign-types" ,rust-foreign-types-0.3)
+        ("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/servo/core-graphics-rs")
+    (synopsis "Bindings to Core Graphics for macOS")
+    (description
+     "Bindings to Core Graphics for macOS.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-crates-index-0.13
   (package
     (name "rust-crates-index")
