@@ -1209,7 +1209,8 @@ a client based on Qt.  This is a fork of Bitcoin Core.")))
                 "1jx56ma351p8af8dvavygjwf6ipa7qbgq7bpdsymwj27apdnixfy"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags
+     '(#:parallel-build? #f             ;fails with -j64
+       #:configure-flags
        (list (string-append "--with-opensp-includes="
                             (assoc-ref %build-inputs "opensp")
                             "/include/OpenSP"))))
