@@ -14421,6 +14421,31 @@ for the serde framework.")
      "This package provides a JSON serialization file format.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-serde-json-0.9
+  (package
+    (inherit rust-serde-json-1.0)
+    (name "rust-serde-json")
+    (version "0.9.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serde_json" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "188nbf56m7p6mnh3xd71rwqxd4g95lqh8gsl7mfy3lp7gd4cz2xd"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-dtoa" ,rust-dtoa-0.4)
+        ("rust-itoa" ,rust-itoa-0.3)
+        ("rust-linked-hash-map" ,rust-linked-hash-map-0.4)
+        ("rust-num-traits" ,rust-num-traits-0.1)
+        ("rust-serde" ,rust-serde-0.9))
+       #:cargo-development-inputs
+       (("rust-serde-derive" ,rust-serde-derive-0.9))))))
+
 (define-public rust-serde-macros-0.4
   (package
     (name "rust-serde-macros")
