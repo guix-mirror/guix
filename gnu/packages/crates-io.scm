@@ -2626,6 +2626,34 @@ semantics than those provided by @code{as} or @code{From}/@code{Into}.")
 intrinsics.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-core-foundation-0.6
+  (package
+    (name "rust-core-foundation")
+    (version "0.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "core-foundation" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0va97wf49c8dzm9c8pgyk1jn7z21rl0bj1syf2zz5m2z2hzy1f95"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t     ; only for macOS
+       #:cargo-inputs
+       (("rust-chrono" ,rust-chrono-0.4)
+        ("rust-core-foundation-sys" ,rust-core-foundation-sys-0.6)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-uuid" ,rust-uuid-0.5))))
+    (home-page "https://github.com/servo/core-foundation-rs")
+    (synopsis
+     "Bindings to Core Foundation for macOS")
+    (description
+     "Bindings to Core Foundation for macOS.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-core-foundation-sys-0.6
   (package
     (name "rust-core-foundation-sys")
