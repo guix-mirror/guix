@@ -14142,6 +14142,24 @@ proven statistical guarantees.")
        (("rust-clippy" ,rust-clippy-0.0))
        #:tests? #f))))
 
+(define-public rust-serde-0.4
+  (package
+    (inherit rust-serde-0.9)
+    (name "rust-serde")
+    (version "0.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serde" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06s2ayx1p5zzj4q7bfld60c9iprsk1256pnh8qj6h794mjinw11b"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs (("rust-num" ,rust-num-0.2))))))
+
 (define-public rust-serde-big-array-0.1
   (package
     (name "rust-serde-big-array")
