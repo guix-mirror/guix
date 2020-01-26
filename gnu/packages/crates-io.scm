@@ -2702,6 +2702,33 @@ intrinsics.")
      "Bindings to Core Graphics for macOS.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-core-text-13
+  (package
+    (name "rust-core-text")
+    (version "13.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "core-text" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0v9lxn277p39cf81pb45r7k0lzf17pwgd5cpry1c04ajv556b16v"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t     ; only for macOS
+       #:cargo-inputs
+       (("rust-core-foundation" ,rust-core-foundation-0.6)
+        ("rust-core-graphics" ,rust-core-graphics-0.17)
+        ("rust-foreign-types" ,rust-foreign-types-0.3)
+        ("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/servo/core-foundation-rs")
+    (synopsis "Bindings to the Core Text framework")
+    (description
+     "Bindings to the Core Text framework.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-crates-index-0.13
   (package
     (name "rust-crates-index")
