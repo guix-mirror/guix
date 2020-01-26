@@ -10763,6 +10763,36 @@ deserialization, and interpreter in Rust.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-partial-io-0.2
+  (package
+    (name "rust-partial-io")
+    (version "0.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "partial-io" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "03iynvayh11a4mckhwflm5y1qmnkw5m3b20gzi1crpasndy3h8xx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-futures" ,rust-futures-0.1)
+        ("rust-quickcheck" ,rust-quickcheck-0.4)
+        ("rust-tokio-io" ,rust-tokio-io-0.1))
+       #:cargo-development-inputs
+       (("rust-lazy-static" ,rust-lazy-static-0.2)
+        ("rust-quickcheck" ,rust-quickcheck-0.4)
+        ("rust-tokio-core" ,rust-tokio-core-0.1))))
+    (home-page "https://github.com/facebookincubator/rust-partial-io")
+    (synopsis
+     "Helpers to test partial, interrupted and would-block I/O operations")
+    (description
+     "Helpers to test partial, interrupted and would-block I/O operations.")
+    (license license:bsd-3)))
+
 (define-public rust-paste-0.1
   (package
     (name "rust-paste")
