@@ -2108,13 +2108,17 @@ libxml2 and libxslt.")
 (define-public python-xmlschema
   (package
     (name "python-xmlschema")
-    (version "1.0.18")
+    (version "1.1.0")
     (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "xmlschema" version))
+              ;; Unit tests are not distributed with the PyPI archive.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/sissaschool/xmlschema")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1inwqwr7d3qah9xf9rfzkpva433jpr4n7n43zybf2gdpz4q1g0ry"))))
+                "1h8321jb6q3dhlh3608y3f3sbbzfd3jg1psyirxkrm4w5xs3lbvy"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -2126,7 +2130,7 @@ libxml2 and libxslt.")
                    (setenv "PYTHONPATH"
                            (string-append "./build/lib:"
                                           (getenv "PYTHONPATH")))
-                   (invoke "python" "xmlschema/tests/test_all.py"))
+                   (invoke "python" "-m" "unittest" "-v"))
                  (format #t "test suite not run~%"))
              #t)))))
     (native-inputs
