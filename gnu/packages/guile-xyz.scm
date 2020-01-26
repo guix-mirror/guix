@@ -2546,6 +2546,14 @@ libraries, such as GTK+3.  Its README comes with the disclaimer: This is
 pre-alpha code.")
     (license license:gpl3+)))
 
+(define-public guile3.0-gi
+  (package
+    (inherit guile-gi)
+    (name "guile3.0-gi")
+    (native-inputs
+     `(("guile" ,guile-3.0)
+       ,@(package-native-inputs guile-gi)))))
+
 (define-public guile-srfi-159
   (let ((commit "1bd98abda2ae4ef8f36761a167903e55c6bda7bb")
         (revision "0"))
