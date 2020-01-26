@@ -87,6 +87,7 @@
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages libunistring)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages lsof)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages man)
@@ -3120,11 +3121,11 @@ related tools to process winmail.dat files.")
     (license gpl2+)))
 
 (define-public public-inbox
-  (let ((commit "3cf66514aea9e958999973b9f104473b6d800fbe")
+  (let ((commit "05a06f3262a2ddbf46adb85169e13ce9127e4524")
         (revision "0"))
     (package
      (name "public-inbox")
-     (version (git-version "1.0.0" revision commit))
+     (version (git-version "1.2.0" revision commit))
      (source
       (origin (method git-fetch)
               (uri (git-reference
@@ -3132,7 +3133,7 @@ related tools to process winmail.dat files.")
                     (commit commit)))
               (sha256
                (base32
-                "1sxycwlm2n6p544gn9f0vf3xs6gz8vdswdhs2ha6fka8mgabvmdh"))
+                "06cclxg46gsls3x19l9s8s9x8gkjghm6gd4jb1v9ng6fds6xi2fg"))
               (file-name (git-file-name name version))))
      (build-system perl-build-system)
      (arguments
@@ -3149,6 +3150,9 @@ related tools to process winmail.dat files.")
             (lambda _
               (substitute* "t/spawn.t"
                 (("\\['env'\\]") (string-append "['" (which "env") "']")))
+              (substitute* "t/ds-leak.t"
+                (("/bin/sh") (which "sh")))
+              (invoke "./certs/create-certs.perl")
               #t))
           (add-after 'install 'wrap-programs
             (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -3168,10 +3172,12 @@ related tools to process winmail.dat files.")
               #t)))))
      (native-inputs
       `(("git" ,git)
-        ("xapian" ,xapian)))
+        ("xapian" ,xapian)
+        ;; For testing.
+        ("lsof" ,lsof)
+        ("openssl" ,openssl)))
      (inputs
-      `(("perl-danga-socket" ,perl-danga-socket)
-        ("perl-dbd-sqlite" ,perl-dbd-sqlite)
+      `(("perl-dbd-sqlite" ,perl-dbd-sqlite)
         ("perl-dbi" ,perl-dbi)
         ("perl-email-address-xs" ,perl-email-address-xs)
         ("perl-email-mime-contenttype" ,perl-email-mime-contenttype)
