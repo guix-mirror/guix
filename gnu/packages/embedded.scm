@@ -2,7 +2,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Clément Lassieur <clement@lassieur.org>
 ;;;
@@ -459,16 +459,16 @@ SEGGER J-Link and compatible devices.")
 (define-public jimtcl
   (package
     (name "jimtcl")
-    (version "0.77")
+    (version "0.79")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/msteveb/jimtcl"
-                    "/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/msteveb/jimtcl")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1cmk3qscqckg70chjyimzxa2qcka4qac0j4wq908kiijp45cax08"))))
+                "1k88hz0v3bi19xdvlp0i9nsx38imzwpjh632w7326zwbv2wldf0h"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -479,7 +479,7 @@ SEGGER J-Link and compatible devices.")
              (let ((out (assoc-ref outputs "out")))
                (invoke "./configure"
                        (string-append "--prefix=" out))))))))
-    (home-page "http://jim.tcl.tk")
+    (home-page "http://jim.tcl.tk/index.html")
     (synopsis "Small footprint Tcl implementation")
     (description "Jim is a small footprint implementation of the Tcl programming
 language.")
@@ -753,13 +753,14 @@ Propeller micro-controller development.")
     (name "openspin")
     (version "1.00.78")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/parallaxinc/"
-                                  "OpenSpin/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/parallaxinc/OpenSpin")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1k2dbz1v604g4r2d9qhckg2m8dnhiya760mbsqfsg4waxal87yb7"))))
+                "0ghk8hj4717ydhqzx2pfs6737s1cxng6sgg2xgbkwvcfclxdbrd0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests
@@ -826,13 +827,14 @@ upload binaries to a Parallax Propeller micro-controller.")
     (name "spin2cpp")
     (version "3.6.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/totalspectrum/spin2cpp/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/totalspectrum/spin2cpp")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "05qak187sn0xg7vhrxw27b19xhmid1b8ab8kax3gv0faavzablfw"))))
+                "0wznqvsckzzz4hdy2rpvj6jqpxw4yn7i0c7zxfm6i46k8gg9327b"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;; The tests assume that a micro-controller is connected.
@@ -1260,13 +1262,14 @@ and displaying decoded target responses.
     (version "1.5.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/texane/stlink/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/texane/stlink")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "01z1cz1a5xbbhd163qrqcgp4bi1k145pb80jmwdz50g7sfzmy570"))))
+         "1d5gxiqpsm8fc105cxlp27af9fk339fap5h6nay21x5a7n61jgyc"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no tests

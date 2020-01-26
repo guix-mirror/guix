@@ -72,7 +72,7 @@
 
 (define* (spice-vdagent-service
           #:optional (config (spice-vdagent-configuration)))
-  "Start the @command{vdagentd} and @command{vdagent} deamons
+  "Start the @command{vdagentd} and @command{vdagent} daemons
 from @var{spice-vdagent} to enable guest window resizing and
 clipboard sharing."
   (service spice-vdagent-service-type config))

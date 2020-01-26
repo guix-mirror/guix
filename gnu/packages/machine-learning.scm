@@ -206,6 +206,8 @@ classification.")
       (arguments
        `(#:imported-modules (,@%gnu-build-system-modules
                              (guix build python-build-system))
+         #:modules          ((guix build python-build-system)
+                             ,@%gnu-build-system-modules)
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'enter-dir

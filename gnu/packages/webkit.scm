@@ -121,14 +121,14 @@ engine that uses Wayland for graphics output.")
 (define-public webkitgtk
   (package
     (name "webkitgtk")
-    (version "2.26.2")
+    (version "2.26.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.webkitgtk.org/releases/"
                                   "webkitgtk-" version ".tar.xz"))
               (sha256
                (base32
-                "04k5h0sid9azsqz9pyq436v1rx4lnfrhvmcgmicqb0c0g9iz103b"))))
+                "04g6y0sv04d20bw401myq3k828ikysjhx383ly81vh9wji9i3mdd"))))
     (build-system cmake-build-system)
     (outputs '("out" "doc"))
     (arguments

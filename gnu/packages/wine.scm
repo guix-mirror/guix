@@ -3,7 +3,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
@@ -76,15 +76,15 @@
 (define-public wine
   (package
     (name "wine")
-    (version "4.0.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://dl.winehq.org/wine/source/"
-                                  (version-major+minor version)
-                                  "/wine-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1nhgw1wm613ln9dhjm0d03zs5adcmnqr2b50p21jbmm5k2gns0i5"))))
+    (version "5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dl.winehq.org/wine/source/"
+                           (version-major+minor version)
+                           "/wine-" version ".tar.xz"))
+       (sha256
+        (base32 "1d0kcy338radq07hrnzcpc9lc9j2fvzjh37q673002x8d6x5058q"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gettext-minimal)
@@ -96,6 +96,7 @@
        ("dbus" ,dbus)
        ("cups" ,cups)
        ("eudev" ,eudev)
+       ("faudio" ,faudio)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("glu" ,glu)
@@ -322,7 +323,7 @@ integrate Windows applications into your desktop.")
 (define-public wine-staging-patchset-data
   (package
     (name "wine-staging-patchset-data")
-    (version "4.18")
+    (version "5.0")
     (source
      (origin
        (method git-fetch)
@@ -331,7 +332,7 @@ integrate Windows applications into your desktop.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "03z0haf47mpm2aj9cji3wma4jy6j12wz10kkbgmbgrkkrc5lcqc2"))))
+        (base32 "054m2glvav29qnlgr3p36kahyv3kbxzba82djzqpc7cmsrin0d3f"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("bash" ,bash)
@@ -368,18 +369,21 @@ integrate Windows applications into your desktop.")
     (inherit wine)
     (name "wine-staging")
     (version (package-version wine-staging-patchset-data))
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://dl.winehq.org/wine/source/"
-                    (version-major version) ".x"
-                    "/wine-" version ".tar.xz"))
-              (file-name (string-append name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "0chf6vdy41kg75liibkb862442zwi8dbjzf6l5arcy2z4580a2yi"))))
-    (inputs `(("autoconf" ,autoconf) ; for autoreconf
-              ("faudio" ,faudio)
+    (source
+     (origin
+       (method url-fetch)
+       (uri (let ((dir (string-append
+                        (version-major version)
+                        (if (string-suffix? ".0" (version-major+minor version))
+                            ".0"
+                            ".x"))))
+              (string-append
+               "https://dl.winehq.org/wine/source/" dir
+               "/wine-" version ".tar.xz")))
+       (file-name (string-append name "-" version ".tar.xz"))
+       (sha256
+        (base32 "1d0kcy338radq07hrnzcpc9lc9j2fvzjh37q673002x8d6x5058q"))))
+    (inputs `(("autoconf" ,autoconf)    ; for autoreconf
               ("ffmpeg" ,ffmpeg)
               ("gtk+" ,gtk+)
               ("libva" ,libva)

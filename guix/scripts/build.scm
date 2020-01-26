@@ -809,7 +809,11 @@ build---packages, gexps, derivations, and so on."
                  (cond ((derivation-path? spec)
                         (catch 'system-error
                           (lambda ()
-                            (list (read-derivation-from-file spec)))
+                            ;; Ask for absolute file names so that .drv file
+                            ;; names passed from the user to 'read-derivation'
+                            ;; are absolute when it returns.
+                            (let ((spec (canonicalize-path spec)))
+                              (list (read-derivation-from-file spec))))
                           (lambda args
                             ;; Non-existent .drv files can be substituted down
                             ;; the road, so don't error out.
@@ -927,67 +931,64 @@ needed."
                         (list %default-options)))
 
   (with-error-handling
-    ;; Ask for absolute file names so that .drv file names passed from the
-    ;; user to 'read-derivation' are absolute when it returns.
-    (with-fluids ((%file-port-name-canonicalization 'absolute))
-      (with-status-verbosity (assoc-ref opts 'verbosity)
-        (with-store store
-          ;; Set the build options before we do anything else.
-          (set-build-options-from-command-line store opts)
+    (with-status-verbosity (assoc-ref opts 'verbosity)
+      (with-store store
+        ;; Set the build options before we do anything else.
+        (set-build-options-from-command-line store opts)
 
-          (parameterize ((current-terminal-columns (terminal-columns)))
-            (let* ((mode  (assoc-ref opts 'build-mode))
-                   (drv   (options->derivations store opts))
-                   (urls  (map (cut string-append <> "/log")
-                               (if (assoc-ref opts 'substitutes?)
-                                   (or (assoc-ref opts 'substitute-urls)
-                                       ;; XXX: This does not necessarily match the
-                                       ;; daemon's substitute URLs.
-                                       %default-substitute-urls)
-                                   '())))
-                   (items (filter-map (match-lambda
-                                        (('argument . (? store-path? file))
-                                         ;; If FILE is a .drv that's not in
-                                         ;; store, keep it so that it can be
-                                         ;; substituted.
-                                         (and (or (not (derivation-path? file))
-                                                  (not (file-exists? file)))
-                                              file))
-                                        (_ #f))
-                                      opts))
-                   (roots (filter-map (match-lambda
-                                        (('gc-root . root) root)
-                                        (_ #f))
-                                      opts)))
+        (parameterize ((current-terminal-columns (terminal-columns)))
+          (let* ((mode  (assoc-ref opts 'build-mode))
+                 (drv   (options->derivations store opts))
+                 (urls  (map (cut string-append <> "/log")
+                             (if (assoc-ref opts 'substitutes?)
+                                 (or (assoc-ref opts 'substitute-urls)
+                                     ;; XXX: This does not necessarily match the
+                                     ;; daemon's substitute URLs.
+                                     %default-substitute-urls)
+                                 '())))
+                 (items (filter-map (match-lambda
+                                      (('argument . (? store-path? file))
+                                       ;; If FILE is a .drv that's not in
+                                       ;; store, keep it so that it can be
+                                       ;; substituted.
+                                       (and (or (not (derivation-path? file))
+                                                (not (file-exists? file)))
+                                            file))
+                                      (_ #f))
+                                    opts))
+                 (roots (filter-map (match-lambda
+                                      (('gc-root . root) root)
+                                      (_ #f))
+                                    opts)))
 
-              (unless (or (assoc-ref opts 'log-file?)
-                          (assoc-ref opts 'derivations-only?))
-                (show-what-to-build store drv
-                                    #:use-substitutes?
-                                    (assoc-ref opts 'substitutes?)
-                                    #:dry-run? (assoc-ref opts 'dry-run?)
-                                    #:mode mode))
+            (unless (or (assoc-ref opts 'log-file?)
+                        (assoc-ref opts 'derivations-only?))
+              (show-what-to-build store drv
+                                  #:use-substitutes?
+                                  (assoc-ref opts 'substitutes?)
+                                  #:dry-run? (assoc-ref opts 'dry-run?)
+                                  #:mode mode))
 
-              (cond ((assoc-ref opts 'log-file?)
-                     ;; Pass 'show-build-log' the output file names, not the
-                     ;; derivation file names, because there can be several
-                     ;; derivations leading to the same output.
-                     (for-each (cut show-build-log store <> urls)
-                               (delete-duplicates
-                                (append (map derivation->output-path drv)
-                                        items))))
-                    ((assoc-ref opts 'derivations-only?)
-                     (format #t "~{~a~%~}" (map derivation-file-name drv))
-                     (for-each (cut register-root store <> <>)
-                               (map (compose list derivation-file-name) drv)
-                               roots))
-                    ((not (assoc-ref opts 'dry-run?))
-                     (and (build-derivations store (append drv items)
-                                             mode)
-                          (for-each show-derivation-outputs drv)
-                          (for-each (cut register-root store <> <>)
-                                    (map (lambda (drv)
-                                           (map cdr
-                                                (derivation->output-paths drv)))
-                                         drv)
-                                    roots)))))))))))
+            (cond ((assoc-ref opts 'log-file?)
+                   ;; Pass 'show-build-log' the output file names, not the
+                   ;; derivation file names, because there can be several
+                   ;; derivations leading to the same output.
+                   (for-each (cut show-build-log store <> urls)
+                             (delete-duplicates
+                              (append (map derivation->output-path drv)
+                                      items))))
+                  ((assoc-ref opts 'derivations-only?)
+                   (format #t "~{~a~%~}" (map derivation-file-name drv))
+                   (for-each (cut register-root store <> <>)
+                             (map (compose list derivation-file-name) drv)
+                             roots))
+                  ((not (assoc-ref opts 'dry-run?))
+                   (and (build-derivations store (append drv items)
+                                           mode)
+                        (for-each show-derivation-outputs drv)
+                        (for-each (cut register-root store <> <>)
+                                  (map (lambda (drv)
+                                         (map cdr
+                                              (derivation->output-paths drv)))
+                                       drv)
+                                  roots))))))))))

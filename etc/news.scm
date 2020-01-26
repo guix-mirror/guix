@@ -1,6 +1,6 @@
 ;; GNU Guix news, for use by 'guix pull'.
 ;;
-;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;
 ;; Copying and distribution of this file, with or without modification, are
 ;; permitted in any medium without royalty provided the copyright notice and
@@ -8,6 +8,29 @@
 
 (channel-news
  (version 0)
+
+ (entry (commit "8234fe653e61d0090138cbd4c48d877568355439")
+        (title (en "Guix now runs on Guile 3.0")
+               (de "Guix läuft jetzt auf Guile 3.0")
+               (nl "Guix draait nu op Guile 3.0"))
+        (body (en "The Guix revision you just pulled runs on version 3.0 of
+GNU@tie{}Guile (previously it would run on version 2.2).  Guile 3.0 improves
+performance through the use of just-in-time (JIT) native code generation.  The
+switch should be entirely transparent to you.  See
+@uref{https://gnu.org/software/guile} for more information on Guile 3.0.")
+              (de "Die Guix-Version, die Sie gerade gepullt haben, läuft auf
+Version 3.0 von GNU@tie{}Guile (und nicht mehr auf Version 2.2).  Guile 3.0
+verbessert die Rechenleistung, indem native Maschinenbefehle „just in time“
+erzeugt werden (JIT-Kompilierung).  Der Wechsel sollte für Sie völlig
+transparent sein und Guix verhält sich gleich.  Siehe
+@uref{https://gnu.org/software/guile} für weitere Informationen zu Guile
+3.0.")
+              (nl "De Guix die u net heeft gepulld gebruikt versie 3.0 van
+GNU@tie{}Guile (voorheen was dat versie 2.2).  Guile@tie{}3.0 draait dezelfde
+programma's doorgaans sneller door ze ‘just-in-time’ (JIT) te vertalen naar
+machine-instructies.  De omschakeling zou voor u volledig naadloos moeten
+zijn.  Lees @uref{https://gnu.org/software/guile} voor meer informatie over
+Guile@tie{}3.0.")))
 
  (entry (commit "828a39da68a9169ef1d9f9ff02a1c66b1bcbe884")
         (title (en "New @option{--diff} option for @command{guix challenge}")

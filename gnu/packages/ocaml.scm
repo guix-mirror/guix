@@ -1765,7 +1765,7 @@ through Transport Layer Security (@dfn{TLS}) encrypted connections.")
     (synopsis "File mapping for OCaml")
     (description "This project provides a @command{Mmap.map_file} function
 for mapping files in memory.  This function is the same as the
-@command{Unix.map_file} funciton added in OCaml >= 4.06.")
+@command{Unix.map_file} function added in OCaml >= 4.06.")
     (license (list license:qpl license:lgpl2.0))))
 
 (define-public ocaml-lwt

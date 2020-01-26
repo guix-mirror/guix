@@ -4,6 +4,7 @@
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -289,3 +290,48 @@ testing framework.")
     (description "This package provides a virtualenv fixture for the py.test
 framework.")
     (license license:expat)))
+
+(define-public python-codacy-coverage
+  (package
+    (name "python-codacy-coverage")
+    (version "1.3.11")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "codacy-coverage" version))
+        (sha256
+         (base32
+          "1g0c0w56xdkmqb8slacyw5qhzrkp814ng3ddh2lkiij58y9m2imr"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)); no tests
+    (propagated-inputs
+     `(("python-check-manifest" ,python-check-manifest)))
+    (home-page "https://github.com/codacy/python-codacy-coverage")
+    (synopsis "Codacy coverage reporter for Python")
+    (description "This package analyses Python test suites and reports how much
+of the code is covered by them.  This tool is part of the Codacy suite for
+analysing code quality.")
+    (license license:expat)))
+
+(define-public python-httmock
+  (package
+    (name "python-httmock")
+    (version "1.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "httmock" version))
+        (sha256
+         (base32
+          "1zj1fcm0n6f0wr9mr0hmlqz9430fnr5cdwd5jkcvq9j44bnsrfz0"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)); no tests
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
+    (home-page "https://github.com/patrys/httmock")
+    (synopsis "Mocking library for requests.")
+    (description "This package provides a library for replying fake data to
+Python software under test, when they make an HTTP query.")
+    (license license:asl2.0)))

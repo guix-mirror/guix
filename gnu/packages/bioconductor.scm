@@ -7349,7 +7349,7 @@ analytics on packages.")
     (description
      "BiocSet displays different biological sets in a triple tibble format.
 These three tibbles are @code{element}, @code{set}, and @code{elementset}.
-The user has the abilty to activate one of these three tibbles to perform
+The user has the ability to activate one of these three tibbles to perform
 common functions from the @code{dplyr} package.  Mapping functionality and
 accessing web references for elements/sets are also available in BiocSet.")
     (license license:artistic2.0)))

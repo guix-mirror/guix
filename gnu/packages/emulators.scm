@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2018 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -405,26 +405,26 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
 (define-public mgba
   (package
     (name "mgba")
-    (version "0.7.3")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/mgba-emu/mgba.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1wrmwh50rv8bd328r8cisrihq6h90kx2bfb0vmjfbsd3l1jvgrgm"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Make sure we don't use the bundled software.
-               '(begin
-                  (for-each
-                   (lambda (subdir)
-                     (let ((lib-subdir (string-append "src/third-party/" subdir)))
-                       (delete-file-recursively lib-subdir)))
-                   '("libpng" "lzma" "sqlite3" "zlib"))
-                  #t))))
+    (version "0.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mgba-emu/mgba.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0m3rgcdv32ms98j7rrmk2hphvn462bwsd6xfz2ssy05398pj4ljh"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Make sure we don't use the bundled software.
+        '(begin
+           (for-each
+            (lambda (subdir)
+              (let ((lib-subdir (string-append "src/third-party/" subdir)))
+                (delete-file-recursively lib-subdir)))
+            '("libpng" "lzma" "sqlite3" "zlib"))
+           #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no "test" target

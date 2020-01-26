@@ -9,7 +9,7 @@
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Adriano Peluso <catonano@gmail.com>
-;;; Copyright © 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
@@ -1009,40 +1009,29 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
 (define-public python-duniterpy
   (package
     (name "python-duniterpy")
-    (version "0.55.1")
+    (version "0.56.0")
     (source
      (origin
-       (method git-fetch)
-       ;; Pypi's default URI is missing "requirements.txt" file.
-       (uri (git-reference
-             (url "https://git.duniter.org/clients/python/duniterpy.git")
-             (commit version)))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (pypi-uri "duniterpy" version))
        (sha256
-        (base32
-         "07zsbbkzmnvyv5v0vw2d42vw3ar4iqhlidy9376ysk4ldlj1igf7"))))
+        (base32 "1h8d8cnr6k5sw4cqy8r82zy4ldzpvn4nlk2221lz2haqq7xm4s5z"))))
     (build-system python-build-system)
     (arguments
-     ;; Tests fail with "AttributeError: module 'attr' has no attribute 's'".
+     ;; FIXME: Tests fail with: "ModuleNotFoundError: No module named
+     ;; 'tests'".  Not sure how to handle this.
      `(#:tests? #f
        #:phases
        (modify-phases %standard-phases
-         (add-after 'build 'build-documentation
+         ;; "setup.py" tries to open missing "requirements.txt".
+         (add-after 'unpack 'ignore-missing-file
            (lambda _
-             (invoke "make" "docs")))
-         (add-after 'build-documentation 'install-documentation
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (doc (string-append out "/share/doc/" ,name)))
-               (mkdir-p doc)
-               (copy-recursively "docs/_build/html" doc))
+             (substitute* "setup.py"
+               (("open\\('requirements\\.txt'\\)") "[]"))
              #t)))))
-    (native-inputs
-     `(("sphinx" ,python-sphinx)
-       ("sphinx-rtd-theme" ,python-sphinx-rtd-theme)))
     (propagated-inputs
      `(("aiohttp" ,python-aiohttp)
-       ("attr" ,python-attr)
+       ("attrs" ,python-attrs)
        ("base58" ,python-base58)
        ("jsonschema" ,python-jsonschema)
        ("libnacl" ,python-libnacl)
@@ -1067,17 +1056,13 @@ main features are:
 (define-public silkaj
   (package
     (name "silkaj")
-    (version "0.7.3")
+    (version "0.7.6")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://git.duniter.org/clients/python/silkaj.git")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (pypi-uri "silkaj" version))
        (sha256
-        (base32
-         "0yk2574yb0d0k0rg7qf0pkmjidblsad04x8hhqpy9k80rvgjcr5w"))))
+        (base32 "0hrn0jwg415z7wjkp0myvw85wszlfi18f56j03075xxakr4dmi2j"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ;no test
@@ -1088,7 +1073,7 @@ main features are:
        ("pynacl" ,python-pynacl)
        ("tabulate" ,python-tabulate)
        ("texttable" ,python-texttable)))
-    (home-page "https://silkaj.duniter.org/")
+    (home-page "https://git.duniter.org/clients/python/silkaj")
     (synopsis "Command line client for Duniter network")
     (description "@code{Silkaj} is a command line client for the
 @uref{https://github.com/duniter/duniter/, Duniter} network.
@@ -1224,7 +1209,8 @@ a client based on Qt.  This is a fork of Bitcoin Core.")))
                 "1jx56ma351p8af8dvavygjwf6ipa7qbgq7bpdsymwj27apdnixfy"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags
+     '(#:parallel-build? #f             ;fails with -j64
+       #:configure-flags
        (list (string-append "--with-opensp-includes="
                             (assoc-ref %build-inputs "opensp")
                             "/include/OpenSP"))))
@@ -1301,3 +1287,77 @@ entity management.")
      (license:non-copyleft
       "file://COPYING"
       "See COPYING in the distribution."))))
+
+(define-public bitcoin-unlimited
+  (package
+    (name "bitcoin-unlimited")
+    (version "1.7.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/BitcoinUnlimited/BitcoinUnlimited.git")
+             (commit (string-append "bucash" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "05rcd73mg2fb2zb6b1imzspck6jhcy3xymrr7n24kwjrzmvihdpx"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python) ; for the tests
+       ("util-linux" ,util-linux) ; provides the hexdump command for tests
+       ("qttools" ,qttools)))
+    (inputs
+     `(("bdb" ,bdb-4.8)
+       ("boost" ,boost)
+       ("libevent" ,libevent)
+       ("miniupnpc" ,miniupnpc)
+       ("openssl" ,openssl)
+       ("protobuf" ,protobuf)
+       ("qrencode" ,qrencode)
+       ("qtbase" ,qtbase)
+       ("zeromq" ,zeromq)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:configure-flags
+       (list
+        ;; Boost is not found unless specified manually.
+        (string-append "--with-boost="
+                       (assoc-ref %build-inputs "boost"))
+        ;; XXX: The configure script looks up Qt paths by
+        ;; `pkg-config --variable=host_bins Qt5Core`, which fails to pick
+        ;; up executables residing in 'qttools', so we specify them here.
+        (string-append "ac_cv_path_LRELEASE="
+                       (assoc-ref %build-inputs "qttools")
+                       "/bin/lrelease")
+        (string-append "ac_cv_path_LUPDATE="
+                       (assoc-ref %build-inputs "qttools")
+                       "/bin/lupdate"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             ;; TODO: Find why utilprocess_tests never ends. Disable for now.
+             (substitute* "src/test/utilprocess_tests.cpp"
+               (("#if \\(BOOST_OS_LINUX && \\(BOOST_VERSION >= 106500\\)\\)")
+                "#if 0"))
+             #t))
+         (add-before 'configure 'make-qt-deterministic
+           (lambda _
+             ;; Make Qt deterministic.
+             (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")
+             #t))
+         (add-before 'check 'set-home
+           (lambda _
+             (setenv "HOME" (getenv "TMPDIR")) ; tests write to $HOME
+             #t)))))
+    (home-page "https://www.bitcoinunlimited.info/")
+    (synopsis "Client for the Bitcoin Cash protocol")
+    (description
+     "Bitcoin Unlimited is a client for the Bitcoin Cash peer-to-peer
+electronic cash system.  This package provides a command line client and
+a Qt GUI.")
+    (license license:expat)))

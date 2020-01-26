@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Mathieu Lirzin <mthl@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -240,6 +240,13 @@ the store."
   "Return a list of inputs, such that when INPUTS contains the same DRV twice,
 they are coalesced, with their sub-derivations merged.  This is needed because
 Nix itself keeps only one of them."
+  (define (find pred lst)                         ;inlinable copy of 'find'
+    (let loop ((lst lst))
+      (match lst
+        (() #f)
+        ((head . tail)
+         (if (pred head) head (loop tail))))))
+
   (fold (lambda (input result)
           (match input
             (($ <derivation-input> (= derivation-file-name path) sub-drvs)

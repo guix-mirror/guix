@@ -9544,7 +9544,7 @@ uses finite automata and guarantees linear time matching on all inputs.")
        (("rust-hex" ,rust-hex-0.3))))
     (home-page "https://github.com/sru-systems/rust-argon2")
     (synopsis "Rust implementation of the Argon2 password hashing function")
-    (description "This package contans a rust implementation of the Argon2
+    (description "This package contains a rust implementation of the Argon2
 password hashing function.")
     (license (list license:expat license:asl2.0))))
 
@@ -10219,7 +10219,7 @@ proven statistical guarantees.")
         ("rust-serde-test" ,rust-serde-test-1.0))))
     (home-page "https://github.com/serde-rs/bytes")
     (synopsis
-     "Hanlde of integer arrays and vectors for Serde")
+     "Handle of integer arrays and vectors for Serde")
     (description
      "Optimized handling of @code{&[u8]} and @code{Vec<u8>} for Serde.")
     (license (list license:expat license:asl2.0))))
@@ -13582,7 +13582,7 @@ attribute that is not in the shared backend crate.")
     (synopsis "Rust equivalent of Unix command \"which\"")
     (description
      "This package provides a Rust equivalent of Unix command \"which\".
-Locate installed execuable in cross platforms.")
+Locate installed executable in cross platforms.")
     (license license:expat)))
 
 (define-public rust-widestring-0.4

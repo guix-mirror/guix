@@ -75,6 +75,7 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages selinux)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages spice)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
@@ -109,20 +110,24 @@
 (define-public qemu
   (package
     (name "qemu")
-    (version "4.1.1")
+    (version "4.2.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qemu.org/qemu-"
                                  version ".tar.xz"))
+             (patches (search-patches "qemu-CVE-2020-7039.patch"
+                                      "qemu-CVE-2020-7211.patch"
+                                      "qemu-fix-documentation-build-failure.patch"))
              (sha256
               (base32
-               "1lm1jndfpc5sydwrxyiz5sms414zkcg9jdl0zx318qbjsayxnvzd"))))
+               "1w38hzlw7xp05gcq1nhga7hxvndxy6dfcnzi7q2il8ff110isj6k"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Running tests in parallel can occasionally lead to failures, like:
        ;; boot_sector_test: assertion failed (signature == SIGNATURE): (0x00000000 == 0x0000dead)
        #:parallel-tests? #f
        #:configure-flags (list "--enable-usb-redir" "--enable-opengl"
+                               "--enable-docs"
                                (string-append "--smbd="
                                               (assoc-ref %outputs "out")
                                               "/libexec/samba-wrapper")
@@ -232,6 +237,7 @@ exec smbd $@")))
                      ("bison" ,bison)
                      ("pkg-config" ,pkg-config)
                      ("python-wrapper" ,python-wrapper)
+                     ("python-sphinx" ,python-sphinx)
                      ("texinfo" ,texinfo)))
     (home-page "https://www.qemu.org")
     (synopsis "Machine emulator and virtualizer")
@@ -293,7 +299,7 @@ server and embedded PowerPC, and S390 guests.")
     ;; qemu-minimal-2.10 needs Python 2. Remove below once no longer necessary.
     (native-inputs `(("python-2" ,python-2)
                      ,@(fold alist-delete (package-native-inputs qemu)
-                             '("python-wrapper"))))
+                             '("python-wrapper" "python-sphinx"))))
     (inputs
      (fold alist-delete (package-inputs qemu)
            ;; Disable seccomp support, because it's not required for the GRUB

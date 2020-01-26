@@ -4177,7 +4177,9 @@ symbols, it still needs graphics to render the non-euclidean world.")
        (list (string-append "CPPFLAGS=-I"
                             (assoc-ref %build-inputs "sdl-union")
                             "/include/SDL"))))
-    (inputs `(("sdl-union" ,(sdl-union (list sdl sdl-image)))))
+    (inputs
+     `(("glu" ,glu)
+       ("sdl-union" ,(sdl-union (list sdl sdl-image)))))
     (synopsis "Shooter with space station destruction")
     (description
      "Kobo Deluxe is an enhanced version of Akira Higuchi's XKobo graphical game

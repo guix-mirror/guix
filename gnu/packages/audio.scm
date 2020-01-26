@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
@@ -1512,25 +1512,23 @@ well suited to all musical instruments and vocals.")
 (define-public ir
   (package
     (name "ir")
-    (version "1.3.2")
+    (version "1.3.4")
     (source (origin
-             (method url-fetch)
-             ;; The original home-page is gone. Download the tarball from an
-             ;; archive mirror instead.
-             (uri (list (string-append
-                         "https://web.archive.org/web/20150803095032/"
-                         "http://factorial.hu/system/files/ir.lv2-"
-                         version ".tar.gz")
-                        (string-append
-                         "https://mirrors.kernel.org/gentoo/distfiles/ir.lv2-"
-                         version ".tar.gz")))
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/tomszilagyi/ir.lv2")
+                   (commit version)))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "1jh2z01l9m4ar7yz0n911df07dygc7n4cl59p7qdjbh0nvkm747g"))))
+               "0svmjhg4r6wy5ci5rwz43ybll7yxjv7nnj7nyqscbzhr3gi5aib0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                              ; no tests
-       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "INSTDIR="
+                            (assoc-ref %outputs "out") "/lib/lv2"))
        #:phases (modify-phases %standard-phases
                   (delete 'configure))))        ; no configure script
     (inputs
@@ -1546,9 +1544,7 @@ well suited to all musical instruments and vocals.")
      (list (search-path-specification
             (variable "LV2_PATH")
             (files '("lib/lv2")))))
-    ;; Link to an archived copy of the home-page since the original is gone.
-    (home-page (string-append "https://web.archive.org/web/20150803095032/"
-                              "http://factorial.hu/plugins/lv2/ir"))
+    (home-page "https://tomszilagyi.github.io/plugins/ir.lv2")
     (synopsis "LV2 convolution reverb")
     (description
      "IR is a low-latency, real-time, high performance signal convolver

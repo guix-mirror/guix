@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 Marek Benc <merkur32@gmail.com>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,10 +24,12 @@
   #:use-module (gnu packages aspell)
   #:use-module (gnu packages check)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages libreoffice)
   #:use-module (gnu packages pkg-config)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (guix licenses)
   #:use-module (srfi srfi-1))
 
@@ -86,3 +89,35 @@ working\".")
               (sha256
                (base32
                 "0zq9yw1xzk8k9s6x83n1f9srzcwdavzazn3haln4nhp9wxxrxb1g"))))))
+
+(define-public python-pyenchant
+  (package
+    (name "python-pyenchant")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pyenchant" version))
+              (sha256
+               (base32
+                "1872ckgdip8nj9rnh167m0gsj5754qfg2hjxzsl1s06f5akwscgw"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f; FIXME: Dictionary for language 'en_US' could not be found
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'setlib
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "enchant/_enchant.py"
+               (("/opt/local/lib/libenchant.dylib\"")
+                (string-append "/opt/local/lib/libenchant.dylib\"\n"
+                               "    yield \"" (assoc-ref inputs "enchant")
+                               "/lib/libenchant-2.so\""))))))))
+    (inputs
+     `(("enchant" ,enchant)))
+    (home-page "https://github.com/pyenchant/pyenchant")
+    (synopsis "Spellchecking library for Python")
+    (description "PyEnchant is a spellchecking library for Python, based on the
+Enchant library.  PyEnchant combines all the functionality of the underlying
+Enchant library with the flexibility of Python.  It also provides some
+higher-level functionality than is available in the C API.")
+    (license lgpl2.1+)))

@@ -46,7 +46,7 @@
 ;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
 ;;; Copyright © 2019 mikadoZero <mikadozero@yandex.com>
 ;;; Copyright © 2019 Gabriel Hondet <gabrielhondet@gmail.com>
-;;; Copyright © 2019 LaFreniere, Joseph <joseph@lafreniere.xyz>
+;;; Copyright © 2019, 2020 Joseph LaFreniere <joseph@lafreniere.xyz>
 ;;; Copyright © 2019 Amar Singh <nly@disroot.org>
 ;;; Copyright © 2019 Baptiste Strazzulla <bstrazzull@hotmail.fr>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
@@ -105,6 +105,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages telephony)
+  #:use-module (gnu packages terminals)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tcl)
@@ -959,15 +960,13 @@ in certain cases.  It also enables recursion for anonymous functions.")
 (define-public emacs-xr
   (package
     (name "emacs-xr")
-    (version "1.13")
+    (version "1.14")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://elpa.gnu.org/packages/xr-" version ".tar"))
+       (uri (string-append "https://elpa.gnu.org/packages/xr-" version ".tar"))
        (sha256
-        (base32
-         "1km4x92pii8c4bcimks4xzhmwpypdf183z0zh7raj062jz4jb74r"))))
+        (base32 "1hfl7jvimgdgi2mwsx9laxcywp4n6k6vfkanjwm3sf27awqz7ngs"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/xr.html")
     (synopsis "Convert string regexp to rx notation")
@@ -17401,6 +17400,73 @@ next, volume) and display and control the current playlist as well as your
 stored playlists.")
     (license license:gpl3+)))
 
+(define-public emacs-vterm
+  (let ((version "0")
+        (revision "1")
+        (commit "7d7381fa8104b55b70148cf147523d9ab7f01fcd"))
+    (package
+      (name "emacs-vterm")
+      (version (git-version version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/akermu/emacs-libvterm.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "04a2jlhmr20ipgzpnba3yryw3ly7qdxjgaw10dwn9wxy1yqmapz1"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:modules ((guix build emacs-build-system)
+                    ((guix build cmake-build-system) #:prefix cmake:)
+                    (guix build emacs-utils)
+                    (guix build utils))
+         #:imported-modules (,@%emacs-build-system-modules
+                             (guix build cmake-build-system))
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'add-source-to-load-path 'remove-vterm-module-make
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Remove the Emacs Lisp file.
+               (delete-file "vterm-module-make.el")
+               ;; Remove references to the removed file.
+               (make-file-writable "vterm.el")
+               (emacs-substitute-sexps "vterm.el"
+                 ("(or (require 'vterm-module nil t)"
+                  `(module-load
+                    ,(string-append (assoc-ref outputs "out")
+                                    "/lib/vterm-module.so"))))
+               #t))
+           (add-after 'build 'configure
+             ;; Run cmake.
+             (lambda* (#:key outputs #:allow-other-keys)
+               ((assoc-ref cmake:%standard-phases 'configure)
+                #:outputs outputs
+                #:out-of-source? #f
+                #:configure-flags '("-DUSE_SYSTEM_LIBVTERM=ON"))
+               #t))
+           (add-after 'configure 'make
+             ;; Run make.
+             (lambda* (#:key (make-flags '()) outputs #:allow-other-keys)
+               ;; Compile the shared object file.
+               (apply invoke "make" "all" make-flags)
+               ;; Move the file into /lib.
+               (install-file
+                "vterm-module.so"
+                (string-append (assoc-ref outputs "out") "/lib"))
+               #t)))
+         #:tests? #f))
+      (native-inputs
+       `(("cmake" ,cmake-minimal)
+         ("libtool" ,libtool)
+         ("libvterm" ,libvterm)))
+      (home-page "https://github.com/akermu/emacs-libvterm")
+      (synopsis "Emacs libvterm integration")
+      (description "This package implements a bridge to @code{libvterm} to
+display a terminal in an Emacs buffer.")
+      (license license:gpl3+))))
+
 (define-public emacs-simple-mpc
   ;; There have been no releases.
   (let ((commit "bee8520e81292b4c7353e45b193f9a13b482f5b2")
@@ -20422,9 +20488,9 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
   ;; This package has versions newer than indicated on MELPA.
   ;; Get the current version from `telega-version` in telega.el.
   ;; or by running M-x telega-version.
-  (let ((commit "69565cc4de72e28148c8041de8930a122a39b800")
-	(revision "4")
-	(version "0.5.4"))
+  (let ((commit "f6728934988140839a71550c9c18b65424ba6225")
+	(revision "0")
+	(version "0.5.10"))
     (package
       (name "emacs-telega")
       (version (git-version version revision commit))
@@ -20436,7 +20502,7 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
                (commit commit)))
          (sha256
           (base32
-           "0blvj07f1sbdmp68qwlwgnhnv42ib0mjai5ndf8scbi12drn4rmk"))
+           "1ijz1isxzssbhz6bxrqmn6wv2apx5rhvd9sbsclv1gaiz3wmkj7i"))
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
@@ -20633,6 +20699,31 @@ each slide with left/right keys.")
     (description "This library provides helpers for single-window-per-frame
 execution of buffer-exposing commands.")
     (license license:gpl3+)))
+
+(define-public emacs-eshell-toggle
+  (let ((commit "ddfbe0a693497c4d4bc5494a19970ba4f6ab9033")
+        (revision "1"))
+    (package
+      (name "emacs-eshell-toggle")
+      (version (git-version "0.10.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/4DA/eshell-toggle.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "0xqrp8pwbmfxjdqipgpw5nw633mvhjjjm3k3j9sh9xdpmw05hhws"))
+         (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)))
+      (home-page "https://github.com/4DA/eshell-toggle")
+      (synopsis "Show and hide an @code{eshell} instance")
+      (description "This package toggles an @code{eshell} instance for the
+current buffer.")
+      (license license:gpl3+))))
 
 (define-public emacs-repl-toggle
   (package
@@ -20998,7 +21089,7 @@ data format @code{edn}.  See @url{https://github.com/edn-format/edn}.")
        `(("emacs-helm" ,emacs-helm)
          ("emacs-edn" ,emacs-edn)))
       (synopsis "Search help on clojuredocs.org with Helm")
-      (description "This packages provides a Helm interface to lookup Clojure
+      (description "This package provides a Helm interface to lookup Clojure
 documentation on @url{https://clojuredocs.org} with Helm.
 
 Two function are exposed:
