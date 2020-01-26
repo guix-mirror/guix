@@ -10426,6 +10426,41 @@ system for OpenSSL.")
                (setenv "OPENSSL_DIR" openssl))
              #t)))))))
 
+(define-public rust-openssl-sys-extras-0.7
+  (package
+    (name "rust-openssl-sys-extras")
+    (version "0.7.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "openssl-sys-extras" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ymrmfnknyjji74fflbnnq9r5ihx25h0vgs5y203vl6klzdy3i8i"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-openssl-sys" ,rust-openssl-sys-0.7)
+        ("rust-gcc" ,rust-gcc-0.3))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-cargo-toml
+           (lambda _
+             (substitute* "Cargo.toml"
+               ((", path =.*}") "}"))
+             #t)))))
+    (native-inputs
+     `(("openssl" ,openssl-1.0)))   ; openssl-1.0 specifically
+    (home-page "https://github.com/sfackler/rust-openssl")
+    (synopsis
+     "Extra FFI bindings to OpenSSL that require a C shim")
+    (description
+     "Extra FFI bindings to OpenSSL that require a C shim.")
+    (license license:expat)))
+
 (define-public rust-ordered-float-1.0
   (package
     (name "rust-ordered-float")
