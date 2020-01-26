@@ -7970,6 +7970,29 @@ allows loading dynamic libraries (also known as shared libraries) as well as use
 functions and static variables these libraries contain.")
     (license license:isc)))
 
+(define-public rust-libloading-0.3
+  (package
+    (inherit rust-libloading-0.5)
+    (name "rust-libloading")
+    (version "0.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "libloading" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0risz19rllhdc0d7nkpwkf4pcbjjgg1iim0kkmzb6kkp874hl0ha"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; Some test libraries not included in release.
+       #:cargo-inputs
+       (("rust-kernel32-sys" ,rust-kernel32-sys-0.2)
+        ("rust-lazy-static" ,rust-lazy-static-0.2)
+        ("rust-winapi" ,rust-winapi-0.2)
+        ("rust-target-build-utils" ,rust-target-build-utils-0.3))))))
+
 (define-public rust-libm-0.2
   (package
     (name "rust-libm")
