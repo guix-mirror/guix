@@ -30,6 +30,7 @@
 ;;; Copyright © 2019 Josh Holland <josh@inv.alid.pw>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020 David Wilson <david@daviwil.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,6 +58,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system scons)
   #:use-module (gnu packages)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages admin)
@@ -2005,3 +2007,69 @@ The cutbuffer and clipboard selection are always synchronized.")
 can optionally use some appearance settings from XSettings, tint2 and GTK.")
     (home-page "https://jgmenu.github.io/")
     (license license:gpl2)))
+
+(define-public xsettingsd
+  (package
+    (name "xsettingsd")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/derat/xsettingsd.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "05m4jlw0mgwp24cvyklncpziq1prr2lg0cq9c055sh4n9d93d07v"))))
+    (build-system scons-build-system)
+    (inputs
+     `(("libx11" ,libx11)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("googletest" ,googletest)
+       ("googletest-source" ,(package-source googletest))))
+    (arguments
+     `(#:scons ,scons-python2
+       #:scons-flags
+       (list "CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-sconstruct
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "SConstruct"
+               ;; scons doesn't pick up environment variables automatically
+               ;; so it needs help to find path variables
+               (("env = Environment\\(")
+                "env = Environment(
+                         ENV = {
+                           'PATH': os.environ['PATH'],
+                           'CPATH': os.environ['CPATH'],
+                           'LIBRARY_PATH': os.environ['LIBRARY_PATH'],
+                           'PKG_CONFIG_PATH': os.environ['PKG_CONFIG_PATH']
+                         },")
+               ;; Update path to gtest source files used in tests
+               (("/usr/src/gtest") (string-append
+                                    (assoc-ref inputs "googletest-source")
+                                    "/googletest"))
+               ;; Exclude one warning that causes a build error
+               (("-Werror") "-Werror -Wno-error=sign-compare"))
+             #t))
+         ;; The SConstruct script doesn't configure installation so
+         ;; binaries must be copied to the output path directly
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (mkdir-p bin)
+               (install-file "xsettingsd" bin)
+               (install-file "dump_xsettings" bin)
+               #t))))))
+    (home-page "https://github.com/derat/xsettingsd")
+    (synopsis "Xorg settings daemon")
+    (description "@command{xsettingsd} is a lightweight daemon that provides settings to
+Xorg applications via the XSETTINGS specification.  It is used for defining
+font and theme settings when a complete desktop environment (GNOME, KDE) is
+not running.  With a simple @file{.xsettingsd} configuration file one can avoid
+configuring visual settings in different UI toolkits separately.")
+    (license license:bsd-3)))
