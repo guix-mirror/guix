@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
-;;; Copyright © 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2016, 2019 Eraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
@@ -2504,14 +2504,14 @@ list of components.  This module takes care of that for you.")
 (define-public guile-gi
   (package
     (name "guile-gi")
-    (version "0.2.1")
+    (version "0.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://lonelycactus.com/tarball/guile_gi-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1ah5bmkzplsmkrk7v9vlxlqch7i91qv4cq2d2nar9xshbpcrj484"))))
+                "1v82kz8mz7wgq6w5llaz8a2wwdnl8vk2667dpjwjxscl0qyxsy6y"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-gnu-filesystem-hierarchy")
