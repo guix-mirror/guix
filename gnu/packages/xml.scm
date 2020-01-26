@@ -2054,14 +2054,14 @@ modular implementation of XML-RPC for C and C++.")
 (define-public python-elementpath
   (package
     (name "python-elementpath")
-    (version "1.3.3")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "elementpath" version))
        (sha256
         (base32
-         "1rb8892zli74wk1c4hyg77ja9wglq9hplgxwak1rmj3s9p6xnf0p"))))
+         "15h7d41v48q31hzjay7qzixdv531hnga3h35hksk7x52pgqcrkz7"))))
     (build-system python-build-system)
     (home-page
      "https://github.com/sissaschool/elementpath")
