@@ -18394,6 +18394,25 @@ untrusted inputs in Rust.")
         ("rust-rustc-test" ,rust-rustc-test-0.3)
         ("rust-serde-json" ,rust-serde-json-1.0))))))
 
+(define-public rust-urlocator-0.1
+ (package
+   (name "rust-urlocator")
+   (version "0.1.2")
+   (source
+    (origin
+      (method url-fetch)
+      (uri (crate-uri "urlocator" version))
+      (file-name
+       (string-append name "-" version ".tar.gz"))
+      (sha256
+       (base32
+        "1xzhwmqrqyk8p3s5npqpidrn0gjapqx5fshrx633fk56j7cm8qm1"))))
+   (build-system cargo-build-system)
+   (home-page "https://github.com/chrisduerr/urlocator.git")
+   (synopsis "Locate URLs in character streams")
+   (description "Locate URLs in character streams.")
+   (license (list license:expat license:asl2.0))))
+
 (define-public rust-user32-sys-0.2
   (package
     (name "rust-user32-sys")
