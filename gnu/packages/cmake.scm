@@ -33,6 +33,7 @@
   #:use-module (guix utils)
   #:use-module (guix deprecation)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system emacs)
   #:use-module (gnu packages)
   #:use-module (gnu packages backup)
@@ -49,8 +50,63 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
-;;; The "bootstrap" CMake.  It is used to build the inputs of 'cmake-minimal'
-;;; below, to prevent a cyclic dependency on cmake-build-system.
+;;; Build phases shared between 'cmake-bootstrap' and the later variants
+;;; that use cmake-build-system.
+(define %common-build-phases
+  `((add-after 'unpack 'split-package
+      ;; Remove files that have been packaged in other package recipes.
+      (lambda _
+        (delete-file "Auxiliary/cmake-mode.el")
+        (substitute* "Auxiliary/CMakeLists.txt"
+          ((".*cmake-mode.el.*") ""))
+        #t))
+    (add-after 'unpack 'use-system-libarchive
+      ;; 'Source/cm_get_date.c' includes archive_getdate.c wholesale,
+      ;; so it needs to be available along with the header file.
+      (lambda* (#:key native-inputs inputs #:allow-other-keys)
+        (let ((libarchive-source (assoc-ref (or native-inputs inputs)
+                                            "libarchive:source"))
+              ;; XXX: We can not use ,(package-version libarchive) here due to
+              ;; a cyclic module reference at the top-level.
+              (libarchive-version "3.4.1")
+              (files-to-unpack '("libarchive/archive_getdate.c"
+                                 "libarchive/archive_getdate.h")))
+          (mkdir-p "Utilities/cmlibarchive")
+          (apply invoke "tar" "-xvf" libarchive-source
+                 "--strip-components=1"
+                 "-C" "Utilities/cmlibarchive"
+                 (map (lambda (file)
+                        (string-append "libarchive-" libarchive-version
+                                       "/" file))
+                      files-to-unpack))
+          #t)))
+    (add-before 'configure 'patch-bin-sh
+      (lambda _
+        ;; Replace "/bin/sh" by the right path in... a lot of
+        ;; files.
+        (substitute*
+            '("Modules/CompilerId/Xcode-3.pbxproj.in"
+              "Modules/Internal/CPack/CPack.RuntimeScript.in"
+              "Source/cmGlobalXCodeGenerator.cxx"
+              "Source/cmLocalUnixMakefileGenerator3.cxx"
+              "Source/cmExecProgramCommand.cxx"
+              "Utilities/Release/release_cmake.cmake"
+              "Tests/CMakeLists.txt"
+              "Tests/RunCMake/File_Generate/RunCMakeTest.cmake")
+          (("/bin/sh") (which "sh")))
+        #t))))
+
+(define %common-disabled-tests
+  '(;; This test copies libgcc_s.so.1 from GCC and tries to modify its RPATH,
+    ;; but does not cope with the file being read-only.
+    "BundleUtilities"
+    ;; This test requires network access.
+    "CTestTestUpload"
+    ;; This test requires 'ldconfig' which is not available in Guix.
+    "RunCMake.install"))
+
+;;; The "bootstrap" CMake.  It is used to build 'cmake-minimal' below, as well
+;;; as any dependencies that need cmake-build-system.
 (define-public cmake-bootstrap
   (package
     (name "cmake-bootstrap")
@@ -78,17 +134,13 @@
                                  (and (string-prefix? "cm" file)
                                       (eq? 'directory (stat:type (stat file)))
 
-                                      ;; jsoncpp must be kept around for now to
-                                      ;; work around a circular dependency.  It
-                                      ;; gets deleted once we reach "cmake-minimal".
+                                      ;; These inputs are required to bootstrap
+                                      ;; the initial build system.  They are
+                                      ;; deleted in 'cmake-minimal' below.
                                       ;; TODO: Consider building jsoncpp with
                                       ;; Meson instead, once meson-build-system
                                       ;; learns cross-compilation.
                                       (not (string=? "cmjsoncpp" file))
-
-                                      ;; XXX: cmake's bootstrap script appears to
-                                      ;; rquire libuv, even though it detects and
-                                      ;; uses the system version eventually.
                                       (not (string=? "cmlibuv" file)))))))
                   #t))
               (patches (search-patches "cmake-curl-certificates.patch"))))
@@ -118,13 +170,11 @@
                "--" "-DCMAKE_BUILD_TYPE=Release"))
        #:make-flags
        (let ((skipped-tests
-              (list "BundleUtilities" ; This test fails on Guix.
+              (list ,@%common-disabled-tests
                     "CTestTestSubdir" ; This test fails to build 2 of the 3 tests.
-                    ;; This test requires 'ldconfig' which is not available in Guix.
-                    "RunCMake.install"
-                    ;; These tests requires network access.
-                    "CTestCoverageCollectGCOV"
-                    "CTestTestUpload")))
+                    ;; This test fails when ARGS (below) is in use, see
+                    ;; <https://gitlab.kitware.com/cmake/cmake/issues/17165>.
+                    "CTestCoverageCollectGCOV")))
          (list
           (string-append
            ;; These arguments apply for the tests only.
@@ -133,46 +183,7 @@
            " --exclude-regex ^\\(" (string-join skipped-tests "\\|") "\\)$")))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'split-package
-           ;; Remove files that have been packaged in other package recipes.
-           (lambda _
-             (delete-file "Auxiliary/cmake-mode.el")
-             (substitute* "Auxiliary/CMakeLists.txt"
-               ((".*cmake-mode.el.*") ""))
-             #t))
-         (add-after 'unpack 'use-system-libarchive
-           (lambda* (#:key native-inputs inputs #:allow-other-keys)
-             (let ((libarchive-source (assoc-ref (or native-inputs inputs)
-                                                 "libarchive:source"))
-                   (libarchive-version ,(package-version libarchive))
-                   (files-to-unpack '("libarchive/archive_getdate.c"
-                                      "libarchive/archive_getdate.h")))
-               ;; XXX: Source/cm_get_date.c includes archive_getdate.c wholesale,
-               ;; so it needs to be available along with the header file.
-               (mkdir-p "Utilities/cmlibarchive")
-               (apply invoke "tar" "-xvf" libarchive-source
-                      "--strip-components=1"
-                      "-C" "Utilities/cmlibarchive"
-                      (map (lambda (file)
-                             (string-append "libarchive-" libarchive-version
-                                            "/" file))
-                           files-to-unpack))
-               #t)))
-         (add-before 'configure 'patch-bin-sh
-           (lambda _
-             ;; Replace "/bin/sh" by the right path in... a lot of
-             ;; files.
-             (substitute*
-                 '("Modules/CompilerId/Xcode-3.pbxproj.in"
-                   "Modules/Internal/CPack/CPack.RuntimeScript.in"
-                   "Source/cmGlobalXCodeGenerator.cxx"
-                   "Source/cmLocalUnixMakefileGenerator3.cxx"
-                   "Source/cmExecProgramCommand.cxx"
-                   "Utilities/Release/release_cmake.cmake"
-                   "Tests/CMakeLists.txt"
-                   "Tests/RunCMake/File_Generate/RunCMakeTest.cmake")
-               (("/bin/sh") (which "sh")))
-             #t))
+         ,@%common-build-phases
          (add-before 'configure 'set-paths
            (lambda _
              ;; Help cmake's bootstrap process to find system libraries
@@ -187,8 +198,6 @@
              (apply invoke "./configure" configure-flags))))))
     (native-inputs
      `(("bzip2" ,bzip2)
-       ;; cURL depends on ghostscript (via groff and OpenLDAP), which depends on
-       ;; 'cmake-build-system' through libtiff and ultimately libjpeg-turbo.
        ("curl" ,curl-minimal)
        ("expat" ,expat)
        ("file" ,file)
@@ -243,10 +252,37 @@ and workspaces that can be used in the compiler environment of your choice.")
      `(("curl" ,curl)
        ("jsoncpp" ,jsoncpp)
        ,@(alist-delete "curl" (package-native-inputs cmake-bootstrap))))
+    (build-system cmake-build-system)
     (arguments
-     (substitute-keyword-arguments (package-arguments cmake-bootstrap)
-       ((#:configure-flags flags ''())
-        `(delete "--no-system-jsoncpp" ,flags))))))
+     `(#:configure-flags
+       (list "-DCMAKE_USE_SYSTEM_LIBRARIES=ON"
+             (string-append "-DCMAKE_DOC_DIR=share/doc/cmake-"
+                            ,(version-major+minor (package-version
+                                                   cmake-bootstrap))))
+
+       ;; This is the CMake used in cmake-build-system.  Ensure compiler
+       ;; optimizations are enabled to save size and CPU cycles.
+       #:build-type "Release"
+       #:phases
+       (modify-phases %standard-phases
+         ,@%common-build-phases
+         (replace 'check
+           (lambda* (#:key tests? parallel-tests? #:allow-other-keys)
+             (let ((skipped-tests (list ,@%common-disabled-tests
+                                        ;; This test requires the bundled libuv.
+                                        "BootstrapTest")))
+               (if tests?
+                   (begin
+                     (invoke "ctest" "-j" (if parallel-tests?
+                                              (number->string (parallel-job-count))
+                                              "1")
+                             "--exclude-regex"
+                             (string-append "^(" (string-join skipped-tests "|") ")$")))
+                   (format #t "test suite not run~%"))
+               #t))))
+        ,@(if (%current-target-system)
+              '()
+              `(#:cmake ,cmake-bootstrap))))))
 
 ;;; The "user-facing" CMake, now with manuals and HTML documentation.
 (define-public cmake
@@ -255,12 +291,19 @@ and workspaces that can be used in the compiler environment of your choice.")
     (name "cmake")
     (arguments
      (substitute-keyword-arguments (package-arguments cmake-minimal)
-       ((#:configure-flags configure-flags ''())
-        `(append ,configure-flags
-                ;; Extra configure flags used to generate the documentation.
-                '("--sphinx-info"
-                  "--sphinx-man"
-                  "--sphinx-html")))
+       ;; Use cmake-minimal this time.
+       ((#:cmake _ #f)
+        (if (%current-target-system)
+            cmake-minimal-cross
+            cmake-minimal))
+       ((#:configure-flags flags ''())
+        `(append (list "-DSPHINX_INFO=ON" "-DSPHINX_MAN=ON" "-DSPHINX_HTML=ON"
+                       (string-append "-DCMAKE_DOC_DIR=share/doc/cmake-"
+                                      ,(version-major+minor (package-version
+                                                             cmake-minimal)))
+                       "-DCMAKE_INFO_DIR=share/info"
+                       "-DCMAKE_MAN_DIR=share/man")
+                 ,flags))
        ((#:phases phases)
         `(modify-phases ,phases
            (add-after 'install 'move-html-doc
