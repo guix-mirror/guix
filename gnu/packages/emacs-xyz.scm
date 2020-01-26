@@ -8053,14 +8053,13 @@ passive voice.")
     (name "emacs-org")
     ;; emacs-org-contrib inherits from this package.  Please update it as
     ;; well.
-    (version "9.3.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://elpa.gnu.org/packages/org-"
-                                  version ".tar"))
-              (sha256
-               (base32
-                "1n79h6ihhsaxxbnl9hw511aav0215m3pa51sa5fh3ddknjfplian"))))
+    (version "9.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/org-" version ".tar"))
+       (sha256
+        (base32 "1275s3hzyka2wwxl6nc2sndnwyl7kbc1nnl0hrznxb3wpy2abfd6"))))
     (build-system emacs-build-system)
     (home-page "https://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
