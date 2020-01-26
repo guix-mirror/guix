@@ -2,7 +2,7 @@
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -40,14 +40,14 @@
     (version "2.7.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/mathjax/MathJax/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/mathjax/MathJax")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1r72di4pg4i6pfhcskkxqmf1158m81ki6a7lbw6nz4zh7xw23hy4"))))
+         "127j12g7v2hx6k7r00b8cp49s7nkrwhxy6l8p03pw34xpxbgbimm"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -55,20 +55,11 @@
        (begin
          (use-modules (guix build utils)
                       (ice-9 match))
-         (set-path-environment-variable
-          "PATH" '("bin") (map (match-lambda
-                                 ((_ . input)
-                                  input))
-                               %build-inputs))
          (let ((install-directory (string-append %output "/share/fonts/mathjax")))
            (mkdir-p install-directory)
-           (invoke "tar" "-C" install-directory "-xvf"
-                   (assoc-ref %build-inputs "source")
-                   ,(string-append "MathJax-" version "/fonts")
-                   "--strip" "2")))))
-    (native-inputs
-     `(("gzip" ,gzip)
-       ("tar" ,tar)))
+           (copy-recursively (string-append (assoc-ref %build-inputs "source")
+                                            "/fonts")
+                             install-directory)))))
     (home-page "https://www.mathjax.org/")
     (synopsis "Fonts for MathJax")
     (description "This package contains the fonts required for MathJax.")
@@ -96,10 +87,8 @@
           (list (assoc-ref %build-inputs "glibc-utf8-locales")))
          (setenv "LANG" "en_US.UTF-8")
          (let ((install-directory (string-append %output "/share/javascript/mathjax")))
-           (invoke "tar" "xvf" (assoc-ref %build-inputs "source")
-                   ,(string-append "MathJax-" (package-version font-mathjax)
-                                   "/unpacked")
-                   "--strip" "2")
+           (copy-recursively (string-append (assoc-ref %build-inputs "source") "/unpacked")
+                             "MathJax-unpacked")
            (mkdir-p install-directory)
            (symlink (string-append (assoc-ref %build-inputs "font-mathjax")
                                    "/share/fonts/mathjax")
@@ -108,8 +97,8 @@
            (for-each
             (lambda (file)
               (let ((installed (string-append install-directory
-                                              ;; remove prefix "."
-                                              (string-drop file 1))))
+                                              ;; remove prefix "./MathJax-unpacked"
+                                              (string-drop file 18))))
                 (format #t "~a -> ~a~%" file installed)
                 (cond
                  ((string-match "\\.js$" file)
