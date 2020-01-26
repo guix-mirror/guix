@@ -638,12 +638,10 @@ threads.")
                        ("texinfo" ,texinfo)))
       (arguments
        `(#:modules ((guix build utils)
-                    (srfi srfi-1)
                     (srfi srfi-26))
          #:builder
          (begin
            (use-modules (guix build utils)
-                        (srfi srfi-1)
                         (srfi srfi-26))
            (let ((gzip (assoc-ref %build-inputs "gzip"))
                  (source (assoc-ref %build-inputs "source"))
