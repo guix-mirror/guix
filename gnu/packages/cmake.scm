@@ -197,17 +197,17 @@
            (lambda* (#:key (configure-flags '()) #:allow-other-keys)
              (apply invoke "./configure" configure-flags))))))
     (native-inputs
+     `(("libarchive:source" ,(package-source libarchive))))
+    (inputs
      `(("bzip2" ,bzip2)
        ("curl" ,curl-minimal)
        ("expat" ,expat)
        ("file" ,file)
        ("libarchive" ,libarchive)
-       ("libarchive:source" ,(package-source libarchive))
        ("libuv" ,libuv)
+       ("ncurses" ,ncurses)             ;required for ccmake
        ("rhash" ,rhash)
        ("zlib" ,zlib)))
-    (inputs
-     `(("ncurses" ,ncurses))) ; required for ccmake
     (native-search-paths
      (list (search-path-specification
             (variable "CMAKE_PREFIX_PATH")
@@ -252,10 +252,10 @@ and workspaces that can be used in the compiler environment of your choice.")
                                        '("Utilities/cmjsoncpp"
                                          "Utilities/cmlibuv")))
                           exp))))))
-    (native-inputs
+    (inputs
      `(("curl" ,curl)
        ("jsoncpp" ,jsoncpp)
-       ,@(alist-delete "curl" (package-native-inputs cmake-bootstrap))))
+       ,@(alist-delete "curl" (package-inputs cmake-bootstrap))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
