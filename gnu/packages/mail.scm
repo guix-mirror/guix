@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2014 Sou Bunnbu <iyzsong@gmail.com>
@@ -137,7 +137,9 @@
   #:use-module (guix build-system guile)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
-  #:use-module (guix build-system trivial))
+  #:use-module (guix build-system trivial)
+  #:use-module (srfi srfi-1)
+  #:use-module (ice-9 match))
 
 (define-public mailutils
   (package
@@ -152,7 +154,7 @@
                "1wkn9ch664477r4d8jk9153w5msljsbj99907k7zgzpmywbs6ba7"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'check 'prepare-test-suite
            (lambda _
@@ -200,12 +202,18 @@
 
              #t)))
        ;; TODO: Add `--with-sql'.
-       #:configure-flags (list "--sysconfdir=/etc"
+       #:configure-flags
+       (list "--sysconfdir=/etc"
 
-                               ;; Add "/2.2" to the installation directory.
-                               (string-append "--with-guile-site-dir="
-                                              (assoc-ref %outputs "out")
-                                              "/share/guile/site/2.2"))
+             ;; Add "/X.Y" to the installation directory.
+             (string-append "--with-guile-site-dir="
+                            (assoc-ref %outputs "out")
+                            "/share/guile/site/"
+                            ,(match (assoc "guile"
+                                           (package-inputs this-package))
+                               (("guile" guile)
+                                (version-major+minor
+                                 (package-version guile))))))
 
        #:parallel-tests? #f))
     (native-inputs
@@ -237,6 +245,14 @@ software.")
     (license
      ;; Libraries are under LGPLv3+, and programs under GPLv3+.
      (list gpl3+ lgpl3+))))
+
+(define-public guile3.0-mailutils
+  (package
+    (inherit mailutils)
+    (name "guile3.0-mailutils")
+    (inputs
+     `(("guile" ,guile-3.0)
+       ,@(alist-delete "guile" (package-inputs mailutils))))))
 
 (define-public nullmailer
   (package
