@@ -246,7 +246,11 @@ and workspaces that can be used in the compiler environment of your choice.")
               (snippet
                (match (origin-snippet (package-source cmake-bootstrap))
                  ((begin exp ...)
-                  (append '(begin (delete-file-recursively "Utilities/cmjsoncpp"))
+                  ;; Now we can delete the remaining software bundles.
+                  (append '(begin
+                             (for-each delete-file-recursively
+                                       '("Utilities/cmjsoncpp"
+                                         "Utilities/cmlibuv")))
                           exp))))))
     (native-inputs
      `(("curl" ,curl)
