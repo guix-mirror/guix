@@ -18275,6 +18275,31 @@ specified across Unix and Windows platforms.")
     (license (list license:unlicense
                    license:expat))))
 
+(define-public rust-walkdir-1.0
+  (package
+    (inherit rust-walkdir-2.2)
+    (name "rust-walkdir")
+    (version "1.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "walkdir" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1zw8safzqpsrvfn0256cngq2fr9d4lmwv5qb8ycn1f7sf3kgj25v"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-kernel32-sys" ,rust-kernel32-sys-0.2)
+        ("rust-same-file" ,rust-same-file-0.1)
+        ("rust-winapi" ,rust-winapi-0.2))
+       #:cargo-development-inputs
+       (("rust-docopt" ,rust-docopt-0.7)
+        ("rust-quickcheck" ,rust-quickcheck-0.4)
+        ("rust-rand" ,rust-rand-0.3)
+        ("rust-rustc-serialize" ,rust-rustc-serialize-0.3))))))
+
 (define-public rust-wasi-0.5
   (package
     (name "rust-wasi")
