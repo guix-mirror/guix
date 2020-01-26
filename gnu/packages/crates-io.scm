@@ -14097,6 +14097,33 @@ proven statistical guarantees.")
      "This package provides a generic serialization/deserialization framework.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-serde-0.9
+  (package
+    (inherit rust-serde-1.0)
+    (name "rust-serde")
+    (version "0.9.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serde" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1bsla8l5xr9pp5sirkal6mngxcq6q961km88jvf339j5ff8j7dil"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-cargo-toml
+           (lambda _
+             (substitute* "Cargo.toml"
+               ((", path =.*}") "}"))
+             #t)))
+       #:cargo-inputs
+       (("rust-serde-derive" ,rust-serde-derive-0.9))
+       #:cargo-development-inputs
+       (("rust-serde-derive" ,rust-serde-derive-0.9))))))
+
 (define-public rust-serde-0.8
   (package
     (inherit rust-serde-1.0)
