@@ -8161,6 +8161,30 @@ functions and static variables these libraries contain.")
         (base32
          "16pc0gx4gkg0q2s1ssq8268brn14j8344623vwhadmivc4lsmivz"))))))
 
+(define-public rust-libressl-pnacl-sys-2
+  (package
+    (name "rust-libressl-pnacl-sys")
+    (version "2.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "libressl-pnacl-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0w9yvgrf591phpr1222j0dj7x1n489v2sihnr8syz8xn3aamih6b"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-pnacl-build-helper" ,rust-pnacl-build-helper-1.4))))
+    (home-page "https://github.com/DiamondLovesYou/libressl-pnacl-sys")
+    (synopsis "Openssl linking provider for PNaCl/NaCl targets")
+    (description
+     "This package provides an openssl linking provider for PNaCl/NaCl targets.")
+    (license license:expat)))
+
 (define-public rust-libssh2-sys-0.2
   (package
     (name "rust-libssh2-sys")
