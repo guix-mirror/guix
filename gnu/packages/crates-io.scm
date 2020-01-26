@@ -14248,6 +14248,28 @@ proven statistical guarantees.")
 for the serde framework.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-serde-codegen-internals-0.14
+  (package
+    (name "rust-serde-codegen-internals")
+    (version "0.14.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serde_codegen_internals" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0004s3wlc85vi6hq62hq84cv5b6qbbin1n6hdaqj095xhg98p25w"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-syn" ,rust-syn-0.11))))
+    (home-page "https://serde.rs")
+    (synopsis "AST representation used by Serde codegen")
+    (description
+     "Unstable AST representation used by Serde codegen.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-serde-derive-1.0
   (package
     (name "rust-serde-derive")
