@@ -14,6 +14,7 @@
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -728,9 +729,16 @@ BLAKE.")
          (replace 'configure
            ;; ./configure is not GNU autotools' and doesn't gracefully handle
            ;; unrecognized options, so we must call it manually.
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key native-inputs outputs #:allow-other-keys)
              (invoke "./configure"
-                     (string-append "--prefix=" (assoc-ref outputs "out")))))
+                     (string-append "--prefix=" (assoc-ref outputs "out"))
+                     ,@(let ((target (%current-target-system)))
+                         (if target
+                             `((string-append "--target=" ,target)
+                               (string-append "--cc="
+                                              (assoc-ref native-inputs "cross-gcc")
+                                              "/bin/" ,target "-gcc"))
+                             '())))))
          (add-before 'check 'patch-/bin/sh
            (lambda _
              (substitute* "Makefile"
