@@ -61,7 +61,8 @@
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages terminals)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg))
 
 (define-public vis
   (package
