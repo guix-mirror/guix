@@ -300,6 +300,10 @@ and workspaces that can be used in the compiler environment of your choice.")
         (if (%current-target-system)
             cmake-minimal-cross
             cmake-minimal))
+
+       ;; Enable debugging information for convenience.
+       ((#:build-type _ #f) "RelWithDebInfo")
+
        ((#:configure-flags flags ''())
         `(append (list "-DSPHINX_INFO=ON" "-DSPHINX_MAN=ON" "-DSPHINX_HTML=ON"
                        (string-append "-DCMAKE_DOC_DIR=share/doc/cmake-"
