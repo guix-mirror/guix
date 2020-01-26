@@ -11390,6 +11390,31 @@ used in Cargo build scripts.")
      "Lazily evaluated, order-independent plugins for extensible types.")
     (license license:expat)))
 
+(define-public rust-pnacl-build-helper-1.4
+  (package
+    (name "rust-pnacl-build-helper")
+    (version "1.4.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pnacl-build-helper" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "145hxz3m3sg8mm9sfqqqaarnna43v65l6whwswrvcvy0fzp17gnz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-tempdir" ,rust-tempdir-0.3)
+        ("rust-walkdir" ,rust-walkdir-1.0))))
+    (home-page "https://github.com/DiamondLovesYou/cargo-pnacl-helper")
+    (synopsis
+     "Build script helper for building PNaCl/NaCl C/CXX libraries from source")
+    (description
+     "Build script helper for building PNaCl/NaCl C/CXX libraries from source")
+    (license license:mpl2.0)))
+
 (define-public rust-png-0.15
   (package
     (name "rust-png")
