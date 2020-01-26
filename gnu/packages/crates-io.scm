@@ -18700,6 +18700,28 @@ Unix users and groups.")
      "This package provides a library to generate and parse UUIDs.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-uuid-0.5
+  (package
+    (inherit rust-uuid-0.7)
+    (name "rust-uuid")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "uuid" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "08nw3famk1w1zf9ck32pmklk24wd4n4nqnr9wl46qvxak2wf7ixw"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-md5" ,rust-md5-0.3)
+        ("rust-rand" ,rust-rand-0.3)
+        ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-sha1" ,rust-sha1-0.2))))))
+
 (define-public rust-vcpkg-0.2
   (package
     (name "rust-vcpkg")
