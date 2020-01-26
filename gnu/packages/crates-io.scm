@@ -19566,6 +19566,38 @@ to XDG Base Directory specification")
        (("rust-clippy" ,rust-clippy-0.0)
         ("rust-linked-hash-map" ,rust-linked-hash-map-0.3))))))
 
+(define-public rust-zip-0.5
+  (package
+    (name "rust-zip")
+    (version "0.5.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "zip" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1biv5kh4fl7wpjlsxfczvgrdjlybf0xjaw7s36didql8lxxz67z4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bzip2" ,rust-bzip2-0.3)
+        ("rust-crc32fast" ,rust-crc32fast-1.2)
+        ("rust-flate2" ,rust-flate2-1.0)
+        ("rust-podio" ,rust-podio-0.1)
+        ("rust-time" ,rust-time-0.1))
+       #:cargo-development-inputs
+       (("rust-bencher" ,rust-bencher-0.1)
+        ("rust-rand" ,rust-rand-0.4)
+        ("rust-walkdir" ,rust-walkdir-1.0))))
+    (home-page "https://github.com/mvdnes/zip-rs.git")
+    (synopsis
+     "Library to support the reading and writing of zip files")
+    (description
+     "Library to support the reading and writing of zip files.")
+    (license license:expat)))
+
 (define-public rust-zoneinfo-compiled-0.4
   (package
     (name "rust-zoneinfo-compiled")
