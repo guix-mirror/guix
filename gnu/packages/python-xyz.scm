@@ -17359,24 +17359,6 @@ file to ensure it completely and accurately describes your project.")
 files.  These files are used to translate strings in android apps.")
     (license license:expat)))
 
-(define-public python-pathtools
-  (package
-    (name "python-pathtools")
-    (version "0.1.2")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "pathtools" version))
-        (sha256
-         (base32
-          "1h7iam33vwxk8bvslfj4qlsdprdnwf8bvzhqh3jq5frr391cadbw"))))
-    (build-system python-build-system)
-    (home-page "https://github.com/gorakhargosh/pathtools")
-    (synopsis "File system general utilities")
-    (description "This package provides pattern matching and various utilities
-for file systems paths.")
-    (license license:expat)))
-
 (define-public python-watchdog
   (package
     (name "python-watchdog")
