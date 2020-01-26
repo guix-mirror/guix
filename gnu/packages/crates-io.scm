@@ -985,6 +985,39 @@ Bresenham's line algorithm.")
 libraries.")
     (license license:bsd-3)))
 
+(define-public rust-bindgen-0.33
+  (package
+    (inherit rust-bindgen-0.50)
+    (name "rust-bindgen")
+    (version "0.33.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bindgen" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0vnw5fb74gl9pgnimgbrkac1xgwrjz86pqilx20rbkia77cdhgk0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cexpr" ,rust-cexpr-0.2)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-clang-sys" ,rust-clang-sys-0.22)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-env-logger" ,rust-env-logger-0.5)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-peeking-take-while" ,rust-peeking-take-while-0.1)
+        ("rust-quote" ,rust-quote-0.3)
+        ("rust-regex" ,rust-regex-0.2)
+        ("rust-which" ,rust-which-1.0))
+       #:cargo-development-inputs
+       (("rust-clap" ,rust-clap-2)
+        ("rust-diff" ,rust-diff-0.1)
+        ("rust-shlex" ,rust-shlex-0.1))))))
+
 (define-public rust-bit-set-0.5
   (package
     (name "rust-bit-set")
