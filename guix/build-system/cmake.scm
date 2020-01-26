@@ -102,7 +102,7 @@
                       (build-type "RelWithDebInfo")
                       (tests? #t)
                       (test-target "test")
-                      (parallel-build? #t) (parallel-tests? #f)
+                      (parallel-build? #t) (parallel-tests? #t)
                       (validate-runpath? #t)
                       (patch-shebangs? #t)
                       (strip-binaries? #t)
@@ -181,7 +181,7 @@ provides a 'CMakeLists.txt' file as its build system."
                             (build-type "RelWithDebInfo")
                             (tests? #f) ; nothing can be done
                             (test-target "test")
-                            (parallel-build? #t) (parallel-tests? #f)
+                            (parallel-build? #t) (parallel-tests? #t)
                             (validate-runpath? #t)
                             (patch-shebangs? #t)
                             (strip-binaries? #t)
