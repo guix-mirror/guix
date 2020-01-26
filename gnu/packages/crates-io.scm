@@ -15609,6 +15609,71 @@ cryptographic implementations.")
         ("rust-walkdir" ,rust-walkdir-2.2))))
     (properties '())))
 
+(define-public rust-syn-0.11
+  (package
+    (inherit rust-syn-0.15)
+    (name "rust-syn")
+    (version "0.11.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "syn" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1b8x8jdsmj6r9ck7n1pg371526n1q90kx6rv6ivcb22w06wr3f6k"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fixup-cargo-toml
+           (lambda _
+             (substitute* "Cargo.toml"
+               ((", path =.*,") ","))
+             #t)))
+       #:cargo-inputs
+       (("rust-quote" ,rust-quote-0.3)
+        ("rust-synom" ,rust-synom-0.11)
+        ("rust-unicode-xid" ,rust-unicode-xid-0.0))
+       #:cargo-development-inputs
+       (("rust-syntex-pos" ,rust-syntex-pos-0.58)
+        ("rust-syntex-syntax" ,rust-syntex-syntax-0.58)
+        ("rust-tempdir" ,rust-tempdir-0.3)
+        ("rust-walkdir" ,rust-walkdir-1.0))))))
+
+(define-public rust-synom-0.11
+  (package
+    (name "rust-synom")
+    (version "0.11.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "synom" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1dj536sh5xxhan2h0znxhv0sl6sb7lvzmsmrc3nvl3h1v5p0d4x3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; doc tests fail
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fixup-cargo-toml
+           (lambda _
+             (substitute* "Cargo.toml"
+               (("^path =.*") ""))
+             #t)))
+       #:cargo-inputs
+       (("rust-unicode-xid" ,rust-unicode-xid-0.0))
+       #:cargo-development-inputs
+       (("rust-syn" ,rust-syn-0.11))))
+    (home-page "https://github.com/dtolnay/syn")
+    (synopsis "Stripped-down Nom parser used by Syn")
+    (description
+     "Stripped-down Nom parser used by Syn.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-synstructure-0.10
   (package
     (name "rust-synstructure")
