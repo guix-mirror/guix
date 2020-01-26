@@ -17399,28 +17399,6 @@ for file systems paths.")
 output and standard error.")
     (license license:expat)))
 
-(define-public python-argh
-  (package
-    (name "python-argh")
-    (version "0.26.2")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "argh" version))
-        (sha256
-         (base32
-          "0rdv0n2aa181mkrybwvl3czkrrikgzd4y2cri6j735fwhj65nlz9"))))
-    (build-system python-build-system)
-    (native-inputs
-     `(("python-iocapture" ,python-iocapture)
-       ("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)))
-    (home-page "https://github.com/neithere/argh/")
-    (synopsis "Argparse wrapper with natural syntax")
-    (description "This package provides a parser for dealing with command-line
-arguments in Python.")
-    (license license:lgpl3)))
-
 (define-public python-watchdog
   (package
     (name "python-watchdog")
