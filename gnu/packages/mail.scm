@@ -3169,6 +3169,10 @@ related tools to process winmail.dat files.")
               (substitute* "t/ds-leak.t"
                 (("/bin/sh") (which "sh")))
               (invoke "./certs/create-certs.perl")
+              ;; XXX: This test fails due to zombie process is not reaped by
+              ;; the builder.
+              (substitute* "t/httpd-unix.t"
+                (("^SKIP: \\{") "SKIP: { skip('Guix');"))
               #t))
           (add-after 'install 'wrap-programs
             (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -3199,6 +3203,7 @@ related tools to process winmail.dat files.")
         ("perl-email-mime-contenttype" ,perl-email-mime-contenttype)
         ("perl-email-mime" ,perl-email-mime)
         ("perl-email-simple" ,perl-email-simple)
+        ("perl-net-server" ,perl-net-server)
         ("perl-filesys-notify-simple" ,perl-filesys-notify-simple)
         ("perl-plack-middleware-deflater" ,perl-plack-middleware-deflater)
         ("perl-plack-middleware-reverseproxy" ,perl-plack-middleware-reverseproxy)
