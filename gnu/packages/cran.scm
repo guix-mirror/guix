@@ -14436,14 +14436,14 @@ and Learning to Rank measures (LambdaMart).")
 (define-public r-threejs
   (package
     (name "r-threejs")
-    (version "0.3.1")
+    (version "0.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "threejs" version))
        (sha256
         (base32
-         "1s3rdlzy7man6177ycayg6xsh6k8y1r9rdj9yzn3b93j2rs0nxbi"))))
+         "1711h351nzxfkbbdwvfzyhciyvi9c6wx3jq1g97lzcqgnb45kivn"))))
     (build-system r-build-system)
     (arguments
      `(#:modules ((guix build utils)
@@ -14460,8 +14460,8 @@ and Learning to Rank measures (LambdaMart).")
                      (unzip2
                       `((,(assoc-ref inputs "js-jquery")
                          "htmlwidgets/lib/jquery/jquery.min.js")
-                        (,(assoc-ref inputs "js-threejs-85")
-                         "htmlwidgets/lib/threejs-85/three.min.js"))))
+                        (,(assoc-ref inputs "js-threejs-111")
+                         "htmlwidgets/lib/threejs-111/three.min.js"))))
                  (lambda (sources targets)
                    (for-each (lambda (source target)
                                (format #t "Processing ~a --> ~a~%"
@@ -14483,17 +14483,17 @@ and Learning to Rank measures (LambdaMart).")
        ("js-jquery"
         ,(origin
            (method url-fetch)
-           (uri "https://code.jquery.com/jquery-3.3.1.js")
+           (uri "https://code.jquery.com/jquery-1.12.4.js")
            (sha256
             (base32
-             "1b8zxrp6xwzpw25apn8j4qws0f6sr7qr7h2va5h1mjyfqvn29anq"))))
-       ("js-threejs-85"
+             "0x9mrc1668icvhpwzvgafm8xm11x9lfai9nwr66aw6pjnpwkc3s3"))))
+       ("js-threejs-111"
         ,(origin
            (method url-fetch)
-           (uri "https://raw.githubusercontent.com/mrdoob/three.js/r85/build/three.js")
+           (uri "https://raw.githubusercontent.com/mrdoob/three.js/r111/build/three.js")
            (sha256
             (base32
-             "17khh3dmijdjw4qb9qih1rqhxgrmm3pc6w8lzdx6rf6a3mrc9xnl"))))))
+             "1cxdkw3plmlw1xvhbx5dm39gqczgzxip2dm887v6whhsxqxl9cky"))))))
     (home-page "https://bwlewis.github.io/rthreejs")
     (synopsis "Interactive 3D scatter plots, networks and globes")
     (description
