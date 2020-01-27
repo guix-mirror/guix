@@ -8584,13 +8584,13 @@ conversion of indices such as Cohen's d, r, odds, etc.")
 (define-public r-sjplot
   (package
     (name "r-sjplot")
-    (version "2.8.1")
+    (version "2.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sjPlot" version))
        (sha256
-        (base32 "0rmfc2pq80w0kxh6icljhqm31q580s0czvllsfxk6crmpyfgxkp7"))))
+        (base32 "16721a5006q0gv45zjcwnkykxhjkzpq5n35vhik0g0ixgm3a2vci"))))
     (properties `((upstream-name . "sjPlot")))
     (build-system r-build-system)
     (propagated-inputs
@@ -8600,17 +8600,11 @@ conversion of indices such as Cohen's d, r, odds, etc.")
        ("r-forcats" ,r-forcats)
        ("r-ggeffects" ,r-ggeffects)
        ("r-ggplot2" ,r-ggplot2)
-       ("r-ggrepel" ,r-ggrepel)
-       ("r-glmmtmb" ,r-glmmtmb)
        ("r-insight" ,r-insight)
        ("r-knitr" ,r-knitr)
-       ("r-lme4" ,r-lme4)
-       ("r-magrittr" ,r-magrittr)
        ("r-mass" ,r-mass)
-       ("r-modelr" ,r-modelr)
        ("r-parameters" ,r-parameters)
        ("r-performance" ,r-performance)
-       ("r-psych" ,r-psych)
        ("r-purrr" ,r-purrr)
        ("r-rlang" ,r-rlang)
        ("r-scales" ,r-scales)
