@@ -106,12 +106,17 @@ boolean settings).")
     (arguments
      `(#:tests? #f ; there is no check target
        #:make-flags
-       (let ((out (assoc-ref %outputs "out")))
+       (let ((out (assoc-ref %outputs "out"))
+             (target ,(%current-target-system)))
          (list (string-append "PREFIX=" out)
                (string-append "LIBSEPOLA="
                               (assoc-ref %build-inputs "libsepol")
                               "/lib/libsepol.a")
-               "CC=gcc"))
+               (string-append "CC="
+                              (if target
+                                  (string-append (assoc-ref %build-inputs "cross-gcc")
+                                                 "/bin/" target "-gcc")
+                                  "gcc"))))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
