@@ -12937,14 +12937,14 @@ analyses in addition to large-scale sequence-level searches.")
 (define-public r-diversitree
   (package
     (name "r-diversitree")
-    (version "0.9-11")
+    (version "0.9-13")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "diversitree" version))
         (sha256
          (base32
-          "1jqfjmmaigq581l4zxysmkhld0xv6izlbr1hihf9zplkix36majc"))))
+          "00vi4klywi35hd170ksjv3xja3hqqbkcidcnrrlpgv4179k0azix"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
