@@ -15377,56 +15377,54 @@ try completing.  See @code{fish-completion-fallback-on-bash-p}.")
     (license license:gpl3+)))
 
 (define-public emacs-gif-screencast
-  (let ((commit "248d1e158405e6cba2c65ecaed40e2c59b089cd8")
-        (revision "2"))
-    (package
-      (name "emacs-gif-screencast")
-      (version (git-version "1.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://gitlab.com/Ambrevar/emacs-gif-screencast.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "19xqi5mgalnnhb4hw0fh7py2s2dllldx1xxbhwhknkdpifai8hl8"))))
-      (build-system emacs-build-system)
-      (inputs
-       `(("scrot" ,scrot)
-         ("imagemagick" ,imagemagick)
-         ("gifsicle" ,gifsicle)))
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'configure
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((scrot (assoc-ref inputs "scrot"))
-                     (imagemagick (assoc-ref inputs "imagemagick"))
-                     (gifsicle (assoc-ref inputs "gifsicle")))
-                 (make-file-writable "gif-screencast.el")
-                 ;; Specify the absolute file names of the various
-                 ;; programs so that everything works out-of-the-box.
-                 (emacs-substitute-variables
-                     "gif-screencast.el"
-                   ("gif-screencast-program"
-                    (string-append scrot "/bin/scrot"))
-                   ("gif-screencast-convert-program"
-                    (string-append imagemagick "/bin/convert"))
-                   ("gif-screencast-cropping-program"
-                    (string-append imagemagick "/bin/mogrify"))
-                   ("gif-screencast-optimize-program"
-                    (string-append gifsicle "/bin/gifsicle")))))))))
-      (home-page
-       "https://gitlab.com/Ambrevar/emacs-gif-screencast")
-      (synopsis "One-frame-per-action GIF recording")
-      (description
-       "Call @code{gif-screencast} to start a recording.
+  (package
+    (name "emacs-gif-screencast")
+    (version "1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/Ambrevar/emacs-gif-screencast.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1g1by8lvf8c9vzm4wwsi5kp285kaj0ahsl54048ympin4pi0njw9"))))
+    (build-system emacs-build-system)
+    (inputs
+     `(("scrot" ,scrot)
+       ("imagemagick" ,imagemagick)
+       ("gifsicle" ,gifsicle)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((scrot (assoc-ref inputs "scrot"))
+                   (imagemagick (assoc-ref inputs "imagemagick"))
+                   (gifsicle (assoc-ref inputs "gifsicle")))
+               (make-file-writable "gif-screencast.el")
+               ;; Specify the absolute file names of the various
+               ;; programs so that everything works out-of-the-box.
+               (emacs-substitute-variables
+                   "gif-screencast.el"
+                 ("gif-screencast-program"
+                  (string-append scrot "/bin/scrot"))
+                 ("gif-screencast-convert-program"
+                  (string-append imagemagick "/bin/convert"))
+                 ("gif-screencast-cropping-program"
+                  (string-append imagemagick "/bin/mogrify"))
+                 ("gif-screencast-optimize-program"
+                  (string-append gifsicle "/bin/gifsicle")))))))))
+    (home-page
+     "https://gitlab.com/Ambrevar/emacs-gif-screencast")
+    (synopsis "One-frame-per-action GIF recording")
+    (description
+     "Call @code{gif-screencast} to start a recording.
 A screenshot is taken for every user action.  Call
 @code{gif-screencast-stop} (<f9> by default) to finish recording and create
 the GIF result.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-google-translate
   (package
