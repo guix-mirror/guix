@@ -4067,22 +4067,20 @@ to variables on the left-hand side of the assignment.")
 (define-public r-vctrs
   (package
     (name "r-vctrs")
-    (version "0.2.1")
+    (version "0.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "vctrs" version))
        (sha256
         (base32
-         "0rlwjfvvhv3s5mj4lqhwlqwddpizyp46i1qbcvw0mzb5q8b0nkz0"))))
+         "008xjmlj5a5vm303wxac7bliamqwaj7mcj0jv6n9ibc8p8h93aqd"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-backports" ,r-backports)
-       ("r-digest" ,r-digest)
+     `(("r-digest" ,r-digest)
        ("r-ellipsis" ,r-ellipsis)
        ("r-glue" ,r-glue)
-       ("r-rlang" ,r-rlang)
-       ("r-zeallot" ,r-zeallot)))
+       ("r-rlang" ,r-rlang)))
     (home-page "https://github.com/r-lib/vctrs")
     (synopsis "Vector helpers")
     (description
