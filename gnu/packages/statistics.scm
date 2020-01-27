@@ -3284,19 +3284,17 @@ package registries.")
 (define-public r-rngtools
   (package
     (name "r-rngtools")
-    (version "1.4")
+    (version "1.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rngtools" version))
        (sha256
         (base32
-         "1kivj594bn774lbn29ws2rmzy2km99sza0j3jqvhal6hwmk27a9s"))))
+         "0xgmg3qb6insc157as47mcm9sdjdpy9jirh7w06bxb7pfcxqfx42"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-digest" ,r-digest)
-       ("r-pkgmaker" ,r-pkgmaker)
-       ("r-stringr" ,r-stringr)))
+     `(("r-digest" ,r-digest)))
     (home-page "https://renozao.github.io/rngtools")
     (synopsis "Utility functions for working with random number generators")
     (description
