@@ -143,9 +143,7 @@ gitignore rules.")
          (add-after 'configure 'unvendor-libraries-from-crates
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((openssl (assoc-ref inputs "openssl")))
-               (setenv "OPENSSL_DIR" openssl)
-               (setenv "LIBGIT2_SYS_USE_PKG_CONFIG" "1")
-               (setenv "LIBSSH2_SYS_USE_PKG_CONFIG" "1"))
+               (setenv "OPENSSL_DIR" openssl))
              #t)))))
     (native-inputs
      `(("libgit2" ,libgit2)

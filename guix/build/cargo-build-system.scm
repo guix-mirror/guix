@@ -119,6 +119,8 @@ directory = '" port)
   ;; upgrading the compiler for example.
   (setenv "RUSTFLAGS" "--cap-lints allow")
   (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
+  (setenv "LIBGIT2_SYS_USE_PKG_CONFIG" "1")
+  (setenv "LIBSSH2_SYS_USE_PKG_CONFIG" "1")
 
   ;; We don't use the Cargo.lock file to determine the package versions we use
   ;; during building, and in any case if one is not present it is created
