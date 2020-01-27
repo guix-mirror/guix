@@ -68,6 +68,7 @@
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2019 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17436,3 +17437,32 @@ Project, or not such a gitlab instance when your upstream doesn't use any
 dedicated platform.  The tool proposes a unified interface for any format and
 an upload option to send your work back to the platform.")
     (license license:gpl3+)))
+
+(define-public python-pypng
+  (package
+    (name "python-pypng")
+    (version "0.0.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pypng" version))
+       (sha256
+        (base32 "02qpa22ls41vwsrzw9r9qhj1nhq05p03hb5473pay6y980s86chh"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/drj11/pypng")
+    (synopsis "Pure Python PNG image encoder/decoder")
+    (description
+     "The PyPNG module implements support for PNG images.  It reads and writes
+PNG files with all allowable bit depths (1/2/4/8/16/24/32/48/64 bits per
+pixel) and colour combinations: greyscale (1/2/4/8/16 bit); RGB, RGBA,
+LA (greyscale with alpha) with 8/16 bits per channel; colour mapped
+images (1/2/4/8 bit).  Adam7 interlacing is supported for reading and writing.
+A number of optional chunks can be specified (when writing) and
+understood (when reading): tRNS, bKGD, gAMA.
+
+PyPNG is not a high level toolkit for image processing (like PIL) and does not
+aim at being a replacement or competitor.  Its strength lies in fine-grained
+extensive support of PNG features.  It can also read and write Netpbm PAM
+files, with a focus on its use as an intermediate format for implementing
+custom PNG processing.")
+    (license license:expat)))
