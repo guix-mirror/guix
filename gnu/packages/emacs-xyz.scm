@@ -12356,7 +12356,7 @@ into sections while preserving the structure imposed by any timestamps.")
 (define-public emacs-org-make-toc
   (package
     (name "emacs-org-make-toc")
-    (version "0.3")
+    (version "0.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -12365,7 +12365,7 @@ into sections while preserving the structure imposed by any timestamps.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0syhj8q4pv33xgl5qa6x27yhwqvfhffw5xqp819hj4qs1ddlc7j5"))))
+                "0348iq3bc3rxs5bqdvskyly4agqxiapamqkfm0323620kxl70agw"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-org" ,emacs-org)
