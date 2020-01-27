@@ -8559,14 +8559,14 @@ results using @code{ggplot2}.")
 (define-public r-effectsize
   (package
     (name "r-effectsize")
-    (version "0.0.1")
+    (version "0.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "effectsize" version))
        (sha256
         (base32
-         "07vgmxdl75798hgdh90zysafjh97rmmj2wjjyr6xff4fbhi8rlkb"))))
+         "0dd7nbkg8kmash9zh2gg08m7hbpsqwpkvkdhinfqkbg5d0jinhq8"))))
     (properties `((upstream-name . "effectsize")))
     (build-system r-build-system)
     (propagated-inputs
