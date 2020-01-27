@@ -862,7 +862,12 @@ the GNOME desktop environment.")
                    "#TimedLoginEnable=false\n"
                    "#TimedLogin=\n"
                    "#TimedLoginDelay=0\n"
-                   "#InitialSetupEnable=true\n"
+                   ;; Disable initial system setup inside GDM.
+                   ;; Whatever settings are set there should already be
+                   ;; taken care of through `guix system'.
+                   ;; See also
+                   ;; <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=39281>.
+                   "InitialSetupEnable=false\n"
                    ;; Enable me once X is working.
                    "WaylandEnable=false\n"
                    "\n"
