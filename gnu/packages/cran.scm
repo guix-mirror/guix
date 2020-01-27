@@ -18936,14 +18936,14 @@ problems (food web problems, linear programming problems).")
 (define-public r-shinycssloaders
   (package
     (name "r-shinycssloaders")
-    (version "0.2.0")
+    (version "0.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "shinycssloaders" version))
        (sha256
         (base32
-         "1bpzsm7m7c366sjl1qndp4m5dg2vlm68rjgdy9n1ija9xbp0r2g4"))))
+         "1gzq1lhcnhqd145ys3ixf0l13l560fiqr2sc3m2nrijwxlgcw54d"))))
     (properties
      `((upstream-name . "shinycssloaders")))
     (build-system r-build-system)
