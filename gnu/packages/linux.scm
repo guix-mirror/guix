@@ -5042,6 +5042,21 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
         (base32 "0zrjipd392bzjvxx0rjrb0cgi0ix1d83fwgw1mcy8kc4d16cgyjg"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-udev-rules-absolute-path-bins
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "90-backlight.rules"
+               (("/bin/chgrp") (which "chgrp"))
+               (("/bin/chmod") (which "chmod")))
+             #t))
+         (add-after 'install 'install-udev-rules
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file
+                "90-backlight.rules" (string-append out "/lib/udev/rules.d"))
+               #t))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
