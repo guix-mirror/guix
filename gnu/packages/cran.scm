@@ -8401,18 +8401,19 @@ detection, parallelism through BLAS and parallel user templates.")
 (define-public r-sjstats
   (package
     (name "r-sjstats")
-    (version "0.17.7")
+    (version "0.17.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sjstats" version))
        (sha256
-        (base32 "029rl05p88bp01favz300m980r1khcx2a2kn88yqbnbgkjjgqqc6"))))
+        (base32 "0gagqbcmimlvxhpjkmd3s17mbrz5n937qksca1hvm6kj4rk37hzb"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bayestestr" ,r-bayestestr)
        ("r-broom" ,r-broom)
        ("r-dplyr" ,r-dplyr)
+       ("r-effectsize" ,r-effectsize)
        ("r-emmeans" ,r-emmeans)
        ("r-insight" ,r-insight)
        ("r-lme4" ,r-lme4)
