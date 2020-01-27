@@ -8649,17 +8649,18 @@ back to file after modifications.")
 (define-public r-gh
   (package
     (name "r-gh")
-    (version "1.0.1")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gh" version))
        (sha256
         (base32
-         "1llinfajb0g7006jd2w1hpskxpmkjhnqarcjb71r1qvsccb2ph7k"))))
+         "1bc9bn1078s664hc806dh0y1ncxif77q479rfmxfir9z7hwaz7yy"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-httr" ,r-httr)
+     `(("r-cli" ,r-cli)
+       ("r-httr" ,r-httr)
        ("r-ini" ,r-ini)
        ("r-jsonlite" ,r-jsonlite)))
     (home-page "https://github.com/r-lib/gh#readme")
