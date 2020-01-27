@@ -7865,7 +7865,9 @@ world.")
        ("gnome-control-center" ,gnome-control-center)
        ("gnome-desktop" ,gnome-desktop)
        ("gnome-getting-started-docs" ,gnome-getting-started-docs)
-       ("gnome-initial-setup" ,gnome-initial-setup)
+       ;; Adding gnome-initial-setup causes GDM startup failure.
+       ;; See <https://issues.guix.gnu.org/issue/39281>.
+       ; ("gnome-initial-setup" ,gnome-initial-setup)
        ("gnome-keyring" ,gnome-keyring)
        ("gnome-menus" ,gnome-menus)
        ("gnome-session" ,gnome-session)
