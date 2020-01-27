@@ -116,7 +116,7 @@ complexity.")))
    (inputs `(("skalibs" ,skalibs)
              ("execline" ,execline)))
    (arguments
-    '(#:configure-flags (list
+    `(#:configure-flags (list
                         (string-append "--with-lib="
                                        (assoc-ref %build-inputs "skalibs")
                                        "/lib/skalibs")
@@ -126,7 +126,15 @@ complexity.")))
                         (string-append "--with-sysdeps="
                                        (assoc-ref %build-inputs "skalibs")
                                        "/lib/skalibs/sysdeps"))
-      #:tests? #f))                    ; no tests exist
+      #:tests? #f                       ; no tests exist
+      #:phases
+      (modify-phases %standard-phases
+        (add-after 'install 'install-doc
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (doc (string-append out "/share/doc/s6-" ,version)))
+              (copy-recursively "doc" doc)
+              #t))))))
    (home-page "https://skarnet.org/software/s6")
    (license isc)
    (synopsis "Small suite of programs for process supervision")
