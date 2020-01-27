@@ -11788,20 +11788,19 @@ heuristics.")
 (define-public r-dorng
   (package
     (name "r-dorng")
-    (version "1.7.1")
+    (version "1.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "doRNG" version))
        (sha256
         (base32
-         "1sb75aqkliprglfxc4x4wds6alqgzhvl2n812g1d32a88ra3slr7"))))
+         "1jff27zzrvd1fd61x2m9468h8xn3s1c9f6wibviy5zdhj5dx9s9k"))))
     (properties `((upstream-name . "doRNG")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-foreach" ,r-foreach)
        ("r-iterators" ,r-iterators)
-       ("r-pkgmaker" ,r-pkgmaker)
        ("r-rngtools" ,r-rngtools)))
     (home-page "https://renozao.github.io/doRNG/")
     (synopsis "Generic reproducible parallel backend for foreach loops")
