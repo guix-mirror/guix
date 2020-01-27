@@ -10680,20 +10680,23 @@ limitations\" using the GNU Multiple Precision library.")
 (define-public r-rmpfr
   (package
     (name "r-rmpfr")
-    (version "0.7-2")
+    (version "0.8-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rmpfr" version))
        (sha256
         (base32
-         "1zq3as34r27v2yc729731997wdhxb6cs5ilmak4nmsljabnac7gc"))))
+         "09kw7hyca8xc09r2d88qj81cclar8acaq5q9q5rw9f49iffda0rr"))))
     (properties `((upstream-name . "Rmpfr")))
     (build-system r-build-system)
     (inputs
-     `(("mpfr" ,mpfr)))
+     `(("mpfr" ,mpfr)
+       ("gmp" ,gmp)))
     (propagated-inputs
      `(("r-gmp" ,r-gmp)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (home-page "http://rmpfr.r-forge.r-project.org/")
     (synopsis "R bindings to the MPFR library")
     (description
