@@ -1478,12 +1478,22 @@ functions.  The source code to MAME serves as this documentation.")
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'cd-subdir
-             (lambda _ (chdir "pcsxr")))
+             (lambda _ (chdir "pcsxr") #t))
            (add-before 'configure 'fix-cdio-lookup
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "cmake/FindCdio.cmake"
                  (("/usr/include/cdio")
-                  (string-append (assoc-ref inputs "libcdio") "/include/cdio"))))))))
+                  (string-append (assoc-ref inputs "libcdio") "/include/cdio")))
+               #t))
+           (add-after 'install 'wrap-program
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (wrap-program (string-append (assoc-ref outputs "out")
+                                            "/bin/pcsxr")
+                 ;; For GtkFileChooserDialog.
+                 `("GSETTINGS_SCHEMA_DIR" =
+                   (,(string-append (assoc-ref inputs "gtk+")
+                                    "/share/glib-2.0/schemas"))))
+               #t)))))
       (native-inputs
        `(("pkg-config" ,pkg-config)
          ("intltool" ,intltool)
