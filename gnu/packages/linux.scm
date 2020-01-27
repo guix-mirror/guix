@@ -3838,8 +3838,14 @@ Linux Device Mapper multipathing driver:
                 "0ajhzbqjwsmz51gwccfyw6w9k4j4gmxcl2ph30sfn2gxv0d8gkv2"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags
-       (list "CC=gcc" (string-append "prefix=" %output))
+     `(#:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "prefix=" %output)
+               (string-append
+                "CC=" (if target
+                          (string-append (assoc-ref %build-inputs "cross-gcc")
+                                         "/bin/" target "-gcc")
+                          "gcc"))))
        #:test-target "partcheck" ; need root for a full 'check'
        #:phases
        (modify-phases %standard-phases (delete 'configure)))) ; no configure script
