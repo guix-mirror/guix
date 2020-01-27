@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,14 +63,19 @@
      `(#:tests? #f ; tests require checkpolicy, which requires libsepol
        #:test-target "test"
        #:make-flags
-       (let ((out (assoc-ref %outputs "out")))
+       (let ((out (assoc-ref %outputs "out"))
+             (target ,(%current-target-system)))
          (list (string-append "PREFIX=" out)
                (string-append "SHLIBDIR=" out "/lib")
                (string-append "MAN3DIR=" out "/share/man/man3")
                (string-append "MAN5DIR=" out "/share/man/man5")
                (string-append "MAN8DIR=" out "/share/man/man8")
                (string-append "LDFLAGS=-Wl,-rpath=" out "/lib")
-               "CC=gcc"))
+               (string-append "CC="
+                              (if target
+                                  (string-append (assoc-ref %build-inputs "cross-gcc")
+                                                 "/bin/" target "-gcc")
+                                  "gcc"))))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
