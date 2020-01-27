@@ -12021,14 +12021,14 @@ numbers (e.g. concentrations).")
 (define-public r-cobs
   (package
     (name "r-cobs")
-    (version "1.3-3")
+    (version "1.3-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "cobs" version))
        (sha256
         (base32
-         "1pqvz7czcchri4x79g78hbwyagb3bqzdqb047zkbdinyz067c7kb"))))
+         "0hiw5smk6kgk0gb9840kcqkhkybl7n30s77xhjc395x09izbgix1"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-quantreg" ,r-quantreg)
