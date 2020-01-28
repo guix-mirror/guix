@@ -21194,3 +21194,21 @@ by Jan Tatarik.")
 various line positions, like moving to the beginning/end of code, line, or
 comment.")
       (license license:gpl3+))))
+
+(define-public emacs-delight
+  (package
+    (name "emacs-delight")
+    (version "1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "delight-" version ".el"))
+       (sha256
+        (base32 "0kzlvzwmn6zj0874086q2xw0pclyi7wlkq48zh2lkd2796xm8vw7"))))
+    (build-system emacs-build-system)
+    (home-page "https://elpa.gnu.org/packages/delight.html")
+    (synopsis "Dimmer switch for your mode-line lighter text")
+    (description "@code{delight} enables customizing or hiding the
+mode-line text (lighter) of major and minor modes.")
+    (license license:gpl3+)))
