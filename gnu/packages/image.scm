@@ -25,6 +25,7 @@
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 R Veera Kumar <vkor@vkten.in>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,6 +75,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sphinx)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
@@ -855,6 +857,55 @@ algorithm was patented.  Tools are also included to convert, manipulate,
 compose, and analyze GIF images.")
     (home-page "http://giflib.sourceforge.net/")
     (license license:x11)))
+
+(define-public libuemf
+  (package
+    (name "libuemf")
+    (version "0.2.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/libuemf/libUEMF-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "05djs99vqf067x81xfpskh7a66y5x7b4mmjavybcy7swnm0swg7v"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Overriding CMAKE_INSTALL_PREFIX is not a good idea.
+         (add-after 'unpack 'fix-CMakeLists.txt
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               ((".*SET\\(CMAKE_INSTALL_PREFIX.*") ""))
+             #t))
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (sources (string-append "../libUEMF-" ,version))
+                    (drm-tools (assoc-ref inputs "drm-tools"))
+                    (extract (string-append drm-tools "/bin/extract"))
+                    (execinput (string-append drm-tools "/bin/execinput")))
+               (with-directory-excursion sources
+                 (substitute* "testit.sh"
+                   (("^EPATH=.*")
+                    (format #f "EPATH=~a~%" bin))
+                   (("`which diff`")
+                    "diff")
+                   (("^EXTRACT=.*")
+                    (format #f "EXTRACT=~a~%" extract))
+                   (("^EXECINPUT=.*")
+                    (format #f "EXECINPUT=~a~%" execinput)))
+                 (invoke "sh" "testit.sh"))))))))
+    (native-inputs `(("drm-tools" ,drm-tools))) ;for tests
+    (home-page "http://libuemf.sourceforge.net/")
+    (synopsis "Library for working with WFM, EMF and EMF+ images")
+    (description "The libUEMF library is a portable C99 implementation for
+reading and writing @abbr{WFM, Windows Metafile}, @abbr{EMF, Enhanced
+Metafile}, and @abbr{EMF+, Enhanced Metafile Plus} files.")
+    (license license:gpl2+)))
 
 (define-public libungif
   (package
