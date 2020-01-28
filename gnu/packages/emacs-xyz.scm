@@ -21123,3 +21123,24 @@ pattern guessed from thing under current cursor position.
 mercury-mode provided by Emacs as a wrapper around prolog-mode.")
       (home-page "https://github.com/ahungry/metal-mercury-mode")
       (license license:gpl3+))))
+
+(define-public emacs-company-ebdb
+  (package
+    (name "emacs-company-ebdb")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "company-ebdb-" version ".el"))
+       (sha256
+        (base32 "146qpiigz12zp1823ggxfrx090g0mxs7gz1ba7sa0iq6ibgzwwm9"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-company" ,emacs-company)))
+    (home-page "https://elpa.gnu.org/packages/company-ebdb.html")
+    (synopsis "Company completion backend for EBDB in Message mode")
+    (description "@code{company-ebdb} provides Company mode integration for
+EBDB.  It is copied more or less intact from @code{company-bbdb}, originally
+by Jan Tatarik.")
+    (license license:gpl3+)))
