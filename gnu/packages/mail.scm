@@ -2367,14 +2367,14 @@ e-mails with other systems speaking the SMTP protocol.")
 (define-public opensmtpd-next
   (package
     (name "opensmtpd-next")
-    (version "6.6.1p1")
+    (version "6.6.2p1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.opensmtpd.org/archives/"
                            "opensmtpd-" version ".tar.gz"))
        (sha256
-        (base32 "1ngil8j13m2rq07g94j4yjr6zmaimzy8wbfr17shi7rxnazys6zb"))))
+        (base32 "16nz2n4s3djlasd6m6dqfwggf6igyfxzq5igny5i0qb8lnn13f33"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)
