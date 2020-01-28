@@ -3254,12 +3254,14 @@ long and size_t whose sizes depend on the host platform.")
    (version "0.14.0")
    (home-page "https://github.com/ocamllabs/ocaml-ctypes")
    (source (origin
-             (method url-fetch)
-             (uri (string-append home-page "/archive/" version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                    (url home-page)
+                    (commit version)))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "0zrsd42q2nciyg9375g2kydqax6ay299rhyfgms59qiw7d9ylyp9"))))
+               "1b2q3h63ngf4x9qp65qwapf2dg9q0mcdah6qjm2q0c7v2p5vysv9"))))
    (build-system ocaml-build-system)
    (arguments
     `(#:tests? #f; require an old lwt
@@ -3267,6 +3269,14 @@ long and size_t whose sizes depend on the host platform.")
       (list (string-append "INSTALL_HEADERS = $(wildcard $($(PROJECT).dir)/*.h)"))
       #:phases
       (modify-phases %standard-phases
+        (add-after 'unpack 'make-writable
+          (lambda _
+            (for-each
+              (lambda (file)
+                (let ((stat (stat file)))
+                  (chmod file (+ #o200 (stat:mode stat)))))
+              (find-files "." "."))
+            #t))
         (delete 'configure))))
    (native-inputs
     `(("pkg-config" ,pkg-config)))
