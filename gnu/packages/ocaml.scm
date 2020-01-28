@@ -2659,13 +2659,14 @@ standard iterator type starting from 4.07.")
     (name "ocaml-ocplib-endian")
     (version "1.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/OCamlPro/ocplib-endian/"
-                                  "archive/" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/OCamlPro/ocplib-endian/")
+                     (commit version)))
               (sha256
                (base32
-                "0hwj09rnzjs0m0kazz5h2mgs6p95j0zlga8cda5srnzqmzhniwkn"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "0s1ld3kavz892b8awyxyg1mr98h2g61gy9ci5v6yb49bsii6wicw"))
+              (file-name (git-file-name name version))))
     (build-system ocaml-build-system)
     (native-inputs
      `(("cppo" ,ocaml-cppo)
