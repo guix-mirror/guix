@@ -1784,12 +1784,13 @@ for mapping files in memory.  This function is the same as the
     (version "5.1.1")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/ocsigen/lwt/archive/" version
-                            ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/ocsigen/lwt")
+               (commit version)))
+        (file-name (git-file-name name version))
         (sha256 (base32
-                  "0gwdmhn0qx03agc45dplj73ia5y1gb42aan64ywfxmll3lsnr2h7"))))
+                 "1nl7rdnwfdhwcsm5zpay1nr9y5cbapd9x1qzily7zk9ab4v52m8g"))))
     (build-system dune-build-system)
     (arguments
      `(#:package "lwt"))
