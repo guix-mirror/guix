@@ -19,6 +19,7 @@
 ;;; Copyright © 2019 Yoshinori Arai <kumagusu08@gmail.com>
 ;;; Copyright © 2019 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,6 +54,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages java)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -724,6 +726,110 @@ categories.")
      "C library for creating and parsing configuration files.")
     (license (list license:lgpl2.1         ; Main distribution.
                    license:asl1.1))))      ; src/readdir.{c,h}
+
+(define-public drm-tools
+  (package
+    (name "drm-tools")
+    (version "1.1.33")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/drmtools/drm_tools-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "187zbxw21zcg8gpyc13gxlycfw0n05a6rmqq6im5wr9zk1v1wj80"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ;the test suite fails
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'set-install-prefixes
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out")))
+                        (substitute* "CMakeLists.txt"
+                          (("tmp/testinstall")
+                           (string-drop out 1))
+                          (("/man/man1")
+                           "/share/man/man1"))
+                        #t)))
+                  (add-after 'unpack 'adjust-test-paths
+                    (lambda _
+                      (substitute* '("test_extract_increment.sh"
+                                     "test_extract_features.sh"
+                                     "test_extract_features2.sh"
+                                     "test_dmath.sh")
+                        (("\\./extract") "extract")
+                        (("\\./dmath") "dmath")
+                        (("/usr/local/bin/") "")
+                        (("/bin/rm") "rm")
+                        (("/bin/cp") "cp"))
+                      #t))
+                  (delete 'check)
+                  ;; The produced binaries are written directly to %output/bin.
+                  (delete 'install)
+                  (add-after 'build 'check
+                    (lambda* (#:key outputs tests? #:allow-other-keys)
+                      (when tests?
+                        (let* ((out (assoc-ref outputs "out"))
+                               (bin (string-append out "/bin")))
+                          (setenv "PATH" (string-append bin ":"
+                                                        (getenv "PATH")))
+                          (with-directory-excursion
+                              (format #f "../drm_tools-~a" ,version)
+                            (invoke "sh" "test_all.sh")))))))))
+    (native-inputs `(("which" ,which))) ;for tests
+    (inputs `(("pcre" ,pcre)))
+    (home-page "http://drmtools.sourceforge.net/")
+    (synopsis "Utilities to manipulate text and binary files")
+    (description "The drm_tools package contains the following commands:
+@table @command
+@item accudate
+An extended version of the \"date\" program that has sub-second accuracy.
+@item binformat
+Format complex binary data into text.
+@item binload
+Load data into a binary file using simple commands from the input.
+@item binorder
+Sort, merge, search, retrieve or generate test data consisting of fixed size
+binary records.
+@item binreplace
+Find or find/replace in binary files.
+@item binsplit
+Split test data consisting of fixed size binary records into one or more
+output streams.
+@item chardiff
+Find changes between two files at the character level.  Unlike \"diff\", it
+lists just the characters that differ, so if the 40,000th character is
+different only that one character will be shown, not the entire line.
+@item columnadd
+Add columns of integers, decimals, and/or times.
+@item datasniffer
+A utility for formatting binary data dumps.
+@item dmath
+Double precision interactive command line math calculator.
+@item extract
+Extract and emit data from text files based on character or token position.
+@item execinput
+A utility that reads from STDIN and executes each line as a command in a
+sub-process.
+@item indexed_text
+A utility for rapid retrieval of text by line numbers, in any order, from a
+text file.
+@item mdump
+Format binary data.
+@item msgqueue
+Create message queues and send/receive messages.
+@item mbin
+@itemx mbout
+Multiple buffer in and out.  Used for buffering a lot of data between a slow
+device and a fast device.  Mostly for buffering streaming tape drives for use
+with slower network connections, so that streaming is maintained as much as
+possible to minimize wear on the tape device.
+@item pockmark
+Corrupt data streams - useful for testing error correction and data recovery.
+@item tarsieve
+Filter, list, or split a tar file.
+@end table")
+    (license license:gpl2+)))
 
 (define-public java-rsyntaxtextarea
   (package
