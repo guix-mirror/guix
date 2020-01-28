@@ -1515,27 +1515,42 @@ games.")
               (sha256
                (base32
                 "12305wj2i4067jc50l8r0wmb7zjcna24fli8vb8kiaild0jrlip6"))
-              (modules '((guix build utils)))
+              (modules '((guix build utils)
+                         (ice-9 ftw)
+                         (srfi srfi-1)))
               (snippet
                '(begin
-                  ;; Drop libraries that we take from Guix.  Note that some
-                  ;; of these may be modified; see "thirdparty/README.md".
+                  ;; Keep only those bundled files we have not (yet) replaced
+                  ;; with Guix versions. Note that some of these may be
+                  ;; modified; see "thirdparty/README.md".
                   (with-directory-excursion "thirdparty"
-                    (for-each delete-file-recursively
-                              '("bullet"
-                                "freetype"
-                                "libogg"
-                                "libpng"
-                                "libtheora"
-                                "libvorbis"
-                                "libvpx"
-                                "libwebp"
-                                "mbedtls"
-                                "opus"
-                                "pcre2"
-                                "zlib"
-                                "zstd"))
-                    #t)))))
+                    (let* ((preserved-files
+                            '("README.md"
+                              "b2d_convexdecomp"
+                              "certs"
+                              "cvtt"
+                              "enet"
+                              "etc2comp"
+                              "fonts"
+                              "glad"
+                              "jpeg-compressor"
+                              "libsimplewebm"
+                              "libwebsockets"
+                              "miniupnpc"
+                              "minizip"
+                              "misc"
+                              "nanosvg"
+                              "pvrtccompressor"
+                              "recastnavigation"
+                              "squish"
+                              "thekla_atlas"
+                              "tinyexr"
+                              "xatlas")))
+                      (for-each delete-file-recursively
+                                (lset-difference string=?
+                                                 (scandir ".")
+                                                 (cons* "." ".." preserved-files)))))
+                  #t))))
     (build-system scons-build-system)
     (arguments
      `(#:scons ,scons-python2
