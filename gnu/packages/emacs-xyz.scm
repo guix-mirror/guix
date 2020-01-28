@@ -21212,3 +21212,28 @@ comment.")
     (description "@code{delight} enables customizing or hiding the
 mode-line text (lighter) of major and minor modes.")
     (license license:gpl3+)))
+
+(define-public emacs-unkillable-scratch
+  ;; Use the latest (unreleased) commit as of now, since it contains a handy
+  ;; `unkillable-scratch-do-not-reset-scratch-buffer' customization to not
+  ;; repopulate the scratch buffer with `initial-scratch-message'.
+  (let ((commit "b24c2a760529833f230c14cb02ff6e7ec92288ab")
+        (revision "0"))
+    (package
+      (name "emacs-unkillable-scratch")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/EricCrosson/unkillable-scratch.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "13wjbcxr3km4s96yhpavgs5acs5pvqv3ih1p84diqb3x3i6wd4pa"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/EricCrosson/unkillable-scratch")
+      (synopsis "Prevents the *scratch* buffer from being killed")
+      (description "@code{unkillable-scratch} helps prevent killing buffers
+matching a given regexp.")
+      (license license:gpl2+))))
