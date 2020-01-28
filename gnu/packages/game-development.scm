@@ -78,6 +78,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages music)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
@@ -1521,15 +1522,19 @@ games.")
                   ;; of these may be modified; see "thirdparty/README.md".
                   (with-directory-excursion "thirdparty"
                     (for-each delete-file-recursively
-                              '("freetype"
+                              '("bullet"
+                                "freetype"
                                 "libogg"
                                 "libpng"
                                 "libtheora"
                                 "libvorbis"
                                 "libvpx"
                                 "libwebp"
+                                "mbedtls"
                                 "opus"
-                                "zlib"))
+                                "pcre2"
+                                "zlib"
+                                "zstd"))
                     #t)))))
     (build-system scons-build-system)
     (arguments
@@ -1541,6 +1546,7 @@ games.")
                                '())
                            ;; Avoid using many of the bundled libs.
                            ;; Note: These options can be found in the SConstruct file.
+                           "builtin_bullet=no"
                            "builtin_freetype=no"
                            "builtin_glew=no"
                            "builtin_libmpdec=no"
@@ -1550,8 +1556,11 @@ games.")
                            "builtin_libvorbis=no"
                            "builtin_libvpx=no"
                            "builtin_libwebp=no"
+                           "builtin_mbedtls=no"
                            "builtin_opus=no"
-                           "builtin_zlib=no")
+                           "builtin_pcre2=no"
+                           "builtin_zlib=no"
+                           "builtin_zstd=no")
        #:tests? #f ; There are no tests
        #:phases
        (modify-phases %standard-phases
@@ -1598,6 +1607,7 @@ games.")
                #t))))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("alsa-lib" ,alsa-lib)
+              ("bullet" ,bullet)
               ("freetype" ,freetype)
               ("glew" ,glew)
               ("glu" ,glu)
@@ -1610,9 +1620,12 @@ games.")
               ("libxi" ,libxi)
               ("libxinerama" ,libxinerama)
               ("libxrandr" ,libxrandr)
+              ("mbedtls" ,mbedtls-apache)
               ("mesa" ,mesa)
               ("opusfile" ,opusfile)
-              ("pulseaudio" ,pulseaudio)))
+              ("pcre2" ,pcre2)
+              ("pulseaudio" ,pulseaudio)
+              ("zstd" ,zstd "lib")))
     (home-page "https://godotengine.org/")
     (synopsis "Advanced 2D and 3D game engine")
     (description
