@@ -66,9 +66,9 @@
        #:phases
        (modify-phases %standard-phases
          (replace 'install
-           (lambda* (#:key make-flags #:allow-other-keys)
+           (lambda* (#:key outputs #:allow-other-keys)
              (invoke "python" "setup.py" "install" "--prefix"
-                     (assoc-ref %outputs "out")))))))
+                     (assoc-ref outputs "out")))))))
     (home-page "https://thinkle.github.io/gourmet/")
     (synopsis "Recipe organizer")
     (description
