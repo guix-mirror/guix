@@ -18,6 +18,7 @@
 ;;; Copyright © 2019, 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2019 Jethro Cao <jethrocao@gmail.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1503,7 +1504,7 @@ games.")
 (define-public godot
   (package
     (name "godot")
-    (version "3.0.6")
+    (version "3.1.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1512,7 +1513,7 @@ games.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0g64h0x8dlv6aa9ggfcidk2mknkfl5li7z1phcav8aqp9srj8avf"))
+                "12305wj2i4067jc50l8r0wmb7zjcna24fli8vb8kiaild0jrlip6"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1527,7 +1528,6 @@ games.")
                                 "libvorbis"
                                 "libvpx"
                                 "libwebp"
-                                "openssl"
                                 "opus"
                                 "zlib"))
                     #t)))))
@@ -1550,7 +1550,6 @@ games.")
                            "builtin_libvorbis=no"
                            "builtin_libvpx=no"
                            "builtin_libwebp=no"
-                           "builtin_openssl=no"
                            "builtin_opus=no"
                            "builtin_zlib=no")
        #:tests? #f ; There are no tests
@@ -1612,7 +1611,6 @@ games.")
               ("libxinerama" ,libxinerama)
               ("libxrandr" ,libxrandr)
               ("mesa" ,mesa)
-              ("openssl" ,openssl)
               ("opusfile" ,opusfile)
               ("pulseaudio" ,pulseaudio)))
     (home-page "https://godotengine.org/")
