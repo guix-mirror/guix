@@ -21169,3 +21169,28 @@ example code.")
 EBDB.  It is copied more or less intact from @code{company-bbdb}, originally
 by Jan Tatarik.")
     (license license:gpl3+)))
+
+(define-public emacs-mwim
+  ;; Use the latest commit not in a release version as of yet, since it
+  ;; contains a bug fix for the cases where `comment-start-skip' is nil.
+  (let ((commit "b4f3edb4c0fb8f8b71cecbf8095c2c25a8ffbf85")
+        (revision "0"))
+    (package
+      (name "emacs-mwim")
+      (version (git-version "0.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/alezost/mwim.el.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0l3k611gp9g2x2vfmh92wnhnda81dslpwwpb8mxmzk308man77ya"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/alezost/mwim.el")
+      (synopsis "Move to the beginning/end of line, code or comment")
+      (description "@code{mwim} provides several commands to switch between
+various line positions, like moving to the beginning/end of code, line, or
+comment.")
+      (license license:gpl3+))))
