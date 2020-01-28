@@ -21124,6 +21124,31 @@ mercury-mode provided by Emacs as a wrapper around prolog-mode.")
       (home-page "https://github.com/ahungry/metal-mercury-mode")
       (license license:gpl3+))))
 
+(define-public emacs-boxquote
+  ;; The following commit is 2.1 release with a switch to GPL3+ license.
+  (let ((commit "7e47e0e2853bc1215739b2e28f260e9eed93b2c5")
+        (revision "0"))
+    (package
+      (name "emacs-boxquote")
+      (version (git-version "2.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/davep/boxquote.el.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1aqhg24gajvllbqxb0zxrnx6sddas37k2ldfinqyszd856sjhsg3"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/davep/boxquote.el")
+      (synopsis "Quote text with different kinds of boxes")
+      (description "@code{boxquote} provides a set of functions for using
+a text quoting style that partially boxes in the left hand side of an area of
+text, such a marking style might be used to show externally included text or
+example code.")
+      (license license:gpl3+))))
+
 (define-public emacs-company-ebdb
   (package
     (name "emacs-company-ebdb")
