@@ -1999,9 +1999,9 @@ a.k.a. XenoCollide) as described in Game Programming Gems 7.")
     (build-system cmake-build-system)
     (arguments
      ;; Tests fail on all systems but x86_64.
-     `(#:tests? ,(string=? "x86_64-linux"
-                           (or (%current-target-system)
-                               (%current-system)))
+     `(#:tests? ,(string-prefix? "x86_64-"
+                                 (or (%current-target-system)
+                                     (%current-system)))
        #:configure-flags '("-DODE_WITH_LIBCCD_SYSTEM=ON")
        #:phases
        (modify-phases %standard-phases
