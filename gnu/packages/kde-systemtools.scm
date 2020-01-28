@@ -26,12 +26,12 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages kde)
   #:use-module (gnu packages kde-frameworks)
-  #:use-module (gnu packages libvnc)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages search)
+  #:use-module (gnu packages vnc)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
