@@ -872,7 +872,8 @@ then ported to the GNU / Linux environment.")
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
-       (list "-DUSE_SHARED_MBEDTLS_LIBRARY=ON")))
+       (list "-DUSE_SHARED_MBEDTLS_LIBRARY=ON"
+             "-DUSE_STATIC_MBEDTLS_LIBRARY=OFF")))
     (native-inputs
      `(("perl" ,perl)
        ("python" ,python)))
