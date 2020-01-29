@@ -122,15 +122,15 @@ in intelligent transportation networks.")
 (define-public p11-kit
   (package
     (name "p11-kit")
-    (version "0.23.18.1")
+    (version "0.23.19")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://github.com/p11-glue/p11-kit/releases/"
-                          "download/" version "/p11-kit-" version ".tar.gz"))
+                          "download/" version "/p11-kit-" version ".tar.xz"))
       (sha256
        (base32
-        "0vrwab1082f7l5sbzpb28nrs3q4d2q7wzbi8c977rpah026bvhrl"))))
+        "1w7i4f5lc8darjkfjsm1ldvhkv0x29mvwg89klmh5kb2xqf6x4wi"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
