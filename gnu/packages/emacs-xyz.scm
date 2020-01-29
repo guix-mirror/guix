@@ -21237,3 +21237,30 @@ mode-line text (lighter) of major and minor modes.")
       (description "@code{unkillable-scratch} helps prevent killing buffers
 matching a given regexp.")
       (license license:gpl2+))))
+
+(define-public emacs-message-x
+  ;; Use the latest commit, as there are no tagged releases.
+  (let ((commit "5524de7bbfdd8749c110f48de5afb024d9f83133")
+        (revision "0"))
+    (package
+      (name "emacs-message-x")
+      (version (git-version "1.23" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacsmirror/message-x.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0qy1xf11j357lsnbb829hnbg7fq1cii4cx54fwf0wgjh1bv2abvj"))))
+      (build-system emacs-build-system)
+      (home-page "https://www.emacswiki.org/emacs/message-x.el")
+      (synopsis "Customizable completion in message headers")
+      (description "@code{message-x} assigns a context-sensitive function to
+the TAB key in Message mode.  When on a header line, it performs completion
+based on which header we are in (for example, newsgroup name completion makes
+sense on the @samp{Newsgroups} header, whereas mail alias expansion makes
+sense in the @samp{To} and @samp{Cc} headers).  When in the message body, this
+executes a different function (default: @code{indent-relative}).")
+      (license license:gpl2+))))
