@@ -290,6 +290,8 @@ languages.")
              #t))))
       (arguments
        (substitute-keyword-arguments (package-arguments emacs)
+         ((#:configure-flags flags)
+          `(cons* "--with-harfbuzz" ,flags))
          ((#:phases phases)
           `(modify-phases ,phases
              ;; The 'reset-gzip-timestamps phase will throw a
@@ -318,6 +320,7 @@ languages.")
                    #t)))))))
       (inputs
        `(("jansson" ,jansson)
+         ("harfbuzz" ,harfbuzz)
          ,@(package-inputs emacs)))
       (native-inputs
        `(("autoconf" ,autoconf)      ; needed when building from trunk
