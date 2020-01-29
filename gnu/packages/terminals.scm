@@ -17,6 +17,7 @@
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -138,6 +139,11 @@ configurable through a graphical wizard.")
     (arguments
       `(#:phases
         (modify-phases %standard-phases
+          (add-after 'unpack 'patch-xdg-open
+            (lambda _
+              (substitute* "termite.cc"
+                (("xdg-open") (which "xdg-open")))
+              #t))
           (delete 'configure))
         #:tests? #f
         ;; This sets the destination when installing the necessary terminal
@@ -150,6 +156,7 @@ configurable through a graphical wizard.")
     (inputs
      `(("vte" ,vte-ng)
        ("gtk+" ,gtk+)
+       ("xdg-utils" ,xdg-utils)
        ("ncurses" ,ncurses)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))

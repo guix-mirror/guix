@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,7 +22,7 @@
 (define-module (gnu packages nutrition)
   #:use-module (guix packages)
   #:use-module (guix licenses)
-  #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages databases)
@@ -38,13 +39,14 @@
     (version "0.17.4")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "https://github.com/thinkle/gourmet/archive/"
-                          version ".tar.gz"))
-      (file-name (string-append name "-" version ".tar.gz"))
+      (method git-fetch)
+      (uri (git-reference
+             (url "https://github.com/thinkle/gourmet")
+             (commit version)))
+      (file-name (git-file-name name version))
       (sha256
        (base32
-        "1qvz175arzqm10lpfx8ffadrgirs3240zzqcp0h7sl53qfwx7v8k"))))
+        "09a2zk140l4babwdj8pwcgl9v7rvwff9cn7h3ppfhm3yvsgkrx07"))))
     (build-system python-build-system)
     (native-inputs
      `(("distutils-extra"   ,python2-distutils-extra)
@@ -64,9 +66,9 @@
        #:phases
        (modify-phases %standard-phases
          (replace 'install
-           (lambda* (#:key make-flags #:allow-other-keys)
+           (lambda* (#:key outputs #:allow-other-keys)
              (invoke "python" "setup.py" "install" "--prefix"
-                     (assoc-ref %outputs "out")))))))
+                     (assoc-ref outputs "out")))))))
     (home-page "https://thinkle.github.io/gourmet/")
     (synopsis "Recipe organizer")
     (description

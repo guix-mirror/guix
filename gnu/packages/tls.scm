@@ -122,15 +122,15 @@ in intelligent transportation networks.")
 (define-public p11-kit
   (package
     (name "p11-kit")
-    (version "0.23.18.1")
+    (version "0.23.19")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://github.com/p11-glue/p11-kit/releases/"
-                          "download/" version "/p11-kit-" version ".tar.gz"))
+                          "download/" version "/p11-kit-" version ".tar.xz"))
       (sha256
        (base32
-        "0vrwab1082f7l5sbzpb28nrs3q4d2q7wzbi8c977rpah026bvhrl"))))
+        "1w7i4f5lc8darjkfjsm1ldvhkv0x29mvwg89klmh5kb2xqf6x4wi"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -858,7 +858,7 @@ then ported to the GNU / Linux environment.")
 (define-public mbedtls-apache
   (package
     (name "mbedtls-apache")
-    (version "2.16.3")
+    (version "2.16.4")
     (source
      (origin
        (method url-fetch)
@@ -868,11 +868,12 @@ then ported to the GNU / Linux environment.")
                            version "-apache.tgz"))
        (sha256
         (base32
-         "0qd65lnr63vmx2gxla6lcmm5gawlnaj4wy4h4vmdc3h9h9nyw6zc"))))
+         "1yxj5wahaj87xhdi89zbk78ig77b166h464yrj5gb3lwv8mz6h9l"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
-       (list "-DUSE_SHARED_MBEDTLS_LIBRARY=ON")))
+       (list "-DUSE_SHARED_MBEDTLS_LIBRARY=ON"
+             "-DUSE_STATIC_MBEDTLS_LIBRARY=OFF")))
     (native-inputs
      `(("perl" ,perl)
        ("python" ,python)))

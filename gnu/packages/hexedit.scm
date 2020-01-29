@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages ncurses)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -43,12 +45,26 @@
                (base32
                 "1xsxa5mip892jkvz9jshj73y6c7j3mgp8y393ciihqlyf2nmfs67"))))
     (build-system gnu-build-system)
-    (arguments '(#:tests? #f))          ; no check target
+    (arguments
+     `(#:tests? #f                      ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         ;; Make F1 open the man page even if man-db is not in the profile.
+         (add-after 'unpack 'patch-man-path
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "interact.c"
+               (("\"man\"")
+                (string-append "\"" (assoc-ref inputs "man-db") "/bin/man\""))
+               (("\"hexedit\"")
+                (string-append "\"" (assoc-ref outputs "out")
+                               "/share/man/man1/hexedit.1.gz\"")))
+             #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
     (inputs
-     `(("ncurses" ,ncurses)))
+     `(("man-db" ,man-db)
+       ("ncurses" ,ncurses)))
     (synopsis "View and edit files or devices in hexadecimal or ASCII")
     (description "hexedit shows a file both in ASCII and in hexadecimal.  The
 file can be a device as the file is read a piece at a time.  You can modify
@@ -80,3 +96,25 @@ low-level functionality of a debugger with the usability of an @dfn{Integrated
 Development Environment} (IDE).")
     (home-page "http://hte.sourceforge.net/")
     (license license:gpl2)))
+
+(define-public bvi
+  (package
+    (name "bvi")
+    (version "1.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/bvi/bvi/" version
+                    "/bvi-" version ".src.tar.gz"))
+              (sha256
+               (base32
+                "0a0yl0dcyff31k3dr4dpgqmlwygp8iaslnr5gmb6814ylxf2ad9h"))))
+    (build-system gnu-build-system)
+    (arguments '(#:tests? #f))          ; no check target
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (synopsis "Binary file editor")
+    (description "@command{bvi} is a display-oriented editor for binary files,
+based on the @command{vi} text editor.")
+    (home-page "http://bvi.sourceforge.net/")
+    (license license:gpl3+)))

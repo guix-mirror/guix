@@ -938,3 +938,37 @@ through its msgpack-rpc API.")
 
 (define-public python2-pynvim
   (package-with-python2 python-pynvim))
+
+(define-public vim-guix-vim
+  (package
+    (name "vim-guix-vim")
+    (version "0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://gitlab.com/Efraim/guix.vim")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1f8h8m96fqh3f9hy87spgh9kdqzyxl11n9s3rywvyq5xhn489bnk"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (vimfiles (string-append out "/share/vim/vimfiles")))
+               (for-each
+                 (lambda (dir)
+                   (copy-recursively dir (string-append vimfiles "/" dir)))
+                 '("compiler" "doc" "indent" "ftdetect" "ftplugin" "syntax"))
+               #t))))))
+    (home-page "https://gitlab.com/Efraim/guix.vim")
+    (synopsis "Guix integration in Vim")
+    (description "This package provides support for GNU Guix in Vim.")
+    (license license:vim)))

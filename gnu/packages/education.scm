@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -484,6 +484,108 @@ use the computer and at the same time teach them a little math,
 letters of the alphabet, spelling, eye-hand coordination, etc.")
     (home-page "http://www.schoolsplay.org")
     (license license:gpl3+)))
+
+(define-public omnitux
+  (package
+    (name "omnitux")
+    (version "1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/omnitux/omnitux/"
+                           "v" version "/omnitux-" version ".tar.bz2"))
+       (sha256
+        (base32 "1wmmmbzmxd0blhn00d4g91xwavnab143a31ca3i8hrqgzh6qz9w6"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove pre-compiled .pyc files from source.
+           (for-each delete-file (find-files "bin" "\\.pyc$"))
+           #t))))
+    (build-system python-build-system)
+    (inputs
+     `(("python2-pygame" ,python2-pygame)
+       ("python2-pygtk" ,python2-pygtk)))
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'build)                ;no setup.py
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share"))
+                    (data (string-append share "/omnitux")))
+               ;; Install documentation.
+               (let ((doc (string-append share "/doc/" ,name "-" ,version)))
+                 (for-each (lambda (f) (install-file f doc))
+                           '("LICENSE.txt" "README.txt")))
+               ;; Install data.
+               (install-file "omnitux.sh" data)
+               (for-each (lambda (d)
+                           (copy-recursively d (string-append data "/" d)))
+                         '("bin" "data"))
+               ;; Install the launcher.
+               (let* ((bin (string-append out "/bin"))
+                      (script (string-append bin "/omnitux"))
+                      (bash (string-append (assoc-ref %build-inputs "bash")
+                                           "/bin/bash"))
+                      (python (string-append (assoc-ref %build-inputs "python")
+                                             "/bin/python2")))
+                 (mkdir-p bin)
+                 (with-output-to-file script
+                   (lambda ()
+                     (format #t "#!~a~%" bash)
+                     (format #t
+                             "cd ~a; ~a menu.py~%"
+                             (string-append data "/bin")
+                             python)))
+                 (chmod script #o755))
+               ;; Install icon and desktop file.
+               (let ((pixmaps (string-append share "/pixmaps")))
+                 (install-file "data/default/icons/Omnitux_logo.svg" pixmaps))
+               (let ((apps (string-append out "/share/applications")))
+                 (mkdir-p apps)
+                 (with-output-to-file (string-append apps "/omnitux.desktop")
+                   (lambda _
+                     (format #t
+                             "[Desktop Entry]~@
+                              Name=Omnitux~@
+                              GenericName=Omnitux
+                              Comment=An educational game based on multimedia elements.~@
+                              Comment[fr]=Un jeu ludo-éducatif basé sur des éléments multimédias.~@
+                              Exec=~a/bin/omnitux~@
+                              Type=Application~@
+                              Categories=Game;Education;~@
+                              Terminal=false~@
+                              Icon=Omnitux_logo.svg~@"
+                             out))))
+               #t))))))
+    (home-page "http://omnitux.sourceforge.net/")
+    (synopsis "Educational activities based on multimedia elements")
+    (description "The project aims to provide various educational
+activities around multimedia elements (images, sounds, texts).  Types
+of activities include:
+@itemize
+@item associations,
+@item items to place on a map or a schema,
+@item counting activities,
+@item puzzles,
+@item card faces to remember,
+@item find differences between two pictures,
+@item ...
+@end itemize
+
+Activities are available in English, French, German, Polish,
+Portuguese, Spanish and Italian.")
+    ;; Project's license is GPL3+, but multimedia elements are
+    ;; released under various licenses.
+    (license (list license:gpl3+
+                   license:gpl2+
+                   license:cc-by-sa2.0
+                   license:cc-by-sa3.0
+                   license:public-domain))))
 
 (define-public fet
   (package

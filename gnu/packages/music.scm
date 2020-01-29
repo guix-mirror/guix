@@ -24,7 +24,7 @@
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.lonestar.org>
 ;;; Copyright © 2019 raingloom <raingloom@protonmail.com>
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
-;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
+;;; Copyright © 2019, 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5138,3 +5138,50 @@ MIDI drums and comes as two separate drumkits: Black Pearl and Red Zeppelin.")
     (description "Helm is a cross-platform polyphonic synthesizer available standalone
 and as an LV2 plugin.")
     (license license:gpl3+)))
+
+(define-public zrythm
+  (package
+    (name "zrythm")
+    (version "0.7.345")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://www.zrythm.org/releases/zrythm-"
+                            version ".tar.xz"))
+        (sha256
+          (base32
+            "1csiwq38a1ckx23lairfpl7qjkz71wsa7a9vsxl3k58f9ybibiil"))))
+   (build-system meson-build-system)
+   (arguments
+    `(#:glib-or-gtk? #t
+      #:configure-flags
+      `("-Denable_tests=true" "-Dmanpage=true"
+        "-Dinstall_dseg_font=false" "-Denable_ffmpeg=true")))
+   (inputs
+    `(("alsa-lib" ,alsa-lib)
+      ("jack" ,jack-1)
+      ("font-dseg", font-dseg)
+      ("ffmpeg", ffmpeg)
+      ("fftw", fftw)
+      ("fftwf", fftwf)
+      ("gettext", gettext-minimal)
+      ("glibc", glibc)
+      ("gtk+", gtk+)
+      ("libsamplerate" ,libsamplerate)
+      ("libsndfile" ,libsndfile)
+      ("libyaml" ,libyaml)
+      ("lilv", lilv)
+      ("xdg-utils", xdg-utils)
+      ("rubberband", rubberband)))
+   (native-inputs
+     `(("pkg-config", pkg-config)
+       ("help2man", help2man)
+       ("libaudec" ,libaudec)
+       ("lv2", lv2)
+       ("glib" ,glib "bin"))) ;for 'glib-compile-resources'
+   (synopsis "Digital audio workstation focusing on usability")
+   (description "Zrythm is a digital audio workstation designed to be
+featureful and easy to use.  It offers unlimited automation options, LV2
+plugin support, JACK support and chord assistance.")
+   (home-page "https://www.zrythm.org")
+   (license license:agpl3+)))

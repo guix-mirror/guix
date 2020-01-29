@@ -2367,14 +2367,14 @@ e-mails with other systems speaking the SMTP protocol.")
 (define-public opensmtpd-next
   (package
     (name "opensmtpd-next")
-    (version "6.6.1p1")
+    (version "6.6.2p1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.opensmtpd.org/archives/"
                            "opensmtpd-" version ".tar.gz"))
        (sha256
-        (base32 "1ngil8j13m2rq07g94j4yjr6zmaimzy8wbfr17shi7rxnazys6zb"))))
+        (base32 "16nz2n4s3djlasd6m6dqfwggf6igyfxzq5igny5i0qb8lnn13f33"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)
@@ -3169,6 +3169,10 @@ related tools to process winmail.dat files.")
               (substitute* "t/ds-leak.t"
                 (("/bin/sh") (which "sh")))
               (invoke "./certs/create-certs.perl")
+              ;; XXX: This test fails due to zombie process is not reaped by
+              ;; the builder.
+              (substitute* "t/httpd-unix.t"
+                (("^SKIP: \\{") "SKIP: { skip('Guix');"))
               #t))
           (add-after 'install 'wrap-programs
             (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -3199,6 +3203,7 @@ related tools to process winmail.dat files.")
         ("perl-email-mime-contenttype" ,perl-email-mime-contenttype)
         ("perl-email-mime" ,perl-email-mime)
         ("perl-email-simple" ,perl-email-simple)
+        ("perl-net-server" ,perl-net-server)
         ("perl-filesys-notify-simple" ,perl-filesys-notify-simple)
         ("perl-plack-middleware-deflater" ,perl-plack-middleware-deflater)
         ("perl-plack-middleware-reverseproxy" ,perl-plack-middleware-reverseproxy)

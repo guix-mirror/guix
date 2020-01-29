@@ -559,14 +559,14 @@ and up to 1 Mbit/s downstream.")
 (define-public whois
   (package
     (name "whois")
-    (version "5.5.4")
+    (version "5.5.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://debian/pool/main/w/whois/"
                            "whois_" version ".tar.xz"))
        (sha256
-        (base32 "0k97aiz7ngkjz3vhzvk27kqhnmqmkskdfx310c94qnh8fd7hiqfi"))))
+        (base32 "03akwma24gzfnsmwpjxmkzmcaxzg6fc68hmyaz0xmsl28i28l3n3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite

@@ -26,7 +26,7 @@
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Chris Marusich <cmmarusich@gmail.com>
@@ -1441,8 +1441,6 @@ C/C++, R, and more, and uploads it to the @code{codecov.io} service.")
        #:modules ((guix build python-build-system)
                   (guix build utils)
                   (srfi srfi-1))
-       #:imported-modules (,@%python-build-system-modules
-                           (srfi srfi-1))
        #:phases
        (modify-phases %standard-phases
          (delete 'install)

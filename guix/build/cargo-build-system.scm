@@ -2,7 +2,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
-;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,7 +58,7 @@
 (define (crate-src? path)
   "Check if PATH refers to a crate source, namely a gzipped tarball with a
 Cargo.toml file present at its root."
-    (and (gzip-file? path)
+    (and (not (directory-exists? path)) ; not a tarball
          ;; First we print out all file names within the tarball to see if it
          ;; looks like the source of a crate. However, the tarball will include
          ;; an extra path component which we would like to ignore (since we're
@@ -119,6 +119,8 @@ directory = '" port)
   ;; upgrading the compiler for example.
   (setenv "RUSTFLAGS" "--cap-lints allow")
   (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
+  (setenv "LIBGIT2_SYS_USE_PKG_CONFIG" "1")
+  (setenv "LIBSSH2_SYS_USE_PKG_CONFIG" "1")
 
   ;; We don't use the Cargo.lock file to determine the package versions we use
   ;; during building, and in any case if one is not present it is created

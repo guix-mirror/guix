@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -99,6 +99,11 @@ scientific data.")
               (modules '((guix build utils)))
               (snippet
                '(begin
+                  ;; Allow builds with Guile 3.0.
+                  (substitute* "configure"
+                    (("2\\.2 2\\.0")
+                     "3.0 2.2 2.0"))
+
                   ;; By default, .go files would be installed to
                   ;; $libdir/…/ccache instead of $libdir/…/site-ccache.  Fix
                   ;; that.
@@ -115,6 +120,13 @@ scientific data.")
      "Guile-Charting is a Guile Scheme library to create bar charts and graphs
 using the Cairo drawing library.")
     (license license:lgpl2.1+)))
+
+(define-public guile3.0-charting
+  (package
+    (inherit guile-charting)
+    (name "guile3.0-charting")
+    (inputs `(("guile" ,guile-3.0)))
+    (propagated-inputs `(("guile-cairo" ,guile3.0-cairo)))))
 
 (define-public ploticus
   (package

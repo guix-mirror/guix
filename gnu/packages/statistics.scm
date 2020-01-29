@@ -504,14 +504,14 @@ code for possible problems.")
 (define-public r-foreign
   (package
     (name "r-foreign")
-    (version "0.8-74")
+    (version "0.8-75")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "foreign" version))
        (sha256
         (base32
-         "047w772msiki85rxxhqkxya37gmw4331l32651rr09dl2vq02pgj"))))
+         "0g4mi101srjbl17ydb2hl3854m3xj0llj6861lfr30sp08nkqavl"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/foreign")
     (synopsis "Read data stored by other statistics software")
@@ -1400,13 +1400,13 @@ emitter (http://pyyaml.org/wiki/LibYAML) for R.")
 (define-public r-knitr
   (package
     (name "r-knitr")
-    (version "1.26")
+    (version "1.27")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "knitr" version))
               (sha256
                (base32
-                "08f3bdd5cnnbigybr9vmkhq12n64pbmn4layl3w5rwk8xi5kbnrq"))))
+                "02nysgnx6xv0kd351s1d59yx4g0drsd9lmcgxs0rsw5f1jiycgdg"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-evaluate" ,r-evaluate)
@@ -1607,13 +1607,13 @@ defined in different packages.")
 (define-public r-rlang
   (package
     (name "r-rlang")
-    (version "0.4.2")
+    (version "0.4.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "rlang" version))
               (sha256
                (base32
-                "0fczcp17kaz3s4p0nd4126bppwl20vpxfybhsndpcky9h75wklgv"))))
+                "0qsqfikbsj55x5brghnkzzp7pz0japr4xnzm993f668mlls3f6i4"))))
     (build-system r-build-system)
     (home-page "http://rlang.tidyverse.org")
     (synopsis "Functions for base types, core R and Tidyverse features")
@@ -2565,13 +2565,13 @@ well as additional utilities such as panel and axis annotation functions.")
 (define-public r-rcpparmadillo
   (package
     (name "r-rcpparmadillo")
-    (version "0.9.800.3.0")
+    (version "0.9.800.4.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RcppArmadillo" version))
               (sha256
                (base32
-                "0kpcspg3mafi5kncjfhnbcwimvlf19jvrxilvhbpd20sap473mh3"))))
+                "1csh54v4d0ccwmk4bqj4rca1d5rqpafvb4459x3q6k9sys0charx"))))
     (properties `((upstream-name . "RcppArmadillo")))
     (build-system r-build-system)
     ;; All needed for vignettes
@@ -2617,13 +2617,13 @@ vectors.")
 (define-public r-catools
   (package
     (name "r-catools")
-    (version "1.17.1.4")
+    (version "1.18.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "caTools" version))
               (sha256
                (base32
-                "151vsfakg32jn9msfdjcizhizm8k8yxlfpnsbagns9ihr59s3w49"))))
+                "0y1kgyiy322yhb0phzwvf2zgjz9awp13lhzhk9v1ddg88656jhq3"))))
     (properties `((upstream-name . "caTools")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2663,13 +2663,13 @@ certain criterion, e.g., it contains a certain regular file.")
 (define-public r-rmarkdown
   (package
     (name "r-rmarkdown")
-    (version "2.0")
+    (version "2.1")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "rmarkdown" version))
         (sha256
-          (base32 "1bm3n17wa0pf1cq7qmwhbnn02x2pld7zzmmzjcvwy6apanch9fl7"))))
+          (base32 "0pa5xs0vzwn9vsgysjqbks9v5lbqphxh5agciskllibc40hhwigg"))))
     (properties `((upstream-name . "rmarkdown")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2755,17 +2755,16 @@ that package, other packages are unaffected.")
 (define-public r-blob
   (package
     (name "r-blob")
-    (version "1.2.0")
+    (version "1.2.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "blob" version))
               (sha256
                (base32
-                "08z071jzac4gasgfgab0y5g3ilfmlw08ln813wphxg07hsiczw8s"))))
+                "1slb5mvxfyi92i8ifx2qa31hp57inilwhq1g9lzvgha6jrxbqm7g"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-prettyunits" ,r-prettyunits)
-       ("r-rlang" ,r-rlang)
+     `(("r-rlang" ,r-rlang)
        ("r-vctrs" ,r-vctrs)))
     (home-page "https://github.com/hadley/blob")
     (synopsis "Simple S3 Class for representing vectors of binary data")
@@ -2850,13 +2849,13 @@ ldap, and also supports cookies, redirects, authentication, etc.")
 (define-public r-xml
   (package
     (name "r-xml")
-    (version "3.98-1.20")
+    (version "3.99-0.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "XML" version))
               (sha256
                (base32
-                "0n28m8iz1wfgixr7fjswl238c5w9kggsrw0c8hdzp859dqvqdbs6"))))
+                "0lzpqwajs5xaqdna50vl24qkp9xvh00zypjjzy6kgdzk11isgdw1"))))
     (properties
      `((upstream-name . "XML")))
     (build-system r-build-system)
@@ -3235,17 +3234,18 @@ path-wise fashion.")
 (define-public r-pkgmaker
   (package
     (name "r-pkgmaker")
-    (version "0.27")
+    (version "0.31")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pkgmaker" version))
        (sha256
         (base32
-         "0spcamjncj78kzjps2rw4v1a4494yazv6xvhn0vmdflnypc8k8hp"))))
+         "0cc6v6kpwxwwh7k7zyw13wqdp0f9qzzr1a7vv02lskgii54aa4nb"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-bibtex" ,r-bibtex)
+     `(("r-assertthat" ,r-assertthat)
+       ("r-bibtex" ,r-bibtex)
        ("r-codetools" ,r-codetools)
        ("r-digest" ,r-digest)
        ("r-magrittr" ,r-magrittr)
@@ -3284,19 +3284,17 @@ package registries.")
 (define-public r-rngtools
   (package
     (name "r-rngtools")
-    (version "1.4")
+    (version "1.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rngtools" version))
        (sha256
         (base32
-         "1kivj594bn774lbn29ws2rmzy2km99sza0j3jqvhal6hwmk27a9s"))))
+         "0xgmg3qb6insc157as47mcm9sdjdpy9jirh7w06bxb7pfcxqfx42"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-digest" ,r-digest)
-       ("r-pkgmaker" ,r-pkgmaker)
-       ("r-stringr" ,r-stringr)))
+     `(("r-digest" ,r-digest)))
     (home-page "https://renozao.github.io/rngtools")
     (synopsis "Utility functions for working with random number generators")
     (description
@@ -3714,14 +3712,14 @@ selection.")
 (define-public r-tidyr
   (package
     (name "r-tidyr")
-    (version "1.0.0")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidyr" version))
        (sha256
         (base32
-         "1403j0xd93l0r7qj738ryd5zc79hbcghrzybib3c3hrnaq5s78cj"))))
+         "0safj8bcf8libwr0jx4059bmarngvhfddrcv8k5iw39m9lpxs0r4"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
@@ -4835,18 +4833,17 @@ analysis} (PCA) by projection pursuit.")
 (define-public r-rrcov
   (package
     (name "r-rrcov")
-    (version "1.4-9")
+    (version "1.5-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rrcov" version))
        (sha256
         (base32
-         "11zvxidlb1pr2j5dzvmbjqdgsmmicsq8ppjf5wcfykfyf2fkcmz7"))))
+         "0m62k58nabw7hjz1qyyf9a0d6lvcz5vcvpksjnq93zcfra9inr57"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-cluster" ,r-cluster)
-       ("r-lattice" ,r-lattice)
+     `(("r-lattice" ,r-lattice)
        ("r-mvtnorm" ,r-mvtnorm)
        ("r-pcapp" ,r-pcapp)
        ("r-robustbase" ,r-robustbase)))
@@ -4939,14 +4936,14 @@ of the points.")
 (define-public r-fpc
   (package
     (name "r-fpc")
-    (version "2.2-3")
+    (version "2.2-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fpc" version))
        (sha256
         (base32
-         "1dy3pla4jjgs46izqg2kxajlxr80sbr9896jbzb1qszrdx7af041"))))
+         "1gsnl5sbdg86b2wdrsy6wq83xj6mrziiq7rxa8cqksgljc7gp6yf"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-class" ,r-class)

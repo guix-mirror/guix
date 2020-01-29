@@ -365,18 +365,18 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.98")
+(define-public linux-libre-4.19-version "4.19.99")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "0dr9vnaaycq77r49mj001zvkxhdyxkgh27dbjsaxcq1dq8xv3zli")))
+        (hash (base32 "1axmspnqir2zz7lail95y5yaamxl86k39sd4im3c77dgjkwj3g4d")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.167")
+(define-public linux-libre-4.14-version "4.14.168")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "0hzyb5k6adhg4vkhix21kg7z6gdzyk1dnzylvbsz9yh2m73qzdrb")))
+        (hash (base32 "1ziixdg4jsr17kgfa9dpckczk0r2mc5jayqb2f6br19al79pfmyv")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
@@ -1788,7 +1788,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "5.3.0")
+    (version "5.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1796,7 +1796,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0gvv269wjn4279hxr5zzwsk2c5qgswr47za3hm1x4frsk52iw76b"))))
+                "0ywg70f98wgfai35jl47xzpjp45a6n7crja4vc8ql85cbi1l7ids"))))
     (build-system gnu-build-system)
     (arguments
      `( ;; There is a test suite, but it wants network namespaces and sudo.
@@ -5042,6 +5042,21 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
         (base32 "0zrjipd392bzjvxx0rjrb0cgi0ix1d83fwgw1mcy8kc4d16cgyjg"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-udev-rules-absolute-path-bins
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "90-backlight.rules"
+               (("/bin/chgrp") (which "chgrp"))
+               (("/bin/chmod") (which "chmod")))
+             #t))
+         (add-after 'install 'install-udev-rules
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file
+                "90-backlight.rules" (string-append out "/lib/udev/rules.d"))
+               #t))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
