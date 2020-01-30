@@ -41,6 +41,7 @@
   #:use-module (guix utils)
   #:use-module (ice-9 match)
   #:use-module (gnu packages)
+  #:use-module (gnu packages aidc)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
@@ -930,7 +931,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
 (define-public libreoffice
   (package
     (name "libreoffice")
-    (version "6.3.4.2")
+    (version "6.4.0.3")
     (source
      (origin
        (method url-fetch)
@@ -940,17 +941,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
          (version-prefix version 3) "/libreoffice-" version ".tar.xz"))
        (sha256
         (base32
-         "1774vmf3lr5x24ikpn1z5vqcdwrhiwfkjy7sx09jqkvpm6d5awnb"))
-       (patches (search-patches "libreoffice-icu.patch"
-                                "libreoffice-glm.patch"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           (for-each (lambda (file)
-                       ;; Adjust to renamed function in Poppler 0.72.
-                       (substitute* file (("getCString") "c_str")))
-                     (find-files "sdext/source/pdfimport/xpdfwrapper"))
-           #t))))
+         "09ra8a3ylb08xhy8wy233fs0f87klkpsbi9n3zss0c688afxjcf5"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -1023,6 +1014,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
        ("postgresql" ,postgresql)
        ("python" ,python)
        ("python-lxml" ,python-lxml)
+       ("qrcodegen-cpp" ,qrcodegen-cpp)
        ("redland" ,redland)
        ("sane-backends" ,sane-backends)
        ("unixodbc" ,unixodbc)
