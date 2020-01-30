@@ -2836,13 +2836,13 @@ definitions on a Ruby object.")
 (define-public ruby-redcarpet
   (package
     (name "ruby-redcarpet")
-    (version "3.4.0")
+    (version "3.5.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "redcarpet" version))
               (sha256
                (base32
-                "0h9qz2hik4s9knpmbwrzb3jcp3vc5vygp9ya8lcpl7f1l9khmcd7"))))
+                "0skcyx1h8b5ms0rp2zm3ql6g322b8c1adnkwkqyv7z3kypb4bm7k"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
