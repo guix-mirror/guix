@@ -112,7 +112,7 @@
 @samp{passwd} and @samp{static}.")
   (server
    (string 'unset)
-   "Name or IP adddress of the server to retrieve mail from.")
+   "Name or IP address of the server to retrieve mail from.")
   (username
    (string 'unset)
    "Username to login to the mail server with.")
