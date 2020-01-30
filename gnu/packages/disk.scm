@@ -15,6 +15,7 @@
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2020 Pkill -9 <pkill9@runbox.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -62,11 +63,14 @@
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages swig)
+  #:use-module (gnu packages terminals)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages vim)
   #:use-module (gnu packages w3m)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system scons)
@@ -822,3 +826,30 @@ on your file system and offers to remove it.  @command{rmlint} can find:
 @item files with broken user and/or group ID.
 @end itemize\n")
     (license license:gpl3+)))
+
+(define-public lf
+  (package
+    (name "lf")
+    (version "13")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/gokcehan/lf.git")
+                    (commit (string-append "r" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ld3q75v8rvp169w5p85z1vznqs9bhck6bm2f6fykxx16hmpb6ga"))))
+    (build-system go-build-system)
+    (native-inputs
+     `(("go-github.com-mattn-go-runewidth" ,go-github.com-mattn-go-runewidth)
+       ("go-github.com-nsf-termbox-go" ,go-github.com-nsf-termbox-go)))
+    (arguments
+     `(#:import-path "github.com/gokcehan/lf"))
+    (home-page "https://github.com/gokcehan/lf")
+    (synopsis "Console file browser similar to Ranger")
+    (description "lf (as in \"list files\") is a terminal file manager
+written in Go.  It is heavily inspired by ranger with some missing and
+extra features.  Some of the missing features are deliberately omitted
+since they are better handled by external tools.")
+    (license license:expat)))
