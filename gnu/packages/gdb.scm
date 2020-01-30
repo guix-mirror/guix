@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -27,12 +27,14 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages python)
   #:use-module (gnu packages pkg-config)
   #:use-module ((guix licenses) #:select (gpl3+))
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (srfi srfi-1))
 
 (define-public gdb-8.3
   (package
@@ -89,6 +91,7 @@
        ("python" ,python)
        ("python-wrapper" ,python-wrapper)
        ("dejagnu" ,dejagnu)
+       ("source-highlight" ,source-highlight)
 
        ;; Allow use of XML-formatted syscall information.  This enables 'catch
        ;; syscall' and similar commands.
@@ -116,7 +119,8 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "00i27xqawjv282a07i73lp1l02n0a3ywzhykma75qg500wll6sha"))))))
+               "00i27xqawjv282a07i73lp1l02n0a3ywzhykma75qg500wll6sha"))))
+   (inputs (alist-delete "source-highlight" (package-inputs gdb-8.3)))))
 
 (define-public gdb
   ;; This is the fixed version that packages depend on.  Update it rarely
