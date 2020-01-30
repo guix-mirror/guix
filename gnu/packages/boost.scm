@@ -283,14 +283,14 @@ signals and slots system.")
 (define-public mdds
   (package
     (name "mdds")
-    (version "1.4.3")
+    (version "1.5.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "http://kohei.us/files/mdds/src/mdds-" version ".tar.bz2"))
              (sha256
               (base32
-               "10cw6irdm6d15nxnys2v5akp8yz52qijpcjvw0frwq7nz5d3vki5"))))
+               "03b8i43pw4m767mm0cnbi77x7qhpkzpi9b1f6dpp4cmyszmnsk8l"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("boost" ,boost))) ; inclusion of header files
