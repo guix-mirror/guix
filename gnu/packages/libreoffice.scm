@@ -67,6 +67,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages logging)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages openldap)
@@ -85,7 +86,7 @@
 (define-public ixion
   (package
     (name "ixion")
-    (version "0.14.1")
+    (version "0.15.0")
     (source
      (origin
        (method url-fetch)
@@ -93,13 +94,14 @@
                            version ".tar.xz"))
        (sha256
         (base32
-         "14gdd6div4l22vnz3jn2qjxgjly98ck6p8c1v7386c41rx7kilba"))))
+         "1rmrl2zjzi4z0abf2cd54acypkccdhx2065dlyzy6xg83gv0mxmi"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("mdds" ,mdds)
-       ("python" ,python)))
+       ("python" ,python)
+       ("spdlog" ,spdlog)))
     (home-page "https://gitlab.com/ixion/ixion")
     (synopsis "General purpose formula parser and interpreter")
     (description "Ixion is a library for calculating the results of formula
