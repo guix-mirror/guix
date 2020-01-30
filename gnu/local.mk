@@ -1351,6 +1351,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/qemu-CVE-2020-7039.patch			\
   %D%/packages/patches/qemu-CVE-2020-7211.patch			\
   %D%/packages/patches/qemu-fix-documentation-build-failure.patch	\
+  %D%/packages/patches/qrcodegen-cpp-make-install.patch		\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtbase-use-TZDIR.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
