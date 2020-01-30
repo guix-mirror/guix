@@ -101,7 +101,7 @@
       (home-page "https://bcachefs.org/")
       (synopsis "Tools to create and manage bcachefs file systems")
       (description
-       "The bcachefs-tools are command-line utilites for creating, checking,
+       "The bcachefs-tools are command-line utilities for creating, checking,
 and otherwise managing bcachefs file systems.
 
 Bcachefs is a @acronym{CoW, copy-on-write} file system supporting native
