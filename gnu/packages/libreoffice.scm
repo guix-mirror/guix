@@ -403,7 +403,7 @@ CorelDRAW documents of all versions.")
                "0jhsbdimiyijdqriy0zzkjjgc4wi6fjimhdg4mdybrlwg7l7f5p6"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--with-mdds=1.4")))
+     `(#:configure-flags '("--with-mdds=1.5")))
     (native-inputs
      `(("cppunit" ,cppunit)
        ("doxygen" ,doxygen)
