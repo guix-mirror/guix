@@ -108,6 +108,8 @@
 
             invoke/quiet
 
+            make-desktop-entry-file
+
             locale-category->string))
 
 
