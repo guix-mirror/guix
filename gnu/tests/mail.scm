@@ -5,7 +5,7 @@
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2019 Christopher Baines <mail@cbaines.net>
-;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,7 +47,8 @@
              (config-file
               (plain-file "smtpd.conf" "
 listen on 0.0.0.0
-accept from any for local deliver to mbox
+action inbound mbox
+match from any for local action inbound
 "))))))
 
 (define (run-opensmtpd-test)

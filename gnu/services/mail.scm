@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Kristofer Buffington <kristoferbuffington@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -1621,8 +1621,12 @@ by @code{dovecot-configuration}.  @var{config} may also be created by
 (define %default-opensmtpd-config-file
   (plain-file "smtpd.conf" "
 listen on lo
-accept from any for local deliver to mbox
-accept from local for any relay
+
+action inbound mbox
+match for local action inbound
+
+action outbound relay
+match from local for any action outbound
 "))
 
 (define opensmtpd-shepherd-service
