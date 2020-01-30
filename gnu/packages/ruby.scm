@@ -4955,19 +4955,26 @@ including comments and whitespace.")
 (define-public ruby-unf-ext
   (package
     (name "ruby-unf-ext")
-    (version "0.0.7.1")
+    (version "0.0.7.6")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "unf_ext" version))
               (sha256
                (base32
-                "0ly2ms6c3irmbr1575ldyh52bz2v0lzzr2gagf0p526k12ld2n5b"))))
+                "1ll6w64ibh81qwvjx19h8nj7mngxgffg7aigjx11klvf5k2g4nxf"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'build 'build-ext
-           (lambda _ (invoke "rake" "compile:unf_ext"))))))
+           (lambda _ (invoke "rake" "compile:unf_ext")))
+         (add-before 'check 'lose-rake-compiler-dock-dependency
+           (lambda _
+             ;; rake-compiler-dock is listed in the gemspec, but only
+             ;; required when cross-compiling.
+             (substitute* "unf_ext.gemspec"
+               ((".*rake-compiler-dock.*") ""))
+             #t)))))
     (native-inputs
      `(("bundler" ,bundler)
        ("ruby-rake-compiler" ,ruby-rake-compiler)
