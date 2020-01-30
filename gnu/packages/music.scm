@@ -5142,7 +5142,7 @@ and as an LV2 plugin.")
 (define-public zrythm
   (package
     (name "zrythm")
-    (version "0.7.345")
+    (version "0.7.474")
     (source
       (origin
         (method url-fetch)
@@ -5150,13 +5150,21 @@ and as an LV2 plugin.")
                             version ".tar.xz"))
         (sha256
           (base32
-            "1csiwq38a1ckx23lairfpl7qjkz71wsa7a9vsxl3k58f9ybibiil"))))
+            "0qq9v8y27zhamcb7nq7pl76874ws8x8cxhp5r685b8binvl9p0az"))))
    (build-system meson-build-system)
    (arguments
     `(#:glib-or-gtk? #t
       #:configure-flags
       `("-Denable_tests=true" "-Dmanpage=true"
-        "-Dinstall_dseg_font=false" "-Denable_ffmpeg=true")))
+        "-Dinstall_dseg_font=false" "-Denable_ffmpeg=true")
+      #:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'patch-xdg-open
+          (lambda _
+            (substitute* "src/utils/io.c"
+                         (("OPEN_DIR_CMD")
+                          (string-append "\"" (which "xdg-open") "\"")))
+            #t)))))
    (inputs
     `(("alsa-lib" ,alsa-lib)
       ("jack" ,jack-1)
