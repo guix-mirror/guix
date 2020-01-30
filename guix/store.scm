@@ -103,6 +103,7 @@
             add-text-to-store
             add-to-store
             add-file-tree-to-store
+            file-mapping->tree
             binary-file
             build-things
             build
@@ -1219,6 +1220,45 @@ an arbitrary directory layout in the store without creating a derivation."
           (let ((result (read-store-path port)))
             (hash-set! cache tree result)
             result)))))
+
+(define (file-mapping->tree mapping)
+  "Convert MAPPING, an alist like:
+
+  ((\"guix/build/utils.scm\" . \"…/utils.scm\"))
+
+to a tree suitable for 'add-file-tree-to-store' and 'interned-file-tree'."
+  (let ((mapping (map (match-lambda
+                        ((destination . source)
+                         (cons (string-tokenize destination %not-slash)
+                               source)))
+                      mapping)))
+    (fold (lambda (pair result)
+            (match pair
+              ((destination . source)
+               (let loop ((destination destination)
+                          (result result))
+                 (match destination
+                   ((file)
+                    (let* ((mode (stat:mode (stat source)))
+                           (type (if (zero? (logand mode #o100))
+                                     'regular
+                                     'executable)))
+                      (alist-cons file
+                                  `(,type (file ,source))
+                                  result)))
+                   ((file rest ...)
+                    (let ((directory (assoc-ref result file)))
+                      (alist-cons file
+                                  `(directory
+                                    ,@(loop rest
+                                            (match directory
+                                              (('directory . entries) entries)
+                                              (#f '()))))
+                                  (if directory
+                                      (alist-delete file result)
+                                      result)))))))))
+          '()
+          mapping)))
 
 (define build-things
   (let ((build (operation (build-things (string-list things)
