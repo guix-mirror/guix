@@ -5028,21 +5028,20 @@ w3c webidl files and a binding configuration file.")
          (delete 'configure)
          (add-after 'build 'adjust-welcome
            (lambda _
-             ;; First, fix some unended tags and simple substitutions
              (substitute* "frontends/gtk/res/welcome.html"
+             ;; Close some XHTML tags.
                (("<(img|input)([^>]*)>" _ tag contents)
                 (string-append "<" tag contents " />"))
-               (("Licence") "License") ;prefer GNU spelling
+               ;; Increase freedom.
                ((" open source") ", free software")
-               (("web&nbsp;site") "website")
-               ;; Prefer privacy-respecting default search engine
+               ;; Prefer a more privacy-respecting default search engine.
                (("www.google.co.uk") "www.duckduckgo.com/html")
                (("Google Search") "DuckDuckGo Search")
                (("name=\"btnG\"") ""))
-             ;; Remove default links so it doesn't seem we're endorsing them
+             ;; Remove default links so it doesn't seem we're endorsing them.
              (with-atomic-file-replacement "frontends/gtk/res/welcome.html"
                (lambda (in out)
-                 ;; Leave the DOCTYPE header as is
+                 ;; Leave the DOCTYPE header as is.
                  (display (read-line in 'concat) out)
                  (sxml->xml
                   (let rec ((sxml (xml->sxml in)))
