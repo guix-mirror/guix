@@ -720,7 +720,16 @@ BLAKE.")
          "1xn9fqa6rlnhsbgami45g82dlw9i1skg2sri3ydiinwak5ph1ca2"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags
+     `(#:configure-flags
+       (list (string-append "--prefix=" (assoc-ref %outputs "out"))
+             ,@(let ((target (%current-target-system)))
+                 (if target
+                     `((string-append "--target=" ,target)
+                       (string-append "--cc="
+                                      (assoc-ref %build-inputs "cross-gcc")
+                                      "/bin/" ,target "-gcc"))
+                     '())))
+       #:make-flags
        ;; The binaries in /bin need some help finding librhash.so.0.
        (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
        #:test-target "test"             ; ‘make check’ just checks the sources
@@ -729,16 +738,8 @@ BLAKE.")
          (replace 'configure
            ;; ./configure is not GNU autotools' and doesn't gracefully handle
            ;; unrecognized options, so we must call it manually.
-           (lambda* (#:key native-inputs outputs #:allow-other-keys)
-             (invoke "./configure"
-                     (string-append "--prefix=" (assoc-ref outputs "out"))
-                     ,@(let ((target (%current-target-system)))
-                         (if target
-                             `((string-append "--target=" ,target)
-                               (string-append "--cc="
-                                              (assoc-ref native-inputs "cross-gcc")
-                                              "/bin/" ,target "-gcc"))
-                             '())))))
+           (lambda* (#:key configure-flags #:allow-other-keys)
+             (apply invoke "./configure" configure-flags)))
          (add-before 'check 'patch-/bin/sh
            (lambda _
              (substitute* "Makefile"
