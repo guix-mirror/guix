@@ -9740,3 +9740,36 @@ defined in RFC4648.")
 
 (define-public ecl-cl-base32
   (sbcl-package->ecl-package sbcl-cl-base32))
+
+(define-public sbcl-cl-z85
+  (let ((commit "85b3951a9cfa2603acb6aee15567684f9a108098")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-z85")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/glv2/cl-z85.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0r27pidjaxbm7k1rr90nnajwl5xm2kp65g1fv0fva17lzy45z1mp"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("cl-octet-streams" ,sbcl-cl-octet-streams)
+         ("fiveam" ,sbcl-fiveam)))
+      (synopsis "Common Lisp library for Z85 encoding and decoding")
+      (description
+       "This package provides functions to encode or decode byte vectors or
+byte streams using the Z85 format, which is a base-85 encoding used by
+ZeroMQ.")
+      (home-page "https://github.com/glv2/cl-z85")
+      (license license:gpl3+))))
+
+(define-public cl-z85
+  (sbcl-package->cl-source-package sbcl-cl-z85))
+
+(define-public ecl-cl-z85
+  (sbcl-package->ecl-package sbcl-cl-z85))
