@@ -19365,3 +19365,25 @@ matrices using the Armadillo and Intel TBB libraries.  Among several built-in
 similarity/distance measures, computation of correlation, cosine similarity
 and Euclidean distance is particularly fast.")
     (license license:gpl3)))
+
+(define-public r-isocodes
+  (package
+    (name "r-isocodes")
+    (version "2019.12.22")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ISOcodes" version))
+       (sha256
+        (base32
+         "1k2f2258bwzs0b3nxma9kcw395qkljvk514a7047rx4dn0iwd874"))))
+    (properties `((upstream-name . "ISOcodes")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/package=ISOcodes")
+    (synopsis "Selected ISO codes")
+    (description
+     "This package provides ISO language, territory, currency, script and
+character codes.  It provides ISO 639 language codes, ISO 3166 territory
+codes, ISO 4217 currency codes, ISO 15924 script codes, and the ISO 8859
+character codes as well as the UN M.49 area codes.")
+    (license license:gpl2)))
