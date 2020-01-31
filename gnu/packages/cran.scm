@@ -19530,3 +19530,37 @@ David M. Blei and co-authors and the C++ code for fitting LDA models using
 Gibbs sampling by Xuan-Hieu Phan and co-authors.")
     (license license:gpl2)))
 
+(define-public r-stm
+  (package
+    (name "r-stm")
+    (version "1.3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "stm" version))
+       (sha256
+        (base32
+         "1yyfxaxqc6yq0yq68zhdnhpwpvsyp71dlmivn7zxixfmp932s6cn"))))
+    (properties `((upstream-name . "stm")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)
+       ("r-glmnet" ,r-glmnet)
+       ("r-lda" ,r-lda)
+       ("r-matrix" ,r-matrix)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-quadprog" ,r-quadprog)
+       ("r-quanteda" ,r-quanteda)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-slam" ,r-slam)
+       ("r-stringr" ,r-stringr)))
+    (home-page "http://www.structuraltopicmodel.com/")
+    (synopsis "Estimation of the Structural Topic Model")
+    (description
+     "The @dfn{Structural Topic Model} (STM) allows researchers to estimate
+topic models with document-level covariates.  The package also includes tools
+for model selection, visualization, and estimation of topic-covariate
+regressions.")
+    (license license:expat)))
+
