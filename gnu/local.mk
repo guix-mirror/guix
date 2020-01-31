@@ -1394,7 +1394,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/spice-fix-test-armhf.patch		\
   %D%/packages/patches/steghide-fixes.patch			\
   %D%/packages/patches/superlu-dist-awpm-grid.patch		\
-  %D%/packages/patches/superlu-dist-fix-mpi-deprecations.patch	\
   %D%/packages/patches/superlu-dist-scotchmetis.patch		\
   %D%/packages/patches/supertux-unbundle-squirrel.patch		\
   %D%/packages/patches/swig-guile-gc.patch			\
