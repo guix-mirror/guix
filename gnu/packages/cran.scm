@@ -19564,3 +19564,26 @@ for model selection, visualization, and estimation of topic-covariate
 regressions.")
     (license license:expat)))
 
+(define-public r-polycor
+  (package
+    (name "r-polycor")
+    (version "0.7-10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "polycor" version))
+       (sha256
+        (base32
+         "0wzwzklflbhi8sv9m7ijwr16v9zmkk0j0v4pbcpf32f8lbn3psna"))))
+    (properties `((upstream-name . "polycor")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)
+       ("r-mvtnorm" ,r-mvtnorm)))
+    (home-page "https://r-forge.r-project.org/projects/polycor/")
+    (synopsis "Polychoric and polyserial correlations")
+    (description
+     "This package provides tools to compute polychoric and polyserial
+correlations by quick \"two-step\" methods or ML, optionally with standard
+errors; tetrachoric and biserial correlations are special cases.")
+    (license license:gpl2+)))
