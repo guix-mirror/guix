@@ -6,7 +6,7 @@
 ;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,6 +46,7 @@
   #:use-module (gnu packages hurd)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages rsync)
   #:use-module (gnu packages xml)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -1661,6 +1662,15 @@ exec " gcc "/bin/" program
        #:guile ,%bootstrap-guile
        #:tests? #f))))
 
+(define rsync-boot0
+  (package
+    (inherit rsync)
+    (native-inputs `(("perl" ,perl-boot0)))
+    (inputs (%boot0-inputs))
+    (arguments
+     `(#:implicit-inputs? #f
+       #:guile ,%bootstrap-guile))))
+
 (define linux-libre-headers-boot0
   (mlambda ()
     "Return Linux-Libre header files for the bootstrap environment."
@@ -1680,6 +1690,9 @@ exec " gcc "/bin/" program
          ;; Flex and Bison are required since version 4.16.
          ("flex" ,flex-boot0)
          ("bison" ,bison-boot0)
+
+         ;; Rsync is required since version 5.3.
+         ("rsync" ,rsync-boot0)
          ,@(%boot0-inputs))))))
 
 (define with-boot0
