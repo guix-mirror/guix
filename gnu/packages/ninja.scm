@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,7 +23,7 @@
 (define-module (gnu packages ninja)
   #:use-module ((guix licenses) #:select (asl2.0))
   #:use-module (guix packages)
-  #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages python))
@@ -32,13 +33,14 @@
     (name "ninja")
     (version "1.9.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/martine/ninja/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ninja-build/ninja")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ffmzj5s9h98qhl94d9i23zcv057rsqbac9g1hdgvlzq51ccfzjx"))))
+                "1q0nld3g0d210zmdjyjzjz2xb2bw1s58gj6zsx7p8q30yh0wg610"))))
     (build-system gnu-build-system)
     (inputs `(("python" ,python-wrapper)))
     (arguments
