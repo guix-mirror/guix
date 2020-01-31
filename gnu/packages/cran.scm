@@ -19431,3 +19431,26 @@ analysis and natural language processing.")
      "This package provides an R wrapper to the Python @dfn{natural language
 processing} (NLP) library @code{spaCy}, from @url{http://spacy.io}.")
     (license license:gpl3)))
+
+(define-public r-snowballc
+  (package
+    (name "r-snowballc")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "SnowballC" version))
+       (sha256
+        (base32
+         "0b7pqdavf5jbf8si4ybnii5fff39p3b1rb5rym05j8s48hs7sqb1"))))
+    (properties `((upstream-name . "SnowballC")))
+    (build-system r-build-system)
+    (home-page "https://r-forge.r-project.org/projects/r-temis/")
+    (synopsis "Snowball stemmers based on the C libstemmer UTF-8 library")
+    (description
+     "This package provides an R interface to the C @code{libstemmer} library
+that implements Porter's word stemming algorithm for collapsing words to a
+common root to aid comparison of vocabulary.  Currently supported languages
+are Danish, Dutch, English, Finnish, French, German, Hungarian, Italian,
+Norwegian, Portuguese, Romanian, Russian, Spanish, Swedish and Turkish.")
+    (license license:bsd-3)))
