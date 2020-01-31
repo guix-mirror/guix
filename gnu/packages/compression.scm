@@ -259,16 +259,14 @@ file; as a result, it is often used in conjunction with \"tar\", resulting in
 (define-public bzip2
   (package
     (name "bzip2")
-    (version "1.0.6")
+    (version "1.0.8")
     (source (origin
               (method url-fetch)
-              ;; XXX The bzip.org domain was allowed to expire.
-              (uri (string-append "https://web.archive.org/web/20180624184806/"
-                                  "http://www.bzip.org/"
-                                  version "/bzip2-" version ".tar.gz"))
+              (uri (string-append "https://sourceware.org/pub/bzip2/bzip2-"
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "1kfrc7f0ja9fdn6j1y6yir6li818npy6217hvr3wzmnmzhs8z152"))))
+                "0s92986cv0p692icqlw1j42y9nld8zd83qwhzbqd61p1dqbh6nmb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
