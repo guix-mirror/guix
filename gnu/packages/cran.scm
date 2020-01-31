@@ -19615,3 +19615,31 @@ other observation schemes are supported.  Both Markov transition rates and the
 hidden Markov output process can be modelled in terms of covariates, which may
 be constant or piecewise-constant in time.")
     (license license:gpl2+)))
+
+(define-public r-ltm
+  (package
+    (name "r-ltm")
+    (version "1.1-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ltm" version))
+       (sha256
+        (base32
+         "1qrgzwx5l58qf5rfp1knxc84r0g943q5sdr3ky74zzwpnmrf2vf7"))))
+    (properties `((upstream-name . "ltm")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)
+       ("r-msm" ,r-msm)
+       ("r-polycor" ,r-polycor)))
+    (home-page "https://github.com/drizopoulos/ltm")
+    (synopsis "Latent trait models under IRT")
+    (description
+     "This is a package supporting the analysis of multivariate dichotomous
+and polytomous data using latent trait models under the Item Response Theory
+approach.  It includes the Rasch, the Two-Parameter Logistic, the Birnbaum's
+Three-Parameter, the Graded Response, and the Generalized Partial Credit
+Models.")
+    (license license:gpl2+)))
+
