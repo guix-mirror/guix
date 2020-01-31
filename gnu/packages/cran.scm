@@ -19587,3 +19587,31 @@ regressions.")
 correlations by quick \"two-step\" methods or ML, optionally with standard
 errors; tetrachoric and biserial correlations are special cases.")
     (license license:gpl2+)))
+
+(define-public r-msm
+  (package
+    (name "r-msm")
+    (version "1.6.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "msm" version))
+       (sha256
+        (base32
+         "1d32y8f0vb2dfv3999liigpns788j145nrvd1xpxb9i2lsg8mwgk"))))
+    (properties `((upstream-name . "msm")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-expm" ,r-expm)
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-survival" ,r-survival)))
+    (home-page "https://github.com/chjackson/msm")
+    (synopsis "Multi-state Markov and hidden Markov models in continuous time")
+    (description
+     "This package provides functions for fitting continuous-time Markov and
+hidden Markov multi-state models to longitudinal data.  It was designed for
+processes observed at arbitrary times in continuous time (panel data) but some
+other observation schemes are supported.  Both Markov transition rates and the
+hidden Markov output process can be modelled in terms of covariates, which may
+be constant or piecewise-constant in time.")
+    (license license:gpl2+)))
