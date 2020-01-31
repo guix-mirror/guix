@@ -34,6 +34,8 @@
                (base32
                 "11x8q45jvjvf2dvgclds64mscyg10lva33qinf2hwgc84v3svf1l"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (synopsis "Utility functions from BSD systems")
     (description "This library provides useful functions commonly found on BSD
 systems, and lacking on others like GNU systems, thus making it easier to port
