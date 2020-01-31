@@ -19337,3 +19337,31 @@ space models and automatic ARIMA modelling.")
 which are useful when developing R packages for @dfn{object oriented
 programming} (OOP) using R Reference Class.")
     (license license:gpl2+)))
+
+(define-public r-proxyc
+  (package
+    (name "r-proxyc")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "proxyC" version))
+       (sha256
+        (base32
+         "159bc42x4shm6n3rh9fc8ziv3ivq0ipmpbasrh279hhn1prc8gg6"))))
+    (properties `((upstream-name . "proxyC")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-rcppparallel" ,r-rcppparallel)))
+    (home-page "https://cran.r-project.org/package=proxyC")
+    (synopsis "Compute proximity in large sparse matrices")
+    (description
+     "This package provides efficient tools to compute the proximity between
+rows or columns of large matrices.  Functions are optimised for large sparse
+matrices using the Armadillo and Intel TBB libraries.  Among several built-in
+similarity/distance measures, computation of correlation, cosine similarity
+and Euclidean distance is particularly fast.")
+    (license license:gpl3)))
