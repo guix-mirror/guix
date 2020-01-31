@@ -19257,3 +19257,25 @@ are followed and which ones are not) from one package and use it to check
 another.  This makes it easier to find and correct the most important problems
 first.")
     (license license:gpl3)))
+
+(define-public r-fracdiff
+  (package
+    (name "r-fracdiff")
+    (version "1.5-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fracdiff" version))
+       (sha256
+        (base32
+         "1dhfjlhr9sb38qgpsx0sm73l9lgc13d0fk32l7fmjfnalhr3n45q"))))
+    (properties `((upstream-name . "fracdiff")))
+    (build-system r-build-system)
+    (home-page "https://github.com/mmaechler/fracdiff")
+    (synopsis
+     "Fractionally differenced ARIMA aka ARFIMA(P,d,q) models")
+    (description
+     "This package provides tools for the maximum likelihood estimation of the
+parameters of a fractionally differenced ARIMA(p,d,q) model (Haslett and
+Raftery, Appl.Statistics, 1989); it includes inference and basic methods.")
+    (license license:gpl2+)))
