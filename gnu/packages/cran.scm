@@ -19279,3 +19279,39 @@ first.")
 parameters of a fractionally differenced ARIMA(p,d,q) model (Haslett and
 Raftery, Appl.Statistics, 1989); it includes inference and basic methods.")
     (license license:gpl2+)))
+
+(define-public r-forecast
+  (package
+    (name "r-forecast")
+    (version "8.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "forecast" version))
+       (sha256
+        (base32
+         "0jccr2wg7sii38lyqrs58fkxf2az7nw6v0jya27hpbz9bg8ib3kr"))))
+    (properties `((upstream-name . "forecast")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-colorspace" ,r-colorspace)
+       ("r-fracdiff" ,r-fracdiff)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-lmtest" ,r-lmtest)
+       ("r-magrittr" ,r-magrittr)
+       ("r-nnet" ,r-nnet)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-timedate" ,r-timedate)
+       ("r-tseries" ,r-tseries)
+       ("r-urca" ,r-urca)
+       ("r-zoo" ,r-zoo)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))           ; needed for vignettes
+    (home-page "https://pkg.robjhyndman.com/forecast/")
+    (synopsis "Forecasting functions for time series and linear models")
+    (description
+     "This package provides methods and tools for displaying and analysing
+univariate time series forecasts including exponential smoothing via state
+space models and automatic ARIMA modelling.")
+    (license license:gpl3)))
