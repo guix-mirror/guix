@@ -19387,3 +19387,24 @@ character codes.  It provides ISO 639 language codes, ISO 3166 territory
 codes, ISO 4217 currency codes, ISO 15924 script codes, and the ISO 8859
 character codes as well as the UN M.49 area codes.")
     (license license:gpl2)))
+
+(define-public r-stopwords
+  (package
+    (name "r-stopwords")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "stopwords" version))
+       (sha256
+        (base32
+         "1nmi0bpd0c238g5b8ch1v034m5ng9llhs519cgxdrj3sh9fplwlv"))))
+    (properties `((upstream-name . "stopwords")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-isocodes" ,r-isocodes)))
+    (home-page "https://github.com/quanteda/stopwords")
+    (synopsis "Multilingual stopword lists")
+    (description
+     "This package provides multiple sources of stopwords, for use in text
+analysis and natural language processing.")
+    (license license:expat)))
