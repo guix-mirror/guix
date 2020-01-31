@@ -19501,3 +19501,32 @@ feature co-occurrences, analyzing keywords, computing feature similarities and
 distances, applying content dictionaries, applying supervised and unsupervised
 machine learning, visually representing text and text analyses, and more.")
     (license license:gpl3)))
+
+(define-public r-topicmodels
+  (package
+    (name "r-topicmodels")
+    (version "0.2-9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "topicmodels" version))
+       (sha256
+        (base32
+         "1757r5x8bsl4dk106xg6481mvdkdz9vwg87n7rpbvdkavsvhyxs0"))))
+    (properties `((upstream-name . "topicmodels")))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gsl" ,gsl)))
+    (propagated-inputs
+     `(("r-modeltools" ,r-modeltools)
+       ("r-slam" ,r-slam)
+       ("r-tm" ,r-tm)))
+    (home-page "https://cran.r-project.org/package=topicmodels")
+    (synopsis "Topic models")
+    (description
+     "This package provides an interface to the C code for @dfn{Latent
+Dirichlet Allocation} (LDA) models and @dfn{Correlated Topics Models} (CTM) by
+David M. Blei and co-authors and the C++ code for fitting LDA models using
+Gibbs sampling by Xuan-Hieu Phan and co-authors.")
+    (license license:gpl2)))
+
