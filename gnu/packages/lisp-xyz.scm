@@ -9709,3 +9709,34 @@ possible.")
 
 (define-public ecl-green-threads
   (sbcl-package->ecl-package sbcl-green-threads))
+
+(define-public sbcl-cl-base32
+  (let ((commit "8cdee06fab397f7b0a19583b57e7f0c98405be85")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-base32")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/hargettp/cl-base32.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "17jrng8jb05d64ggyd11hp308c2fl5drvf9g175blgrkkl8l4mf8"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("lisp-unit" ,sbcl-lisp-unit)))
+      (synopsis "Common Lisp library for base32 encoding and decoding")
+      (description
+       "This package provides functions for base32 encoding and decoding as
+defined in RFC4648.")
+      (home-page "https://github.com/hargettp/cl-base32")
+      (license license:expat))))
+
+(define-public cl-base32
+  (sbcl-package->cl-source-package sbcl-cl-base32))
+
+(define-public ecl-cl-base32
+  (sbcl-package->ecl-package sbcl-cl-base32))
