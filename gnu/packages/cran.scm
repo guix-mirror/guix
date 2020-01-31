@@ -19454,3 +19454,50 @@ common root to aid comparison of vocabulary.  Currently supported languages
 are Danish, Dutch, English, Finnish, French, German, Hungarian, Italian,
 Norwegian, Portuguese, Romanian, Russian, Spanish, Swedish and Turkish.")
     (license license:bsd-3)))
+
+(define-public r-quanteda
+  (package
+    (name "r-quanteda")
+    (version "1.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "quanteda" version))
+       (sha256
+        (base32
+         "0iv25rpx5cl9ansazjs0qb97pniajrxf4mqsnb5q98y2hil9ipd3"))))
+    (properties `((upstream-name . "quanteda")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)
+       ("r-extrafont" ,r-extrafont)
+       ("r-fastmatch" ,r-fastmatch)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggrepel" ,r-ggrepel)
+       ("r-lubridate" ,r-lubridate)
+       ("r-magrittr" ,r-magrittr)
+       ("r-matrix" ,r-matrix)
+       ("r-network" ,r-network)
+       ("r-proxyc" ,r-proxyc)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-rcppparallel" ,r-rcppparallel)
+       ("r-rspectra" ,r-rspectra)
+       ("r-sna" ,r-sna)
+       ("r-snowballc" ,r-snowballc)
+       ("r-spacyr" ,r-spacyr)
+       ("r-stopwords" ,r-stopwords)
+       ("r-stringi" ,r-stringi)
+       ("r-xml2" ,r-xml2)
+       ("r-yaml" ,r-yaml)))
+    (home-page "https://quanteda.io")
+    (synopsis "Quantitative analysis of textual data")
+    (description
+     "This package provides a fast, flexible, and comprehensive framework for
+quantitative text analysis in R.  It provides functionality for corpus
+management, creating and manipulating tokens and ngrams, exploring keywords in
+context, forming and manipulating sparse matrices of documents by features and
+feature co-occurrences, analyzing keywords, computing feature similarities and
+distances, applying content dictionaries, applying supervised and unsupervised
+machine learning, visually representing text and text analyses, and more.")
+    (license license:gpl3)))
