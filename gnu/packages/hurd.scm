@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016, 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages texinfo)
   #:use-module (guix git-download)
   #:export (hurd-triplet?
             hurd-target?))
@@ -44,69 +46,54 @@ GNU/Hurd."
   (or (and=> (%current-target-system) hurd-triplet?)
       (string-suffix? (%current-system) "-gnu")))
 
-(define (gnumach-source-url version)
-  (string-append "mirror://gnu/gnumach/gnumach-"
-                 version ".tar.gz"))
-
 (define (hurd-source-url version)
   (string-append "mirror://gnu/hurd/hurd-"
                  version ".tar.gz"))
 
-(define (patch-url repository commit)
-  (string-append "https://git.savannah.gnu.org/cgit/hurd/" repository
-                 ".git/patch/?id=" commit))
-
 (define-public gnumach-headers
-  (package
-    (name "gnumach-headers")
-    (version "1.8")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (gnumach-source-url version))
-      (sha256
-       (base32
-        "02hygsfpd2dljl5lg1vjjg9pizi9jyxd4aiiqzjshz6jax62jm9f"))
-      (patches (list (origin
-                       ;; This patch adds <mach/vm_wire.h>, which defines the
-                       ;; VM_WIRE_* constants needed by glibc 2.28.
-                       (method url-fetch)
-                       (uri (patch-url "gnumach" "2b0f19f602e08fd9d37268233b962674fd592634"))
-                       (sha256
-                        (base32
-                         "01iajnwsmka0w9hwjkxxijc4xfhwqbvlkw1w8n71hpnhfixd0y28"))
-                       (file-name "gnumach-vm-wire-header.patch"))))
-      (modules '((guix build utils)))
-      (snippet
-       '(begin
-          ;; Actually install vm_wire.h.
-          (substitute* "Makefile.in"
-            (("^include_mach_HEADERS =")
-             "include_mach_HEADERS = include/mach/vm_wire.h"))
-          #t))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'install
-           (lambda _
-             (invoke "make" "install-data")))
-         (delete 'build))
+   (let ((commit "097f9cf735ffa1212b828682ad92f0f6c5f1c552")
+         (revision "1"))
+     (package
+       (name "gnumach-headers")
+       (version (git-version "1.8" revision commit))
+       (source
+         (origin
+           (method git-fetch)
+           (uri (git-reference
+                  (url "https://git.savannah.gnu.org/git/hurd/gnumach.git")
+                  (commit commit)))
+           (file-name (git-file-name "gnumach" version))
+           (sha256
+            (base32
+             "0q36z7k02bykrld90zaxbhyzxlmwlqqs4divgir6ix38zsp6icqk"))))
+       (build-system gnu-build-system)
+       (arguments
+        `(#:phases
+          (modify-phases %standard-phases
+            (replace 'install
+              (lambda _
+                (invoke "make" "install-data")))
+            (delete 'build))
 
-      ;; GNU Mach supports only IA32 currently, so cheat so that we can at
-      ;; least install its headers.
-      ,@(if (%current-target-system)
-            '()
-            ;; See <http://lists.gnu.org/archive/html/bug-hurd/2015-06/msg00042.html>
-            ;; <http://lists.gnu.org/archive/html/guix-devel/2015-06/msg00716.html>
-            '(#:configure-flags '("--build=i586-pc-gnu")))
+           ;; GNU Mach supports only IA32 currently, so cheat so that we can at
+           ;; least install its headers.
+           ,@(if (%current-target-system)
+               '()
+               ;; See <http://lists.gnu.org/archive/html/bug-hurd/2015-06/msg00042.html>
+               ;; <http://lists.gnu.org/archive/html/guix-devel/2015-06/msg00716.html>
+               '(#:configure-flags '("--build=i586-pc-gnu"
+                                     "--host=i686-linux-gnu")))
 
-      #:tests? #f))
-    (home-page "https://www.gnu.org/software/hurd/microkernel/mach/gnumach.html")
-    (synopsis "GNU Mach kernel headers")
-    (description
-     "Headers of the GNU Mach kernel.")
-    (license gpl2+)))
+           #:tests? #f))
+       (native-inputs
+        `(("autoconf" ,autoconf)
+          ("automake" ,automake)
+          ("texinfo" ,texinfo-4)))
+       (home-page "https://www.gnu.org/software/hurd/microkernel/mach/gnumach.html")
+       (synopsis "GNU Mach kernel headers")
+       (description
+        "Headers of the GNU Mach kernel.")
+       (license gpl2+))))
 
 (define-public mig
   (package
@@ -264,15 +251,8 @@ Hurd-minimal package which are needed for both glibc and GCC.")
 
 (define-public gnumach
   (package
+    (inherit gnumach-headers)
     (name "gnumach")
-    (version "1.8")
-    (source (origin
-              (method url-fetch)
-              (uri (gnumach-source-url version))
-              (sha256
-               (base32
-                "02hygsfpd2dljl5lg1vjjg9pizi9jyxd4aiiqzjshz6jax62jm9f"))))
-    (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-after 'install 'produce-image
@@ -286,12 +266,9 @@ Hurd-minimal package which are needed for both glibc and GCC.")
      `(("mig" ,mig)
        ("perl" ,perl)))
     (supported-systems (cons "i686-linux" %hurd-systems))
-    (home-page
-     "https://www.gnu.org/software/hurd/microkernel/mach/gnumach.html")
     (synopsis "Microkernel of the GNU system")
     (description
-     "GNU Mach is the microkernel upon which a GNU Hurd system is based.")
-    (license gpl2+)))
+     "GNU Mach is the microkernel upon which a GNU Hurd system is based.")))
 
 (define-public hurd
   (package
