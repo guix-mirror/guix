@@ -2411,7 +2411,7 @@ easy-to-write markup language for mathematics.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://crd-legacy.lbl.gov/~xiaoye/SuperLU/"
+       (uri (string-append "https://portal.nersc.gov/project/sparse/superlu/"
                            "superlu_" version ".tar.gz"))
        (sha256
         (base32 "0qzlb7cd608q62kyppd0a8c65l03vrwqql6gsm465rky23b6dyr8"))
@@ -2457,7 +2457,7 @@ void mc64ad_ (int *a, int *b, int *c, int *d, int *e, double *f, int *g,
      `(#:configure-flags '("-Denable_blaslib:BOOL=NO" ;do not use internal cblas
                            "-DTPL_BLAS_LIBRARIES=openblas"
                            "-DBUILD_SHARED_LIBS:BOOL=YES")))
-    (home-page "http://crd-legacy.lbl.gov/~xiaoye/SuperLU/")
+    (home-page "https://portal.nersc.gov/project/sparse/superlu/")
     (synopsis "Supernodal direct solver for sparse linear systems")
     (description
      "SuperLU is a general purpose library for the direct solution of large,
