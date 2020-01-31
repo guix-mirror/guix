@@ -19408,3 +19408,26 @@ character codes as well as the UN M.49 area codes.")
      "This package provides multiple sources of stopwords, for use in text
 analysis and natural language processing.")
     (license license:expat)))
+
+(define-public r-spacyr
+  (package
+    (name "r-spacyr")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "spacyr" version))
+       (sha256
+        (base32
+         "1xsiz6zx89vs6ykrkkp011d8fz4ksdgnf5nyaq5ynjr6zv865vks"))))
+    (properties `((upstream-name . "spacyr")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)
+       ("r-reticulate" ,r-reticulate)))
+    (home-page "https://spacyr.quanteda.io")
+    (synopsis "R wrapper for the spaCy NLP library")
+    (description
+     "This package provides an R wrapper to the Python @dfn{natural language
+processing} (NLP) library @code{spaCy}, from @url{http://spacy.io}.")
+    (license license:gpl3)))
