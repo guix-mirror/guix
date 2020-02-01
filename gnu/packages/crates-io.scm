@@ -444,8 +444,30 @@ ArrayVec and ArrayString.")
      "This package provides a simple interface for querying atty.")
     (license license:expat)))
 
+(define-public rust-autocfg-1.0
+  (package
+    (name "rust-autocfg")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "autocfg" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17cv6pwb4q08s0ynpr4n8hv5299hcmhdgvdchzixfpw8y5qcgapq"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/cuviper/autocfg")
+    (synopsis
+     "Automatic cfg for Rust compiler features")
+    (description
+     "Automatic cfg for Rust compiler features.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-autocfg-0.1
   (package
+    (inherit rust-autocfg-1.0)
     (name "rust-autocfg")
     (version "0.1.7")
     (source
@@ -456,16 +478,7 @@ ArrayVec and ArrayString.")
         (sha256
          (base32
           "1chwgimpx5z7xbag7krr9d8asxfqbh683qhgl9kn3hxk2l0djj8x"))))
-    (build-system cargo-build-system)
-    (arguments '(#:skip-build? #t))
-    (home-page "https://github.com/cuviper/autocfg")
-    (synopsis "Automatic cfg for Rust compiler features")
-    (description "Rust library for build scripts to automatically configure
-code based on compiler support.  Code snippets are dynamically tested to see
-if the @code{rustc} will accept them, rather than hard-coding specific version
-support.")
-    (license (list license:asl2.0
-                   license:expat))))
+    (arguments '(#:skip-build? #t))))
 
 (define-public rust-backtrace-0.3
   (package
