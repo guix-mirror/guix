@@ -402,6 +402,7 @@ Go.  It also includes runtime support libraries for these languages.")
                 "14l06m7nvcvb0igkbip58x59w3nq6315k6jcz3wr9ch1rn9d44bc"))
               (patches (search-patches "gcc-4.9-libsanitizer-fix.patch"
                                        "gcc-4.9-libsanitizer-ustat.patch"
+                                       "gcc-4.9-libsanitizer-mode-size.patch"
                                        "gcc-arm-bug-71399.patch"
                                        "gcc-asan-missing-include.patch"
                                        "gcc-libvtv-runpath.patch"
@@ -441,6 +442,7 @@ Go.  It also includes runtime support libraries for these languages.")
                                        "gcc-5.0-libvtv-runpath.patch"
                                        "gcc-5-source-date-epoch-1.patch"
                                        "gcc-5-source-date-epoch-2.patch"
+                                       "gcc-6-libsanitizer-mode-size.patch"
                                        "gcc-fix-texi2pod.patch"))
               (modules '((guix build utils)))
               (snippet
@@ -473,6 +475,7 @@ Go.  It also includes runtime support libraries for these languages.")
                (base32
                 "0i89fksfp6wr1xg9l8296aslcymv2idn60ip31wr9s4pwin7kwby"))
               (patches (search-patches "gcc-strmov-store-file-names.patch"
+                                       "gcc-6-libsanitizer-mode-size.patch"
                                        "gcc-6-source-date-epoch-1.patch"
                                        "gcc-6-source-date-epoch-2.patch"
                                        "gcc-5.0-libvtv-runpath.patch"))))
@@ -492,6 +495,7 @@ Go.  It also includes runtime support libraries for these languages.")
                (base32
                 "0qg6kqc5l72hpnj4vr6l0p69qav0rh4anlkk3y55540zy3klc6dq"))
               (patches (search-patches "gcc-strmov-store-file-names.patch"
+                                       "gcc-7-libsanitizer-mode-size.patch"
                                        "gcc-5.0-libvtv-runpath.patch"))))
     (description
      "GCC is the GNU Compiler Collection.  It provides compiler front-ends
@@ -510,6 +514,7 @@ It also includes runtime support libraries for these languages.")))
                (base32
                 "0b3xv411xhlnjmin2979nxcbnidgvzqdf4nbhix99x60dkzavfk4"))
               (patches (search-patches "gcc-8-strmov-store-file-names.patch"
+                                       "gcc-8-libsanitizer-mode-size.patch"
                                        "gcc-5.0-libvtv-runpath.patch"))))))
 
 (define-public gcc-9
@@ -524,6 +529,7 @@ It also includes runtime support libraries for these languages.")))
              (base32
               "01mj3yk7z49i49168hg2cg7qs4bsccrrnv7pjmbdlf8j2a7z0vpa"))
             (patches (search-patches "gcc-9-strmov-store-file-names.patch"
+                                     "gcc-9-libsanitizer-mode-size.patch"
                                      "gcc-9-asan-fix-limits-include.patch"
                                      "gcc-5.0-libvtv-runpath.patch"))))))
 

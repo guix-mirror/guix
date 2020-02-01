@@ -593,13 +593,13 @@ the store.")
   ;; version 2.28, GNU/Hurd used a different glibc branch.
   (package
    (name "glibc")
-   (version "2.30")
+   (version "2.31")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/glibc/glibc-" version ".tar.xz"))
             (sha256
              (base32
-              "1bxqpg91d02qnaz837a5kamm0f43pr1il4r9pknygywsar713i72"))
+              "05zxkyz9bv3j9h0xyid1rhvh3klhsmrpkf3bcs6frvlgyr2gwilj"))
             (snippet
              ;; Disable 'ldconfig' and /etc/ld.so.cache.  The latter is
              ;; required on LFS distros to avoid loading the distro's libc.so
@@ -611,7 +611,6 @@ the store.")
                 #t))
             (modules '((guix build utils)))
             (patches (search-patches "glibc-ldd-x86_64.patch"
-                                     "glibc-CVE-2019-19126.patch"
                                      "glibc-hidden-visibility-ldconfig.patch"
                                      "glibc-versioned-locpath.patch"
                                      "glibc-allow-kernel-2.6.32.patch"
@@ -843,6 +842,24 @@ with the Linux kernel.")
 ;; Below are old libc versions, which we use mostly to build locale data in
 ;; the old format (which the new libc cannot cope with.)
 
+(define-public glibc-2.30
+  (package
+    (inherit glibc)
+    (version "2.30")
+    (source (origin
+              (inherit (package-source glibc))
+              (uri (string-append "mirror://gnu/glibc/glibc-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1bxqpg91d02qnaz837a5kamm0f43pr1il4r9pknygywsar713i72"))
+              (patches (search-patches "glibc-ldd-x86_64.patch"
+                                       "glibc-CVE-2019-19126.patch"
+                                       "glibc-hidden-visibility-ldconfig.patch"
+                                       "glibc-versioned-locpath.patch"
+                                       "glibc-allow-kernel-2.6.32.patch"
+                                       "glibc-reinstate-prlimit64-fallback.patch"
+                                       "glibc-2.29-supported-locales.patch"))))))
+
 (define-public glibc-2.29
   (package
     (inherit glibc)
@@ -861,7 +878,7 @@ with the Linux kernel.")
                                        "glibc-versioned-locpath.patch"
                                        "glibc-allow-kernel-2.6.32.patch"
                                        "glibc-reinstate-prlimit64-fallback.patch"
-                                       "glibc-supported-locales.patch"))))))
+                                       "glibc-2.29-supported-locales.patch"))))))
 
 (define-public glibc-2.28
   (package
