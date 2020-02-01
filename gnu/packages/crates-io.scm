@@ -19979,6 +19979,32 @@ Look at the crate wayland-client for usable bindings.")
 the wayland protocol, server side.")
     (license license:expat)))
 
+(define-public rust-wayland-server-0.21
+  (package
+    (inherit rust-wayland-server-0.23)
+    (name "rust-wayland-server")
+    (version "0.21.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wayland-server" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ayn4wlrpg0fw04prri9awpkjvbzjil0d3l3a8zs9pdbnspvw6ah"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-calloop" ,rust-calloop-0.4)
+        ("rust-downcast-rs" ,rust-downcast-rs-1.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-mio" ,rust-mio-0.6)
+        ("rust-nix" ,rust-nix-0.14)
+        ("rust-wayland-commons" ,rust-wayland-commons-0.21)
+        ("rust-wayland-sys" ,rust-wayland-sys-0.21)
+        ("rust-wayland-scanner" ,rust-wayland-scanner-0.21))))))
+
 (define-public rust-web-sys-0.3
   (package
     (name "rust-web-sys")
