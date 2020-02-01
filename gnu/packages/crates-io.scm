@@ -6703,6 +6703,34 @@ release (fork of debug_unreachable)")
      "Rust friendly bindings to *nix APIs.")
     (license license:expat)))
 
+(define-public rust-no-panic-0.1
+  (package
+    (name "rust-no-panic")
+    (version "0.1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "no-panic" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0xan5v9ac1aklinc8aw16raq36pb4idjrl502np8gy32gfs6s751"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1.0)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-syn" ,rust-syn-1.0))
+       #:cargo-development-inputs
+       (("rust-tempfile" ,rust-tempfile-3.1))))
+    (home-page "https://github.com/dtolnay/no-panic")
+    (synopsis "Prove a function can't ever panic")
+    (description
+     "This package provides a rust attribute macro to require that the compiler
+prove a function can't ever panic.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-nodrop-0.1
   (package
     (name "rust-nodrop")
