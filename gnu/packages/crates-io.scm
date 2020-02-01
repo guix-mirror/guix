@@ -19649,6 +19649,31 @@ You should only need this crate if you are working on custom wayland
 protocol extensions.  Look at the crate wayland-client for usable bindings.")
     (license license:expat)))
 
+(define-public rust-wayland-commons-0.23
+  (package
+    (name "rust-wayland-commons")
+    (version "0.23.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wayland-commons" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1nyvcs6xxxzqgh0wvc7z0fgi89bf3h9p4qrbf77bnfbwlb8v0rmv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-nix" ,rust-nix-0.14)
+        ("rust-wayland-sys" ,rust-wayland-sys-0.23))))
+    (home-page "https://github.com/smithay/wayland-rs")
+    (synopsis
+     "Common types and structures used by wayland-client and wayland-server")
+    (description
+     "Common types and structures used by wayland-client and wayland-server.")
+    (license license:expat)))
+
 (define-public rust-web-sys-0.3
   (package
     (name "rust-web-sys")
