@@ -15742,6 +15742,36 @@ stack.")
      "Toolkit for making client wayland applications.")
     (license license:expat)))
 
+(define-public rust-smithay-client-toolkit-0.4
+  (package
+    (inherit rust-smithay-client-toolkit-0.6)
+    (name "rust-smithay-client-toolkit")
+    (version "0.4.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "smithay-client-toolkit" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1yj8yzd0lhqpsgq0x4iikl9a02q2hnkky81brk938alv0ibqrjrc"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-andrew" ,rust-andrew-0.2)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-dlib" ,rust-dlib-0.4)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-memmap" ,rust-memmap-0.7)
+        ("rust-nix" ,rust-nix-0.14)
+        ("rust-wayland-client" ,rust-wayland-client-0.21)
+        ("rust-wayland-commons" ,rust-wayland-commons-0.21)
+        ("rust-wayland-protocols" ,rust-wayland-protocols-0.21))
+       #:cargo-development-inputs
+       (("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-image" ,rust-image-0.20)
+        ("rust-wayland-client" ,rust-wayland-client-0.21))))))
+
 (define-public rust-socket2-0.3
   (package
     (name "rust-socket2")
