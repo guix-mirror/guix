@@ -764,14 +764,14 @@ standard library.")
 (define-public python-pytest
   (package
     (name "python-pytest")
-    (version "5.3.2")
+    (version "5.3.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest" version))
        (sha256
         (base32
-         "1yi51ckkiywszz0qp67jisxzcp54acf57wqr3ysgk457nlai4mvb"))))
+         "139i9cjhrv5aici3skq8iihvfb3lq0d8xb5j7qycr2hlk8cfjpqd"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
