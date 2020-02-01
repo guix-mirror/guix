@@ -19739,6 +19739,39 @@ you are working on custom wayland protocol extensions.
 Look at the crate wayland-client for usable bindings.")
     (license license:expat)))
 
+(define-public rust-wayland-server-0.23
+  (package
+    (name "rust-wayland-server")
+    (version "0.23.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wayland-server" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ccsalq6gnf07klnbjx2dxcbibhw03rqsgi578p913s3zsjlcg8a"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-calloop" ,rust-calloop-0.4)
+        ("rust-downcast-rs" ,rust-downcast-rs-1.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-mio" ,rust-mio-0.6)
+        ("rust-nix" ,rust-nix-0.14)
+        ("rust-wayland-commons" ,rust-wayland-commons-0.23)
+        ("rust-wayland-sys" ,rust-wayland-sys-0.23)
+        ("rust-wayland-scanner" ,rust-wayland-scanner-0.23))))
+    (home-page "https://github.com/smithay/wayland-rs")
+    (synopsis
+     "Bindings to the standard C implementation of the wayland protocol")
+    (description
+     "This package provides Rust bindings to the standard C implementation of
+the wayland protocol, server side.")
+    (license license:expat)))
+
 (define-public rust-web-sys-0.3
   (package
     (name "rust-web-sys")
