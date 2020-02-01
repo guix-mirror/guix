@@ -19902,6 +19902,29 @@ the wayland protocol, client side.")
      "Generated API for the officials wayland protocol extensions.")
     (license license:expat)))
 
+(define-public rust-wayland-protocols-0.21
+  (package
+    (inherit rust-wayland-protocols-0.23)
+    (name "rust-wayland-protocols")
+    (version "0.21.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wayland-protocols" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0i91yh3nxk9llhly2ly3nvlfx0lbpvyq919cgmnyx3j25bmf5zaa"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-wayland-client" ,rust-wayland-client-0.21)
+        ("rust-wayland-commons" ,rust-wayland-commons-0.21)
+        ("rust-wayland-server" ,rust-wayland-server-0.21)
+        ("rust-wayland-sys" ,rust-wayland-sys-0.21)
+        ("rust-wayland-scanner" ,rust-wayland-scanner-0.21))))))
+
 (define-public rust-wayland-scanner-0.23
   (package
     (name "rust-wayland-scanner")
