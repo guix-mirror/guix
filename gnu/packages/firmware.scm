@@ -185,7 +185,9 @@ by the b43-open driver of Linux-libre.")
 
 (define* (make-opensbi-package platform variant #:optional (arch "riscv64"))
   (package
-    (name (string-append "opensbi-" platform "-" variant))
+    (name (string-replace-substring
+           (string-append "opensbi-" platform "-" variant)
+           "_" "-"))
     (version "0.5")
     (source
      (origin
@@ -237,6 +239,9 @@ for platform-specific firmwares executing in M-mode.")
 
 (define-public opensbi-qemu-virt
   (make-opensbi-package "qemu" "virt"))
+
+(define-public opensbi-qemu-sifive-u
+  (make-opensbi-package "qemu" "sifive_u"))
 
 (define-public seabios
   (package
