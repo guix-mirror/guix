@@ -19335,6 +19335,7 @@ in Rust.")
 
 (define-public rust-wasm-bindgen-futures-0.3
   (package
+    (inherit rust-wasm-bindgen-futures-0.4)
     (name "rust-wasm-bindgen-futures")
     (version "0.3.24")
     (source
@@ -19346,7 +19347,6 @@ in Rust.")
        (sha256
         (base32
          "0bf9x6qfjczspc4zs605z1n4j15cdd8kk2z7rah0yggw8b6zl5nc"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -19358,13 +19358,7 @@ in Rust.")
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2))
        #:cargo-development-inputs
-       (("rust-wasm-bindgen-test" ,rust-wasm-bindgen-test-0.2))))
-    (home-page "https://rustwasm.github.io/wasm-bindgen/")
-    (synopsis
-     "Bridging the gap between Rust Futures and JavaScript Promises")
-    (description
-     "Bridging the gap between Rust Futures and JavaScript Promises.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-wasm-bindgen-test" ,rust-wasm-bindgen-test-0.2))))))
 
 (define-public rust-wasm-bindgen-macro-0.2
   (package
