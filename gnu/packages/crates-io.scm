@@ -19649,6 +19649,42 @@ You should only need this crate if you are working on custom wayland
 protocol extensions.  Look at the crate wayland-client for usable bindings.")
     (license license:expat)))
 
+(define-public rust-wayland-client-0.23
+  (package
+    (name "rust-wayland-client")
+    (version "0.23.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wayland-client" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1nmw2kz70llc5mxwzg6bglnqy0qnyr9224zjmq9czazgw3mq045g"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-calloop" ,rust-calloop-0.4)
+        ("rust-downcast-rs" ,rust-downcast-rs-1.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-mio" ,rust-mio-0.6)
+        ("rust-nix" ,rust-nix-0.14)
+        ("rust-wayland-commons" ,rust-wayland-commons-0.23)
+        ("rust-wayland-sys" ,rust-wayland-sys-0.23)
+        ("rust-wayland-scanner" ,rust-wayland-scanner-0.23))
+       #:cargo-development-inputs
+       (("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-tempfile" ,rust-tempfile-3.1))))
+    (home-page "https://github.com/smithay/wayland-rs")
+    (synopsis
+     "Rust bindings to the standard C implementation of the wayland protocol")
+    (description
+     "This package provides Rust bindings to the standard C implementation of
+the wayland protocol, client side.")
+    (license license:expat)))
+
 (define-public rust-wayland-commons-0.23
   (package
     (name "rust-wayland-commons")
