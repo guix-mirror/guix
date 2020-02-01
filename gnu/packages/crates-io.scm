@@ -5771,7 +5771,6 @@ values of all the exported APIs match the platform that libc is compiled for.")
         (sha256
          (base32
           "0y2mibmx7wy91s2kmb2gfb29mrqlqaxpy5wcwr8s1lwws7b9w5sc"))))
-    (arguments '())
     (properties '((hidden? . #t)))))
 
 (define-public rust-libgit2-sys-0.7
