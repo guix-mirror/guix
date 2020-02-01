@@ -19302,6 +19302,37 @@ in Rust.")
      "Backend code generation of the wasm-bindgen tool.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-wasm-bindgen-futures-0.4
+  (package
+    (name "rust-wasm-bindgen-futures")
+    (version "0.4.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wasm-bindgen-futures" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1n9ma4kinr4w6r2sh4wm04my6p14k1vx3a4vdbn0vd187sgd9gcb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-js-sys" ,rust-js-sys-0.3)
+        ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
+        ("rust-web-sys" ,rust-web-sys-0.3))
+       #:cargo-development-inputs
+       (("rust-futures-channel-preview" ,rust-futures-channel-preview-0.3)
+        ("rust-wasm-bindgen-test" ,rust-wasm-bindgen-test-0.3))))
+    (home-page "https://rustwasm.github.io/wasm-bindgen/")
+    (synopsis
+     "Bridging the gap between Rust Futures and JavaScript Promises")
+    (description
+     "Bridging the gap between Rust Futures and JavaScript Promises.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-wasm-bindgen-futures-0.3
   (package
     (name "rust-wasm-bindgen-futures")
@@ -19415,6 +19446,36 @@ attribute that is not in the shared backend crate.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-wasm-bindgen-test-0.3
+  (package
+    (name "rust-wasm-bindgen-test")
+    (version "0.3.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wasm-bindgen-test" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0bn833hghwbcg9cqz1bx9biq271bc4jcbgn2nqk1fkf4ab1hxzcq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-console-error-panic-hook" ,rust-console-error-panic-hook-0.1)
+        ("rust-js-sys" ,rust-js-sys-0.3)
+        ("rust-scoped-tls" ,rust-scoped-tls-1.0)
+        ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
+        ("rust-wasm-bindgen-futures" ,rust-wasm-bindgen-futures-0.4)
+        ("rust-wasm-bindgen-test-macro" ,rust-wasm-bindgen-test-macro-0.3))))
+    (home-page "https://github.com/rustwasm/wasm-bindgen")
+    (synopsis
+     "Internal testing crate for wasm-bindgen")
+    (description
+     "Internal testing crate for wasm-bindgen.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-wasm-bindgen-test-0.2
   (package
     (name "rust-wasm-bindgen-test")
@@ -19516,6 +19577,39 @@ attribute that is not in the shared backend crate.")
     (synopsis "Support for parsing WebIDL specific to wasm-bindgen")
     (description
      "Support for parsing WebIDL specific to wasm-bindgen.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-web-sys-0.3
+  (package
+    (name "rust-web-sys")
+    (version "0.3.35")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "web-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fzmxcyahy3ghl8lkjkchj9krmnr56shvbqgr7db3hm8dappryda"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-js-sys" ,rust-js-sys-0.3)
+        ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
+        ("rust-anyhow" ,rust-anyhow-1.0)
+        ("rust-env-logger" ,rust-env-logger-0.7)
+        ("rust-sourcefile" ,rust-sourcefile-0.1)
+        ("rust-wasm-bindgen-webidl" ,rust-wasm-bindgen-webidl-0.2))
+       #:cargo-development-inputs
+       (("rust-wasm-bindgen-futures" ,rust-wasm-bindgen-futures-0.4)
+        ("rust-wasm-bindgen-test" ,rust-wasm-bindgen-test-0.3))))
+    (home-page "https://rustwasm.github.io/wasm-bindgen/web-sys/index.html")
+    (synopsis
+     "Bindings for all Web APIs, a procedurally generated crate from WebIDL")
+    (description
+     "Bindings for all Web APIs, a procedurally generated crate from WebIDL.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-weedle-0.10
