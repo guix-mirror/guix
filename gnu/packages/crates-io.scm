@@ -5745,6 +5745,28 @@ functions and static variables these libraries contain.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-locale-0.2
+  (package
+    (name "rust-locale")
+    (version "0.2.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "locale" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1z87wc7z6889x1pqlrwjw8f1crshzi15q5m102lqs8y0m69f9nsz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/rust-locale/rust-locale")
+    (synopsis "Library for basic localisation")
+    (description
+     "This package provides a library for basic localisation.")
+    (license license:expat)))
+
 (define-public rust-lock-api-0.3
   (package
     (name "rust-lock-api")
