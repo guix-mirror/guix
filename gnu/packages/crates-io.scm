@@ -20402,6 +20402,42 @@ color in a Windows console.")
      "Cross-platform window creation library.")
     (license license:asl2.0)))
 
+(define-public rust-winit-0.19
+  (package
+    (inherit rust-winit-0.20)
+    (name "rust-winit")
+    (version "0.19.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "winit" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1a4lnfyvlc4jabhs30wlmkgdjv7qhbplmyp833kl7ykjni5yp5hy"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-android-glue" ,rust-android-glue-0.2)
+        ("rust-backtrace" ,rust-backtrace-0.3)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-cocoa" ,rust-cocoa-0.18)
+        ("rust-core-foundation" ,rust-core-foundation-0.6)
+        ("rust-core-graphics" ,rust-core-graphics-0.17)
+        ("rust-image" ,rust-image-0.21)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-objc" ,rust-objc-0.2)
+        ("rust-parking-lot" ,rust-parking-lot-0.9)
+        ("rust-percent-encoding" ,rust-percent-encoding-2.1)
+        ("rust-raw-window-handle" ,rust-raw-window-handle-0.3)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-smithay-client-toolkit" ,rust-smithay-client-toolkit-0.4)
+        ("rust-wayland-client" ,rust-wayland-client-0.21)
+        ("rust-winapi" ,rust-winapi-0.3)
+        ("rust-x11-dl" ,rust-x11-dl-2))))))
+
 (define-public rust-winpty-sys-0.4
   (package
     (name "rust-winpty-sys")
