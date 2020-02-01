@@ -6398,6 +6398,29 @@ path simultaneously, and returning all of the globs that matched.")
     (description "The gles2 bindings for glutin.")
     (license license:asl2.0)))
 
+(define-public rust-glutin-glx-sys-0.1
+  (package
+    (name "rust-glutin-glx-sys")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "glutin-glx-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0mxs3mil68xqqb49466n5rpwpcllj6fwqjgrcrzzmz26bv5ab40j"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-x11-dl" ,rust-x11-dl-2)
+        ("rust-gl-generator" ,rust-gl-generator-0.11))))
+    (home-page "https://github.com/tomaka/glutin")
+    (synopsis "Glx bindings for glutin")
+    (description "The glx bindings for glutin.")
+    (license license:asl2.0)))
+
 (define-public rust-goblin-0.0
   (package
     (name "rust-goblin")
