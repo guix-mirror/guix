@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
@@ -83,7 +83,17 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "1fv3g8vikj3sn37x1j6qsywn09w1jipvlv34j3q5qrljbrwa5ayd"))))
+                "1fv3g8vikj3sn37x1j6qsywn09w1jipvlv34j3q5qrljbrwa5ayd"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; The SIOCGSTAMP ioctl is defined in <linux/sockios.h> instead
+                  ;; of <asm/sockios.h> starting with linux-libre-headers 5.2.
+                  ;; Remove this for dnsmasq versions > 2.80.
+                  (substitute* "src/dnsmasq.h"
+                    (("#if defined\\(HAVE_LINUX_NETWORK\\)" all)
+                     (string-append all "\n#include <linux/sockios.h>")))
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
