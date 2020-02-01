@@ -6641,6 +6641,26 @@ checking.")
     (properties '((hidden? . #t)))
     (license license:expat)))
 
+(define-public rust-natord-1.0
+  (package
+    (name "rust-natord")
+    (version "1.0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "natord" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0z75spwag3ch20841pvfwhh3892i2z2sli4pzp1jgizbipdrd39h"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/lifthrasiir/rust-natord")
+    (synopsis "Natural ordering for Rust")
+    (description
+     "This package provides a crate to perform natural ordering for Rust.")
+    (license license:expat)))
+
 (define-public rust-net2-0.2
   (package
     (name "rust-net2")
