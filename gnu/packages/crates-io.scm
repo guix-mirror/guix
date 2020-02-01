@@ -19826,6 +19826,25 @@ the wayland protocol, client side.")
      "Common types and structures used by wayland-client and wayland-server.")
     (license license:expat)))
 
+(define-public rust-wayland-commons-0.21
+  (package
+    (inherit rust-wayland-commons-0.23)
+    (name "rust-wayland-commons")
+    (version "0.21.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wayland-commons" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1v1jpcsnn6cwwy5ii5pdl58i6b9slmi8mn4my4fpwrlbfsb8ih20"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-nix" ,rust-nix-0.14)
+        ("rust-wayland-sys" ,rust-wayland-sys-0.21))))))
+
 (define-public rust-wayland-protocols-0.23
   (package
     (name "rust-wayland-protocols")
