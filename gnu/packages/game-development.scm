@@ -1599,6 +1599,10 @@ games.")
                      (rename-file "godot.x11.tools.64" "godot")
                      (rename-file "godot.x11.tools.32" "godot"))
                  (install-file "godot" bin))
+               ;; Tell Godot where to find zenity for OS.alert().
+               (wrap-program (string-append bin "/godot")
+                 `("PATH" ":" prefix
+                   (,(string-append (assoc-ref %build-inputs "zenity") "/bin"))))
                #t)))
          (add-after 'install 'install-godot-desktop
            (lambda* (#:key outputs #:allow-other-keys)
@@ -1642,6 +1646,7 @@ games.")
               ("pcre2" ,pcre2)
               ("pulseaudio" ,pulseaudio)
               ("wslay" ,wslay)
+              ("zenity" ,zenity)
               ("zstd" ,zstd "lib")))
     (home-page "https://godotengine.org/")
     (synopsis "Advanced 2D and 3D game engine")
