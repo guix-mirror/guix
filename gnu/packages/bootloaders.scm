@@ -751,6 +751,9 @@ to Novena upstream, does not load u-boot.img from the first partition.")
          ("firmware-m0" ,rk3399-cortex-m0)
          ,@(package-native-inputs base))))))
 
+(define-public u-boot-qemu-riscv64-smode
+  (make-u-boot-package "qemu-riscv64_smode" "riscv64-linux-gnu"))
+
 (define-public u-boot-rock64-rk3328
   (let ((base (make-u-boot-package "rock64-rk3328" "aarch64-linux-gnu")))
     (package
