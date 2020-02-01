@@ -6358,6 +6358,48 @@ the process of matching one or more glob patterns against a single candidate
 path simultaneously, and returning all of the globs that matched.")
     (license (list license:expat license:unlicense))))
 
+(define-public rust-glutin-0.22
+  (package
+    (name "rust-glutin")
+    (version "0.22.0-alpha5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "glutin" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0lilr4f335m1fq1acmshd51zblfaglw1hha6lhalnc1fw3cg0aag"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-android-glue" ,rust-android-glue-0.2)
+        ("rust-cgl" ,rust-cgl-0.3)
+        ("rust-cocoa" ,rust-cocoa-0.19)
+        ("rust-core-foundation" ,rust-core-foundation-0.6)
+        ("rust-core-graphics" ,rust-core-graphics-0.17)
+        ("rust-glutin-egl-sys" ,rust-glutin-egl-sys-0.1)
+        ("rust-glutin-emscripten-sys" ,rust-glutin-emscripten-sys-0.1)
+        ("rust-glutin-gles2-sys" ,rust-glutin-gles2-sys-0.1)
+        ("rust-glutin-glx-sys" ,rust-glutin-glx-sys-0.1)
+        ("rust-glutin-wgl-sys" ,rust-glutin-wgl-sys-0.1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libloading" ,rust-libloading-0.5)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-objc" ,rust-objc-0.2)
+        ("rust-osmesa-sys" ,rust-osmesa-sys-0.1)
+        ("rust-parking-lot" ,rust-parking-lot-0.9)
+        ("rust-wayland-client" ,rust-wayland-client-0.23)
+        ("rust-winapi" ,rust-winapi-0.3)
+        ("rust-winit" ,rust-winit-0.20))))
+    (home-page "https://github.com/tomaka/glutin")
+    (synopsis
+     "Cross-platform OpenGL context provider")
+    (description
+     "Cross-platform OpenGL context provider.")
+    (license license:asl2.0)))
+
 (define-public rust-glutin-egl-sys-0.1
   (package
     (name "rust-glutin-egl-sys")
