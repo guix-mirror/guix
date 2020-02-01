@@ -19478,6 +19478,7 @@ attribute that is not in the shared backend crate.")
 
 (define-public rust-wasm-bindgen-test-0.2
   (package
+    (inherit rust-wasm-bindgen-test-0.3)
     (name "rust-wasm-bindgen-test")
     (version "0.2.48")
     (source
@@ -19489,7 +19490,6 @@ attribute that is not in the shared backend crate.")
        (sha256
         (base32
          "0gwslc2sfkghzzb3r0gvd8i5rig2nlqgpl1rn43y2w4mr1ci494k"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -19499,12 +19499,7 @@ attribute that is not in the shared backend crate.")
         ("rust-scoped-tls" ,rust-scoped-tls-1.0)
         ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
         ("rust-wasm-bindgen-futures" ,rust-wasm-bindgen-futures-0.3)
-        ("rust-wasm-bindgen-test-macro" ,rust-wasm-bindgen-test-macro-0.2))))
-    (home-page "https://github.com/rustwasm/wasm-bindgen")
-    (synopsis "Internal testing crate for wasm-bindgen")
-    (description
-     "Internal testing crate for wasm-bindgen.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-wasm-bindgen-test-macro" ,rust-wasm-bindgen-test-macro-0.2))))))
 
 (define-public rust-wasm-bindgen-test-macro-0.3
   (package
