@@ -19674,6 +19674,35 @@ protocol extensions.  Look at the crate wayland-client for usable bindings.")
      "Common types and structures used by wayland-client and wayland-server.")
     (license license:expat)))
 
+(define-public rust-wayland-scanner-0.23
+  (package
+    (name "rust-wayland-scanner")
+    (version "0.23.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wayland-scanner" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0g8wcphykjrcpslznyi3qccx1pckw97rckq5b295nfbg6r3j5c4k"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-0.6)
+        ("rust-xml-rs" ,rust-xml-rs-0.8))))
+    (home-page "https://github.com/smithay/wayland-rs")
+    (synopsis
+     "Wayland Scanner for generating rust APIs from XML wayland protocol files")
+    (description
+     "Wayland Scanner for generating rust APIs from XML wayland protocol files.
+Intented for use with wayland-sys.  You should only need this crate if
+you are working on custom wayland protocol extensions.
+Look at the crate wayland-client for usable bindings.")
+    (license license:expat)))
+
 (define-public rust-web-sys-0.3
   (package
     (name "rust-web-sys")
