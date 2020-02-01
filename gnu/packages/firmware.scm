@@ -243,6 +243,9 @@ for platform-specific firmwares executing in M-mode.")
 (define-public opensbi-qemu-sifive-u
   (make-opensbi-package "qemu" "sifive_u"))
 
+(define-public opensbi-sifive-fu540
+  (make-opensbi-package "sifive" "fu540"))
+
 (define-public seabios
   (package
     (name "seabios")
