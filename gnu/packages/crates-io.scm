@@ -19622,6 +19622,33 @@ attribute that is not in the shared backend crate.")
      "Support for parsing WebIDL specific to wasm-bindgen.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-wayland-sys-0.23
+  (package
+    (name "rust-wayland-sys")
+    (version "0.23.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wayland-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1x2qafvj8hd2x5qfaan2dfpw9amg0f5g9sqrkdy7qvbddsl8jknr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-dlib" ,rust-dlib-0.4)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/smithay/wayland-rs")
+    (synopsis "FFI bindings to the various libwayland-*.so libraries")
+    (description
+     "FFI bindings to the various libwayland-*.so libraries.
+You should only need this crate if you are working on custom wayland
+protocol extensions.  Look at the crate wayland-client for usable bindings.")
+    (license license:expat)))
+
 (define-public rust-web-sys-0.3
   (package
     (name "rust-web-sys")
