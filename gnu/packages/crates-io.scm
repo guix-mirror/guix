@@ -6421,6 +6421,28 @@ path simultaneously, and returning all of the globs that matched.")
     (description "The glx bindings for glutin.")
     (license license:asl2.0)))
 
+(define-public rust-glutin-wgl-sys-0.1
+  (package
+    (name "rust-glutin-wgl-sys")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "glutin-wgl-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "08chlfzpj59q36qm212i4k879gvjzha7i90q90fds8pw3v4vn0gq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-gl-generator" ,rust-gl-generator-0.11))))
+    (home-page "https://github.com/tomaka/glutin")
+    (synopsis "Wgl bindings for glutin")
+    (description "The wgl bindings for glutin.")
+    (license license:asl2.0)))
+
 (define-public rust-goblin-0.0
   (package
     (name "rust-goblin")
