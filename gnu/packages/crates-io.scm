@@ -14210,3 +14210,27 @@ to XDG Base Directory specification")
     (description
      "The missing YAML 1.2 parser for rust.")
     (license (list license:asl2.0 license:expat))))
+
+(define-public rust-zoneinfo-compiled-0.4
+  (package
+    (name "rust-zoneinfo-compiled")
+    (version "0.4.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "zoneinfo_compiled" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0bnm19w791q6kp79s0zl1cj9w51bw5xrifrxfy3g1p05i676y4vf"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-datetime" ,rust-datetime-0.4))))
+    (home-page "https://github.com/rust-datetime/zoneinfo-compiled/")
+    (synopsis "Library for parsing compiled zoneinfo files")
+    (description
+     "This package provides a library for parsing compiled zoneinfo files.")
+    (license license:expat)))
