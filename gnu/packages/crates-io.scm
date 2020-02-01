@@ -4751,6 +4751,33 @@ consistent, and reasonably well performing.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-hermit-abi-0.1
+  (package
+    (name "rust-hermit-abi")
+    (version "0.1.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "hermit-abi" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+         "0wippj5nkw9q5yyyaqpdrgdhag3l3nbrwja7149cwn7ii1nnbwpg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+        (("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
+         ("rust-libc" ,rust-libc-0.2)
+         ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1.0))))
+    (home-page "https://github.com/hermitcore/rusty-hermit")
+    (synopsis "Small interface to call functions from RustyHermit")
+    (description
+     "Hermit-abi is small interface to call functions from the unikernel RustyHermit.
+It is used to build the target x86_64-unknown-hermit.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-hex-0.4
   (package
     (name "rust-hex")
