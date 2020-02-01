@@ -7005,7 +7005,7 @@ combinators library.")
 (define-public rust-num-traits-0.2
   (package
     (name "rust-num-traits")
-    (version "0.2.8")
+    (version "0.2.11")
     (source
      (origin
        (method url-fetch)
@@ -7014,10 +7014,12 @@ combinators library.")
         (string-append name "-" version ".crate"))
        (sha256
         (base32
-         "0clvrm34rrqc8p6gq5ps5fcgws3kgq5knh7nlqxf2ayarwks9abb"))))
+         "15khrlm1bra50nd48ijl1vln13m9xg4fxzghf28jp16ic5zf8ay6"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs (("rust-autocfg" ,rust-autocfg-0.1))))
+     `(#:cargo-inputs
+       (("rust-autocfg" ,rust-autocfg-1.0)
+        ("rust-libm" ,rust-libm-0.2))))
     (home-page "https://github.com/rust-num/num-traits")
     (synopsis "Numeric traits for generic mathematics")
     (description "Numeric traits for generic mathematics.")
