@@ -19445,8 +19445,33 @@ attribute that is not in the shared backend crate.")
      "Internal testing crate for wasm-bindgen.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-wasm-bindgen-test-macro-0.3
+  (package
+    (name "rust-wasm-bindgen-test-macro")
+    (version "0.3.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wasm-bindgen-test-macro" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0kybf3shpp8ysz4v4j259d7vad9kw5bs4i4dlfrs895bhdp7m0wp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1.0)
+        ("rust-quote" ,rust-quote-1.0))))
+    (home-page "https://github.com/rustwasm/wasm-bindgen")
+    (synopsis "Internal testing macro for wasm-bindgen")
+    (description
+     "This library contains the internal testing macro for wasm-bindgen.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-wasm-bindgen-test-macro-0.2
   (package
+    (inherit rust-wasm-bindgen-test-macro-0.3)
     (name "rust-wasm-bindgen-test-macro")
     (version "0.2.50")
     (source
@@ -19457,17 +19482,10 @@ attribute that is not in the shared backend crate.")
         (sha256
          (base32
           "19bvmw8mqlwh6wkbzgs3cnlkywrv8q2kkqggz6y0p158930xm287"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-proc-macro2" ,rust-proc-macro2-0.4)
-        ("rust-quote" ,rust-quote-0.6))))
-    (home-page "https://github.com/rustwasm/wasm-bindgen")
-    (synopsis "Internal testing macro for wasm-bindgen")
-    (description
-     "This library contains the internal testing macro for wasm-bindgen.")
-    (license (list license:asl2.0
-                   license:expat))))
+        ("rust-quote" ,rust-quote-0.6))))))
 
 (define-public rust-wasm-bindgen-webidl-0.2
   (package
