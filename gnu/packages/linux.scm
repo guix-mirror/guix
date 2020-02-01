@@ -781,7 +781,7 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-5.4
   (make-linux-libre* linux-libre-5.4-version
                      linux-libre-5.4-source
-                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
+                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
                      #:configuration-file kernel-config))
 
 (define-public linux-libre-version         linux-libre-5.4-version)
@@ -872,6 +872,12 @@ It has been modified to remove all non-free binary blobs.")
                      '("armhf-linux")
                      #:defconfig "omap2plus_defconfig"
                      #:extra-version "arm-omap2plus"))
+
+(define-public linux-libre-riscv64-generic
+  (make-linux-libre* linux-libre-version
+                     linux-libre-source
+                     '("riscv64-linux")
+                     #:extra-version "riscv64-generic"))
 
 
 ;;;
