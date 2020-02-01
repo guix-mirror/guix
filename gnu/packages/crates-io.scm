@@ -5723,6 +5723,30 @@ allows loading dynamic libraries (also known as shared libraries) as well as use
 functions and static variables these libraries contain.")
     (license license:isc)))
 
+(define-public rust-libm-0.2
+  (package
+    (name "rust-libm")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "libm" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0akh56sh51adhagmk9l84dyrlz60gv8ri05xhr13i1b18czkpmy7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-development-inputs
+       (("rust-no-panic" ,rust-no-panic-0.1)
+        ("rust-rand" ,rust-rand-0.6))))
+    (home-page "https://github.com/rust-lang/libm")
+    (synopsis "Libm in pure Rust")
+    (description "Libm in pure Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-libssh2-sys-0.2
   (package
     (name "rust-libssh2-sys")
