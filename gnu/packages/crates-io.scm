@@ -5760,6 +5760,21 @@ functions and static variables these libraries contain.")
     (description "This package provides an implementation of libm in pure Rust.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-libm-0.1
+  (package
+    (inherit rust-libm-0.2)
+    (name "rust-libm")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "libm" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "16pc0gx4gkg0q2s1ssq8268brn14j8344623vwhadmivc4lsmivz"))))))
+
 (define-public rust-libssh2-sys-0.2
   (package
     (name "rust-libssh2-sys")
