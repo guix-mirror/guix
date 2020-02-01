@@ -266,7 +266,7 @@ the freedesktop.org XDG Base Directory specification.")
 (define-public elogind
   (package
     (name "elogind")
-    (version "241.4")
+    (version "243.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -275,7 +275,7 @@ the freedesktop.org XDG Base Directory specification.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "13nd0chackqclgvw43910k4pkw2q773dh6wq9s5f3d97ibnik48k"))))
+                "141frvgyk4fafcxsix94qc0d9ffrwksld8lqq4hq6xsgjlvv0mrs"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
@@ -283,9 +283,11 @@ the freedesktop.org XDG Base Directory specification.")
               (sysconf (string-append out "/etc"))
               (libexec (string-append out "/libexec/elogind"))
               (dbuspolicy (string-append out "/etc/dbus-1/system.d"))
+              (shadow (assoc-ref %build-inputs "shadow"))
               (shepherd (assoc-ref %build-inputs "shepherd"))
               (halt-path (string-append shepherd "/sbin/halt"))
               (kexec-path "")           ;not available in Guix yet
+              (nologin-path (string-append shadow "/sbin/nologin"))
               (poweroff-path (string-append shepherd "/sbin/shutdown"))
               (reboot-path (string-append shepherd "/sbin/reboot")))
          (list
@@ -299,7 +301,9 @@ the freedesktop.org XDG Base Directory specification.")
           (string-append "-Dkexec-path=" kexec-path)
           (string-append "-Dpoweroff-path=" poweroff-path)
           (string-append "-Dreboot-path=" reboot-path)
+          (string-append "-Dnologin-path=" nologin-path)
           "-Dcgroup-controller=elogind"
+          "-Dman=true"
           ;; Disable some tests.
           "-Dtests=false"
           "-Dslow-tests=false"))
@@ -310,6 +314,14 @@ the freedesktop.org XDG Base Directory specification.")
              (substitute* "meson.build"
                (("join_paths\\(bindir, 'pkttyagent'\\)")
                 "'\"/run/current-system/profile/bin/pkttyagent\"'"))
+             #t))
+         (add-after 'unpack 'adjust-dbus-socket-address
+           (lambda _
+             ;; Look for the D-Bus socket in /var/run instead of /run.  Remove
+             ;; this for versions > 243.4.
+             (substitute* "src/libelogind/sd-bus/bus-internal.h"
+               (("=/run/dbus/system_bus_socket")
+                "=/var/run/dbus/system_bus_socket"))
              #t))
          (add-after 'unpack 'change-pid-file-path
            (lambda _
@@ -330,6 +342,7 @@ the freedesktop.org XDG Base Directory specification.")
     (inputs
      `(("linux-pam" ,linux-pam)
        ("libcap" ,libcap)
+       ("shadow" ,shadow)                    ;for 'nologin'
        ("shepherd" ,shepherd)                ;for 'halt' and 'reboot', invoked
                                              ;when pressing the power button
        ("dbus" ,dbus)
