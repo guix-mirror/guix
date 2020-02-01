@@ -6833,6 +6833,24 @@ implementation (which is unstable / requires nightly).")
 combinators library.")
     (license license:expat)))
 
+(define-public rust-nom-1.2
+  (package
+    (inherit rust-nom-4.2)
+    (name "rust-nom")
+    (version "1.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nom" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1kjh42w67z1hh1dw3jrilgqrf54jk2xcvhw4rcdm4wclzmbc5f55"))))
+    (arguments
+      ;; This is an ancient version and all inputs are optional.
+     `(#:skip-build? #t))))
+
 (define-public rust-num-complex-0.2
   (package
     (name "rust-num-complex")
