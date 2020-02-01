@@ -2178,6 +2178,10 @@ from forcing GEXP-PROMISE."
                      #+(canonical-package tar)))
               (invoke "tar" "xvf" #+upstream-source)
               (with-directory-excursion (string-append "librsvg-" #$version)
+                ;; The following crate(s) are needed in addition to the ones replaced:
+                (begin
+                  (invoke
+                   "tar" "xvf" #+(package-source rust-autocfg-0.1) "-C" "vendor"))
                 (for-each
                   (lambda (crate)
                     (delete-file-recursively (string-append "vendor/" (car crate)))
@@ -2187,7 +2191,7 @@ from forcing GEXP-PROMISE."
                     ("approx" . #+(package-source rust-approx-0.3))
                     ("arrayvec" . #+(package-source rust-arrayvec-0.4))
                     ("atty" . #+(package-source rust-atty-0.2))
-                    ("autocfg" . #+(package-source rust-autocfg-0.1))
+                    ("autocfg" . #+(package-source rust-autocfg-1.0))
                     ("bitflags" . #+(package-source rust-bitflags-1))
 ;; block 0.1
                     ("bstr" . #+(package-source rust-bstr-0.2))
@@ -2238,7 +2242,7 @@ from forcing GEXP-PROMISE."
                     ("language-tags" . #+(package-source rust-language-tags-0.2))
                     ("lazy_static" . #+(package-source rust-lazy-static-1.3))
                     ("libc" . #+(package-source rust-libc-0.2))
-;; libm 0.1
+                    ("libm" . #+(package-source rust-libm-0.1))
 ;; locale_config 0.3
                     ("log" . #+(package-source rust-log-0.4))
                     ("mac" . #+(package-source rust-mac-0.1))
