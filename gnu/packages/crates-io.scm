@@ -19801,6 +19801,35 @@ protocol extensions.  Look at the crate wayland-client for usable bindings.")
 the wayland protocol, client side.")
     (license license:expat)))
 
+(define-public rust-wayland-client-0.21
+  (package
+    (inherit rust-wayland-client-0.23)
+    (name "rust-wayland-client")
+    (version "0.21.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wayland-client" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "04r7dy074hhdalsi1day482wvmczr40hg7qvrnzkgxpakrgkx5j9"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-calloop" ,rust-calloop-0.4)
+        ("rust-downcast-rs" ,rust-downcast-rs-1.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-mio" ,rust-mio-0.6)
+        ("rust-nix" ,rust-nix-0.14)
+        ("rust-wayland-commons" ,rust-wayland-commons-0.21)
+        ("rust-wayland-sys" ,rust-wayland-sys-0.21)
+        ("rust-wayland-scanner" ,rust-wayland-scanner-0.21))
+       #:cargo-development-inputs
+       (("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-tempfile" ,rust-tempfile-3.1))))))
+
 (define-public rust-wayland-commons-0.23
   (package
     (name "rust-wayland-commons")
