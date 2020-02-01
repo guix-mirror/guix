@@ -15641,6 +15641,40 @@ stack.")
        #:cargo-development-inputs
        (("rust-bincode" ,rust-bincode-1.1))))))
 
+(define-public rust-smithay-client-toolkit-0.6
+  (package
+    (name "rust-smithay-client-toolkit")
+    (version "0.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "smithay-client-toolkit" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0m20687zs36l6xak2s5k9s7qp78ly8xfjpbmrhacp7whfn4hx5lk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-andrew" ,rust-andrew-0.2)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-dlib" ,rust-dlib-0.4)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-memmap" ,rust-memmap-0.7)
+        ("rust-nix" ,rust-nix-0.14)
+        ("rust-wayland-client" ,rust-wayland-client-0.23)
+        ("rust-wayland-protocols" ,rust-wayland-protocols-0.23))
+       #:cargo-development-inputs
+       (("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-image" ,rust-image-0.21)
+        ("rust-wayland-client" ,rust-wayland-client-0.23))))
+    (home-page "https://github.com/smithay/client-toolkit")
+    (synopsis "Toolkit for making client wayland applications")
+    (description
+     "Toolkit for making client wayland applications.")
+    (license license:expat)))
+
 (define-public rust-socket2-0.3
   (package
     (name "rust-socket2")
