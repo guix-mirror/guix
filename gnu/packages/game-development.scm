@@ -90,6 +90,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
@@ -1505,7 +1506,7 @@ games.")
 (define-public godot
   (package
     (name "godot")
-    (version "3.1.2")
+    (version "3.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1514,7 +1515,7 @@ games.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "12305wj2i4067jc50l8r0wmb7zjcna24fli8vb8kiaild0jrlip6"))
+                "0f15izjl4i2xlz1xj5pcslzl9gm3rmr3c21gh256ynpi2zhhkcdd"))
               (modules '((guix build utils)
                          (ice-9 ftw)
                          (srfi srfi-1)))
@@ -1526,7 +1527,7 @@ games.")
                   (with-directory-excursion "thirdparty"
                     (let* ((preserved-files
                             '("README.md"
-                              "b2d_convexdecomp"
+                              "assimp"
                               "certs"
                               "cvtt"
                               "enet"
@@ -1535,7 +1536,6 @@ games.")
                               "glad"
                               "jpeg-compressor"
                               "libsimplewebm"
-                              "libwebsockets"
                               "miniupnpc"
                               "minizip"
                               "misc"
@@ -1543,8 +1543,8 @@ games.")
                               "pvrtccompressor"
                               "recastnavigation"
                               "squish"
-                              "thekla_atlas"
                               "tinyexr"
+                              "vhacd"
                               "xatlas")))
                       (for-each delete-file-recursively
                                 (lset-difference string=?
@@ -1574,6 +1574,7 @@ games.")
                            "builtin_mbedtls=no"
                            "builtin_opus=no"
                            "builtin_pcre2=no"
+                           "builtin_wslay=no"
                            "builtin_zlib=no"
                            "builtin_zstd=no")
        #:tests? #f ; There are no tests
@@ -1640,6 +1641,7 @@ games.")
               ("opusfile" ,opusfile)
               ("pcre2" ,pcre2)
               ("pulseaudio" ,pulseaudio)
+              ("wslay" ,wslay)
               ("zstd" ,zstd "lib")))
     (home-page "https://godotengine.org/")
     (synopsis "Advanced 2D and 3D game engine")
