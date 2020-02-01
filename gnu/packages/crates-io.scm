@@ -19710,6 +19710,34 @@ the wayland protocol, client side.")
      "Common types and structures used by wayland-client and wayland-server.")
     (license license:expat)))
 
+(define-public rust-wayland-protocols-0.23
+  (package
+    (name "rust-wayland-protocols")
+    (version "0.23.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wayland-protocols" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ygwbzqlnks5xzafka3c8ag6k92g2h6ygj2xsmvjfx2n6rj8dhkc"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-wayland-client" ,rust-wayland-client-0.23)
+        ("rust-wayland-commons" ,rust-wayland-commons-0.23)
+        ("rust-wayland-server" ,rust-wayland-server-0.23)
+        ("rust-wayland-scanner" ,rust-wayland-scanner-0.23))))
+    (home-page "https://github.com/smithay/wayland-rs")
+    (synopsis
+     "Generated API for the officials wayland protocol extensions")
+    (description
+     "Generated API for the officials wayland protocol extensions.")
+    (license license:expat)))
+
 (define-public rust-wayland-scanner-0.23
   (package
     (name "rust-wayland-scanner")
