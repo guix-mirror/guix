@@ -7303,6 +7303,29 @@ normally prevent moving a type that has been borrowed from.")
     (description "Portable Packed SIMD vectors.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-pad-0.1
+  (package
+    (name "rust-pad")
+    (version "0.1.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "pad" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1qy0r26r52gp034fv252mmg0s599a55h9nr4xswy04hvky49pbfj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-unicode-width" ,rust-unicode-width-0.1))))
+    (home-page "https://github.com/ogham/rust-pad")
+    (synopsis "Library for padding strings at runtime")
+    (description
+      "This package provides a library for padding strings at runtime.")
+    (license license:expat)))
+
 (define-public rust-parking-lot-0.9
   (package
     (name "rust-parking-lot")
