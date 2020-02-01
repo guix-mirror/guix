@@ -7014,8 +7014,36 @@ combinators library.")
      "Complex numbers implementation for Rust.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-num-cpus-1.11
+  (package
+    (name "rust-num-cpus")
+    (version "1.11.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "num_cpus" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0wlxs00cpg16z09fwchj1gdz1jxnf5dgg1cbidvq0sc75bnwbnkn"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+        (("rust-hermit-abi" ,rust-hermit-abi-0.1)
+         ("rust-libc" ,rust-libc-0.2))
+        #:cargo-development-inputs
+        (("rust-doc-comment" ,rust-doc-comment-0.3))))
+    (home-page "https://github.com/seanmonstar/num_cpus")
+    (synopsis "Get the number of CPUs on a machine")
+    (description
+     "Get the number of CPUs on a machine.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-num-cpus-1.10
   (package
+    (inherit rust-num-cpus-1.11)
     (name "rust-num-cpus")
     (version "1.10.1")
     (source
@@ -7026,19 +7054,12 @@ combinators library.")
         (sha256
          (base32
           "0wrj3zvj6h3q26sqj9zxpd59frjb54n7jhjwf307clq31ic47vxw"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-libc" ,rust-libc-0.2))
        #:cargo-development-inputs
-       (("rust-doc-comment" ,rust-doc-comment-0.3))))
-    (home-page "https://github.com/seanmonstar/num_cpus")
-    (synopsis "Get the number of CPUs on a machine")
-    (description
-     "Get the number of CPUs on a machine.")
-    (license (list license:asl2.0
-                   license:expat))))
+       (("rust-doc-comment" ,rust-doc-comment-0.3))))))
 
 (define-public rust-num-integer-0.1
   (package
