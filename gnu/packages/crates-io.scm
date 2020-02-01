@@ -5738,13 +5738,13 @@ functions and static variables these libraries contain.")
          "0akh56sh51adhagmk9l84dyrlz60gv8ri05xhr13i1b18czkpmy7"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
+     `(#:cargo-inputs
+       (("rust-rand" ,rust-rand-0.6))
        #:cargo-development-inputs
-       (("rust-no-panic" ,rust-no-panic-0.1)
-        ("rust-rand" ,rust-rand-0.6))))
+       (("rust-no-panic" ,rust-no-panic-0.1))))
     (home-page "https://github.com/rust-lang/libm")
     (synopsis "Libm in pure Rust")
-    (description "Libm in pure Rust.")
+    (description "This package provides an implementation of libm in pure Rust.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-libssh2-sys-0.2
@@ -6988,11 +6988,11 @@ combinators library.")
         (base32
          "0clvrm34rrqc8p6gq5ps5fcgws3kgq5knh7nlqxf2ayarwks9abb"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-autocfg" ,rust-autocfg-0.1))))
     (home-page "https://github.com/rust-num/num-traits")
     (synopsis "Numeric traits for generic mathematics")
     (description "Numeric traits for generic mathematics.")
-    (properties '((hidden? . #t)))
-    ;; Dual licensed.
     (license (list license:asl2.0
                    license:expat))))
 
@@ -7009,7 +7009,9 @@ combinators library.")
         (sha256
          (base32
           "0c9whknf2dm74a3cqirafy6gj83a76gl56g4v3g19k6lkwz13rcj"))))
-    (build-system cargo-build-system)))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num-traits" , rust-num-traits-0.2))))))
 
 (define-public rust-numtoa-0.1
   (package
