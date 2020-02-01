@@ -6333,6 +6333,29 @@ the process of matching one or more glob patterns against a single candidate
 path simultaneously, and returning all of the globs that matched.")
     (license (list license:expat license:unlicense))))
 
+(define-public rust-glutin-egl-sys-0.1
+  (package
+    (name "rust-glutin-egl-sys")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "glutin-egl-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0k1x1frdp4wp47qkai8zzmgqxzpfcn7780m29qgd92lbnbrxwbkp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-winapi" ,rust-winapi-0.3)
+        ("rust-gl-generator" ,rust-gl-generator-0.13))))
+    (home-page "https://github.com/rust-windowing/glutin")
+    (synopsis "Egl bindings for glutin")
+    (description "The egl bindings for glutin.")
+    (license license:asl2.0)))
+
 (define-public rust-glutin-emscripten-sys-0.1
   (package
     (name "rust-glutin-emscripten-sys")
