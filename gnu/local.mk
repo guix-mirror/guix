@@ -1412,6 +1412,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/t1lib-CVE-2010-2642.patch		\
   %D%/packages/patches/t1lib-CVE-2011-0764.patch		\
   %D%/packages/patches/t1lib-CVE-2011-1552+.patch		\
+  %D%/packages/patches/t4k-common-libpng16.png			\
   %D%/packages/patches/tar-remove-wholesparse-check.patch	\
   %D%/packages/patches/tar-skip-unreliable-tests.patch		\
   %D%/packages/patches/tcc-boot-0.9.27.patch			\
