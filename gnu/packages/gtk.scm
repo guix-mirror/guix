@@ -147,6 +147,7 @@ tools have full access to view and control running applications.")
     (arguments
      `(#:tests? #f  ; see http://lists.gnu.org/archive/html/bug-guix/2013-06/msg00085.html
        #:configure-flags '("--enable-tee"      ;needed for GNU Icecat
+                           "--enable-xml"      ;for cairo-xml support
                            "--disable-static")))
    (synopsis "2D graphics library")
    (description
