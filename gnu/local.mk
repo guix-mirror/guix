@@ -1342,6 +1342,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-unittest2-remove-argparse.patch	\
   %D%/packages/patches/python-waitress-fix-tests.patch		\
   %D%/packages/patches/qemu-glibc-2.27.patch 			\
+  %D%/packages/patches/qemu-CVE-2020-1711.patch			\
   %D%/packages/patches/qemu-CVE-2020-7039.patch			\
   %D%/packages/patches/qemu-CVE-2020-7211.patch			\
   %D%/packages/patches/qemu-fix-documentation-build-failure.patch	\
