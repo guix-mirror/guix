@@ -755,7 +755,13 @@ to Novena upstream, does not load u-boot.img from the first partition.")
   (make-u-boot-package "qemu-riscv64" "riscv64-linux-gnu"))
 
 (define-public u-boot-qemu-riscv64-smode
-  (make-u-boot-package "qemu-riscv64_smode" "riscv64-linux-gnu"))
+  (let ((base (make-u-boot-package "qemu-riscv64_smode" "riscv64-linux-gnu")))
+    (package
+      (inherit base)
+      (source (origin
+                (inherit (package-source u-boot))
+                (patches
+                 (search-patches "u-boot-riscv64-fix-extlinux.patch")))))))
 
 (define-public u-boot-sifive-fu540
   (make-u-boot-package "sifive_fu540" "riscv64-linux-gnu"))
