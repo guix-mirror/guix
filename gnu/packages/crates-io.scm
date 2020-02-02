@@ -9082,6 +9082,41 @@ for Rust structs.")
          "1cvm2z7dy138s302ii7wlzcxbka5a8yfl5pl5di7lbdnw9hw578g"))))
     (arguments `(#:skip-build? #t))))
 
+(define-public rust-metal-0.14
+  (package
+    (name "rust-metal")
+    (version "0.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "metal" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0my1xwlv562i80y3jbk0nygayi383j5skdwk48clb286b7922gyd"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-block" ,rust-block-0.1)
+        ("rust-cocoa" ,rust-cocoa-0.18)
+        ("rust-core-graphics" ,rust-core-graphics-0.17)
+        ("rust-foreign-types" ,rust-foreign-types-0.3)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-objc" ,rust-objc-0.2)
+        ("rust-objc-foundation" ,rust-objc-foundation-0.1)
+        ("rust-objc-id" ,rust-objc-id-0.1))
+       #:cargo-development-inputs
+       (("rust-sema" ,rust-sema-0.1)
+        ("rust-winit" ,rust-winit-0.19)))) ; 0.17?
+    (home-page "https://github.com/gfx-rs/metal-rs")
+    (synopsis "Rust bindings for Metal")
+    (description "Rust bindings for Metal.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-mime-0.3
   (package
     (name "rust-mime")
