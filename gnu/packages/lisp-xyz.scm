@@ -9841,3 +9841,21 @@ in pure Common Lisp and does not require any Tk knowledge for its usage.")
 
 (define-public ecl-ltk-mw
   (sbcl-package->ecl-package sbcl-ltk-mw))
+
+(define-public sbcl-ltk-remote
+  (package
+    (inherit sbcl-ltk)
+    (name "sbcl-ltk-remote")
+    (inputs
+     `(("ltk" ,sbcl-ltk)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-ltk)
+       ((#:asd-file _) "ltk/ltk-remote.asd")
+       ((#:phases _) '%standard-phases)))
+    (synopsis "Remote GUI support for LTK")
+    (description
+     "This LTK extension allows the GUI to be displayed on a computer different
+from the one running the Lisp program by using a TCP connection.")))
+
+(define-public cl-ltk-remote
+  (sbcl-package->cl-source-package sbcl-ltk-remote))
