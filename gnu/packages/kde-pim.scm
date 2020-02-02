@@ -467,6 +467,52 @@ modern blogging web application that provides an XML data interface supports
 one of the APIs mentioned above.")
     (license license:lgpl2.0+)))
 
+(define-public kcalendarsupport
+  (package
+    (name "kcalendarsupport")
+    (version "19.08.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/applications/" version
+                           "/src/calendarsupport-" version ".tar.xz"))
+       (sha256
+        (base32 "1hwfh5njq4614ypwdilna33hdcn11kshpwg6n27cag1qhwrxs1i4"))))
+    (properties `((upstream-name . "calendarsupport")))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("akonadi" ,akonadi)
+       ("akonadi-calendar" ,akonadi-calendar)
+       ("akonadi-mime" ,akonadi-mime)
+       ("boost" ,boost)
+       ("kcalendarcore" ,kcalendarcore)
+       ("kcalutils", kcalutils)
+       ("kcompletion" ,kcompletion)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdepim-apps-libs" ,kdepim-apps-libs)
+       ("kguiaddons" ,kguiaddons)
+       ("kholidays" ,kholidays)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kidentitymanagement" ,kidentitymanagement)
+       ("kio" ,kio)
+       ("kitemmodels" ,kitemmodels)
+       ("kmime" ,kmime)
+       ("kpimcommon" ,kpimcommon)
+       ("kpimtextedit" ,kpimtextedit)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kxmlgui" ,kxmlgui)
+       ("qtbase" ,qtbase)))
+    (home-page "https://api.kde.org/stable/calendarsupport/")
+    (synopsis "Calendar Support library for KDE PIM")
+    (description "The Calendar Support library provides helper utilities for
+calendaring applications.")
+    (license ;; GPL for programs, LGPL for libraries
+     (list license:gpl2+ license:lgpl2.0+))))
+
 (define-public kcalutils
   (package
     (name "kcalutils")
