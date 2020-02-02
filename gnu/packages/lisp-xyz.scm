@@ -9859,3 +9859,35 @@ from the one running the Lisp program by using a TCP connection.")))
 
 (define-public cl-ltk-remote
   (sbcl-package->cl-source-package sbcl-ltk-remote))
+
+(define-public sbcl-cl-lex
+  (let ((commit "f2dbbe25ef553005fb402d9a6203180c3fa1093b")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-lex")
+      (version (git-version "1.1.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/djr7C4/cl-lex.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1kg50f76bfpfxcv4dfivq1n9a0xlsra2ajb0vd68lxwgbidgyc2y"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-ppcre" ,sbcl-cl-ppcre)))
+      (synopsis "Common Lisp macros for generating lexical analyzers")
+      (description
+       "This is a Common Lisp library providing a set of macros for generating
+lexical analyzers automatically.  The lexers generated using @code{cl-lex} can
+be used with @code{cl-yacc}.")
+      (home-page "https://github.com/djr7C4/cl-lex")
+      (license license:gpl3))))
+
+(define-public cl-lex
+  (sbcl-package->cl-source-package sbcl-cl-lex))
+
+(define-public ecl-cl-lex
+  (sbcl-package->ecl-package sbcl-cl-lex))
