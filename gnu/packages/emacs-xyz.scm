@@ -20484,9 +20484,9 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
   ;; This package has versions newer than indicated on MELPA.
   ;; Get the current version from `telega-version` in telega.el.
   ;; or by running M-x telega-version.
-  (let ((commit "f6728934988140839a71550c9c18b65424ba6225")
+  (let ((commit "ae09592498ce380e57fbb76725fd4c89ae248864")
 	(revision "0")
-	(version "0.5.10"))
+	(version "0.6.0"))
     (package
       (name "emacs-telega")
       (version (git-version version revision commit))
@@ -20498,7 +20498,7 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
                (commit commit)))
          (sha256
           (base32
-           "1ijz1isxzssbhz6bxrqmn6wv2apx5rhvd9sbsclv1gaiz3wmkj7i"))
+           "0mv6i80958d9crzspzik5xh5g8326115bvg2frgv0dp9p6rm86m3"))
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
