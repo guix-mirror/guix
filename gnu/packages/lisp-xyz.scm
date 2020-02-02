@@ -9990,3 +9990,56 @@ for reading and writing JPEG image files.")
 
 (define-public ecl-cl-jpeg
   (sbcl-package->ecl-package sbcl-cl-jpeg))
+
+(define-public sbcl-nodgui
+  (let ((commit "bc59ed9b787dfc9e68ae3bd7f7e8507c5c619212")
+        (revision "1"))
+    (package
+      (name "sbcl-nodgui")
+      (version (git-version "0.0.5" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://notabug.org/cage/nodgui.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0xx0dk54d882i598ydnwmy7mnfk0b7vib3ddsgpqxhjck1rwq8l8"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("cl-colors2" ,sbcl-cl-colors2)
+         ("cl-jpeg" ,sbcl-cl-jpeg)
+         ("cl-lex" ,sbcl-cl-lex)
+         ("cl-ppcre-unicode" ,sbcl-cl-ppcre-unicode)
+         ("cl-unicode" ,sbcl-cl-unicode)
+         ("cl-yacc" ,sbcl-cl-yacc)
+         ("clunit2" ,sbcl-clunit2)
+         ("named-readtables" ,sbcl-named-readtables)
+         ("parse-number" ,sbcl-parse-number)
+         ("tk" ,tk)))
+      (arguments
+       `(#:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'fix-paths
+                      (lambda* (#:key inputs #:allow-other-keys)
+                        (substitute* "src/wish-communication.lisp"
+                          (("#-freebsd \"wish\"")
+                           (string-append "#-freebsd \""
+                                          (assoc-ref inputs "tk")
+                                          "/bin/wish\"")))
+                        #t)))))
+      (synopsis "Common Lisp bindings for the Tk GUI toolkit")
+      (description
+       "Nodgui (@emph{No Drama GUI}) is a Common Lisp binding for the Tk GUI
+toolkit.  It also provides a few additional widgets more than the standard Tk
+ones.")
+      (home-page "https://www.autistici.org/interzona/nodgui.html")
+      (license license:llgpl))))
+
+(define-public cl-nodgui
+  (sbcl-package->cl-source-package sbcl-nodgui))
+
+(define-public ecl-nodgui
+  (sbcl-package->ecl-package sbcl-nodgui))
