@@ -31,6 +31,7 @@
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 David Wilson <david@daviwil.com>
+;;; Copyright © 2020 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2006,6 +2007,41 @@ The cutbuffer and clipboard selection are always synchronized.")
      "This is a simple menu for X11 designed for scripting and tweaking.  It
 can optionally use some appearance settings from XSettings, tint2 and GTK.")
     (home-page "https://jgmenu.github.io/")
+    (license license:gpl2)))
+
+(define-public xwrits
+  (package
+    (name "xwrits")
+    (version "2.26")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.lcdf.org/~eddietwo/xwrits/"
+                           "xwrits-" version ".tar.gz"))
+       (sha256
+        (base32 "1n7y0fqpcvmzznvbsn14hzy5ddaa3lilm8aw6ckscqndnh4lijma"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-docs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/xwrits")))
+               (install-file "GESTURES" doc)
+               (install-file "README" doc)
+               #t))))))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxinerama" ,libxinerama)))
+    (home-page "https://www.lcdf.org/~eddietwo/xwrits/")
+    (synopsis "Reminds you to take wrist breaks")
+    (description "Xwrits reminds you to take wrist breaks for prevention or
+management of repetitive stress injuries.  When you should take a break, it
+pops up an X window, the warning window.  You click on the warning window,
+then take a break.  The window changes appearance while you take the break.
+It changes again when your break is over.  Then you just resume typing.
+Xwrits hides itself until you should take another break.")
     (license license:gpl2)))
 
 (define-public xsettingsd
