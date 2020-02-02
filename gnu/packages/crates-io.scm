@@ -7320,6 +7320,33 @@ compile time.")
 requests and responses.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-http-req-0.5
+  (package
+    (name "rust-http-req")
+    (version "0.5.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "http_req" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0qaw43nwvvxbnqddxhb9fh9316dn64nmkzj08pq8n49qdy51xrys"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       ;; Haven't packaged rustls and webpki because of license
+       (("rust-native-tls" ,rust-native-tls-0.2)
+        ("rust-unicase" ,rust-unicase-2.4))))
+    (home-page "https://github.com/jayjamesjay/http_req")
+    (synopsis
+     "HTTP client with built-in HTTPS support")
+    (description
+     "Simple and lightweight HTTP client with built-in HTTPS support.")
+    (license license:expat)))
+
 (define-public rust-httparse-1.3
   (package
     (name "rust-httparse")
