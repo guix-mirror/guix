@@ -163,7 +163,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.6.11.1")
+    (version "3.6.12")
     (source (origin
              (method url-fetch)
              (uri
@@ -175,7 +175,7 @@ living in the same process.")
              (patches (search-patches "gnutls-skip-trust-store-test.patch"))
              (sha256
               (base32
-               "1y1wadpsrj5ai603xv5bgssl9v0pb1si2hg14zqdnmcsvgri5fpv"))))
+               "0jvca1qahn9lrwv6f5kfs95icirc15b2a8x9fzczyj996ipg3b5z"))))
     (build-system gnu-build-system)
     (arguments
      `(; Ensure we don't keep a reference to this buggy software.
