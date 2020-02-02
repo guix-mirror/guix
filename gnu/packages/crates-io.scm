@@ -6315,6 +6315,44 @@ reading and writing git repositories.")
      "Generated OpenGL bindings and wrapper for Servo.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-glium-0.25
+  (package
+    (name "rust-glium")
+    (version "0.25.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "glium" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0mhjly07x10lxg802ppg16wbxddhh4fdnlg10i99qwpfamvqhzbd"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-backtrace" ,rust-backtrace-0.3)
+        ("rust-fnv" ,rust-fnv-1.0)
+        ("rust-glutin" ,rust-glutin-0.21)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-smallvec" ,rust-smallvec-0.6)
+        ("rust-takeable-option" ,rust-takeable-option-0.4))
+       #:cargo-development-inputs
+       (("rust-cgmath" ,rust-cgmath-0.17)
+        ("rust-genmesh" ,rust-genmesh-0.6)
+        ("rust-gl-generator" ,rust-gl-generator-0.11)
+        ("rust-image" ,rust-image-0.21)
+        ("rust-obj" ,rust-obj-0.9)
+        ("rust-rand" ,rust-rand-0.6))))
+    (home-page "https://github.com/glium/glium")
+    (synopsis
+     "OpenGL wrapper")
+    (description
+     "Glium is an intermediate layer between OpenGL and your application.  You
+still need to manually handle the graphics pipeline, but without having to use
+OpenGL's old and error-prone API.")
+    (license license:asl2.0)))
+
 (define-public rust-glob-0.3
   (package
     (name "rust-glob")
