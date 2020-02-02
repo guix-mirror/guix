@@ -9684,6 +9684,52 @@ checking.")
 IO of Windows's named pipes.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-native-tls-0.2
+  (package
+    (name "rust-native-tls")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "native-tls" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ki7cj4wzyd2nach4qdjly69sp7rs0yz3n3z2ii4mm1gqajg2bab"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; tests require network access
+       #:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-openssl" ,rust-openssl-0.10)
+        ("rust-openssl-probe" ,rust-openssl-probe-0.1)
+        ("rust-openssl-sys" ,rust-openssl-sys-0.9)
+        ("rust-schannel" ,rust-schannel-0.1)
+        ("rust-security-framework" ,rust-security-framework-0.3)
+        ("rust-security-framework-sys" ,rust-security-framework-sys-0.3)
+        ("rust-tempfile" ,rust-tempfile-3.1))
+       #:cargo-development-inputs
+       (("rust-hex" ,rust-hex-0.3))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'find-openssl
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((openssl (assoc-ref inputs "openssl")))
+               (setenv "OPENSSL_DIR" openssl))
+             #t)))))
+    (native-inputs
+     `(("openssl" ,openssl)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/sfackler/rust-native-tls")
+    (synopsis
+     "Wrapper over a platform's native TLS implementation")
+    (description
+     "This package provides a wrapper over a platform's native TLS implementation.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-natord-1.0
   (package
     (name "rust-natord")
