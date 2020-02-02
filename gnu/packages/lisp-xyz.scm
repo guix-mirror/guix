@@ -9821,3 +9821,23 @@ in pure Common Lisp and does not require any Tk knowledge for its usage.")
 
 (define-public ecl-ltk
   (sbcl-package->ecl-package sbcl-ltk))
+
+(define-public sbcl-ltk-mw
+  (package
+    (inherit sbcl-ltk)
+    (name "sbcl-ltk-mw")
+    (inputs
+     `(("ltk" ,sbcl-ltk)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-ltk)
+       ((#:asd-file _) "ltk/ltk-mw.asd")
+       ((#:phases _) '%standard-phases)))
+    (synopsis "Extra widgets for LTK")
+    (description
+     "This is a collection of higher-level widgets built on top of LTK.")))
+
+(define-public cl-ltk-mw
+  (sbcl-package->cl-source-package sbcl-ltk-mw))
+
+(define-public ecl-ltk-mw
+  (sbcl-package->ecl-package sbcl-ltk-mw))
