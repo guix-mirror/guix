@@ -21261,6 +21261,28 @@ hooks are run.  The hooked functions will be called with both the previous and
 the current buffer.")
     (license license:unlicense)))
 
+(define-public emacs-erc-scrolltoplace
+  (package
+    (name "emacs-erc-scrolltoplace")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/jgkamat/erc-scrolltoplace.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "11zpqwh1mlfifbgnvhc63bvnhg340jgxssm3m43hr1sxsyb52lh6"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-switch-buffer-functions" ,emacs-switch-buffer-functions)))
+    (home-page "https://gitlab.com/jgkamat/erc-scrolltoplace")
+    (synopsis "ERC module to replace scrolltobottom while using keep-place")
+    (description "@code{erc-scrolltoplace} is an ERC module to try
+to emulate @code{scrolltobottom} while @code{keep-place} is enabled.")
+    (license license:gpl3+)))
+
 (define-public emacs-dmenu
   ;; Use the latest commit, as there are no tagged releases.
   (let ((commit "e8cc9b27c79d3ecc252267c082ab8e9c82eab264")
