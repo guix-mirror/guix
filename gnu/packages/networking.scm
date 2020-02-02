@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016, 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -601,14 +601,14 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "3.2.0")
+    (version "3.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.wireshark.org/download/src/wireshark-"
                            version ".tar.xz"))
        (sha256
-        (base32 "0v5nn7i2nbqr59jsw8cs2052hr7xd96x1sa3480g8ks5kahk7zac"))))
+        (base32 "0nz84zyhs4177ljxmv34vgc9kgg7ssxhxa4mssxqwh6nb00697sq"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
