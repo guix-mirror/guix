@@ -9920,3 +9920,44 @@ easy to use so that you can quickly start testing.")
 
 (define-public ecl-clunit2
   (sbcl-package->ecl-package sbcl-clunit2))
+
+(define-public sbcl-cl-colors2
+  (let ((commit "795aedee593b095fecde574bd999b520dd03ed24")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-colors2")
+      (version (git-version "0.2.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://notabug.org/cage/cl-colors2.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0hlyf4h5chkjdp9armla5w4kw5acikk159sym7y8c4jbjp9x47ih"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("clunit2" ,sbcl-clunit2)))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-ppcre" ,sbcl-cl-ppcre)))
+      (synopsis "Color library for Common Lisp")
+      (description
+       "This is a very simple color library for Common Lisp, providing:
+
+@itemize
+@item Types for representing colors in HSV and RGB spaces.
+@item Simple conversion functions between the above types (and also
+hexadecimal representation for RGB).
+@item Some predefined colors (currently X11 color names -- of course
+the library does not depend on X11).
+@end itemize\n")
+      (home-page "https://notabug.org/cage/cl-colors2")
+      (license license:boost1.0))))
+
+(define-public cl-colors2
+  (sbcl-package->cl-source-package sbcl-cl-colors2))
+
+(define-public ecl-cl-colors2
+  (sbcl-package->ecl-package sbcl-cl-colors2))
