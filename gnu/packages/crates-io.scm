@@ -7751,6 +7751,36 @@ in Rust.")
      "This package provides a snapshot testing library for Rust.")
     (license license:asl2.0)))
 
+(define-public rust-instant-0.1
+  (package
+    (name "rust-instant")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "instant" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1bwca9fr29a1pyimfl94q6m6k2l57ljw1hhhvjafzs1zkqlnqd3c"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-stdweb" ,rust-stdweb-0.4)
+        ("rust-time" ,rust-time-0.1)
+        ("rust-web-sys" ,rust-web-sys-0.3))
+       #:cargo-development-inputs
+       (("rust-wasm-bindgen-test" ,rust-wasm-bindgen-test-0.2))))
+    (home-page "https://github.com/sebcrozet/instant")
+    (synopsis
+     "Partial replacement for std::time::Instant that works on WASM too")
+    (description
+     "This package provides a partial replacement for @code{std::time::Instant}
+that works on WASM too.")
+    (license license:bsd-3)))
+
 (define-public rust-intervaltree-0.2
   (package
     (name "rust-intervaltree")
