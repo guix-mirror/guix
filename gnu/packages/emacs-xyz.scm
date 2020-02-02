@@ -18997,6 +18997,29 @@ previewed by scrolling up and down within a @code{dired} buffer.")
 and searching through @code{Ctags} files.")
     (license license:gpl3+)))
 
+(define-public emacs-ivy-clipmenu
+  (let ((commit "d2071f2c5043a05d610cd1952e84176ca78c31dc"))
+    (package
+      (name "emacs-ivy-clipmenu")
+      (version (git-version "0.0.1" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/wpcarro/ivy-clipmenu.el.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0npd8glzk5z4n7y9mzbsbzi0cf3by19fqcki052jr3dga363lds7"))))
+      (propagated-inputs
+       `(("emacs-f" ,emacs-f)
+         ("emacs-ivy" ,emacs-ivy)))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/wpcarro/ivy-clipmenu.el")
+      (synopsis "Ivy integration with clipmenu")
+      (description "Ivy integration with the clipboard manager, clipmenu.")
+      (license license:expat))))
+
 (define-public emacs-org-download
   (let ((commit "10c9d7c8eed928c88a896310c882e3af4d8d0f61")
         (revision "2"))
