@@ -3526,3 +3526,50 @@ with GitLab instances through their API.")
     (description "Path-and-address resolves ambiguities of command-line
 interfaces, inferring which argument is the path, and which is the address.")
     (license license:expat)))
+
+(define-public grip
+  ;; No release by upstream for quite some time, some bugs fixed since. See:
+  ;; https://github.com/joeyespo/grip/issues/304
+  (let ((commit "27a4d6d87ea1d0ea7f7f120de55baabee3de73e3"))
+    (package
+      (name "grip")
+      (version (git-version "4.5.2" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/joeyespo/grip")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0kx5hgb3q19i4l18a4vqdq9af390xgpk88lp2ay75qi96k0dc68w"))))
+      (build-system python-build-system)
+      (propagated-inputs
+       `(("python-docopt" ,python-docopt)
+         ("python-flask" ,python-flask)
+         ("python-markdown" ,python-markdown)
+         ("python-path-and-address" ,python-path-and-address)
+         ("python-pygments" ,python-pygments)
+         ("python-requests" ,python-requests)))
+      (native-inputs
+       `(("python-pytest" ,python-pytest)
+         ("python-responses" ,python-responses)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (add-installed-pythonpath inputs outputs)
+               (setenv "PATH" (string-append
+                                (getenv "PATH") ":"
+                                (assoc-ref %outputs "out") "/bin"))
+               (invoke "py.test" "-m" "not assumption"))))))
+      (home-page "https://github.com/joeyespo/grip")
+      (synopsis "Preview Markdown files using the GitHub API")
+      (description "Grip is a command-line server application written in Python
+that uses the GitHub Markdown API to render a local Markdown file.  The styles
+and rendering come directly from GitHub, so you'll know exactly how it will
+appear.  Changes you make to the file will be instantly reflected in the browser
+without requiring a page refresh.")
+      (license license:expat))))
