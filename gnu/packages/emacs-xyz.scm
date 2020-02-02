@@ -21238,6 +21238,30 @@ mode-line text (lighter) of major and minor modes.")
 matching a given regexp.")
       (license license:gpl2+))))
 
+(define-public emacs-no-littering
+  (package
+    (name "emacs-no-littering")
+    (version "1.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emacscollective/no-littering.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "17is06l0w6glppabv2kaclrnqi3dqb6p6alpslpg7lrjd8vd45ir"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/emacscollective/no-littering")
+    (synopsis "Help keep ~/.emacs.d/ clean")
+    (description "The default paths used to store configuration files and
+persistent data are not consistent across Emacs packages, be them built-in or
+third-party ones.  @code{no-littering} sets out to help clean
+@file{~/.emacs.d/} by putting configuration files and persistent data files in
+two user-defined directories, as well as using more descriptive names for
+files and subdirectories when appropriate.")
+    (license license:gpl3+)))
+
 (define-public emacs-message-x
   ;; Use the latest commit, as there are no tagged releases.
   (let ((commit "5524de7bbfdd8749c110f48de5afb024d9f83133")
