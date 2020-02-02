@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2016, 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
+;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -318,6 +319,14 @@ dictionaries, including personal ones.")
                      #:sha256
                      (base32
                       "0ip6nq43hcr7vvzbv4lwwmlwgfa60hrhsldh9xy3zg2prv6bcaaw")))
+
+(define-public aspell-dict-sl
+  (aspell-dictionary "sl" "Slovenian"
+                     #:version "0.50-0"
+                     #:prefix "aspell-"
+                     #:sha256
+                     (base32
+                      "1l9kc5g35flq8kw9jhn2n0bjb4sipjs4qkqzgggs438kywkx2rp5")))
 
 (define-public aspell-dict-sv
   (aspell-dictionary "sv" "Swedish"
