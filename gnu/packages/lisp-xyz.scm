@@ -9961,3 +9961,32 @@ the library does not depend on X11).
 
 (define-public ecl-cl-colors2
   (sbcl-package->ecl-package sbcl-cl-colors2))
+
+(define-public sbcl-cl-jpeg
+  (let ((commit "ec557038128df6895fbfb743bfe8faf8ec2534af")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-jpeg")
+      (version (git-version "2.8" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sharplispers/cl-jpeg.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1bkkiqz8fqldlj1wbmrccjsvxcwj98h6s4b6gslr3cg2wmdv5xmy"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "JPEG image library for Common Lisp")
+      (description
+       "This is a baseline JPEG codec written in Common Lisp.  It can be used
+for reading and writing JPEG image files.")
+      (home-page "https://github.com/sharplispers/cl-jpeg")
+      (license license:bsd-3))))
+
+(define-public cl-jpeg
+  (sbcl-package->cl-source-package sbcl-cl-jpeg))
+
+(define-public ecl-cl-jpeg
+  (sbcl-package->ecl-package sbcl-cl-jpeg))
