@@ -14770,6 +14770,37 @@ Pwrite traits from the scroll crate.")
 proven statistical guarantees.")
     (license license:expat)))
 
+(define-public rust-security-framework-0.3
+  (package
+    (name "rust-security-framework")
+    (version "0.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "security-framework" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1pqn79cl9njnnhsmjvvphkzx8is5jhfd8bhxpllgvrgggjfl5wlf"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; Some test files not included in release.
+       #:cargo-inputs
+       (("rust-core-foundation" ,rust-core-foundation-0.6)
+        ("rust-core-foundation-sys" ,rust-core-foundation-sys-0.6)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-security-framework-sys" ,rust-security-framework-sys-0.3))
+       #:cargo-development-inputs
+       (("rust-hex" ,rust-hex-0.4)
+        ("rust-tempdir" ,rust-tempdir-0.3))))
+    (home-page "https://lib.rs/crates/security_framework")
+    (synopsis
+     "Security.framework bindings for macOS and iOS")
+    (description
+     "Security.framework bindings for macOS and iOS.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-security-framework-sys-0.3
   (package
     (name "rust-security-framework-sys")
