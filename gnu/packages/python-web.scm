@@ -31,6 +31,7 @@
 ;;; Copyright © 2019 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3494,3 +3495,34 @@ is part of the Weblate translation platform.")
     (description "This package provides an extended library for interacting
 with GitLab instances through their API.")
     (license license:lgpl3+)))
+
+(define-public python-path-and-address
+  (package
+    (name "python-path-and-address")
+    (version "2.0.1")
+    (source
+     (origin
+       ;; The source distributed on PyPI doesn't include tests.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/joeyespo/path-and-address")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0b0afpsaim06mv3lhbpm8fmawcraggc11jhzr6h72kdj1cqjk5h6"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "py.test"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/joeyespo/path-and-address")
+    (synopsis "Functions for command-line server tools used by humans")
+    (description "Path-and-address resolves ambiguities of command-line
+interfaces, inferring which argument is the path, and which is the address.")
+    (license license:expat)))
