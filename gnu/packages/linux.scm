@@ -11,7 +11,7 @@
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Raymond Nicholson <rain1@openmailbox.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
-;;; Copyright © 2016, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -87,6 +87,7 @@
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages haskell-apps)
   #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages libusb)
@@ -5170,42 +5171,46 @@ interface in sysfs, which can be accomplished with the included udev rules.")
 (define-public tlp
   (package
     (name "tlp")
-    (version "1.2.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/linrunner/"
-                    (string-upcase name)
-                    "/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "059kxrpxx580mm6p0z2a421nxngszyh4yqqhbgvn04b6a7dbsa2w"))))
-    (inputs `(("bash" ,bash)
-              ("dbus" ,dbus)
-              ("ethtool" ,ethtool)
-              ("eudev" ,eudev)
-              ("grep" ,grep)
-              ("hdparm" ,hdparm)
-              ("inetutils" ,inetutils)
-              ("iw" ,iw)
-              ("kmod" ,kmod)
-              ("pciutils" ,pciutils)
-              ("perl" ,perl)
-              ("rfkill" ,rfkill)
-              ("sed" ,sed)
-              ("usbutils" ,usbutils)
-              ("util-linux" ,util-linux)
-              ("wireless-tools" ,wireless-tools)
-              ,@(if (let ((system (or (%current-target-system)
-                                      (%current-system))))
-                      (or (string-prefix? "i686-" system)
-                          (string-prefix? "x86_64-" system)))
-                    `(("x86-energy-perf-policy" ,x86-energy-perf-policy))
-                    '())))
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/linrunner/TLP/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "169k3xypq5rq0xiggrlpr73yr2r2x7b2d9vcr9ac96qrgph7sk7r"))))
+    (native-inputs
+     `(("shellcheck" ,shellcheck)))
+    (inputs
+     `(("bash" ,bash)
+       ("dbus" ,dbus)
+       ("ethtool" ,ethtool)
+       ("eudev" ,eudev)
+       ("grep" ,grep)
+       ("hdparm" ,hdparm)
+       ("inetutils" ,inetutils)
+       ("iw" ,iw)
+       ("kmod" ,kmod)
+       ("pciutils" ,pciutils)
+       ("perl" ,perl)
+       ("rfkill" ,rfkill)
+       ("sed" ,sed)
+       ("usbutils" ,usbutils)
+       ("util-linux" ,util-linux)
+       ("wireless-tools" ,wireless-tools)
+       ,@(if (let ((system (or (%current-target-system)
+                               (%current-system))))
+               (or (string-prefix? "i686-" system)
+                   (string-prefix? "x86_64-" system)))
+             `(("x86-energy-perf-policy" ,x86-energy-perf-policy))
+             '())))
     (build-system gnu-build-system)
     (arguments
-     `(#:modules ((guix build gnu-build-system)
+     ;; XXX: The full test suite is run with "checkall" but it requires
+     ;; "checkbashisms" and "perlcritic", not yet packaged in Guix.
+     `(#:test-target "shellcheck"
+       #:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (srfi srfi-1))
        #:phases
@@ -5222,7 +5227,9 @@ interface in sysfs, which can be accomplished with the included udev rules.")
                (setenv "TLP_TLIB" (string-append out "/share/tlp"))
                (setenv "TLP_FLIB" (string-append out "/share/tlp/func.d"))
                (setenv "TLP_ULIB" (string-append out "/lib/udev"))
-               (setenv "TLP_CONF" "/etc/tlp")
+               (setenv "TLP_CONFDEF"
+                       (string-append out "/share/tlp/defaults.conf"))
+               (setenv "TLP_CONFDIR" (string-append out "/etc/tlp.d"))
                (setenv "TLP_ELOD"
                        (string-append out "/lib/elogind/system-sleep"))
                (setenv "TLP_SHCPL"
@@ -5230,17 +5237,15 @@ interface in sysfs, which can be accomplished with the included udev rules.")
                (setenv "TLP_MAN" (string-append out "/share/man"))
                (setenv "TLP_META" (string-append out "/share/metainfo"))
                #t)))
-         (delete 'check)                ; no tests
          (add-before 'install 'fix-installation
            (lambda _
              ;; Stop the Makefile from trying to create system directories.
              (substitute* "Makefile"
-               (("\\[ -f \\$\\(_CONF\\) \\]") "#")
+               (("\\[ -f \\$\\(_CONFUSR\\) \\]") "#")
                (("install -d -m 755 \\$\\(_VAR\\)") "#"))
              #t))
          (replace 'install
-           (lambda _
-             (invoke "make" "install-tlp" "install-man")))
+           (lambda _ (invoke "make" "install-tlp" "install-man-tlp")))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((bin (string-append (assoc-ref outputs "out") "/bin"))
