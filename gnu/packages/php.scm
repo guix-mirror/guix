@@ -4,6 +4,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,15 +60,15 @@
 (define-public php
   (package
     (name "php")
-    (version "7.4.1")
-    (home-page "https://secure.php.net/")
+    (version "7.4.2")
+    (home-page "https://www.php.net/")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page "distributions/"
                                   "php-" version ".tar.xz"))
               (sha256
                (base32
-                "0qn7zwf2jzj3h7p4b1l79lf9gv236mycwkhgw15hj2fmpmkbh6sn"))
+                "04yz9f7klh642syfh49rmribzwd1k5ssxv0pc510vnhpq3m4sa4q"))
               (modules '((guix build utils)))
               (snippet
                '(with-directory-excursion "ext"
@@ -210,6 +211,14 @@
                          "ext/standard/tests/strings/setlocale_basic2.phpt"
                          "ext/standard/tests/strings/setlocale_basic3.phpt"
                          "ext/standard/tests/strings/setlocale_variation1.phpt"
+                         ;; This failing test is skipped on PHP's Travis CI as it is
+                         ;; supposedly inaccurate.
+                         "ext/standard/tests/file/disk_free_space_basic.phpt"
+                         ;; The two following tests erroneously expect the link count
+                         ;; of a sub-directory to increase compared to its
+                         ;; parent.
+                         "ext/standard/tests/file/lstat_stat_variation8.phpt"
+                         "ext/standard/tests/file/lstat_stat_variation9.phpt"
 
                          ;; XXX: These gd tests fails.  Likely because our version
                          ;; is different from the (patched) bundled one.
@@ -237,6 +246,13 @@
                          ;; complete.  It's a warning in both cases and test
                          ;; result is the same.
                          "ext/gd/tests/bug77973.phpt"
+                         ;; Test expects uninitialized value to be false, but
+                         ;; instead gets "resource(5) of type (gd)".
+                         "ext/gd/tests/bug79067.phpt"
+                         ;; The following test fails with "The image size
+                         ;; differs: expected 114x115, got 117x117".
+                         "ext/gd/tests/bug79068.phpt"
+
 
                          ;; XXX: These iconv tests have the expected outcome,
                          ;; but with different error messages.
