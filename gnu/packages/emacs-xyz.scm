@@ -21238,6 +21238,30 @@ mode-line text (lighter) of major and minor modes.")
 matching a given regexp.")
       (license license:gpl2+))))
 
+(define-public emacs-dmenu
+  ;; Use the latest commit, as there are no tagged releases.
+  (let ((commit "e8cc9b27c79d3ecc252267c082ab8e9c82eab264")
+        (revision "0"))
+    (package
+      (name "emacs-dmenu")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/lujun9972/el-dmenu.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "098ncygms1r33zhjlq4fj2p4jc91v5whqrm3fazzdk7sd6dilf25"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/lujun9972/el-dmenu")
+      (synopsis "Simulate the @command{dmenu} command line program")
+      (description "This package provides a @command{dmenu} command for
+launching other commands/applications from within Emacs, similar to the
+@command{dmenu} program.  This is especially useful when using EXWM.")
+      (license license:gpl3+))))
+
 (define-public emacs-no-littering
   (package
     (name "emacs-no-littering")
