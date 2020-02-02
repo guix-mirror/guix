@@ -14325,6 +14325,32 @@ It also provides an implementation of a dynamic GPU glyph cache for hardware
 font rendering.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-rusttype-0.7
+  (package
+    (inherit rust-rusttype-0.8)
+    (name "rust-rusttype")
+    (version "0.7.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rusttype" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1m9ms4p94cgif74y1rzkj04rx8i1la193c0jgvnip61rd904429i"))))
+    (arguments
+     `(#:tests? #f      ; Artifacts for tests not included.
+       #:cargo-inputs
+       (("rust-rusttype" ,rust-rusttype-0.8))
+       #:cargo-development-inputs
+       (("rust-arrayvec" ,rust-arrayvec-0.4)
+        ("rust-blake2" ,rust-blake2-0.8)
+        ("rust-glium" ,rust-glium-0.25)
+        ("rust-image" ,rust-image-0.21)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-unicode-normalization" ,rust-unicode-normalization-0.1))))))
+
 (define-public rust-rustversion-1.0
   (package
     (name "rust-rustversion")
