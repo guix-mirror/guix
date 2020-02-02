@@ -9891,3 +9891,32 @@ be used with @code{cl-yacc}.")
 
 (define-public ecl-cl-lex
   (sbcl-package->ecl-package sbcl-cl-lex))
+
+(define-public sbcl-clunit2
+  (let ((commit "5e28343734eb9b7aee39306a614af92c1062d50b")
+        (revision "1"))
+    (package
+      (name "sbcl-clunit2")
+      (version (git-version "0.2.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://notabug.org/cage/clunit2.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1ngiapfki6nm8a555mzhb5p7ch79i3w665za5bmb5j7q34fy80vw"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Unit testing framework for Common Lisp")
+      (description
+       "CLUnit is a Common Lisp unit testing framework.  It is designed to be
+easy to use so that you can quickly start testing.")
+      (home-page "https://notabug.org/cage/clunit2")
+      (license license:expat))))
+
+(define-public cl-clunit2
+  (sbcl-package->cl-source-package sbcl-clunit2))
+
+(define-public ecl-clunit2
+  (sbcl-package->ecl-package sbcl-clunit2))
