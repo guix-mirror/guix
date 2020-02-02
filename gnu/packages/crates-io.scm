@@ -30,6 +30,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages pcre)
@@ -215,6 +216,39 @@ Rust, using gimli.")
         ("rust-quickcheck" ,rust-quickcheck-0.2)
         ("rust-rand" ,rust-rand-0.3)
         ("rust-rustc-serialize" ,rust-rustc-serialize-0.3))))))
+
+(define-public rust-andrew-0.2
+  (package
+    (name "rust-andrew")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "andrew" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0pmklwcwy8g1jras46fz8xcny779zfqpg4riksrbdhkjk3w0jzwv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-line-drawing" ,rust-line-drawing-0.7)
+        ("rust-rusttype" ,rust-rusttype-0.7)
+        ("rust-walkdir" ,rust-walkdir-2.2)
+        ("rust-xdg" ,rust-xdg-2.2)
+        ("rust-xml-rs" ,rust-xml-rs-0.8))
+       #:cargo-development-inputs
+       (("rust-smithay-client-toolkit" ,rust-smithay-client-toolkit-0.4))))
+    (inputs
+     `(("wayland" ,wayland)))
+    (home-page "https://github.com/trimental/andrew")
+    (synopsis "Provides convenient drawing of objects to buffers")
+    (description
+     "The @code{andrew} crate provides convenient drawing of objects such as
+shapes, lines and text to buffers.")
+    (license license:expat)))
 
 (define-public rust-android-glue-0.2
   (package
