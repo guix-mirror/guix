@@ -2798,6 +2798,36 @@ intrinsics.")
      "Bindings to the Core Text framework.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-core-video-sys-0.1
+  (package
+    (name "rust-core-video-sys")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "core-video-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1l59cg88482hkl95ssb30ac9x65hpbdsmxz9s5r6y222jlhnbh4d"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t     ; only for macOS
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-core-foundation-sys" ,rust-core-foundation-sys-0.6)
+        ("rust-core-graphics" ,rust-core-graphics-0.17)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-metal" ,rust-metal-0.14)
+        ("rust-objc" ,rust-objc-0.2))))
+    (home-page "https://github.com/luozijun/rust-core-video-sys")
+    (synopsis
+     "Bindings to CoreVideo.framework for macOS and iOS")
+    (description
+     "Bindings to CoreVideo.framework for macOS and iOS.")
+    (license license:expat)))
+
 (define-public rust-crates-index-0.13
   (package
     (name "rust-crates-index")
