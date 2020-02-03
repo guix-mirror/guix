@@ -4158,7 +4158,7 @@ say, on another machine, by providing a channel specification in
       (channel
        (name 'my-personal-packages)
        (url "https://example.org/personal-packages.git")
-       (branch "dd3df5e2c8818760a8fc0bd699e55d3b69fef2bb")))
+       (commit "dd3df5e2c8818760a8fc0bd699e55d3b69fef2bb")))
 @end lisp
 
 The @command{guix describe --format=channels} command can even generate this
