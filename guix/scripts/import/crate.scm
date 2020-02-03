@@ -96,7 +96,7 @@ Import and convert the crate.io package for PACKAGE-NAME.\n"))
 
        (if (assoc-ref opts 'recursive)
            (crate-recursive-import name #:version version)
-           (let ((sexp (crate->guix-package name #:version version)))
+           (let ((sexp (crate->guix-package name #:version version #:include-dev-deps? #t)))
              (unless sexp
                (leave (G_ "failed to download meta-data for package '~a'~%")
                       (if version
