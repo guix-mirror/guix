@@ -7438,7 +7438,7 @@ interactive development.")
          ("metabang-bind" ,sbcl-metabang-bind)
          ("named-readtables" ,sbcl-named-readtables)))
       (arguments
-       '(#:test-asd-file "graph.test.asd"))
+       '(#:test-asd-file "graph-test.asd"))
       (synopsis "Graph data structure and algorithms for Common Lisp")
       (description
        "The GRAPH Common Lisp library provides a data structures to represent
@@ -7463,7 +7463,7 @@ path, maximum flow, minimum spanning tree, etc.).")
        ("named-readtables" ,sbcl-named-readtables)))
     (arguments
      (substitute-keyword-arguments (package-arguments sbcl-graph)
-       ((#:asd-file _ "") "graph.dot.asd")
+       ((#:asd-file _ "") "graph-dot.asd")
        ((#:asd-system-name _ #f) "graph-dot")))
     (synopsis "Serialize graphs to and from DOT format")))
 
@@ -7480,7 +7480,7 @@ path, maximum flow, minimum spanning tree, etc.).")
        ("yason" ,sbcl-yason)))
     (arguments
      (substitute-keyword-arguments (package-arguments sbcl-graph)
-       ((#:asd-file _ "") "graph.json.asd")
+       ((#:asd-file _ "") "graph-json.asd")
        ((#:asd-system-name _ #f) "graph-json")))
     (synopsis "Serialize graphs to and from JSON format")))
 
