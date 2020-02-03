@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -108,6 +108,10 @@ the 'SSL_CERT_FILE' and 'SSL_CERT_DIR' environment variables."
                               (string-append "R:" url)
                               url))))))
 
+;; Authentication appeared in Guile-Git 0.3.0, check if it is available.
+(define auth-supported?
+  (false-if-exception (resolve-interface '(git auth))))
+
 (define (clone* url directory)
   "Clone git repository at URL into DIRECTORY.  Upon failure,
 make sure no empty directory is left behind."
@@ -119,7 +123,13 @@ make sure no empty directory is left behind."
       ;; value in Guile-Git: <https://bugs.gnu.org/29238>.
       (if (module-defined? (resolve-interface '(git))
                            'clone-init-options)
-          (clone url directory (clone-init-options))
+          (let ((auth-method (and auth-supported?
+                                  (%make-auth-ssh-agent))))
+            (clone url directory
+                   (if auth-supported?
+                       (make-clone-options
+                        #:fetch-options (make-fetch-options auth-method))
+                       (clone-init-options))))
           (clone url directory)))
     (lambda _
       (false-if-exception (rmdir directory)))))
@@ -276,12 +286,17 @@ When RECURSIVE? is true, check out submodules as well, if any."
   (with-libgit2
    (let* ((cache-exists? (openable-repository? cache-directory))
           (repository    (if cache-exists?
-                             (repository-open cache-directory)
+                             (repository-open (pk cache-directory))
                              (clone* url cache-directory))))
      ;; Only fetch remote if it has not been cloned just before.
      (when (and cache-exists?
                 (not (reference-available? repository ref)))
-       (remote-fetch (remote-lookup repository "origin")))
+       (if auth-supported?
+           (let ((auth-method (and auth-supported?
+                                   (%make-auth-ssh-agent))))
+             (remote-fetch (remote-lookup repository "origin")
+                           #:fetch-options (make-fetch-options auth-method)))
+           (remote-fetch (remote-lookup repository "origin"))))
      (when recursive?
        (update-submodules repository #:log-port log-port))
      (let ((oid (switch-to-ref repository canonical-ref)))
