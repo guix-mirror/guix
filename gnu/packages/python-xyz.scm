@@ -5029,8 +5029,7 @@ for older versions of Python.")
      `(("python-zipp" ,python-zipp)))
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-six" ,python-six)
-       ("python-packaging" ,python-packaging-bootstrap)))
+       ("python-packaging" ,python-packaging)))
     (home-page "https://importlib-metadata.readthedocs.io/")
     (synopsis "Read metadata from Python packages")
     (description
@@ -5049,6 +5048,9 @@ need to use the older and less efficient @code{pkg_resources} package.")
     (package/inherit
      base
      (name "python2-importlib-metadata")
+     (native-inputs
+      `(("python-packaging" ,python2-packaging-bootstrap)
+        ,@(alist-delete "python-packaging" (package-native-inputs base))))
      (propagated-inputs
       `(("python-configparser" ,python2-configparser)
         ("python-contextlib2" ,python2-contextlib2)
