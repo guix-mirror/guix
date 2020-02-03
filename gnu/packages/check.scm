@@ -2437,6 +2437,10 @@ portable to just about any platform.")
                     (lambda _
                       (substitute* "test/functests/test_exclude_mono.sh"
                         (("/bin/bash") (which "bash")))
+
+                      ;; Do not fail due to use of 'ftime', which was deprecated in
+                      ;; glibc 2.31.  Remove this for later versions of libfaketime.
+                      (setenv "FAKETIME_COMPILE_CFLAGS" "-Wno-deprecated-declarations")
                       #t)))
        #:test-target "test"))
     (native-inputs
