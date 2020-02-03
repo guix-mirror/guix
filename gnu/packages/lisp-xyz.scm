@@ -10043,3 +10043,31 @@ ones.")
 
 (define-public ecl-nodgui
   (sbcl-package->ecl-package sbcl-nodgui))
+
+(define-public sbcl-salza2
+  (package
+    (name "sbcl-salza2")
+    (version "2.0.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/xach/salza2.git")
+             (commit (string-append "release-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0p38rj4gq7j5k807php7hrz7l2zyyfshv8i9yms7i8lkgg3433ki"))))
+    (build-system asdf-build-system/sbcl)
+    (synopsis "Common Lisp library for zlib, deflate and gzip compression")
+    (description
+     "Salza2 is a Common Lisp library for creating compressed data in the zlib,
+deflate, or gzip data formats, described in RFC 1950, RFC 1951, and RFC 1952,
+respectively.")
+    (home-page "https://www.xach.com/lisp/salza2/")
+    (license license:bsd-2)))
+
+(define-public cl-salza2
+  (sbcl-package->cl-source-package sbcl-salza2))
+
+(define-public ecl-salza2
+  (sbcl-package->ecl-package sbcl-salza2))
