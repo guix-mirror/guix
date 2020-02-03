@@ -7,6 +7,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Timothy Sample <samplet@ngyro.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,8 +52,8 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (guix build-system guile)
   #:use-module (guix build-system trivial)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix memoization)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
@@ -140,252 +141,170 @@
             (variable "GUILE_LOAD_COMPILED_PATH")
             (files '("lib/guile/2.0/site-ccache")))))))
 
+(define bootar
+  (package
+    (name "bootar")
+    (version "1")
+    (source (origin
+              (method url-fetch)
+              (uri "https://files.ngyro.com/bootar/bootar-1.ses")
+              (sha256
+               (base32
+                "011p0nky2qp0vmyhvdx220qywxxp7a0m6pvy0lzzg4qxbpyqpf0r"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:implicit-inputs? #f
+       #:tests? #f
+       #:guile ,%bootstrap-guile
+       #:imported-modules ((guix build gnu-bootstrap)
+                           ,@%gnu-build-system-modules)
+       #:phases
+       (begin
+         (use-modules (guix build gnu-bootstrap))
+         (modify-phases %standard-phases
+           (replace 'unpack
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let* ((source (assoc-ref inputs "source"))
+                      (guile-dir (assoc-ref inputs "guile"))
+                      (guile (string-append guile-dir "/bin/guile")))
+                 (invoke guile "--no-auto-compile" source)
+                 (chdir "bootar")
+                 #t)))
+           (replace 'configure (bootstrap-configure ,version "." "scripts"))
+           (replace 'build (bootstrap-build "."))
+           (replace 'install (bootstrap-install "." "scripts"))))))
+    (inputs `(("guile" ,%bootstrap-guile)))
+    (home-page "https://git.ngyro.com/bootar")
+    (synopsis "Tar decompression and extraction in Guile Scheme")
+    (description "Bootar is a simple Tar extractor written in Guile
+Scheme.  It supports running 'tar xvf' on uncompressed tarballs or
+tarballs that are compressed with BZip2, GZip, or XZ.  It also provides
+standalone scripts for 'bzip2', 'gzip', and 'xz' that each support
+decompression to standard output.
+
+What makes this special is that Bootar is distributed as a
+self-extracting Scheme (SES) program.  That is, a little script that
+outputs the source code of Bootar.  This makes it possible to go from
+pure Scheme to Tar and decompression in one easy step.")
+    (license license:gpl3+)))
+
 (define gash-boot
   (package
     (inherit gash)
     (name "gash-boot")
-    (version "0.2.0")
-    (source (bootstrap-origin
-             (origin (inherit (package-source gash))
-                     (modules '((guix build utils)
-                                (srfi srfi-26)))
-                     (snippet
-                      '(begin
-                         ;; Remove Guix'y files that we cannot compile.
-                         (delete-file "guix.scm")
-                         (delete-file-recursively "tests")
-                         #t)))))
-    (build-system guile-build-system)
-    (native-inputs `(("bash" ,(bootstrap-executable "bash" (%current-system)))
-                     ("tar" ,(bootstrap-executable "tar" (%current-system)))
-                     ("xz" ,(bootstrap-executable "xz" (%current-system)))
-                     ("guile-source" ,(bootstrap-origin
-                                       (package-source guile-2.0)))))
-    (inputs `(("guile" ,%bootstrap-guile+guild)))
+    (source (origin
+              (inherit (package-source gash))
+              (modules '())))
     (arguments
      `(#:implicit-inputs? #f
-       #:guile ,%bootstrap-guile+guild
+       #:tests? #f
+       #:guile ,%bootstrap-guile
+       #:imported-modules ((guix build gnu-bootstrap)
+                           ,@%gnu-build-system-modules)
        #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'unpack-guile-source
-           (lambda _
-             (let ((guile-source (assoc-ref %build-inputs "guile-source"))
-                   (bin (string-append (getcwd) "/zee-bin")))
-               (mkdir-p bin)
-               (with-directory-excursion bin
-                 (invoke "tar" "--strip-components=2"
-
-                         "-xvf" guile-source
-                         (string-append "guile-"
-                                        ,(package-version guile-2.0)
-                                        "/meta/guild.in"))
-                 (copy-file "guild.in" "guild")
-                 (chmod "guild" #o555))
-               #t)))
-         (add-before 'unpack 'set-path
-           (lambda _
-             (let ((bash (assoc-ref %build-inputs "bash"))
-                   (tar (assoc-ref %build-inputs "tar"))
-                   (xz (assoc-ref %build-inputs "xz"))
-                   (bin (string-append (getcwd) "/zee-bin")))
-               (mkdir-p bin)
-               (setenv "PATH" (string-append bin ":" (getenv "PATH")))
-               (copy-file bash (string-append bin "/bash"))
-               (copy-file bash (string-append bin "/sh"))
-               (copy-file tar (string-append bin "/tar"))
-               (copy-file xz (string-append bin "/xz"))
-               #t)))
-         (add-after 'build 'build-scripts
-           (lambda _
-             (let* ((guile (assoc-ref %build-inputs "guile"))
-                    (guile (string-append guile "/bin/guile"))
-                    (out (assoc-ref %outputs "out"))
-                    (effective "2.0")
-                    (moddir (string-append out "/share/guile/site/" effective "/"))
-                    (godir (string-append out "/lib/guile/" effective "/site-ccache/")))
-               (copy-file "scripts/gash.in" "scripts/gash")
-               (chmod "scripts/gash" #o555)
-               (substitute* "scripts/gash"
-                 (("@GUILE@") guile)
-                 (("@MODDIR@") moddir)
-                 (("@GODIR") godir))
-               #t)))
-         (add-after 'install 'install-scripts
-           (lambda _
-             (let* ((out (assoc-ref %outputs "out"))
-                    (bin (string-append out "/bin")))
-               (install-file "scripts/gash" bin)
-               (copy-file "scripts/gash" "scripts/sh")
-               (install-file "scripts/sh" bin)
-               (copy-file "scripts/gash" "scripts/bash")
-               (install-file "scripts/bash" bin)
-               #t))))))))
+       (begin
+         (use-modules (guix build gnu-bootstrap))
+         (modify-phases %standard-phases
+           (replace 'configure
+             (bootstrap-configure ,(version) "gash" "scripts"))
+           (replace 'build (bootstrap-build "gash"))
+           (replace 'install (bootstrap-install "gash" "scripts"))
+           (add-after 'install 'install-symlinks
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (symlink (string-append out "/bin/gash")
+                          (string-append out "/bin/sh"))
+                 (symlink (string-append out "/bin/gash")
+                          (string-append out "/bin/bash"))
+                 #t)))))))
+    (inputs `(("guile" ,%bootstrap-guile)))
+    (native-inputs `(("bootar" ,bootar)))))
 
 (define gash-utils-boot
   (package
     (inherit gash-utils)
     (name "gash-utils-boot")
-    (version "0.0.214-fc1b")
-    (source (bootstrap-origin
-             (origin
-               (method url-fetch)
-               (uri (string-append "http://lilypond.org/janneke/"
-                                   "/gash-core-utils-" version ".tar.gz"))
-               (modules '((guix build utils)))
-               (snippet
-                '(begin
-                   ;; The Guile build system compiles *.scm; avoid
-                   ;; compiling included lalr.
-                   (delete-file "guix.scm")
-                   (delete-file-recursively "tests")
-                   (substitute* "system/base/lalr.scm"
-                     (("system/base/lalr.upstream.scm") "lalr.upstream.scm"))
-                   #t))
-               (sha256
-                (base32
-                 "090d8m0b165jf9381nhqpljc5zk22jd6bw03xnyf0na5snk9xp6v")))))
-    (build-system guile-build-system)
-    (native-inputs `(("bash" ,(bootstrap-executable "bash" (%current-system)))
-                     ("tar" ,(bootstrap-executable "tar" (%current-system)))
-                     ("xz" ,(bootstrap-executable "xz" (%current-system)))
-                     ("guile-source" ,(bootstrap-origin
-                                       (package-source guile-2.0)))
-                     ;; We need the 2.0.9 lalr for %bootstrap-guile
-                     ("lalr.upstream"
-                      ,(origin
-                         (method url-fetch)
-                         (uri (string-append "http://git.savannah.gnu.org/cgit/guile.git/plain/module/system/base/lalr.upstream.scm?h=v2.0.9"))
-                         (file-name "lalr.upstream.scm")
-                         (sha256
-                          (base32
-                           "0h7gyjj8nr2qrgzwma146s7l22scp8bbcqzdy9wqf12bgyhbw7d5"))))))
-    (inputs `(("guile" ,%bootstrap-guile+guild)
-              ("gash" ,gash-boot)))
     (arguments
      `(#:implicit-inputs? #f
-       #:guile ,%bootstrap-guile+guild
-       #:not-compiled-file-regexp "upstream\\.scm$"
+       #:tests? #f
+       #:guile ,%bootstrap-guile
+       #:imported-modules ((guix build gnu-bootstrap)
+                           ,@%gnu-build-system-modules)
        #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'unpack-guile-source
-           (lambda _
-             (let ((guile-source (assoc-ref %build-inputs "guile-source"))
-                   (bin (string-append (getcwd) "/zee-bin")))
-               (mkdir-p bin)
-               (with-directory-excursion bin
-                 (invoke "tar" "--strip-components=2"
-
-                         "-xvf" guile-source
-                         (string-append "guile-"
-                                        ,(package-version guile-2.0)
-                                        "/meta/guild.in"))
-                 (copy-file "guild.in" "guild")
-                 (chmod "guild" #o555))
-               #t)))
-         (add-before 'unpack 'set-path
-           (lambda _
-             (let ((bash (assoc-ref %build-inputs "bash"))
-                   (tar (assoc-ref %build-inputs "tar"))
-                   (xz (assoc-ref %build-inputs "xz"))
-                   (bin (string-append (getcwd) "/zee-bin")))
-               (mkdir-p bin)
-               (setenv "PATH" (string-append bin ":" (getenv "PATH")))
-               (copy-file bash (string-append bin "/bash"))
-               (copy-file bash (string-append bin "/sh"))
-               (copy-file tar (string-append bin "/tar"))
-               (copy-file xz (string-append bin "/xz"))
-               #t)))
-         (add-before 'build 'set-env
-           (lambda _
-             (let ((gash (assoc-ref %build-inputs "gash")))
-               (setenv "LANG" "C")
-               (setenv "LC_ALL" "C")
-               (setenv "GUILE_LOAD_PATH"
-                       (string-append (getcwd)
-                                      ":" (getcwd) "/system/base"
-                                      ":" gash "/share/guile/2.0"))
-               (setenv "GUILE_LOAD_COMPILED_PATH"
-                       (string-append ".:" gash "/lib/guile/2.0/site-ccache/"))
-               (format (current-error-port)
-                       "GUILE_LOAD_PATH=~s\n" (getenv "GUILE_LOAD_PATH"))
-               #t)))
-         (add-before 'build 'replace-lalr.upstream
-           (lambda _
-             (let ((lalr.upstream (assoc-ref %build-inputs "lalr.upstream")))
-               (copy-file lalr.upstream "system/base/lalr.upstream.scm")
-               #t)))
-         (add-after 'build 'build-scripts
-           (lambda _
-             (let* ((guile (assoc-ref %build-inputs "guile"))
-                    (guile (string-append guile "/bin/guile"))
-                    (gash (string-append guile "gash"))
-                    (out (assoc-ref %outputs "out"))
-                    (effective "2.0")
-                    (guilemoduledir (string-append gash "/share/guile/site/" effective "/"))
-                    (guileobjectdir (string-append gash "/lib/guile/" effective "/site-ccache/"))
-                    (gashmoduledir (string-append out "/share/guile/site/" effective "/"))
-                    (gashobjectdir (string-append out "/lib/guile/" effective "/site-ccache/"))
-                    (bin (string-append out "/bin")))
-               (define (wrap name)
-                 (copy-file "command.in" name)
-                 (chmod name #o555)
-                 (substitute* name
-                   (("@GUILE@") guile)
-                   (("@guilemoduledir@") guilemoduledir)
-                   (("@guileobjectdir") guileobjectdir)
-                   (("@gashmoduledir@") gashmoduledir)
-                   (("@gashobjectdir") gashobjectdir)
-                   (("@command@") name))
-                 (install-file name bin))
-               (mkdir-p bin)
-               (with-directory-excursion "bin"
-                 (for-each wrap '("awk"
-                                  "basename"
-                                  "cat"
-                                  "chmod"
-                                  "cmp"
-                                  "compress"
-                                  "cp"
-                                  "cut"
-                                  "diff"
-                                  "dirname"
-                                  "expr"
-                                  "false"
-                                  "find"
-                                  "grep"
-                                  "gzip"
-                                  "head"
-                                  "ln"
-                                  "ls"
-                                  "mkdir"
-                                  "mv"
-                                  "pwd"
-                                  "reboot"
-                                  "rm"
-                                  "rmdir"
-                                  "sed"
-                                  "sleep"
-                                  "sort"
-                                  "tar"
-                                  "test"
-                                  "touch"
-                                  "tr"
-                                  "true"
-                                  "uname"
-                                  "uniq"
-                                  "wc"
-                                  "which")))
-               (with-directory-excursion bin
-                 (copy-file "grep" "fgrep")
-                 (copy-file "grep" "egrep")
-                 (copy-file "test" "["))
-               #t))))))))
+       (begin
+         (use-modules (guix build gnu-bootstrap))
+         (modify-phases %standard-phases
+           (add-after 'unpack 'set-load-path
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((gash (assoc-ref inputs "gash")))
+                 (add-to-load-path (string-append gash "/share/guile/site/"
+                                                  (effective-version))))
+               #t))
+           (add-before 'configure 'pre-configure
+             (lambda _
+               (format #t "Creating gash/commands/testb.scm~%")
+               (copy-file "gash/commands/test.scm"
+                          "gash/commands/testb.scm")
+               (substitute* "gash/commands/testb.scm"
+                 (("gash commands test") "gash commands testb")
+                 (("apply test [(]cdr") "apply test/bracket (cdr"))
+               (for-each (lambda (script)
+                           (let ((target (string-append "scripts/"
+                                                        script ".in")))
+                             (format #t "Creating scripts/~a~%" target)
+                             (copy-file "scripts/template.in" target)
+                             (substitute* target
+                               (("@UTILITY@") script))))
+                         '("awk" "basename" "cat" "chmod" "cmp" "command"
+                           "compress" "cp" "cut" "diff" "dirname" "expr"
+                           "false" "find" "grep" "head" "ln" "ls" "mkdir"
+                           "mv" "printf" "pwd" "reboot" "rm" "rmdir"
+                           "sed" "sleep" "sort" "tar" "test" "touch" "tr"
+                           "true" "uname" "uniq" "wc" "which"))
+               (format #t "Creating scripts/[.in~%")
+               (copy-file "scripts/template.in" "scripts/[.in")
+               (substitute* "scripts/[.in"
+                 (("@UTILITY@") "testb"))
+               (delete-file "scripts/template.in")
+               #t))
+           (replace 'configure
+             (bootstrap-configure ,(version) "gash" "scripts"))
+           (replace 'build (bootstrap-build "gash"))
+           (replace 'install (bootstrap-install "gash" "scripts"))
+           ;; XXX: The scripts should add Gash to their load paths and
+           ;; this phase should not exist.
+           (add-after 'install 'copy-gash
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (moddir (string-append out "/share/guile/site/"
+                                             (effective-version)))
+                      (godir (string-append out "/lib/guile/"
+                                            (effective-version)
+                                            "/site-ccache"))
+                      (gash (assoc-ref inputs "gash"))
+                      (gash-moddir (string-append gash "/share/guile/site/"
+                                                  (effective-version)))
+                      (gash-godir (string-append gash "/lib/guile/"
+                                                 (effective-version)
+                                                 "/site-ccache")))
+                 (copy-file (string-append gash-moddir "/gash/compat.scm")
+                            (string-append moddir "/gash/compat.scm"))
+                 (copy-recursively (string-append gash-moddir "/gash/compat")
+                                   (string-append moddir "/gash/compat"))
+                 (copy-file (string-append gash-godir "/gash/compat.go")
+                            (string-append godir "/gash/compat.go"))
+                 (copy-recursively (string-append gash-godir "/gash/compat")
+                                   (string-append godir "/gash/compat"))
+                 #t)))))))
+    (inputs `(("gash" ,gash-boot)
+              ("guile" ,%bootstrap-guile)))
+    (native-inputs `(("bootar" ,bootar)))))
 
 (define (%boot-gash-inputs)
   `(("bash" , gash-boot)                ; gnu-build-system wants "bash"
     ("coreutils" , gash-utils-boot)
-    ("guile" ,%bootstrap-guile)
-    ("guile+guild" ,%bootstrap-guile+guild)))
+    ("bootar" ,bootar)
+    ("guile" ,%bootstrap-guile)))
 
 (define %bootstrap-mes-rewired
   (package
@@ -538,8 +457,7 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
                (setenv "GUILE_LOAD_PATH"
                        (string-append
                         mes "/share/mes/module"
-                        ":" dir "/nyacc-0.99.0/module"
-                        ":" (getenv "GUILE_LOAD_PATH")))
+                        ":" dir "/nyacc-0.99.0/module"))
                (invoke "gash" "configure.sh"
                        (string-append "--prefix=" out)
                        (string-append "--host=i686-linux-gnu")))))
