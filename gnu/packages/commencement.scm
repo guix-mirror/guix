@@ -85,7 +85,7 @@
 (define %bootstrap-guile+guild
   ;; This package combines %bootstrap-guile with guild, which is not included
   ;; in %bootstrap-guile.  Guild is needed to build gash-boot and
-  ;; gash-core-utils-boot because it is dependency of the Guile build system.
+  ;; gash-utils-boot because it is dependency of the Guile build system.
   (package
     (name "guile-bootstrap+guild")
     (version "2.0")
@@ -221,10 +221,10 @@
                (install-file "scripts/bash" bin)
                #t))))))))
 
-(define gash-core-utils-boot
+(define gash-utils-boot
   (package
-    (inherit gash-core-utils)
-    (name "gash-core-utils-boot")
+    (inherit gash-utils)
+    (name "gash-utils-boot")
     (version "0.0.214-fc1b")
     (source (bootstrap-origin
              (origin
@@ -383,7 +383,7 @@
 
 (define (%boot-gash-inputs)
   `(("bash" , gash-boot)                ; gnu-build-system wants "bash"
-    ("coreutils" , gash-core-utils-boot)
+    ("coreutils" , gash-utils-boot)
     ("guile" ,%bootstrap-guile)
     ("guile+guild" ,%bootstrap-guile+guild)))
 
