@@ -126,7 +126,6 @@ engine that uses Wayland for graphics output.")
               (method url-fetch)
               (uri (string-append "https://www.webkitgtk.org/releases/"
                                   "webkitgtk-" version ".tar.xz"))
-              (patches (search-patches "webkitgtk-icu-65.patch"))
               (sha256
                (base32
                 "04g6y0sv04d20bw401myq3k828ikysjhx383ly81vh9wji9i3mdd"))))
