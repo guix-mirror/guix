@@ -5029,6 +5029,7 @@ for older versions of Python.")
      `(("python-zipp" ,python-zipp)))
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-six" ,python-six)
        ("python-packaging" ,python-packaging-bootstrap)))
     (home-page "https://importlib-metadata.readthedocs.io/")
     (synopsis "Read metadata from Python packages")
