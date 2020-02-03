@@ -8,7 +8,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
@@ -42,10 +42,12 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages audio)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages fcitx)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages ibus)
   #:use-module (gnu packages image)
@@ -325,6 +327,54 @@ and set the path to the configuration file with @code{TIMIDITY_CFG}.")
 SDL.")
     (home-page "https://www.libsdl.org/projects/SDL_net/")
     (license zlib)))
+
+(define-public sdl-pango
+  (package
+    (name "sdl-pango")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://sourceforge/sdlpango/SDL_Pango/" version "/"
+             "SDL_Pango-" version  ".tar.gz"))
+       (sha256
+        (base32 "197baw1dsg0p4pljs5k0fshbyki00r4l49m1drlpqw6ggawx6xbz"))
+       (patches
+        (search-patches
+         "sdl-pango-api_additions.patch"
+         "sdl-pango-blit_overflow.patch"
+         "sdl-pango-fillrect_crash.patch"
+         "sdl-pango-fix-explicit-SDLPango_CopyFTBitmapToSurface.patch"
+         "sdl-pango-matrix_declarations.patch"
+         "sdl-pango-sans-serif.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list "--disable-static")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autogen
+           ;; Force reconfiguration because the included libtool
+           ;; generates linking errors.
+           (lambda _ (invoke "autoreconf" "-vif"))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("glib" ,glib)
+       ("harfbuzz" ,harfbuzz)
+       ("pango" ,pango)
+       ("sdl" ,sdl)))
+    (home-page "http://sdlpango.sourceforge.net")
+    (synopsis "Pango SDL binding")
+    (description "This library is a wrapper around the Pango library.
+It allows you to use TrueType fonts to render internationalized and
+tagged text in SDL applications.")
+    (license lgpl2.1)))
 
 (define-public sdl-ttf
   (package

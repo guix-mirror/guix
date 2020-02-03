@@ -36,6 +36,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages javascript)
   #:use-module (gnu packages kde)
   #:use-module (gnu packages kde-frameworks) ; extra-cmake-modules
@@ -254,7 +255,7 @@ easy.")
 (define-public snap
   (package
     (name "snap")
-    (version "5.4.0")
+    (version "5.4.5")
     (source
      (origin
        (method git-fetch)
@@ -263,8 +264,7 @@ easy.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "05m3x8yc9a7x9hfkrz2bm3yqkc63cdb8v3yznkjqq04sfx5dfd04"))))
+        (base32 "1z6dbcsgvxxs40p23qysfsk4vzpg8jlrr5pqfnjf8q3kpz1xvzxf"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -590,14 +590,14 @@ Portuguese, Spanish and Italian.")
 (define-public fet
   (package
     (name "fet")
-    (version "5.42.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://www.lalescu.ro/liviu/fet/download/"
-                                  "fet-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "1dzlbhp42dxdxbcrjwrjl4kj65cibxgjqc3ir1w78yprikihdxca"))))
+    (version "5.42.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.lalescu.ro/liviu/fet/download/"
+                           "fet-" version ".tar.bz2"))
+       (sha256
+        (base32 "0z31i8kwd59c3hlq35qll61qhc3x63w330ss92glhp12iy0aja1y"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -714,3 +714,111 @@ each key.  A collection of lessons are included for a wide range of different
 languages and keyboard layouts, and typing statistics are used to dynamically
 adjust the level of difficulty.")
     (license license:gpl2)))
+
+(define-public t4k-common
+  (package
+    (name "t4k-common")
+    (version "0.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tux4kids/t4kcommon")
+             (commit (string-append "upstream/" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "13q02xpmps9qg8zrzzy2gzv4a6afgi28lxk4z242j780v0gphchp"))
+       (patches
+        (search-patches "t4k-common-libpng16.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ;FIXME: cannot find how to run tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'set-paths 'set-sdl-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CPATH" (string-append (assoc-ref inputs "sdl")
+                                            "/include/SDL:"
+                                            (or (getenv "CPATH") "")))))
+         (add-after 'unpack 'fix-andika-font-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/t4k_sdl.c"
+               (("(/usr/share/.*?)/AndikaDesRevG\\.ttf")
+                (string-append (assoc-ref inputs "font-andika")
+                               "/share/fonts/truetype")))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("font-andika" ,font-sil-andika)
+       ("libpng" ,libpng)
+       ("librsvg" ,librsvg)
+       ("libxml2" ,libxml2)
+       ("sdl" ,(sdl-union (list sdl sdl-image sdl-mixer sdl-net sdl-pango)))))
+    (home-page "https://github.com/tux4kids/t4kcommon")
+    (synopsis "Library of code shared between TuxMath and TuxType")
+    (description "Tux4Kids-Common is a library of code shared between
+TuxMath and TuxType.")
+    (license license:gpl3+)))
+
+(define-public tuxmath
+  (package
+    (name "tuxmath")
+    (version "2.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tux4kids/tuxmath")
+             (commit (string-append "upstream/" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1f1pz83w6d3mbik2h6xavfxmk5apxlngxbkh80x0m55lhniwkdxv"))
+       (modules '((guix build utils)))
+       ;; Unbundle fonts.
+       (snippet
+        `(begin
+           (for-each delete-file (find-files "data/fonts" "\\.ttf$"))
+           #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'set-paths 'set-sdl-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CPATH"
+                     (string-append (assoc-ref inputs "sdl")
+                                    "/include/SDL:"
+                                    (or (getenv "CPATH") "")))
+             #t))
+         (add-after 'install 'install-desktop-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (apps (string-append out "/share/applications"))
+                    (pixmaps (string-append out "/share/pixmaps")))
+               (install-file "tuxmath.desktop" apps)
+               (for-each (lambda (f) (install-file f pixmaps))
+                         (find-files "data/images/icons/"
+                                     "tuxmath\\.(png|ico|svg)$"))
+               #t))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("librsvg" ,librsvg)
+       ("libxml2" ,libxml2)
+       ("sdl" ,(sdl-union (list sdl sdl-image sdl-mixer sdl-net sdl-pango)))
+       ("t4k-common" ,t4k-common)))
+    (home-page "https://github.com/tux4kids/tuxmath")
+    (synopsis "Educational math tutorial game")
+    (description "@emph{Tux, of Math Command} is an educational math
+tutorial game starring Tux, the Linux penguin, in which you play the
+part of Commander Tux, as he defends his friends from an attack of
+math equations.  Comets are crashing towards the friendly penguins in
+their igloos, and you must destroy the comets by solving their
+equations.
+
+TuxMath also includes Factoroids, a game that gives practice in
+factoring numbers and simplifying fractions, as well as zapping rocks
+floating through space.")
+    (license license:gpl3+)))

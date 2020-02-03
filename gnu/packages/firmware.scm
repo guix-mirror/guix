@@ -183,6 +183,69 @@ Broadcom/AirForce chipset BCM43xx with Wireless-Core Revision 5.  It is used
 by the b43-open driver of Linux-libre.")
     (license license:gpl2)))
 
+(define* (make-opensbi-package platform variant #:optional (arch "riscv64"))
+  (package
+    (name (string-replace-substring
+           (string-append "opensbi-" platform "-" variant)
+           "_" "-"))
+    (version "0.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/riscv/opensbi.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0qc73xbiy79qqkwxmp4mg15q8n8k26njkyqb6n0jw5dyibd6hb85"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(,@(if (and (not (string-prefix? "riscv64" (%current-system)))
+                  (string-prefix? "riscv64" arch))
+           `(("cross-gcc" ,(cross-gcc "riscv64-linux-gnu" #:xgcc gcc-7))
+             ("cross-binutils" ,(cross-binutils "riscv64-linux-gnu")))
+           '())))
+    (arguments
+     `(#:tests? #f ; no check target
+       #:make-flags (list (string-append "PLATFORM=" ,platform "/" ,variant)
+                          ,@(if (and (not (string-prefix? "riscv64"
+                                                          (%current-system)))
+                                     (string-prefix? "riscv64" arch))
+                                `("CROSS_COMPILE=riscv64-linux-gnu-")
+                                '())
+                          "FW_PAYLOAD=n"
+                          "V=1")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (bin (find-files "." ".*fw_.*.elf$")))
+               (for-each
+                 (lambda (file)
+                   (install-file file out))
+                 bin))
+             #t)))))
+    (home-page "https://github.com/riscv/opensbi")
+    (synopsis "RISC-V Open Source Supervisor Binary Interface")
+    (description "A reference implementation of the RISC-V SBI specifications
+for platform-specific firmwares executing in M-mode.")
+    (license (list license:bsd-2
+                   ;; lib/utils/libfdt/* is dual licensed under bsd-2 and gpl2+.
+                   license:gpl2+
+                   ;; platform/ariane-fpga/* is gpl2.
+                   license:gpl2))))
+
+(define-public opensbi-qemu-virt
+  (make-opensbi-package "qemu" "virt"))
+
+(define-public opensbi-qemu-sifive-u
+  (make-opensbi-package "qemu" "sifive_u"))
+
+(define-public opensbi-sifive-fu540
+  (make-opensbi-package "sifive" "fu540"))
+
 (define-public seabios
   (package
     (name "seabios")

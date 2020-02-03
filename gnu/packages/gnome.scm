@@ -39,7 +39,7 @@
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2019 Jonathan Frederickson <jonathan@terracrypt.net>
-;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;; Copyright © 2019, 2020 Raghav Gururajan <raghavgururajan@disroot.org>
@@ -8303,7 +8303,11 @@ functionality and behavior.")
        (modify-phases %standard-phases
          ;; autogen.sh calls configure at the end of the script.
          (replace 'bootstrap
-           (lambda _ (invoke "autoreconf" "-vfi"))))))
+           (lambda _ (invoke "autoreconf" "-vfi")))
+         (add-before 'build 'set-home   ;placate Inkscape
+           (lambda _
+             (setenv "HOME" (getcwd))
+             #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)

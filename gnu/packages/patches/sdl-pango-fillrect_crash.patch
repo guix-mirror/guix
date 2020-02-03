@@ -1,0 +1,15 @@
+Index: SDL_Pango-0.1.2/src/SDL_Pango.c
+===================================================================
+--- SDL_Pango-0.1.2.orig/src/SDL_Pango.c	2007-09-18 15:56:12.406223540 +0200
++++ SDL_Pango-0.1.2/src/SDL_Pango.c	2007-09-18 15:57:27.986530616 +0200
+@@ -932,7 +932,9 @@
+     width = PANGO_PIXELS (logical_rect.width);
+     height = PANGO_PIXELS (logical_rect.height);
+ 
+-    SDL_FillRect(surface, NULL, SDL_MapRGBA(surface->format, 0, 0, 0, 0));
++    if (width && height) {
++        SDL_FillRect(surface, NULL, SDL_MapRGBA(surface->format, 0, 0, 0, 0));
++    }
+ 
+     if((! context->tmp_ftbitmap) || context->tmp_ftbitmap->width < width
+ 	|| context->tmp_ftbitmap->rows < height)

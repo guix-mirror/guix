@@ -24,8 +24,6 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages commencement)
-  #:use-module ((guix licenses)
-                #:select (gpl3+ lgpl2.0+ public-domain))
   #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages base)
@@ -56,10 +54,8 @@
   #:use-module (guix memoization)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-26)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 match)
-  #:use-module (ice-9 regex)
   #:export (make-gcc-toolchain))
 
 ;;; Commentary:

@@ -51,6 +51,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages lisp)
@@ -59,6 +60,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xdisorg)
@@ -9709,3 +9711,335 @@ possible.")
 
 (define-public ecl-green-threads
   (sbcl-package->ecl-package sbcl-green-threads))
+
+(define-public sbcl-cl-base32
+  (let ((commit "8cdee06fab397f7b0a19583b57e7f0c98405be85")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-base32")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/hargettp/cl-base32.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "17jrng8jb05d64ggyd11hp308c2fl5drvf9g175blgrkkl8l4mf8"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("lisp-unit" ,sbcl-lisp-unit)))
+      (synopsis "Common Lisp library for base32 encoding and decoding")
+      (description
+       "This package provides functions for base32 encoding and decoding as
+defined in RFC4648.")
+      (home-page "https://github.com/hargettp/cl-base32")
+      (license license:expat))))
+
+(define-public cl-base32
+  (sbcl-package->cl-source-package sbcl-cl-base32))
+
+(define-public ecl-cl-base32
+  (sbcl-package->ecl-package sbcl-cl-base32))
+
+(define-public sbcl-cl-z85
+  (let ((commit "85b3951a9cfa2603acb6aee15567684f9a108098")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-z85")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/glv2/cl-z85.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0r27pidjaxbm7k1rr90nnajwl5xm2kp65g1fv0fva17lzy45z1mp"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("cl-octet-streams" ,sbcl-cl-octet-streams)
+         ("fiveam" ,sbcl-fiveam)))
+      (synopsis "Common Lisp library for Z85 encoding and decoding")
+      (description
+       "This package provides functions to encode or decode byte vectors or
+byte streams using the Z85 format, which is a base-85 encoding used by
+ZeroMQ.")
+      (home-page "https://github.com/glv2/cl-z85")
+      (license license:gpl3+))))
+
+(define-public cl-z85
+  (sbcl-package->cl-source-package sbcl-cl-z85))
+
+(define-public ecl-cl-z85
+  (sbcl-package->ecl-package sbcl-cl-z85))
+
+(define-public sbcl-ltk
+  (package
+    (name "sbcl-ltk")
+    (version "0.992")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/herth/ltk.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "13l2q4mskzilya9xh5wy2xvy30lwn104bd8wrq6ifds56r82iy3x"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("imagemagick" ,imagemagick)
+       ("tk" ,tk)))
+    (arguments
+     `(#:asd-file "ltk/ltk.asd"
+       #:tests? #f
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'fix-paths
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (substitute* "ltk/ltk.lisp"
+                        (("#-freebsd \"wish\"")
+                         (string-append "#-freebsd \""
+                                        (assoc-ref inputs "tk")
+                                        "/bin/wish\""))
+                        (("do-execute \"convert\"")
+                         (string-append "do-execute \""
+                                        (assoc-ref inputs "imagemagick")
+                                        "/bin/convert\"")))
+                      #t)))))
+    (synopsis "Common Lisp bindings for the Tk GUI toolkit")
+    (description
+     "LTK is a Common Lisp binding for the Tk graphics toolkit.  It is written
+in pure Common Lisp and does not require any Tk knowledge for its usage.")
+    (home-page "http://www.peter-herth.de/ltk/")
+    (license license:llgpl)))
+
+(define-public cl-ltk
+  (sbcl-package->cl-source-package sbcl-ltk))
+
+(define-public ecl-ltk
+  (sbcl-package->ecl-package sbcl-ltk))
+
+(define-public sbcl-ltk-mw
+  (package
+    (inherit sbcl-ltk)
+    (name "sbcl-ltk-mw")
+    (inputs
+     `(("ltk" ,sbcl-ltk)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-ltk)
+       ((#:asd-file _) "ltk/ltk-mw.asd")
+       ((#:phases _) '%standard-phases)))
+    (synopsis "Extra widgets for LTK")
+    (description
+     "This is a collection of higher-level widgets built on top of LTK.")))
+
+(define-public cl-ltk-mw
+  (sbcl-package->cl-source-package sbcl-ltk-mw))
+
+(define-public ecl-ltk-mw
+  (sbcl-package->ecl-package sbcl-ltk-mw))
+
+(define-public sbcl-ltk-remote
+  (package
+    (inherit sbcl-ltk)
+    (name "sbcl-ltk-remote")
+    (inputs
+     `(("ltk" ,sbcl-ltk)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-ltk)
+       ((#:asd-file _) "ltk/ltk-remote.asd")
+       ((#:phases _) '%standard-phases)))
+    (synopsis "Remote GUI support for LTK")
+    (description
+     "This LTK extension allows the GUI to be displayed on a computer different
+from the one running the Lisp program by using a TCP connection.")))
+
+(define-public cl-ltk-remote
+  (sbcl-package->cl-source-package sbcl-ltk-remote))
+
+(define-public sbcl-cl-lex
+  (let ((commit "f2dbbe25ef553005fb402d9a6203180c3fa1093b")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-lex")
+      (version (git-version "1.1.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/djr7C4/cl-lex.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1kg50f76bfpfxcv4dfivq1n9a0xlsra2ajb0vd68lxwgbidgyc2y"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-ppcre" ,sbcl-cl-ppcre)))
+      (synopsis "Common Lisp macros for generating lexical analyzers")
+      (description
+       "This is a Common Lisp library providing a set of macros for generating
+lexical analyzers automatically.  The lexers generated using @code{cl-lex} can
+be used with @code{cl-yacc}.")
+      (home-page "https://github.com/djr7C4/cl-lex")
+      (license license:gpl3))))
+
+(define-public cl-lex
+  (sbcl-package->cl-source-package sbcl-cl-lex))
+
+(define-public ecl-cl-lex
+  (sbcl-package->ecl-package sbcl-cl-lex))
+
+(define-public sbcl-clunit2
+  (let ((commit "5e28343734eb9b7aee39306a614af92c1062d50b")
+        (revision "1"))
+    (package
+      (name "sbcl-clunit2")
+      (version (git-version "0.2.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://notabug.org/cage/clunit2.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1ngiapfki6nm8a555mzhb5p7ch79i3w665za5bmb5j7q34fy80vw"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Unit testing framework for Common Lisp")
+      (description
+       "CLUnit is a Common Lisp unit testing framework.  It is designed to be
+easy to use so that you can quickly start testing.")
+      (home-page "https://notabug.org/cage/clunit2")
+      (license license:expat))))
+
+(define-public cl-clunit2
+  (sbcl-package->cl-source-package sbcl-clunit2))
+
+(define-public ecl-clunit2
+  (sbcl-package->ecl-package sbcl-clunit2))
+
+(define-public sbcl-cl-colors2
+  (let ((commit "795aedee593b095fecde574bd999b520dd03ed24")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-colors2")
+      (version (git-version "0.2.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://notabug.org/cage/cl-colors2.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0hlyf4h5chkjdp9armla5w4kw5acikk159sym7y8c4jbjp9x47ih"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("clunit2" ,sbcl-clunit2)))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-ppcre" ,sbcl-cl-ppcre)))
+      (synopsis "Color library for Common Lisp")
+      (description
+       "This is a very simple color library for Common Lisp, providing:
+
+@itemize
+@item Types for representing colors in HSV and RGB spaces.
+@item Simple conversion functions between the above types (and also
+hexadecimal representation for RGB).
+@item Some predefined colors (currently X11 color names -- of course
+the library does not depend on X11).
+@end itemize\n")
+      (home-page "https://notabug.org/cage/cl-colors2")
+      (license license:boost1.0))))
+
+(define-public cl-colors2
+  (sbcl-package->cl-source-package sbcl-cl-colors2))
+
+(define-public ecl-cl-colors2
+  (sbcl-package->ecl-package sbcl-cl-colors2))
+
+(define-public sbcl-cl-jpeg
+  (let ((commit "ec557038128df6895fbfb743bfe8faf8ec2534af")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-jpeg")
+      (version (git-version "2.8" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sharplispers/cl-jpeg.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1bkkiqz8fqldlj1wbmrccjsvxcwj98h6s4b6gslr3cg2wmdv5xmy"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "JPEG image library for Common Lisp")
+      (description
+       "This is a baseline JPEG codec written in Common Lisp.  It can be used
+for reading and writing JPEG image files.")
+      (home-page "https://github.com/sharplispers/cl-jpeg")
+      (license license:bsd-3))))
+
+(define-public cl-jpeg
+  (sbcl-package->cl-source-package sbcl-cl-jpeg))
+
+(define-public ecl-cl-jpeg
+  (sbcl-package->ecl-package sbcl-cl-jpeg))
+
+(define-public sbcl-nodgui
+  (let ((commit "bc59ed9b787dfc9e68ae3bd7f7e8507c5c619212")
+        (revision "1"))
+    (package
+      (name "sbcl-nodgui")
+      (version (git-version "0.0.5" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://notabug.org/cage/nodgui.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0xx0dk54d882i598ydnwmy7mnfk0b7vib3ddsgpqxhjck1rwq8l8"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("cl-colors2" ,sbcl-cl-colors2)
+         ("cl-jpeg" ,sbcl-cl-jpeg)
+         ("cl-lex" ,sbcl-cl-lex)
+         ("cl-ppcre-unicode" ,sbcl-cl-ppcre-unicode)
+         ("cl-unicode" ,sbcl-cl-unicode)
+         ("cl-yacc" ,sbcl-cl-yacc)
+         ("clunit2" ,sbcl-clunit2)
+         ("named-readtables" ,sbcl-named-readtables)
+         ("parse-number" ,sbcl-parse-number)
+         ("tk" ,tk)))
+      (arguments
+       `(#:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'fix-paths
+                      (lambda* (#:key inputs #:allow-other-keys)
+                        (substitute* "src/wish-communication.lisp"
+                          (("#-freebsd \"wish\"")
+                           (string-append "#-freebsd \""
+                                          (assoc-ref inputs "tk")
+                                          "/bin/wish\"")))
+                        #t)))))
+      (synopsis "Common Lisp bindings for the Tk GUI toolkit")
+      (description
+       "Nodgui (@emph{No Drama GUI}) is a Common Lisp binding for the Tk GUI
+toolkit.  It also provides a few additional widgets more than the standard Tk
+ones.")
+      (home-page "https://www.autistici.org/interzona/nodgui.html")
+      (license license:llgpl))))
+
+(define-public cl-nodgui
+  (sbcl-package->cl-source-package sbcl-nodgui))
+
+(define-public ecl-nodgui
+  (sbcl-package->ecl-package sbcl-nodgui))

@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2015, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Alex Vong <alexvong1995@gmail.com>
@@ -23,7 +23,7 @@
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Brendan Tildesley <mail@brendan.scot>
@@ -337,52 +337,59 @@ a shared library and encoder and decoder command-line executables.")
     (license license:gpl2+)))
 
 (define-public libx264
-  (package
-    (name "libx264")
-    (version "20180810-2245")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://download.videolan.org/pub/x264/snapshots/"
-                                  "x264-snapshot-" version "-stable.tar.bz2"))
-              (sha256
-               (base32
-                "0f25f39imas9pcqm7lnaa0shhjmf42hdx7jxzcnvxc7qsb7lh1bv"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("nasm" ,nasm)))
-    ;; TODO: Add gpac input
-    (arguments
-     `(#:tests? #f  ;no check target
-       #:configure-flags '("--enable-shared"
-                           ;; Don't build the command-line program.  If we
-                           ;; want it later, we should do so in a different
-                           ;; package to avoid a circular dependency (the x264
-                           ;; program depends on ffmpeg and ffmpeg depends on
-                           ;; libx264).
-                           "--disable-cli"
+  ;; There are no tags in the repository, so we take the version number from
+  ;; the X264_BUILD variable defined in x264.h.
+  (let ((version "159")
+        (commit "1771b556ee45207f8711744ccbd5d42a3949b14c")
+        (revision "0"))
+    (package
+      (name "libx264")
+      (version (git-version version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://code.videolan.org/videolan/x264.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0kmi78gs5101d4df33il5bmjbns54nvdjsyn44xiw60lwsg11vwz"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("nasm" ,nasm)))
+      ;; TODO: Add gpac input
+      (arguments
+       `(#:tests? #f                    ;no check target
+         #:configure-flags '("--enable-shared"
+                             ;; Don't build the command-line program.  If we
+                             ;; want it later, we should do so in a different
+                             ;; package to avoid a circular dependency (the x264
+                             ;; program depends on ffmpeg and ffmpeg depends on
+                             ;; libx264).
+                             "--disable-cli"
 
-                           ;; On MIPS, we must pass "--disable-asm" or else
-                           ;; configure fails after printing: "You specified a
-                           ;; pre-MSA CPU in your CFLAGS. If you really want
-                           ;; to run on such a CPU, configure with
-                           ;; --disable-asm."
-                           ,@(if (string-prefix? "mips"
-                                                 (or (%current-target-system)
-                                                     (%current-system)))
-                                 '("--disable-asm")
-                                 '()))))
-    (home-page "https://www.videolan.org/developers/x264.html")
-    (synopsis "H.264 video coding library")
-    (description "libx264 is an advanced encoding library for creating
+                             ;; On MIPS, we must pass "--disable-asm" or else
+                             ;; configure fails after printing: "You specified a
+                             ;; pre-MSA CPU in your CFLAGS. If you really want
+                             ;; to run on such a CPU, configure with
+                             ;; --disable-asm."
+                             ,@(if (string-prefix? "mips"
+                                                   (or (%current-target-system)
+                                                       (%current-system)))
+                                   '("--disable-asm")
+                                   '()))))
+      (home-page "https://www.videolan.org/developers/x264.html")
+      (synopsis "H.264 video coding library")
+      (description "libx264 is an advanced encoding library for creating
 H.264 (MPEG-4 AVC) video streams.")
-    (license (list license:gpl2+         ;most files
-                   license:isc           ;common/x86/x86inc.asm
-                   license:lgpl2.1+      ;extras/getopt.c
-                   license:bsd-3         ;extras/inttypes.h
-                   (license:non-copyleft ;extras/cl*.h
-                    "file://extras/cl.h"
-                    "See extras/cl.h in the distribution.")))))
+      (license (list license:gpl2+       ;most files
+                     license:isc         ;common/x86/x86inc.asm
+                     license:lgpl2.1+    ;extras/getopt.c
+                     license:bsd-3       ;extras/inttypes.h
+                     (license:non-copyleft ;extras/cl*.h
+                      "file://extras/cl.h"
+                      "See extras/cl.h in the distribution."))))))
 
 (define-public mkvtoolnix
   (package
@@ -1349,7 +1356,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.31.0")
+    (version "0.32.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1358,7 +1365,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "138m09l4wi6ifbi15z76j578plmxkclhlzfryasfcdp8hswhs59r"))))
+                "0kmy1q0hp87vq4rpv7py04x8bpg1wmlzaibavmkf713jqp6qy596"))))
     (build-system waf-build-system)
     (native-inputs
      `(("perl" ,perl) ; for zsh completion file

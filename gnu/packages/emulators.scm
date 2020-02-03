@@ -1234,7 +1234,8 @@ multi-system game/emulator system.")
                (setenv "CONFIG_SHELL" bash)
                (apply invoke "./configure" flags)))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("nasm" ,nasm)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("faad2" ,faad2)
@@ -1249,7 +1250,6 @@ multi-system game/emulator system.")
        ("libpng" ,libpng)
        ("libtheora" ,libtheora)
        ("libvorbis" ,libvorbis)
-       ("nasm" ,nasm)
        ("sdl2" ,(sdl-union (list sdl2 sdl2-net)))
        ("zlib" ,zlib)))
     (home-page "https://www.scummvm.org/")
@@ -1264,7 +1264,7 @@ play them on systems for which they were never designed!")
 (define-public mame
   (package
     (name "mame")
-    (version "0.217")
+    (version "0.218")
     (source
      (origin
        (method git-fetch)
@@ -1273,8 +1273,7 @@ play them on systems for which they were never designed!")
              (commit (apply string-append "mame" (string-split version #\.)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "03h4d0d8lh6djjff3zqhjm14klc9n129yzwygdqppz0f43w97cmw"))
+        (base32 "1c43hqfabc7spkyk5ma4bjdb0yqm93sdg5g13ka8mvi462snrfd7"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.

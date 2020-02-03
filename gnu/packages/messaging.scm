@@ -1949,9 +1949,9 @@ Telegram messenger.")
     (license license:gpl2+)))
 
 (define-public tdlib
-  (let ((commit "5efaf8c3b523797373c487d972ea514364e5eac2")
-        (revision "1")
-        (version "1.5.5"))
+  (let ((commit "278c7acdec83c5ac17d8e1ed0bb2cacbcea62460")
+        (revision "0")
+        (version "1.6.0"))
     (package
       (name "tdlib")
       (version (git-version version revision commit))
@@ -1962,7 +1962,7 @@ Telegram messenger.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1grflgvqqxbf84yi09j60a1cpbcrv85yhj9a735agi32hgd51whi"))
+                  "0zlzpl6fgszg18kwycyyyrnkm255dvc6fkq0b0y32m5wvwwl36cv"))
                 (file-name (git-file-name name version))))
       (build-system cmake-build-system)
       (arguments

@@ -11,7 +11,7 @@
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Raymond Nicholson <rain1@openmailbox.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
-;;; Copyright © 2016, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -33,7 +33,7 @@
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
-;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Stefan Stefanović <stefanx2ovic@gmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Brice Waegeneire <brice@waegenei.re>
@@ -87,6 +87,8 @@
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages haskell-apps)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages man)
@@ -357,42 +359,42 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-(define-public linux-libre-5.4-version "5.4.15")
+(define-public linux-libre-5.4-version "5.4.17")
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "1ccldlwj89qd22cl06706w7xzm8n69m6kg8ic0s5ns0ghlpj41v4")))
+        (hash (base32 "1fbl5knf6pini9lsx8mqkdmf3qbsydqvaxggh6nd1vk9mzv2npwl")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.99")
+(define-public linux-libre-4.19-version "4.19.101")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "1axmspnqir2zz7lail95y5yaamxl86k39sd4im3c77dgjkwj3g4d")))
+        (hash (base32 "1i4bkwankl5q95kgqmmyzdkwmf3b8ppkb8ild9bw12mkpmm1a9my")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.168")
+(define-public linux-libre-4.14-version "4.14.169")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "1ziixdg4jsr17kgfa9dpckczk0r2mc5jayqb2f6br19al79pfmyv")))
+        (hash (base32 "0jc24zvqz3vsv65xxcivzkj6nv27vsy62l50n2h1ysy5jdwsk3nq")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.211")
+(define-public linux-libre-4.9-version "4.9.212")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "1gmi27ih5ys1wxbrnc4a5dr9vw9ngccs9xpa2p0gsk4pbn6n15r5")))
+        (hash (base32 "0c5yjilaq86j6i2hzlxbp2ia7jhnf7kv952ffv7jxdf90sk3irxd")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.211")
+(define-public linux-libre-4.4-version "4.4.212")
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "1f6qz4bvjn18cfcg3wwfsl75aw2kxwn28r228kdic9aibhy6rpvp")))
+        (hash (base32 "0mx3qyj6w6h7gw7drsfsgl4iyz1695sjnf9hqh4kczci48kw5rj7")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -780,7 +782,7 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-5.4
   (make-linux-libre* linux-libre-5.4-version
                      linux-libre-5.4-source
-                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
+                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
                      #:configuration-file kernel-config))
 
 (define-public linux-libre-version         linux-libre-5.4-version)
@@ -871,6 +873,12 @@ It has been modified to remove all non-free binary blobs.")
                      '("armhf-linux")
                      #:defconfig "omap2plus_defconfig"
                      #:extra-version "arm-omap2plus"))
+
+(define-public linux-libre-riscv64-generic
+  (make-linux-libre* linux-libre-version
+                     linux-libre-source
+                     '("riscv64-linux")
+                     #:extra-version "riscv64-generic"))
 
 
 ;;;
@@ -2655,6 +2663,50 @@ These tools are designed on top of libkmod, a library that is shipped with
 kmod.  The aim is to be compatible with tools, configurations and indices
 from the module-init-tools project.")
     (license license:gpl2+))) ; library under lgpl2.1+
+
+(define-public earlyoom
+  (package
+    (name "earlyoom")
+    (version "1.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/rfjakob/earlyoom.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0fwbx0y80nqgkxrc9kf9j3iwa0wbps2jmqir3pgqbc2cj0wjh0lr"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-before 'check 'set-home
+                    (lambda _
+                      (setenv "HOME" (getcwd))
+                      #t))
+                  (add-after 'build 'install-contribs
+                    ;; Install what seems useful from the contrib directory.
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (contrib (string-append
+                                       out "/share/earlyoom/contrib")))
+                        (install-file "contrib/notify_all_users.py" contrib)
+                        #t))))
+       #:make-flags (let* ((prefix (assoc-ref %outputs "out")))
+                      (list "CC=gcc"
+                            (string-append "VERSION=v" ,version)
+                            (string-append "PREFIX=" prefix)
+                            (string-append "SYSCONFDIR=" prefix "/etc")))
+       #:test-target "test"))
+    (native-inputs `(("go" ,go)               ;for the test suite
+                     ("pandoc" ,ghc-pandoc))) ;to generate the manpage
+    (home-page "https://github.com/rfjakob/earlyoom")
+    (synopsis "Simple out of memory (OOM) daemon for the Linux kernel")
+    (description "Early OOM is a minimalist out of memory (OOM) daemon that
+runs in user space and provides a more responsive and configurable alternative
+to the in-kernel OOM killer.")
+    (license license:expat)))
 
 (define-public eudev
   ;; The post-systemd fork, maintained by Gentoo.
@@ -5119,42 +5171,46 @@ interface in sysfs, which can be accomplished with the included udev rules.")
 (define-public tlp
   (package
     (name "tlp")
-    (version "1.2.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/linrunner/"
-                    (string-upcase name)
-                    "/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "059kxrpxx580mm6p0z2a421nxngszyh4yqqhbgvn04b6a7dbsa2w"))))
-    (inputs `(("bash" ,bash)
-              ("dbus" ,dbus)
-              ("ethtool" ,ethtool)
-              ("eudev" ,eudev)
-              ("grep" ,grep)
-              ("hdparm" ,hdparm)
-              ("inetutils" ,inetutils)
-              ("iw" ,iw)
-              ("kmod" ,kmod)
-              ("pciutils" ,pciutils)
-              ("perl" ,perl)
-              ("rfkill" ,rfkill)
-              ("sed" ,sed)
-              ("usbutils" ,usbutils)
-              ("util-linux" ,util-linux)
-              ("wireless-tools" ,wireless-tools)
-              ,@(if (let ((system (or (%current-target-system)
-                                      (%current-system))))
-                      (or (string-prefix? "i686-" system)
-                          (string-prefix? "x86_64-" system)))
-                    `(("x86-energy-perf-policy" ,x86-energy-perf-policy))
-                    '())))
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/linrunner/TLP/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "169k3xypq5rq0xiggrlpr73yr2r2x7b2d9vcr9ac96qrgph7sk7r"))))
+    (native-inputs
+     `(("shellcheck" ,shellcheck)))
+    (inputs
+     `(("bash" ,bash)
+       ("dbus" ,dbus)
+       ("ethtool" ,ethtool)
+       ("eudev" ,eudev)
+       ("grep" ,grep)
+       ("hdparm" ,hdparm)
+       ("inetutils" ,inetutils)
+       ("iw" ,iw)
+       ("kmod" ,kmod)
+       ("pciutils" ,pciutils)
+       ("perl" ,perl)
+       ("rfkill" ,rfkill)
+       ("sed" ,sed)
+       ("usbutils" ,usbutils)
+       ("util-linux" ,util-linux)
+       ("wireless-tools" ,wireless-tools)
+       ,@(if (let ((system (or (%current-target-system)
+                               (%current-system))))
+               (or (string-prefix? "i686-" system)
+                   (string-prefix? "x86_64-" system)))
+             `(("x86-energy-perf-policy" ,x86-energy-perf-policy))
+             '())))
     (build-system gnu-build-system)
     (arguments
-     `(#:modules ((guix build gnu-build-system)
+     ;; XXX: The full test suite is run with "checkall" but it requires
+     ;; "checkbashisms" and "perlcritic", not yet packaged in Guix.
+     `(#:test-target "shellcheck"
+       #:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (srfi srfi-1))
        #:phases
@@ -5171,7 +5227,9 @@ interface in sysfs, which can be accomplished with the included udev rules.")
                (setenv "TLP_TLIB" (string-append out "/share/tlp"))
                (setenv "TLP_FLIB" (string-append out "/share/tlp/func.d"))
                (setenv "TLP_ULIB" (string-append out "/lib/udev"))
-               (setenv "TLP_CONF" "/etc/tlp")
+               (setenv "TLP_CONFDEF"
+                       (string-append out "/share/tlp/defaults.conf"))
+               (setenv "TLP_CONFDIR" (string-append out "/etc/tlp.d"))
                (setenv "TLP_ELOD"
                        (string-append out "/lib/elogind/system-sleep"))
                (setenv "TLP_SHCPL"
@@ -5179,17 +5237,15 @@ interface in sysfs, which can be accomplished with the included udev rules.")
                (setenv "TLP_MAN" (string-append out "/share/man"))
                (setenv "TLP_META" (string-append out "/share/metainfo"))
                #t)))
-         (delete 'check)                ; no tests
          (add-before 'install 'fix-installation
            (lambda _
              ;; Stop the Makefile from trying to create system directories.
              (substitute* "Makefile"
-               (("\\[ -f \\$\\(_CONF\\) \\]") "#")
+               (("\\[ -f \\$\\(_CONFUSR\\) \\]") "#")
                (("install -d -m 755 \\$\\(_VAR\\)") "#"))
              #t))
          (replace 'install
-           (lambda _
-             (invoke "make" "install-tlp" "install-man")))
+           (lambda _ (invoke "make" "install-tlp" "install-man-tlp")))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((bin (string-append (assoc-ref outputs "out") "/bin"))

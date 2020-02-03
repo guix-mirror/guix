@@ -627,6 +627,16 @@ potential infinite waits blocking libvirt."))
                  (bv "\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x08\x00")
                  (bv "\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff")))
 
+(define %riscv32
+  (qemu-platform "riscv32" "riscv"
+                 (bv "\x7fELF\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\xf3\x00")
+                 (bv "\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff")))
+
+(define %riscv64
+  (qemu-platform "riscv64" "riscv"
+                 (bv "\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\xf3\x00")
+                 (bv "\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff")))
+
 (define %sh4
   (qemu-platform "sh4" "sh4"
                  (bv "\x7fELF\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x2a\x00")
@@ -655,7 +665,7 @@ potential infinite waits blocking libvirt."))
 (define %qemu-platforms
   (list %i386 %i486 %alpha %arm %sparc32plus %ppc %ppc64 %ppc64le %m68k
         %mips %mipsel %mipsn32 %mipsn32el %mips64 %mips64el
-        %sh4 %sh4eb %s390x %aarch64 %hppa))
+        %riscv32 %riscv64 %sh4 %sh4eb %s390x %aarch64 %hppa))
 
 (define (lookup-qemu-platforms . names)
   "Return the list of QEMU platforms that match NAMES--a list of names such as

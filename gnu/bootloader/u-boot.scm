@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
             u-boot-a20-olinuxino-micro-bootloader
             u-boot-bananapi-m2-ultra-bootloader
             u-boot-beaglebone-black-bootloader
+            u-boot-cubietruck-bootloader
             u-boot-firefly-rk3399-bootloader
             u-boot-mx6cuboxi-bootloader
             u-boot-nintendo-nes-classic-edition-bootloader
@@ -179,6 +181,11 @@
   (bootloader
    (inherit u-boot-allwinner-bootloader)
    (package u-boot-bananapi-m2-ultra)))
+
+(define u-boot-cubietruck-bootloader
+  (bootloader
+    (inherit u-boot-allwinner-bootloader)
+    (package u-boot-cubietruck)))
 
 (define u-boot-firefly-rk3399-bootloader
   ;; SD and eMMC use the same format

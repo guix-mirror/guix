@@ -960,13 +960,13 @@ in certain cases.  It also enables recursion for anonymous functions.")
 (define-public emacs-xr
   (package
     (name "emacs-xr")
-    (version "1.14")
+    (version "1.15")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/xr-" version ".tar"))
        (sha256
-        (base32 "1hfl7jvimgdgi2mwsx9laxcywp4n6k6vfkanjwm3sf27awqz7ngs"))))
+        (base32 "0pxzr6n0qa29ly8j3cl46rv9a65ajfcgahrhdylg4yfb9gh1x4ly"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/xr.html")
     (synopsis "Convert string regexp to rx notation")
@@ -1064,14 +1064,14 @@ optional minor mode which can apply this command automatically on save.")
 (define-public emacs-relint
   (package
     (name "emacs-relint")
-    (version "1.11")
+    (version "1.13")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://elpa.gnu.org/packages/relint-" version ".tar"))
        (sha256
-        (base32 "0c7d35kp5k11fnyjrq9cg8i2r005gs57pmb3rvpf8ilwv0scn1m7"))))
+        (base32 "1kzzlixhd6kp0mkmgn02b7pqv6m55g708xsys7vjskdxbfb6jjib"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-xr" ,emacs-xr)))
     (home-page "https://github.com/mattiase/relint")
@@ -18997,6 +18997,29 @@ previewed by scrolling up and down within a @code{dired} buffer.")
 and searching through @code{Ctags} files.")
     (license license:gpl3+)))
 
+(define-public emacs-ivy-clipmenu
+  (let ((commit "d2071f2c5043a05d610cd1952e84176ca78c31dc"))
+    (package
+      (name "emacs-ivy-clipmenu")
+      (version (git-version "0.0.1" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/wpcarro/ivy-clipmenu.el.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0npd8glzk5z4n7y9mzbsbzi0cf3by19fqcki052jr3dga363lds7"))))
+      (propagated-inputs
+       `(("emacs-f" ,emacs-f)
+         ("emacs-ivy" ,emacs-ivy)))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/wpcarro/ivy-clipmenu.el")
+      (synopsis "Ivy integration with clipmenu")
+      (description "Ivy integration with the clipboard manager, clipmenu.")
+      (license license:expat))))
+
 (define-public emacs-org-download
   (let ((commit "10c9d7c8eed928c88a896310c882e3af4d8d0f61")
         (revision "2"))
@@ -20484,9 +20507,9 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
   ;; This package has versions newer than indicated on MELPA.
   ;; Get the current version from `telega-version` in telega.el.
   ;; or by running M-x telega-version.
-  (let ((commit "f6728934988140839a71550c9c18b65424ba6225")
+  (let ((commit "ae09592498ce380e57fbb76725fd4c89ae248864")
 	(revision "0")
-	(version "0.5.10"))
+	(version "0.6.0"))
     (package
       (name "emacs-telega")
       (version (git-version version revision commit))
@@ -20498,7 +20521,7 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
                (commit commit)))
          (sha256
           (base32
-           "1ijz1isxzssbhz6bxrqmn6wv2apx5rhvd9sbsclv1gaiz3wmkj7i"))
+           "0mv6i80958d9crzspzik5xh5g8326115bvg2frgv0dp9p6rm86m3"))
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
@@ -21236,4 +21259,124 @@ mode-line text (lighter) of major and minor modes.")
       (synopsis "Prevents the *scratch* buffer from being killed")
       (description "@code{unkillable-scratch} helps prevent killing buffers
 matching a given regexp.")
+      (license license:gpl2+))))
+
+(define-public emacs-switch-buffer-functions
+  (package
+    (name "emacs-switch-buffer-functions")
+    (version "0.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/10sr/switch-buffer-functions-el.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0pq53b8wrjbrxd5hnrcdi0z7mffp4bax55hn90k9ca3j76lhbn1k"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/10sr/switch-buffer-functions-el")
+    (synopsis "Hooks run when switching current buffer")
+    (description "This package provides a hook variable
+@code{switch-buffer-functions}.  The hooks will be run when the current buffer
+is changed after an interactive command, i.e., when @code{post-command-hook}
+hooks are run.  The hooked functions will be called with both the previous and
+the current buffer.")
+    (license license:unlicense)))
+
+(define-public emacs-erc-scrolltoplace
+  (package
+    (name "emacs-erc-scrolltoplace")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/jgkamat/erc-scrolltoplace.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "11zpqwh1mlfifbgnvhc63bvnhg340jgxssm3m43hr1sxsyb52lh6"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-switch-buffer-functions" ,emacs-switch-buffer-functions)))
+    (home-page "https://gitlab.com/jgkamat/erc-scrolltoplace")
+    (synopsis "ERC module to replace scrolltobottom while using keep-place")
+    (description "@code{erc-scrolltoplace} is an ERC module to try
+to emulate @code{scrolltobottom} while @code{keep-place} is enabled.")
+    (license license:gpl3+)))
+
+(define-public emacs-dmenu
+  ;; Use the latest commit, as there are no tagged releases.
+  (let ((commit "e8cc9b27c79d3ecc252267c082ab8e9c82eab264")
+        (revision "0"))
+    (package
+      (name "emacs-dmenu")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/lujun9972/el-dmenu.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "098ncygms1r33zhjlq4fj2p4jc91v5whqrm3fazzdk7sd6dilf25"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/lujun9972/el-dmenu")
+      (synopsis "Simulate the @command{dmenu} command line program")
+      (description "This package provides a @command{dmenu} command for
+launching other commands/applications from within Emacs, similar to the
+@command{dmenu} program.  This is especially useful when using EXWM.")
+      (license license:gpl3+))))
+
+(define-public emacs-no-littering
+  (package
+    (name "emacs-no-littering")
+    (version "1.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emacscollective/no-littering.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "17is06l0w6glppabv2kaclrnqi3dqb6p6alpslpg7lrjd8vd45ir"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/emacscollective/no-littering")
+    (synopsis "Help keep ~/.emacs.d/ clean")
+    (description "The default paths used to store configuration files and
+persistent data are not consistent across Emacs packages, be them built-in or
+third-party ones.  @code{no-littering} sets out to help clean
+@file{~/.emacs.d/} by putting configuration files and persistent data files in
+two user-defined directories, as well as using more descriptive names for
+files and subdirectories when appropriate.")
+    (license license:gpl3+)))
+
+(define-public emacs-message-x
+  ;; Use the latest commit, as there are no tagged releases.
+  (let ((commit "5524de7bbfdd8749c110f48de5afb024d9f83133")
+        (revision "0"))
+    (package
+      (name "emacs-message-x")
+      (version (git-version "1.23" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacsmirror/message-x.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0qy1xf11j357lsnbb829hnbg7fq1cii4cx54fwf0wgjh1bv2abvj"))))
+      (build-system emacs-build-system)
+      (home-page "https://www.emacswiki.org/emacs/message-x.el")
+      (synopsis "Customizable completion in message headers")
+      (description "@code{message-x} assigns a context-sensitive function to
+the TAB key in Message mode.  When on a header line, it performs completion
+based on which header we are in (for example, newsgroup name completion makes
+sense on the @samp{Newsgroups} header, whereas mail alias expansion makes
+sense in the @samp{To} and @samp{Cc} headers).  When in the message body, this
+executes a different function (default: @code{indent-relative}).")
       (license license:gpl2+))))

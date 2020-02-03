@@ -36,6 +36,7 @@
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.lonestar.org>
 ;;; Copyright © 2019 Florian Pelz <pelzflorian@pelzflorian.de>
+;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1139,6 +1140,36 @@ WebSocket functionality.  The goals of the project are to provide a WebSocket
 implementation that is simple, portable, flexible, lightweight, low level, and
 high performance.")
     (license license:bsd-3)))
+
+(define-public wslay
+  (package
+    (name "wslay")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tatsuhiro-t/wslay.git")
+             (commit (string-append "release-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ak9a6hsanhys40yhv7c2gqkfghpm6jx36j1pnml8ajvgaky5q98"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("cunit" ,cunit) ; For tests.
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("python-sphinx" ,python-sphinx)))
+    (home-page "https://tatsuhiro-t.github.io/wslay/")
+    (synopsis "C WebSocket library")
+    (description "@code{Wslay} is an event-based C library for the WebSocket
+protocol version 13, described in RFC 6455.  Besides a high-level API it
+provides callbacks for sending and receiving frames directly.  @code{Wslay}
+only supports the data transfer part of WebSocket protocol and does not
+perform the opening handshake in HTTP.")
+    (license license:expat)))
 
 (define-public libpsl
   (package
@@ -5073,21 +5104,20 @@ w3c webidl files and a binding configuration file.")
          (delete 'configure)
          (add-after 'build 'adjust-welcome
            (lambda _
-             ;; First, fix some unended tags and simple substitutions
              (substitute* "frontends/gtk/res/welcome.html"
+             ;; Close some XHTML tags.
                (("<(img|input)([^>]*)>" _ tag contents)
                 (string-append "<" tag contents " />"))
-               (("Licence") "License") ;prefer GNU spelling
+               ;; Increase freedom.
                ((" open source") ", free software")
-               (("web&nbsp;site") "website")
-               ;; Prefer privacy-respecting default search engine
+               ;; Prefer a more privacy-respecting default search engine.
                (("www.google.co.uk") "www.duckduckgo.com/html")
                (("Google Search") "DuckDuckGo Search")
                (("name=\"btnG\"") ""))
-             ;; Remove default links so it doesn't seem we're endorsing them
+             ;; Remove default links so it doesn't seem we're endorsing them.
              (with-atomic-file-replacement "frontends/gtk/res/welcome.html"
                (lambda (in out)
-                 ;; Leave the DOCTYPE header as is
+                 ;; Leave the DOCTYPE header as is.
                  (display (read-line in 'concat) out)
                  (sxml->xml
                   (let rec ((sxml (xml->sxml in)))
