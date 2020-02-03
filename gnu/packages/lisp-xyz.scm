@@ -10071,3 +10071,34 @@ respectively.")
 
 (define-public ecl-salza2
   (sbcl-package->ecl-package sbcl-salza2))
+
+(define-public sbcl-png-read
+  (let ((commit "ec29f38a689972b9f1373f13bbbcd6b05deada88")
+        (revision "1"))
+    (package
+      (name "sbcl-png-read")
+      (version (git-version "0.3.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Ramarren/png-read.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0vyczbcwskrygrf1hgrsnk0jil8skmvf1kiaalw5jps4fjrfdkw0"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("babel" ,sbcl-babel)
+         ("chipz" ,sbcl-chipz)
+         ("iterate" ,sbcl-iterate)))
+      (synopsis "PNG decoder for Common Lisp")
+      (description "This is a Common Lisp library for reading PNG images.")
+      (home-page "https://github.com/Ramarren/png-read")
+      (license license:bsd-3))))
+
+(define-public cl-png-read
+  (sbcl-package->cl-source-package sbcl-png-read))
+
+(define-public ecl-png-read
+  (sbcl-package->ecl-package sbcl-png-read))
