@@ -2473,7 +2473,7 @@ non-consing thread safe queues and fibonacci priority queues.")
 (define sbcl-cffi-bootstrap
   (package
     (name "sbcl-cffi-bootstrap")
-    (version "0.19.0")
+    (version "0.21.0")
     (source
      (origin
        (method git-fetch)
@@ -2482,7 +2482,7 @@ non-consing thread safe queues and fibonacci priority queues.")
              (commit (string-append "v" version))))
        (file-name (git-file-name "cffi-bootstrap" version))
        (sha256
-        (base32 "09sfgc6r7ihmbkwfpvkq5fxc7h45cabpvgbvs47i5cvnmv3k72xy"))))
+        (base32 "1qalargz9bhp850qv60ffwpdqi4xirzar4l3g6qcg8yc6xqf2cjk"))))
     (build-system asdf-build-system/sbcl)
     (inputs
      `(("libffi" ,libffi)
