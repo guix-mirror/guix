@@ -1821,8 +1821,11 @@ processes that doesn't run under Emacs.  Lisp processes created by
          ("cl-fad" ,sbcl-cl-fad)
          ("ironclad" ,sbcl-ironclad)
          ("named-readtables" ,sbcl-named-readtables)
-         ("pythonic-string-reader" ,sbcl-pythonic-string-reader)
-         ("swank" ,cl-slime-swank)))
+         ("pythonic-string-reader" ,sbcl-pythonic-string-reader)))
+      (propagated-inputs
+       ;; Packages having mgl-pax as input complain that it can't find
+       ;; swank if we put it in inputs, so let's put it in propageted-inputs.
+       `(("swank" ,cl-slime-swank)))
       (synopsis "Exploratory programming environment and documentation generator")
       (description
        "PAX provides an extremely poor man's Explorable Programming
