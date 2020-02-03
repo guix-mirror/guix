@@ -10129,3 +10129,34 @@ respectively.")
 
 (define-public ecl-zpng
   (sbcl-package->ecl-package sbcl-zpng))
+
+(define-public sbcl-cl-qrencode
+  (package
+    (name "sbcl-cl-qrencode")
+    (version "0.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jnjcc/cl-qrencode.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1l5k131dchbf6cj8a8xqa731790p01p3qa1kdy2wa9dawy3ymkxr"))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("lisp-unit" ,sbcl-lisp-unit)))
+    (inputs
+     `(("zpng" ,sbcl-zpng)))
+    (synopsis "QR code encoder for Common Lisp")
+    (description
+     "This Common Lisp library provides function to make QR codes and to save
+them as PNG files.")
+    (home-page "https://github.com/jnjcc/cl-qrencode")
+    (license license:gpl2+)))
+
+(define-public cl-qrencode
+  (sbcl-package->cl-source-package sbcl-cl-qrencode))
+
+(define-public ecl-cl-qrencode
+  (sbcl-package->ecl-package sbcl-cl-qrencode))
