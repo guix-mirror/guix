@@ -2438,7 +2438,7 @@ grew out of the @dfn{Vc} project.")
 (define-public python-pyfakefs
   (package
     (name "python-pyfakefs")
-    (version "3.5.8")
+    (version "3.7.1")
     (source (origin
               (method url-fetch)
               ;; We use the PyPI URL because there is no proper release
@@ -2447,7 +2447,7 @@ grew out of the @dfn{Vc} project.")
               (uri (pypi-uri "pyfakefs" version))
               (sha256
                (base32
-                "0qb9jp0bqhc0dv0rn805fv99029fvx135f3bvka6scfkcl6jgllc"))
+                "1cp2yw96fa2qkgi39xa3nlr3inf8wb5rgh9kdq53256ca2r8pdhy"))
               (patches (search-patches
                         "python-pyfakefs-remove-bad-test.patch"))
               (file-name (string-append name "-" version ".tar.gz"))))
