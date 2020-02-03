@@ -10102,3 +10102,30 @@ respectively.")
 
 (define-public ecl-png-read
   (sbcl-package->ecl-package sbcl-png-read))
+
+(define-public sbcl-zpng
+  (package
+    (name "sbcl-zpng")
+    (version "1.2.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/xach/zpng.git")
+             (commit (string-append "release-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0b3ag3jhl3z7kdls3ahdsdxsfhhw5qrizk769984f4wkxhb69rcm"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("salza2" ,sbcl-salza2)))
+    (synopsis "PNG encoder for Common Lisp")
+    (description "This is a Common Lisp library for creating PNG images.")
+    (home-page "https://www.xach.com/lisp/zpng/")
+    (license license:bsd-2)))
+
+(define-public cl-zpng
+  (sbcl-package->cl-source-package sbcl-zpng))
+
+(define-public ecl-zpng
+  (sbcl-package->ecl-package sbcl-zpng))
