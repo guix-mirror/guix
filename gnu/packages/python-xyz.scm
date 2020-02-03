@@ -5019,18 +5019,20 @@ for older versions of Python.")
 (define-public python-importlib-metadata
   (package
     (name "python-importlib-metadata")
-    (version "1.4.0")
+    (version "1.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "importlib_metadata" version))
        (sha256
-        (base32 "1n76444v7zn910xrhh8954jdn4byxbn9f1jck6b85a716mbh2z7i"))))
+        (base32
+         "00ikdj4gjhankdljnz7g5ggak4k9lql2926x0x117ir9j2lv7x86"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-zipp" ,python-zipp)))
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-pyfakefs" ,python-pyfakefs)
        ("python-packaging" ,python-packaging)))
     (home-page "https://importlib-metadata.readthedocs.io/")
     (synopsis "Read metadata from Python packages")
@@ -5051,8 +5053,9 @@ need to use the older and less efficient @code{pkg_resources} package.")
      base
      (name "python2-importlib-metadata")
      (native-inputs
-      `(("python-packaging" ,python2-packaging-bootstrap)
-        ,@(alist-delete "python-packaging" (package-native-inputs base))))
+      `(("python-setuptools-scm" ,python2-setuptools-scm)
+        ("python-pyfakefs" ,python2-pyfakefs-bootstrap)
+        ("python-packaging" ,python2-packaging-bootstrap)))
      (propagated-inputs
       `(("python-configparser" ,python2-configparser)
         ("python-contextlib2" ,python2-contextlib2)
