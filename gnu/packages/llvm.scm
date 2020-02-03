@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Dennis Mungai <dmngaie@gmail.com>
 ;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
@@ -574,7 +574,13 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
                           version "/llvm-" version ".src.tar.xz"))
       (sha256
        (base32
-        "1vi9sf7rx1q04wj479rsvxayb6z740iaz3qniwp266fgp5a07n8z"))))))
+        "1vi9sf7rx1q04wj479rsvxayb6z740iaz3qniwp266fgp5a07n8z"))))
+    (outputs '("out"))
+    (arguments
+     (substitute-keyword-arguments (package-arguments llvm)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (delete 'install-opt-viewer)))))))
 
 (define-public clang-runtime-3.9.1
   (clang-runtime-from-llvm
@@ -590,7 +596,7 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
                    #:patches '("clang-3.8-libc-search-path.patch")))
 
 (define-public llvm-3.8
-  (package (inherit llvm)
+  (package (inherit llvm-3.9.1)
     (name "llvm")
     (version "3.8.1")
     (source
@@ -615,7 +621,7 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
                    #:patches '("clang-3.8-libc-search-path.patch")))
 
 (define-public llvm-3.7
-  (package (inherit llvm)
+  (package (inherit llvm-3.9.1)
     (version "3.7.1")
     (source
      (origin
@@ -639,7 +645,7 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
                    #:patches '("clang-3.5-libc-search-path.patch")))
 
 (define-public llvm-3.6
-  (package (inherit llvm)
+  (package (inherit llvm-3.9.1)
     (version "3.6.2")
     (source
      (origin
@@ -662,7 +668,7 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
                    #:patches '("clang-3.5-libc-search-path.patch")))
 
 (define-public llvm-3.5
-  (package (inherit llvm)
+  (package (inherit llvm-3.9.1)
     (version "3.5.2")
     (source
      (origin
