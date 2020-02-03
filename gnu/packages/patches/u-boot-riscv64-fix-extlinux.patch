@@ -1,0 +1,54 @@
+From 3fc056f0b9f7c26e58a1e947c8c0184e55919614 Mon Sep 17 00:00:00 2001
+From: David Abdurachmanov <david.abdurachmanov@gmail.com>
+Date: Wed, 21 Aug 2019 12:07:20 -0700
+Subject: [PATCH] qemu-riscv64_smode, sifive-fu540: fix extlinux (define
+ preboot)
+Forwarded: https://patchwork.ozlabs.org/patch/1151125/
+
+Commit 37304aaf60bf92a5dc3ef222ba520698bd862a44 removed preboot
+commands in RISC-V targets and broke extlinux support as reported
+by Fu Wei <wefu@redhat.com>.
+
+The patch finishes migration of CONFIG_USE_PREBOOT and CONFIG_REBOOT
+to Kconfig.
+
+Signed-off-by: David Abdurachmanov <david.abdurachmanov@sifive.com>
+---
+ configs/qemu-riscv64_smode_defconfig | 2 ++
+ configs/sifive_fu540_defconfig       | 2 ++
+ include/configs/sifive-fu540.h       | 4 ----
+ 3 files changed, 4 insertions(+), 4 deletions(-)
+
+Index: u-boot/configs/qemu-riscv64_smode_defconfig
+===================================================================
+--- u-boot.orig/configs/qemu-riscv64_smode_defconfig
++++ u-boot/configs/qemu-riscv64_smode_defconfig
+@@ -14,3 +14,5 @@ CONFIG_CMD_NVEDIT_EFI=y
+ CONFIG_OF_PRIOR_STAGE=y
+ CONFIG_SYS_RELOC_GD_ENV_ADDR=y
+ CONFIG_DM_MTD=y
++CONFIG_USE_PREBOOT=y
++CONFIG_PREBOOT="setenv fdt_addr ${fdtcontroladdr}; fdt addr ${fdtcontroladdr};"
+Index: u-boot/configs/sifive_fu540_defconfig
+===================================================================
+--- u-boot.orig/configs/sifive_fu540_defconfig
++++ u-boot/configs/sifive_fu540_defconfig
+@@ -12,3 +12,5 @@ CONFIG_DISPLAY_BOARDINFO=y
+ CONFIG_DEFAULT_DEVICE_TREE="hifive-unleashed-a00"
+ CONFIG_SYS_RELOC_GD_ENV_ADDR=y
+ CONFIG_DM_MTD=y
++CONFIG_USE_PREBOOT=y
++CONFIG_PREBOOT="setenv fdt_addr ${fdtcontroladdr}; fdt addr ${fdtcontroladdr};"
+Index: u-boot/include/configs/sifive-fu540.h
+===================================================================
+--- u-boot.orig/include/configs/sifive-fu540.h
++++ u-boot/include/configs/sifive-fu540.h
+@@ -40,8 +40,4 @@
+ 	"ramdisk_addr_r=0x88300000\0" \
+ 	BOOTENV
+ 
+-#define CONFIG_PREBOOT \
+-	"setenv fdt_addr ${fdtcontroladdr};" \
+-	"fdt addr ${fdtcontroladdr};"
+-
+ #endif /* __CONFIG_H */

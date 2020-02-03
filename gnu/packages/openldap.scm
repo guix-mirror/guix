@@ -5,6 +5,7 @@
 ;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,7 +50,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages)
-  #:use-module ((guix licenses) #:select (openldap2.8 lgpl2.1+ gpl3+ psfl))
+  #:use-module ((guix licenses) #:select (openldap2.8 lgpl2.1+ gpl3+ psfl expat))
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix download)
@@ -399,3 +400,30 @@ Other features include:
 @end enumerate\n")
     ;; GPLv3+ with OpenSSL linking exception.
     (license gpl3+)))
+
+(define-public python-bonsai
+  (package
+    (name "python-bonsai")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "bonsai" version))
+       (sha256
+        (base32
+         "013bl6h1m3f7vg1lk89d4vi28wbf31zdcs4f9g8css7ngx63v6px"))))
+    (build-system python-build-system)
+    (inputs
+     `(("mit-krb5" ,mit-krb5)
+       ("cyrus-sasl" ,cyrus-sasl)
+       ("openldap" ,openldap)))
+    ;; disabling tests, since they require docker and extensive setup
+    (arguments `(#:tests? #f))
+    (home-page "https://github.com/noirello/bonsai")
+    (synopsis "Access LDAP directory servers from Python")
+    (description
+     "This is a module for handling LDAP operations in Python.  LDAP entries
+are mapped to a special Python case-insensitive dictionary, tracking the
+changes of the dictionary to modify the entry on the server easily.")
+    (license expat)))
+

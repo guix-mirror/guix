@@ -7,7 +7,7 @@
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2016, 2017, 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2014, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
@@ -67,6 +67,7 @@
   #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
@@ -310,14 +311,14 @@ other HTTP libraries.")
 (define-public httpie
   (package
     (name "httpie")
-    (version "1.0.3")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "httpie" version))
        (sha256
         (base32
-         "103fcigpxf4nqmrdqjnyz7d9n4n16906slwmmqqc0gkxv8hnw6vd"))))
+         "02bw20cwv3a1lzrn919dk25dq4v81x6q786zlrqsqzhsdxszj14c"))))
     (build-system python-build-system)
     (arguments
      ;; The tests attempt to access external web servers, so we cannot run them.
@@ -3431,3 +3432,65 @@ Unicorn project.  The Gunicorn server is broadly compatible with
 various web frameworks, simply implemented, light on server resources,
 and fairly speedy.")
   (license license:expat)))
+
+(define-public python-translation-finder
+  (package
+    (name "python-translation-finder")
+    (version "1.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "translation-finder" version))
+        (sha256
+         (base32
+          "1pcy9z8gmb8x41gjhw9x0lkr0d2mv5mdxcs2hwg6q8mxs857j589"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'remove-failing-test
+           (lambda _
+             (delete-file "translation_finder/test_api.py")
+             #t)))))
+    (propagated-inputs
+     `(("python-chardet" ,python-chardet)
+       ("python-pathlib2" ,python-pathlib2)
+       ("python-ruamel.yaml" ,python-ruamel.yaml)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-codecov" ,python-codecov)
+       ("python-codacy-coverage" ,python-codacy-coverage)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-twine" ,python-twine)))
+    (home-page "https://weblate.org/")
+    (synopsis "Translation file finder for Weblate")
+    (description "This package provides a function to find translation file in
+the source code of a project.  It supports many translation file formats and
+is part of the Weblate translation platform.")
+    (license license:gpl3+)))
+
+(define-public python-gitlab
+  (package
+    (name "python-gitlab")
+    (version "1.15.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "python-gitlab" version))
+        (sha256
+         (base32
+          "0zl6kz8v8cg1bcy2r78b2snb0lpw0b573gdx2x1ps0nhsh75l4j5"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-httmock" ,python-httmock)
+       ("python-mock" ,python-mock)))
+    (home-page
+      "https://github.com/python-gitlab/python-gitlab")
+    (synopsis "Interact with GitLab API")
+    (description "This package provides an extended library for interacting
+with GitLab instances through their API.")
+    (license license:lgpl3+)))

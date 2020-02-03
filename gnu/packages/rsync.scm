@@ -47,8 +47,10 @@
              (base32
               "1h0011dj6jgqpgribir4anljjv7bbrdcs8g91pbsmzf5zr75bk2m"))))
    (build-system gnu-build-system)
-   (inputs `(("perl" ,perl)
-             ("acl" ,acl)))
+   (native-inputs
+    `(("perl" ,perl)))
+   (inputs
+    `(("acl" ,acl)))
    (synopsis "Remote (and local) file copying tool")
    (description
     "Rsync is a fast and versatile file copying tool.  It can copy locally,

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
@@ -637,13 +637,10 @@ threads.")
                        ("source" ,source)
                        ("texinfo" ,texinfo)))
       (arguments
-       `(#:modules ((guix build utils)
-                    (srfi srfi-1)
-                    (srfi srfi-26))
+       `(#:modules ((guix build utils))
          #:builder
          (begin
            (use-modules (guix build utils)
-                        (srfi srfi-1)
                         (srfi srfi-26))
            (let ((gzip (assoc-ref %build-inputs "gzip"))
                  (source (assoc-ref %build-inputs "source"))

@@ -2911,13 +2911,13 @@ definitions on a Ruby object.")
 (define-public ruby-redcarpet
   (package
     (name "ruby-redcarpet")
-    (version "3.4.0")
+    (version "3.5.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "redcarpet" version))
               (sha256
                (base32
-                "0h9qz2hik4s9knpmbwrzb3jcp3vc5vygp9ya8lcpl7f1l9khmcd7"))))
+                "0skcyx1h8b5ms0rp2zm3ql6g322b8c1adnkwkqyv7z3kypb4bm7k"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -4869,7 +4869,7 @@ unacceptable HTML and/or CSS from a string.")
 (define-public ruby-oj
   (package
     (name "ruby-oj")
-    (version "3.6.7")
+    (version "3.10.1")
     (source
      (origin
        (method git-fetch)
@@ -4881,7 +4881,7 @@ unacceptable HTML and/or CSS from a string.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1fqx58pwjiln7053lw2jy6ns4agcpxq2ac4f2fkd2ca3fxwpmh03"))))
+         "0i5xjx4sh816zx2c1a4d1q67k7vllg5jnnc4jy6zhbmwi1dvp5vw"))))
     (build-system ruby-build-system)
     (arguments
      '(#:test-target "test_all"
@@ -5040,19 +5040,26 @@ including comments and whitespace.")
 (define-public ruby-unf-ext
   (package
     (name "ruby-unf-ext")
-    (version "0.0.7.1")
+    (version "0.0.7.6")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "unf_ext" version))
               (sha256
                (base32
-                "0ly2ms6c3irmbr1575ldyh52bz2v0lzzr2gagf0p526k12ld2n5b"))))
+                "1ll6w64ibh81qwvjx19h8nj7mngxgffg7aigjx11klvf5k2g4nxf"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'build 'build-ext
-           (lambda _ (invoke "rake" "compile:unf_ext"))))))
+           (lambda _ (invoke "rake" "compile:unf_ext")))
+         (add-before 'check 'lose-rake-compiler-dock-dependency
+           (lambda _
+             ;; rake-compiler-dock is listed in the gemspec, but only
+             ;; required when cross-compiling.
+             (substitute* "unf_ext.gemspec"
+               ((".*rake-compiler-dock.*") ""))
+             #t)))))
     (native-inputs
      `(("bundler" ,bundler)
        ("ruby-rake-compiler" ,ruby-rake-compiler)
@@ -6162,14 +6169,14 @@ neither too verbose nor too minimal.")
 (define-public ruby-sqlite3
   (package
     (name "ruby-sqlite3")
-    (version "1.3.13")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "sqlite3" version))
        (sha256
         (base32
-         "01ifzp8nwzqppda419c9wcvr8n82ysmisrs0hph9pdmv1lpa4f5i"))))
+         "0lja01cp9xd5m6vmx99zwn4r7s97r1w5cb76gqd8xhbm1wxyzf78"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -7837,23 +7844,34 @@ features that don't exist yet like variables, nesting, mixins and inheritance.")
 (define-public ruby-sassc
   (package
     (name "ruby-sassc")
-    (version "2.0.1")
+    (version "2.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "sassc" version))
        (sha256
         (base32
-         "1sr4825rlwsrl7xrsm0sgalcpf5zgp4i56dbi3qxfa9lhs8r6zh4"))))
+         "09bnid7r5z5hcin5hykvpvv8xig27wbbckxwis60z2aaxq4j9siz"))))
     (build-system ruby-build-system)
     (arguments
-     '(#:phases
+     '(#:modules ((guix build ruby-build-system)
+                  (guix build utils)
+                  (ice-9 textual-ports))
+       #:phases
        (modify-phases %standard-phases
          ;; TODO: This would be better as a snippet, but the ruby-build-system
          ;; doesn't seem to support that
          (add-after 'unpack 'remove-libsass
            (lambda _
              (delete-file-recursively "ext")
+             (with-atomic-file-replacement "sassc.gemspec"
+               (lambda (in out)
+                 (let* ((gemspec (get-string-all in))
+                        (index (string-contains gemspec "libsass_dir")))
+                   (display (string-append
+                             (string-take gemspec index)
+                             "\nend\n")
+                            out))))
              #t))
          (add-after 'unpack 'dont-check-the-libsass-version
            (lambda _
@@ -7863,18 +7881,17 @@ features that don't exist yet like variables, nesting, mixins and inheritance.")
          (add-after 'unpack 'remove-git-from-gemspec
            (lambda _
              (substitute* "sassc.gemspec"
-               (("`git ls-files -z`") "`find . -type f -print0 |sort -z`")
-               (("`git submodule --quiet foreach pwd`") "''"))
+               (("`git ls-files -z`") "`find . -type f -print0 |sort -z`"))
              #t))
          (add-after 'unpack 'remove-extensions-from-gemspec
            (lambda _
              (substitute* "sassc.gemspec"
-               (("\\[\"ext/Rakefile\"\\]") "[]"))
+               (("\\[\"ext/extconf.rb\"\\]") "[]"))
              #t))
          (add-after 'unpack 'fix-Rakefile
            (lambda _
              (substitute* "Rakefile"
-               (("test: 'libsass:compile'") ":test"))
+               (("test: 'compile:libsass'") ":test"))
              #t))
          (add-after 'unpack 'remove-unnecessary-dependencies
            (lambda _
@@ -7899,6 +7916,7 @@ features that don't exist yet like variables, nesting, mixins and inheritance.")
      `(("libsass" ,libsass)))
     (native-inputs
      `(("bundler" ,bundler)
+       ("ruby-rake-compiler" ,ruby-rake-compiler)
        ("ruby-minitest-around" ,ruby-minitest-around)
        ("ruby-test-construct" ,ruby-test-construct)))
     (synopsis "Use libsss from Ruby")

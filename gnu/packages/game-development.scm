@@ -18,6 +18,7 @@
 ;;; Copyright © 2019, 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2019 Jethro Cao <jethrocao@gmail.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -77,6 +78,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages music)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
@@ -88,6 +90,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
@@ -723,7 +726,7 @@ package is the Nuklear bindings for LÖVE created by Kevin Harrison.")
 multimedia programming.  It handles common, low-level tasks such as creating
 windows, accepting user input, loading data, drawing images, playing sounds,
 etc.")
-    (home-page "http://liballeg.org")
+    (home-page "https://liballeg.org")
     (license license:giftware)))
 
 (define-public allegro
@@ -764,7 +767,7 @@ etc.")
 multimedia programming.  It handles common, low-level tasks such as creating
 windows, accepting user input, loading data, drawing images, playing sounds,
 etc.")
-    (home-page "http://liballeg.org")
+    (home-page "https://liballeg.org")
     (license license:bsd-3)))
 
 (define-public allegro-5.0
@@ -1503,7 +1506,7 @@ games.")
 (define-public godot
   (package
     (name "godot")
-    (version "3.0.6")
+    (version "3.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1512,25 +1515,42 @@ games.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0g64h0x8dlv6aa9ggfcidk2mknkfl5li7z1phcav8aqp9srj8avf"))
-              (modules '((guix build utils)))
+                "0f15izjl4i2xlz1xj5pcslzl9gm3rmr3c21gh256ynpi2zhhkcdd"))
+              (modules '((guix build utils)
+                         (ice-9 ftw)
+                         (srfi srfi-1)))
               (snippet
                '(begin
-                  ;; Drop libraries that we take from Guix.  Note that some
-                  ;; of these may be modified; see "thirdparty/README.md".
+                  ;; Keep only those bundled files we have not (yet) replaced
+                  ;; with Guix versions. Note that some of these may be
+                  ;; modified; see "thirdparty/README.md".
                   (with-directory-excursion "thirdparty"
-                    (for-each delete-file-recursively
-                              '("freetype"
-                                "libogg"
-                                "libpng"
-                                "libtheora"
-                                "libvorbis"
-                                "libvpx"
-                                "libwebp"
-                                "openssl"
-                                "opus"
-                                "zlib"))
-                    #t)))))
+                    (let* ((preserved-files
+                            '("README.md"
+                              "assimp"
+                              "certs"
+                              "cvtt"
+                              "enet"
+                              "etc2comp"
+                              "fonts"
+                              "glad"
+                              "jpeg-compressor"
+                              "libsimplewebm"
+                              "miniupnpc"
+                              "minizip"
+                              "misc"
+                              "nanosvg"
+                              "pvrtccompressor"
+                              "recastnavigation"
+                              "squish"
+                              "tinyexr"
+                              "vhacd"
+                              "xatlas")))
+                      (for-each delete-file-recursively
+                                (lset-difference string=?
+                                                 (scandir ".")
+                                                 (cons* "." ".." preserved-files)))))
+                  #t))))
     (build-system scons-build-system)
     (arguments
      `(#:scons ,scons-python2
@@ -1541,6 +1561,7 @@ games.")
                                '())
                            ;; Avoid using many of the bundled libs.
                            ;; Note: These options can be found in the SConstruct file.
+                           "builtin_bullet=no"
                            "builtin_freetype=no"
                            "builtin_glew=no"
                            "builtin_libmpdec=no"
@@ -1550,9 +1571,12 @@ games.")
                            "builtin_libvorbis=no"
                            "builtin_libvpx=no"
                            "builtin_libwebp=no"
-                           "builtin_openssl=no"
+                           "builtin_mbedtls=no"
                            "builtin_opus=no"
-                           "builtin_zlib=no")
+                           "builtin_pcre2=no"
+                           "builtin_wslay=no"
+                           "builtin_zlib=no"
+                           "builtin_zstd=no")
        #:tests? #f ; There are no tests
        #:phases
        (modify-phases %standard-phases
@@ -1575,6 +1599,10 @@ games.")
                      (rename-file "godot.x11.tools.64" "godot")
                      (rename-file "godot.x11.tools.32" "godot"))
                  (install-file "godot" bin))
+               ;; Tell Godot where to find zenity for OS.alert().
+               (wrap-program (string-append bin "/godot")
+                 `("PATH" ":" prefix
+                   (,(string-append (assoc-ref %build-inputs "zenity") "/bin"))))
                #t)))
          (add-after 'install 'install-godot-desktop
            (lambda* (#:key outputs #:allow-other-keys)
@@ -1599,6 +1627,7 @@ games.")
                #t))))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("alsa-lib" ,alsa-lib)
+              ("bullet" ,bullet)
               ("freetype" ,freetype)
               ("glew" ,glew)
               ("glu" ,glu)
@@ -1611,10 +1640,14 @@ games.")
               ("libxi" ,libxi)
               ("libxinerama" ,libxinerama)
               ("libxrandr" ,libxrandr)
+              ("mbedtls" ,mbedtls-apache)
               ("mesa" ,mesa)
-              ("openssl" ,openssl)
               ("opusfile" ,opusfile)
-              ("pulseaudio" ,pulseaudio)))
+              ("pcre2" ,pcre2)
+              ("pulseaudio" ,pulseaudio)
+              ("wslay" ,wslay)
+              ("zenity" ,zenity)
+              ("zstd" ,zstd "lib")))
     (home-page "https://godotengine.org/")
     (synopsis "Advanced 2D and 3D game engine")
     (description
@@ -1998,7 +2031,11 @@ a.k.a. XenoCollide) as described in Game Programming Gems 7.")
            #t))))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags '("-DODE_WITH_LIBCCD_SYSTEM=ON")
+     ;; Tests fail on all systems but x86_64.
+     `(#:tests? ,(string-prefix? "x86_64-"
+                                 (or (%current-target-system)
+                                     (%current-system)))
+       #:configure-flags '("-DODE_WITH_LIBCCD_SYSTEM=ON")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'unbundle-libccd

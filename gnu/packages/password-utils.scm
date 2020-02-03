@@ -24,6 +24,7 @@
 ;;; Copyright © 2018, 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -56,6 +57,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
+  #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages file)
   #:use-module (gnu packages freedesktop)
@@ -114,7 +116,7 @@ human.")
 (define-public keepassxc
   (package
     (name "keepassxc")
-    (version "2.5.2")
+    (version "2.5.3")
     (source
      (origin
        (method url-fetch)
@@ -122,7 +124,7 @@ human.")
                            "/releases/download/" version "/keepassxc-"
                            version "-src.tar.xz"))
        (sha256
-        (base32 "0lvwc3nxyz7d7vymb6cmgwxylb9g6gsjnq247vbh4lk1ifjir58j"))))
+        (base32 "1sx647mp1xikig50p9bb6vxv18ymdfj3wkxj6qfdr1zfcv7gn005"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DWITH_XC_ALL=YES"
@@ -1066,3 +1068,30 @@ binaries.  All of these utils are designed to execute only one specific
 function.  Since they all work with @code{STDIN} and @code{STDOUT} you can
 group them into chains.")
     (license license:expat)))
+
+(define-public bruteforce-luks
+  (package
+    (name "bruteforce-luks")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/glv2/bruteforce-luks/releases/download/"
+                           version
+                           "/bruteforce-luks-"
+                           version
+                           ".tar.lz"))
+       (sha256
+        (base32 "0yawrlbbklhmvwr99wm7li3r0d5kxvpkwf33a12rji7z0ya5p340"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("lzip" ,lzip)))
+    (inputs
+     `(("cryptsetup" ,cryptsetup)))
+    (synopsis "LUKS encrypted volume cracker")
+    (description
+     "This is a cracker for LUKS encrypted volumes.  It can be used either in
+exhaustive mode to try every password given a charset or in dictionary mode to
+try every password contained in a file.")
+    (home-page "https://github.com/glv2/bruteforce-luks")
+    (license license:gpl3+)))

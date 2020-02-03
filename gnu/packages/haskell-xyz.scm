@@ -11742,7 +11742,7 @@ function which generates instances.")
        ("1" "0k8ph4sydaiqp8dav4if6hpiaq8h1xsr93khmdr7a1mmfwdxr64r")))
     (home-page "https://github.com/phadej/time-compat")
     (synopsis "Compatibility package for time")
-    (description "This packages tries to compat as many @code{time}
+    (description "This package tries to compat as many @code{time}
 features as possible.")
     (license license:bsd-3)))
 

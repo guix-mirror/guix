@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +36,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages javascript)
   #:use-module (gnu packages kde)
   #:use-module (gnu packages kde-frameworks) ; extra-cmake-modules
@@ -254,7 +255,7 @@ easy.")
 (define-public snap
   (package
     (name "snap")
-    (version "5.4.0")
+    (version "5.4.5")
     (source
      (origin
        (method git-fetch)
@@ -263,8 +264,7 @@ easy.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "05m3x8yc9a7x9hfkrz2bm3yqkc63cdb8v3yznkjqq04sfx5dfd04"))))
+        (base32 "1z6dbcsgvxxs40p23qysfsk4vzpg8jlrr5pqfnjf8q3kpz1xvzxf"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -485,17 +485,119 @@ letters of the alphabet, spelling, eye-hand coordination, etc.")
     (home-page "http://www.schoolsplay.org")
     (license license:gpl3+)))
 
+(define-public omnitux
+  (package
+    (name "omnitux")
+    (version "1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/omnitux/omnitux/"
+                           "v" version "/omnitux-" version ".tar.bz2"))
+       (sha256
+        (base32 "1wmmmbzmxd0blhn00d4g91xwavnab143a31ca3i8hrqgzh6qz9w6"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove pre-compiled .pyc files from source.
+           (for-each delete-file (find-files "bin" "\\.pyc$"))
+           #t))))
+    (build-system python-build-system)
+    (inputs
+     `(("python2-pygame" ,python2-pygame)
+       ("python2-pygtk" ,python2-pygtk)))
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'build)                ;no setup.py
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share"))
+                    (data (string-append share "/omnitux")))
+               ;; Install documentation.
+               (let ((doc (string-append share "/doc/" ,name "-" ,version)))
+                 (for-each (lambda (f) (install-file f doc))
+                           '("LICENSE.txt" "README.txt")))
+               ;; Install data.
+               (install-file "omnitux.sh" data)
+               (for-each (lambda (d)
+                           (copy-recursively d (string-append data "/" d)))
+                         '("bin" "data"))
+               ;; Install the launcher.
+               (let* ((bin (string-append out "/bin"))
+                      (script (string-append bin "/omnitux"))
+                      (bash (string-append (assoc-ref %build-inputs "bash")
+                                           "/bin/bash"))
+                      (python (string-append (assoc-ref %build-inputs "python")
+                                             "/bin/python2")))
+                 (mkdir-p bin)
+                 (with-output-to-file script
+                   (lambda ()
+                     (format #t "#!~a~%" bash)
+                     (format #t
+                             "cd ~a; ~a menu.py~%"
+                             (string-append data "/bin")
+                             python)))
+                 (chmod script #o755))
+               ;; Install icon and desktop file.
+               (let ((pixmaps (string-append share "/pixmaps")))
+                 (install-file "data/default/icons/Omnitux_logo.svg" pixmaps))
+               (let ((apps (string-append out "/share/applications")))
+                 (mkdir-p apps)
+                 (with-output-to-file (string-append apps "/omnitux.desktop")
+                   (lambda _
+                     (format #t
+                             "[Desktop Entry]~@
+                              Name=Omnitux~@
+                              GenericName=Omnitux
+                              Comment=An educational game based on multimedia elements.~@
+                              Comment[fr]=Un jeu ludo-éducatif basé sur des éléments multimédias.~@
+                              Exec=~a/bin/omnitux~@
+                              Type=Application~@
+                              Categories=Game;Education;~@
+                              Terminal=false~@
+                              Icon=Omnitux_logo.svg~@"
+                             out))))
+               #t))))))
+    (home-page "http://omnitux.sourceforge.net/")
+    (synopsis "Educational activities based on multimedia elements")
+    (description "The project aims to provide various educational
+activities around multimedia elements (images, sounds, texts).  Types
+of activities include:
+@itemize
+@item associations,
+@item items to place on a map or a schema,
+@item counting activities,
+@item puzzles,
+@item card faces to remember,
+@item find differences between two pictures,
+@item ...
+@end itemize
+
+Activities are available in English, French, German, Polish,
+Portuguese, Spanish and Italian.")
+    ;; Project's license is GPL3+, but multimedia elements are
+    ;; released under various licenses.
+    (license (list license:gpl3+
+                   license:gpl2+
+                   license:cc-by-sa2.0
+                   license:cc-by-sa3.0
+                   license:public-domain))))
+
 (define-public fet
   (package
     (name "fet")
-    (version "5.42.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://www.lalescu.ro/liviu/fet/download/"
-                                  "fet-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "1dzlbhp42dxdxbcrjwrjl4kj65cibxgjqc3ir1w78yprikihdxca"))))
+    (version "5.42.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.lalescu.ro/liviu/fet/download/"
+                           "fet-" version ".tar.bz2"))
+       (sha256
+        (base32 "0z31i8kwd59c3hlq35qll61qhc3x63w330ss92glhp12iy0aja1y"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -612,3 +714,111 @@ each key.  A collection of lessons are included for a wide range of different
 languages and keyboard layouts, and typing statistics are used to dynamically
 adjust the level of difficulty.")
     (license license:gpl2)))
+
+(define-public t4k-common
+  (package
+    (name "t4k-common")
+    (version "0.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tux4kids/t4kcommon")
+             (commit (string-append "upstream/" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "13q02xpmps9qg8zrzzy2gzv4a6afgi28lxk4z242j780v0gphchp"))
+       (patches
+        (search-patches "t4k-common-libpng16.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ;FIXME: cannot find how to run tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'set-paths 'set-sdl-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CPATH" (string-append (assoc-ref inputs "sdl")
+                                            "/include/SDL:"
+                                            (or (getenv "CPATH") "")))))
+         (add-after 'unpack 'fix-andika-font-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/t4k_sdl.c"
+               (("(/usr/share/.*?)/AndikaDesRevG\\.ttf")
+                (string-append (assoc-ref inputs "font-andika")
+                               "/share/fonts/truetype")))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("font-andika" ,font-sil-andika)
+       ("libpng" ,libpng)
+       ("librsvg" ,librsvg)
+       ("libxml2" ,libxml2)
+       ("sdl" ,(sdl-union (list sdl sdl-image sdl-mixer sdl-net sdl-pango)))))
+    (home-page "https://github.com/tux4kids/t4kcommon")
+    (synopsis "Library of code shared between TuxMath and TuxType")
+    (description "Tux4Kids-Common is a library of code shared between
+TuxMath and TuxType.")
+    (license license:gpl3+)))
+
+(define-public tuxmath
+  (package
+    (name "tuxmath")
+    (version "2.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tux4kids/tuxmath")
+             (commit (string-append "upstream/" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1f1pz83w6d3mbik2h6xavfxmk5apxlngxbkh80x0m55lhniwkdxv"))
+       (modules '((guix build utils)))
+       ;; Unbundle fonts.
+       (snippet
+        `(begin
+           (for-each delete-file (find-files "data/fonts" "\\.ttf$"))
+           #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'set-paths 'set-sdl-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CPATH"
+                     (string-append (assoc-ref inputs "sdl")
+                                    "/include/SDL:"
+                                    (or (getenv "CPATH") "")))
+             #t))
+         (add-after 'install 'install-desktop-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (apps (string-append out "/share/applications"))
+                    (pixmaps (string-append out "/share/pixmaps")))
+               (install-file "tuxmath.desktop" apps)
+               (for-each (lambda (f) (install-file f pixmaps))
+                         (find-files "data/images/icons/"
+                                     "tuxmath\\.(png|ico|svg)$"))
+               #t))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("librsvg" ,librsvg)
+       ("libxml2" ,libxml2)
+       ("sdl" ,(sdl-union (list sdl sdl-image sdl-mixer sdl-net sdl-pango)))
+       ("t4k-common" ,t4k-common)))
+    (home-page "https://github.com/tux4kids/tuxmath")
+    (synopsis "Educational math tutorial game")
+    (description "@emph{Tux, of Math Command} is an educational math
+tutorial game starring Tux, the Linux penguin, in which you play the
+part of Commander Tux, as he defends his friends from an attack of
+math equations.  Comets are crashing towards the friendly penguins in
+their igloos, and you must destroy the comets by solving their
+equations.
+
+TuxMath also includes Factoroids, a game that gives practice in
+factoring numbers and simplifying fractions, as well as zapping rocks
+floating through space.")
+    (license license:gpl3+)))

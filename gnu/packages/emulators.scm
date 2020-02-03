@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2018 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -405,26 +405,26 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
 (define-public mgba
   (package
     (name "mgba")
-    (version "0.7.3")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/mgba-emu/mgba.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1wrmwh50rv8bd328r8cisrihq6h90kx2bfb0vmjfbsd3l1jvgrgm"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Make sure we don't use the bundled software.
-               '(begin
-                  (for-each
-                   (lambda (subdir)
-                     (let ((lib-subdir (string-append "src/third-party/" subdir)))
-                       (delete-file-recursively lib-subdir)))
-                   '("libpng" "lzma" "sqlite3" "zlib"))
-                  #t))))
+    (version "0.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mgba-emu/mgba.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0m3rgcdv32ms98j7rrmk2hphvn462bwsd6xfz2ssy05398pj4ljh"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Make sure we don't use the bundled software.
+        '(begin
+           (for-each
+            (lambda (subdir)
+              (let ((lib-subdir (string-append "src/third-party/" subdir)))
+                (delete-file-recursively lib-subdir)))
+            '("libpng" "lzma" "sqlite3" "zlib"))
+           #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no "test" target
@@ -1234,7 +1234,8 @@ multi-system game/emulator system.")
                (setenv "CONFIG_SHELL" bash)
                (apply invoke "./configure" flags)))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("nasm" ,nasm)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("faad2" ,faad2)
@@ -1249,7 +1250,6 @@ multi-system game/emulator system.")
        ("libpng" ,libpng)
        ("libtheora" ,libtheora)
        ("libvorbis" ,libvorbis)
-       ("nasm" ,nasm)
        ("sdl2" ,(sdl-union (list sdl2 sdl2-net)))
        ("zlib" ,zlib)))
     (home-page "https://www.scummvm.org/")
@@ -1264,7 +1264,7 @@ play them on systems for which they were never designed!")
 (define-public mame
   (package
     (name "mame")
-    (version "0.217")
+    (version "0.218")
     (source
      (origin
        (method git-fetch)
@@ -1273,8 +1273,7 @@ play them on systems for which they were never designed!")
              (commit (apply string-append "mame" (string-split version #\.)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "03h4d0d8lh6djjff3zqhjm14klc9n129yzwygdqppz0f43w97cmw"))
+        (base32 "1c43hqfabc7spkyk5ma4bjdb0yqm93sdg5g13ka8mvi462snrfd7"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.
@@ -1478,12 +1477,22 @@ functions.  The source code to MAME serves as this documentation.")
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'cd-subdir
-             (lambda _ (chdir "pcsxr")))
+             (lambda _ (chdir "pcsxr") #t))
            (add-before 'configure 'fix-cdio-lookup
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "cmake/FindCdio.cmake"
                  (("/usr/include/cdio")
-                  (string-append (assoc-ref inputs "libcdio") "/include/cdio"))))))))
+                  (string-append (assoc-ref inputs "libcdio") "/include/cdio")))
+               #t))
+           (add-after 'install 'wrap-program
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (wrap-program (string-append (assoc-ref outputs "out")
+                                            "/bin/pcsxr")
+                 ;; For GtkFileChooserDialog.
+                 `("GSETTINGS_SCHEMA_DIR" =
+                   (,(string-append (assoc-ref inputs "gtk+")
+                                    "/share/glib-2.0/schemas"))))
+               #t)))))
       (native-inputs
        `(("pkg-config" ,pkg-config)
          ("intltool" ,intltool)

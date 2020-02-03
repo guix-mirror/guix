@@ -770,6 +770,17 @@ directories:~{ ~a~}~%")
                            (gettext (condition-message c) %gettext-domain))
              (display-hint (condition-fix-hint c))
              (exit 1))
+
+            ;; On Guile 3.0.0, exceptions such as 'unbound-variable' come are
+            ;; compound and include a '&message'.  However, that message only
+            ;; contains the format string.  Thus, special-case it here to
+            ;; avoid displaying a bare format string.
+            ((cond-expand
+               (guile-3
+                ((exception-predicate &exception-with-kind-and-args) c))
+               (else #f))
+             (raise c))
+
             ((message-condition? c)
              ;; Normally '&message' error conditions have an i18n'd message.
              (leave (G_ "~a~%")

@@ -146,7 +146,9 @@ the X-Consortium license.")
               (sha256
                (base32
                 "16lrxxxd9ps9l69y3zsw6iy0drwjsp6m26d1937xj71alqk6dr6x"))))
-    (build-system gnu-build-system)))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))))
 
 (define-public ftgl
   (package

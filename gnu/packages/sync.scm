@@ -3,8 +3,9 @@
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
 (define-module (gnu packages sync)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (guix build-system meson)
   #:use-module (guix download)
@@ -31,20 +33,113 @@
   #:use-module (guix packages)
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
+  #:use-module (gnu packages adns)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages documentation)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages golang)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages selinux)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls))
+
+(define-public megacmd
+  (package
+    (name "megacmd")
+    (version "1.1.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/meganz/MEGAcmd.git")
+              (commit (string-append version "_Linux"))
+              (recursive? #t)))
+        (sha256
+         (base32
+          "004j8m3xs6slx03g2g6wzr97myl2v3zc09wxnfar5c62a625pd53"))
+        (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    ;; XXX: Disabling tests because they depend on libgtest.la from googletest,
+    ;; which is not installed for unclear reasons.
+    (arguments
+     `(#:tests? #f
+       #:configure-flags '("--with-pcre")))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (inputs
+     `(("c-ares" ,c-ares)
+       ("crypto++" ,crypto++)
+       ("curl" ,curl)
+       ("freeimage" ,freeimage)
+       ("gtest" ,googletest)
+       ("openssl" ,openssl)
+       ("pcre" ,pcre)
+       ("readline" ,readline)
+       ("sodium" ,libsodium)
+       ("sqlite3" ,sqlite)
+       ("zlib" ,zlib)))
+    (home-page "https://mega.nz/cmd")
+    (synopsis
+     "Command Line Interactive and Scriptable Application to access mega.nz")
+    (description "MEGAcmd provides non UI access to MEGA services.  It intends
+to offer all the functionality of a MEGA account via commands.  It features
+synchronization, backup of local folders into a MEGA account and a
+webdav/streaming server.
+
+See also: megatools, a third-party alternative more commonly packaged in other
+distributions.")
+    (license (list license:bsd-2 license:gpl3+))))
+
+(define-public megatools
+  (package
+    (name "megatools")
+    (version "1.10.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://megatools.megous.com/builds/megatools-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "12n32w5mqvpk0hvh9yg9qkj9i0g2wp7jp9rq28bnqs94iv3897hp"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ;; For documentation
+       ("asciidoc" ,asciidoc)))
+    (inputs
+     `(("curl" ,curl)
+       ("glib" ,glib)
+       ("openssl" ,openssl)))
+    (home-page "https://megatools.megous.com/")
+    (synopsis "Command line client application for mega.nz")
+    (description "Megatools is a collection of programs for accessing the mega.nz service
+from the command line.
+
+Megatools allow you to copy individual files as well as entire directory trees to and from
+the cloud.  You can also perform streaming downloads for example to preview videos and
+audio files, without needing to download the entire file first.
+
+Megatools are robust and optimized for fast operation - as fast as Mega servers allow.
+Memory requirements and CPU utilization are kept at minimum.
+
+See also: megacmd, the official tool set by MEGA.")
+    (license license:gpl2)))
 
 (define-public owncloud-client
   (package
@@ -265,14 +360,14 @@ over the Internet in an HTTP and CDN friendly way;
 (define-public rclone
   (package
     (name "rclone")
-    (version "1.50.2")
+    (version "1.51.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/rclone/rclone/releases/download/"
                            "v" version "/rclone-v" version ".tar.gz"))
        (sha256
-        (base32 "14b0k5nb85v0mxmdpqxf8avha0wwc3f4dbj1s8h3hkaifa59kn3d"))))
+        (base32 "1vi7sbdr5irlgxn080nwzs9lr893cxk59y4vnannzr8prvzvgd9y"))))
     ;; FIXME: Rclone bundles some libraries Guix already provides.  Need to
     ;; un-bundle them.
     (build-system go-build-system)

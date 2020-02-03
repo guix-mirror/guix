@@ -273,6 +273,6 @@ Texi2HTML.")
      "Pinfo is an Info file viewer.  Pinfo is similar in use to the Lynx web
 browser.  You just move across info nodes, and select links, follow them, etc.
 It supports many colors.  Pinfo also supports viewing of manual pages -- they
-are colorized like in the midnight commander's viewer, and additionaly they
+are colorized like in the midnight commander's viewer, and additionally they
 are hypertextualized.")
     (license gpl2+)))

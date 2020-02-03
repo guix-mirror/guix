@@ -10,7 +10,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Rodger Fox <thylakoid@openmailbox.org>
-;;; Copyright © 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017, 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -24,7 +24,7 @@
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.lonestar.org>
 ;;; Copyright © 2019 raingloom <raingloom@protonmail.com>
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
-;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
+;;; Copyright © 2019, 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1749,58 +1749,84 @@ is subjective.")
        #:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'enter-dir
-           (lambda _ (chdir "TuxGuitar-lib") #t))
-         (add-after 'build 'build-libraries
+         (replace 'build
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((initial-classpath (getenv "CLASSPATH"))
                     (build-dir (lambda (dir)
-                                 (chdir "..")
-                                 (setenv "CLASSPATH"
-                                         (string-join (cons initial-classpath
-                                                            (find-files (getcwd) "\\.jar$"))
-                                                      ":"))
-                                 (chdir dir)
-                                 (if (file-exists? "build.xml")
-                                     ((assoc-ref %standard-phases 'build)
-                                      #:build-target "build")
-                                     (begin
-                                       ;; Generate default build.xml.
-                                       ((@@ (guix build ant-build-system) default-build.xml)
-                                        (string-append (string-downcase dir) ".jar")
-                                        (string-append (assoc-ref outputs "out")
-                                                       "/share/java"))
-                                       ((assoc-ref %standard-phases 'build)))))))
-               (map build-dir '("TuxGuitar-editor-utils"
+                                 (setenv
+                                  "CLASSPATH"
+                                  (string-join (cons initial-classpath
+                                                     (find-files (getcwd) "\\.jar$"))
+                                               ":"))
+                                 (with-directory-excursion dir
+                                   (if (file-exists? "build.xml")
+                                       ((assoc-ref %standard-phases 'build)
+                                        #:build-target "build")
+                                       (begin
+                                         ;; Generate default build.xml.
+                                         ((@@ (guix build ant-build-system)
+                                              default-build.xml)
+                                          (string-append (string-downcase dir) ".jar")
+                                          (string-append (assoc-ref outputs "out")
+                                                         "/share/java"))
+                                         ((assoc-ref %standard-phases 'build))))))))
+               (map build-dir '("TuxGuitar-lib"
+                                "TuxGuitar-editor-utils"
                                 "TuxGuitar-ui-toolkit"
                                 "TuxGuitar-ui-toolkit-swt"
-                                "TuxGuitar-awt-graphics")))))
-         (add-after 'build-libraries 'build-application
+                                "TuxGuitar-viewer"
+                                "TuxGuitar"
+                                "TuxGuitar-gm-utils"
+                                "TuxGuitar-alsa"
+                                "TuxGuitar-midi"
+                                "TuxGuitar-midi-ui"))
+               #t)))
+         (add-after 'build 'build-jni
            (lambda _
-             (chdir "../TuxGuitar")
-             ((assoc-ref %standard-phases 'build)
-              #:build-target "build")))
+             (setenv "CC" "gcc")
+             (setenv "CFLAGS" (string-append
+                               "-fpic -I"
+                               (getcwd)
+                               "/build-scripts/native-modules/common-include"))
+             (invoke "make" "-C" "./TuxGuitar-alsa/jni" "-f" "GNUmakefile")))
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out   (assoc-ref outputs "out"))
                     (bin   (string-append out "/bin"))
                     (share (string-append out "/share"))
+                    (jni-lib (string-append out "/lib"))
                     (lib   (string-append share "/java"))
-                    (swt   (assoc-ref inputs "java-swt")))
+                    (swt   (assoc-ref inputs "java-swt"))
+                    (mime  (string-append share "/mime/packages"))
+                    (app   (string-append share "/applications"))
+                    (man   (string-append share "/man/man1")))
+
                (mkdir-p bin)
                ;; Install all jars.
                (for-each (lambda (file)
                            (install-file file lib))
-                         (find-files ".." "\\.jar$"))
+                         (find-files "." "\\.jar$"))
+
+               ;; Install jni libraries
+               (for-each (lambda (file)
+                           (install-file file jni-lib))
+                         (find-files "." "\\-jni.so$"))
 
                ;; Install all resources.
-               (copy-recursively "share" share)
+               (copy-recursively "./TuxGuitar/share" share)
+
+               ;; Install desktop and mime files
+               (install-file "./misc/tuxguitar.xml" mime)
+               (install-file "./misc/tuxguitar.desktop" app)
+
+               ;; Install manaual
+               (install-file "./misc/tuxguitar.1" man)
 
                ;; Create wrapper.
                (call-with-output-file (string-append bin "/tuxguitar")
                  (lambda (port)
-                   (let ((classpath (string-join (append (find-files lib "\\.jar$")
-                                                         (find-files swt "\\.jar$"))
+                   (let ((classpath (string-join (append  (find-files lib "\\.jar$")
+                                                          (find-files swt "\\.jar$"))
                                                  ":")))
                      (format
                       port
@@ -1810,12 +1836,14 @@ is subjective.")
                                      " -Dtuxguitar.home.path=" out
                                      " -Dtuxguitar.share.path=" out "/share"
                                      " -Dswt.library.path=" swt "/lib"
+                                     " -Djava.library.path=" out "/lib"
                                      " org.herac.tuxguitar.app.TGMainSingleton"
                                      " \"$1\" \"$2\"")))))
                (chmod (string-append bin "/tuxguitar") #o555)
                #t))))))
     (inputs
-     `(("java-swt" ,java-swt)))
+     `(("alsa-lib" ,alsa-lib)
+       ("java-swt" ,java-swt)))
     (home-page "http://tuxguitar.com.ar/")
     (synopsis "Multitrack tablature editor and player")
     (description
@@ -3850,34 +3878,30 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
 (define-public musescore
   (package
     (name "musescore")
-    (version "3.3.4")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/musescore/MuseScore.git")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1jwj89v69nhyawj8x7niwznm1vgvp51dhzw6ggnarc3wdvp6qq8y"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Un-bundle OpenSSL and remove unused libraries.
-               '(begin
-                  (substitute* "thirdparty/kQOAuth/CMakeLists.txt"
-                    (("-I \\$\\{PROJECT_SOURCE_DIR\\}/thirdparty/openssl/include ")
-                     ""))
-                  (substitute* "thirdparty/kQOAuth/kqoauthutils.cpp"
-                    (("#include <openssl/.*") ""))
-                  (for-each delete-file-recursively
-                            '("thirdparty/freetype"
-                              "thirdparty/openssl"
-                              "thirdparty/portmidi"))
-                  #t))))
+    (version "3.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/musescore/MuseScore.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "16rx4x0czhwjg8vppcc7iw0cvii9q2l730cqhmhvip9r8wwamsvj"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Un-bundle OpenSSL and remove unused libraries.
+        '(begin
+           (for-each delete-file-recursively
+                     '("thirdparty/freetype"
+                       "thirdparty/openssl"
+                       "thirdparty/portmidi"))
+           #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
-       `("-DBUILD_WEBENGINE=OFF"
+       `("-DBUILD_TELEMETRY_MODULE=OFF" ;don't phone home
+         "-DBUILD_WEBENGINE=OFF"
          "-DDOWNLOAD_SOUNDFONT=OFF"
          "-DUSE_SYSTEM_FREETYPE=ON")
        ;; There are tests, but no simple target to run.  The command used to
@@ -5114,3 +5138,50 @@ MIDI drums and comes as two separate drumkits: Black Pearl and Red Zeppelin.")
     (description "Helm is a cross-platform polyphonic synthesizer available standalone
 and as an LV2 plugin.")
     (license license:gpl3+)))
+
+(define-public zrythm
+  (package
+    (name "zrythm")
+    (version "0.7.345")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://www.zrythm.org/releases/zrythm-"
+                            version ".tar.xz"))
+        (sha256
+          (base32
+            "1csiwq38a1ckx23lairfpl7qjkz71wsa7a9vsxl3k58f9ybibiil"))))
+   (build-system meson-build-system)
+   (arguments
+    `(#:glib-or-gtk? #t
+      #:configure-flags
+      `("-Denable_tests=true" "-Dmanpage=true"
+        "-Dinstall_dseg_font=false" "-Denable_ffmpeg=true")))
+   (inputs
+    `(("alsa-lib" ,alsa-lib)
+      ("jack" ,jack-1)
+      ("font-dseg", font-dseg)
+      ("ffmpeg", ffmpeg)
+      ("fftw", fftw)
+      ("fftwf", fftwf)
+      ("gettext", gettext-minimal)
+      ("glibc", glibc)
+      ("gtk+", gtk+)
+      ("libsamplerate" ,libsamplerate)
+      ("libsndfile" ,libsndfile)
+      ("libyaml" ,libyaml)
+      ("lilv", lilv)
+      ("xdg-utils", xdg-utils)
+      ("rubberband", rubberband)))
+   (native-inputs
+     `(("pkg-config", pkg-config)
+       ("help2man", help2man)
+       ("libaudec" ,libaudec)
+       ("lv2", lv2)
+       ("glib" ,glib "bin"))) ;for 'glib-compile-resources'
+   (synopsis "Digital audio workstation focusing on usability")
+   (description "Zrythm is a digital audio workstation designed to be
+featureful and easy to use.  It offers unlimited automation options, LV2
+plugin support, JACK support and chord assistance.")
+   (home-page "https://www.zrythm.org")
+   (license license:agpl3+)))

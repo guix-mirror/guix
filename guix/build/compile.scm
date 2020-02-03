@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -29,9 +29,7 @@
   #:use-module (guix build utils)
   #:use-module (language tree-il optimize)
   #:use-module (language cps optimize)
-  #:export (%default-optimizations
-            %lightweight-optimizations
-            compile-files))
+  #:export (compile-files))
 
 ;;; Commentary:
 ;;;

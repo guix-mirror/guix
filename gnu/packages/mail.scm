@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2014 Sou Bunnbu <iyzsong@gmail.com>
@@ -87,6 +87,7 @@
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages libunistring)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages lsof)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages man)
@@ -136,7 +137,9 @@
   #:use-module (guix build-system guile)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
-  #:use-module (guix build-system trivial))
+  #:use-module (guix build-system trivial)
+  #:use-module (srfi srfi-1)
+  #:use-module (ice-9 match))
 
 (define-public mailutils
   (package
@@ -151,7 +154,7 @@
                "1wkn9ch664477r4d8jk9153w5msljsbj99907k7zgzpmywbs6ba7"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'check 'prepare-test-suite
            (lambda _
@@ -199,12 +202,18 @@
 
              #t)))
        ;; TODO: Add `--with-sql'.
-       #:configure-flags (list "--sysconfdir=/etc"
+       #:configure-flags
+       (list "--sysconfdir=/etc"
 
-                               ;; Add "/2.2" to the installation directory.
-                               (string-append "--with-guile-site-dir="
-                                              (assoc-ref %outputs "out")
-                                              "/share/guile/site/2.2"))
+             ;; Add "/X.Y" to the installation directory.
+             (string-append "--with-guile-site-dir="
+                            (assoc-ref %outputs "out")
+                            "/share/guile/site/"
+                            ,(match (assoc "guile"
+                                           (package-inputs this-package))
+                               (("guile" guile)
+                                (version-major+minor
+                                 (package-version guile))))))
 
        #:parallel-tests? #f))
     (native-inputs
@@ -236,6 +245,14 @@ software.")
     (license
      ;; Libraries are under LGPLv3+, and programs under GPLv3+.
      (list gpl3+ lgpl3+))))
+
+(define-public guile3.0-mailutils
+  (package
+    (inherit mailutils)
+    (name "guile3.0-mailutils")
+    (inputs
+     `(("guile" ,guile-3.0)
+       ,@(alist-delete "guile" (package-inputs mailutils))))))
 
 (define-public nullmailer
   (package
@@ -2284,80 +2301,14 @@ transfer protocols.")
 (define-public opensmtpd
   (package
     (name "opensmtpd")
-    (version "6.0.3p1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://www.opensmtpd.org/archives/"
-                                  name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "10bsfsnlg9d9i6l2izdnxp05s3ri8fvwzqxvx1jmarc852382619"))
-              ;; Fixed upstream: <github.com/OpenSMTPD/OpenSMTPD/pull/835>.
-              (patches (search-patches "opensmtpd-fix-crash.patch"))))
-    (build-system gnu-build-system)
-    (inputs
-     `(("bdb" ,bdb)
-       ("libressl" ,libressl)
-       ("libevent" ,libevent)
-       ("libasr" ,libasr)
-       ("linux-pam" ,linux-pam)
-       ("zlib" ,zlib)))
-    (native-inputs
-     `(("bison" ,bison)
-       ("groff" ,groff)))
-    (arguments
-     `(#:configure-flags
-       (list "--with-table-db" "--with-auth-pam" "--localstatedir=/var"
-             "--with-user-smtpd=smtpd" "--with-user-queue=smtpq"
-             "--with-group-queue=smtpq"
-             "--with-path-socket=/var/run" ; not default (./configure lies)
-             "--with-path-CAfile=/etc/ssl/certs/ca-certificates.crt")
-       #:phases
-       (modify-phases %standard-phases
-         ;; Fix some incorrectly hard-coded external tool file names.
-         (add-after 'unpack 'patch-FHS-file-names
-           (lambda _
-             (substitute* "smtpd/smtpctl.c"
-               (("/bin/cat") (which "cat"))
-               (("/bin/sh") (which "sh")))
-             #t))
-         ;; OpenSMTPD provides a single utility smtpctl to control the daemon and
-         ;; the local submission subsystem.  To accomodate systems that require
-         ;; historical interfaces such as sendmail, newaliases or makemap, the
-         ;; smtpctl utility can operate in compatibility mode if called with the
-         ;; historical name.
-         (add-after 'install 'install-compability-links
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out  (assoc-ref outputs "out"))
-                    (sbin (string-append out "/sbin/")))
-               (for-each (lambda (command)
-                           (symlink "smtpctl" (string-append sbin command)))
-                         '("makemap" "sendmail" "send-mail"
-                           "newaliases" "mailq")))
-             #t)))))
-    (synopsis "Lightweight SMTP daemon")
-    (description
-     "OpenSMTPD is an implementation of the server-side SMTP protocol, with
-some additional standard extensions.  It allows ordinary machines to exchange
-e-mails with other systems speaking the SMTP protocol.")
-    (home-page "https://www.opensmtpd.org")
-    (license (list bsd-2 bsd-3 bsd-4 (non-copyleft "file://COPYING")
-                   public-domain isc license:openssl))))
-
-;; OpenSMTPd 6.4 introduced a new and incompatible configuration file format.
-;; Use a different name, for now, to avoid auto-upgrades and broken mail boxes.
-;; OPENSMTP-CONFIGURATION in (gnu services mail) will also need an overhaul.
-(define-public opensmtpd-next
-  (package
-    (name "opensmtpd-next")
-    (version "6.6.1p1")
+    (version "6.6.2p1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.opensmtpd.org/archives/"
                            "opensmtpd-" version ".tar.gz"))
        (sha256
-        (base32 "1ngil8j13m2rq07g94j4yjr6zmaimzy8wbfr17shi7rxnazys6zb"))))
+        (base32 "16nz2n4s3djlasd6m6dqfwggf6igyfxzq5igny5i0qb8lnn13f33"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)
@@ -3120,11 +3071,11 @@ related tools to process winmail.dat files.")
     (license gpl2+)))
 
 (define-public public-inbox
-  (let ((commit "3cf66514aea9e958999973b9f104473b6d800fbe")
+  (let ((commit "05a06f3262a2ddbf46adb85169e13ce9127e4524")
         (revision "0"))
     (package
      (name "public-inbox")
-     (version (git-version "1.0.0" revision commit))
+     (version (git-version "1.2.0" revision commit))
      (source
       (origin (method git-fetch)
               (uri (git-reference
@@ -3132,7 +3083,7 @@ related tools to process winmail.dat files.")
                     (commit commit)))
               (sha256
                (base32
-                "1sxycwlm2n6p544gn9f0vf3xs6gz8vdswdhs2ha6fka8mgabvmdh"))
+                "06cclxg46gsls3x19l9s8s9x8gkjghm6gd4jb1v9ng6fds6xi2fg"))
               (file-name (git-file-name name version))))
      (build-system perl-build-system)
      (arguments
@@ -3149,6 +3100,13 @@ related tools to process winmail.dat files.")
             (lambda _
               (substitute* "t/spawn.t"
                 (("\\['env'\\]") (string-append "['" (which "env") "']")))
+              (substitute* "t/ds-leak.t"
+                (("/bin/sh") (which "sh")))
+              (invoke "./certs/create-certs.perl")
+              ;; XXX: This test fails due to zombie process is not reaped by
+              ;; the builder.
+              (substitute* "t/httpd-unix.t"
+                (("^SKIP: \\{") "SKIP: { skip('Guix');"))
               #t))
           (add-after 'install 'wrap-programs
             (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -3168,15 +3126,18 @@ related tools to process winmail.dat files.")
               #t)))))
      (native-inputs
       `(("git" ,git)
-        ("xapian" ,xapian)))
+        ("xapian" ,xapian)
+        ;; For testing.
+        ("lsof" ,lsof)
+        ("openssl" ,openssl)))
      (inputs
-      `(("perl-danga-socket" ,perl-danga-socket)
-        ("perl-dbd-sqlite" ,perl-dbd-sqlite)
+      `(("perl-dbd-sqlite" ,perl-dbd-sqlite)
         ("perl-dbi" ,perl-dbi)
         ("perl-email-address-xs" ,perl-email-address-xs)
         ("perl-email-mime-contenttype" ,perl-email-mime-contenttype)
         ("perl-email-mime" ,perl-email-mime)
         ("perl-email-simple" ,perl-email-simple)
+        ("perl-net-server" ,perl-net-server)
         ("perl-filesys-notify-simple" ,perl-filesys-notify-simple)
         ("perl-plack-middleware-deflater" ,perl-plack-middleware-deflater)
         ("perl-plack-middleware-reverseproxy" ,perl-plack-middleware-reverseproxy)

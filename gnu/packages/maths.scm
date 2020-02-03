@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2016, 2017 John Darrington <jmd@gnu.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2014 Mathieu Lirzin <mathieu.lirzin@openmailbox.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -2410,7 +2410,7 @@ easy-to-write markup language for mathematics.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://crd-legacy.lbl.gov/~xiaoye/SuperLU/"
+       (uri (string-append "https://portal.nersc.gov/project/sparse/superlu/"
                            "superlu_" version ".tar.gz"))
        (sha256
         (base32 "0qzlb7cd608q62kyppd0a8c65l03vrwqql6gsm465rky23b6dyr8"))
@@ -2456,7 +2456,7 @@ void mc64ad_ (int *a, int *b, int *c, int *d, int *e, double *f, int *g,
      `(#:configure-flags '("-Denable_blaslib:BOOL=NO" ;do not use internal cblas
                            "-DTPL_BLAS_LIBRARIES=openblas"
                            "-DBUILD_SHARED_LIBS:BOOL=YES")))
-    (home-page "http://crd-legacy.lbl.gov/~xiaoye/SuperLU/")
+    (home-page "https://portal.nersc.gov/project/sparse/superlu/")
     (synopsis "Supernodal direct solver for sparse linear systems")
     (description
      "SuperLU is a general purpose library for the direct solution of large,
@@ -2472,14 +2472,14 @@ also provides threshold-based ILU factorization preconditioners.")
 (define-public superlu-dist
   (package
     (name "superlu-dist")
-    (version "6.1.0")
+    (version "6.2.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://crd-legacy.lbl.gov/~xiaoye/SuperLU/"
+       (uri (string-append "https://portal.nersc.gov/project/sparse/superlu/"
                            "superlu_dist_" version ".tar.gz"))
        (sha256
-        (base32 "0pqgcgh1yxhfzs99fas3mggajzd5wca3nbyp878rziy74gfk03dl"))
+        (base32 "1ynmwqajc9sc3my2hssa5k9s58ggvizqv9rdss0j7w99pbh5mnvw"))
        (modules '((guix build utils)))
        (snippet
         ;; Replace the non-free implementation of MC64 with a stub
@@ -2505,8 +2505,7 @@ void mc64ad_dist (int *a, int *b, int *c, int *d, int *e, double *f, int *g,
               "RowPerm = NOROWPERM;"))
            #t))
        (patches (search-patches "superlu-dist-scotchmetis.patch"
-                                "superlu-dist-awpm-grid.patch"
-                                "superlu-dist-fix-mpi-deprecations.patch"))))
+                                "superlu-dist-awpm-grid.patch"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("tcsh" ,tcsh)))

@@ -1699,6 +1699,7 @@ parallel computing platforms.  It also supports serial execution.")
        ("libtool" ,libtool)))
     (native-inputs
      `(("pkg-config-native" ,pkg-config)
+       ("gcc" ,gcc-5)
        ("libtool-native" ,libtool)))
     (home-page "http://www.freehdl.seul.org/")
     (synopsis "VHDL simulator")

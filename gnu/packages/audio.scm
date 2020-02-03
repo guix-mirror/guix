@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
@@ -23,7 +23,7 @@
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
+;;; Copyright © 2019, 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2019 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 ;;; Copyright © 2019 Hartmt Goebel <h.goebel@crazy-compilers.com>
@@ -54,6 +54,7 @@
   #:use-module (guix build-system waf)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
@@ -1512,25 +1513,23 @@ well suited to all musical instruments and vocals.")
 (define-public ir
   (package
     (name "ir")
-    (version "1.3.2")
+    (version "1.3.4")
     (source (origin
-             (method url-fetch)
-             ;; The original home-page is gone. Download the tarball from an
-             ;; archive mirror instead.
-             (uri (list (string-append
-                         "https://web.archive.org/web/20150803095032/"
-                         "http://factorial.hu/system/files/ir.lv2-"
-                         version ".tar.gz")
-                        (string-append
-                         "https://mirrors.kernel.org/gentoo/distfiles/ir.lv2-"
-                         version ".tar.gz")))
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/tomszilagyi/ir.lv2")
+                   (commit version)))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "1jh2z01l9m4ar7yz0n911df07dygc7n4cl59p7qdjbh0nvkm747g"))))
+               "0svmjhg4r6wy5ci5rwz43ybll7yxjv7nnj7nyqscbzhr3gi5aib0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                              ; no tests
-       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "INSTDIR="
+                            (assoc-ref %outputs "out") "/lib/lv2"))
        #:phases (modify-phases %standard-phases
                   (delete 'configure))))        ; no configure script
     (inputs
@@ -1546,9 +1545,7 @@ well suited to all musical instruments and vocals.")
      (list (search-path-specification
             (variable "LV2_PATH")
             (files '("lib/lv2")))))
-    ;; Link to an archived copy of the home-page since the original is gone.
-    (home-page (string-append "https://web.archive.org/web/20150803095032/"
-                              "http://factorial.hu/plugins/lv2/ir"))
+    (home-page "https://tomszilagyi.github.io/plugins/ir.lv2")
     (synopsis "LV2 convolution reverb")
     (description
      "IR is a low-latency, real-time, high performance signal convolver
@@ -2047,7 +2044,7 @@ lv2-c++-tools.")
 (define-public openal
   (package
     (name "openal")
-    (version "1.20.0")
+    (version "1.20.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2055,7 +2052,7 @@ lv2-c++-tools.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "03p6s5gap0lvig2fs0a8nib5rxsc24dbqjsydpwvlm5l49wlk2f0"))))
+                "0vax0b1lgd4212bpxa1rciz52d4mv3dkfvcbbhzw4cjp698v1kmn"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f  ; no check target
@@ -4013,3 +4010,33 @@ in the package.")
     ;; (see the file 'COPYING.LGPL'). This allows writing ECI applications
     ;; that are not licensed under GPL.
     (license (list license:gpl2 license:lgpl2.1))))
+
+(define-public libaudec
+  (package
+    (name "libaudec")
+    (version "0.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://git.zrythm.org/git/libaudec")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "0lfydvs92b0hr72z71ci3yi356rjzi162pgms8dphgg18bz8dazv"))))
+   (build-system meson-build-system)
+   (arguments
+    `(#:configure-flags `("-Denable_tests=true -Denable_ffmpeg=true")))
+   (inputs
+    `(("libsamplerate" ,libsamplerate)
+      ("libsndfile" ,libsndfile)
+      ("ffmpeg" ,ffmpeg)))
+   (native-inputs
+     `(("pkg-config", pkg-config)))
+   (synopsis "Library for reading and resampling audio files")
+   (description "libaudec is a wrapper library over ffmpeg, sndfile and
+libsamplerate for reading and resampling audio files, based on Robin Gareus'
+@code{audio_decoder} code.")
+   (home-page "https://git.zrythm.org/cgit/libaudec")
+   (license license:agpl3+)))

@@ -33,6 +33,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages check)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sphinx))
@@ -85,11 +86,20 @@ Python strings.")
        (uri (pypi-uri "lz4" version))
        (sha256
         (base32
-         "0ghv1xbaq693kgww1x9c22bplz479ls9szjsaa4ig778ls834hm0"))))
+         "0ghv1xbaq693kgww1x9c22bplz479ls9szjsaa4ig778ls834hm0"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove bundled copy of lz4.
+           (delete-file-recursively "lz4libs")
+           #t))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nose" ,python-nose)
+     `(("pkg-config" ,pkg-config)
+       ("python-nose" ,python-nose)
        ("python-setuptools-scm" ,python-setuptools-scm)))
+    (inputs
+     `(("lz4" ,lz4)))
     (home-page "https://github.com/python-lz4/python-lz4")
     (synopsis "LZ4 bindings for Python")
     (description

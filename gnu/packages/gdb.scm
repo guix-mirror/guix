@@ -1,7 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,12 +28,14 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages python)
   #:use-module (gnu packages pkg-config)
   #:use-module ((guix licenses) #:select (gpl3+))
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (srfi srfi-1))
 
 (define-public gdb-8.3
   (package
@@ -45,6 +48,10 @@
              (sha256
               (base32
                "1i2pjwaafrlz7wqm40b4znr77ai32rjsxkpl2az38yyarpbv8m8y"))))
+
+    ;; Hide this package so that end users get 'gdb/next' below.
+    (properties '((hidden? . #t)))
+
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; FIXME "make check" fails on single-processor systems.
@@ -106,6 +113,8 @@ the program is running to try to fix bugs.  It can be used to debug programs
 written in C, C++, Ada, Objective-C, Pascal and more.")
     (license gpl3+)))
 
+;; This version of GDB is required by some of the Rust compilers, see
+;; <https://bugs.gnu.org/37810>.
 (define-public gdb-8.2
   (package/inherit
    gdb-8.3
@@ -117,6 +126,15 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
              (sha256
               (base32
                "00i27xqawjv282a07i73lp1l02n0a3ywzhykma75qg500wll6sha"))))))
+
+;; The "next" version of GDB, to be merged with 'gdb' in the next rebuild cycle.
+(define-public gdb/next
+  (package/inherit
+   gdb-8.3
+   (inputs
+    `(("source-highlight" ,source-highlight)
+      ,@(package-inputs gdb-8.3)))
+   (properties (alist-delete 'hidden? (package-properties gdb-8.3)))))
 
 (define-public gdb
   ;; This is the fixed version that packages depend on.  Update it rarely

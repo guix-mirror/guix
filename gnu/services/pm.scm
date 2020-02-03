@@ -388,7 +388,7 @@ shutdown on system startup."))
     (with-imported-modules '((guix build utils))
       #~(begin
           (use-modules (guix build utils))
-          (copy-file #$config-file "/etc/tlp")))))
+          (copy-file #$config-file "/etc/tlp.conf")))))
 
 (define tlp-service-type
   (service-type

@@ -47,8 +47,8 @@ Copyright @copyright{} 2017 Thomas Danckaert@*
 Copyright @copyright{} 2017 humanitiesNerd@*
 Copyright @copyright{} 2017 Christopher Allan Webber@*
 Copyright @copyright{} 2017, 2018, 2019 Marius Bakke@*
-Copyright @copyright{} 2017, 2019 Hartmut Goebel@*
-Copyright @copyright{} 2017, 2019 Maxim Cournoyer@*
+Copyright @copyright{} 2017, 2019, 2020 Hartmut Goebel@*
+Copyright @copyright{} 2017, 2019, 2020 Maxim Cournoyer@*
 Copyright @copyright{} 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice@*
 Copyright @copyright{} 2017 George Clemmer@*
 Copyright @copyright{} 2017 Andy Wingo@*
@@ -310,6 +310,7 @@ Services
 * Version Control Services::    Providing remote access to Git repositories.
 * Game Services::               Game servers.
 * PAM Mount Service::           Service to mount volumes when logging in.
+* Linux Services::              Services tied to the Linux kernel.
 * Miscellaneous Services::      Other services.
 
 Defining Services
@@ -6447,10 +6448,24 @@ Which Perl package is used can be specified with @code{#:perl}.
 This variable is exported by @code{(guix build-system qt)}.  It
 is intended for use with applications using Qt or KDE.
 
-This build system adds the phase @code{qt-wrap} to the ones defined by
-@code{cmake-build-system}, after the @code{install} phase.
+This build system adds the following two phases to the ones defined by
+@code{cmake-build-system}:
 
-This phase searches for Qt5 plugin paths, QML paths and some XDG in the inputs
+@table @code
+@item check-setup
+The phase @code{check-setup} prepares the environment for running
+the checks as commonly used by Qt test programs.
+For now this only sets some environment variables:
+@code{QT_QPA_PLATFORM=offscreen},
+@code{DBUS_FATAL_WARNINGS=0} and
+@code{CTEST_OUTPUT_ON_FAILURE=1}.
+
+This phase is added before the @code{check} phase.
+It's a separate phase to ease adjusting if necessary.
+
+@item qt-wrap
+The phase @code{qt-wrap}
+searches for Qt5 plugin paths, QML paths and some XDG in the inputs
 and output.  In case some path is found, all programs in the output's
 @file{bin/}, @file{sbin/}, @file{libexec/} and @file{lib/libexec/} directories
 are wrapped in scripts defining the necessary environment variables.
@@ -6460,6 +6475,9 @@ by listing their names in the @code{#:qt-wrap-excluded-outputs} parameter.
 This is useful when an output is known not to contain any Qt binaries, and
 where wrapping would gratuitously add a dependency of that output on Qt, KDE,
 or such.
+
+This phase is added after the @code{install} phase.
+@end table
 @end defvr
 
 @defvr {Scheme Variable} r-build-system
@@ -12084,6 +12102,7 @@ declaration.
 * Game Services::               Game servers.
 * PAM Mount Service::           Service to mount volumes when logging in.
 * Guix Services::               Services relating specifically to Guix.
+* Linux Services::              Services tied to the Linux kernel.
 * Miscellaneous Services::      Other services.
 @end menu
 
@@ -25129,6 +25148,71 @@ list.
 @end table
 @end deftp
 
+@node Linux Services
+@subsubheading Linux Services
+
+@cindex oom
+@cindex out of memory killer
+@cindex earlyoom
+@cindex early out of memory daemon
+@subsection Early OOM Service
+
+@uref{https://github.com/rfjakob/earlyoom,Early OOM}, also known as
+Earlyoom, is a minimalist out of memory (OOM) daemon that runs in user
+space and provides a more responsive and configurable alternative to the
+in-kernel OOM killer.  It is useful to prevent the system from becoming
+unresponsive when it runs out of memory.
+
+@deffn {Scheme Variable} earlyoom-service-type
+The service type for running @command{earlyoom}, the Early OOM daemon.
+Its value must be a @code{earlyoom-configuration} object, described
+below.  The service can be instantiated in its default configuration
+with:
+
+@lisp
+(service earlyoom-service-type)
+@end lisp
+@end deffn
+
+@deftp {Data Type} earlyoom-configuration
+This is the configuration record for the @code{earlyoom-service-type}.
+
+@table @asis
+@item @code{earlyoom} (default: @var{earlyoom})
+The Earlyoom package to use.
+
+@item @code{minimum-available-memory} (default: @code{10})
+The threshold for the minimum @emph{available} memory, in percentages.
+
+@item @code{minimum-free-swap} (default: @code{10})
+The threshold for the minimum free swap memory, in percentages.
+
+@item @code{prefer-regexp} (default: @code{#f})
+A regular expression (as a string) to match the names of the processes
+that should be preferably killed.
+
+@item @code{avoid-regexp} (default: @code{#f})
+A regular expression (as a string) to match the names of the processes
+that should @emph{not} be killed.
+
+@item @code{memory-report-interval} (default: @code{0})
+The interval in seconds at which a memory report is printed.  It is
+disabled by default.
+
+@item @code{ignore-positive-oom-score-adj?} (default: @code{#f})
+A boolean indicating whether the positive adjustments set in
+@file{/proc/*/oom_score_adj}.
+
+@item @code{show-debug-messages?} (default: @code{#f})
+A boolean indicating whether debug messages should be printed.  The logs
+are saved at @file{/var/log/earlyoom.log}.
+
+@item @code{send-notification-command} (default: @code{#f})
+This can be used to provide a custom command used for sending
+notifications.
+@end table
+@end deftp
+
 
 @node Miscellaneous Services
 @subsection Miscellaneous Services
@@ -26101,9 +26185,22 @@ must @emph{not} be an OS device name such as @file{/dev/sda1}.
 @end table
 @end deftp
 
+@cindex HDPI
+@cindex HiDPI
+@cindex resolution
 @c FIXME: Write documentation once it's stable.
-For now only GRUB has theme support. GRUB themes are created using
-the @code{grub-theme} form, which is not documented yet.
+For now only GRUB has theme support.  GRUB themes are created using
+the @code{grub-theme} form, which is not fully documented yet.
+
+@deftp {Data Type} grub-theme
+Data type representing the configuration of the GRUB theme.
+
+@table @asis
+@item @code{gfxmode} (default: @code{'("auto")})
+The GRUB @code{gfxmode} to set (a list of screen resolution strings, see
+@pxref{gfxmode,,, grub, GNU GRUB manual}).
+@end table
+@end deftp
 
 @defvr {Scheme Variable} %default-theme
 This is the default GRUB theme used by the operating system if no
@@ -26114,6 +26211,17 @@ It comes with a fancy background image displaying the GNU and Guix
 logos.
 @end defvr
 
+For example, to override the default resolution, you may use something
+like
+
+@lisp
+(bootloader
+ (grub-configuration
+ ;; @dots{}
+ (theme (grub-theme
+         (inherit %default-theme)
+         (gfxmode '("1024x786x32" "auto"))))))
+@end lisp
 
 @node Invoking guix system
 @section Invoking @code{guix system}

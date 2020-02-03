@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2019, 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +35,17 @@
 ;; Builder-side code of the standard Qt build procedure.
 ;;
 ;; Code:
+
+(define* (check-setup #:rest args)
+  ;; Make Qt render "offscreen". In many cases this allows to run tests
+  ;; without starting a X11 server.
+  (setenv "QT_QPA_PLATFORM" "offscreen")
+  ;; Qt/KDE tests often need dbus (`dbus-launch …`) which is not fully
+  ;; set-up the the build container.
+  (setenv "DBUS_FATAL_WARNINGS" "0")
+  ;; Set here to ease overwriting 'check (even if set there, too)
+  (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
+  #t)
 
 (define (variables-for-wrapping base-directories)
 
@@ -101,6 +112,7 @@ add a dependency of that output on Qt."
 
 (define %standard-phases
   (modify-phases cmake:%standard-phases
+    (add-before 'check 'check-setup check-setup)
     (add-after 'install 'qt-wrap wrap-all-programs)))
 
 (define* (qt-build #:key inputs (phases %standard-phases)

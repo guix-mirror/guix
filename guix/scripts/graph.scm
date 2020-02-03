@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -552,20 +552,17 @@ Emit a representation of the dependency graph of PACKAGE...\n"))
                                                   (read/eval-package-expression exp)))
                                       (_ #f))
                                     opts)))
-        ;; Ask for absolute file names so that .drv file names passed from the
-        ;; user to 'read-derivation' are absolute when it returns.
-        (with-fluids ((%file-port-name-canonicalization 'absolute))
-          (run-with-store store
-            ;; XXX: Since grafting can trigger unsolicited builds, disable it.
-            (mlet %store-monad ((_     (set-grafting #f))
-                                (nodes (mapm %store-monad
-                                             (node-type-convert type)
-                                             items)))
-              (export-graph (concatenate nodes)
-                            (current-output-port)
-                            #:node-type type
-                            #:backend backend))
-            #:system (assq-ref opts 'system))))))
+        (run-with-store store
+          ;; XXX: Since grafting can trigger unsolicited builds, disable it.
+          (mlet %store-monad ((_     (set-grafting #f))
+                              (nodes (mapm %store-monad
+                                           (node-type-convert type)
+                                           items)))
+            (export-graph (concatenate nodes)
+                          (current-output-port)
+                          #:node-type type
+                          #:backend backend))
+          #:system (assq-ref opts 'system)))))
   #t)
 
 ;;; graph.scm ends here

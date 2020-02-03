@@ -46,12 +46,12 @@
 ;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
 ;;; Copyright © 2019 mikadoZero <mikadozero@yandex.com>
 ;;; Copyright © 2019 Gabriel Hondet <gabrielhondet@gmail.com>
-;;; Copyright © 2019 LaFreniere, Joseph <joseph@lafreniere.xyz>
+;;; Copyright © 2019, 2020 Joseph LaFreniere <joseph@lafreniere.xyz>
 ;;; Copyright © 2019 Amar Singh <nly@disroot.org>
 ;;; Copyright © 2019 Baptiste Strazzulla <bstrazzull@hotmail.fr>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
-;;; Copyright © 2019 Amin Bandali <mab@gnu.org>
+;;; Copyright © 2019, 2020 Amin Bandali <mab@gnu.org>
 ;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2019 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2019 Stephen Webber <montokapro@gmail.com>
@@ -105,6 +105,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages telephony)
+  #:use-module (gnu packages terminals)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tcl)
@@ -959,15 +960,13 @@ in certain cases.  It also enables recursion for anonymous functions.")
 (define-public emacs-xr
   (package
     (name "emacs-xr")
-    (version "1.13")
+    (version "1.15")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://elpa.gnu.org/packages/xr-" version ".tar"))
+       (uri (string-append "https://elpa.gnu.org/packages/xr-" version ".tar"))
        (sha256
-        (base32
-         "1km4x92pii8c4bcimks4xzhmwpypdf183z0zh7raj062jz4jb74r"))))
+        (base32 "0pxzr6n0qa29ly8j3cl46rv9a65ajfcgahrhdylg4yfb9gh1x4ly"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/xr.html")
     (synopsis "Convert string regexp to rx notation")
@@ -1065,14 +1064,14 @@ optional minor mode which can apply this command automatically on save.")
 (define-public emacs-relint
   (package
     (name "emacs-relint")
-    (version "1.11")
+    (version "1.13")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://elpa.gnu.org/packages/relint-" version ".tar"))
        (sha256
-        (base32 "0c7d35kp5k11fnyjrq9cg8i2r005gs57pmb3rvpf8ilwv0scn1m7"))))
+        (base32 "1kzzlixhd6kp0mkmgn02b7pqv6m55g708xsys7vjskdxbfb6jjib"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-xr" ,emacs-xr)))
     (home-page "https://github.com/mattiase/relint")
@@ -8054,14 +8053,13 @@ passive voice.")
     (name "emacs-org")
     ;; emacs-org-contrib inherits from this package.  Please update it as
     ;; well.
-    (version "9.3.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://elpa.gnu.org/packages/org-"
-                                  version ".tar"))
-              (sha256
-               (base32
-                "1n79h6ihhsaxxbnl9hw511aav0215m3pa51sa5fh3ddknjfplian"))))
+    (version "9.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/org-" version ".tar"))
+       (sha256
+        (base32 "1275s3hzyka2wwxl6nc2sndnwyl7kbc1nnl0hrznxb3wpy2abfd6"))))
     (build-system emacs-build-system)
     (home-page "https://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
@@ -8075,14 +8073,14 @@ programming and reproducible research.")
   (package
     (inherit emacs-org)
     (name "emacs-org-contrib")
-    (version "20191226")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://orgmode.org/elpa/"
-                                  "org-plus-contrib-" version ".tar"))
-              (sha256
-               (base32
-                "08h6qiplvm7rvrb1pv2arwdlv6p31p0a6h0fk64kb79g6br8rk8i"))))
+    (version "20200126")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://orgmode.org/elpa/"
+                           "org-plus-contrib-" version ".tar"))
+       (sha256
+        (base32 "08yik0i8ya2x5j4vsnwxdcdlcxbiq58lvy30vcbdbf0hqrd40kjv"))))
     (arguments
      `(#:modules ((guix build emacs-build-system)
                   (guix build utils)
@@ -12355,7 +12353,7 @@ into sections while preserving the structure imposed by any timestamps.")
 (define-public emacs-org-make-toc
   (package
     (name "emacs-org-make-toc")
-    (version "0.3")
+    (version "0.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -12364,7 +12362,7 @@ into sections while preserving the structure imposed by any timestamps.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0syhj8q4pv33xgl5qa6x27yhwqvfhffw5xqp819hj4qs1ddlc7j5"))))
+                "0348iq3bc3rxs5bqdvskyly4agqxiapamqkfm0323620kxl70agw"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-org" ,emacs-org)
@@ -15376,56 +15374,54 @@ try completing.  See @code{fish-completion-fallback-on-bash-p}.")
     (license license:gpl3+)))
 
 (define-public emacs-gif-screencast
-  (let ((commit "248d1e158405e6cba2c65ecaed40e2c59b089cd8")
-        (revision "2"))
-    (package
-      (name "emacs-gif-screencast")
-      (version (git-version "1.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://gitlab.com/Ambrevar/emacs-gif-screencast.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "19xqi5mgalnnhb4hw0fh7py2s2dllldx1xxbhwhknkdpifai8hl8"))))
-      (build-system emacs-build-system)
-      (inputs
-       `(("scrot" ,scrot)
-         ("imagemagick" ,imagemagick)
-         ("gifsicle" ,gifsicle)))
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'configure
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((scrot (assoc-ref inputs "scrot"))
-                     (imagemagick (assoc-ref inputs "imagemagick"))
-                     (gifsicle (assoc-ref inputs "gifsicle")))
-                 (make-file-writable "gif-screencast.el")
-                 ;; Specify the absolute file names of the various
-                 ;; programs so that everything works out-of-the-box.
-                 (emacs-substitute-variables
-                     "gif-screencast.el"
-                   ("gif-screencast-program"
-                    (string-append scrot "/bin/scrot"))
-                   ("gif-screencast-convert-program"
-                    (string-append imagemagick "/bin/convert"))
-                   ("gif-screencast-cropping-program"
-                    (string-append imagemagick "/bin/mogrify"))
-                   ("gif-screencast-optimize-program"
-                    (string-append gifsicle "/bin/gifsicle")))))))))
-      (home-page
-       "https://gitlab.com/Ambrevar/emacs-gif-screencast")
-      (synopsis "One-frame-per-action GIF recording")
-      (description
-       "Call @code{gif-screencast} to start a recording.
+  (package
+    (name "emacs-gif-screencast")
+    (version "1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/Ambrevar/emacs-gif-screencast.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1g1by8lvf8c9vzm4wwsi5kp285kaj0ahsl54048ympin4pi0njw9"))))
+    (build-system emacs-build-system)
+    (inputs
+     `(("scrot" ,scrot)
+       ("imagemagick" ,imagemagick)
+       ("gifsicle" ,gifsicle)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((scrot (assoc-ref inputs "scrot"))
+                   (imagemagick (assoc-ref inputs "imagemagick"))
+                   (gifsicle (assoc-ref inputs "gifsicle")))
+               (make-file-writable "gif-screencast.el")
+               ;; Specify the absolute file names of the various
+               ;; programs so that everything works out-of-the-box.
+               (emacs-substitute-variables
+                   "gif-screencast.el"
+                 ("gif-screencast-program"
+                  (string-append scrot "/bin/scrot"))
+                 ("gif-screencast-convert-program"
+                  (string-append imagemagick "/bin/convert"))
+                 ("gif-screencast-cropping-program"
+                  (string-append imagemagick "/bin/mogrify"))
+                 ("gif-screencast-optimize-program"
+                  (string-append gifsicle "/bin/gifsicle")))))))))
+    (home-page
+     "https://gitlab.com/Ambrevar/emacs-gif-screencast")
+    (synopsis "One-frame-per-action GIF recording")
+    (description
+     "Call @code{gif-screencast} to start a recording.
 A screenshot is taken for every user action.  Call
 @code{gif-screencast-stop} (<f9> by default) to finish recording and create
 the GIF result.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-google-translate
   (package
@@ -17398,6 +17394,73 @@ next, volume) and display and control the current playlist as well as your
 stored playlists.")
     (license license:gpl3+)))
 
+(define-public emacs-vterm
+  (let ((version "0")
+        (revision "1")
+        (commit "7d7381fa8104b55b70148cf147523d9ab7f01fcd"))
+    (package
+      (name "emacs-vterm")
+      (version (git-version version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/akermu/emacs-libvterm.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "04a2jlhmr20ipgzpnba3yryw3ly7qdxjgaw10dwn9wxy1yqmapz1"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:modules ((guix build emacs-build-system)
+                    ((guix build cmake-build-system) #:prefix cmake:)
+                    (guix build emacs-utils)
+                    (guix build utils))
+         #:imported-modules (,@%emacs-build-system-modules
+                             (guix build cmake-build-system))
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'add-source-to-load-path 'remove-vterm-module-make
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Remove the Emacs Lisp file.
+               (delete-file "vterm-module-make.el")
+               ;; Remove references to the removed file.
+               (make-file-writable "vterm.el")
+               (emacs-substitute-sexps "vterm.el"
+                 ("(or (require 'vterm-module nil t)"
+                  `(module-load
+                    ,(string-append (assoc-ref outputs "out")
+                                    "/lib/vterm-module.so"))))
+               #t))
+           (add-after 'build 'configure
+             ;; Run cmake.
+             (lambda* (#:key outputs #:allow-other-keys)
+               ((assoc-ref cmake:%standard-phases 'configure)
+                #:outputs outputs
+                #:out-of-source? #f
+                #:configure-flags '("-DUSE_SYSTEM_LIBVTERM=ON"))
+               #t))
+           (add-after 'configure 'make
+             ;; Run make.
+             (lambda* (#:key (make-flags '()) outputs #:allow-other-keys)
+               ;; Compile the shared object file.
+               (apply invoke "make" "all" make-flags)
+               ;; Move the file into /lib.
+               (install-file
+                "vterm-module.so"
+                (string-append (assoc-ref outputs "out") "/lib"))
+               #t)))
+         #:tests? #f))
+      (native-inputs
+       `(("cmake" ,cmake-minimal)
+         ("libtool" ,libtool)
+         ("libvterm" ,libvterm)))
+      (home-page "https://github.com/akermu/emacs-libvterm")
+      (synopsis "Emacs libvterm integration")
+      (description "This package implements a bridge to @code{libvterm} to
+display a terminal in an Emacs buffer.")
+      (license license:gpl3+))))
+
 (define-public emacs-simple-mpc
   ;; There have been no releases.
   (let ((commit "bee8520e81292b4c7353e45b193f9a13b482f5b2")
@@ -18931,6 +18994,29 @@ previewed by scrolling up and down within a @code{dired} buffer.")
 and searching through @code{Ctags} files.")
     (license license:gpl3+)))
 
+(define-public emacs-ivy-clipmenu
+  (let ((commit "d2071f2c5043a05d610cd1952e84176ca78c31dc"))
+    (package
+      (name "emacs-ivy-clipmenu")
+      (version (git-version "0.0.1" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/wpcarro/ivy-clipmenu.el.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0npd8glzk5z4n7y9mzbsbzi0cf3by19fqcki052jr3dga363lds7"))))
+      (propagated-inputs
+       `(("emacs-f" ,emacs-f)
+         ("emacs-ivy" ,emacs-ivy)))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/wpcarro/ivy-clipmenu.el")
+      (synopsis "Ivy integration with clipmenu")
+      (description "Ivy integration with the clipboard manager, clipmenu.")
+      (license license:expat))))
+
 (define-public emacs-org-download
   (let ((commit "10c9d7c8eed928c88a896310c882e3af4d8d0f61")
         (revision "2"))
@@ -20140,7 +20226,7 @@ Emacs that integrate with major modes like Org-mode.")
 (define-public emacs-modus-themes
   (package
     (name "emacs-modus-themes")
-    (version "0.3.0")
+    (version "0.4.0")
     (source
      (origin
        (method git-fetch)
@@ -20149,8 +20235,7 @@ Emacs that integrate with major modes like Org-mode.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1xrrjhpdxi9bgx877gvq8xrc2ph5qp9y5j3ssdphy333x9km1px1"))))
+        (base32 "0c4y3y9mjf6x2b9087fk6nkxvgvm9f5l1p2vdwqny80vp4krsb8r"))))
     (build-system emacs-build-system)
     (home-page "https://gitlab.com/protesilaos/modus-themes")
     (synopsis "Emacs themes designed for colour-contrast accessibility")
@@ -20419,9 +20504,9 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
   ;; This package has versions newer than indicated on MELPA.
   ;; Get the current version from `telega-version` in telega.el.
   ;; or by running M-x telega-version.
-  (let ((commit "69565cc4de72e28148c8041de8930a122a39b800")
-	(revision "4")
-	(version "0.5.4"))
+  (let ((commit "ae09592498ce380e57fbb76725fd4c89ae248864")
+	(revision "0")
+	(version "0.6.0"))
     (package
       (name "emacs-telega")
       (version (git-version version revision commit))
@@ -20433,7 +20518,7 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
                (commit commit)))
          (sha256
           (base32
-           "0blvj07f1sbdmp68qwlwgnhnv42ib0mjai5ndf8scbi12drn4rmk"))
+           "0mv6i80958d9crzspzik5xh5g8326115bvg2frgv0dp9p6rm86m3"))
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
@@ -20630,6 +20715,31 @@ each slide with left/right keys.")
     (description "This library provides helpers for single-window-per-frame
 execution of buffer-exposing commands.")
     (license license:gpl3+)))
+
+(define-public emacs-eshell-toggle
+  (let ((commit "ddfbe0a693497c4d4bc5494a19970ba4f6ab9033")
+        (revision "1"))
+    (package
+      (name "emacs-eshell-toggle")
+      (version (git-version "0.10.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/4DA/eshell-toggle.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "0xqrp8pwbmfxjdqipgpw5nw633mvhjjjm3k3j9sh9xdpmw05hhws"))
+         (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)))
+      (home-page "https://github.com/4DA/eshell-toggle")
+      (synopsis "Show and hide an @code{eshell} instance")
+      (description "This package toggles an @code{eshell} instance for the
+current buffer.")
+      (license license:gpl3+))))
 
 (define-public emacs-repl-toggle
   (package
@@ -20995,7 +21105,7 @@ data format @code{edn}.  See @url{https://github.com/edn-format/edn}.")
        `(("emacs-helm" ,emacs-helm)
          ("emacs-edn" ,emacs-edn)))
       (synopsis "Search help on clojuredocs.org with Helm")
-      (description "This packages provides a Helm interface to lookup Clojure
+      (description "This package provides a Helm interface to lookup Clojure
 documentation on @url{https://clojuredocs.org} with Helm.
 
 Two function are exposed:
@@ -21033,3 +21143,237 @@ pattern guessed from thing under current cursor position.
 mercury-mode provided by Emacs as a wrapper around prolog-mode.")
       (home-page "https://github.com/ahungry/metal-mercury-mode")
       (license license:gpl3+))))
+
+(define-public emacs-boxquote
+  ;; The following commit is 2.1 release with a switch to GPL3+ license.
+  (let ((commit "7e47e0e2853bc1215739b2e28f260e9eed93b2c5")
+        (revision "0"))
+    (package
+      (name "emacs-boxquote")
+      (version (git-version "2.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/davep/boxquote.el.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1aqhg24gajvllbqxb0zxrnx6sddas37k2ldfinqyszd856sjhsg3"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/davep/boxquote.el")
+      (synopsis "Quote text with different kinds of boxes")
+      (description "@code{boxquote} provides a set of functions for using
+a text quoting style that partially boxes in the left hand side of an area of
+text, such a marking style might be used to show externally included text or
+example code.")
+      (license license:gpl3+))))
+
+(define-public emacs-company-ebdb
+  (package
+    (name "emacs-company-ebdb")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "company-ebdb-" version ".el"))
+       (sha256
+        (base32 "146qpiigz12zp1823ggxfrx090g0mxs7gz1ba7sa0iq6ibgzwwm9"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-company" ,emacs-company)))
+    (home-page "https://elpa.gnu.org/packages/company-ebdb.html")
+    (synopsis "Company completion backend for EBDB in Message mode")
+    (description "@code{company-ebdb} provides Company mode integration for
+EBDB.  It is copied more or less intact from @code{company-bbdb}, originally
+by Jan Tatarik.")
+    (license license:gpl3+)))
+
+(define-public emacs-mwim
+  ;; Use the latest commit not in a release version as of yet, since it
+  ;; contains a bug fix for the cases where `comment-start-skip' is nil.
+  (let ((commit "b4f3edb4c0fb8f8b71cecbf8095c2c25a8ffbf85")
+        (revision "0"))
+    (package
+      (name "emacs-mwim")
+      (version (git-version "0.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/alezost/mwim.el.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0l3k611gp9g2x2vfmh92wnhnda81dslpwwpb8mxmzk308man77ya"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/alezost/mwim.el")
+      (synopsis "Move to the beginning/end of line, code or comment")
+      (description "@code{mwim} provides several commands to switch between
+various line positions, like moving to the beginning/end of code, line, or
+comment.")
+      (license license:gpl3+))))
+
+(define-public emacs-delight
+  (package
+    (name "emacs-delight")
+    (version "1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "delight-" version ".el"))
+       (sha256
+        (base32 "0kzlvzwmn6zj0874086q2xw0pclyi7wlkq48zh2lkd2796xm8vw7"))))
+    (build-system emacs-build-system)
+    (home-page "https://elpa.gnu.org/packages/delight.html")
+    (synopsis "Dimmer switch for your mode-line lighter text")
+    (description "@code{delight} enables customizing or hiding the
+mode-line text (lighter) of major and minor modes.")
+    (license license:gpl3+)))
+
+(define-public emacs-unkillable-scratch
+  ;; Use the latest (unreleased) commit as of now, since it contains a handy
+  ;; `unkillable-scratch-do-not-reset-scratch-buffer' customization to not
+  ;; repopulate the scratch buffer with `initial-scratch-message'.
+  (let ((commit "b24c2a760529833f230c14cb02ff6e7ec92288ab")
+        (revision "0"))
+    (package
+      (name "emacs-unkillable-scratch")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/EricCrosson/unkillable-scratch.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "13wjbcxr3km4s96yhpavgs5acs5pvqv3ih1p84diqb3x3i6wd4pa"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/EricCrosson/unkillable-scratch")
+      (synopsis "Prevents the *scratch* buffer from being killed")
+      (description "@code{unkillable-scratch} helps prevent killing buffers
+matching a given regexp.")
+      (license license:gpl2+))))
+
+(define-public emacs-switch-buffer-functions
+  (package
+    (name "emacs-switch-buffer-functions")
+    (version "0.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/10sr/switch-buffer-functions-el.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0pq53b8wrjbrxd5hnrcdi0z7mffp4bax55hn90k9ca3j76lhbn1k"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/10sr/switch-buffer-functions-el")
+    (synopsis "Hooks run when switching current buffer")
+    (description "This package provides a hook variable
+@code{switch-buffer-functions}.  The hooks will be run when the current buffer
+is changed after an interactive command, i.e., when @code{post-command-hook}
+hooks are run.  The hooked functions will be called with both the previous and
+the current buffer.")
+    (license license:unlicense)))
+
+(define-public emacs-erc-scrolltoplace
+  (package
+    (name "emacs-erc-scrolltoplace")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/jgkamat/erc-scrolltoplace.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "11zpqwh1mlfifbgnvhc63bvnhg340jgxssm3m43hr1sxsyb52lh6"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-switch-buffer-functions" ,emacs-switch-buffer-functions)))
+    (home-page "https://gitlab.com/jgkamat/erc-scrolltoplace")
+    (synopsis "ERC module to replace scrolltobottom while using keep-place")
+    (description "@code{erc-scrolltoplace} is an ERC module to try
+to emulate @code{scrolltobottom} while @code{keep-place} is enabled.")
+    (license license:gpl3+)))
+
+(define-public emacs-dmenu
+  ;; Use the latest commit, as there are no tagged releases.
+  (let ((commit "e8cc9b27c79d3ecc252267c082ab8e9c82eab264")
+        (revision "0"))
+    (package
+      (name "emacs-dmenu")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/lujun9972/el-dmenu.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "098ncygms1r33zhjlq4fj2p4jc91v5whqrm3fazzdk7sd6dilf25"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/lujun9972/el-dmenu")
+      (synopsis "Simulate the @command{dmenu} command line program")
+      (description "This package provides a @command{dmenu} command for
+launching other commands/applications from within Emacs, similar to the
+@command{dmenu} program.  This is especially useful when using EXWM.")
+      (license license:gpl3+))))
+
+(define-public emacs-no-littering
+  (package
+    (name "emacs-no-littering")
+    (version "1.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emacscollective/no-littering.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "17is06l0w6glppabv2kaclrnqi3dqb6p6alpslpg7lrjd8vd45ir"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/emacscollective/no-littering")
+    (synopsis "Help keep ~/.emacs.d/ clean")
+    (description "The default paths used to store configuration files and
+persistent data are not consistent across Emacs packages, be them built-in or
+third-party ones.  @code{no-littering} sets out to help clean
+@file{~/.emacs.d/} by putting configuration files and persistent data files in
+two user-defined directories, as well as using more descriptive names for
+files and subdirectories when appropriate.")
+    (license license:gpl3+)))
+
+(define-public emacs-message-x
+  ;; Use the latest commit, as there are no tagged releases.
+  (let ((commit "5524de7bbfdd8749c110f48de5afb024d9f83133")
+        (revision "0"))
+    (package
+      (name "emacs-message-x")
+      (version (git-version "1.23" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacsmirror/message-x.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0qy1xf11j357lsnbb829hnbg7fq1cii4cx54fwf0wgjh1bv2abvj"))))
+      (build-system emacs-build-system)
+      (home-page "https://www.emacswiki.org/emacs/message-x.el")
+      (synopsis "Customizable completion in message headers")
+      (description "@code{message-x} assigns a context-sensitive function to
+the TAB key in Message mode.  When on a header line, it performs completion
+based on which header we are in (for example, newsgroup name completion makes
+sense on the @samp{Newsgroups} header, whereas mail alias expansion makes
+sense in the @samp{To} and @samp{Cc} headers).  When in the message body, this
+executes a different function (default: @code{indent-relative}).")
+      (license license:gpl2+))))

@@ -166,8 +166,12 @@
      "0154 E1B9 1CC9 D9EF 7764  8DE7 F3A7 27DB 44FC CA36")
     ("roelj"
      "17CB 2812 EB63 3DFF 2C7F  0452 C3EC 1DCA 8430 72E1")
-    ("roptat"
+    ("roptat (old)"
      "B5FA E628 5B41 3728 B2A0  FAED 4311 1F45 2008 6A0C")
+    ("roptat"
+     ;; From commit 2cbede5935eb6a40173bbdf30a9ad22bf7574c22 (Jan. 2020).  See
+     ;; <https://lists.gnu.org/archive/html/guix-devel/2020-01/msg00499.html>.
+     "1EFB 0909 1F17 D28C CBF9  B13A 53D4 57B2 D636 EE82")
     ("samplet"
      ;; primary: "D6B0 C593 DA8C 5EDC A44C  7A58 C336 91F7 1188 B004"
      "A02C 2D82 0EF4 B25B A6B5  1D90 2AC6 A5EC 1C35 7C59")

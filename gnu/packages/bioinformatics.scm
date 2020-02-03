@@ -7349,13 +7349,13 @@ checks on R packages that are to be submitted to the Bioconductor repository.")
 (define-public r-s4vectors
   (package
     (name "r-s4vectors")
-    (version "0.24.2")
+    (version "0.24.3")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "S4Vectors" version))
               (sha256
                (base32
-                "1s1h00k2ki7sd0hz4l8n41xr6ixszag7lm0ryrbb08idgcy16ipn"))))
+                "01f7dms4kw9ajwqlvh5s47riv748xrrs41na03byhjvn4fbdc44y"))))
     (properties
      `((upstream-name . "S4Vectors")))
     (build-system r-build-system)
@@ -7930,13 +7930,13 @@ as well as query and modify the browser state, such as the current viewport.")
 (define-public r-genomicfeatures
   (package
     (name "r-genomicfeatures")
-    (version "1.38.0")
+    (version "1.38.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomicFeatures" version))
               (sha256
                (base32
-                "0xd9rlsicycbanbcfhc97cj8b8vk94g7lkbmhk37w1511bq35wz5"))))
+                "1c1x29f447dv0i1wi88paji645lfsgmg4ckn19hyhlra72smhzqc"))))
     (properties
      `((upstream-name . "GenomicFeatures")))
     (build-system r-build-system)
@@ -10317,14 +10317,14 @@ family of feature/genome hypotheses.")
 (define-public r-gviz
   (package
     (name "r-gviz")
-    (version "1.30.0")
+    (version "1.30.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Gviz" version))
        (sha256
         (base32
-         "1p7n4yc77272rd8ybsim3rcg6kf6wmc95pwwav40b754imxn263z"))))
+         "03jj193fzmhvkjw8f5zk6wgflkvm3phny0q38scawcplfsyb8z64"))))
     (properties `((upstream-name . "Gviz")))
     (build-system r-build-system)
     (propagated-inputs
@@ -12937,14 +12937,14 @@ analyses in addition to large-scale sequence-level searches.")
 (define-public r-diversitree
   (package
     (name "r-diversitree")
-    (version "0.9-11")
+    (version "0.9-13")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "diversitree" version))
         (sha256
          (base32
-          "1jqfjmmaigq581l4zxysmkhld0xv6izlbr1hihf9zplkix36majc"))))
+          "00vi4klywi35hd170ksjv3xja3hqqbkcidcnrrlpgv4179k0azix"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
@@ -14626,21 +14626,23 @@ let before_space s =
                (let* ((out (assoc-ref outputs "out"))
                       (bin (string-append out "/bin")))
                  (copy-recursively "bin" bin))
-               #t)))))
+               #t)))
+       #:ocaml ,ocaml-4.07
+       #:findlib ,ocaml4.07-findlib))
       (inputs
        `(("zlib" ,zlib "static")
          ("gsl" ,gsl)
-         ("ocaml-ounit" ,ocaml-ounit)
-         ("ocaml-batteries" ,ocaml-batteries)
-         ("ocaml-camlzip" ,camlzip)
-         ("ocaml-csv" ,ocaml-csv)
-         ("ocaml-sqlite3" ,ocaml-sqlite3)
-         ("ocaml-xmlm" ,ocaml-xmlm)
-         ("ocaml-mcl" ,ocaml-mcl)
-         ("ocaml-gsl" ,ocaml-gsl-1)))
+         ("ocaml-ounit" ,(package-with-ocaml4.07 ocaml-ounit))
+         ("ocaml-batteries" ,(package-with-ocaml4.07 ocaml-batteries))
+         ("ocaml-camlzip" ,(package-with-ocaml4.07 camlzip))
+         ("ocaml-csv" ,(package-with-ocaml4.07 ocaml-csv))
+         ("ocaml-sqlite3" ,ocaml4.07-sqlite3)
+         ("ocaml-xmlm" ,(package-with-ocaml4.07 ocaml-xmlm))
+         ("ocaml-mcl" ,(package-with-ocaml4.07 ocaml-mcl))
+         ("ocaml-gsl" ,ocaml4.07-gsl-1)))
       (native-inputs
        `(("cddlib-src" ,(package-source cddlib))
-         ("ocamlbuild" ,ocamlbuild)
+         ("ocamlbuild" ,(package-with-ocaml4.07 ocamlbuild))
          ("pkg-config" ,pkg-config)))
       (propagated-inputs
        `(("pplacer-scripts" ,pplacer-scripts)))

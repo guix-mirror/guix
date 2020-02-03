@@ -694,6 +694,34 @@ annotations.")
      "This is a manifest package for Illumina's EPIC methylation arrays.")
     (license license:artistic2.0)))
 
+;; This is a CRAN package, but it depends on r-bsgenome-hsapiens-ucsc-hg19
+;; from Bioconductor.
+(define-public r-deconstructsigs
+  (package
+    (name "r-deconstructsigs")
+    (version "1.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "deconstructSigs" version))
+              (sha256
+               (base32
+                "014x0nb23jb98666kaav2phkvmkr38pi38jv0dqd4jv7zp0gdf1a"))))
+    (properties
+     `((upstream-name . "deconstructSigs")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)
+       ("r-bsgenome-hsapiens-ucsc-hg19" ,r-bsgenome-hsapiens-ucsc-hg19)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-reshape2" ,r-reshape2)))
+    (home-page "https://github.com/raerose01/deconstructSigs")
+    (synopsis "Identifies signatures present in a tumor sample")
+    (description "This package takes sample information in the form of the
+fraction of mutations in each of 96 trinucleotide contexts and identifies
+the weighted combination of published signatures that, when summed, most
+closely reconstructs the mutational profile.")
+    (license license:gpl2+)))
+
 (define-public r-do-db
   (package
     (name "r-do-db")
@@ -2160,14 +2188,14 @@ possible, parallelization is achieved using the BiocParallel framework.")
 (define-public r-destiny
   (package
     (name "r-destiny")
-    (version "3.0.0")
+    (version "3.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "destiny" version))
        (sha256
         (base32
-         "0vj9nk8g6i4vzm6cnzvbsqcvyk6fhmx0a0nxxrciarffyhqk81yz"))))
+         "1hzg53p1cz21bvnfyyz40bpvjhg89zi3rahlqf0c4w85iwc1i4vi"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
@@ -3165,14 +3193,14 @@ are standardized and usable by the accompanying mutossGUI package.")
 (define-public r-metap
   (package
     (name "r-metap")
-    (version "1.2")
+    (version "1.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "metap" version))
        (sha256
         (base32
-         "0pfbcixjrzx81l9wqhlp55khg9k63zf8pvg2n39c19akr4ppzhvf"))))
+         "1jmmmmjiklaxfl604hwqil193ydaghvd5jv8xsr4bx3pzn5i9kvz"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)
@@ -5164,14 +5192,14 @@ packages.")
 (define-public r-ropls
   (package
     (name "r-ropls")
-    (version "1.18.6")
+    (version "1.18.8")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ropls" version))
        (sha256
         (base32
-         "1sm2fmygrra9gdcs90lmk5y1ag6arga6159kggx4ij8bkhyc66vb"))))
+         "033i39r4037nd54jnp5zdn1vpzh61r671vmq0sf8dqrfblhm4w7a"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
@@ -7177,14 +7205,14 @@ access.")
 (define-public r-multiassayexperiment
   (package
     (name "r-multiassayexperiment")
-    (version "1.12.1")
+    (version "1.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MultiAssayExperiment" version))
        (sha256
         (base32
-         "0xpi5qpffg9pn8szkvicpc43a0r534wngyqwvsip8w66zi8c9kpc"))))
+         "0722f3jl1xq8k8w7vrv986jd16bgysqp3n07pgmdn0hh1zh2mcqc"))))
     (properties
      `((upstream-name . "MultiAssayExperiment")))
     (build-system r-build-system)
@@ -7349,7 +7377,7 @@ analytics on packages.")
     (description
      "BiocSet displays different biological sets in a triple tibble format.
 These three tibbles are @code{element}, @code{set}, and @code{elementset}.
-The user has the abilty to activate one of these three tibbles to perform
+The user has the ability to activate one of these three tibbles to perform
 common functions from the @code{dplyr} package.  Mapping functionality and
 accessing web references for elements/sets are also available in BiocSet.")
     (license license:artistic2.0)))

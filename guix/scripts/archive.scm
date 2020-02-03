@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -371,36 +371,33 @@ output port."
                 (cons line result)))))
 
   (with-error-handling
-    ;; Ask for absolute file names so that .drv file names passed from the
-    ;; user to 'read-derivation' are absolute when it returns.
-    (with-fluids ((%file-port-name-canonicalization 'absolute))
-      (let ((opts (parse-command-line args %options (list %default-options))))
-        (parameterize ((%graft? (assoc-ref opts 'graft?)))
-          (cond ((assoc-ref opts 'generate-key)
-                 =>
-                 generate-key-pair)
-                ((assoc-ref opts 'authorize)
-                 (authorize-key))
-                (else
-                 (with-status-verbosity (assoc-ref opts 'verbosity)
-                   (with-store store
-                     (set-build-options-from-command-line store opts)
-                     (cond ((assoc-ref opts 'export)
-                            (export-from-store store opts))
-                           ((assoc-ref opts 'import)
-                            (import-paths store (current-input-port)))
-                           ((assoc-ref opts 'missing)
-                            (let* ((files   (lines (current-input-port)))
-                                   (missing (remove (cut valid-path? store <>)
-                                                    files)))
-                              (format #t "~{~a~%~}" missing)))
-                           ((assoc-ref opts 'list)
-                            (list-contents (current-input-port)))
-                           ((assoc-ref opts 'extract)
-                            =>
-                            (lambda (target)
-                              (restore-file (current-input-port) target)))
-                           (else
-                            (leave
-                             (G_ "either '--export' or '--import' \
-must be specified~%")))))))))))))
+    (let ((opts (parse-command-line args %options (list %default-options))))
+      (parameterize ((%graft? (assoc-ref opts 'graft?)))
+        (cond ((assoc-ref opts 'generate-key)
+               =>
+               generate-key-pair)
+              ((assoc-ref opts 'authorize)
+               (authorize-key))
+              (else
+               (with-status-verbosity (assoc-ref opts 'verbosity)
+                 (with-store store
+                   (set-build-options-from-command-line store opts)
+                   (cond ((assoc-ref opts 'export)
+                          (export-from-store store opts))
+                         ((assoc-ref opts 'import)
+                          (import-paths store (current-input-port)))
+                         ((assoc-ref opts 'missing)
+                          (let* ((files   (lines (current-input-port)))
+                                 (missing (remove (cut valid-path? store <>)
+                                                  files)))
+                            (format #t "~{~a~%~}" missing)))
+                         ((assoc-ref opts 'list)
+                          (list-contents (current-input-port)))
+                         ((assoc-ref opts 'extract)
+                          =>
+                          (lambda (target)
+                            (restore-file (current-input-port) target)))
+                         (else
+                          (leave
+                           (G_ "either '--export' or '--import' \
+must be specified~%"))))))))))))

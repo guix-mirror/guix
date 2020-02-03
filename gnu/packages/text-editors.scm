@@ -61,7 +61,8 @@
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages terminals)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg))
 
 (define-public vis
   (package
@@ -305,6 +306,113 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
 OpenBSD team.")
     (license license:public-domain)))
 
+(define-public qemacs
+  (package
+    (name "qemacs")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://bellard.org/qemacs/"
+                           "qemacs-" version ".tar.gz"))
+       (sha256
+        (base32 "156z4wpj49i6j388yjird5qvrph7hz0grb4r44l4jf3q8imadyrg"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'build-qhtml
+           ;; Build fails without first creating qHTML library.
+           (lambda _ (invoke "make" "-C" "libqhtml")))
+         (add-before 'install 'fix-man-pages-directory
+           ;; Install in $out/share/man instead of $out/man.
+           (lambda _
+             (substitute* "Makefile"
+               (("/man/man1" all) (string-append "/share" all)))
+             #t))
+         (add-before 'install 'create-directories
+           ;; Ensure directories exist before installing files.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each (lambda (d) (mkdir-p (string-append out d)))
+                         '("/bin" "/share/man/man1" "/share/qe"))
+               #t)))
+         (add-after 'install 'install-extra-documentation
+           ;; Install sample configuration file, Info, and HTML manual.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((share (string-append (assoc-ref outputs "out") "/share"))
+                    (doc (string-append share "/doc/" ,name "-" ,version))
+                    (html (string-append share "/html"))
+                    (info (string-append share "/info"))
+                    (makeinfo (string-append (assoc-ref %build-inputs "texinfo")
+                                             "/bin/makeinfo")))
+               ;; First fix Texinfo documentation, create appropriate
+               ;; directories, then generate Info and HTML files there.
+               (substitute* "qe-doc.texi"
+                 (("^M-([{}])" _ bracket) (string-append "M-@" bracket)))
+               (for-each (lambda (d) (mkdir-p d)) (list html info))
+               (invoke makeinfo "qe-doc.texi" "-o" info)
+               (invoke makeinfo "qe-doc.texi" "--html" "--no-split" "-o" html)
+               ;; Install sample configuration file.
+               (install-file "config.eg" doc)
+               #t))))))
+    (native-inputs
+     `(("texinfo" ,texinfo)))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxv" ,libxv)))
+    (home-page "https://bellard.org/qemacs/")
+    (synopsis "Small but powerful text editor")
+    (description "QEmacs (for Quick Emacs) is a very small but
+powerful editor.  It has features that even big editors lack:
+
+@itemize
+
+@item Full screen editor with an Emacs look and feel with all Emacs
+common features: multi-buffer, multi-window, command mode, universal
+argument, keyboard macros, config file with C-like syntax, minibuffer
+with completion and history.
+
+@item Can edit files of hundreds of Megabytes without being slow by
+using a highly optimized internal representation and by mmaping the
+file.
+
+@item Full Unicode support, including multi charset handling (8859-x,
+UTF8, SJIS, EUC-JP, ...) and bidirectional editing respecting the
+Unicode bidi algorithm.  Arabic and Indic scripts handling (in
+progress).
+
+@item WYSIWYG HTML/XML/CSS2 mode graphical editing.  Also supports
+Lynx like rendering on VT100 terminals.
+
+@item WYSIWYG DocBook mode based on XML/CSS2 renderer.
+
+@item C mode: coloring with immediate update.  Emacs like auto-indent.
+
+@item Shell mode: colorized VT100 emulation so that your shell work
+exactly as you expect.  Compile mode with next/prev error.
+
+@item Input methods for most languages, including Chinese (input
+methods come from the Yudit editor).
+
+@item Hexadecimal editing mode with insertion and block commands.
+Unicode hexa editing is also supported.
+
+@item Works on any VT100 terminals without termcap.  UTF8 VT100
+support included with double width glyphs.
+
+@item X11 support.  Support multiple proportional fonts at the same
+time (as XEmacs).  X Input methods supported.  Xft extension supported
+for anti aliased font display.
+
+@item Small! Full version (including HTML/XML/CSS2/DocBook rendering
+and all charsets): 200KB big.  Basic version (without bidir/unicode
+scripts/input/X11/C/Shell/HTML/Dired): 49KB.
+@end itemize")
+    (license license:lgpl2.1+)))
+
 (define-public ghostwriter
   (package
     (name "ghostwriter")
@@ -360,7 +468,7 @@ environment with Markdown markup.")
 (define-public manuskript
   (package
     (name "manuskript")
-    (version "0.10.0")
+    (version "0.11.0")
     (source
      (origin
        (method git-fetch)
@@ -369,7 +477,7 @@ environment with Markdown markup.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0q413vym7hzjpyg3krj5y63hwpncdifjkyswqmr76zg5yqnklnh3"))))
+        (base32 "1l6l9k6k69yv8xqpll0zv9cwdqqg4zvxy90l6sx5nv2yywh5crla"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f                      ;no test
@@ -549,15 +657,14 @@ and Octave.  TeXmacs is completely extensible via Guile.")
 (define-public scintilla
   (package
     (name "scintilla")
-    (version "4.2.2")
-    (source (origin
-              (method url-fetch)
-              (uri (let ((v (apply string-append (string-split version #\.))))
-                     (string-append
-                      "https://www.scintilla.org/scintilla" v ".tgz")))
-              (sha256
-               (base32
-                "01gq31ggvasw4sy9xs544h7v1dmxrlxs5bzxpasqb9yi3ps3nl0f"))))
+    (version "4.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (let ((v (apply string-append (string-split version #\.))))
+              (string-append "https://www.scintilla.org/scintilla" v ".tgz")))
+       (sha256
+        (base32 "0c52b2wg0y55kv3w7rnzp0nbd1yn2kksy0w8bjdp3gkl0v28wwx5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "GTK3=1" "CC=gcc" "-Cgtk")

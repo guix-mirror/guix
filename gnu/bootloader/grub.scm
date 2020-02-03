@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -88,7 +89,9 @@ denoting a file name."
   (color-normal    grub-theme-color-normal
                    (default '((fg . cyan) (bg . blue))))
   (color-highlight grub-theme-color-highlight
-                   (default '((fg . white) (bg . blue)))))
+                   (default '((fg . white) (bg . blue))))
+  (gfxmode         grub-gfxmode
+                   (default '("auto"))))          ;list of string
 
 (define %background-image
   (grub-image
@@ -149,8 +152,16 @@ system string---e.g., \"x86_64-linux\"."
     ;; most other modern architectures have no other mode and therefore don't
     ;; need to be switched.
     (if (string-match "^(x86_64|i[3-6]86)-" system)
-        "
-  # Leave 'gfxmode' to 'auto'.
+        (string-append
+         "
+"
+         (let ((gfxmode (and=>
+                         (and=> config bootloader-configuration-theme)
+                         grub-gfxmode)))
+           (if gfxmode
+               (string-append "set gfxmode=" (string-join gfxmode ";"))
+               "# Leave 'gfxmode' to 'auto'."))
+         "
   insmod video_bochs
   insmod video_cirrus
   insmod gfxterm
@@ -166,7 +177,7 @@ system string---e.g., \"x86_64-linux\"."
     insmod vbe
     insmod vga
   fi
-"
+")
         ""))
 
   (define (setup-gfxterm config font-file)

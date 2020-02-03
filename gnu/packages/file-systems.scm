@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
@@ -37,6 +37,7 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages datastructures)
   #:use-module (gnu packages documentation)
@@ -52,7 +53,65 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages valgrind)
   #:use-module (gnu packages xml))
+
+(define-public bcachefs-tools
+  (let ((commit "ab2f1ec24f5307b0cf1e3c4ad19bf350d9f54d9f")
+        (revision "0"))
+    (package
+      (name "bcachefs-tools")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://evilpiepirate.org/git/bcachefs-tools.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "10pafvaxg1lvwnqjv3a4rsi96bghbpcsgh3vhqilndi334k3b0hd"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags
+         (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+               "INITRAMFS_DIR=$(PREFIX)/share/initramfs-tools"
+               "CC=gcc"
+               "PYTEST=pytest")
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure))         ; no configure script
+         #:tests? #f))                  ; XXX 6 valgrind tests fail
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+
+         ;; For tests.
+         ("python-pytest" ,python-pytest)
+         ("valgrind" ,valgrind)))
+      (inputs
+       `(("keyutils" ,keyutils)
+         ("libaio" ,libaio)
+         ("libscrypt" ,libscrypt)
+         ("libsodium" ,libsodium)
+         ("liburcu" ,liburcu)
+         ("util-linux" ,util-linux "lib") ; lib{blkid,uuid}
+         ("lz4" ,lz4)
+         ("zlib" ,zlib)
+         ("zstd:lib" ,zstd "lib")))
+      (home-page "https://bcachefs.org/")
+      (synopsis "Tools to create and manage bcachefs file systems")
+      (description
+       "The bcachefs-tools are command-line utilities for creating, checking,
+and otherwise managing bcachefs file systems.
+
+Bcachefs is a @acronym{CoW, copy-on-write} file system supporting native
+encryption, compression, snapshots, and (meta)data checksums.  It can use
+multiple block devices for replication and/or performance, similar to RAID.
+
+In addition, bcachefs provides all the functionality of bcache, a block-layer
+caching system, and lets you assign different roles to each device based on its
+performance and other characteristics.")
+      (license license:gpl2+))))
 
 (define-public httpfs2
   (package

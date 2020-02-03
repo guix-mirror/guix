@@ -4408,10 +4408,12 @@ the regex engine it uses pluggable.")
          "1wjc3gsan20gapga8nji6jcrmwn9n85q5zf2yfq6g50c7abkc2ql"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-grep-matcher" ,rust-grep-matcher-0.1)
         ("rust-pcre2" ,rust-pcre2-0.2))))
+    (native-inputs
+     `(("pcre2" ,pcre2)
+       ("pkg-config" ,pkg-config)))
     (home-page
      "https://github.com/BurntSushi/ripgrep")
     (synopsis "Use PCRE2 with the grep crate")
@@ -5328,10 +5330,13 @@ wasm-bindgen crate.")
       (origin
         (method url-fetch)
         (uri (crate-uri "jemalloc-sys" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0ify9vlql01qhfxlj7d4p9jvcp90mj2h69nkbq7slccvbhzryfqd"))))
+          "0ify9vlql01qhfxlj7d4p9jvcp90mj2h69nkbq7slccvbhzryfqd"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (delete-file-recursively "jemalloc") #t))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -5344,11 +5349,6 @@ wasm-bindgen crate.")
          (add-after 'configure 'override-jemalloc
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((jemalloc (assoc-ref inputs "jemalloc")))
-               (delete-file-recursively "jemalloc")
-               (delete-file-recursively
-                 (string-append "guix-vendor/rust-jemalloc-sys-"
-                                ,(package-version rust-jemalloc-sys-0.3)
-                                ".crate/jemalloc"))
                (setenv "JEMALLOC_OVERRIDE"
                        (string-append jemalloc "/lib/libjemalloc_pic.a")))
              #t)))))
@@ -5603,10 +5603,13 @@ values of all the exported APIs match the platform that libc is compiled for.")
       (origin
         (method url-fetch)
         (uri (crate-uri "libgit2-sys" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0l9fvki7qxsl97vgzqwlv75nl213a5vxw7b1jaik97ala356pv6r"))))
+          "0l9fvki7qxsl97vgzqwlv75nl213a5vxw7b1jaik97ala356pv6r"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (delete-file-recursively "libgit2") #t))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -5623,21 +5626,6 @@ values of all the exported APIs match the platform that libc is compiled for.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((openssl (assoc-ref inputs "openssl")))
                (setenv "OPENSSL_DIR" openssl))
-             (delete-file-recursively "libgit2")
-             (delete-file-recursively
-               (string-append "guix-vendor/rust-libgit2-sys-"
-                              ,(package-version rust-libgit2-sys-0.10)
-                              ".crate/libgit2"))
-             (delete-file-recursively
-               (string-append "guix-vendor/rust-libz-sys-"
-                              ,(package-version rust-libz-sys-1.0)
-                              ".crate/src/zlib"))
-             (delete-file-recursively
-               (string-append "guix-vendor/rust-libssh2-sys-"
-                              ,(package-version rust-libssh2-sys-0.2)
-                              ".crate/libssh2"))
-             (setenv "LIBGIT2_SYS_USE_PKG_CONFIG" "1")
-             (setenv "LIBSSH2_SYS_USE_PKG_CONFIG" "1")
              #t)))))
     (native-inputs
      `(("libgit2" ,libgit2)
@@ -5720,10 +5708,13 @@ functions and static variables these libraries contain.")
       (origin
         (method url-fetch)
         (uri (crate-uri "libssh2-sys" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "042gsgbvxgm5by4mk906j3zm4qdvzcfhjxrb55is1lrr6f0nxain"))))
+          "042gsgbvxgm5by4mk906j3zm4qdvzcfhjxrb55is1lrr6f0nxain"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (delete-file-recursively "libssh2") #t))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t ; it wants rust-openssl-src
@@ -5741,16 +5732,6 @@ functions and static variables these libraries contain.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((openssl (assoc-ref inputs "openssl")))
                (setenv "OPENSSL_DIR" openssl))
-             (delete-file-recursively "libssh2")
-             (delete-file-recursively
-               (string-append "guix-vendor/rust-libssh2-sys-"
-                              ,(package-version rust-libssh2-sys-0.2)
-                              ".crate/libssh2"))
-             (delete-file-recursively
-               (string-append "guix-vendor/rust-libz-sys-"
-                              ,(package-version rust-libz-sys-1.0)
-                              ".crate/src/zlib"))
-             (setenv "LIBSSH2_SYS_USE_PKG_CONFIG" "1")
              #t)))))
     (native-inputs
      `(("libssh2" ,libssh2)
@@ -5903,26 +5884,19 @@ functions and static variables these libraries contain.")
       (origin
         (method url-fetch)
         (uri (crate-uri "lzma-sys" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "14gyj256yh0wm77jbvmlc39v7lfn0navpfrja4alczarzlc8ir2k"))))
+          "14gyj256yh0wm77jbvmlc39v7lfn0navpfrja4alczarzlc8ir2k"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (delete-file-recursively "xz-5.2") #t))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
         ("rust-cc" ,rust-cc-1.0)
-        ("rust-pkg-config" ,rust-pkg-config-0.3))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'configure 'unbundle-xz
-           (lambda _
-             (delete-file-recursively "xz-5.2")
-             (delete-file-recursively
-               (string-append "guix-vendor/rust-lzma-sys-"
-                              ,(package-version rust-lzma-sys-0.1)
-                              ".crate/xz-5.2"))
-             #t)))))
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("xz" ,xz)))
@@ -6591,10 +6565,13 @@ types as proposed in RFC 1158.")
       (origin
         (method url-fetch)
         (uri (crate-uri "libz-sys" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1gjycyl2283525abks98bhxa4r259m617xfm5z52p3p3c8ry9d9f"))))
+          "1gjycyl2283525abks98bhxa4r259m617xfm5z52p3p3c8ry9d9f"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (delete-file-recursively "src/zlib") #t))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -6602,17 +6579,7 @@ types as proposed in RFC 1158.")
         ;; Build dependencies:
         ("rust-cc" ,rust-cc-1.0)
         ("rust-pkg-config" ,rust-pkg-config-0.3)
-        ("rust-vcpkg" ,rust-vcpkg-0.2))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'configure 'delete-vendored-zlib
-           (lambda _
-             (delete-file-recursively "src/zlib")
-             (delete-file-recursively
-               (string-append "guix-vendor/rust-libz-sys-"
-                              ,(package-version rust-libz-sys-1.0)
-                              ".crate/src/zlib"))
-             #t)))))
+        ("rust-vcpkg" ,rust-vcpkg-0.2))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("zlib" ,zlib)))
@@ -7522,12 +7489,14 @@ deserialization, and interpreter in Rust.")
          "103i66a998g1fjrqf9sdyvi8qi83hwglz3pjdcq9n2r207hsagb0"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
         ("rust-log" ,rust-log-0.4)
         ("rust-pcre2-sys" ,rust-pcre2-sys-0.2)
         ("rust-thread-local" ,rust-thread-local-0.3))))
+    (native-inputs
+     `(("pcre2" ,pcre2)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://github.com/BurntSushi/rust-pcre2")
     (synopsis "High level wrapper library for PCRE2")
     (description
@@ -7546,23 +7515,16 @@ deserialization, and interpreter in Rust.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0nwdvc43dkb89qmm5q8gw1zyll0wsfqw7kczpn23mljra3874v47"))))
+         "0nwdvc43dkb89qmm5q8gw1zyll0wsfqw7kczpn23mljra3874v47"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin (delete-file-recursively "pcre2") #t))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
         ("rust-pkg-config" ,rust-pkg-config-0.3)
-        ("rust-cc" ,rust-cc-1.0))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'configure 'unbundle-sources
-           (lambda _
-             (delete-file-recursively "pcre2")
-             (delete-file-recursively
-               (string-append "guix-vendor/rust-pcre2-sys-"
-                              ,(package-version rust-pcre2-sys-0.2)
-                              ".tar.gz/pcre2"))
-             #t)))))
+        ("rust-cc" ,rust-cc-1.0))))
     (native-inputs
      `(("pcre2" ,pcre2)
        ("pkg-config" ,pkg-config)))
@@ -9544,7 +9506,7 @@ uses finite automata and guarantees linear time matching on all inputs.")
        (("rust-hex" ,rust-hex-0.3))))
     (home-page "https://github.com/sru-systems/rust-argon2")
     (synopsis "Rust implementation of the Argon2 password hashing function")
-    (description "This package contans a rust implementation of the Argon2
+    (description "This package contains a rust implementation of the Argon2
 password hashing function.")
     (license (list license:expat license:asl2.0))))
 
@@ -10219,7 +10181,7 @@ proven statistical guarantees.")
         ("rust-serde-test" ,rust-serde-test-1.0))))
     (home-page "https://github.com/serde-rs/bytes")
     (synopsis
-     "Hanlde of integer arrays and vectors for Serde")
+     "Handle of integer arrays and vectors for Serde")
     (description
      "Optimized handling of @code{&[u8]} and @code{Vec<u8>} for Serde.")
     (license (list license:expat license:asl2.0))))
@@ -13582,7 +13544,7 @@ attribute that is not in the shared backend crate.")
     (synopsis "Rust equivalent of Unix command \"which\"")
     (description
      "This package provides a Rust equivalent of Unix command \"which\".
-Locate installed execuable in cross platforms.")
+Locate installed executable in cross platforms.")
     (license license:expat)))
 
 (define-public rust-widestring-0.4

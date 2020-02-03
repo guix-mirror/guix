@@ -27,6 +27,7 @@
   #:use-module ((ice-9 rdelim) #:prefix rdelim:)
   #:use-module (ice-9 match)
   #:use-module (ice-9 ftw)
+  #:use-module (system foreign)
   #:export (write-int read-int
             write-long-long read-long-long
             write-padding
@@ -80,6 +81,17 @@
                          (port port)))))
     bv))
 
+(define (sub-bytevector bv len)
+  "Return a bytevector that aliases the first LEN bytes of BV."
+  (define max (bytevector-length bv))
+  (cond ((= len max) bv)
+        ((< len max)
+         ;; Yes, this is safe because the result of each conversion procedure
+         ;; has its life cycle synchronized with that of its argument.
+         (pointer->bytevector (bytevector->pointer bv) len))
+        (else
+         (error "sub-bytevector called to get a super bytevector"))))
+
 (define (write-int n p)
   (let ((b (make-bytevector 8 0)))
     (bytevector-u32-set! b 0 n (endianness little))
@@ -119,10 +131,9 @@
 (define (read-byte-string p)
   (let* ((len (read-int p))
          (m   (modulo len 8))
-         (bv  (get-bytevector-n* p len)))
-    (or (zero? m)
-        (get-bytevector-n* p (- 8 m)))
-    bv))
+         (pad (if (zero? m) 0 (- 8 m)))
+         (bv  (get-bytevector-n* p (+ len pad))))
+    (sub-bytevector bv len)))
 
 (define (read-string p)
   (utf8->string (read-byte-string p)))

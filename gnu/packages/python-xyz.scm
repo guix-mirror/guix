@@ -31,7 +31,7 @@
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016, 2017, 2019 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2016, 2017, 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2016, 2017, 2018, 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
@@ -69,6 +69,7 @@
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2019 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2020 Riku Viitanen <riku.viitanen@protonmail.com>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -98,6 +99,7 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dbm)
+  #:use-module (gnu packages enchant)
   #:use-module (gnu packages file)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
@@ -2244,13 +2246,13 @@ JavaScript-like message boxes.  Types of dialog boxes include:
   (package
     (name "python-pympler")
     (home-page "https://pythonhosted.org/Pympler/")
-    (version "0.7")
+    (version "0.8")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Pympler" version))
               (sha256
                (base32
-                "0ki7bqp1h9l1xc2k1h4vjyzsgs20i8ingvcdhszyi72s28wyf4bs"))))
+                "08mrpnb6cv2nvfncvr8a9a8bpwhnasa924anapnjvnaw5jcd4k7p"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -2650,7 +2652,7 @@ reStructuredText.")
     (arguments
      ;; FIXME: Tests require sphinx, which depends on this.
      '(#:tests? #f))
-    (home-page "http://pygments.org/")
+    (home-page "https://pygments.org/")
     (synopsis "Syntax highlighting")
     (description
      "Pygments is a syntax highlighting package written in Python.")
@@ -7633,9 +7635,6 @@ Debian-related files, such as:
 
     ;; Modules are either GPLv2+ or GPLv3+.
     (license license:gpl3+)))
-
-(define-public python2-debian
-  (package-with-python2 python-debian))
 
 (define-public python-nbformat
   (package
@@ -15247,14 +15246,14 @@ time-based (TOTP) passwords.")
 (define-public python-parso
   (package
     (name "python-parso")
-    (version "0.5.1")
+    (version "0.5.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "parso" version))
        (sha256
         (base32
-         "171a9ivhxwsd52h1cgsz40zgzpgzscn7yqb7sdjhy8m1lzj0wsv6"))))
+         "1qgvrkpma7vylrk047mxxvqd66nwqk978n3ig2w8iz9m3bgjbksm"))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (build-system python-build-system)
@@ -17419,3 +17418,155 @@ tests.")
 GSSAPI C libraries.  While it focuses on the Kerberos mechanism, it should
 also be useable with other GSSAPI mechanisms.")
     (license license:isc)))
+
+(define-public python-check-manifest
+  (package
+    (name "python-check-manifest")
+    (version "0.37")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "check-manifest" version))
+        (sha256
+         (base32
+          "0lk45ifdv2cpkl6ayfyix7jwmnxa1rha7xvb0ih5999k115wzqs4"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("git" ,git)))
+    (home-page "https://github.com/mgedmin/check-manifest")
+    (synopsis "Check MANIFEST.in in a Python source package for completeness")
+    (description "Python package can include a MANIFEST.in file to help with
+sending package files to the Python Package Index.  This package checks that
+file to ensure it completely and accurately describes your project.")
+    (license license:expat)))
+
+(define-public python-android-stringslib
+  (package
+    (name "python-android-stringslib")
+    (version "0.1.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://framagit.org/tyreunom/python-android-strings-lib")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0gij55qzzq1h83kfpvhai1vf78kkhyvxa6l17m2nl24454lhfin4"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))
+    (home-page "https://framagit.org/tyreunom/python-android-strings-lib")
+    (synopsis "Android strings.xml support")
+    (description "Android Strings Lib provides support for android's strings.xml
+files.  These files are used to translate strings in android apps.")
+    (license license:expat)))
+
+(define-public python-watchdog
+  (package
+    (name "python-watchdog")
+    (version "0.9.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "watchdog" version))
+        (sha256
+         (base32
+          "07cnvvlpif7a6cg4rav39zq8fxa5pfqawchr46433pij0y6napwn"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'remove-failing
+           (lambda _
+             (delete-file "tests/test_inotify_buffer.py")
+             (delete-file "tests/test_snapshot_diff.py")
+             #t)))))
+    (propagated-inputs
+     `(("python-argh" ,python-argh)
+       ("python-pathtools" ,python-pathtools)
+       ("python-pyyaml" ,python-pyyaml)))
+    (native-inputs
+     `(("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-timeout" ,python-pytest-timeout)))
+    (home-page "https://github.com/gorakhargosh/watchdog")
+    (synopsis "Filesystem events monitoring")
+    (description "This package provides a way to monitor filesystem events
+such as a file modification and trigger an action.  This is similar to inotify,
+but portable.")
+    (license license:asl2.0)))
+
+(define-public offlate
+  (package
+    (name "offlate")
+    (version "0.5")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://framagit.org/tyreunom/offlate")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "13pqnbl05wcyldfvl75fp89vjgwsvxyc69vhnb17kkha2rc2k1h7"))))
+    (build-system python-build-system)
+    (arguments
+     ;; No tests
+     `(#:tests? #f))
+    (propagated-inputs
+      `(("python-android-stringslib" ,python-android-stringslib)
+        ("python-dateutil" ,python-dateutil)
+        ("python-gitlab" ,python-gitlab)
+        ("python-lxml" ,python-lxml)
+        ("python-polib" ,python-polib)
+        ("python-pyenchant" ,python-pyenchant)
+        ("python-pygit2" ,python-pygit2)
+        ("python-pygithub" ,python-pygithub)
+        ("python-pyqt" ,python-pyqt)
+        ("python-requests" ,python-requests)
+        ("python-ruamel.yaml" ,python-ruamel.yaml)
+        ("python-translation-finder" ,python-translation-finder)
+        ("python-watchdog" ,python-watchdog)))
+    (native-inputs
+     `(("qttools" ,qttools)))
+    (home-page "https://framagit.org/tyreunom/offlate")
+    (synopsis "Offline translation interface for online translation tools")
+    (description "Offlate offers a unified interface for different translation
+file formats, as well as many different online translation platforms.  You can
+use it to get work from online platforms, specialized such as the Translation
+Project, or not such a gitlab instance when your upstream doesn't use any
+dedicated platform.  The tool proposes a unified interface for any format and
+an upload option to send your work back to the platform.")
+    (license license:gpl3+)))
+
+(define-public python-pypng
+  (package
+    (name "python-pypng")
+    (version "0.0.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pypng" version))
+       (sha256
+        (base32 "02qpa22ls41vwsrzw9r9qhj1nhq05p03hb5473pay6y980s86chh"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/drj11/pypng")
+    (synopsis "Pure Python PNG image encoder/decoder")
+    (description
+     "The PyPNG module implements support for PNG images.  It reads and writes
+PNG files with all allowable bit depths (1/2/4/8/16/24/32/48/64 bits per
+pixel) and colour combinations: greyscale (1/2/4/8/16 bit); RGB, RGBA,
+LA (greyscale with alpha) with 8/16 bits per channel; colour mapped
+images (1/2/4/8 bit).  Adam7 interlacing is supported for reading and writing.
+A number of optional chunks can be specified (when writing) and
+understood (when reading): tRNS, bKGD, gAMA.
+
+PyPNG is not a high level toolkit for image processing (like PIL) and does not
+aim at being a replacement or competitor.  Its strength lies in fine-grained
+extensive support of PNG features.  It can also read and write Netpbm PAM
+files, with a focus on its use as an intermediate format for implementing
+custom PNG processing.")
+    (license license:expat)))

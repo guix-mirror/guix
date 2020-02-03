@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -501,7 +501,7 @@ trouble using them, because you do not have to remember each snippet name.")
 (define-public vim-fugitive
   (package
     (name "vim-fugitive")
-    (version "3.1")
+    (version "3.2")
     (source
       (origin
         (method git-fetch)
@@ -511,7 +511,7 @@ trouble using them, because you do not have to remember each snippet name.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "0d9jhmidmy5c60iy9x47gqr675n5wp9wrzln83r8ima1fz7vvbgs"))))
+          "1jbn5jxadccmcz01j94d0i1bp74cixr0fpxxf1h0aqdf1ljk3d7n"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
@@ -938,3 +938,37 @@ through its msgpack-rpc API.")
 
 (define-public python2-pynvim
   (package-with-python2 python-pynvim))
+
+(define-public vim-guix-vim
+  (package
+    (name "vim-guix-vim")
+    (version "0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://gitlab.com/Efraim/guix.vim")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1f8h8m96fqh3f9hy87spgh9kdqzyxl11n9s3rywvyq5xhn489bnk"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (vimfiles (string-append out "/share/vim/vimfiles")))
+               (for-each
+                 (lambda (dir)
+                   (copy-recursively dir (string-append vimfiles "/" dir)))
+                 '("compiler" "doc" "indent" "ftdetect" "ftplugin" "syntax"))
+               #t))))))
+    (home-page "https://gitlab.com/Efraim/guix.vim")
+    (synopsis "Guix integration in Vim")
+    (description "This package provides support for GNU Guix in Vim.")
+    (license license:vim)))

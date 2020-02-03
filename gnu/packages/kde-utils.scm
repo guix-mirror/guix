@@ -233,14 +233,6 @@ sentences to be re-spoken.")
        ("kxmlgui" ,kxmlgui)
        ("oxygen-icons" ,oxygen-icons) ;; default icon set
        ("qtbase" ,qtbase)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'check-setup
-           (lambda _
-             ;; make Qt render "offscreen", required for tests
-             (setenv "QT_QPA_PLATFORM" "offscreen")
-             #t)))))
     (home-page "https://kde.org/applications/utilities/org.kde.kronometer")
     (synopsis "Simple stopwatch application")
     (description "Kronometer is a stopwatch application.  It features the
@@ -399,14 +391,6 @@ redone.")
        ("kxmlgui" ,kxmlgui)
        ("oxygen-icons" ,oxygen-icons) ;; default icon set
        ("qtbase" ,qtbase)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'check-setup
-           (lambda _
-             ;; make Qt render "offscreen", required for tests
-             (setenv "QT_QPA_PLATFORM" "offscreen")
-             #t)))))
     (home-page "https://kde.org/applications/utilities/org.kde.rsibreak")
     (synopsis "Assists in the Recovery and Prevention of Repetitive Strain
 Injury")
