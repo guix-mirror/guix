@@ -87,9 +87,7 @@
              ("zlib" ,zlib)))
    (native-inputs `(("libtool" ,libtool)
                     ("groff" ,groff)
-                    ("bdb" ,bdb-5.3)
-                    ;; For up to date 'config.guess' and 'config.sub'.
-                    ("automake" ,automake)))
+                    ("bdb" ,bdb-5.3)))
    (arguments
     `(#:tests? #f
       #:configure-flags
@@ -102,20 +100,6 @@
       #:make-flags '("STRIP=")
       #:phases
       (modify-phases %standard-phases
-        (add-after 'unpack 'fix-configure
-          (lambda* (#:key inputs native-inputs #:allow-other-keys)
-            ;; Replace outdated config.sub and config.guess:
-            (with-directory-excursion "build"
-              (for-each (lambda (file)
-                          (install-file (string-append
-                                         (assoc-ref
-                                          (or native-inputs inputs) "automake")
-                                         "/share/automake-"
-                                         ,(version-major+minor
-                                           (package-version automake))
-                                         "/" file) "."))
-                        '("config.sub" "config.guess")))
-            #t))
         ,@(if (%current-target-system)
               '((add-before 'configure 'fix-cross-gcc
                   (lambda* (#:key target #:allow-other-keys)
