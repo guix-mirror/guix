@@ -1416,7 +1416,7 @@ In addition to regular Packrat / Parsing Grammar / TDPL features ESRAP supports:
 (define-public sbcl-split-sequence
   (package
     (name "sbcl-split-sequence")
-    (version "1.4.1")
+    (version "2.0.0")
     (source
      (origin
        (method git-fetch)
@@ -1425,13 +1425,11 @@ In addition to regular Packrat / Parsing Grammar / TDPL features ESRAP supports:
              (commit (string-append "v" version))))
        (sha256
         (base32
-         "0c3zp6b7fmmp93sfhq112ind4zkld49ycw68z409xpnz3gc0wpf0"))
+         "0jcpnx21hkfwqj5fvp7kc6pn1qcz9hk7g2s5x8h0349x1j2irln0"))
        (file-name (git-file-name "split-sequence" version))))
     (build-system asdf-build-system/sbcl)
-    (arguments
-     ;; TODO: Tests seem to be broken.
-     ;; https://github.com/sharplispers/split-sequence/issues/8
-     `(#:tests? #f))
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)))
     (synopsis "Member of the Common Lisp Utilities family of programs")
     (description
      "Splits sequence into a list of subsequences delimited by objects
