@@ -10,7 +10,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
-;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
@@ -5027,7 +5027,7 @@ w3c webidl files and a binding configuration file.")
        ("xxd" ,xxd)))
     (inputs
      `(("curl" ,curl)
-       ("gtk+" ,gtk+-2)
+       ("gtk+" ,gtk+)
        ("openssl" ,openssl)
        ("utf8proc" ,utf8proc)
        ("libpng" ,libpng)
@@ -5043,6 +5043,7 @@ w3c webidl files and a binding configuration file.")
        ("miscfiles" ,miscfiles)))
     (arguments
      `(#:make-flags `("CC=gcc" "BUILD_CC=gcc"
+                      "TARGET=gtk3"
                       ,(string-append "PREFIX=" %output)
                       ,(string-append "NSSHARED="
                                       (assoc-ref %build-inputs
