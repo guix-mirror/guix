@@ -13,6 +13,7 @@
 ;;; Copyright © 2015 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -265,6 +266,40 @@ patches.
 unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
 @end enumerate")
     (license license:gpl2)))
+
+(define-public ghcid
+  (package
+    (name "ghcid")
+    (version "0.8.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/ghcid/"
+                           "ghcid-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0wpm4ikrm1krz1ckzwk0srng091yh2skjal4fh95iz1hq3dw6qlw"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-extra" ,ghc-extra)
+       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-cmdargs" ,ghc-cmdargs)
+       ("ghc-fsnotify" ,ghc-fsnotify)
+       ("ghc-terminal-size" ,ghc-terminal-size)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+    (home-page
+     "https://github.com/ndmitchell/ghcid#readme")
+    (synopsis "GHCi based bare bones IDE")
+    (description
+     "Either \"GHCi as a daemon\" or \"GHC + a bit of an IDE\".  A very simple Haskell
+development tool which shows you the errors in your project and updates them whenever
+you save.  Run @code{ghcid --topmost --command=ghci}, where @code{--topmost} makes the
+window on top of all others (Windows only) and @code{--command} is the command to start
+GHCi on your project (defaults to @code{ghci} if you have a @file{.ghci} file, or else
+to @code{cabal repl}).")
+    (license license:bsd-3)))
 
 (define-public git-annex
   (package
