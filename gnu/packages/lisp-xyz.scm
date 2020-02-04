@@ -302,7 +302,7 @@ streams which are similar to string streams.")
 (define-public sbcl-cl-ppcre
   (package
     (name "sbcl-cl-ppcre")
-    (version "2.0.11")
+    (version "2.1.1")
     (source
      (origin
        (method git-fetch)
@@ -311,7 +311,7 @@ streams which are similar to string streams.")
              (commit (string-append "v" version))))
        (file-name (git-file-name "cl-ppcre" version))
        (sha256
-        (base32 "0q3iany07vgqm144lw6pj0af2d3vsikpbkwcxr30fci3kzsq4f49"))))
+        (base32 "0dwvr29diqzcg5n6jvbk2rnd90i05l7n828hhw99khmqd0kz7xsi"))))
     (build-system asdf-build-system/sbcl)
     (native-inputs `(("flexi-streams" ,sbcl-flexi-streams)))
     (synopsis "Portable regular expression library for Common Lisp")
