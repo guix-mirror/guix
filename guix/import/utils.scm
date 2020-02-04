@@ -229,13 +229,20 @@ into a proper sentence and by using two spaces between sentences."
                               cleaned 'pre ".  " 'post)))
 
 (define* (package-names->package-inputs names #:optional (output #f))
-  "Given a list of PACKAGE-NAMES, and an optional OUTPUT, tries to generate a
-quoted list of inputs, as suitable to use in an 'inputs' field of a package
-definition."
-  (map (lambda (input)
-         (cons* input (list 'unquote (string->symbol input))
-                            (or (and output (list output))
-                                '())))
+  "Given a list of PACKAGE-NAMES or (PACKAGE-NAME VERSION) pairs, and an
+optional OUTPUT, tries to generate a quoted list of inputs, as suitable to
+use in an 'inputs' field of a package definition."
+  (define (make-input input version)
+    (cons* input (list 'unquote (string->symbol
+                                 (if version
+                                     (string-append input "-" version)
+                                     input)))
+           (or (and output (list output))
+               '())))
+
+  (map (match-lambda
+         ((input version) (make-input input version))
+         (input (make-input input #f)))
        names))
 
 (define* (maybe-inputs package-names #:optional (output #f))
