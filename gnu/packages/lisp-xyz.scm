@@ -3700,6 +3700,9 @@ sockets, SSL, continuable uploads, file uploads, cookies, and more.")
 (define-public cl-drakma
   (sbcl-package->cl-source-package sbcl-drakma))
 
+(define-public ecl-drakma
+  (sbcl-package->ecl-package sbcl-drakma))
+
 (define-public sbcl-hunchentoot
   (package
     (name "sbcl-hunchentoot")
