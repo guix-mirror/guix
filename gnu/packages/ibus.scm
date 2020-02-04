@@ -53,6 +53,7 @@
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages textutils)
+  #:use-module (gnu packages unicode)
   #:use-module (gnu packages xorg))
 
 (define-public ibus
@@ -70,19 +71,22 @@
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f  ; tests fail because there's no connection to dbus
-       #:configure-flags `("--disable-emoji-dict" ; cannot find emoji.json path
-                           "--enable-python-library"
-                           ,(string-append "--with-ucd-dir="
-                                           (getcwd) "/ucd")
-                           "--enable-wayland")
+       #:parallel-build? #f ; race condition discovered with emoji support
+       #:configure-flags (list "--enable-python-library"
+                               (string-append
+                                "--with-unicode-emoji-dir="
+                                (assoc-ref %build-inputs "unicode-emoji")
+                                "/share/unicode/emoji")
+                               (string-append
+                                "--with-emoji-annotation-dir="
+                                (assoc-ref %build-inputs "unicode-cldr-common")
+                                "/share/unicode/cldr/common/annotations")
+                               (string-append "--with-ucd-dir="
+                                              (assoc-ref %build-inputs "ucd")
+                                              "/share/ucd")
+                               "--enable-wayland")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'prepare-ucd-dir
-           (lambda* (#:key inputs #:allow-other-keys)
-             (mkdir-p "../ucd")
-             (symlink (assoc-ref inputs "unicode-blocks") "../ucd/Blocks.txt")
-             (symlink (assoc-ref inputs "unicode-nameslist") "../ucd/NamesList.txt")
-             #t))
          (add-after 'unpack 'patch-python-target-directories
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((root (string-append (assoc-ref outputs "out")
@@ -149,20 +153,9 @@
     (native-inputs
      `(("glib" ,glib "bin") ; for glib-genmarshal
        ("gobject-introspection" ,gobject-introspection) ; for g-ir-compiler
-
-       ;; XXX TODO: Move Unicode data to its own (versioned) package.
-       ("unicode-nameslist"
-        ,(origin
-           (method url-fetch)
-           (uri "https://www.unicode.org/Public/12.0.0/ucd/NamesList.txt")
-           (sha256
-            (base32 "0vsq8gx7hws8mvxy3nlglpwxw7ky57q0fs09d7w9xgb2ylk7fz61"))))
-       ("unicode-blocks"
-        ,(origin
-           (method url-fetch)
-           (uri "https://www.unicode.org/Public/12.0.0/ucd/Blocks.txt")
-           (sha256
-            (base32 "041sk54v6rjzb23b9x7yjdwzdp2wc7gvfz7ybavgg4gbh51wm8x1"))))
+       ("ucd" ,ucd)
+       ("unicode-emoji" ,unicode-emoji)
+       ("unicode-cldr-common" ,unicode-cldr-common)
        ("vala" ,vala)
        ("pkg-config" ,pkg-config)))
     (native-search-paths

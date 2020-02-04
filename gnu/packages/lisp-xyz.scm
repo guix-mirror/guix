@@ -1821,8 +1821,11 @@ processes that doesn't run under Emacs.  Lisp processes created by
          ("cl-fad" ,sbcl-cl-fad)
          ("ironclad" ,sbcl-ironclad)
          ("named-readtables" ,sbcl-named-readtables)
-         ("pythonic-string-reader" ,sbcl-pythonic-string-reader)
-         ("swank" ,cl-slime-swank)))
+         ("pythonic-string-reader" ,sbcl-pythonic-string-reader)))
+      (propagated-inputs
+       ;; Packages having mgl-pax as input complain that it can't find
+       ;; swank if we put it in inputs, so let's put it in propageted-inputs.
+       `(("swank" ,cl-slime-swank)))
       (synopsis "Exploratory programming environment and documentation generator")
       (description
        "PAX provides an extremely poor man's Explorable Programming
@@ -2473,7 +2476,7 @@ non-consing thread safe queues and fibonacci priority queues.")
 (define sbcl-cffi-bootstrap
   (package
     (name "sbcl-cffi-bootstrap")
-    (version "0.20.1")
+    (version "0.21.0")
     (source
      (origin
        (method git-fetch)
@@ -2482,7 +2485,7 @@ non-consing thread safe queues and fibonacci priority queues.")
              (commit (string-append "v" version))))
        (file-name (git-file-name "cffi-bootstrap" version))
        (sha256
-        (base32 "1bzgdwd5yzkv9hwnxg6lqyh5z1vjgjyrl12c72afj7hxziadccm8"))))
+        (base32 "1qalargz9bhp850qv60ffwpdqi4xirzar4l3g6qcg8yc6xqf2cjk"))))
     (build-system asdf-build-system/sbcl)
     (inputs
      `(("libffi" ,libffi)
@@ -7435,7 +7438,7 @@ interactive development.")
          ("metabang-bind" ,sbcl-metabang-bind)
          ("named-readtables" ,sbcl-named-readtables)))
       (arguments
-       '(#:test-asd-file "graph.test.asd"))
+       '(#:test-asd-file "graph-test.asd"))
       (synopsis "Graph data structure and algorithms for Common Lisp")
       (description
        "The GRAPH Common Lisp library provides a data structures to represent
@@ -7460,7 +7463,7 @@ path, maximum flow, minimum spanning tree, etc.).")
        ("named-readtables" ,sbcl-named-readtables)))
     (arguments
      (substitute-keyword-arguments (package-arguments sbcl-graph)
-       ((#:asd-file _ "") "graph.dot.asd")
+       ((#:asd-file _ "") "graph-dot.asd")
        ((#:asd-system-name _ #f) "graph-dot")))
     (synopsis "Serialize graphs to and from DOT format")))
 
@@ -7477,7 +7480,7 @@ path, maximum flow, minimum spanning tree, etc.).")
        ("yason" ,sbcl-yason)))
     (arguments
      (substitute-keyword-arguments (package-arguments sbcl-graph)
-       ((#:asd-file _ "") "graph.json.asd")
+       ((#:asd-file _ "") "graph-json.asd")
        ((#:asd-system-name _ #f) "graph-json")))
     (synopsis "Serialize graphs to and from JSON format")))
 
@@ -10043,3 +10046,120 @@ ones.")
 
 (define-public ecl-nodgui
   (sbcl-package->ecl-package sbcl-nodgui))
+
+(define-public sbcl-salza2
+  (package
+    (name "sbcl-salza2")
+    (version "2.0.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/xach/salza2.git")
+             (commit (string-append "release-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0p38rj4gq7j5k807php7hrz7l2zyyfshv8i9yms7i8lkgg3433ki"))))
+    (build-system asdf-build-system/sbcl)
+    (synopsis "Common Lisp library for zlib, deflate and gzip compression")
+    (description
+     "Salza2 is a Common Lisp library for creating compressed data in the zlib,
+deflate, or gzip data formats, described in RFC 1950, RFC 1951, and RFC 1952,
+respectively.")
+    (home-page "https://www.xach.com/lisp/salza2/")
+    (license license:bsd-2)))
+
+(define-public cl-salza2
+  (sbcl-package->cl-source-package sbcl-salza2))
+
+(define-public ecl-salza2
+  (sbcl-package->ecl-package sbcl-salza2))
+
+(define-public sbcl-png-read
+  (let ((commit "ec29f38a689972b9f1373f13bbbcd6b05deada88")
+        (revision "1"))
+    (package
+      (name "sbcl-png-read")
+      (version (git-version "0.3.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Ramarren/png-read.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0vyczbcwskrygrf1hgrsnk0jil8skmvf1kiaalw5jps4fjrfdkw0"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("babel" ,sbcl-babel)
+         ("chipz" ,sbcl-chipz)
+         ("iterate" ,sbcl-iterate)))
+      (synopsis "PNG decoder for Common Lisp")
+      (description "This is a Common Lisp library for reading PNG images.")
+      (home-page "https://github.com/Ramarren/png-read")
+      (license license:bsd-3))))
+
+(define-public cl-png-read
+  (sbcl-package->cl-source-package sbcl-png-read))
+
+(define-public ecl-png-read
+  (sbcl-package->ecl-package sbcl-png-read))
+
+(define-public sbcl-zpng
+  (package
+    (name "sbcl-zpng")
+    (version "1.2.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/xach/zpng.git")
+             (commit (string-append "release-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0b3ag3jhl3z7kdls3ahdsdxsfhhw5qrizk769984f4wkxhb69rcm"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("salza2" ,sbcl-salza2)))
+    (synopsis "PNG encoder for Common Lisp")
+    (description "This is a Common Lisp library for creating PNG images.")
+    (home-page "https://www.xach.com/lisp/zpng/")
+    (license license:bsd-2)))
+
+(define-public cl-zpng
+  (sbcl-package->cl-source-package sbcl-zpng))
+
+(define-public ecl-zpng
+  (sbcl-package->ecl-package sbcl-zpng))
+
+(define-public sbcl-cl-qrencode
+  (package
+    (name "sbcl-cl-qrencode")
+    (version "0.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jnjcc/cl-qrencode.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1l5k131dchbf6cj8a8xqa731790p01p3qa1kdy2wa9dawy3ymkxr"))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("lisp-unit" ,sbcl-lisp-unit)))
+    (inputs
+     `(("zpng" ,sbcl-zpng)))
+    (synopsis "QR code encoder for Common Lisp")
+    (description
+     "This Common Lisp library provides function to make QR codes and to save
+them as PNG files.")
+    (home-page "https://github.com/jnjcc/cl-qrencode")
+    (license license:gpl2+)))
+
+(define-public cl-qrencode
+  (sbcl-package->cl-source-package sbcl-cl-qrencode))
+
+(define-public ecl-cl-qrencode
+  (sbcl-package->ecl-package sbcl-cl-qrencode))

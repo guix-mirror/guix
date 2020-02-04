@@ -24,11 +24,11 @@ index 193b6e3..56afc8f 100644
 -(register-system-packages "femlisp-matlisp" '(:fl.matlisp))
 +               cl-heap)
 +  :components ((:file "graph")))
-diff --git a/graph.dot.asd b/graph.dot.asd
+diff --git a/graph-dot.asd b/graph-dot.asd
 new file mode 100644
 index 0000000..12aec7e
 --- /dev/null
-+++ b/graph.dot.asd
++++ b/graph-dot.asd
 @@ -0,0 +1,8 @@
 +(defsystem :graph-dot
 +  :depends-on (alexandria
@@ -38,11 +38,11 @@ index 0000000..12aec7e
 +               cl-ppcre
 +               graph)
 +  :components ((:file "dot")))
-diff --git a/graph.json.asd b/graph.json.asd
+diff --git a/graph-json.asd b/graph-json.asd
 new file mode 100644
 index 0000000..e7d091f
 --- /dev/null
-+++ b/graph.json.asd
++++ b/graph-json.asd
 @@ -0,0 +1,8 @@
 +(defsystem :graph-json
 +  :depends-on (alexandria
@@ -52,11 +52,11 @@ index 0000000..e7d091f
 +               yason
 +               graph)
 +  :components ((:file "json")))
-diff --git a/graph.test.asd b/graph.test.asd
+diff --git a/graph-test.asd b/graph-test.asd
 new file mode 100644
 index 0000000..1e811e1
 --- /dev/null
-+++ b/graph.test.asd
++++ b/graph-test.asd
 @@ -0,0 +1,10 @@
 +(defsystem :graph-test
 +  :depends-on (alexandria
