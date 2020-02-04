@@ -19987,3 +19987,27 @@ on a continuous-time birth-death process.")
      "This package provides functions and datasets for maximum likelihood
 fitting of some classes of graphical Markov models.")
     (license license:gpl2+)))
+
+(define-public r-d3network
+  (package
+    (name "r-d3network")
+    (version "0.5.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "d3Network" version))
+       (sha256
+        (base32
+         "1gh979z9wksyxxxdzlfzibn0ysvf6h1ij7vwpd55fvbwr308syaw"))))
+    (properties `((upstream-name . "d3Network")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-plyr" ,r-plyr)
+       ("r-rjson" ,r-rjson)
+       ("r-whisker" ,r-whisker)))
+    (home-page "http://christophergandrud.github.io/d3Network/")
+    (synopsis "Create D3 JavaScript network, tree, dendrogram, and Sankey graphs")
+    (description
+     "This packages is intended to make it easy to create D3 JavaScript
+network, tree, dendrogram, and Sankey graphs from R using data frames.")
+    (license license:gpl3+)))
