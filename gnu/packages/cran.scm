@@ -20194,3 +20194,33 @@ nonparametric Monte-Carlo Tests, itemfit and personfit statistics including
 infit and outfit measures, ICC and other plots, automated stepwise item
 elimination, and a simulation module for various binary data matrices.")
     (license license:gpl3)))
+
+(define-public r-irtoys
+  (package
+    (name "r-irtoys")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "irtoys" version))
+       (sha256
+        (base32
+         "0h6iiaxikhbxhbyksbjnb09qdxinlkwr2v9yzs5wslbni14paq5q"))))
+    (properties `((upstream-name . "irtoys")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ltm" ,r-ltm)
+       ("r-sm" ,r-sm)))
+    (home-page "https://cran.r-project.org/package=irtoys")
+    (synopsis "Collection of functions related to Item Response Theory (IRT)")
+    (description
+     "This package provides a collection of functions useful in learning and
+practicing @dfn{Item Response Theory} (IRT), which can be combined into larger
+programs.  It provides basic CTT analysis, a simple common interface to the
+estimation of item parameters in IRT models for binary responses with three
+different programs (ICL, BILOG-MG, and ltm), ability estimation (MLE, BME,
+EAP, WLE, plausible values), item and person fit statistics, scaling
+methods (MM, MS, Stocking-Lord, and the complete Hebaera method), and a rich
+array of parametric and non-parametric (kernel) plots.  It estimates and plots
+Haberman's interaction model when all items are dichotomously scored.")
+    (license license:gpl2+)))
