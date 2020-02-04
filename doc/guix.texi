@@ -3292,8 +3292,10 @@ $ guix build emacs --dry-run
 @end example
 
 @noindent
-This indicates that substitutes from @code{@value{SUBSTITUTE-SERVER}} are usable and
-will be downloaded, when possible, for future builds.
+The text changed from ``The following derivations would be built'' to
+``112.3 MB would be downloaded''.  This indicates that substitutes from
+@code{@value{SUBSTITUTE-SERVER}} are usable and will be downloaded, when
+possible, for future builds.
 
 @cindex substitutes, how to disable
 The substitute mechanism can be disabled globally by running
