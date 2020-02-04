@@ -16,6 +16,7 @@
 ;;; Copyright © 2019 Jesse Gildersleve <jessejohngildersleve@protonmail.com>
 ;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -10157,3 +10158,66 @@ them as PNG files.")
 
 (define-public ecl-cl-qrencode
   (sbcl-package->ecl-package sbcl-cl-qrencode))
+
+(define-public sbcl-hdf5-cffi
+  (let ((commit "5b5c88f191e470e4fe96b462334e3ce0806eed5c")
+        (revision "1"))
+    (package
+      (name "sbcl-hdf5-cffi")
+      (version (git-version "1.8.18" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/hdfgroup/hdf5-cffi.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0vda3075423xz83qky998lpac5b04dwfv7bwgh9jq8cs5v0zrxjf"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Common Lisp bindings for the HDF5 library")
+      (description
+       "@code{hdf5-cffi} is a CFFI wrapper for the HDF5 library.")
+      (home-page "https://github.com/hdfgroup/hdf5-cffi")
+      (license (license:non-copyleft
+                (string-append "https://github.com/HDFGroup/hdf5-cffi/raw/"
+                               commit
+                               "/LICENSE")))
+      (inputs
+       `(("cffi" ,sbcl-cffi)
+         ("cffi-grovel" ,sbcl-cffi-grovel)
+         ("hdf5" ,hdf5-1.10)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (arguments
+       `(#:asd-system-name "hdf5-cffi"
+         #:asd-file "hdf5-cffi.asd"
+         #:test-asd-file "hdf5-cffi.test.asd"
+         ;; Tests depend on hdf5-cffi.examples.asd in addition to hdf5-cffi.asd,
+         ;; I don't know if there is a way to tell asdf-build-system to load
+         ;; an additional system first, so tests are disabled.
+         #:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "src/library.lisp"
+                 (("libhdf5.so")
+                  (string-append
+                   (assoc-ref inputs "hdf5")
+                   "/lib/libhdf5.so")))))
+           (add-after 'unpack 'fix-dependencies
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "hdf5-cffi.asd"
+                 ((":depends-on \\(:cffi\\)")
+                  ":depends-on (:cffi :cffi-grovel)"))
+               (substitute* "hdf5-cffi.test.asd"
+                 ((":depends-on \\(:cffi :hdf5-cffi")
+                  ":depends-on (:cffi :cffi-grovel :hdf5-cffi"))))))))))
+
+(define-public cl-hdf5-cffi
+  (sbcl-package->cl-source-package sbcl-hdf5-cffi))
+
+(define-public ecl-hdf5-cffi
+  (sbcl-package->ecl-package sbcl-hdf5-cffi))
