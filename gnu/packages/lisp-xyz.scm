@@ -265,7 +265,7 @@ logical continuation of Stefil.  It focuses on interactive debugging.")
 (define-public sbcl-flexi-streams
   (package
     (name "sbcl-flexi-streams")
-    (version "1.0.16")
+    (version "1.0.18")
     (source
      (origin
        (method git-fetch)
@@ -274,7 +274,7 @@ logical continuation of Stefil.  It focuses on interactive debugging.")
              (commit (string-append "v" version))))
        (file-name (git-file-name "flexi-streams" version))
        (sha256
-        (base32 "0gvykjlmja060zqq6nn6aqxlshh6r6ijahmmgf20q0d839rwpgxc"))))
+        (base32 "0bjv7fd2acknidc5dyi3h85pn10krxv5jyxs1xg8jya2rlfv7f1j"))))
     (build-system asdf-build-system/sbcl)
     (arguments
      `(#:phases
