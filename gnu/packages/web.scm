@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
@@ -5075,12 +5075,19 @@ w3c webidl files and a binding configuration file.")
                  ;; Leave the DOCTYPE header as is.
                  (display (read-line in 'concat) out)
                  (sxml->xml
-                  (let rec ((sxml (xml->sxml in)))
+                  (let rec ((sxml (xml->sxml in
+					     #:default-entity-handler
+					     (lambda (port name)
+					       (string-append "<ENTITY>"
+							      (symbol->string name)
+							      "</ENTITY>")))))
                     ;; We'd like to use sxml-match here, but it can't
                     ;; match against generic tag symbols...
                     (match sxml
                       (`(div (@ (class "links")) . ,rest)
                        '())
+		      (`(ENTITY ,ent)
+		       `(*ENTITY* ,ent))
                       ((x ...)
                        (map rec x))
                       (x x)))
