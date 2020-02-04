@@ -19690,3 +19690,30 @@ calculations for probability, econometric and numerical analysis.  There are
 additional functions that are comparable to APL functions which are useful for
 actuarial models such as pension mathematics.")
     (license license:gpl2+)))
+
+(define-public r-sem
+  (package
+    (name "r-sem")
+    (version "3.1-9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sem" version))
+       (sha256
+        (base32
+         "1f9c6g6pfx66gd2pappcsqh484ah6a0x4z47hpd46rah0817hcsa"))))
+    (properties `((upstream-name . "sem")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-boot" ,r-boot)
+       ("r-mass" ,r-mass)
+       ("r-matrixcalc" ,r-matrixcalc)
+       ("r-mi" ,r-mi)))
+    (home-page "https://cran.r-project.org/package=sem")
+    (synopsis "Structural equation models")
+    (description
+     "This package provides functions for fitting general linear structural
+equation models (with observed and latent variables) using the RAM approach,
+and for fitting structural equations in observed-variable models by two-stage
+least squares.")
+    (license license:gpl2+)))
