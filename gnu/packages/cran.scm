@@ -19738,3 +19738,31 @@ least squares.")
     (description
      "This package provides useful tools for structural equation modeling.")
     (license license:gpl2+)))
+
+(define-public r-regsem
+  (package
+    (name "r-regsem")
+    (version "1.3.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "regsem" version))
+       (sha256
+        (base32
+         "1klml4bp76mplipxaca7fk653cjxgdmmiciksxgiglxkzmf2bdps"))))
+    (properties `((upstream-name . "regsem")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lavaan" ,r-lavaan)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-rsolnp" ,r-rsolnp)))
+    (home-page "https://cran.r-project.org/package=regsem")
+    (synopsis "Regularized structural equation modeling")
+    (description
+     "This package uses both ridge and lasso penalties (and extensions) to
+penalize specific parameters in structural equation models.  The package
+offers additional cost functions, cross validation, and other extensions
+beyond traditional structural equation models.  It also contains a function to
+perform @dfn{exploratory mediation} (XMed).")
+    (license license:gpl2+)))
