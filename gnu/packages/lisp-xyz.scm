@@ -5222,7 +5222,7 @@ decoding routines for IDNA, the International Domain Names in Applications.")
   (package
     (name "sbcl-swap-bytes")
     (build-system asdf-build-system/sbcl)
-    (version "1.1")
+    (version "1.2")
     (home-page "https://github.com/sionescu/swap-bytes")
     (source
      (origin
@@ -5233,14 +5233,11 @@ decoding routines for IDNA, the International Domain Names in Applications.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1qysbv0jngdfkv53y874qjhcxc4qi8ixaqq6j8bzxh5z0931wv55"))))
+         "1hw1v1lw26rifyznpnj1csphha9jgzwpiic16ni3pvs6hcsni9rz"))))
     (inputs
      `(("trivial-features" ,sbcl-trivial-features)))
     (native-inputs
      `(("fiveam" ,sbcl-fiveam)))
-    (arguments
-     ;; TODO: Tests fail, why?
-     `(#:tests? #f))
     (synopsis "Efficient endianness conversion for Common Lisp")
     (description "This Common Lisp library provides optimized byte-swapping
 primitives.  The library can change endianness of unsigned integers of length
