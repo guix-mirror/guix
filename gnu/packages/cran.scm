@@ -20099,3 +20099,37 @@ for importing SEM results into R.  Any result usable as input to semPlot can
 also be represented in any of the three popular SEM frame-works, as well as
 translated to input syntax for the R packages @code{sem} and @code{lavaan}.")
     (license license:gpl2)))
+
+(define-public r-cdm
+  (package
+    (name "r-cdm")
+    (version "7.4-19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "CDM" version))
+       (sha256
+        (base32
+         "1ln1r3rk004fmk55iy08bjh3vv4wnkb8zg2wj3r9rq7pi8jn8fv4"))))
+    (properties `((upstream-name . "CDM")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mvtnorm" ,r-mvtnorm)
+       ("r-polycor" ,r-polycor)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)))
+    (home-page
+     "https://github.com/alexanderrobitzsch/CDM")
+    (synopsis "Cognitive diagnosis modeling")
+    (description
+     "This package provides functions for cognitive diagnosis modeling and
+multidimensional item response modeling for dichotomous and polytomous item
+responses.  It enables the estimation of the DINA and DINO model, the multiple
+group (polytomous) GDINA model, the multiple choice DINA model, the general
+diagnostic model (GDM), the structured latent class model (SLCA), and
+regularized latent class analysis.  See George, Robitzsch, Kiefer, Gross, and
+Uenlue (2017) @url{doi:10.18637/jss.v074.i02} for further details on
+estimation and the package structure.  For tutorials on how to use the CDM
+package see George and Robitzsch (2015, @url{doi:10.20982/tqmp.11.3.p189}) as
+well as Ravand and Robitzsch (2015).")
+    (license license:gpl2+)))
