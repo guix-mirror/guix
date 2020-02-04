@@ -19921,3 +19921,23 @@ and \"moderator\" variables.  The emphasis is on \"mean-centered\" and
 \"residual-centered\" predictors.  The vignette @code{rockchalk} offers a
 fairly comprehensive overview.")
     (license license:gpl3+)))
+
+(define-public r-lisreltor
+  (package
+    (name "r-lisreltor")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "lisrelToR" version))
+       (sha256
+        (base32
+         "0zicq0z3hhixan1p1apybnf3v5s6v6ysll4pcz8ivygwr2swv3p5"))))
+    (properties `((upstream-name . "lisrelToR")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/package=lisrelToR")
+    (synopsis "Import output from LISREL into R")
+    (description
+     "This is an unofficial package aimed at automating the import of LISREL
+output in R.")
+    (license license:gpl2)))
