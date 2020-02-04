@@ -166,29 +166,27 @@ interactive development model in mind.")
   (sbcl-package->ecl-package sbcl-fiveam))
 
 (define-public sbcl-bordeaux-threads
-  (let ((commit "5dce49fbc829f4d136a734f5ef4f5d599660984f")
-        (revision "1"))
-    (package
-      (name "sbcl-bordeaux-threads")
-      (version (git-version "0.8.6" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/sionescu/bordeaux-threads.git")
-                      (commit commit)))
-                (sha256
-                 (base32 "1gkh9rz7zw57n3110ikcf4835950wr4hgp8l79id5ai6nd86x7wv"))
-                (file-name
-                 (git-file-name "bordeaux-threads" version))))
-      (inputs `(("alexandria" ,sbcl-alexandria)))
-      (native-inputs `(("fiveam" ,sbcl-fiveam)))
-      (build-system asdf-build-system/sbcl)
-      (synopsis "Portable shared-state concurrency library for Common Lisp")
-      (description "BORDEAUX-THREADS is a proposed standard for a minimal
+  (package
+    (name "sbcl-bordeaux-threads")
+    (version "0.8.7")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/sionescu/bordeaux-threads.git")
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32 "1whpfmyxp2fsw6viqj45fqgsifgr534c575bfh5vaqw5m84b6alp"))
+              (file-name
+               (git-file-name "bordeaux-threads" version))))
+    (inputs `(("alexandria" ,sbcl-alexandria)))
+    (native-inputs `(("fiveam" ,sbcl-fiveam)))
+    (build-system asdf-build-system/sbcl)
+    (synopsis "Portable shared-state concurrency library for Common Lisp")
+    (description "BORDEAUX-THREADS is a proposed standard for a minimal
 MP/Threading interface.  It is similar to the CLIM-SYS threading and lock
 support.")
-      (home-page "https://common-lisp.net/project/bordeaux-threads/")
-      (license license:x11))))
+    (home-page "https://common-lisp.net/project/bordeaux-threads/")
+    (license license:x11)))
 
 (define-public cl-bordeaux-threads
   (sbcl-package->cl-source-package sbcl-bordeaux-threads))
