@@ -20060,3 +20060,42 @@ plotting methods, and tools for psychometric data visualization and graphical
 model estimation.  See Epskamp et al. (2012)
 @url{doi:10.18637/jss.v048.i04}.")
     (license license:gpl2)))
+
+(define-public r-semplot
+  (package
+    (name "r-semplot")
+    (version "1.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "semPlot" version))
+       (sha256
+        (base32
+         "0l1v9yi1pv59iwfknw4dh9qskk5y8r347jq1vq13gnfd3bmd71xr"))))
+    (properties `((upstream-name . "semPlot")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-colorspace" ,r-colorspace)
+       ("r-corpcor" ,r-corpcor)
+       ("r-igraph" ,r-igraph)
+       ("r-lavaan" ,r-lavaan)
+       ("r-lisreltor" ,r-lisreltor)
+       ("r-openmx" ,r-openmx)
+       ("r-plyr" ,r-plyr)
+       ("r-qgraph" ,r-qgraph)
+       ("r-regsem" ,r-regsem)
+       ("r-rockchalk" ,r-rockchalk)
+       ("r-sem" ,r-sem)
+       ("r-xml" ,r-xml)))
+    (home-page "https://github.com/SachaEpskamp/semPlot")
+    (synopsis "Unified visualizations of structural equation models")
+    (description
+     "Structural equation modeling (SEM) has a long history of representing
+models graphically as path diagrams.  The semPlot package for R fills the gap
+between advanced, but time-consuming, graphical software and the limited
+graphics produced automatically by SEM software.  In addition, semPlot offers
+more functionality than drawing path diagrams: it can act as a common ground
+for importing SEM results into R.  Any result usable as input to semPlot can
+also be represented in any of the three popular SEM frame-works, as well as
+translated to input syntax for the R packages @code{sem} and @code{lavaan}.")
+    (license license:gpl2)))
