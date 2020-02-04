@@ -19802,3 +19802,29 @@ doubles, ints, etc.), and a parser for the Stan language.  The @code{r-rstan}
 package provides user-facing R functions to parse, compile, test, estimate,
 and analyze Stan models.")
     (license license:bsd-3)))
+
+(define-public r-rpf
+  (package
+    (name "r-rpf")
+    (version "0.62")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rpf" version))
+       (sha256
+        (base32
+         "1vgqhwi676bi9jjxljnxblw65b5szjwbp87wnsabc11vfjzc9wki"))))
+    (properties `((upstream-name . "rpf")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mvtnorm" ,r-mvtnorm)
+       ("r-rcppeigen" ,r-rcppeigen)))
+    (home-page "https://github.com/jpritikin/rpf")
+    (synopsis "Response probability functions")
+    (description
+     "The purpose of this package is to factor out logic and math common to
+Item Factor Analysis fitting, diagnostics, and analysis.  It is envisioned as
+core support code suitable for more specialized IRT packages to build upon.
+Complete access to optimized C functions is made available with
+@code{R_RegisterCCallable()}.")
+    (license license:gpl3+)))
