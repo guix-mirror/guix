@@ -19891,3 +19891,33 @@ visual summary for each variable in a data frame.  The main feature here is
 the systematic implementation of the \"variable key\" framework for data
 importation and recoding.")
     (license license:gpl2)))
+
+(define-public r-rockchalk
+  (package
+    (name "r-rockchalk")
+    (version "1.8.144")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rockchalk" version))
+       (sha256
+        (base32
+         "07dp1n155b9gfvk8l30h6bhjbhbylsjxfzns08mryn4mxj3nqpnb"))))
+    (properties `((upstream-name . "rockchalk")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cardata" ,r-cardata)
+       ("r-kutils" ,r-kutils)
+       ("r-lme4" ,r-lme4)
+       ("r-mass" ,r-mass)))
+    (home-page "https://cran.r-project.org/package=rockchalk")
+    (synopsis "Regression estimation and presentation")
+    (description
+     "This package provides a collection of functions for interpretation and
+presentation of regression analysis.  These functions are used to produce the
+statistics lectures in @url{http://pj.freefaculty.org/guides}.  The package
+includes regression diagnostics, regression tables, and plots of interactions
+and \"moderator\" variables.  The emphasis is on \"mean-centered\" and
+\"residual-centered\" predictors.  The vignette @code{rockchalk} offers a
+fairly comprehensive overview.")
+    (license license:gpl3+)))
