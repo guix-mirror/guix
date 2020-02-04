@@ -20162,3 +20162,35 @@ multi-faceted Rasch model, nominal item response model, structured latent
 class model, mixture distribution IRT models, and located latent class models.
 Latent regression models and plausible value imputation are also supported.")
     (license license:gpl2+)))
+
+(define-public r-erm
+  (package
+    (name "r-erm")
+    (version "1.0-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "eRm" version))
+       (sha256
+        (base32
+         "11p8j61arq1ih2qi33wf0442vcdbp3zvknzm5aknsifwl4mbzzly"))))
+    (properties `((upstream-name . "eRm")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)
+       ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)))
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/package=eRm")
+    (synopsis "Extended Rasch modeling")
+    (description
+     "This package provides tools to fit @dfn{Rasch models} (RM), @dfn{linear
+logistic test models} (LLTM), @dfn{rating scale model} (RSM), @dfn{linear
+rating scale models} (LRSM), @dfn{partial credit models} (PCM), and
+@dfn{linear partial credit models} (LPCM).  Missing values are allowed in the
+data matrix.  Additional features are the ML estimation of the person
+parameters, Andersen's LR-test, item-specific Wald test, Martin-Loef-Test,
+nonparametric Monte-Carlo Tests, itemfit and personfit statistics including
+infit and outfit measures, ICC and other plots, automated stepwise item
+elimination, and a simulation module for various binary data matrices.")
+    (license license:gpl3)))
