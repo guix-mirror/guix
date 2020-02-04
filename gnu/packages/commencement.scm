@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
@@ -144,11 +144,6 @@
            (lambda _
              (invoke "sh" "install.sh"))))))
     (native-search-paths
-     ;; Use the language-specific variables rather than 'CPATH' because they
-     ;; are equivalent to '-isystem' whereas 'CPATH' is equivalent to '-I'.
-     ;; The intent is to allow headers that are in the search path to be
-     ;; treated as "system headers" (headers exempt from warnings) just like
-     ;; the typical /usr/include headers on an FHS system.
      (list (search-path-specification
             (variable "C_INCLUDE_PATH")
             (files '("share/mes/include")))
@@ -262,11 +257,6 @@
              (lambda _
                (invoke "sh" "install.sh"))))))
       (native-search-paths
-       ;; Use the language-specific variables rather than 'CPATH' because they
-       ;; are equivalent to '-isystem' whereas 'CPATH' is equivalent to '-I'.
-       ;; The intent is to allow headers that are in the search path to be
-       ;; treated as "system headers" (headers exempt from warnings) just like
-       ;; the typical /usr/include headers on an FHS system.
        (list (search-path-specification
               (variable "C_INCLUDE_PATH")
               (files '("include")))
@@ -623,18 +613,14 @@ ac_cv_c_float_format='IEEE (little-endian)'
                        (string-append tcc-lib "/libc+gnu.o")
                        (string-append tcc-lib "/libtcc1.o"))
                (invoke "ls" "-ltrF" gcc-dir)
-               (copy-recursively (string-append tcc "/include")
-                                 (string-append out "/include"))
                #t))))))
     (native-search-paths
-     ;; Use the language-specific variables rather than 'CPATH' because they
-     ;; are equivalent to '-isystem' whereas 'CPATH' is equivalent to '-I'.
-     ;; The intent is to allow headers that are in the search path to be
-     ;; treated as "system headers" (headers exempt from warnings) just like
-     ;; the typical /usr/include headers on an FHS system.
      (list (search-path-specification
             (variable "C_INCLUDE_PATH")
-            (files '("include" "/lib/gcc-lib/i686-unknown-linux-gnu/2.95.3/include")))
+            (files '("include"
+
+                     ;; Needed to get things like GCC's <stddef.h>.
+                     "lib/gcc-lib/i686-unknown-linux-gnu/2.95.3/include")))
            (search-path-specification
             (variable "LIBRARY_PATH")
             (files '("lib")))))))
@@ -665,16 +651,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
                (mkdir-p include)
                (copy-recursively "include" out)
                (copy-recursively headers out)
-               #t))))))
-    (native-search-paths
-     ;; Use the language-specific variables rather than 'CPATH' because they
-     ;; are equivalent to '-isystem' whereas 'CPATH' is equivalent to '-I'.
-     ;; The intent is to allow headers that are in the search path to be
-     ;; treated as "system headers" (headers exempt from warnings) just like
-     ;; the typical /usr/include headers on an FHS system.
-     (list (search-path-specification
-            (variable "C_INCLUDE_PATH")
-            (files '("include")))))))
+               #t))))))))
 
 (define glibc-mesboot0
   ;; GNU C Library 2.2.5 is the most recent glibc that we managed to build
@@ -756,67 +733,37 @@ ac_cv_c_float_format='IEEE (little-endian)'
            (lambda* (#:key configure-flags #:allow-other-keys)
              (format (current-error-port)
                      "running ./configure ~a\n" (string-join configure-flags))
-             (apply invoke "./configure" configure-flags))))))
-    (native-search-paths
-     ;; Use the language-specific variables rather than 'CPATH' because they
-     ;; are equivalent to '-isystem' whereas 'CPATH' is equivalent to '-I'.
-     ;; The intent is to allow headers that are in the search path to be
-     ;; treated as "system headers" (headers exempt from warnings) just like
-     ;; the typical /usr/include headers on an FHS system.
-     (list (search-path-specification
-            (variable "C_INCLUDE_PATH")
-            (files '("include")))
-           (search-path-specification
-            (variable "CPLUS_INCLUDE_PATH")
-            (files '("include")))
-           (search-path-specification
-            (variable "LIBRARY_PATH")
-            (files '("lib")))))))
+             (apply invoke "./configure" configure-flags))))))))
 
 (define gcc-mesboot0
   (package
     (inherit gcc-core-mesboot)
     (name "gcc-mesboot0")
     (native-inputs `(("binutils" ,binutils-mesboot0)
-                     ("gcc" ,gcc-core-mesboot)
+
+                     ;; Packages are given in an order that's relevant for
+                     ;; #include_next purposes.
                      ("libc" ,glibc-mesboot0)
+                     ("kernel-headers" ,%bootstrap-linux-libre-headers)
+                     ("gcc" ,gcc-core-mesboot)
 
                      ("bash" ,%bootstrap-coreutils&co)
                      ("coreutils" ,%bootstrap-coreutils&co)
                      ("diffutils" ,diffutils-mesboot)
-                     ("kernel-headers" ,%bootstrap-linux-libre-headers)
                      ("make" ,make-mesboot0)))
     (arguments
      (substitute-keyword-arguments (package-arguments gcc-core-mesboot)
        ((#:phases phases)
         `(modify-phases ,phases
            (replace 'setenv
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out"))
-                     (bash (assoc-ref %build-inputs "bash"))
-                     (gcc (assoc-ref %build-inputs "gcc"))
-                     (glibc (assoc-ref %build-inputs "libc"))
-                     (kernel-headers (assoc-ref %build-inputs "kernel-headers")))
-                 (setenv "CONFIG_SHELL" (string-append bash "/bin/sh"))
-                 (format (current-error-port) "C_INCLUDE_PATH=~a\n" (getenv "C_INCLUDE_PATH"))
-                 (setenv "C_INCLUDE_PATH" (string-append
-                                           gcc "/lib/gcc-lib/i686-unknown-linux-gnu/2.95.3/include"
-                                           ":" kernel-headers "/include"
-                                           ":" glibc "/include"))
-                 (format (current-error-port) "C_INCLUDE_PATH=~a\n" (getenv "C_INCLUDE_PATH"))
-                 (format (current-error-port) "LIBRARY_PATH=~a\n" (getenv "LIBRARY_PATH"))
-                 ;; FIXME: add glibc dirs to paths manually
-                 (setenv "LIBRARY_PATH" (string-join
-                                         (list (string-append glibc "/lib")
-                                               (getenv "LIBRARY_PATH"))
-                                         ":"))
-                 (format (current-error-port) "LIBRARY_PATH=~a\n" (getenv "LIBRARY_PATH"))
-                 (with-output-to-file "config.cache"
-                   (lambda _
-                     (display "
+             (lambda _
+               (setenv "CONFIG_SHELL" (which "sh"))
+               (with-output-to-file "config.cache"
+                 (lambda _
+                   (display "
 ac_cv_c_float_format='IEEE (little-endian)'
 ")))
-                 #t)))
+               #t))
            (replace 'install2
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
@@ -942,13 +889,14 @@ ac_cv_c_float_format='IEEE (little-endian)'
               ("mpfr-source" ,(package-source mpfr-boot))
               ("mpc-source" ,(package-source mpc-boot))))
     (native-inputs `(("binutils" ,binutils-mesboot)
-                     ("gcc" ,gcc-mesboot0)
+
                      ("libc" ,glibc-mesboot0)
+                     ("kernel-headers" ,%bootstrap-linux-libre-headers)
+                     ("gcc" ,gcc-mesboot0)
 
                      ("bash" ,%bootstrap-coreutils&co)
                      ("coreutils" ,%bootstrap-coreutils&co)
                      ("diffutils" ,diffutils-mesboot)
-                     ("kernel-headers" ,%bootstrap-linux-libre-headers)
                      ("make" ,make-mesboot)))
     (arguments
      (substitute-keyword-arguments (package-arguments gcc-core-mesboot)
@@ -990,24 +938,18 @@ ac_cv_c_float_format='IEEE (little-endian)'
                  #t)))
            (delete 'remove-info)
            (replace 'setenv
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (binutils (assoc-ref %build-inputs "binutils"))
-                      (bash (assoc-ref %build-inputs "bash"))
-                      (gcc (assoc-ref %build-inputs "gcc"))
-                      (glibc (assoc-ref %build-inputs "libc"))
-                      (kernel-headers (assoc-ref %build-inputs "kernel-headers")))
-                 (setenv "CONFIG_SHELL" (string-append bash "/bin/sh"))
-                 (setenv "C_INCLUDE_PATH" (string-append
-                                           gcc "/lib/gcc-lib/i686-unknown-linux-gnu/2.95.3/include"
-                                           ":" kernel-headers "/include"
-                                           ":" glibc "/include"
-                                           ":" (getcwd) "/mpfr/src"))
-                 (setenv "LIBRARY_PATH" (string-append glibc "/lib"
-                                                       ":" gcc "/lib"))
-                 (format (current-error-port) "C_INCLUDE_PATH=~a\n" (getenv "C_INCLUDE_PATH"))
-                 (format (current-error-port) "LIBRARY_PATH=~a\n" (getenv "LIBRARY_PATH"))
-                 #t)))
+             (lambda _
+               (setenv "CONFIG_SHELL" (which "sh"))
+
+               ;; Allow MPFR headers to be found.
+               (setenv "C_INCLUDE_PATH"
+                       (string-append (getcwd) "/mpfr/src:"
+                                      (getenv "C_INCLUDE_PATH")))
+
+               ;; Set the C++ search path so that C headers can be found as
+               ;; libstdc++ is being compiled.
+               (setenv "CPLUS_INCLUDE_PATH" (getenv "C_INCLUDE_PATH"))
+               #t))
            (delete 'install2)))
        ((#:configure-flags configure-flags)
         `(let ((out (assoc-ref %outputs "out"))
@@ -1154,22 +1096,18 @@ exec " gcc "/bin/" program
        ((#:phases phases)
         `(modify-phases ,phases
            (replace 'setenv
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (headers (assoc-ref %build-inputs "headers"))
-                      (bash (assoc-ref %build-inputs "bash"))
-                      (coreutils (assoc-ref %build-inputs "coreutils"))
-                      (libc (assoc-ref %build-inputs "libc"))
-                      (gcc (assoc-ref %build-inputs "gcc"))
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let* ((headers  (assoc-ref inputs "headers"))
+                      (libc     (assoc-ref inputs "libc"))
+                      (gcc      (assoc-ref inputs "gcc"))
                       (cppflags (string-append
                                  " -I " (getcwd) "/nptl/sysdeps/pthread/bits"
                                  " -D BOOTSTRAP_GLIBC=1"))
                       (cflags (string-append " -L " (getcwd)
                                              " -L " libc "/lib")))
                  (setenv "libc_cv_friendly_stddef" "yes")
-                 (setenv "CONFIG_SHELL" (string-append bash "/bin/sh"))
-                 (setenv "SHELL" (getenv "CONFIG_SHELL"))
-                 (format (current-error-port) "CONFIG_SHELL=~s\n" (getenv "CONFIG_SHELL"))
+                 (setenv "CONFIG_SHELL" (which "sh"))
+                 (setenv "SHELL" (which "sh"))
 
                  (setenv "CPP" (string-append gcc "/bin/gcc -E " cppflags))
                  (setenv "CC" (string-append gcc "/bin/gcc " cppflags cflags))
@@ -1177,10 +1115,7 @@ exec " gcc "/bin/" program
                  ;; avoid -fstack-protector
                  (setenv "libc_cv_ssp" "false")
                  (substitute* "configure"
-                   (("/bin/pwd") (string-append coreutils "/bin/pwd")))
-                 (setenv "C_INCLUDE_PATH" (string-append libc "/include"
-                                                         headers "/include"))
-                 (setenv "LIBRARY_PATH" (string-append libc "/lib"))
+                   (("/bin/pwd") "pwd"))
                  #t)))
            (replace 'install
              (lambda* (#:key outputs make-flags #:allow-other-keys)
@@ -1240,22 +1175,7 @@ exec " gcc "/bin/" program
                           (install-flags (cons "install" make-flags)))
                      (apply invoke "make" install-flags)
                      (copy-recursively kernel-headers out)
-                     #t))))))))
-    (native-search-paths ;; FIXME: move to glibc-mesboot0
-     ;; Use the language-specific variables rather than 'CPATH' because they
-     ;; are equivalent to '-isystem' whereas 'CPATH' is equivalent to '-I'.
-     ;; The intent is to allow headers that are in the search path to be
-     ;; treated as "system headers" (headers exempt from warnings) just like
-     ;; the typical /usr/include headers on an FHS system.
-     (list (search-path-specification
-            (variable "C_INCLUDE_PATH")
-            (files '("include")))
-           (search-path-specification
-            (variable "CPLUS_INCLUDE_PATH")
-            (files '("include")))
-           (search-path-specification
-            (variable "LIBRARY_PATH")
-            (files '("lib")))))))
+                     #t))))))))))
 
 (define gcc-mesboot
   (package
@@ -1264,14 +1184,15 @@ exec " gcc "/bin/" program
     (version (package-version gcc-4.9))
     (source (bootstrap-origin (package-source gcc-4.9)))
     (native-inputs `(("binutils" ,binutils-mesboot)
+
+                     ("libc" ,glibc-mesboot)
+                     ("kernel-headers" ,%bootstrap-linux-libre-headers)
                      ("gcc-wrapper" ,gcc-mesboot1-wrapper)
                      ("gcc" ,gcc-mesboot1)
-                     ("libc" ,glibc-mesboot)
 
                      ("bash" ,%bootstrap-coreutils&co)
                      ("coreutils" ,%bootstrap-coreutils&co)
                      ("diffutils" ,diffutils-mesboot)
-                     ("kernel-headers" ,%bootstrap-linux-libre-headers)
                      ("make" ,make-mesboot)))
     (arguments
      `(#:validate-runpath? #f
@@ -1314,34 +1235,7 @@ exec " gcc "/bin/" program
                      "--disable-libstdcxx-pch"
 
                      ;; for libcpp ...
-                     "--disable-build-with-cxx")))
-           ((#:phases phases)
-            `(modify-phases ,phases
-               (replace 'setenv
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let* ((out (assoc-ref outputs "out"))
-                          (binutils (assoc-ref %build-inputs "binutils"))
-                          (bash (assoc-ref %build-inputs "bash"))
-                          (gcc (assoc-ref %build-inputs "gcc"))
-                          (glibc (assoc-ref %build-inputs "libc"))
-                          (kernel-headers (assoc-ref %build-inputs "kernel-headers")))
-                     (setenv "CONFIG_SHELL" (string-append bash "/bin/sh"))
-                     (setenv "C_INCLUDE_PATH" (string-append
-                                               gcc "/lib/gcc-lib/i686-unknown-linux-gnu/4.7.4/include"
-                                               ":" kernel-headers "/include"
-                                               ":" glibc "/include"
-                                               ":" (getcwd) "/mpfr/src"))
-                     (setenv "CPLUS_INCLUDE_PATH" (string-append
-                                                   gcc "/lib/gcc-lib/i686-unknown-linux-gnu/4.7.4/include"
-                                                   ":" kernel-headers "/include"
-                                                   ":" glibc "/include"
-                                                   ":" (getcwd) "/mpfr/src"))
-                     (setenv "LIBRARY_PATH" (string-append glibc "/lib"
-                                                           ":" gcc "/lib"))
-                     (format (current-error-port) "C_INCLUDE_PATH=~a\n" (getenv "C_INCLUDE_PATH"))
-                     (format (current-error-port) "CPLUS_INCLUDE_PATH=~a\n" (getenv "CPLUS_INCLUDE_PATH"))
-                     (format (current-error-port) "LIBRARY_PATH=~a\n" (getenv "LIBRARY_PATH"))
-                     #t))))))))))
+                     "--disable-build-with-cxx"))))))))
 
 (define gcc-mesboot-wrapper
   ;; We need this so gcc-mesboot can be used to create shared binaries that
