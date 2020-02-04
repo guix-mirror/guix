@@ -3177,44 +3177,43 @@ Lisp (from GBBopen project).")
 (define-public ecl-portable-threada
   (sbcl-package->ecl-package sbcl-portable-threads))
 
-(define-public sbcl-usocket-boot0
+(define sbcl-usocket-boot0
   ;; usocket's test rely on usocket-server which depends on usocket itself.
   ;; We break this cyclic dependency with -boot0 that packages usocket.
-  (let ((commit "86e7efbfe50101931edf4b67cdcfa7e221ecfde9"))
-    (package
-      (name "sbcl-usocket-boot0")
-      (version (git-version "0.7.1" "1" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/usocket/usocket/")
-               (commit commit)))
-         (file-name (git-file-name "usocket" version))
-         (sha256
-          (base32
-           "1lk6ipakrib7kdgzw44hrgmls9akp5pz4h35yynw0k5zwmmq6374"))))
-      (build-system asdf-build-system/sbcl)
-      (inputs
-       `(("split-sequence" ,sbcl-split-sequence)))
-      (arguments
-       `(#:tests? #f
-         #:asd-system-name "usocket"))
-      (home-page "https://common-lisp.net/project/usocket/")
-      (synopsis "Universal socket library for Common Lisp (server side)")
-      (description
-       "This library strives to provide a portable TCP/IP and UDP/IP socket
+  (package
+    (name "sbcl-usocket-boot0")
+    (version "0.8.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/usocket/usocket/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "usocket" version))
+       (sha256
+        (base32
+         "0x746wr2324l6bn7skqzgkzcbj5kd0zp2ck0c8rldrw0rzabg826"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("split-sequence" ,sbcl-split-sequence)))
+    (arguments
+     `(#:tests? #f
+       #:asd-system-name "usocket"))
+    (home-page "https://common-lisp.net/project/usocket/")
+    (synopsis "Universal socket library for Common Lisp (server side)")
+    (description
+     "This library strives to provide a portable TCP/IP and UDP/IP socket
 interface for as many Common Lisp implementations as possible, while keeping
 the abstraction and portability layer as thin as possible.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public sbcl-usocket-server
   (package
     (inherit sbcl-usocket-boot0)
     (name "sbcl-usocket-server")
     (inputs
-     `(("usocket" ,sbcl-usocket-boot0)
-       ("portable-threads" ,sbcl-portable-threads)))
+     `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("usocket" ,sbcl-usocket-boot0)))
     (arguments
      '(#:asd-system-name "usocket-server"))
     (synopsis "Universal socket library for Common Lisp (server side)")))
@@ -3240,7 +3239,7 @@ the abstraction and portability layer as thin as possible.")
 (define-public cl-usocket
   (sbcl-package->cl-source-package sbcl-usocket))
 
-(define-public ecl-socket
+(define-public ecl-usocket
   (sbcl-package->ecl-package sbcl-usocket))
 
 (define-public sbcl-s-xml
