@@ -19941,3 +19941,27 @@ fairly comprehensive overview.")
      "This is an unofficial package aimed at automating the import of LISREL
 output in R.")
     (license license:gpl2)))
+
+(define-public r-bdgraph
+  (package
+    (name "r-bdgraph")
+    (version "2.62")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "BDgraph" version))
+       (sha256
+        (base32
+         "1b1vfar940swvn3pcil848qsp8ji50fjjll8jjzp6y2adx0f8pby"))))
+    (properties `((upstream-name . "BDgraph")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-igraph" ,r-igraph)))
+    (home-page "https://www.uva.nl/profile/a.mohammadi")
+    (synopsis "Bayesian structure learning in graphical models")
+    (description
+     "This package provides statistical tools for Bayesian structure learning
+in undirected graphical models for continuous, discrete, and mixed data.  It
+uses a trans-dimensional @dfn{Markov Chain Monte Carlo} (MCMC) approach based
+on a continuous-time birth-death process.")
+    (license license:gpl2+)))
