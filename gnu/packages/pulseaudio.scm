@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2020 Amin Bandali <mab@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +38,7 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages glib)
@@ -365,3 +367,38 @@ install one or more of the following packages alongside pulseaudio-dlna:
 @item vorbis-tools - Vorbis transcoding support
 @end itemize")
       (license l:gpl3+))))
+
+(define-public pamixer
+  (package
+    (name "pamixer")
+    (version "1.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cdemoulins/pamixer.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1i14550n8paijwwnhksv5izgfqm3s5q2773bdfp6vyqybkll55f7"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; There is no test suite.
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; There's no configure phase.
+         (add-before 'install 'mkdir-bin
+           (lambda _
+             (mkdir-p (string-append (assoc-ref %outputs "out") "/bin"))
+             #t)))))
+    (inputs
+     `(("boost" ,boost)
+       ("pulseaudio" ,pulseaudio)))
+    (home-page "https://github.com/cdemoulins/pamixer")
+    (synopsis "PulseAudio command line mixer")
+    (description
+     "pamixer is like amixer but for PulseAudio, allowing easy control of the
+volume levels of the sinks (get, set, decrease, increase, toggle mute, etc).")
+    (license l:gpl3+)))
