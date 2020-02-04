@@ -19860,3 +19860,34 @@ multivariate statistical models.  It consists of a library of functions and
 optimizers that allow you to quickly and flexibly define an SEM model and
 estimate parameters given observed data.")
     (license license:asl2.0)))
+
+(define-public r-kutils
+  (package
+    (name "r-kutils")
+    (version "1.69")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "kutils" version))
+       (sha256
+        (base32
+         "12pg26a85h0jxlfcyai68dbh4bq1gnq8v1ngi8k9qvafbrpc6gx8"))))
+    (properties `((upstream-name . "kutils")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-foreign" ,r-foreign)
+       ("r-lavaan" ,r-lavaan)
+       ("r-openxlsx" ,r-openxlsx)
+       ("r-plyr" ,r-plyr)
+       ("r-runit" ,r-runit)
+       ("r-xtable" ,r-xtable)))
+    (home-page "https://cran.r-project.org/package=kutils")
+    (synopsis "Project management tools")
+    (description
+     "This package provides tools for data importation, recoding, and
+inspection.  There are functions to create new project folders, R code
+templates, create uniquely named output directories, and to quickly obtain a
+visual summary for each variable in a data frame.  The main feature here is
+the systematic implementation of the \"variable key\" framework for data
+importation and recoding.")
+    (license license:gpl2)))
