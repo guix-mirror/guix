@@ -4130,6 +4130,9 @@ memory.")
 (define-public cl-static-vectors
   (sbcl-package->cl-source-package sbcl-static-vectors))
 
+(define-public ecl-static-vectors
+  (sbcl-package->ecl-package sbcl-static-vectors))
+
 (define-public sbcl-marshal
   (let ((commit "eff1b15f2b0af2f26f71ad6a4dd5c4beab9299ec")
         (revision "1"))
