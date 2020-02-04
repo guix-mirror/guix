@@ -934,7 +934,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
   (package
     (inherit gcc-mesboot0)
     (name "gcc-mesboot1")
-    (version "4.7.4")
+    (version (package-version gcc-4.7))
     (source (bootstrap-origin
              (origin (inherit (package-source gcc-4.7))
                      (patches (search-patches "gcc-boot-4.7.4.patch")))))
@@ -1261,7 +1261,7 @@ exec " gcc "/bin/" program
   (package
     (inherit gcc-mesboot1)
     (name "gcc-mesboot")
-    (version "4.9.4")
+    (version (package-version gcc-4.9))
     (source (bootstrap-origin (package-source gcc-4.9)))
     (native-inputs `(("binutils" ,binutils-mesboot)
                      ("gcc-wrapper" ,gcc-mesboot1-wrapper)
