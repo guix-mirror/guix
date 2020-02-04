@@ -20011,3 +20011,52 @@ fitting of some classes of graphical Markov models.")
      "This packages is intended to make it easy to create D3 JavaScript
 network, tree, dendrogram, and Sankey graphs from R using data frames.")
     (license license:gpl3+)))
+
+(define-public r-qgraph
+  (package
+    (name "r-qgraph")
+    (version "1.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "qgraph" version))
+       (sha256
+        (base32
+         "1glg814h7fwl1jfm6dw1d9i80bilmj5jcjjrfln15byrdh4mm1j3"))))
+    (properties `((upstream-name . "qgraph")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-abind" ,r-abind)
+       ("r-bdgraph" ,r-bdgraph)
+       ("r-colorspace" ,r-colorspace)
+       ("r-corpcor" ,r-corpcor)
+       ("r-d3network" ,r-d3network)
+       ("r-dplyr" ,r-dplyr)
+       ("r-fdrtool" ,r-fdrtool)
+       ("r-ggm" ,r-ggm)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggraph" ,r-ggraph)
+       ("r-glasso" ,r-glasso)
+       ("r-gtools" ,r-gtools)
+       ("r-hmisc" ,r-hmisc)
+       ("r-huge" ,r-huge)
+       ("r-igraph" ,r-igraph)
+       ("r-jpeg" ,r-jpeg)
+       ("r-lavaan" ,r-lavaan)
+       ("r-matrix" ,r-matrix)
+       ("r-pbapply" ,r-pbapply)
+       ("r-plyr" ,r-plyr)
+       ("r-png" ,r-png)
+       ("r-psych" ,r-psych)
+       ("r-rcpp" ,r-rcpp)
+       ("r-reshape2" ,r-reshape2)
+       ("r-tidygraph" ,r-tidygraph)))
+    (home-page "http://sachaepskamp.com/qgraph/")
+    (synopsis "Weighted network visualization and analysis")
+    (description
+     "This package implements tools for weighted network visualization and
+analysis, as well as Gaussian graphical model computation.  It contains graph
+plotting methods, and tools for psychometric data visualization and graphical
+model estimation.  See Epskamp et al. (2012)
+@url{doi:10.18637/jss.v048.i04}.")
+    (license license:gpl2)))
