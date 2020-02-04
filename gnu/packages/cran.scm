@@ -19965,3 +19965,25 @@ in undirected graphical models for continuous, discrete, and mixed data.  It
 uses a trans-dimensional @dfn{Markov Chain Monte Carlo} (MCMC) approach based
 on a continuous-time birth-death process.")
     (license license:gpl2+)))
+
+(define-public r-ggm
+  (package
+    (name "r-ggm")
+    (version "2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggm" version))
+       (sha256
+        (base32
+         "1n4y459x2i0jil8chjjqqjs28a8pzfxrws2fcjkg3il7zy0zwbw3"))))
+    (properties `((upstream-name . "ggm")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-igraph" ,r-igraph)))
+    (home-page "https://cran.r-project.org/package=ggm")
+    (synopsis "Functions for graphical Markov models")
+    (description
+     "This package provides functions and datasets for maximum likelihood
+fitting of some classes of graphical Markov models.")
+    (license license:gpl2+)))
