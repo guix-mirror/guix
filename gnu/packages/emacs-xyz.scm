@@ -8626,50 +8626,40 @@ abbreviation and automatically expand it into function templates.")
     (license license:gpl3+)))
 
 (define-public emacs-yasnippet-snippets
-  (let ((commit "885050d34737e2fb36a3e7759d60c09347bd4ce0")
-        (revision "1"))
-    (package
-      (name "emacs-yasnippet-snippets")
-      (version (string-append "1-" revision "." (string-take commit 8)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/AndreaCrotti/yasnippet-snippets")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1m935zgglw0iakzrixld5rcjz3wnj84f8wy2mvc3pggjri9l0qr9"))))
-      (build-system trivial-build-system)
-      (arguments
-       `(#:modules ((ice-9 ftw)
-                    (ice-9 regex)
-                    (guix build utils))
-         #:builder
-         (begin
-           (use-modules (ice-9 ftw)
-                        (ice-9 regex)
-                        (guix build utils))
-           (with-directory-excursion (assoc-ref %build-inputs "source")
-             (for-each (lambda (dir)
-                         (copy-recursively
-                          dir
-                          (string-append %output
-                                         "/share/emacs/yasnippet-snippets/"
-                                         dir)))
-                       (scandir "." (lambda (fname)
-                                      (and (string-match "-mode$" fname)
-                                           (directory-exists? fname))))))
-           #t)))
-      (home-page "https://github.com/AndreaCrotti/yasnippet-snippets")
-      (synopsis "Collection of YASnippet snippets for many languages")
-      (description
-       "Provides Andrea Crotti's collection of YASnippet snippets.  After installation,
+  (package
+    (name "emacs-yasnippet-snippets")
+    (version "0.20")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/AndreaCrotti/yasnippet-snippets")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "095w7cdmfwmmr6426mbq15n0a5izgbmv9408m9yh1pqz5x3v3vsx"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((source (assoc-ref %build-inputs "source"))
+                (out (assoc-ref %outputs "out"))
+                (snippet-dir
+                 (string-append out "/share/emacs/yasnippet-snippets/")))
+           (with-directory-excursion source
+             (mkdir-p snippet-dir)
+             (copy-recursively "snippets" snippet-dir)))
+         #t)))
+    (home-page "https://github.com/AndreaCrotti/yasnippet-snippets")
+    (synopsis "Collection of YASnippet snippets for many languages")
+    (description
+     "Provides Andrea Crotti's collection of YASnippet snippets.  After installation,
 the snippets will be in \"~/.guix-profile/share/emacs/yasnippet-snippets/\".
 To make YASnippet aware of these snippets, add the above directory to
 @code{yas-snippet-dirs}.")
-      (license license:expat))))
+    (license license:gpl3+)))
 
 (define-public emacs-helm-c-yasnippet
   (let ((commit "65ca732b510bfc31636708aebcfe4d2d845b59b0")
