@@ -19766,3 +19766,39 @@ offers additional cost functions, cross validation, and other extensions
 beyond traditional structural equation models.  It also contains a function to
 perform @dfn{exploratory mediation} (XMed).")
     (license license:gpl2+)))
+
+(define-public r-stanheaders
+  (package
+    (name "r-stanheaders")
+    (version "2.19.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "StanHeaders" version))
+       (sha256
+        (base32
+         "0kyka130sin4nbji7p840394ynhmaynv9jyi94ddbplj83i2nhx3"))))
+    (properties `((upstream-name . "StanHeaders")))
+    (build-system r-build-system)
+    (inputs `(("pandoc" ,ghc-pandoc)))
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://mc-stan.org/")
+    (synopsis "C++ header files for Stan")
+    (description
+     "The C++ header files of the Stan project are provided by this package.
+There is a shared object containing part of the @code{CVODES} library, but it
+is not accessible from R.  @code{r-stanheaders} is only useful for developers
+who want to utilize the @code{LinkingTo} directive of their package's
+DESCRIPTION file to build on the Stan library without incurring unnecessary
+dependencies.
+
+The Stan project develops a probabilistic programming language that implements
+full or approximate Bayesian statistical inference via Markov Chain Monte
+Carlo or variational methods and implements (optionally penalized) maximum
+likelihood estimation via optimization.  The Stan library includes an advanced
+automatic differentiation scheme, templated statistical and linear algebra
+functions that can handle the automatically differentiable scalar types (and
+doubles, ints, etc.), and a parser for the Stan language.  The @code{r-rstan}
+package provides user-facing R functions to parse, compile, test, estimate,
+and analyze Stan models.")
+    (license license:bsd-3)))
