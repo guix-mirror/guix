@@ -19717,3 +19717,24 @@ equation models (with observed and latent variables) using the RAM approach,
 and for fitting structural equations in observed-variable models by two-stage
 least squares.")
     (license license:gpl2+)))
+
+(define-public r-semtools
+  (package
+    (name "r-semtools")
+    (version "0.5-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "semTools" version))
+       (sha256
+        (base32
+         "1zj841pszfsikzp82cmh463qyc4xhdrqjqcnhc2r8mcflv12irv6"))))
+    (properties `((upstream-name . "semTools")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lavaan" ,r-lavaan)))
+    (home-page "https://github.com/simsem/semTools/wiki")
+    (synopsis "Useful tools for structural equation modeling")
+    (description
+     "This package provides useful tools for structural equation modeling.")
+    (license license:gpl2+)))
