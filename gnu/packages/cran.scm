@@ -19668,3 +19668,25 @@ generate the imputations, confidence-building mechanisms to validate some of
 the assumptions of the imputation algorithm, and functions to analyze multiply
 imputed data sets with the appropriate degree of sampling uncertainty.")
     (license license:gpl2+)))
+
+(define-public r-matrixcalc
+  (package
+    (name "r-matrixcalc")
+    (version "1.0-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "matrixcalc" version))
+       (sha256
+        (base32
+         "1c4w9dhi5w98qj1wwh9bbpnfk39rhiwjbanalr8bi5nmxkpcmrhp"))))
+    (properties `((upstream-name . "matrixcalc")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/matrixcalc/")
+    (synopsis "Collection of functions for matrix calculations")
+    (description
+     "This package provides a collection of functions to support matrix
+calculations for probability, econometric and numerical analysis.  There are
+additional functions that are comparable to APL functions which are useful for
+actuarial models such as pension mathematics.")
+    (license license:gpl2+)))
