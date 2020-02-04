@@ -19828,3 +19828,35 @@ core support code suitable for more specialized IRT packages to build upon.
 Complete access to optimized C functions is made available with
 @code{R_RegisterCCallable()}.")
     (license license:gpl3+)))
+
+(define-public r-openmx
+  (package
+    (name "r-openmx")
+    (version "2.15.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "OpenMx" version))
+       (sha256
+        (base32
+         "1wbzhmyb1lnk39dkcyccmblxvniwsghh0jd94x05pk6yrcq8im5v"))))
+    (properties `((upstream-name . "OpenMx")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-digest" ,r-digest)
+       ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppeigen" ,r-rcppeigen)
+       ("r-rpf" ,r-rpf)
+       ("r-stanheaders" ,r-stanheaders)))
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "http://openmx.ssri.psu.edu")
+    (synopsis "Extended structural equation modelling")
+    (description
+     "This package allows for the estimation of a wide variety of advanced
+multivariate statistical models.  It consists of a library of functions and
+optimizers that allow you to quickly and flexibly define an SEM model and
+estimate parameters given observed data.")
+    (license license:asl2.0)))
