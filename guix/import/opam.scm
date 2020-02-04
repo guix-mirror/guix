@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -260,7 +261,7 @@ path to the repository."
                         (substring version 1)
                         version)))))
 
-(define* (opam->guix-package name #:key (repository (get-opam-repository)))
+(define* (opam->guix-package name #:key (repository (get-opam-repository)) version)
   "Import OPAM package NAME from REPOSITORY (a directory name) or, if
 REPOSITORY is #f, from the official OPAM repository.  Return a 'package' sexp
 or #f on failure."
@@ -322,9 +323,8 @@ or #f on failure."
                       dependencies))))))))
 
 (define (opam-recursive-import package-name)
-  (recursive-import package-name #f
-                    #:repo->guix-package (lambda (name repo)
-                                           (opam->guix-package name))
+  (recursive-import package-name
+                    #:repo->guix-package opam->guix-package
                     #:guix-name ocaml-name->guix-name))
 
 (define (guix-name->opam-name name)

@@ -6,6 +6,7 @@
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
 ;;; Copyright © 2020 Helio Machado <0x2b3bfa0+guix@googlemail.com>
+;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +46,7 @@
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-71)
   #:export (factorize-uri
 
             flatten
@@ -254,13 +256,15 @@ package definition."
     ((package-inputs ...)
      `((native-inputs (,'quasiquote ,package-inputs))))))
 
-(define (package->definition guix-package)
+(define* (package->definition guix-package #:optional append-version?)
   (match guix-package
-    (('package ('name (? string? name)) _ ...)
-     `(define-public ,(string->symbol name)
-        ,guix-package))
-    (('let anything ('package ('name (? string? name)) _ ...))
-     `(define-public ,(string->symbol name)
+    ((or
+      ('package ('name name) ('version version) . rest)
+      ('let _ ('package ('name name) ('version version) . rest)))
+
+     `(define-public ,(string->symbol (if append-version?
+                                          (string-append name "-" version)
+                                          version))
         ,guix-package))))
 
 (define (build-system-modules)
@@ -409,32 +413,43 @@ obtain a node's uniquely identifying \"key\"."
                    (cons head result)
                    (set-insert (node-name head) visited))))))))
 
-(define* (recursive-import package-name repo
-                           #:key repo->guix-package guix-name
+(define* (recursive-import package-name
+                           #:key repo->guix-package guix-name version repo
                            #:allow-other-keys)
   "Return a list of package expressions for PACKAGE-NAME and all its
 dependencies, sorted in topological order.  For each package,
-call (REPO->GUIX-PACKAGE NAME REPO), which should return a package expression
-and a list of dependencies; call (GUIX-NAME NAME) to obtain the Guix package
-name corresponding to the upstream name."
+call (REPO->GUIX-PACKAGE NAME :KEYS version repo), which should return a
+package expression and a list of dependencies; call (GUIX-NAME NAME) to
+obtain the Guix package name corresponding to the upstream name."
   (define-record-type <node>
-    (make-node name package dependencies)
+    (make-node name version package dependencies)
     node?
     (name         node-name)
+    (version      node-version)
     (package      node-package)
     (dependencies node-dependencies))
 
-  (define (exists? name)
-    (not (null? (find-packages-by-name (guix-name name)))))
+  (define (exists? name version)
+    (not (null? (find-packages-by-name (guix-name name) version))))
 
-  (define (lookup-node name)
-    (receive (package dependencies) (repo->guix-package name repo)
-      (make-node name package dependencies)))
+  (define (lookup-node name version)
+    (let* ((package dependencies (repo->guix-package name
+                                                     #:version version
+                                                     #:repo repo))
+           (normalizied-deps (map (match-lambda
+                                   ((name version) (list name version))
+                                   (name (list name #f))) dependencies)))
+      (make-node name version package normalizied-deps)))
 
   (map node-package
-       (topological-sort (list (lookup-node package-name))
+       (topological-sort (list (lookup-node package-name version))
                          (lambda (node)
-                           (map lookup-node
-                                (remove exists?
+                           (map (lambda (name-version)
+                                  (apply lookup-node name-version))
+                                (remove (lambda (name-version)
+                                          (apply exists? name-version))
                                         (node-dependencies node))))
-                         node-name)))
+                         (lambda (node)
+                           (string-append
+                            (node-name node)
+                            (or (node-version node) ""))))))

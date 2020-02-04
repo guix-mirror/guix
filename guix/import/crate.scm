@@ -187,7 +187,7 @@ and LICENSE."
                          'unknown-license!)))
               (string-split string (string->char-set " /"))))
 
-(define* (crate->guix-package crate-name #:optional version)
+(define* (crate->guix-package crate-name #:key version repo)
   "Fetch the metadata for CRATE-NAME from crates.io, and return the
 `package' s-expression corresponding to that package, or #f on failure.
 When VERSION is specified, attempt to fetch that version; otherwise fetch the
@@ -233,13 +233,10 @@ latest version of CRATE-NAME."
                                             string->license))
           (append cargo-inputs cargo-development-inputs)))))
 
-(define* (crate-recursive-import crate-name #:optional version)
-  (recursive-import crate-name #f
-                    #:repo->guix-package
-                    (lambda (name repo)
-                      (let ((version (and (string=? name crate-name)
-                                          version)))
-                        (crate->guix-package name version)))
+(define* (crate-recursive-import crate-name #:key version)
+  (recursive-import crate-name
+                    #:repo->guix-package crate->guix-package
+                    #:version version
                     #:guix-name crate-name->package-name))
 
 (define (guix-package->crate-name package)

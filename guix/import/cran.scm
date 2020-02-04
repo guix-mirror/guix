@@ -2,6 +2,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -568,7 +569,7 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
 
 (define cran->guix-package
   (memoize
-   (lambda* (package-name #:optional (repo 'cran))
+   (lambda* (package-name #:key (repo 'cran) version)
      "Fetch the metadata for PACKAGE-NAME from REPO and return the `package'
 s-expression corresponding to that package, or #f on failure."
      (let ((description (fetch-description repo package-name)))
@@ -586,8 +587,9 @@ s-expression corresponding to that package, or #f on failure."
               (cran->guix-package package-name 'cran))
              (else (values #f '()))))))))
 
-(define* (cran-recursive-import package-name #:optional (repo 'cran))
-  (recursive-import package-name repo
+(define* (cran-recursive-import package-name #:key (repo 'cran))
+  (recursive-import package-name
+                    #:repo repo
                     #:repo->guix-package cran->guix-package
                     #:guix-name cran-guix-name))
 

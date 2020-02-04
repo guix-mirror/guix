@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -109,8 +110,8 @@ included in the Stackage LTS release."
            (leave-with-message "~a: Stackage package not found" package-name))))))
 
 (define (stackage-recursive-import package-name . args)
-  (recursive-import package-name #f
-                    #:repo->guix-package (lambda (name repo)
+  (recursive-import package-name
+                    #:repo->guix-package (lambda* (name #:key repo version)
                                            (apply stackage->guix-package (cons name args)))
                     #:guix-name hackage-name->package-name))
 

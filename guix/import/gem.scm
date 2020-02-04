@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -122,7 +123,7 @@ VERSION, HASH, HOME-PAGE, DESCRIPTION, DEPENDENCIES, and LICENSES."
                  ((license) (license->symbol license))
                  (_ `(list ,@(map license->symbol licenses)))))))
 
-(define* (gem->guix-package package-name #:optional (repo 'rubygems) version)
+(define* (gem->guix-package package-name #:key (repo 'rubygems) version)
   "Fetch the metadata for PACKAGE-NAME from rubygems.org, and return the
 `package' s-expression corresponding to that package, or #f on failure."
   (let ((gem (rubygems-fetch package-name)))
@@ -188,6 +189,7 @@ package on RubyGems."
    (latest latest-release)))
 
 (define* (gem-recursive-import package-name #:optional version)
-  (recursive-import package-name '()
+  (recursive-import package-name
+                    #:repo '()
                     #:repo->guix-package gem->guix-package
                     #:guix-name ruby-package-name))

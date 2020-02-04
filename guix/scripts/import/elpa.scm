@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -102,7 +103,8 @@ Import the latest package named PACKAGE-NAME from an ELPA repository.\n"))
                   (_ #f))
                 (elpa-recursive-import package-name
                                        (or (assoc-ref opts 'repo) 'gnu)))
-           (let ((sexp (elpa->guix-package package-name (assoc-ref opts 'repo))))
+           (let ((sexp (elpa->guix-package package-name
+                                           #:repo (assoc-ref opts 'repo))))
              (unless sexp
                (leave (G_ "failed to download package '~a'~%") package-name))
              sexp)))

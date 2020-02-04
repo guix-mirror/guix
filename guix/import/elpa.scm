@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -245,7 +246,7 @@ type '<elpa-package>'."
         (license ,license))
      dependencies-names)))
 
-(define* (elpa->guix-package name #:optional (repo 'gnu))
+(define* (elpa->guix-package name #:key (repo 'gnu) version)
   "Fetch the package NAME from REPO and produce a Guix package S-expression."
   (match (fetch-elpa-package name repo)
     (#f #f)
@@ -299,7 +300,8 @@ type '<elpa-package>'."
 (define elpa-guix-name (cut guix-name "emacs-" <>))
 
 (define* (elpa-recursive-import package-name #:optional (repo 'gnu))
-  (recursive-import package-name repo
+  (recursive-import package-name
+                    #:repo repo
                     #:repo->guix-package elpa->guix-package
                     #:guix-name elpa-guix-name))
 

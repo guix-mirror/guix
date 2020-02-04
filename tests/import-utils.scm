@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,15 +49,16 @@
     (package
       (name "foo")
       (inputs `(("bar" ,bar)))))
-  (recursive-import "foo" 'repo
+  (recursive-import "foo"
+                    #:repo 'repo
                     #:repo->guix-package
                     (match-lambda*
-                      (("foo" 'repo)
+                      (("foo" #:version #f #:repo 'repo)
                        (values '(package
                                   (name "foo")
                                   (inputs `(("bar" ,bar))))
                                '("bar")))
-                      (("bar" 'repo)
+                      (("bar" #:version #f #:repo 'repo)
                        (values '(package
                                   (name "bar"))
                                '())))
