@@ -8574,35 +8574,35 @@ been adapted to work with mu4e.")
 (define-public emacs-yasnippet
   (package
     (name "emacs-yasnippet")
-    (version "0.13.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/joaotavora/yasnippet.git")
-                    (commit version)))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0fkkplycrw8f8r30hjjxl1wm7p2irq2ipzzc1g7cc52abaal796p"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; YASnippet expects a "snippets" subdirectory in the same
-                  ;; directory as yasnippet.el, but we don't install it
-                  ;; because it's a git submodule pointing to an external
-                  ;; repository.  Adjust `yas-snippet-dirs' to prevent
-                  ;; warnings about a missing directory.
-                  (substitute* "yasnippet.el"
-                    (("^ +'yas-installed-snippets-dir\\)\\)\n")
-                     "))\n"))
-                  #t))))
+    (version "0.14.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/joaotavora/yasnippet.git")
+             (commit version)))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0via9dzw8m5lzymg1h78xkwjssh39zr3g6ccyamlf1rjzjsyxknv"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; YASnippet expects a "snippets" subdirectory in the same
+           ;; directory as yasnippet.el, but we don't install it because it's
+           ;; a git submodule pointing to an external repository.  Adjust
+           ;; `yas-snippet-dirs' to prevent warnings about a missing
+           ;; directory.
+           (substitute* "yasnippet.el"
+             (("^ +'yas-installed-snippets-dir\\)\\)\n")
+              "))\n"))
+           #t))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
        #:test-command '("emacs" "--batch"
                         "-l" "yasnippet-tests.el"
                         "-f" "ert-run-tests-batch-and-exit")
-       ;; FIXME: one failing test
+       ;; FIXME: one failing test.
        #:phases
        (modify-phases %standard-phases
          (add-before 'check 'make-tests-writable
@@ -8612,11 +8612,10 @@ been adapted to work with mu4e.")
          (add-before 'check 'delete-rebinding-test
            (lambda _
              (emacs-batch-edit-file "yasnippet-tests.el"
-               `(progn (progn (goto-char (point-min))
-                              (re-search-forward
-                               "ert-deftest test-rebindings")
-                              (beginning-of-line)
-                              (kill-sexp))
+               `(progn (goto-char (point-min))
+                       (re-search-forward "ert-deftest test-rebindings")
+                       (beginning-of-line)
+                       (kill-sexp)
                        (basic-save-buffer)))
              #t)))))
     (home-page "https://github.com/joaotavora/yasnippet")
