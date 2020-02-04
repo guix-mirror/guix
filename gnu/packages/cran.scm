@@ -19643,3 +19643,28 @@ Three-Parameter, the Graded Response, and the Generalized Partial Credit
 Models.")
     (license license:gpl2+)))
 
+(define-public r-mi
+  (package
+    (name "r-mi")
+    (version "1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "mi" version))
+        (sha256
+          (base32
+            "1h47k5mpbvhid83277dvvj2di493bgzz9iarpyv3r30y219l7x1l"))))
+    (properties `((upstream-name . "mi")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-arm" ,r-arm)
+       ("r-matrix" ,r-matrix)))
+    (home-page "http://www.stat.columbia.edu/~gelman/")
+    (synopsis "Missing data imputation and model checking")
+    (description
+     "This package provides functions for data manipulation, imputing missing
+values in an approximate Bayesian framework, diagnostics of the models used to
+generate the imputations, confidence-building mechanisms to validate some of
+the assumptions of the imputation algorithm, and functions to analyze multiply
+imputed data sets with the appropriate degree of sampling uncertainty.")
+    (license license:gpl2+)))
