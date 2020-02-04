@@ -625,6 +625,9 @@ from other CLXes around the net.")
      `(("sbcl-cl-ppcre" ,sbcl-cl-ppcre)
        ("sbcl-cl-unicode" ,sbcl-cl-unicode)))))
 
+(define-public ecl-cl-ppcre-unicode
+  (sbcl-package->ecl-package sbcl-cl-ppcre-unicode))
+
 ;; The slynk that users expect to install includes all of slynk's contrib
 ;; modules.  Therefore, we build the base module and all contribs first; then
 ;; we expose the union of these as `sbcl-slynk'.  The following variable
