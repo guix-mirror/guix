@@ -328,32 +328,30 @@ compatible with ANSI-compliant Common Lisp implementations.")
   (sbcl-package->ecl-package sbcl-cl-ppcre))
 
 (define sbcl-cl-unicode-base
-  (let ((revision "1")
-        (commit "9fcd06fba1ddc9e66aed2f2d6c32dc9b764f03ea"))
-    (package
-      (name "sbcl-cl-unicode-base")
-      (version (string-append "0.1.5-" revision "." (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/edicl/cl-unicode.git")
-                      (commit commit)))
-                (file-name (string-append "cl-unicode-" version "-checkout"))
-                (sha256
-                 (base32
-                  "1jicprb5b3bv57dy1kg03572gxkcaqdjhak00426s76g0plmx5ki"))))
-      (build-system asdf-build-system/sbcl)
-      (arguments
-       '(#:asd-file "cl-unicode.asd"
-         #:asd-system-name "cl-unicode/base"))
-      (inputs
-       `(("cl-ppcre" ,sbcl-cl-ppcre)))
-      (home-page "http://weitz.de/cl-unicode/")
-      (synopsis "Portable Unicode library for Common Lisp")
-      (description "CL-UNICODE is a portable Unicode library Common Lisp, which
+  (package
+    (name "sbcl-cl-unicode-base")
+    (version "0.1.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/edicl/cl-unicode.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0ykx2s9lqfl74p1px0ik3l2izd1fc9jd1b4ra68s5x34rvjy0hza"))))
+    (build-system asdf-build-system/sbcl)
+    (arguments
+     '(#:asd-file "cl-unicode.asd"
+       #:asd-system-name "cl-unicode/base"))
+    (inputs
+     `(("cl-ppcre" ,sbcl-cl-ppcre)))
+    (home-page "http://weitz.de/cl-unicode/")
+    (synopsis "Portable Unicode library for Common Lisp")
+    (description "CL-UNICODE is a portable Unicode library Common Lisp, which
 is compatible with perl.  It is pretty fast, thread-safe, and compatible with
 ANSI-compliant Common Lisp implementations.")
-      (license license:bsd-2))))
+    (license license:bsd-2)))
 
 (define-public sbcl-cl-unicode
   (package
