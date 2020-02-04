@@ -4567,7 +4567,7 @@ tools they trust (e.g. wget).")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+       (uri (string-append "https://download.netsurf-browser.org/libs/releases/"
                            "buildsystem-" version ".tar.gz"))
        (sha256
         (base32
@@ -4580,7 +4580,7 @@ tools they trust (e.g. wget).")
        #:phases (modify-phases %standard-phases
                   (delete 'configure)
                   (delete 'build))))
-    (home-page "http://www.netsurf-browser.org")
+    (home-page "https://www.netsurf-browser.org")
     (synopsis "Build system for the Netsurf project")
     (description
      "This package provides the shared build system for Netsurf project
@@ -4606,7 +4606,7 @@ libraries.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+       (uri (string-append "https://download.netsurf-browser.org/libs/releases/"
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
@@ -4617,7 +4617,7 @@ libraries.")
        ("pkg-config" ,pkg-config)
        ("perl" ,perl)))                 ;for test harness
     (arguments netsurf-buildsystem-arguments)
-    (home-page "http://www.netsurf-browser.org/projects/libparserutils/")
+    (home-page "https://www.netsurf-browser.org/projects/libparserutils/")
     (synopsis "Parser building library")
     (description
      "LibParserUtils is a library for building efficient parsers, written in
@@ -4631,7 +4631,7 @@ C.  It is developed as part of the NetSurf project.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+       (uri (string-append "https://download.netsurf-browser.org/libs/releases/"
                            "libhubbub-" version "-src.tar.gz"))
        (sha256
         (base32
@@ -4647,7 +4647,7 @@ C.  It is developed as part of the NetSurf project.")
     (propagated-inputs
      `(("libparserutils" ,libparserutils))) ;for libhubbub.pc
     (arguments netsurf-buildsystem-arguments)
-    (home-page "http://www.netsurf-browser.org/projects/hubbub/")
+    (home-page "https://www.netsurf-browser.org/projects/hubbub/")
     (synopsis "HTML5 compliant parsing library")
     (description
      "Hubbub is an HTML5 compliant parsing library, written in C, which can
@@ -4737,7 +4737,7 @@ commenting.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+       (uri (string-append "https://download.netsurf-browser.org/libs/releases/"
                            "libwapcaplet-" version "-src.tar.gz"))
        (sha256
         (base32
@@ -4748,7 +4748,7 @@ commenting.")
        ("pkg-config" ,pkg-config)
        ("check" ,check)))               ;for tests
     (arguments netsurf-buildsystem-arguments)
-    (home-page "http://www.netsurf-browser.org/projects/libwapcaplet/")
+    (home-page "https://www.netsurf-browser.org/projects/libwapcaplet/")
     (synopsis "String internment library")
     (description
      "LibWapcaplet provides a reference counted string internment system
@@ -4763,7 +4763,7 @@ developed as part of the Netsurf project.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+       (uri (string-append "https://download.netsurf-browser.org/libs/releases/"
                            "libcss-" version "-src.tar.gz"))
        (sha256
         (base32
@@ -4777,7 +4777,7 @@ developed as part of the Netsurf project.")
      `(("libparserutils" ,libparserutils)
        ("libwapcaplet" ,libwapcaplet)))
     (arguments netsurf-buildsystem-arguments)
-    (home-page "http://www.netsurf-browser.org/projects/libcss/")
+    (home-page "https://www.netsurf-browser.org/projects/libcss/")
     (synopsis "CSS parser and selection library")
     (description
      "LibCSS is a CSS (Cascading Style Sheet) parser and selection engine,
@@ -4791,7 +4791,7 @@ written in C.  It is developed as part of the NetSurf project.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+       (uri (string-append "https://download.netsurf-browser.org/libs/releases/"
                            "libdom-" version "-src.tar.gz"))
        (sha256
         (base32
@@ -4813,7 +4813,7 @@ written in C.  It is developed as part of the NetSurf project.")
     (arguments
      `(#:tests? #f                 ;TODO: re-enable. tests take a looong time.
        ,@netsurf-buildsystem-arguments))
-    (home-page "http://www.netsurf-browser.org/projects/libdom/")
+    (home-page "https://www.netsurf-browser.org/projects/libdom/")
     (synopsis "Implementation of the W3C DOM")
     (description
      "LibDOM is an implementation of the W3C DOM, written in C.  It is
@@ -4827,7 +4827,7 @@ developed as part of the NetSurf project.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+       (uri (string-append "https://download.netsurf-browser.org/libs/releases/"
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
@@ -4842,7 +4842,7 @@ developed as part of the NetSurf project.")
     (propagated-inputs
      `(("libdom" ,libdom)))             ;for libsvgtiny.pc
     (arguments netsurf-buildsystem-arguments)
-    (home-page "http://www.netsurf-browser.org/projects/libsvgtiny/")
+    (home-page "https://www.netsurf-browser.org/projects/libsvgtiny/")
     (synopsis "Library for parsing SVG files")
     (description
      "Libsvgtiny takes some SVG as input and returns a list of paths and texts
@@ -4858,7 +4858,7 @@ project.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+       (uri (string-append "https://download.netsurf-browser.org/libs/releases/"
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
@@ -4867,7 +4867,7 @@ project.")
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)))
     (arguments netsurf-buildsystem-arguments)
-    (home-page "http://www.netsurf-browser.org/projects/libnsbmp/")
+    (home-page "https://www.netsurf-browser.org/projects/libnsbmp/")
     (synopsis "Decoding library for BMP and ICO files")
     (description
      "Libnsbmp is a decoding library for BMP and ICO image file formats,
@@ -4881,7 +4881,7 @@ written in C.  It is developed as part of the NetSurf project.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+       (uri (string-append "https://download.netsurf-browser.org/libs/releases/"
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
@@ -4890,7 +4890,7 @@ written in C.  It is developed as part of the NetSurf project.")
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)))
     (arguments netsurf-buildsystem-arguments)
-    (home-page "http://www.netsurf-browser.org/projects/libnsgif/")
+    (home-page "https://www.netsurf-browser.org/projects/libnsgif/")
     (synopsis "Decoding library for GIF files")
     (description
      "Libnsgif is a decoding library for the GIF image file format, written in
@@ -4904,7 +4904,7 @@ C.  It is developed as part of the NetSurf project.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+       (uri (string-append "https://download.netsurf-browser.org/libs/releases/"
                            "libnslog-" version "-src.tar.gz"))
        (sha256
         (base32
@@ -4917,7 +4917,7 @@ C.  It is developed as part of the NetSurf project.")
        ("bison" ,bison)
        ("flex" ,flex)))
     (arguments netsurf-buildsystem-arguments)
-    (home-page "http://www.netsurf-browser.org/")
+    (home-page "https://www.netsurf-browser.org/")
     (synopsis "Logging library")
     (description
      "Libnslog provides a category-based logging library which supports
@@ -4932,7 +4932,7 @@ client applications.  It is developed as part of the NetSurf project.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+       (uri (string-append "https://download.netsurf-browser.org/libs/releases/"
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
@@ -4941,7 +4941,7 @@ client applications.  It is developed as part of the NetSurf project.")
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)))
     (arguments netsurf-buildsystem-arguments)
-    (home-page "http://www.netsurf-browser.org/")
+    (home-page "https://www.netsurf-browser.org/")
     (synopsis "Utility library for NetSurf")
     (description
      "Libnsutils provides a small number of useful utility routines.  It is
@@ -4955,7 +4955,7 @@ developed as part of the NetSurf project.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+       (uri (string-append "https://download.netsurf-browser.org/libs/releases/"
                            "libnspsl-" version "-src.tar.gz"))
        (sha256
         (base32
@@ -4964,7 +4964,7 @@ developed as part of the NetSurf project.")
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)))
     (arguments netsurf-buildsystem-arguments)
-    (home-page "http://www.netsurf-browser.org/")
+    (home-page "https://www.netsurf-browser.org/")
     (synopsis "Library to generate a static Public Suffix List")
     (description
      "Libnspsl is a library to generate a static code representation of the
@@ -4978,7 +4978,7 @@ Public Suffix List.  It is developed as part of the NetSurf project.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+       (uri (string-append "https://download.netsurf-browser.org/libs/releases/"
                            "nsgenbind-" version "-src.tar.gz"))
        (sha256
         (base32
@@ -4992,7 +4992,7 @@ Public Suffix List.  It is developed as part of the NetSurf project.")
      (substitute-keyword-arguments netsurf-buildsystem-arguments
        ((#:make-flags flags)
         `(delete "COMPONENT_TYPE=lib-shared" ,flags))))
-    (home-page "http://www.netsurf-browser.org/")
+    (home-page "https://www.netsurf-browser.org/")
     (synopsis "Generate JavaScript to DOM bindings")
     (description
      "@code{nsgenbind} is a tool to generate JavaScript to DOM bindings from
@@ -5006,7 +5006,7 @@ w3c webidl files and a binding configuration file.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://download.netsurf-browser.org/netsurf/"
+       (uri (string-append "https://download.netsurf-browser.org/netsurf/"
                            "releases/source/netsurf-" version "-src.tar.gz"))
        (sha256
         (base32
@@ -5115,7 +5115,7 @@ w3c webidl files and a binding configuration file.")
                (install-file "docs/netsurf-gtk.1"
                              (string-append out "/share/man/man1/"))
                #t))))))
-    (home-page "http://www.netsurf-browser.org")
+    (home-page "https://www.netsurf-browser.org")
     (synopsis "Web browser")
     (description
      "NetSurf is a lightweight web browser that has its own layout and
