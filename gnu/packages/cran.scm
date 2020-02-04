@@ -20133,3 +20133,32 @@ estimation and the package structure.  For tutorials on how to use the CDM
 package see George and Robitzsch (2015, @url{doi:10.20982/tqmp.11.3.p189}) as
 well as Ravand and Robitzsch (2015).")
     (license license:gpl2+)))
+
+(define-public r-tam
+  (package
+    (name "r-tam")
+    (version "3.3-10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "TAM" version))
+       (sha256
+        (base32
+         "1rkjp5x6wrk1dfspp1imvfals0wvy4w1wb8a5mhfbnilc7vgnlbq"))))
+    (properties `((upstream-name . "TAM")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cdm" ,r-cdm)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)))
+    (home-page "http://www.edmeasurementsurveys.com/TAM/Tutorials/")
+    (synopsis "Test analysis modules")
+    (description
+     "This package includes tools for marginal maximum likelihood estimation
+and joint maximum likelihood estimation for unidimensional and
+multidimensional item response models.  The package functionality covers the
+Rasch model, 2PL model, 3PL model, generalized partial credit model,
+multi-faceted Rasch model, nominal item response model, structured latent
+class model, mixture distribution IRT models, and located latent class models.
+Latent regression models and plausible value imputation are also supported.")
+    (license license:gpl2+)))
