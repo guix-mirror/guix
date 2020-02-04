@@ -1568,7 +1568,7 @@ with @command{colorize} support."))))
 (define-public sbcl-cl-fad
   (package
     (name "sbcl-cl-fad")
-    (version "0.7.5")
+    (version "0.7.6")
     (source
      (origin
        (method git-fetch)
@@ -1577,7 +1577,7 @@ with @command{colorize} support."))))
              (commit (string-append "v" version))))
        (sha256
         (base32
-         "1l1qmk9z57q84bz5r04sxsksggsnd7dgkxlybzh9imz6ma7sm52m"))
+         "1gc8i82v6gks7g0lnm54r4prk2mklidv2flm5fvbr0a7rsys0vpa"))
        (file-name (string-append "cl-fad" version "-checkout"))))
     (build-system asdf-build-system/sbcl)
     (inputs
