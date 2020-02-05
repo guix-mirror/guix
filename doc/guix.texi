@@ -46,7 +46,7 @@ Copyright @copyright{} 2017, 2018 Carlo Zancanaro@*
 Copyright @copyright{} 2017 Thomas Danckaert@*
 Copyright @copyright{} 2017 humanitiesNerd@*
 Copyright @copyright{} 2017 Christopher Allan Webber@*
-Copyright @copyright{} 2017, 2018, 2019 Marius Bakke@*
+Copyright @copyright{} 2017, 2018, 2019, 2020 Marius Bakke@*
 Copyright @copyright{} 2017, 2019, 2020 Hartmut Goebel@*
 Copyright @copyright{} 2017, 2019, 2020 Maxim Cournoyer@*
 Copyright @copyright{} 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice@*
@@ -8455,6 +8455,11 @@ As an example, @var{file} might contain a package definition like this
 @lisp
 @include package-hello.scm
 @end lisp
+
+@item --manifest=@var{manifest}
+@itemx -m @var{manifest}
+Build all packages listed in the given @var{manifest}
+(@pxref{profile-manifest, @option{--manifest}}).
 
 @item --expression=@var{expr}
 @itemx -e @var{expr}

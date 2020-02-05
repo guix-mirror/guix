@@ -1,5 +1,6 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2012, 2013, 2014, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -308,6 +309,14 @@ cat > "$module_dir/gexp.scm"<<EOF
 EOF
 guix build --file="$module_dir/gexp.scm" -d
 guix build --file="$module_dir/gexp.scm" -d | grep 'gexp\.drv'
+
+# Building from a manifest file.
+cat > "$module_dir/manifest.scm"<<EOF
+(specifications->manifest '("hello" "guix"))
+EOF
+test `guix build -d --manifest="$module_dir/manifest.scm" \
+      | grep -e '-hello-' -e '-guix-' \
+      | wc -l` -eq 2
 rm "$module_dir"/*.scm
 
 # Using 'GUIX_BUILD_OPTIONS'.
