@@ -5773,8 +5773,7 @@ values of all the exported APIs match the platform that libc is compiled for.")
           "0y2mibmx7wy91s2kmb2gfb29mrqlqaxpy5wcwr8s1lwws7b9w5sc"))
         (modules '((guix build utils)))
         (snippet
-         '(begin (delete-file-recursively "libgit2") #t))))
-    (properties '((hidden? . #t)))))
+         '(begin (delete-file-recursively "libgit2") #t))))))
 
 (define-public rust-libgit2-sys-0.7
   (package
