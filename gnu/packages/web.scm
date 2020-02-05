@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Aljosha Papsch <misc@rpapsch.de>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
@@ -6806,14 +6806,13 @@ features include:
                 "0s7b5whqsmfa57prbgl66ym551kg6ly0z14h5dgrlx4lqm70y2yw"))))
     (build-system trivial-build-system)
     (arguments
-     `(#:modules ((guix build utils)
-                  (srfi srfi-1)
-                  (srfi srfi-26))
+     `(#:modules ((guix build utils))
        #:builder
        (begin
          (use-modules (guix build utils)
                       (srfi srfi-1)
                       (srfi srfi-26))
+
          (let ((source (assoc-ref %build-inputs "source"))
                (php-dir (string-append %output "/share/web/" ,name "/")))
            ;; The cache directory must not be in the store, but in a writable
