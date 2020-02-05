@@ -10432,13 +10432,13 @@ Wikipedia code samples at
 (define-public python-cleo
   (package
     (name "python-cleo")
-    (version "0.6.8")
+    (version "0.7.6")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "cleo" version))
               (sha256
                (base32
-                "06zp695hq835rkaq6irr1ds1dp2qfzyf32v60vxpd8rcnxv319l5"))))
+                "02dlc0rn43zgvw0s5v4j80bca9n1jfpwy3r78gn9qjgk0qj39kwr"))))
     (build-system python-build-system)
     (native-inputs
      `( ;; For testing
@@ -10447,6 +10447,7 @@ Wikipedia code samples at
        ("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-backpack" ,python-backpack)
+       ("python-clikit" ,python-clikit)
        ("python-pastel" ,python-pastel)
        ("python-pylev" ,python-pylev)))
     (home-page "https://github.com/sdispater/cleo")
