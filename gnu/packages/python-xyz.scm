@@ -10462,14 +10462,14 @@ docstring and colored output.")
 (define-public python-tomlkit
   (package
     (name "python-tomlkit")
-    (version "0.5.7")
+    (version "0.5.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tomlkit" version))
        (sha256
         (base32
-         "18820ga5z3if1w8dvykxrfm000akracq01ic402xrbljgbn5grn4"))))
+         "0sf2a4q61kf344hjbw8kb6za1hlccl89j9lzqw0l2zpddp0hrh9j"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
