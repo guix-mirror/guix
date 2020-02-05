@@ -7375,27 +7375,6 @@ system for OpenSSL.")
     (license (list license:asl2.0
                    license:expat))))
 
-(define-public rust-openssl-src-111
-  (package
-    (name "rust-openssl-src")
-    (version "111.6.0+1.1.1d")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "openssl-src" version))
-        (file-name (string-append name "-" version ".crate"))
-        (sha256
-         (base32
-          "172xh95hp7aygahah1940kg1dnx60c5m80cwj5hgi8x7x0fxmhmr"))))
-    (build-system cargo-build-system)
-    (home-page "https://github.com/alexcrichton/openssl-src-rs")
-    (synopsis "Source of OpenSSL for rust crates")
-    (description
-     "This package contains the source of OpenSSL and logic to build it.")
-    (properties '((hidden? . #t)))
-    (license (list license:asl2.0
-                   license:expat))))
-
 (define-public rust-openssl-sys-0.9
   (package
     (name "rust-openssl-sys")
