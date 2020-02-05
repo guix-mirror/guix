@@ -6872,8 +6872,8 @@ compression/decompression using bindings to the lzlib C library.")
   (sbcl-package->ecl-package sbcl-lzlib))
 
 (define-public sbcl-chanl
-  (let ((commit "2362b57550c2c9238cc882d03553aaa1040b7340")
-        (revision "0"))
+  (let ((commit "56e90a126c78b39bb621a01585e8d3b985238e8c")
+        (revision "1"))
     (package
       (name "sbcl-chanl")
       (version (git-version "0.4.1" revision commit))
@@ -6886,7 +6886,7 @@ compression/decompression using bindings to the lzlib C library.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0ag3wz7yrqwp0s5069wwda98z3rrqd25spg8sa8rdqghj084w28w"))))
+           "0b1cf6c12qx5cy1fw2z42jgh566rp3l8nv5qf0qqc569s7bgmrh4"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
@@ -6904,26 +6904,7 @@ threads.")
   (sbcl-package->cl-source-package sbcl-chanl))
 
 (define-public ecl-chanl
-  (let ((base (sbcl-package->ecl-package sbcl-chanl)))
-    (package
-      (inherit base)
-      (arguments
-       (substitute-keyword-arguments (package-arguments base)
-         ;; The CHANL.ACTORS package uses the :ARGUMENTS option of
-         ;; DEFINE-METHOD-COMBINATION, which is not implemented in ECL yet
-         ;; (see https://gitlab.com/embeddable-common-lisp/ecl/issues/305).
-         ;; So let's disable it for now, as it allows compiling the library
-         ;; and using the rest of it.
-         ((#:phases phases '%standard-phases)
-          `(modify-phases ,phases
-             (add-after 'unpack 'disable-chanl-actors
-               (lambda _
-                 (substitute* "chanl.asd"
-                   (("\\(:file \"actors\"\\)") ""))
-                 #t))))
-         ;; Disable the tests for now, as the SEND-SEQUENCE test seems to
-         ;; never end.
-         ((#:tests? _ #f) #f))))))
+  (sbcl-package->ecl-package sbcl-chanl))
 
 (define-public sbcl-cl-store
   (let ((commit "c787337a16ea8cf8a06227f35933a4ec774746b3")
