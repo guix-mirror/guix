@@ -23,6 +23,7 @@
 ;;; Copyright © 2020 Naga Malleswari <nagamalli@riseup.net>
 ;;; Copyright © 2020 Eric Brown <ecbrown@ericcbrown.com>
 ;;; Copyright © 2020 Peter Lo <peterloleungyau@gmail.com>
+;;; Copyright © 2020 Rafael Luque Leiva <rafael.luque@osoco.es>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -86,6 +87,32 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xorg))
+
+(define-public r-rticles
+  (package
+    (name "r-rticles")
+    (version "0.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rticles" version))
+       (sha256
+        (base32
+         "1377fib4asazhhki4aajvld0wa35vd3zjvyl3lf2hjm2qk3vyak7"))))
+    (properties `((upstream-name . "rticles")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-knitr" ,r-knitr)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("r-tinytex" ,r-tinytex)
+       ("r-xfun" ,r-xfun)
+       ("r-yaml" ,r-yaml)))
+    (home-page "https://github.com/rstudio/rticles")
+    (synopsis "Article formats for R Markdown")
+    (description
+     "This package provides a suite of custom R Markdown formats and templates
+for authoring journal articles and conference submissions.")
+    (license license:gpl3)))
 
 (define-public r-bezier
   (package
