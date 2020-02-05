@@ -455,14 +455,14 @@ over USB.")
 (define-public libmtp
   (package
     (name "libmtp")
-    (version "1.1.16")
+    (version "1.1.17")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/libmtp/libmtp/" version
                                  "/libmtp-" version ".tar.gz"))
              (sha256
               (base32
-               "185vh9bds6dcy00ycggg69g4v7m3api40zv8vrcfb3fk3vfzjs2v"))))
+               "1p3r38nvdip40ab1h4scj3mzfjkx6kd14szjqyw9r6wz5pslr8zq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
