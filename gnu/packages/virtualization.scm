@@ -115,7 +115,8 @@
              (method url-fetch)
              (uri (string-append "https://download.qemu.org/qemu-"
                                  version ".tar.xz"))
-             (patches (search-patches "qemu-CVE-2020-7039.patch"
+             (patches (search-patches "qemu-CVE-2020-1711.patch"
+                                      "qemu-CVE-2020-7039.patch"
                                       "qemu-CVE-2020-7211.patch"
                                       "qemu-fix-documentation-build-failure.patch"))
              (sha256

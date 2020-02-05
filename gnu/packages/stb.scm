@@ -101,3 +101,14 @@ decoding from file or memory.  A variety of formats are supported."))
    "stb-image-write" "1.13"
    "stb-image-write is a small library for writing image files to the
 C@tie{}@code{stdio} interface."))
+
+(define-public stb-sprintf
+  (make-stb-header-package
+   "stb-sprintf" "1.06"
+   "stb-sprintf implements fast @code{sprintf}, @code{snprintf} for C/C++."))
+
+(define-public stb-truetype
+  (make-stb-header-package
+   "stb-truetype" "1.22"
+   "stb-truetype is a library for parsing, decoding, and rasterizing
+characters from TrueType fonts."))

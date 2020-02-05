@@ -16,6 +16,7 @@
 ;;; Copyright © 2019 Jesse Gildersleve <jessejohngildersleve@protonmail.com>
 ;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -166,29 +167,27 @@ interactive development model in mind.")
   (sbcl-package->ecl-package sbcl-fiveam))
 
 (define-public sbcl-bordeaux-threads
-  (let ((commit "5dce49fbc829f4d136a734f5ef4f5d599660984f")
-        (revision "1"))
-    (package
-      (name "sbcl-bordeaux-threads")
-      (version (git-version "0.8.6" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/sionescu/bordeaux-threads.git")
-                      (commit commit)))
-                (sha256
-                 (base32 "1gkh9rz7zw57n3110ikcf4835950wr4hgp8l79id5ai6nd86x7wv"))
-                (file-name
-                 (git-file-name "bordeaux-threads" version))))
-      (inputs `(("alexandria" ,sbcl-alexandria)))
-      (native-inputs `(("fiveam" ,sbcl-fiveam)))
-      (build-system asdf-build-system/sbcl)
-      (synopsis "Portable shared-state concurrency library for Common Lisp")
-      (description "BORDEAUX-THREADS is a proposed standard for a minimal
+  (package
+    (name "sbcl-bordeaux-threads")
+    (version "0.8.7")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/sionescu/bordeaux-threads.git")
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32 "1whpfmyxp2fsw6viqj45fqgsifgr534c575bfh5vaqw5m84b6alp"))
+              (file-name
+               (git-file-name "bordeaux-threads" version))))
+    (inputs `(("alexandria" ,sbcl-alexandria)))
+    (native-inputs `(("fiveam" ,sbcl-fiveam)))
+    (build-system asdf-build-system/sbcl)
+    (synopsis "Portable shared-state concurrency library for Common Lisp")
+    (description "BORDEAUX-THREADS is a proposed standard for a minimal
 MP/Threading interface.  It is similar to the CLIM-SYS threading and lock
 support.")
-      (home-page "https://common-lisp.net/project/bordeaux-threads/")
-      (license license:x11))))
+    (home-page "https://common-lisp.net/project/bordeaux-threads/")
+    (license license:x11)))
 
 (define-public cl-bordeaux-threads
   (sbcl-package->cl-source-package sbcl-bordeaux-threads))
@@ -267,7 +266,7 @@ logical continuation of Stefil.  It focuses on interactive debugging.")
 (define-public sbcl-flexi-streams
   (package
     (name "sbcl-flexi-streams")
-    (version "1.0.16")
+    (version "1.0.18")
     (source
      (origin
        (method git-fetch)
@@ -276,7 +275,7 @@ logical continuation of Stefil.  It focuses on interactive debugging.")
              (commit (string-append "v" version))))
        (file-name (git-file-name "flexi-streams" version))
        (sha256
-        (base32 "0gvykjlmja060zqq6nn6aqxlshh6r6ijahmmgf20q0d839rwpgxc"))))
+        (base32 "0bjv7fd2acknidc5dyi3h85pn10krxv5jyxs1xg8jya2rlfv7f1j"))))
     (build-system asdf-build-system/sbcl)
     (arguments
      `(#:phases
@@ -304,7 +303,7 @@ streams which are similar to string streams.")
 (define-public sbcl-cl-ppcre
   (package
     (name "sbcl-cl-ppcre")
-    (version "2.0.11")
+    (version "2.1.1")
     (source
      (origin
        (method git-fetch)
@@ -313,7 +312,7 @@ streams which are similar to string streams.")
              (commit (string-append "v" version))))
        (file-name (git-file-name "cl-ppcre" version))
        (sha256
-        (base32 "0q3iany07vgqm144lw6pj0af2d3vsikpbkwcxr30fci3kzsq4f49"))))
+        (base32 "0dwvr29diqzcg5n6jvbk2rnd90i05l7n828hhw99khmqd0kz7xsi"))))
     (build-system asdf-build-system/sbcl)
     (native-inputs `(("flexi-streams" ,sbcl-flexi-streams)))
     (synopsis "Portable regular expression library for Common Lisp")
@@ -330,32 +329,30 @@ compatible with ANSI-compliant Common Lisp implementations.")
   (sbcl-package->ecl-package sbcl-cl-ppcre))
 
 (define sbcl-cl-unicode-base
-  (let ((revision "1")
-        (commit "9fcd06fba1ddc9e66aed2f2d6c32dc9b764f03ea"))
-    (package
-      (name "sbcl-cl-unicode-base")
-      (version (string-append "0.1.5-" revision "." (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/edicl/cl-unicode.git")
-                      (commit commit)))
-                (file-name (string-append "cl-unicode-" version "-checkout"))
-                (sha256
-                 (base32
-                  "1jicprb5b3bv57dy1kg03572gxkcaqdjhak00426s76g0plmx5ki"))))
-      (build-system asdf-build-system/sbcl)
-      (arguments
-       '(#:asd-file "cl-unicode.asd"
-         #:asd-system-name "cl-unicode/base"))
-      (inputs
-       `(("cl-ppcre" ,sbcl-cl-ppcre)))
-      (home-page "http://weitz.de/cl-unicode/")
-      (synopsis "Portable Unicode library for Common Lisp")
-      (description "CL-UNICODE is a portable Unicode library Common Lisp, which
+  (package
+    (name "sbcl-cl-unicode-base")
+    (version "0.1.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/edicl/cl-unicode.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0ykx2s9lqfl74p1px0ik3l2izd1fc9jd1b4ra68s5x34rvjy0hza"))))
+    (build-system asdf-build-system/sbcl)
+    (arguments
+     '(#:asd-file "cl-unicode.asd"
+       #:asd-system-name "cl-unicode/base"))
+    (inputs
+     `(("cl-ppcre" ,sbcl-cl-ppcre)))
+    (home-page "http://weitz.de/cl-unicode/")
+    (synopsis "Portable Unicode library for Common Lisp")
+    (description "CL-UNICODE is a portable Unicode library Common Lisp, which
 is compatible with perl.  It is pretty fast, thread-safe, and compatible with
 ANSI-compliant Common Lisp implementations.")
-      (license license:bsd-2))))
+    (license license:bsd-2)))
 
 (define-public sbcl-cl-unicode
   (package
@@ -628,6 +625,9 @@ from other CLXes around the net.")
     (inputs
      `(("sbcl-cl-ppcre" ,sbcl-cl-ppcre)
        ("sbcl-cl-unicode" ,sbcl-cl-unicode)))))
+
+(define-public ecl-cl-ppcre-unicode
+  (sbcl-package->ecl-package sbcl-cl-ppcre-unicode))
 
 ;; The slynk that users expect to install includes all of slynk's contrib
 ;; modules.  Therefore, we build the base module and all contribs first; then
@@ -1417,7 +1417,7 @@ In addition to regular Packrat / Parsing Grammar / TDPL features ESRAP supports:
 (define-public sbcl-split-sequence
   (package
     (name "sbcl-split-sequence")
-    (version "1.4.1")
+    (version "2.0.0")
     (source
      (origin
        (method git-fetch)
@@ -1426,13 +1426,11 @@ In addition to regular Packrat / Parsing Grammar / TDPL features ESRAP supports:
              (commit (string-append "v" version))))
        (sha256
         (base32
-         "0c3zp6b7fmmp93sfhq112ind4zkld49ycw68z409xpnz3gc0wpf0"))
+         "0jcpnx21hkfwqj5fvp7kc6pn1qcz9hk7g2s5x8h0349x1j2irln0"))
        (file-name (git-file-name "split-sequence" version))))
     (build-system asdf-build-system/sbcl)
-    (arguments
-     ;; TODO: Tests seem to be broken.
-     ;; https://github.com/sharplispers/split-sequence/issues/8
-     `(#:tests? #f))
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)))
     (synopsis "Member of the Common Lisp Utilities family of programs")
     (description
      "Splits sequence into a list of subsequences delimited by objects
@@ -1570,7 +1568,7 @@ with @command{colorize} support."))))
 (define-public sbcl-cl-fad
   (package
     (name "sbcl-cl-fad")
-    (version "0.7.5")
+    (version "0.7.6")
     (source
      (origin
        (method git-fetch)
@@ -1579,7 +1577,7 @@ with @command{colorize} support."))))
              (commit (string-append "v" version))))
        (sha256
         (base32
-         "1l1qmk9z57q84bz5r04sxsksggsnd7dgkxlybzh9imz6ma7sm52m"))
+         "1gc8i82v6gks7g0lnm54r4prk2mklidv2flm5fvbr0a7rsys0vpa"))
        (file-name (string-append "cl-fad" version "-checkout"))))
     (build-system asdf-build-system/sbcl)
     (inputs
@@ -1821,8 +1819,11 @@ processes that doesn't run under Emacs.  Lisp processes created by
          ("cl-fad" ,sbcl-cl-fad)
          ("ironclad" ,sbcl-ironclad)
          ("named-readtables" ,sbcl-named-readtables)
-         ("pythonic-string-reader" ,sbcl-pythonic-string-reader)
-         ("swank" ,cl-slime-swank)))
+         ("pythonic-string-reader" ,sbcl-pythonic-string-reader)))
+      (propagated-inputs
+       ;; Packages having mgl-pax as input complain that it can't find
+       ;; swank if we put it in inputs, so let's put it in propageted-inputs.
+       `(("swank" ,cl-slime-swank)))
       (synopsis "Exploratory programming environment and documentation generator")
       (description
        "PAX provides an extremely poor man's Explorable Programming
@@ -2473,7 +2474,7 @@ non-consing thread safe queues and fibonacci priority queues.")
 (define sbcl-cffi-bootstrap
   (package
     (name "sbcl-cffi-bootstrap")
-    (version "0.19.0")
+    (version "0.21.0")
     (source
      (origin
        (method git-fetch)
@@ -2482,7 +2483,7 @@ non-consing thread safe queues and fibonacci priority queues.")
              (commit (string-append "v" version))))
        (file-name (git-file-name "cffi-bootstrap" version))
        (sha256
-        (base32 "09sfgc6r7ihmbkwfpvkq5fxc7h45cabpvgbvs47i5cvnmv3k72xy"))))
+        (base32 "1qalargz9bhp850qv60ffwpdqi4xirzar4l3g6qcg8yc6xqf2cjk"))))
     (build-system asdf-build-system/sbcl)
     (inputs
      `(("libffi" ,libffi)
@@ -3177,44 +3178,43 @@ Lisp (from GBBopen project).")
 (define-public ecl-portable-threada
   (sbcl-package->ecl-package sbcl-portable-threads))
 
-(define-public sbcl-usocket-boot0
+(define sbcl-usocket-boot0
   ;; usocket's test rely on usocket-server which depends on usocket itself.
   ;; We break this cyclic dependency with -boot0 that packages usocket.
-  (let ((commit "86e7efbfe50101931edf4b67cdcfa7e221ecfde9"))
-    (package
-      (name "sbcl-usocket-boot0")
-      (version (git-version "0.7.1" "1" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/usocket/usocket/")
-               (commit commit)))
-         (file-name (git-file-name "usocket" version))
-         (sha256
-          (base32
-           "1lk6ipakrib7kdgzw44hrgmls9akp5pz4h35yynw0k5zwmmq6374"))))
-      (build-system asdf-build-system/sbcl)
-      (inputs
-       `(("split-sequence" ,sbcl-split-sequence)))
-      (arguments
-       `(#:tests? #f
-         #:asd-system-name "usocket"))
-      (home-page "https://common-lisp.net/project/usocket/")
-      (synopsis "Universal socket library for Common Lisp (server side)")
-      (description
-       "This library strives to provide a portable TCP/IP and UDP/IP socket
+  (package
+    (name "sbcl-usocket-boot0")
+    (version "0.8.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/usocket/usocket/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "usocket" version))
+       (sha256
+        (base32
+         "0x746wr2324l6bn7skqzgkzcbj5kd0zp2ck0c8rldrw0rzabg826"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("split-sequence" ,sbcl-split-sequence)))
+    (arguments
+     `(#:tests? #f
+       #:asd-system-name "usocket"))
+    (home-page "https://common-lisp.net/project/usocket/")
+    (synopsis "Universal socket library for Common Lisp (server side)")
+    (description
+     "This library strives to provide a portable TCP/IP and UDP/IP socket
 interface for as many Common Lisp implementations as possible, while keeping
 the abstraction and portability layer as thin as possible.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public sbcl-usocket-server
   (package
     (inherit sbcl-usocket-boot0)
     (name "sbcl-usocket-server")
     (inputs
-     `(("usocket" ,sbcl-usocket-boot0)
-       ("portable-threads" ,sbcl-portable-threads)))
+     `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("usocket" ,sbcl-usocket-boot0)))
     (arguments
      '(#:asd-system-name "usocket-server"))
     (synopsis "Universal socket library for Common Lisp (server side)")))
@@ -3240,7 +3240,7 @@ the abstraction and portability layer as thin as possible.")
 (define-public cl-usocket
   (sbcl-package->cl-source-package sbcl-usocket))
 
-(define-public ecl-socket
+(define-public ecl-usocket
   (sbcl-package->ecl-package sbcl-usocket))
 
 (define-public sbcl-s-xml
@@ -3663,44 +3663,44 @@ the format used by the popular compression tool bzip2.")
   (sbcl-package->cl-source-package sbcl-chipz))
 
 (define-public sbcl-drakma
-  (let ((version "2.0.4")
-        (commit "7647c0ae842ff2058624e53979c7f297760c97a7")
-        (revision "1"))
-    (package
-      (name "sbcl-drakma")
-      (version (git-version version revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/edicl/drakma.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1c4i9wakhj5pxfyyykxshdmv3180sbkrx6fcyynikmc0jd0rh84r"))))
-      (build-system asdf-build-system/sbcl)
-      (inputs
-       `(("sbcl-puri" ,sbcl-puri)
-         ("sbcl-cl-base64" ,sbcl-cl-base64)
-         ("sbcl-chunga" ,sbcl-chunga)
-         ("sbcl-flexi-streams" ,sbcl-flexi-streams)
-         ("sbcl-cl-ppcre" ,sbcl-cl-ppcre)
-         ("sbcl-chipz" ,sbcl-chipz)
-         ("sbcl-usocket" ,sbcl-usocket)
-         ("sbcl-cl+ssl" ,sbcl-cl+ssl)))
-      (native-inputs
-       `(("sbcl-fiveam" ,sbcl-fiveam)))
-      (home-page "https://edicl.github.io/drakma/")
-      (synopsis "HTTP client written in Common Lisp")
-      (description
-       "Drakma is a full-featured HTTP client implemented in Common Lisp.  It
+  (package
+    (name "sbcl-drakma")
+    (version "2.0.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/edicl/drakma.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1441idnyif9xzx3ln1p3fg36k2v9h4wasjqrzc8y52j61420qpci"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("sbcl-puri" ,sbcl-puri)
+       ("sbcl-cl-base64" ,sbcl-cl-base64)
+       ("sbcl-chunga" ,sbcl-chunga)
+       ("sbcl-flexi-streams" ,sbcl-flexi-streams)
+       ("sbcl-cl-ppcre" ,sbcl-cl-ppcre)
+       ("sbcl-chipz" ,sbcl-chipz)
+       ("sbcl-usocket" ,sbcl-usocket)
+       ("sbcl-cl+ssl" ,sbcl-cl+ssl)))
+    (native-inputs
+     `(("sbcl-fiveam" ,sbcl-fiveam)))
+    (home-page "https://edicl.github.io/drakma/")
+    (synopsis "HTTP client written in Common Lisp")
+    (description
+     "Drakma is a full-featured HTTP client implemented in Common Lisp.  It
 knows how to handle HTTP/1.1 chunking, persistent connections, re-usable
 sockets, SSL, continuable uploads, file uploads, cookies, and more.")
-      (license license:bsd-2))))
+    (license license:bsd-2)))
 
 (define-public cl-drakma
   (sbcl-package->cl-source-package sbcl-drakma))
+
+(define-public ecl-drakma
+  (sbcl-package->ecl-package sbcl-drakma))
 
 (define-public sbcl-hunchentoot
   (package
@@ -4102,35 +4102,36 @@ Lisp.")
   (sbcl-package->cl-source-package sbcl-fast-http))
 
 (define-public sbcl-static-vectors
-  (let ((commit "0681eac1f49370cde03e64b077251e8abf47d702")
-        (revision "1"))
-    (package
-     (name "sbcl-static-vectors")
-     (version (git-version "1.8.3" revision commit))
-     (source
-      (origin
+  (package
+    (name "sbcl-static-vectors")
+    (version "1.8.4")
+    (source
+     (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/sionescu/static-vectors.git")
-             (commit commit)))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "138nlsq14hv8785ycjm6jw3i6ablhq8vcwys7q09y80arcgrg6r3"))))
-     (native-inputs
-      `(("sbcl-fiveam" ,sbcl-fiveam)))
-     (inputs
-      `(("sbcl-cffi-grovel" ,sbcl-cffi-grovel)
-        ("sbcl-cffi" ,sbcl-cffi)))
-     (build-system asdf-build-system/sbcl)
-     (home-page "http://common-lisp.net/projects/iolib/")
-     (synopsis "Allocate SIMPLE-ARRAYs in static memory")
-     (description
-      "With @code{static-vectors}, you can create vectors allocated in static
+        (base32 "0qvf9z6bhwhm8n45fjwkm7j8dcb58szfvndky65cyn4lpdval7m1"))))
+    (native-inputs
+     `(("sbcl-fiveam" ,sbcl-fiveam)))
+    (inputs
+     `(("sbcl-cffi-grovel" ,sbcl-cffi-grovel)
+       ("sbcl-cffi" ,sbcl-cffi)))
+    (build-system asdf-build-system/sbcl)
+    (home-page "http://common-lisp.net/projects/iolib/")
+    (synopsis "Allocate SIMPLE-ARRAYs in static memory")
+    (description
+     "With @code{static-vectors}, you can create vectors allocated in static
 memory.")
-     (license license:expat))))
+    (license license:expat)))
 
 (define-public cl-static-vectors
   (sbcl-package->cl-source-package sbcl-static-vectors))
+
+(define-public ecl-static-vectors
+  (sbcl-package->ecl-package sbcl-static-vectors))
 
 (define-public sbcl-marshal
   (let ((commit "eff1b15f2b0af2f26f71ad6a4dd5c4beab9299ec")
@@ -5222,7 +5223,7 @@ decoding routines for IDNA, the International Domain Names in Applications.")
   (package
     (name "sbcl-swap-bytes")
     (build-system asdf-build-system/sbcl)
-    (version "1.1")
+    (version "1.2")
     (home-page "https://github.com/sionescu/swap-bytes")
     (source
      (origin
@@ -5233,14 +5234,11 @@ decoding routines for IDNA, the International Domain Names in Applications.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1qysbv0jngdfkv53y874qjhcxc4qi8ixaqq6j8bzxh5z0931wv55"))))
+         "1hw1v1lw26rifyznpnj1csphha9jgzwpiic16ni3pvs6hcsni9rz"))))
     (inputs
      `(("trivial-features" ,sbcl-trivial-features)))
     (native-inputs
      `(("fiveam" ,sbcl-fiveam)))
-    (arguments
-     ;; TODO: Tests fail, why?
-     `(#:tests? #f))
     (synopsis "Efficient endianness conversion for Common Lisp")
     (description "This Common Lisp library provides optimized byte-swapping
 primitives.  The library can change endianness of unsigned integers of length
@@ -6874,8 +6872,8 @@ compression/decompression using bindings to the lzlib C library.")
   (sbcl-package->ecl-package sbcl-lzlib))
 
 (define-public sbcl-chanl
-  (let ((commit "2362b57550c2c9238cc882d03553aaa1040b7340")
-        (revision "0"))
+  (let ((commit "56e90a126c78b39bb621a01585e8d3b985238e8c")
+        (revision "1"))
     (package
       (name "sbcl-chanl")
       (version (git-version "0.4.1" revision commit))
@@ -6888,7 +6886,7 @@ compression/decompression using bindings to the lzlib C library.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0ag3wz7yrqwp0s5069wwda98z3rrqd25spg8sa8rdqghj084w28w"))))
+           "0b1cf6c12qx5cy1fw2z42jgh566rp3l8nv5qf0qqc569s7bgmrh4"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
@@ -6906,26 +6904,7 @@ threads.")
   (sbcl-package->cl-source-package sbcl-chanl))
 
 (define-public ecl-chanl
-  (let ((base (sbcl-package->ecl-package sbcl-chanl)))
-    (package
-      (inherit base)
-      (arguments
-       (substitute-keyword-arguments (package-arguments base)
-         ;; The CHANL.ACTORS package uses the :ARGUMENTS option of
-         ;; DEFINE-METHOD-COMBINATION, which is not implemented in ECL yet
-         ;; (see https://gitlab.com/embeddable-common-lisp/ecl/issues/305).
-         ;; So let's disable it for now, as it allows compiling the library
-         ;; and using the rest of it.
-         ((#:phases phases '%standard-phases)
-          `(modify-phases ,phases
-             (add-after 'unpack 'disable-chanl-actors
-               (lambda _
-                 (substitute* "chanl.asd"
-                   (("\\(:file \"actors\"\\)") ""))
-                 #t))))
-         ;; Disable the tests for now, as the SEND-SEQUENCE test seems to
-         ;; never end.
-         ((#:tests? _ #f) #f))))))
+  (sbcl-package->ecl-package sbcl-chanl))
 
 (define-public sbcl-cl-store
   (let ((commit "c787337a16ea8cf8a06227f35933a4ec774746b3")
@@ -7435,7 +7414,7 @@ interactive development.")
          ("metabang-bind" ,sbcl-metabang-bind)
          ("named-readtables" ,sbcl-named-readtables)))
       (arguments
-       '(#:test-asd-file "graph.test.asd"))
+       '(#:test-asd-file "graph-test.asd"))
       (synopsis "Graph data structure and algorithms for Common Lisp")
       (description
        "The GRAPH Common Lisp library provides a data structures to represent
@@ -7460,7 +7439,7 @@ path, maximum flow, minimum spanning tree, etc.).")
        ("named-readtables" ,sbcl-named-readtables)))
     (arguments
      (substitute-keyword-arguments (package-arguments sbcl-graph)
-       ((#:asd-file _ "") "graph.dot.asd")
+       ((#:asd-file _ "") "graph-dot.asd")
        ((#:asd-system-name _ #f) "graph-dot")))
     (synopsis "Serialize graphs to and from DOT format")))
 
@@ -7477,7 +7456,7 @@ path, maximum flow, minimum spanning tree, etc.).")
        ("yason" ,sbcl-yason)))
     (arguments
      (substitute-keyword-arguments (package-arguments sbcl-graph)
-       ((#:asd-file _ "") "graph.json.asd")
+       ((#:asd-file _ "") "graph-json.asd")
        ((#:asd-system-name _ #f) "graph-json")))
     (synopsis "Serialize graphs to and from JSON format")))
 
@@ -10043,3 +10022,183 @@ ones.")
 
 (define-public ecl-nodgui
   (sbcl-package->ecl-package sbcl-nodgui))
+
+(define-public sbcl-salza2
+  (package
+    (name "sbcl-salza2")
+    (version "2.0.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/xach/salza2.git")
+             (commit (string-append "release-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0p38rj4gq7j5k807php7hrz7l2zyyfshv8i9yms7i8lkgg3433ki"))))
+    (build-system asdf-build-system/sbcl)
+    (synopsis "Common Lisp library for zlib, deflate and gzip compression")
+    (description
+     "Salza2 is a Common Lisp library for creating compressed data in the zlib,
+deflate, or gzip data formats, described in RFC 1950, RFC 1951, and RFC 1952,
+respectively.")
+    (home-page "https://www.xach.com/lisp/salza2/")
+    (license license:bsd-2)))
+
+(define-public cl-salza2
+  (sbcl-package->cl-source-package sbcl-salza2))
+
+(define-public ecl-salza2
+  (sbcl-package->ecl-package sbcl-salza2))
+
+(define-public sbcl-png-read
+  (let ((commit "ec29f38a689972b9f1373f13bbbcd6b05deada88")
+        (revision "1"))
+    (package
+      (name "sbcl-png-read")
+      (version (git-version "0.3.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Ramarren/png-read.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0vyczbcwskrygrf1hgrsnk0jil8skmvf1kiaalw5jps4fjrfdkw0"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("babel" ,sbcl-babel)
+         ("chipz" ,sbcl-chipz)
+         ("iterate" ,sbcl-iterate)))
+      (synopsis "PNG decoder for Common Lisp")
+      (description "This is a Common Lisp library for reading PNG images.")
+      (home-page "https://github.com/Ramarren/png-read")
+      (license license:bsd-3))))
+
+(define-public cl-png-read
+  (sbcl-package->cl-source-package sbcl-png-read))
+
+(define-public ecl-png-read
+  (sbcl-package->ecl-package sbcl-png-read))
+
+(define-public sbcl-zpng
+  (package
+    (name "sbcl-zpng")
+    (version "1.2.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/xach/zpng.git")
+             (commit (string-append "release-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0b3ag3jhl3z7kdls3ahdsdxsfhhw5qrizk769984f4wkxhb69rcm"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("salza2" ,sbcl-salza2)))
+    (synopsis "PNG encoder for Common Lisp")
+    (description "This is a Common Lisp library for creating PNG images.")
+    (home-page "https://www.xach.com/lisp/zpng/")
+    (license license:bsd-2)))
+
+(define-public cl-zpng
+  (sbcl-package->cl-source-package sbcl-zpng))
+
+(define-public ecl-zpng
+  (sbcl-package->ecl-package sbcl-zpng))
+
+(define-public sbcl-cl-qrencode
+  (package
+    (name "sbcl-cl-qrencode")
+    (version "0.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jnjcc/cl-qrencode.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1l5k131dchbf6cj8a8xqa731790p01p3qa1kdy2wa9dawy3ymkxr"))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("lisp-unit" ,sbcl-lisp-unit)))
+    (inputs
+     `(("zpng" ,sbcl-zpng)))
+    (synopsis "QR code encoder for Common Lisp")
+    (description
+     "This Common Lisp library provides function to make QR codes and to save
+them as PNG files.")
+    (home-page "https://github.com/jnjcc/cl-qrencode")
+    (license license:gpl2+)))
+
+(define-public cl-qrencode
+  (sbcl-package->cl-source-package sbcl-cl-qrencode))
+
+(define-public ecl-cl-qrencode
+  (sbcl-package->ecl-package sbcl-cl-qrencode))
+
+(define-public sbcl-hdf5-cffi
+  (let ((commit "5b5c88f191e470e4fe96b462334e3ce0806eed5c")
+        (revision "1"))
+    (package
+      (name "sbcl-hdf5-cffi")
+      (version (git-version "1.8.18" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/hdfgroup/hdf5-cffi.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0vda3075423xz83qky998lpac5b04dwfv7bwgh9jq8cs5v0zrxjf"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Common Lisp bindings for the HDF5 library")
+      (description
+       "@code{hdf5-cffi} is a CFFI wrapper for the HDF5 library.")
+      (home-page "https://github.com/hdfgroup/hdf5-cffi")
+      (license (license:non-copyleft
+                (string-append "https://github.com/HDFGroup/hdf5-cffi/raw/"
+                               commit
+                               "/LICENSE")))
+      (inputs
+       `(("cffi" ,sbcl-cffi)
+         ("cffi-grovel" ,sbcl-cffi-grovel)
+         ("hdf5" ,hdf5-1.10)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (arguments
+       `(#:asd-system-name "hdf5-cffi"
+         #:asd-file "hdf5-cffi.asd"
+         #:test-asd-file "hdf5-cffi.test.asd"
+         ;; Tests depend on hdf5-cffi.examples.asd in addition to hdf5-cffi.asd,
+         ;; I don't know if there is a way to tell asdf-build-system to load
+         ;; an additional system first, so tests are disabled.
+         #:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "src/library.lisp"
+                 (("libhdf5.so")
+                  (string-append
+                   (assoc-ref inputs "hdf5")
+                   "/lib/libhdf5.so")))))
+           (add-after 'unpack 'fix-dependencies
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "hdf5-cffi.asd"
+                 ((":depends-on \\(:cffi\\)")
+                  ":depends-on (:cffi :cffi-grovel)"))
+               (substitute* "hdf5-cffi.test.asd"
+                 ((":depends-on \\(:cffi :hdf5-cffi")
+                  ":depends-on (:cffi :cffi-grovel :hdf5-cffi"))))))))))
+
+(define-public cl-hdf5-cffi
+  (sbcl-package->cl-source-package sbcl-hdf5-cffi))
+
+(define-public ecl-hdf5-cffi
+  (sbcl-package->ecl-package sbcl-hdf5-cffi))

@@ -397,9 +397,11 @@ aliasing facilities to work just as they would on normal mail.")
      `(("cyrus-sasl" ,cyrus-sasl)
        ("gdbm" ,gdbm)
        ("gpgme" ,gpgme)
+       ("libidn2" ,libidn2)
        ("ncurses" ,ncurses)
        ("openssl" ,openssl)
-       ("perl" ,perl)))
+       ("perl" ,perl)
+       ("sqlite" ,sqlite)))
     (arguments
      `(#:configure-flags '("--enable-smtp"
                            "--enable-imap"
@@ -407,8 +409,11 @@ aliasing facilities to work just as they would on normal mail.")
                            "--enable-gpgme"
                            "--enable-hcache" ; for header caching
                            "--enable-sidebar"
+                           "--enable-autocrypt"
                            "--with-ssl"
                            "--with-sasl"
+                           "--with-sqlite3" ; required for Autocrypt
+                           "--with-idn2" ; recommended for Autocrypt
                            ;; so that mutt does not check whether the path
                            ;; exists, which it does not in the chroot
                            "--with-mailpath=/var/mail")))

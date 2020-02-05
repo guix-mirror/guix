@@ -3079,14 +3079,14 @@ Server (PLS).")
 (define-public python-language-server
   (package
     (name "python-language-server")
-    (version "0.31.6")
+    (version "0.31.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-language-server" version))
        (sha256
         (base32
-         "0cqrffd5272p2hifa35rf1h1g6dss741jmjkwa43jninifmbz0df"))))
+         "0f8rljff4h2ay9m2n9ang7axai37nzd39zd7m6c90rci5wh8cmxh"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pluggy" ,python-pluggy)
@@ -10432,13 +10432,13 @@ Wikipedia code samples at
 (define-public python-cleo
   (package
     (name "python-cleo")
-    (version "0.6.8")
+    (version "0.7.6")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "cleo" version))
               (sha256
                (base32
-                "06zp695hq835rkaq6irr1ds1dp2qfzyf32v60vxpd8rcnxv319l5"))))
+                "02dlc0rn43zgvw0s5v4j80bca9n1jfpwy3r78gn9qjgk0qj39kwr"))))
     (build-system python-build-system)
     (native-inputs
      `( ;; For testing
@@ -10447,6 +10447,7 @@ Wikipedia code samples at
        ("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-backpack" ,python-backpack)
+       ("python-clikit" ,python-clikit)
        ("python-pastel" ,python-pastel)
        ("python-pylev" ,python-pylev)))
     (home-page "https://github.com/sdispater/cleo")
@@ -10462,14 +10463,14 @@ docstring and colored output.")
 (define-public python-tomlkit
   (package
     (name "python-tomlkit")
-    (version "0.5.7")
+    (version "0.5.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tomlkit" version))
        (sha256
         (base32
-         "18820ga5z3if1w8dvykxrfm000akracq01ic402xrbljgbn5grn4"))))
+         "0sf2a4q61kf344hjbw8kb6za1hlccl89j9lzqw0l2zpddp0hrh9j"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
@@ -10529,14 +10530,14 @@ more, possibly remote, memcached servers.")
 (define-public python-clikit
   (package
     (name "python-clikit")
-    (version "0.2.4")
+    (version "0.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "clikit" version))
        (sha256
         (base32
-         "0dc8czib5f4j9px1ivcpqnmivnx2zjpc0xb00ldrhsqylks7r06n"))))
+         "10gab65pq0jdf589n33sj2513pxal2lisl4xwf1ijysdjxmpdr4a"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pastel" ,python-pastel)

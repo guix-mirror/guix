@@ -444,8 +444,30 @@ ArrayVec and ArrayString.")
      "This package provides a simple interface for querying atty.")
     (license license:expat)))
 
+(define-public rust-autocfg-1.0
+  (package
+    (name "rust-autocfg")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "autocfg" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17cv6pwb4q08s0ynpr4n8hv5299hcmhdgvdchzixfpw8y5qcgapq"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/cuviper/autocfg")
+    (synopsis
+     "Automatic cfg for Rust compiler features")
+    (description
+     "Automatic cfg for Rust compiler features.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-autocfg-0.1
   (package
+    (inherit rust-autocfg-1.0)
     (name "rust-autocfg")
     (version "0.1.7")
     (source
@@ -456,16 +478,7 @@ ArrayVec and ArrayString.")
         (sha256
          (base32
           "1chwgimpx5z7xbag7krr9d8asxfqbh683qhgl9kn3hxk2l0djj8x"))))
-    (build-system cargo-build-system)
-    (arguments '(#:skip-build? #t))
-    (home-page "https://github.com/cuviper/autocfg")
-    (synopsis "Automatic cfg for Rust compiler features")
-    (description "Rust library for build scripts to automatically configure
-code based on compiler support.  Code snippets are dynamically tested to see
-if the @code{rustc} will accept them, rather than hard-coding specific version
-support.")
-    (license (list license:asl2.0
-                   license:expat))))
+    (arguments '(#:skip-build? #t))))
 
 (define-public rust-backtrace-0.3
   (package
@@ -5167,6 +5180,29 @@ immutable interval tree.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-iso8601-0.1
+  (package
+    (name "rust-iso8601")
+    (version "0.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "iso8601" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0xy48qyfmirslaj4dy6n4g8b564jap3cjiql35fmj5vgii7ldp0i"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-clippy" ,rust-clippy-0.0)
+        ("rust-nom" ,rust-nom-1.2))))
+    (home-page "https://github.com/badboy/iso8601")
+    (synopsis "Parsing ISO8601 dates using nom")
+    (description "Parsing ISO8601 dates using nom.")
+    (license license:expat)))
+
 (define-public rust-itertools-0.8
   (package
     (name "rust-itertools")
@@ -5700,6 +5736,45 @@ allows loading dynamic libraries (also known as shared libraries) as well as use
 functions and static variables these libraries contain.")
     (license license:isc)))
 
+(define-public rust-libm-0.2
+  (package
+    (name "rust-libm")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "libm" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0akh56sh51adhagmk9l84dyrlz60gv8ri05xhr13i1b18czkpmy7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-rand" ,rust-rand-0.6))
+       #:cargo-development-inputs
+       (("rust-no-panic" ,rust-no-panic-0.1))))
+    (home-page "https://github.com/rust-lang/libm")
+    (synopsis "Libm in pure Rust")
+    (description "This package provides an implementation of libm in pure Rust.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-libm-0.1
+  (package
+    (inherit rust-libm-0.2)
+    (name "rust-libm")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "libm" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "16pc0gx4gkg0q2s1ssq8268brn14j8344623vwhadmivc4lsmivz"))))))
+
 (define-public rust-libssh2-sys-0.2
   (package
     (name "rust-libssh2-sys")
@@ -5744,6 +5819,28 @@ functions and static variables these libraries contain.")
      "This package provides native rust bindings to the @code{libssh2} library.")
     (license (list license:asl2.0
                    license:expat))))
+
+(define-public rust-locale-0.2
+  (package
+    (name "rust-locale")
+    (version "0.2.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "locale" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1z87wc7z6889x1pqlrwjw8f1crshzi15q5m102lqs8y0m69f9nsz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/rust-locale/rust-locale")
+    (synopsis "Library for basic localisation")
+    (description
+     "This package provides a library for basic localisation.")
+    (license license:expat)))
 
 (define-public rust-lock-api-0.3
   (package
@@ -6681,6 +6778,34 @@ release (fork of debug_unreachable)")
      "Rust friendly bindings to *nix APIs.")
     (license license:expat)))
 
+(define-public rust-no-panic-0.1
+  (package
+    (name "rust-no-panic")
+    (version "0.1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "no-panic" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0xan5v9ac1aklinc8aw16raq36pb4idjrl502np8gy32gfs6s751"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1.0)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-syn" ,rust-syn-1.0))
+       #:cargo-development-inputs
+       (("rust-tempfile" ,rust-tempfile-3.1))))
+    (home-page "https://github.com/dtolnay/no-panic")
+    (synopsis "Prove a function can't ever panic")
+    (description
+     "This package provides a rust attribute macro to require that the compiler
+prove a function can't ever panic.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-nodrop-0.1
   (package
     (name "rust-nodrop")
@@ -6759,6 +6884,24 @@ implementation (which is unstable / requires nightly).")
      "This package provides a byte-oriented, zero-copy, parser
 combinators library.")
     (license license:expat)))
+
+(define-public rust-nom-1.2
+  (package
+    (inherit rust-nom-4.2)
+    (name "rust-nom")
+    (version "1.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nom" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1kjh42w67z1hh1dw3jrilgqrf54jk2xcvhw4rcdm4wclzmbc5f55"))))
+    (arguments
+      ;; This is an ancient version and all inputs are optional.
+     `(#:skip-build? #t))))
 
 (define-public rust-num-complex-0.2
   (package
@@ -6862,7 +7005,7 @@ combinators library.")
 (define-public rust-num-traits-0.2
   (package
     (name "rust-num-traits")
-    (version "0.2.8")
+    (version "0.2.11")
     (source
      (origin
        (method url-fetch)
@@ -6871,13 +7014,15 @@ combinators library.")
         (string-append name "-" version ".crate"))
        (sha256
         (base32
-         "0clvrm34rrqc8p6gq5ps5fcgws3kgq5knh7nlqxf2ayarwks9abb"))))
+         "15khrlm1bra50nd48ijl1vln13m9xg4fxzghf28jp16ic5zf8ay6"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-autocfg" ,rust-autocfg-1.0)
+        ("rust-libm" ,rust-libm-0.2))))
     (home-page "https://github.com/rust-num/num-traits")
     (synopsis "Numeric traits for generic mathematics")
     (description "Numeric traits for generic mathematics.")
-    (properties '((hidden? . #t)))
-    ;; Dual licensed.
     (license (list license:asl2.0
                    license:expat))))
 
@@ -6894,7 +7039,9 @@ combinators library.")
         (sha256
          (base32
           "0c9whknf2dm74a3cqirafy6gj83a76gl56g4v3g19k6lkwz13rcj"))))
-    (build-system cargo-build-system)))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num-traits" , rust-num-traits-0.2))))))
 
 (define-public rust-numtoa-0.1
   (package
@@ -7252,6 +7399,29 @@ normally prevent moving a type that has been borrowed from.")
     (synopsis "Portable Packed SIMD vectors")
     (description "Portable Packed SIMD vectors.")
     (license (list license:asl2.0 license:expat))))
+
+(define-public rust-pad-0.1
+  (package
+    (name "rust-pad")
+    (version "0.1.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "pad" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1qy0r26r52gp034fv252mmg0s599a55h9nr4xswy04hvky49pbfj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-unicode-width" ,rust-unicode-width-0.1))))
+    (home-page "https://github.com/ogham/rust-pad")
+    (synopsis "Library for padding strings at runtime")
+    (description
+      "This package provides a library for padding strings at runtime.")
+    (license license:expat)))
 
 (define-public rust-parking-lot-0.9
   (package

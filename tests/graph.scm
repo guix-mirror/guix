@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -195,7 +195,7 @@ edges."
   (let-values (((dune bap ocaml-base)
                 (values (specification->package "dune")
                         (specification->package "bap")
-                        (specification->package "ocaml-base")))
+                        (specification->package "ocaml4.07-base")))
                ((backend nodes+edges) (make-recording-backend)))
     (run-with-store %store
       (export-graph (list dune) 'port

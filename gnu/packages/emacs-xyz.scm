@@ -6942,29 +6942,26 @@ Dust.js, React/JSX, Angularjs, ejs, etc.")
     (license license:gpl3+)))
 
 (define-public emacs-wgrep
-  ;; Tag is missing, so we use the commit directly.
-  ;; https://github.com/mhayashi1120/Emacs-wgrep/issues/64
-  (let ((commit "379afd89ebd76f63842c8589127d66096a8bb595"))
-    (package
-      (name "emacs-wgrep")
-      (version "2.3.1")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/mhayashi1120/Emacs-wgrep")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0v1qx8z1xj9qzirlycbihnkpwcklyi3a0j8lil78pmdpixdbgh47"))))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/mhayashi1120/Emacs-wgrep")
-      (synopsis "Edit a grep buffer and apply those changes to the files")
-      (description
-       "Emacs wgrep allows you to edit a grep buffer and apply those changes
+  (package
+    (name "emacs-wgrep")
+    (version "2.3.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/mhayashi1120/Emacs-wgrep")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "00cwqzb94jlq4mwgv8z7r3mn0a6mhq95z6j189kacq9g4473zh8d"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/mhayashi1120/Emacs-wgrep")
+    (synopsis "Edit a grep buffer and apply those changes to the files")
+    (description
+     "Emacs wgrep allows you to edit a grep buffer and apply those changes
 to the file buffer.  Several backends are supported beside the classic grep:
 ack, ag, helm and pt.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-helm
   (package
@@ -8577,35 +8574,35 @@ been adapted to work with mu4e.")
 (define-public emacs-yasnippet
   (package
     (name "emacs-yasnippet")
-    (version "0.13.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/joaotavora/yasnippet.git")
-                    (commit version)))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0fkkplycrw8f8r30hjjxl1wm7p2irq2ipzzc1g7cc52abaal796p"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; YASnippet expects a "snippets" subdirectory in the same
-                  ;; directory as yasnippet.el, but we don't install it
-                  ;; because it's a git submodule pointing to an external
-                  ;; repository.  Adjust `yas-snippet-dirs' to prevent
-                  ;; warnings about a missing directory.
-                  (substitute* "yasnippet.el"
-                    (("^ +'yas-installed-snippets-dir\\)\\)\n")
-                     "))\n"))
-                  #t))))
+    (version "0.14.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/joaotavora/yasnippet.git")
+             (commit version)))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0via9dzw8m5lzymg1h78xkwjssh39zr3g6ccyamlf1rjzjsyxknv"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; YASnippet expects a "snippets" subdirectory in the same
+           ;; directory as yasnippet.el, but we don't install it because it's
+           ;; a git submodule pointing to an external repository.  Adjust
+           ;; `yas-snippet-dirs' to prevent warnings about a missing
+           ;; directory.
+           (substitute* "yasnippet.el"
+             (("^ +'yas-installed-snippets-dir\\)\\)\n")
+              "))\n"))
+           #t))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
        #:test-command '("emacs" "--batch"
                         "-l" "yasnippet-tests.el"
                         "-f" "ert-run-tests-batch-and-exit")
-       ;; FIXME: one failing test
+       ;; FIXME: one failing test.
        #:phases
        (modify-phases %standard-phases
          (add-before 'check 'make-tests-writable
@@ -8615,11 +8612,10 @@ been adapted to work with mu4e.")
          (add-before 'check 'delete-rebinding-test
            (lambda _
              (emacs-batch-edit-file "yasnippet-tests.el"
-               `(progn (progn (goto-char (point-min))
-                              (re-search-forward
-                               "ert-deftest test-rebindings")
-                              (beginning-of-line)
-                              (kill-sexp))
+               `(progn (goto-char (point-min))
+                       (re-search-forward "ert-deftest test-rebindings")
+                       (beginning-of-line)
+                       (kill-sexp)
                        (basic-save-buffer)))
              #t)))))
     (home-page "https://github.com/joaotavora/yasnippet")
@@ -8630,50 +8626,40 @@ abbreviation and automatically expand it into function templates.")
     (license license:gpl3+)))
 
 (define-public emacs-yasnippet-snippets
-  (let ((commit "885050d34737e2fb36a3e7759d60c09347bd4ce0")
-        (revision "1"))
-    (package
-      (name "emacs-yasnippet-snippets")
-      (version (string-append "1-" revision "." (string-take commit 8)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/AndreaCrotti/yasnippet-snippets")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1m935zgglw0iakzrixld5rcjz3wnj84f8wy2mvc3pggjri9l0qr9"))))
-      (build-system trivial-build-system)
-      (arguments
-       `(#:modules ((ice-9 ftw)
-                    (ice-9 regex)
-                    (guix build utils))
-         #:builder
-         (begin
-           (use-modules (ice-9 ftw)
-                        (ice-9 regex)
-                        (guix build utils))
-           (with-directory-excursion (assoc-ref %build-inputs "source")
-             (for-each (lambda (dir)
-                         (copy-recursively
-                          dir
-                          (string-append %output
-                                         "/share/emacs/yasnippet-snippets/"
-                                         dir)))
-                       (scandir "." (lambda (fname)
-                                      (and (string-match "-mode$" fname)
-                                           (directory-exists? fname))))))
-           #t)))
-      (home-page "https://github.com/AndreaCrotti/yasnippet-snippets")
-      (synopsis "Collection of YASnippet snippets for many languages")
-      (description
-       "Provides Andrea Crotti's collection of YASnippet snippets.  After installation,
+  (package
+    (name "emacs-yasnippet-snippets")
+    (version "0.20")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/AndreaCrotti/yasnippet-snippets")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "095w7cdmfwmmr6426mbq15n0a5izgbmv9408m9yh1pqz5x3v3vsx"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((source (assoc-ref %build-inputs "source"))
+                (out (assoc-ref %outputs "out"))
+                (snippet-dir
+                 (string-append out "/share/emacs/yasnippet-snippets/")))
+           (with-directory-excursion source
+             (mkdir-p snippet-dir)
+             (copy-recursively "snippets" snippet-dir)))
+         #t)))
+    (home-page "https://github.com/AndreaCrotti/yasnippet-snippets")
+    (synopsis "Collection of YASnippet snippets for many languages")
+    (description
+     "Provides Andrea Crotti's collection of YASnippet snippets.  After installation,
 the snippets will be in \"~/.guix-profile/share/emacs/yasnippet-snippets/\".
 To make YASnippet aware of these snippets, add the above directory to
 @code{yas-snippet-dirs}.")
-      (license license:expat))))
+    (license license:gpl3+)))
 
 (define-public emacs-helm-c-yasnippet
   (let ((commit "65ca732b510bfc31636708aebcfe4d2d845b59b0")

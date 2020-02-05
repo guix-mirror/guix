@@ -3292,8 +3292,10 @@ $ guix build emacs --dry-run
 @end example
 
 @noindent
-This indicates that substitutes from @code{@value{SUBSTITUTE-SERVER}} are usable and
-will be downloaded, when possible, for future builds.
+The text changed from ``The following derivations would be built'' to
+``112.3 MB would be downloaded''.  This indicates that substitutes from
+@code{@value{SUBSTITUTE-SERVER}} are usable and will be downloaded, when
+possible, for future builds.
 
 @cindex substitutes, how to disable
 The substitute mechanism can be disabled globally by running
@@ -4158,7 +4160,7 @@ say, on another machine, by providing a channel specification in
       (channel
        (name 'my-personal-packages)
        (url "https://example.org/personal-packages.git")
-       (branch "dd3df5e2c8818760a8fc0bd699e55d3b69fef2bb")))
+       (commit "dd3df5e2c8818760a8fc0bd699e55d3b69fef2bb")))
 @end lisp
 
 The @command{guix describe --format=channels} command can even generate this
@@ -5057,12 +5059,21 @@ Alternatively, you can produce a pack in the Docker image format using
 the following command:
 
 @example
-guix pack -f docker guile emacs geiser
+guix pack -f docker -S /bin=bin guile guile-readline
 @end example
 
 @noindent
 The result is a tarball that can be passed to the @command{docker load}
-command.  See the
+command, followed by @code{docker run}:
+
+@example
+docker load < @var{file}
+docker run -ti guile-guile-readline /bin/guile
+@end example
+
+@noindent
+where @var{file} is the image returned by @var{guix pack}, and
+@code{guile-guile-readline} is its ``image tag''.  See the
 @uref{https://docs.docker.com/engine/reference/commandline/load/, Docker
 documentation} for more information.
 

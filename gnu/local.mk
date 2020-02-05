@@ -502,6 +502,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/tor.scm				\
   %D%/packages/tv.scm				\
   %D%/packages/uml.scm				\
+  %D%/packages/unicode.scm			\
   %D%/packages/unrtf.scm			\
   %D%/packages/upnp.scm				\
   %D%/packages/usb-modeswitch.scm		\
@@ -1349,6 +1350,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-unittest2-remove-argparse.patch	\
   %D%/packages/patches/python-waitress-fix-tests.patch		\
   %D%/packages/patches/qemu-glibc-2.27.patch 			\
+  %D%/packages/patches/qemu-CVE-2020-1711.patch			\
   %D%/packages/patches/qemu-CVE-2020-7039.patch			\
   %D%/packages/patches/qemu-CVE-2020-7211.patch			\
   %D%/packages/patches/qemu-fix-documentation-build-failure.patch	\
