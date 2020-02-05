@@ -5877,8 +5877,7 @@ functions and static variables these libraries contain.")
          '(begin (delete-file-recursively "libssh2") #t))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t ; it wants rust-openssl-src
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
         ("rust-libz-sys" ,rust-libz-sys-1.0)
         ("rust-openssl-sys" ,rust-openssl-sys-0.9)
