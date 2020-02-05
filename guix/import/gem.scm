@@ -44,7 +44,12 @@
   (version       gem-version)                     ;string
   (authors       gem-authors)                     ;string
   (licenses      gem-licenses "licenses"          ;list of strings
-                 vector->list)
+                 (lambda (licenses)
+                   ;; This is sometimes #nil (the JSON 'null' value).  Arrange
+                   ;; to always return a list.
+                   (cond ((not licenses) '())
+                         ((vector? licenses) (vector->list licenses))
+                         (else '()))))
   (info          gem-info)
   (sha256        gem-sha256 "sha"                 ;bytevector
                  base16-string->bytevector)
