@@ -4252,8 +4252,7 @@ reading and writing git repositories.")
         (base32
          "0cayf5w7wkvclvs8brbi7lyfxbdklwls9s49mpf2brl655yjwjwj"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-libgit2-sys" ,rust-libgit2-sys-0.8)
@@ -4267,7 +4266,13 @@ reading and writing git repositories.")
         ("rust-serde-derive" ,rust-serde-derive-1.0)
         ("rust-tempdir" ,rust-tempdir-0.3)
         ("rust-thread-id" ,rust-thread-id-3.3)
-        ("rust-time" ,rust-time-0.1))))))
+        ("rust-time" ,rust-time-0.1))))
+    (native-inputs
+     `(("libgit2" ,libgit2)
+       ("libssh2" ,libssh2)
+       ("openssl" ,openssl)
+       ("pkg-config" ,pkg-config)
+       ("zlib" ,zlib)))))
 
 (define-public rust-glob-0.3
   (package
