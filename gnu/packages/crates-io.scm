@@ -4213,8 +4213,7 @@ DWARF debugging format.")
          "1i0fgsr91r97hsjbgqnymkcyiyg0057m7m04116k3vmyqpvrwlbp"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-libgit2-sys" ,rust-libgit2-sys-0.10)
@@ -4229,6 +4228,12 @@ DWARF debugging format.")
         ("rust-tempfile" ,rust-tempfile-3.1)
         ("rust-thread-id" ,rust-thread-id-3.3)
         ("rust-time" ,rust-time-0.1))))
+    (native-inputs
+     `(("libgit2" ,libgit2)
+       ("libssh2" ,libssh2)
+       ("openssl" ,openssl)
+       ("pkg-config" ,pkg-config)
+       ("zlib" ,zlib)))
     (home-page "https://github.com/rust-lang/git2-rs")
     (synopsis "Rust bindings to libgit2")
     (description
@@ -4266,13 +4271,7 @@ reading and writing git repositories.")
         ("rust-serde-derive" ,rust-serde-derive-1.0)
         ("rust-tempdir" ,rust-tempdir-0.3)
         ("rust-thread-id" ,rust-thread-id-3.3)
-        ("rust-time" ,rust-time-0.1))))
-    (native-inputs
-     `(("libgit2" ,libgit2)
-       ("libssh2" ,libssh2)
-       ("openssl" ,openssl)
-       ("pkg-config" ,pkg-config)
-       ("zlib" ,zlib)))))
+        ("rust-time" ,rust-time-0.1))))))
 
 (define-public rust-glob-0.3
   (package
