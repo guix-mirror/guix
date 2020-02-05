@@ -42,6 +42,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages web)
@@ -402,3 +403,42 @@ install one or more of the following packages alongside pulseaudio-dlna:
      "pamixer is like amixer but for PulseAudio, allowing easy control of the
 volume levels of the sinks (get, set, decrease, increase, toggle mute, etc).")
     (license l:gpl3+)))
+
+(define-public pasystray
+  (package
+    (name "pasystray")
+    (version "0.7.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/christophgysin/pasystray.git")
+             (commit (string-append name "-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0xx1bm9kimgq11a359ikabdndqg5q54pn1d1dyyjnrj0s41168fk"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'remove-bootstrap.sh
+           (lambda _
+             ;; Interferes with the bootstrap phase.
+             (delete-file "bootstrap.sh")
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("avahi" ,avahi)
+       ("gtk+" ,gtk+)
+       ("libnotify" ,libnotify)
+       ("libx11" ,libx11)
+       ("pulseaudio" ,pulseaudio)))
+    (home-page "https://github.com/christophgysin/pasystray")
+    (synopsis "PulseAudio controller for the system tray")
+    (description "@command{pasystray} enables control of various
+PulseAudio server settings from the X11 system tray.  See the project
+README.md for a detailed list of features.")
+    (license l:lgpl2.1+)))
