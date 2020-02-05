@@ -466,10 +466,11 @@ over USB.")
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libgcrypt" ,libgcrypt)))
     (propagated-inputs
      ;; libmtp.pc refers to all these.
-     `(("libgcrypt" ,libgcrypt)
-       ("libusb" ,libusb)))
+     `(("libusb" ,libusb)))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-udev="
