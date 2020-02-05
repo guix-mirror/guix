@@ -96,7 +96,23 @@
                (("test!\\(leg:.*") "")
                (("test!\\(lid:.*") "")
                (("test!\\(original_g:.*") ""))
-             #t)))))
+             #t))
+         (add-after 'install 'install-extras
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (share (string-append out "/share"))
+                    (man1  (string-append share "/man/man1")))
+               (install-file "contrib/man/exa.1" man1)
+               (mkdir-p (string-append out "/etc/bash_completion.d"))
+               (mkdir-p (string-append share "/fish/vendor_completions.d"))
+               (mkdir-p (string-append share "/zsh/site-functions"))
+               (copy-file "contrib/completions.bash"
+                          (string-append out "/etc/bash_completion.d/exa"))
+               (copy-file "contrib/completions.fish"
+                          (string-append share "/fish/vendor_completions.d/exa.fish"))
+               (copy-file "contrib/completions.zsh"
+                          (string-append share "/zsh/site-functions/_exa"))
+               #t))))))
     (inputs
      `(("libgit2" ,libgit2)
        ("zlib" ,zlib)))
