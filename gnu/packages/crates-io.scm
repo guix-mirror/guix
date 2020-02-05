@@ -11588,12 +11588,15 @@ memory all at once.")
          (base32
           "1n5n86zxpgd85y0mswrp5cfdisizq2rv3la906g6ipyc03xvbwhm"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-rand" ,rust-rand-0.4)
+        ("rust-remove-dir-all" ,rust-remove-dir-all-0.5))))
     (home-page "https://github.com/rust-lang-deprecated/tempdir")
     (synopsis "Temporary directory management for Rust")
     (description
      "This package provides a library for managing a temporary directory and
 deleting all contents when it's dropped.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
