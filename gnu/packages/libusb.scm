@@ -473,7 +473,8 @@ over USB.")
      `(("libusb" ,libusb)))
     (arguments
      `(#:configure-flags
-       (list (string-append "--with-udev="
+       (list "--disable-static"
+             (string-append "--with-udev="
                             (assoc-ref %outputs "out")
                             "/lib/udev"))))
     (home-page "http://libmtp.sourceforge.net/")
