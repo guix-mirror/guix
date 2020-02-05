@@ -5,6 +5,7 @@
 ;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020 Robert Smith <robertsmith@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
 (define-module (gnu packages education)
   #:use-module (ice-9 regex)
   #:use-module (gnu packages)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
@@ -40,14 +42,18 @@
   #:use-module (gnu packages javascript)
   #:use-module (gnu packages kde)
   #:use-module (gnu packages kde-frameworks) ; extra-cmake-modules
+  #:use-module (gnu packages mp3)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
@@ -714,6 +720,103 @@ each key.  A collection of lessons are included for a wide range of different
 languages and keyboard layouts, and typing statistics are used to dynamically
 adjust the level of difficulty.")
     (license license:gpl2)))
+
+(define-public anki
+  (package
+    (name "anki")
+    ;; Later versions have dependencies on npm packages not yet in Guix.
+    (version "2.1.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://apps.ankiweb.net/downloads/archive/anki-"
+                           version "-source.tgz"))
+       (sha256
+        (base32 "1gfr51rnllkyzli73p4r51h5ypzfa3m7lic3m3rzpywmqwrxs07k"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list (string-append "PREFIX=" %output))
+       #:tests? #f                      ;no check target
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (ice-9 match))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ;no configure script
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin"))
+                   ;; List of paths to the site-packages directories of Python
+                   ;; library inputs.
+                   (site-packages
+                    (map (lambda (pyinput)
+                           (string-append
+                            (cdr pyinput)
+                            "/lib/python"
+                            ;; Calculate the python version to avoid breaking
+                            ;; with future 3.X releases.
+                            ,(version-major+minor
+                              (package-version python-wrapper))
+                            "/site-packages"))
+                         (filter (match-lambda
+                                   ((label . _)
+                                    (string-prefix? "python-" label)))
+                                 inputs)))
+                   (qtwebengineprocess
+                    (string-append (assoc-ref inputs "qtwebengine")
+                                   "/lib/qt5/libexec/QtWebEngineProcess")))
+               ;; The program fails to find the QtWebEngineProcess program, so
+               ;; we set QTWEBENGINEPROCESS_PATH to help it.  PYTHONPATH is
+               ;; wrapped to avoid declaring Python libraries as propagated
+               ;; inputs.
+               (for-each (lambda (program)
+                           (wrap-program program
+                             `("QTWEBENGINEPROCESS_PATH" =
+                               (,qtwebengineprocess))
+                             `("PYTHONPATH" = ,site-packages)))
+                         (find-files bin ".")))
+             #t)))))
+    (native-inputs
+     `(("xdg-utils" ,xdg-utils)))
+    (inputs
+     `(("lame" ,lame)
+       ("mpv" ,mpv)
+       ("python" ,python-wrapper)
+       ("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-decorator" ,python-decorator)
+       ("python-distro" ,python-distro)
+       ("python-jsonschema" ,python-jsonschema)
+       ("python-markdown" ,python-markdown)
+       ("python-pyaudio" ,python-pyaudio)
+       ;; `python-pyqtwebengine' must precede `python-pyqt' in PYTHONPATH.
+       ("python-pyqtwebengine" ,python-pyqtwebengine)
+       ("python-pyqt" ,python-pyqt)
+       ("python-requests" ,python-requests)
+       ("python-send2trash" ,python-send2trash)
+       ("python-sip" ,python-sip)
+       ;; `qtwebengine' is included in `pyqtwebengine', included here for easy
+       ;; wrapping.
+       ("qtwebengine" ,qtwebengine)))
+    (home-page "https://apps.ankiweb.net/")
+    (synopsis "Powerful, intelligent flash cards")
+    (description "Anki is a program which makes remembering things
+easy.  Because it's a lot more efficient than traditional study
+methods, you can either greatly decrease your time spent studying, or
+greatly increase the amount you learn.
+
+Anyone who needs to remember things in their daily life can benefit
+from Anki.  Since it is content-agnostic and supports images, audio,
+videos and scientific markup (via LaTeX), the possibilities are
+endless.  For example:
+@itemize
+@item Learning a language
+@item Studying for medical and law exams
+@item Memorizing people's names and faces
+@item Brushing up on geography
+@item Mastering long poems
+@item Even practicing guitar chords!
+@end itemize")
+    (license license:agpl3+)))
 
 (define-public t4k-common
   (package
