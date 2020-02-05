@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -363,7 +364,11 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
           (receive (guix-dependencies upstream-dependencies)
               (compute-inputs source-url wheel-url temp)
             (match guix-dependencies
-              ((required-inputs test-inputs)
+              ((required-inputs native-inputs)
+               (when (string-suffix? ".zip" source-url)
+                 (set! native-inputs (cons
+                                     '("unzip" ,unzip)
+                                     native-inputs)))
                (values
                 `(package
                    (name ,(python->package-name name))
@@ -371,20 +376,29 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
                    (source
                     (origin
                       (method url-fetch)
-                      ;; PyPI URL are case sensitive, but sometimes a project
-                      ;; named using mixed case has a URL using lower case, so
-                      ;; we must work around this inconsistency.  For actual
-                      ;; examples, compare the URLs of the "Deprecated" and
-                      ;; "uWSGI" PyPI packages.
-                      (uri ,(if (string-contains source-url name)
-                                `(pypi-uri ,name version)
-                                `(pypi-uri ,(string-downcase name) version)))
+                      (uri (pypi-uri
+                             ;; PyPI URL are case sensitive, but sometimes
+                             ;; a project named using mixed case has a URL
+                             ;; using lower case, so we must work around this
+                             ;; inconsistency.  For actual examples, compare
+                             ;; the URLs of the "Deprecated" and "uWSGI" PyPI
+                             ;; packages.
+                             ,(if (string-contains source-url name)
+                                  name
+                                  (string-downcase name))
+                             version
+                             ;; Some packages have been released as `.zip`
+                             ;; instead of the more common `.tar.gz`. For
+                             ;; example, see "path-and-address".
+                             ,@(if (string-suffix? ".zip" source-url)
+                                   '(".zip")
+                                   '())))
                       (sha256
                        (base32
                         ,(guix-hash-url temp)))))
                    (build-system python-build-system)
                    ,@(maybe-inputs required-inputs 'propagated-inputs)
-                   ,@(maybe-inputs test-inputs 'native-inputs)
+                   ,@(maybe-inputs native-inputs 'native-inputs)
                    (home-page ,home-page)
                    (synopsis ,synopsis)
                    (description ,description)
