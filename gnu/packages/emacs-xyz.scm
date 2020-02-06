@@ -21371,3 +21371,42 @@ sense on the @samp{Newsgroups} header, whereas mail alias expansion makes
 sense in the @samp{To} and @samp{Cc} headers).  When in the message body, this
 executes a different function (default: @code{indent-relative}).")
       (license license:gpl2+))))
+
+(define-public emacs-gnus-harvest
+  (let ((commit "feda071a87b799bd5d23cacde3ee71f0b166e75d")
+        (revision "0"))
+    (package
+      (name "emacs-gnus-harvest")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jwiegley/gnus-harvest.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "08zb7vc3v3wdxkzgi902vlc5ybfvm8fxrvm5drnwfsjj9873pbcb"))))
+      (build-system emacs-build-system)
+      (inputs
+       `(("sqlite" ,sqlite)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'build 'patch-exec-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((sqlite (assoc-ref inputs "sqlite"))
+                     (file "gnus-harvest.el"))
+                 (make-file-writable file)
+                 (emacs-substitute-variables file
+                   ("gnus-harvest-sqlite-program"
+                    (string-append sqlite "/bin/sqlite3"))))
+               #t)))))
+      (home-page "https://github.com/jwiegley/gnus-harvest")
+      (synopsis
+       "Harvest email addresses from read/written Gnus articles")
+      (description "@code{gnus-harvest} notices email address in every message
+or post you read or write, and collects them in a SQLite database, which can
+be easily and quickly queried to determine the completion list.  It optionally
+uses BBDB and Message-X.")
+      (license license:gpl3+))))
