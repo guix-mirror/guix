@@ -163,14 +163,15 @@
 (define-public emacs-geiser
   (package
     (name "emacs-geiser")
-    (version "0.10")
+    (version "0.11")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://savannah/geiser/" version
-                                 "/geiser-" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://gitlab.com/jaor/geiser/")
+                   (commit version)))
              (sha256
               (base32
-               "0pj3l7p8d60c9b4vfprnv6g5l61d74pls4b5dvd84cn4ky9mzwjv"))))
+               "0fb2h984hn7bnyiziplp7kgk29zdzc9yainsv0k1li436irlp9dd"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -183,7 +184,11 @@
                                      "geiser-autoloads.el"))
              #t)))))
     (inputs `(("guile" ,guile-2.2)))
-    (native-inputs `(("emacs" ,emacs-minimal)))
+    (native-inputs
+     `(("emacs" ,emacs-minimal)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("texinfo" ,texinfo)))
     (home-page "https://nongnu.org/geiser/")
     (synopsis "Collection of Emacs modes for Guile and Racket hacking")
     (description
