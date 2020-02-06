@@ -2068,7 +2068,13 @@ intrinsics.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "04rcpgjs6ns57vag8a3dzx26190dhbvy2l0p9n22b9p1yf64pr05"))))))
+         "04rcpgjs6ns57vag8a3dzx26190dhbvy2l0p9n22b9p1yf64pr05"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-crossbeam-epoch" ,rust-crossbeam-epoch-0.7)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.6))))))
 
 (define-public rust-crossbeam-epoch-0.8
   (package
