@@ -249,7 +249,7 @@ from the jfsutils package.  It is meant to be used in initrds.")
 (define-public disorderfs
   (package
     (name "disorderfs")
-    (version "0.5.6")
+    (version "0.5.8")
     (source
      (origin
        (method git-fetch)
@@ -259,7 +259,7 @@ from the jfsutils package.  It is meant to be used in initrds.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1zn2ydap8k9fwjl3ivgrg6l32s5p4ik6ca6j1idp7c77znlv6cpp"))))
+         "0pk9i0dycjq0wl6dp37r2hbadgpgmzbmjk2xpbjl36x4yrm4jns8"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -274,7 +274,7 @@ from the jfsutils package.  It is meant to be used in initrds.")
        #:test-target "test"
        ;; FIXME: Tests require 'run-parts' which is not in Guix yet.
        #:tests? #f))
-    (home-page "https://github.com/ReproducibleBuilds/disorderfs")
+    (home-page "https://salsa.debian.org/reproducible-builds/disorderfs")
     (synopsis "FUSE file system that introduces non-determinism")
     (description
      "An overlay FUSE file system that introduces non-determinism
