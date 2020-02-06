@@ -167,7 +167,7 @@ gitignore rules.")
 (define-public rust-cbindgen
   (package
     (name "rust-cbindgen")
-    (version "0.12.2")
+    (version "0.13.0")
     (source
       (origin
         (method url-fetch)
@@ -175,7 +175,7 @@ gitignore rules.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "13jzbmjz1bmmfr0i80hw6ar484mgabx3hbpb2ynhk0ddqi0yr58m"))))
+          "1kywaz62cglg8fv0p7mp1m946gwmrf62s8ffndd5zpf1mz21j472"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
