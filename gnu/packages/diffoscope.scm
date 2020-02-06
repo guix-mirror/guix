@@ -217,7 +217,11 @@
        "Diffoscope tries to get to the bottom of what makes files or directories
 different.  It recursively unpacks archives of many kinds and transforms
 various binary formats into more human readable forms to compare them.  It can
-compare two tarballs, ISO images, or PDFs just as easily.")
+compare two tarballs, ISO images, or PDFs just as easily.
+
+Diffoscope has many optional dependencies; @code{diffoscope
+--list-missing-tools guix} will display optional packages to
+install.")
       (license license:gpl3+))))
 
 (define-public trydiffoscope
