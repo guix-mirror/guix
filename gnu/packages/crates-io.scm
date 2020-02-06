@@ -6827,6 +6827,25 @@ pairs in insertion order.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-linked-hash-map-0.3
+  (package
+    (inherit rust-linked-hash-map-0.5)
+    (name "rust-linked-hash-map")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "linked-hash-map" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1kaf95grvfqchxn8pl0854g8ab0fzl56217hndhhhz5qqm2j09kd"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-clippy" ,rust-clippy-0.0)
+        ("rust-serde" ,rust-serde-0.8)
+        ("rust-serde-test" ,rust-serde-test-0.8))))))
+
 (define-public rust-new-debug-unreachable-1.0
   (package
     (name "rust-new-debug-unreachable")
