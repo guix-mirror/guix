@@ -1990,6 +1990,28 @@ between Julian dates and Gregorian dates.")
 (define-public python2-jdcal
   (package-with-python2 python-jdcal))
 
+(define-public python-jsondiff
+  (package
+   (name "python-jsondiff")
+   (version "1.2.0")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (pypi-uri "jsondiff" version))
+     (sha256
+      (base32
+       "00v3689175aqzdscrxpffm712ylp8jvcpqdg51ca22ni6721p51l"))))
+   (build-system python-build-system)
+   (native-inputs
+    `(("python-nose" ,python-nose)
+      ("python-nose-random" ,python-nose-random)))
+   (home-page
+    "https://github.com/fzumstein/jsondiff")
+   (synopsis "Compare JSON and JSON-like structures in Python")
+   (description "@code{jsondiff} is a Python library which lets you
+compare, diff, and patch JSON and JSON-like structures in Python.")
+   (license license:expat)))
+
 (define-public python-jsonschema
   (package
     (name "python-jsonschema")
