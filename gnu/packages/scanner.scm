@@ -131,6 +131,13 @@ package contains the library, but no drivers.")
        ((#:phases phases)
         `(modify-phases ,phases
            (delete 'disable-backends)
+           (add-after 'disable-failing-tests 'disable-failing-backend-tests
+             (lambda _
+               ;; Disable test that fails on i686:
+               ;;   <https://bugs.gnu.org/39449>
+               (substitute* "testsuite/backend/genesys/Makefile.in"
+                 ((" genesys_unit_tests\\$\\(EXEEXT\\)") ""))
+               #t))
            (add-after 'unpack 'add-backends
              (lambda _
                (substitute* "backend/dll.conf.in"
