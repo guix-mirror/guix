@@ -13671,10 +13671,16 @@ specified across Unix and Windows platforms.")
          (base32
           "07ppalpvxkf8cnqr64np422792y4z5bs9m8b4nrflh5rm17wjn4n"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-same-file" ,rust-same-file-1.0)
+        ("rust-winapi" ,rust-winapi-0.3)
+        ("rust-winapi-util" ,rust-winapi-util-0.1))
+       #:cargo-development-inputs
+       (("rust-doc-comment" ,rust-doc-comment-0.3))))
     (home-page  "https://github.com/BurntSushi/walkdir")
     (synopsis "Recursively walk a directory")
     (description "Recursively walk a directory.")
-    (properties '((hidden? . #t)))
     (license (list license:unlicense
                    license:expat))))
 
