@@ -8070,14 +8070,14 @@ programming and reproducible research.")
   (package
     (inherit emacs-org)
     (name "emacs-org-contrib")
-    (version "20200126")
+    (version "20200206")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://orgmode.org/elpa/"
                            "org-plus-contrib-" version ".tar"))
        (sha256
-        (base32 "08yik0i8ya2x5j4vsnwxdcdlcxbiq58lvy30vcbdbf0hqrd40kjv"))))
+        (base32 "1fdxh8zgjnb500wkcl0bc0fdzbsln6p044b4s4nz85wkfw0jkfs5"))))
     (arguments
      `(#:modules ((guix build emacs-build-system)
                   (guix build utils)
@@ -8094,11 +8094,11 @@ programming and reproducible research.")
                      (map basename (find-files out)))
                     (org+contrib-files
                      (map basename (find-files org)))
-                    (duplicates (lset-intersection
-                                 string=? contrib-files org+contrib-files)))
+                    (duplicates (lset-intersection string=?
+                                                   contrib-files
+                                                   org+contrib-files)))
                (with-directory-excursion
-                   (string-append
-                    out "/share/emacs/site-lisp")
+                   (string-append out "/share/emacs/site-lisp")
                  (for-each delete-file duplicates))
                #t))))))
     (propagated-inputs
