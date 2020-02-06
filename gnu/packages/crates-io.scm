@@ -13110,11 +13110,12 @@ with the Unicode character database.")
          (base32
           "1xmpmkakhhblq7dzab1kwyv925kv7fqjkjsxjspg6ix9n88makm8"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-version-check" ,rust-version-check-0.1))))
     (home-page "https://github.com/seanmonstar/unicase")
     (synopsis "Case-insensitive wrapper around strings")
     (description
      "A case-insensitive wrapper around strings.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
