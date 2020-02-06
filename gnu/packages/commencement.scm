@@ -2193,15 +2193,6 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                            char-set:letter)
                                          ,(package-name lib)))
                              (list gmp-6.0 mpfr mpc))
-                      #t)))
-                (add-before 'configure 'treat-glibc-as-system-header
-                  (lambda* (#:key inputs #:allow-other-keys)
-                    (let ((libc (assoc-ref inputs "libc")))
-                      ;; Make sure Glibc is treated as a "system header" so
-                      ;; #include_next does the right thing.
-                      (for-each (lambda (var)
-                                  (setenv var (string-append libc "/include")))
-                                '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH"))
                       #t))))))))
 
     ;; This time we want Texinfo, so we get the manual.  Add

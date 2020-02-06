@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
@@ -340,7 +340,9 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                (files '("include")))
               (search-path-specification
                (variable "CPLUS_INCLUDE_PATH")
-               (files '("include")))
+               ;; Add 'include/c++' here so that <cstdlib>'s "#include_next
+               ;; <stdlib.h>" finds GCC's <stdlib.h>, not libc's.
+               (files '("include/c++" "include")))
               (search-path-specification
                (variable "LIBRARY_PATH")
                (files '("lib" "lib64")))))
@@ -476,17 +478,7 @@ Go.  It also includes runtime support libraries for these languages.")
                                        "gcc-5.0-libvtv-runpath.patch"))))
     (inputs
      `(("isl" ,isl)
-       ,@(package-inputs gcc-4.7)))
-
-    (native-search-paths
-     ;; We have to use 'CPATH' for GCC > 5, not 'C_INCLUDE_PATH' & co., due to
-     ;; <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=70129>.
-     (list (search-path-specification
-            (variable "CPATH")
-            (files '("include")))
-           (search-path-specification
-            (variable "LIBRARY_PATH")
-            (files '("lib" "lib64")))))))
+       ,@(package-inputs gcc-4.7)))))
 
 (define-public gcc-7
   (package

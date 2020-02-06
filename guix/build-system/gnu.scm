@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -296,13 +296,19 @@ standard packages used as implicit inputs of the GNU build system."
                           `(("source" ,source))
                           '())
                     ,@native-inputs
+
+                    ;; When not cross-compiling, ensure implicit inputs come
+                    ;; last.  That way, libc headers come last, which allows
+                    ;; #include_next to work correctly; see
+                    ;; <https://bugs.gnu.org/30756>.
+                    ,@(if target '() inputs)
                     ,@(if (and target implicit-cross-inputs?)
                           (standard-cross-packages target 'host)
                           '())
                     ,@(if implicit-inputs?
                           (standard-packages)
                           '())))
-    (host-inputs inputs)
+    (host-inputs (if target inputs '()))
 
     ;; The cross-libc is really a target package, but for bootstrapping
     ;; reasons, we can't put it in 'host-inputs'.  Namely, 'cross-gcc' is a

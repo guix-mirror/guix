@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -72,6 +72,7 @@
                           '())
                     ,@`(("cmake" ,cmake))
                     ,@native-inputs
+                    ,@(if target '() inputs)
                     ,@(if target
                           ;; Use the standard cross inputs of
                           ;; 'gnu-build-system'.
@@ -79,7 +80,7 @@
                           '())
                     ;; Keep the standard inputs of 'gnu-build-system'.
                     ,@(standard-packages)))
-    (host-inputs inputs)
+    (host-inputs (if target inputs '()))
 
     ;; The cross-libc is really a target package, but for bootstrapping
     ;; reasons, we can't put it in 'host-inputs'.  Namely, 'cross-gcc' is a

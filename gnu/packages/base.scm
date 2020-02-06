@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016, 2018 Mark H Weaver <mhw@netris.org>
@@ -981,21 +981,8 @@ with the Linux kernel.")
                                 (package-name libc) "-"
                                 (package-version libc)))
            (arguments
-            (substitute-keyword-arguments
-             (ensure-keyword-arguments (package-arguments base-gcc)
-                                       '(#:implicit-inputs? #f))
-             ((#:phases phases)
-              `(modify-phases ,phases
-                 (add-before 'configure 'treat-glibc-as-system-header
-                   (lambda _
-                     (let ((libc (assoc-ref %build-inputs "libc")))
-                       ;; GCCs build processes requires that the libc
-                       ;; we're building against is on the system header
-                       ;; search path.
-                       (for-each (lambda (var)
-                                   (setenv var (string-append libc "/include")))
-                                 '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH"))
-                       #t)))))))
+            (ensure-keyword-arguments (package-arguments base-gcc)
+                                      '(#:implicit-inputs? #f)))
            (native-inputs
             `(,@(package-native-inputs base-gcc)
               ,@(append (fold alist-delete (%final-inputs) '("libc" "libc:static")))

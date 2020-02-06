@@ -1,4 +1,4 @@
-Make sure the build system honors CPATH and LIBRARY_PATH when
+Make sure the build system honors C_INCLUDE_PATH and LIBRARY_PATH when
 looking for headers and libraries.
 
 --- Python-2.7.10/setup.py	2015-10-07 18:33:18.125153186 +0200
@@ -10,7 +10,7 @@ looking for headers and libraries.
 +        # Always honor these variables.
 +        if not cross_compiling:
 +            lib_dirs += os.getenv('LIBRARY_PATH', '').split(os.pathsep)
-+            inc_dirs += os.getenv('CPATH', '').split(os.pathsep)
++            inc_dirs += os.getenv('C_INCLUDE_PATH', '').split(os.pathsep)
 +        else:
 +            lib_dirs = os.getenv('CROSS_LIBRARY_PATH', '').split(os.pathsep)
 +            inc_dirs = os.getenv('CROSS_CPATH', '').split(os.pathsep)

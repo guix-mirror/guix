@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Mark H Weaver <mhw@netris.org>
@@ -95,32 +95,11 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
     (package
       (inherit gcc)
       (outputs '("out")) ;all in one so libgcc_s is easily found
-      (native-search-paths
-       ;; Set CPLUS_INCLUDE_PATH so GCC is able to find the libc
-       ;; C++ headers.
-       (cons (search-path-specification
-              (variable "CPLUS_INCLUDE_PATH")
-              (files '("include")))
-             (package-native-search-paths gcc)))
       (inputs
        `( ;; Distinguish the name so we can refer to it below.
          ("bootstrap-libc" ,(glibc-for-bootstrap glibc))
          ("libc:static" ,(glibc-for-bootstrap glibc) "static")
-         ,@(package-inputs gcc)))
-      (arguments
-       (substitute-keyword-arguments (package-arguments gcc)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-before 'configure 'treat-glibc-as-system-header
-               (lambda* (#:key inputs #:allow-other-keys)
-                 (let ((libc (assoc-ref inputs "bootstrap-libc")))
-                   ;; GCCs build processes requires that the libc
-                   ;; we're building against is on the system header
-                   ;; search path.
-                   (for-each (lambda (var)
-                               (setenv var (string-append libc "/include")))
-                             '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH"))
-                   #t))))))))))
+         ,@(package-inputs gcc))))))
 
 (define (package-with-relocatable-glibc p)
   "Return a variant of P that uses the libc as defined by

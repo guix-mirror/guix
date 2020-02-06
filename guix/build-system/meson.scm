@@ -74,13 +74,13 @@
          (system system)
          (build-inputs `(("meson" ,meson)
                          ("ninja" ,ninja)
-                         ,@native-inputs))
-         (host-inputs `(,@(if source
-                              `(("source" ,source))
-                              '())
-                        ,@inputs
-                        ;; Keep the standard inputs of 'gnu-build-system'.
-                        ,@(standard-packages)))
+                         ,@native-inputs
+                         ,@inputs
+                         ;; Keep the standard inputs of 'gnu-build-system'.
+                         ,@(standard-packages)))
+         (host-inputs (if source
+                          `(("source" ,source))
+                          '()))
          (outputs outputs)
          (build meson-build)
          (arguments (strip-keyword-arguments private-keywords arguments)))))
