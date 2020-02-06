@@ -286,7 +286,7 @@ When RECURSIVE? is true, check out submodules as well, if any."
   (with-libgit2
    (let* ((cache-exists? (openable-repository? cache-directory))
           (repository    (if cache-exists?
-                             (repository-open (pk cache-directory))
+                             (repository-open cache-directory)
                              (clone* url cache-directory))))
      ;; Only fetch remote if it has not been cloned just before.
      (when (and cache-exists?
