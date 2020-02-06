@@ -11529,11 +11529,11 @@ and Jaro-Winkler.")
         (base32
          "1id5g6x6zihv3j7hwrw3m1jp636bg8dpi671r7zy3jvpkavb794w"))))
     (arguments
-     `(#:skip-build? #t
+     `(#:cargo-test-flags '("--release" "--all-features")
        #:cargo-inputs
        (("rust-proc-macro2" ,rust-proc-macro2-0.4)
-        ("rust-quote" ,rust-quote-1.0)
-        ("rust-unicode-xid" ,rust-unicode-xid-0.2))
+        ("rust-quote" ,rust-quote-0.6)
+        ("rust-unicode-xid" ,rust-unicode-xid-0.1))
        #:cargo-development-inputs
        (("rust-insta" ,rust-insta-0.8)
         ("rust-rayon" ,rust-rayon-1.1)
