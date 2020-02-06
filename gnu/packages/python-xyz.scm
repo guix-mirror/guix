@@ -2922,6 +2922,27 @@ for SSH and SFTP.  It has the following main usages:
 @end itemize")
     (license license:asl2.0)))
 
+(define-public python-rstr
+  (package
+   (name "python-rstr")
+   (version "2.2.6")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (pypi-uri "rstr" version))
+     (sha256
+      (base32
+       "197dw8mbq0pjjz1l6h1ksi62vgn7x55d373ch74y06744qiq5sjx"))))
+   (build-system python-build-system)
+   (home-page
+    "http://bitbucket.org/leapfrogdevelopment/rstr/overview")
+   (synopsis "Generate random strings in Python")
+   (description "This package provides a python module for generating
+random strings of various types.  It could be useful for fuzz testing,
+generating dummy data, or other applications.  It has no dependencies
+outside the standard library.")
+   (license license:bsd-3)))
+
 (define-public python-scp
   (package
     (name "python-scp")
