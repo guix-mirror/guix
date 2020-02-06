@@ -2116,6 +2116,32 @@ JSON APIs with Behave.")
 (define-public python2-rednose
   (package-with-python2 python-rednose))
 
+(define-public python-nose-random
+  (package
+    (name "python-nose-random")
+    (version "1.0.0")
+    (source
+     (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/fzumstein/nose-random")
+            (commit version)))
+      (file-name (git-file-name name version))
+      (sha256
+       (base32
+        "1dvip61r2frjv35mv6mmfjc07402z73pjbndfp3mhxyjn2zhksw2"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/fzumstein/nose-random")
+    (synopsis "Nose plugin to facilitate randomized unit testing with
+Python")
+    (description "Python nose-random is designed to facilitate
+Monte-Carlo style unit testing.  The idea is to improve testing by
+running your code against a large number of randomly generated input
+scenarios.")
+    (license license:expat)))
+
 (define-public python-nose-randomly
   (package
     (name "python-nose-randomly")
