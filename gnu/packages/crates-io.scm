@@ -10614,6 +10614,29 @@ proven statistical guarantees.")
      "Token De/Serializer for testing De/Serialize implementations.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-serde-test-0.8
+  (package
+    (inherit rust-serde-test-1.0)
+    (name "rust-serde-test")
+    (version "0.8.23")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serde-test" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1m939j7cgs7i58r6vxf0ffp3nbr8advr8p9dqa9w8zk0z2yks2qi"))))
+    (arguments
+     `(#:cargo-inputs (("rust-serde" ,rust-serde-0.8))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-Cargo-toml
+           (lambda _
+             (substitute* "Cargo.toml"
+               ((", path = \"../serde\"") ""))
+             #t)))))))
+
 (define-public rust-serde-yaml-0.8
   (package
     (name "rust-serde-yaml")
