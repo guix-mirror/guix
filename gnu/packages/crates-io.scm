@@ -14237,6 +14237,24 @@ to XDG Base Directory specification")
      "The missing YAML 1.2 parser for rust.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-yaml-rust-0.3
+  (package
+    (inherit rust-yaml-rust-0.4)
+    (name "rust-yaml-rust")
+    (version "0.3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "yaml-rust" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "14m9dzwb8fb05f4jjb4nqp49rxd9c5vcmwpv3a04d2y5iphncqz6"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-clippy" ,rust-clippy-0.0)
+        ("rust-linked-hash-map" ,rust-linked-hash-map-0.3))))))
+
 (define-public rust-zoneinfo-compiled-0.4
   (package
     (name "rust-zoneinfo-compiled")
