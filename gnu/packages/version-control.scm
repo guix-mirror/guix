@@ -1448,6 +1448,10 @@ following features:
              (substitute* "subversion/tests/libsvn_repos/repos-test.c"
                (("#!/bin/sh") (string-append "#!" (which "sh"))))
              #t))
+         (add-before 'check 'set-PARALLEL
+           (lambda _
+             (setenv "PARALLEL" (number->string (parallel-job-count)))
+             #t))
          (add-after 'install 'install-perl-bindings
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Follow the instructions from 'subversion/bindings/swig/INSTALL'.
