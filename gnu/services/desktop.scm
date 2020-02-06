@@ -1070,7 +1070,7 @@ as expected.")))
   (match-lambda
     (($ <inputattach-configuration> type device baud-rate log-file)
      (let ((args (append (if baud-rate
-                             (list "--baud-rate" (number->string baud-rate))
+                             (list "--baud" (number->string baud-rate))
                              '())
                          (list (string-append "--" type)
                                device))))
