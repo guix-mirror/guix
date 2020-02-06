@@ -513,6 +513,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                     #t)))))))
      (inputs
       `(("zlib:static" ,zlib "static")
+        ("isl:static" ,isl "static")
         ,@(package-inputs gcc)))
      (native-inputs
       (if (%current-target-system)

@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -882,6 +882,25 @@ as the 'native-search-paths' field."
               (base32
                "1kf54jib0nind1pvakblnfhimmwzm0y1llz8470ag0di5vwqwrhs"))))
     (build-system gnu-build-system)
+    (outputs '("out" "static"))
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'install 'move-static-library
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (static (assoc-ref outputs "static"))
+                             (source (string-append out "/lib/libisl.a"))
+                             (target (string-append static "/lib/libisl.a")))
+                        (mkdir-p (dirname target))
+                        (link source target)
+                        (delete-file source)
+
+                        ;; Remove reference to libisl.a from the .la file so
+                        ;; libtool looks for it in the usual locations.
+                        (substitute* (string-append out "/lib/libisl.la")
+                          (("^old_library=.*")
+                           "old_library=''\n"))
+                        #t))))))
     (inputs `(("gmp" ,gmp)))
     (home-page "http://isl.gforge.inria.fr/")
     (synopsis
