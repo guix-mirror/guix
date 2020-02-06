@@ -10452,6 +10452,24 @@ proven statistical guarantees.")
      "This package provides a generic serialization/deserialization framework.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-serde-0.8
+  (package
+    (inherit rust-serde-1.0)
+    (name "rust-serde")
+    (version "0.8.23")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serde" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1j4ajipn0sf4ya0crgcb94s848qp7mfc35n6d0q2rf8rk5skzbcx"))))
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-clippy" ,rust-clippy-0.0))
+       #:tests? #f))))
+
 ;; Circular dev dependency on bincode.
 ;; Probably not going away: https://github.com/rust-lang/cargo/issues/4242
 (define-public rust-serde-bytes-0.11
