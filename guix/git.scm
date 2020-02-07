@@ -46,7 +46,9 @@
             git-checkout
             git-checkout?
             git-checkout-url
-            git-checkout-branch))
+            git-checkout-branch
+            git-checkout-commit
+            git-checkout-recursive?))
 
 (define %repository-cache-directory
   (make-parameter (string-append (cache-directory #:ensure? #f)
