@@ -380,6 +380,55 @@ path management.  Much of the functionality is inspired by the Python
 standard libraries.")
     (license license:expat)))
 
+(define-public lua-ldoc
+  (package
+    (name "lua-ldoc")
+    (version "1.4.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/stevedonovan/LDoc.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1h0cf7bp4am54r0j8lhjs2l1c7q5vz74ba0jvw9qdbaqimls46g8"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("lua" ,lua)))
+    (propagated-inputs
+     `(("lua-penlight" ,lua-penlight)))
+    (arguments
+     `(#:tests? #f                 ;tests must run after installation.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-installation-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (lua-version ,(version-major+minor (package-version lua))))
+               (substitute* "makefile"
+                 (("LUA=.*") "#\n")
+                 (("(LUA_PREFIX=).*" _ prefix)
+                  (string-append prefix out "\n"))
+                 (("(LUA_BINDIR=).*" _ prefix)
+                  (string-append prefix out "/bin\n"))
+                 (("(LUA_SHAREDIR=).*" _ prefix)
+                  (string-append prefix out "/share/lua/" lua-version "\n"))))
+             #t))
+         (delete 'configure)
+         (add-before 'install 'create-bin-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/bin"))
+             #t)))))
+    (home-page "http://stevedonovan.github.io/ldoc/")
+    (synopsis "Lua documentation generator")
+    (description
+     "LDoc is a LuaDoc-compatible documentation generation system for
+Lua source code.  It parses the declaration and documentation comments
+in a set of Lua source files and produces a set of XHTML pages
+describing the commented declarations and functions.")
+    (license license:expat)))
+
 (define (make-lua-lgi name lua)
   (package
     (name name)
