@@ -138,7 +138,7 @@ Rust, using gimli.")
 (define-public rust-aho-corasick-0.7
   (package
     (name "rust-aho-corasick")
-    (version "0.7.6")
+    (version "0.7.8")
     (source
      (origin
        (method url-fetch)
@@ -147,11 +147,10 @@ Rust, using gimli.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0b8dh20fhdc59dhhnfi89n2bi80a8zbagzd5c122hf1vv2amxysq"))))
+         "048q5vr1qac4lf90z80lw8kcya6qmlxw857xhwxsssk832jdafkl"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs (("rust-memchr" ,rust-memchr-2.2))
+     `(#:cargo-inputs (("rust-memchr" ,rust-memchr-2.2))
        #:cargo-development-inputs
        (("rust-doc-comment" ,rust-doc-comment-0.3))))
     (home-page "https://github.com/BurntSushi/aho-corasick")
