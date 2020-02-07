@@ -511,8 +511,7 @@ features for productive professionals.")
        #:asd-system-name "next/hooks"))
     (inputs
      `(("alexandria" ,sbcl-alexandria)
-       ("serapeum" ,sbcl-serapeum)
-       ("fare-quasiquote-extras" ,cl-fare-quasiquote-extras)))
+       ("serapeum" ,sbcl-serapeum)))
     (native-inputs
      `(("trivial-features" ,sbcl-trivial-features)
        ("prove-asdf" ,sbcl-prove-asdf)))
@@ -592,7 +591,6 @@ features for productive professionals.")
          ("closer-mop" ,sbcl-closer-mop)
          ("dbus" ,cl-dbus)
          ("dexador" ,sbcl-dexador)
-         ("fare-quasiquote-extras" ,cl-fare-quasiquote-extras) ; For serapeum.  Guix bug?
          ("ironclad" ,sbcl-ironclad)
          ("local-time" ,sbcl-local-time)
          ("log4cl" ,sbcl-log4cl)
