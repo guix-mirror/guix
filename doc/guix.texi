@@ -73,6 +73,7 @@ Copyright @copyright{} 2020 Leo Prikler@*
 Copyright @copyright{} 2019, 2020 Simon Tournier@*
 Copyright @copyright{} 2020 Wiktor Żelazny@*
 Copyright @copyright{} 2020 Damien Cassou@*
+Copyright @copyright{} 2020 Jakub Kądziołka@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -2440,6 +2441,11 @@ your system includes the latest security updates (@pxref{Security Updates}).
 Note that @command{sudo guix} runs your user's @command{guix} command and
 @emph{not} root's, because @command{sudo} leaves @code{PATH} unchanged.  To
 explicitly run root's @command{guix}, type @command{sudo -i guix @dots{}}.
+
+The difference matters here, because @command{guix pull} updates
+the @command{guix} command and package definitions only for the user it is ran
+as.  This means that if you choose to use @command{guix system reconfigure} in
+root's login shell, you'll need to @command{guix pull} separately.
 @end quotation
 
 Join us on @code{#guix} on the Freenode IRC network or on
