@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019, 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -199,7 +200,7 @@ provides defaults for 80% of the use cases.")
 (define-public ripgrep
   (package
     (name "ripgrep")
-    (version "11.0.1")
+    (version "11.0.2")
     (source
      (origin
        (method url-fetch)
@@ -208,14 +209,15 @@ provides defaults for 80% of the use cases.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0bn40lz9n08llq615p4qqqbi24zbkf0appfx3zgxg34a86ga9zds"))))
+         "0vqjr96s2rs45715hzf0g0wjahig4zjyiqfijmzzg4jyh9ni80yr"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-bstr" ,rust-bstr-0.1)
+       (("rust-bstr" ,rust-bstr-0.2)
         ("rust-clap" ,rust-clap-2)
         ("rust-grep" ,rust-grep-0.2)
         ("rust-ignore" ,rust-ignore-0.4)
+        ("rust-jemallocator" ,rust-jemallocator-0.3)
         ("rust-lazy-static" ,rust-lazy-static-1.3)
         ("rust-log" ,rust-log-0.4)
         ("rust-num-cpus" ,rust-num-cpus-1.10)
@@ -223,9 +225,7 @@ provides defaults for 80% of the use cases.")
         ("rust-serde-json" ,rust-serde-json-1.0)
         ("rust-termcolor" ,rust-termcolor-1.0))
        #:cargo-development-inputs
-       (("rust-clap" ,rust-clap-2)
-        ("rust-lazy-static" ,rust-lazy-static-1.3)
-        ("rust-serde" ,rust-serde-1.0)
+       (("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0))))
     (home-page "https://github.com/BurntSushi/ripgrep")
     (synopsis "Line-oriented search tool")
