@@ -31,6 +31,7 @@
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019 Noodles! <nnoodle@chiru.no>
 ;;; Copyright © 2019 Alexandru-Sergiu Marton <brown121407@member.fsf.org>
+;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -868,89 +869,108 @@ experience.")
 (define-public awesome
   (package
     (name "awesome")
-    (version "4.2")
+    (version "4.3")
     (source
-     (origin (method url-fetch)
-             (uri (string-append
-                   "https://github.com/awesomeWM/awesome-releases/raw/"
-                   "master/awesome-" version ".tar.xz"))
-             (sha256
-              (base32
-               "0kwpbls9h1alxcmvxh5g9qb995fds5b2ngcr44w0ibazkyls2pdc"))
-             (modules '((guix build utils)
-                        (srfi srfi-19)))
-             (snippet '(begin
-                         ;; Remove non-reproducible timestamp and use the date
-                         ;; of the source file instead.
-                         (substitute* "common/version.c"
-                           (("__DATE__ \" \" __TIME__")
-                            (date->string
-                             (time-utc->date
-                              (make-time time-utc 0
-                                         (stat:mtime (stat "awesome.c"))))
-                             "\"~c\"")))
-                         #t))
-             (patches (search-patches "awesome-reproducible-png.patch"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/awesomeWM/awesome-releases/raw/master/"
+             "awesome-" version ".tar.xz"))
+       (sha256
+        (base32 "0lqpw401mkkmp9wgbvrmm45bqq2j9357l4irwdqv6l1305pls9kq"))
+       (modules '((guix build utils)
+                  (srfi srfi-19)))
+       (snippet
+        '(begin
+           ;; Remove non-reproducible timestamp and use the date of
+           ;; the source file instead.
+           (substitute* "common/version.c"
+             (("__DATE__ \" \" __TIME__")
+              (date->string
+               (time-utc->date
+                (make-time time-utc 0 (stat:mtime (stat "awesome.c"))))
+               "\"~c\"")))
+           #t))
+       (patches
+        (search-patches "awesome-reproducible-png.patch"))))
     (build-system cmake-build-system)
-    (native-inputs `(("asciidoc" ,asciidoc)
-                     ("docbook-xsl" ,docbook-xsl)
-                     ("doxygen" ,doxygen)
-                     ("gperf" ,gperf)
-                     ("imagemagick" ,imagemagick)
-                     ("libxml2" ,libxml2)         ;for XML_CATALOG_FILES
-                     ("pkg-config" ,pkg-config)
-                     ("xmlto" ,xmlto)))
-    (inputs `(("cairo" ,cairo)
-              ("dbus" ,dbus)
-              ("gdk-pixbuf" ,gdk-pixbuf)
-              ("glib" ,glib)
-              ("gobject-introspection" ,gobject-introspection)
-              ("imlib2" ,imlib2)
-              ("libev" ,libev)
-              ("libxcb" ,libxcb)
-              ("libxcursor" ,libxcursor)
-              ("libxdg-basedir" ,libxdg-basedir)
-              ("libxkbcommon" ,libxkbcommon)
-              ("lua" ,lua)
-              ("lua-lgi" ,lua-lgi)
-              ("pango" ,pango)
-              ("startup-notification" ,startup-notification)
-              ("xcb-util" ,xcb-util)
-              ("xcb-util-cursor" ,xcb-util-cursor)
-              ("xcb-util-image" ,xcb-util-image)
-              ("xcb-util-keysyms" ,xcb-util-keysyms)
-              ("xcb-util-renderutil" ,xcb-util-renderutil)
-              ("xcb-util-xrm" ,xcb-util-xrm)
-              ("xcb-util-wm" ,xcb-util-wm)))
+    (native-inputs
+     `(("asciidoc" ,asciidoc)
+       ("docbook-xsl" ,docbook-xsl)
+       ("doxygen" ,doxygen)
+       ("gperf" ,gperf)
+       ("imagemagick" ,imagemagick)
+       ("libxml2" ,libxml2)             ;for XML_CATALOG_FILES
+       ("lua-ldoc" ,lua-ldoc)
+       ("pkg-config" ,pkg-config)
+       ("xmlto" ,xmlto)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("dbus" ,dbus)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("glib" ,glib)
+       ("gobject-introspection" ,gobject-introspection)
+       ("imlib2" ,imlib2)
+       ("libev" ,libev)
+       ("libxcb" ,libxcb)
+       ("libxcursor" ,libxcursor)
+       ("libxdg-basedir" ,libxdg-basedir)
+       ("libxkbcommon" ,libxkbcommon)
+       ("lua" ,lua)
+       ("lua-lgi" ,lua-lgi)
+       ("pango" ,pango)
+       ("startup-notification" ,startup-notification)
+       ("xcb-util" ,xcb-util)
+       ("xcb-util-cursor" ,xcb-util-cursor)
+       ("xcb-util-image" ,xcb-util-image)
+       ("xcb-util-keysyms" ,xcb-util-keysyms)
+       ("xcb-util-renderutil" ,xcb-util-renderutil)
+       ("xcb-util-xrm" ,xcb-util-xrm)
+       ("xcb-util-wm" ,xcb-util-wm)))
     (arguments
-     `(;; Let compression happen in our 'compress-documentation' phase so that
-       ;; '--no-name' is used, which removes timestamps from gzip output.
-       #:configure-flags '("-DCOMPRESS_MANPAGES=off")
-
-       ;; Building awesome in its source dir is no longer supported.
+     `(#:modules ((guix build cmake-build-system)
+                  (guix build utils)
+                  (ice-9 match))
+       ;; Let compression happen in our 'compress-documentation' phase
+       ;; so that '--no-name' is used, which removes timestamps from
+       ;; gzip output.
+       #:configure-flags
+       '("-DCOMPRESS_MANPAGES=off")
+       ;; Building awesome in its source directory is no longer
+       ;; supported.
        #:out-of-source? #t
-
        #:phases
        (modify-phases %standard-phases
-         (add-before 'build 'xmlto-skip-validation
-           (lambda _
-             ;; We can't download the necessary schema, so so skip
-             ;; validation and assume they're valid.
-             (substitute* "../build/CMakeFiles/man.dir/build.make"
-               (("/xmlto")
-                (string-append "/xmlto --skip-validation")))
-             #t))
-         (add-before 'configure 'set-lua-paths
+         (add-before 'configure 'set-paths
            (lambda* (#:key inputs #:allow-other-keys)
-             ;; The build process needs to load cairo dynamically.
-             (let* ((cairo (string-append
-                             (assoc-ref inputs "cairo") "/lib" ))
-                    (lua-lgi (assoc-ref inputs "lua-lgi") ))
-               (setenv "LD_LIBRARY_PATH" cairo )
-               (setenv "LUA_PATH" (string-append lua-lgi
-                                                 "/share/lua/5.3/?.lua"))
-               (setenv "LUA_CPATH" (string-append lua-lgi
-                                                  "/lib/lua/5.3/?.so"))
+             ;; The build process needs to load Cairo dynamically.
+             (let* ((cairo (string-append (assoc-ref inputs "cairo") "/lib"))
+                    (lua-version ,(version-major+minor (package-version lua)))
+                    (lua-dependencies
+                     (filter (match-lambda
+                               ((label . _) (string-prefix? "lua-" label)))
+                             inputs))
+                    (lua-path
+                     (string-join
+                      (map (match-lambda
+                             ((_ . dir)
+                              (string-append
+                               dir "/share/lua/" lua-version "/?.lua;"
+                               dir "/share/lua/" lua-version "/?/?.lua")))
+                           lua-dependencies)
+                      ";"))
+                    (lua-cpath
+                     (string-join
+                      (map (match-lambda
+                             ((_ . dir)
+                              (string-append
+                               dir "/lib/lua/" lua-version "/?.so;"
+                               dir "/lib/lua/" lua-version "/?/?.so")))
+                           lua-dependencies)
+                      ";")))
+               (setenv "LD_LIBRARY_PATH" cairo)
+               (setenv "LUA_PATH" (string-append "?.lua;" lua-path))
+               (setenv "LUA_CPATH" lua-cpath)
                #t)))
          (replace 'check
            (lambda _
@@ -967,22 +987,23 @@ experience.")
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((awesome (assoc-ref outputs "out"))
-                    (cairo (string-append
-                             (assoc-ref inputs "cairo") "/lib" ))
-                    (lua-lgi (assoc-ref inputs "lua-lgi") ))
+                    (cairo (string-append (assoc-ref inputs "cairo") "/lib"))
+                    (lua-version ,(version-major+minor (package-version lua)))
+                    (lua-lgi (assoc-ref inputs "lua-lgi")))
                (wrap-program (string-append awesome "/bin/awesome")
+                 `("LUA_PATH" suffix
+                   (,(format #f "~a/share/lua/~a/?.lua" lua-lgi lua-version)))
+                 `("LUA_CPATH" suffix
+                   (,(format #f "~a/lib/lua/~a/?.so" lua-lgi lua-version)))
                  `("GI_TYPELIB_PATH" ":" prefix (,(getenv "GI_TYPELIB_PATH")))
-                 `("LD_LIBRARY_PATH" suffix (, cairo))
-                 `("LUA_PATH" suffix (,(string-append lua-lgi
-                                                      "/share/lua/5.3/?.lua")))
-                 `("LUA_CPATH" suffix (,(string-append
-                                          lua-lgi "/lib/lua/5.3/?.so"))))))))))
+                 `("LD_LIBRARY_PATH" suffix (,cairo)))
+               #t))))))
+    (home-page "https://awesomewm.org/")
     (synopsis "Highly configurable window manager")
     (description
      "Awesome has been designed as a framework window manager.  It is fast, small,
 dynamic and extensible using the Lua programming language.")
-    (license license:gpl2+)
-    (home-page "https://awesomewm.org/")))
+    (license license:gpl2+)))
 
 (define-public menumaker
   (package
