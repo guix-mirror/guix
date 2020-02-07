@@ -9642,7 +9642,7 @@ functionality.")
 (define-public rust-regex-1.3
   (package
     (name "rust-regex")
-    (version "1.3.3")
+    (version "1.3.4")
     (source
      (origin
        (method url-fetch)
@@ -9651,11 +9651,10 @@ functionality.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "11syqmfvbsah805z6ih8vxf8p6jssdsz1gjsjqcwprz484cqql5m"))))
+         "1a1mh9mgr8jipnxdaykla6xlw4a6kjn2bzkq3cifx8xy4ivzjb1j"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-aho-corasick" ,rust-aho-corasick-0.7)
         ("rust-memchr" ,rust-memchr-2.2)
         ("rust-regex-syntax" ,rust-regex-syntax-0.6)
