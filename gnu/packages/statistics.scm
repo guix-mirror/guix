@@ -5823,7 +5823,7 @@ Java package that provides routines for various statistical distributions.")
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     (let ((base-directory "/share/emacs/site-lisp/guix.d/ess"))
+     (let ((base-directory "/share/emacs/site-lisp"))
        `(#:make-flags (list (string-append "PREFIX=" %output)
                             (string-append "ETCDIR=" %output "/"
                                            ,base-directory "/etc")
