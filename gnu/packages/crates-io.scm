@@ -8692,7 +8692,8 @@ to write.")
          (base32
           "1qgqq48jymp5h4y082aanf25hrw6bpb678xh3zw993qfhxmkpqkc"))))
     (arguments
-     `(#:cargo-inputs (("rust-proc-macro2" ,rust-proc-macro2-0.4))))))
+     `(#:cargo-inputs (("rust-proc-macro2" ,rust-proc-macro2-0.4))))
+    (properties '())))
 
 (define-public rust-rand-0.7
   (package
