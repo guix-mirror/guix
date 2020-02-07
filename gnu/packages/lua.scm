@@ -35,6 +35,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages tls)
@@ -338,6 +339,46 @@ secure session between the peers.")
 
 (define-public lua5.2-sec
   (make-lua-sec "lua5.2-sec" lua-5.2))
+
+(define-public lua-penlight
+  (package
+    (name "lua-penlight")
+    (version "1.7.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Tieske/Penlight.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0qc2d1riyr4b5a0gnsmdw2lz5pw65s4ac60hc34w3mmk9l6yg6nl"))))
+    (build-system trivial-build-system)
+    (inputs
+     `(("lua" ,lua)))
+    (propagated-inputs
+     `(("lua-filesystem" ,lua-filesystem)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((source (assoc-ref %build-inputs "source"))
+                (lua-version ,(version-major+minor (package-version lua)))
+                (destination (string-append (assoc-ref %outputs "out")
+                                            "/share/lua/" lua-version)))
+           (mkdir-p destination)
+           (with-directory-excursion source
+             (copy-recursively "lua/" destination)))
+         #t)))
+    (home-page "http://tieske.github.io/Penlight/")
+    (synopsis "Collection of general purpose libraries for the Lua language")
+    (description "Penlight is a set of pure Lua libraries focusing on
+input data handling (such as reading configuration files), functional
+programming (such as map, reduce, placeholder expressions,etc), and OS
+path management.  Much of the functionality is inspired by the Python
+standard libraries.")
+    (license license:expat)))
 
 (define (make-lua-lgi name lua)
   (package
