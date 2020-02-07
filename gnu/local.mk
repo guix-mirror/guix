@@ -864,6 +864,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/emacs-magit-log-format-author-margin.patch	\
   %D%/packages/patches/emacs-scheme-complete-scheme-r5rs-info.patch	\
   %D%/packages/patches/emacs-source-date-epoch.patch		\
+  %D%/packages/patches/emacs-telega-test-env.patch		\
   %D%/packages/patches/emacs-undohist-ignored.patch	\
   %D%/packages/patches/emacs-wordnut-require-adaptive-wrap.patch	\
   %D%/packages/patches/emacs-zones-called-interactively.patch	\

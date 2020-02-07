@@ -21376,6 +21376,7 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
          (sha256
           (base32
            "0mv6i80958d9crzspzik5xh5g8326115bvg2frgv0dp9p6rm86m3"))
+         (patches (search-patches "emacs-telega-test-env.patch"))
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
