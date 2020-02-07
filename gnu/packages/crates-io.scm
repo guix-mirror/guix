@@ -8467,8 +8467,7 @@ in terms of the upstream unstable API.")
          (base32
           "0nd71fl24sys066jrha6j7i34nfkjv44yzw8yww9742wmc8j0gfg"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-unicode-xid" ,rust-unicode-xid-0.1))
        #:cargo-development-inputs
        (("rust-quote" ,rust-quote-0.6))))))
