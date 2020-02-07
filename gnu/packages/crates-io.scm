@@ -4561,7 +4561,7 @@ standard printing of search results, similar to grep itself.")
 (define-public rust-grep-regex-0.1
   (package
     (name "rust-grep-regex")
-    (version "0.1.3")
+    (version "0.1.4")
     (source
      (origin
        (method url-fetch)
@@ -4570,11 +4570,10 @@ standard printing of search results, similar to grep itself.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1lbb8837gzy25n706mnidaps4jl63ym679zraj8nfy5g02zbz549"))))
+         "090k1sbn4jq680dmgp1jyqs7f9dzn198k0806kc8f40jcjazd88n"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-aho-corasick" ,rust-aho-corasick-0.7)
         ("rust-grep-matcher" ,rust-grep-matcher-0.1)
         ("rust-log" ,rust-log-0.4)
