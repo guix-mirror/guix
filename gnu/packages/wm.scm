@@ -948,9 +948,9 @@ experience.")
                     (lua-lgi (assoc-ref inputs "lua-lgi") ))
                (setenv "LD_LIBRARY_PATH" cairo )
                (setenv "LUA_PATH" (string-append lua-lgi
-                                                 "/share/lua/5.2/?.lua"))
+                                                 "/share/lua/5.3/?.lua"))
                (setenv "LUA_CPATH" (string-append lua-lgi
-                                                  "/lib/lua/5.2/?.so"))
+                                                  "/lib/lua/5.3/?.so"))
                #t)))
          (replace 'check
            (lambda _
@@ -974,9 +974,9 @@ experience.")
                  `("GI_TYPELIB_PATH" ":" prefix (,(getenv "GI_TYPELIB_PATH")))
                  `("LD_LIBRARY_PATH" suffix (, cairo))
                  `("LUA_PATH" suffix (,(string-append lua-lgi
-                                                      "/share/lua/5.2/?.lua")))
+                                                      "/share/lua/5.3/?.lua")))
                  `("LUA_CPATH" suffix (,(string-append
-                                          lua-lgi "/lib/lua/5.2/?.so"))))))))))
+                                          lua-lgi "/lib/lua/5.3/?.so"))))))))))
     (synopsis "Highly configurable window manager")
     (description
      "Awesome has been designed as a framework window manager.  It is fast, small,

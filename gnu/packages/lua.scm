@@ -10,6 +10,7 @@
 ;;; Copyright © 2016 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
+;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -338,40 +339,41 @@ secure session between the peers.")
 (define-public lua5.2-sec
   (make-lua-sec "lua5.2-sec" lua-5.2))
 
-(define-public lua-lgi
+(define (make-lua-lgi name lua)
   (package
-    (name "lua-lgi")
+    (name name)
     (version "0.9.2")
     (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://github.com/pavouk/lgi")
-               (commit version)))
-        (file-name (git-file-name name version))
-        (sha256
-         (base32
-          "03rbydnj411xpjvwsyvhwy4plm96481d7jax544mvk7apd8sd5jj"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pavouk/lgi")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "03rbydnj411xpjvwsyvhwy4plm96481d7jax544mvk7apd8sd5jj"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" (assoc-ref %outputs "out")))
+     `(#:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure) ; no configure script
+         (delete 'configure)            ; no configure script
          (add-before 'build 'set-env
            (lambda* (#:key inputs #:allow-other-keys)
-             ;; we need to load cairo dynamically
-             (let* ((cairo (string-append
-                             (assoc-ref inputs "cairo") "/lib" )))
+             ;; We need to load cairo dynamically.
+             (let* ((cairo (string-append (assoc-ref inputs "cairo") "/lib")))
                (setenv "LD_LIBRARY_PATH" cairo)
                #t)))
          (add-before 'build 'set-lua-version
            (lambda _
-             ;; lua version and therefore install directories are hardcoded
-             ;; FIXME: This breaks when we update lua to >=5.3
+             ;; Lua version and therefore install directories are hardcoded.
              (substitute* "./lgi/Makefile"
-               (("LUA_VERSION=5.1") "LUA_VERSION=5.2"))
+               (("LUA_VERSION=5.1")
+                (format #f
+                        "LUA_VERSION=~a"
+                        ,(version-major+minor (package-version lua)))))
              #t))
          (add-before 'check 'skip-test-gtk
            (lambda _
@@ -392,25 +394,34 @@ secure session between the peers.")
                              (assoc-ref inputs "xorg-server")))
              (setenv "DISPLAY" ":1")
              #t)))))
-    (inputs
-     `(("gobject-introspection" ,gobject-introspection)
-       ("glib" ,glib)
-       ("pango" ,pango)
-       ("gtk" ,gtk+-2)
-       ("lua" ,lua)
-       ("cairo" ,cairo)
-       ("libffi" ,libffi)
-       ("xorg-server" ,xorg-server)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("dbus" ,dbus)))                          ;tests use 'dbus-run-session'
+     `(("dbus" ,dbus)                   ;tests use 'dbus-run-session'
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("glib" ,glib)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk" ,gtk+-2)
+       ("libffi" ,libffi)
+       ("lua" ,lua)
+       ("pango" ,pango)
+       ("xorg-server" ,xorg-server)))
     (home-page "https://github.com/pavouk/lgi/")
     (synopsis "Lua bridge to GObject based libraries")
     (description
-     "LGI is gobject-introspection based dynamic Lua binding to GObject
-based libraries.  It allows using GObject-based libraries directly from Lua.
+     "LGI is gobject-introspection based dynamic Lua binding to GObject based
+libraries.  It allows using GObject-based libraries directly from Lua.
 Notable examples are GTK+, GStreamer and Webkit.")
     (license license:expat)))
+
+(define-public lua-lgi
+  (make-lua-lgi "lua-lgi" lua))
+
+(define-public lua5.1-lgi
+  (make-lua-lgi "lua5.1-lgi" lua-5.1))
+
+(define-public lua5.2-lgi
+  (make-lua-lgi "lua5.2-lgi" lua-5.2))
 
 (define (make-lua-lpeg name lua)
   (package
