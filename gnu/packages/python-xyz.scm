@@ -15236,7 +15236,7 @@ working with iterables.")
                (base32
                 "1r12cm6mcdwdzz7d47a6g4l437xsvapdlgyhqay3i2nrlv03da9q"))))
     (arguments
-     `(#:python ,python2-minimal))
+     `(#:python ,python-2))
     (propagated-inputs
      `(("python2-six" ,python2-six-bootstrap)))))
 
