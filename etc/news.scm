@@ -1,6 +1,7 @@
 ;; GNU Guix news, for use by 'guix pull'.
 ;;
 ;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;
 ;; Copying and distribution of this file, with or without modification, are
 ;; permitted in any medium without royalty provided the copyright notice and
@@ -8,6 +9,14 @@
 
 (channel-news
  (version 0)
+
+ (entry (commit "e3e1a7ba08af2d58c47264c543617e499c239444")
+        (title (en "@command{guix pull} now supports SSH authenticated
+repositories"))
+        (body (en "The @command{guix pull} command now supports SSH
+authenticated repositories as argument of @option{--url} and in custom
+channels definitions.  The authentication requires that an @command{ssh-agent}
+is running.")))
 
  (entry (commit "8234fe653e61d0090138cbd4c48d877568355439")
         (title (en "Guix now runs on Guile 3.0")
