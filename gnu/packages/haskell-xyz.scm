@@ -8166,6 +8166,39 @@ easily work with command-line options.")
 command line options in Haskell.")
     (license license:bsd-3)))
 
+(define-public ghc-emojis
+  (package
+    (name "ghc-emojis")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/emojis/"
+             "emojis-" version ".tar.gz"))
+       (sha256
+        (base32 "1c6zkj9gmk1y90gbdrn50hyp7mw1mggzhnr2khqd728ryipw60ss"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)))
+    (home-page "https://github.com/jgm/emojis#readme")
+    (synopsis "Conversion between emoji characters and their names.")
+    (description
+     "This package provides functions for converting emoji names to emoji
+characters and vice versa.
+
+How does it differ from the @code{emoji} package?
+@itemize
+@item It supports a fuller range of emojis, including all those supported by
+GitHub
+@item It supports lookup of emoji aliases from emoji
+@item It uses Text rather than String
+@item It has a lighter dependency footprint: in particular, it does not
+require aeson
+@item It does not require TemplateHaskell
+@end itemize")
+    (license license:bsd-3)))
+
 (define-public ghc-doclayout
   (package
     (name "ghc-doclayout")
