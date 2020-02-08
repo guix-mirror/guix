@@ -172,6 +172,7 @@ MODULES =					\
   guix/build/git.scm				\
   guix/build/hg.scm				\
   guix/build/glib-or-gtk-build-system.scm	\
+  guix/build/gnu-bootstrap.scm			\
   guix/build/gnu-build-system.scm		\
   guix/build/gnu-dist.scm			\
   guix/build/guile-build-system.scm		\
