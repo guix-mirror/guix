@@ -8166,6 +8166,29 @@ easily work with command-line options.")
 command line options in Haskell.")
     (license license:bsd-3)))
 
+(define-public ghc-jira-wiki-markup
+  (package
+    (name "ghc-jira-wiki-markup")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/jira-wiki-markup/"
+             "jira-wiki-markup-" version ".tar.gz"))
+       (sha256
+        (base32 "1sl2jjcsqg61si33mxjwpf8zdn56kbbgcwqqqzbgifx2qbv4wmf8"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+    (home-page "https://github.com/tarleb/jira-wiki-markup")
+    (synopsis "Handle Jira wiki markup")
+    (description
+     "Parse jira wiki text into an abstract syntax tree for easy transformation
+to other formats.")
+    (license license:expat)))
+
 (define-public ghc-emojis
   (package
     (name "ghc-emojis")
