@@ -1813,8 +1813,8 @@ ac_cv_c_float_format='IEEE (little-endian)'
     ("sed" ,sed-mesboot)
     ("tar" ,tar-mesboot)
     ,@(fold alist-delete (%boot-mesboot0-inputs)
-            '("bash" "bash" "binutils" "coreutils" "gash" "gawk" "grep " "guile"
-              "make" "sed" "tar"))))
+            '("bash" "binutils" "bootar" "coreutils" "gash"
+              "gawk" "grep" "guile" "make" "sed" "tar"))))
 
 (define gmp-boot
   (package
