@@ -5415,7 +5415,8 @@ primitives to an @code{io::Write}.")
        (file-name (string-append name "-" version ".crate"))
        (sha256
         (base32
-         "18g7p2hrb3dk84z3frfgmszfc9hjb4ps9vp99qlb1kmf9gm8hc5f"))))))
+         "18g7p2hrb3dk84z3frfgmszfc9hjb4ps9vp99qlb1kmf9gm8hc5f"))))
+    (arguments '())))
 
 (define-public rust-jobserver-0.1
   (package
