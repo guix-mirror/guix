@@ -1987,6 +1987,27 @@ filters, new key bindings and faces.  It can be enabled by
 @code{tablist-mode} or @code{tablist-minor-mode} commands.")
     (license license:gpl3+)))
 
+(define-public emacs-djvu
+  (package
+    (name "emacs-djvu")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "djvu-" version ".el"))
+       (sha256
+        (base32 "0njgyx09q225hliacsnjk8wallg5i6xkz6bj501pb05nwqfbvfk7"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/djvu.html")
+    (synopsis "Edit and view Djvu files via djvused")
+    (description
+     "This package is a front end for the command-line program djvused from
+DjVuLibre, see @url{http://djvu.sourceforge.net/}.  It assumes you have the
+programs @command{djvused}, @command{djview}, @command{ddjvu}, and
+@command{djvm} installed.")
+    (license license:gpl3+)))
+
 (define-public emacs-pdf-tools
   (package
     (name "emacs-pdf-tools")
