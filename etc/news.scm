@@ -70,7 +70,7 @@ default), @command{guix challenge} automatically downloads binaries and
 reports the list of differing files; @option{--diff=diffoscope} instructs it
 to pass them to @command{diffoscope}, which simplifies the comparison process.
 Run @command{info \"(guix) Invoking guix challenge\"}, for more info.")
-              (fr "La command @command{uix challenge} qui compare les binaires
+              (fr "La commande @command{guix challenge} qui compare les binaires
 fournis par différents serveurs de substituts aux contsructions locales a une
 nouvelle option @option{--diff}.  Avec @option{--diff=simple} (par défaut),
 @command{guix challenge} télécharge automatiquement les binaires et rapporte
