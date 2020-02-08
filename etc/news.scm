@@ -12,11 +12,17 @@
 
  (entry (commit "e3e1a7ba08af2d58c47264c543617e499c239444")
         (title (en "@command{guix pull} now supports SSH authenticated
-repositories"))
+repositories")
+               (de "@command{guix pull} unterstützt nun SSH-authentifizierte
+Repositorys"))
         (body (en "The @command{guix pull} command now supports SSH
 authenticated repositories as argument of @option{--url} and in custom
 channels definitions.  The authentication requires that an @command{ssh-agent}
-is running.")))
+is running.")
+              (de "Der Befehl @command{guix pull} unterstützt nun über SSH
+authentifizierte Repositorys als Argument von @option{--url} und in
+selbstgeschriebenen Kanaldefinitionen. Zur Authentisierung muss ein
+@command{ssh-agent} laufen.")))
 
  (entry (commit "8234fe653e61d0090138cbd4c48d877568355439")
         (title (en "Guix now runs on Guile 3.0")
