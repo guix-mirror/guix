@@ -8222,6 +8222,31 @@ require aeson
 @end itemize")
     (license license:bsd-3)))
 
+(define-public ghc-text-conversions
+  (package
+    (name "ghc-text-conversions")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/text-conversions/"
+             "text-conversions-" version ".tar.gz"))
+       (sha256
+        (base32 "089c56vdj9xysqfr1hnvbnrghlg83q6w10xk02gflpsidcpvwmhp"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-base16-bytestring" ,ghc-base16-bytestring)
+       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-errors" ,ghc-errors)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-hspec-discover" ,ghc-hspec-discover)))
+    (home-page "https://github.com/cjdev/text-conversions#readme")
+    (synopsis "Safe conversions between textual types")
+    (description "Safe conversions between textual types")
+    (license license:isc)))
+
 (define-public ghc-doclayout
   (package
     (name "ghc-doclayout")
