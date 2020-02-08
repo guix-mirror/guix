@@ -5627,8 +5627,7 @@ language tags.")
           "0in6ikhw8mgl33wjv6q6xfrb5b9jr16q8ygjy803fay4zcisvaz2"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs (("rust-spin" ,rust-spin-0.5))
+     `(#:cargo-inputs (("rust-spin" ,rust-spin-0.5))
        #:cargo-development-inputs
        (("rust-doc-comment" ,rust-doc-comment-0.3))))
     (home-page  "https://github.com/rust-lang-nursery/lazy-static.rs")
