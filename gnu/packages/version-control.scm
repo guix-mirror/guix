@@ -1007,16 +1007,16 @@ will work.")
     (name "git-flow")
     ;; This version has not be officially released yet, so we build it
     ;; directly from the git repository.
-    (version "0.4.2-pre")
+    (version "1.12.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/nvie/gitflow/")
-                    (commit "15aab26490facf285acef56cb5d61025eacb3a69")))
+                    (url "https://github.com/petervanderdoes/gitflow-avh/")
+                    (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "01fs97q76fdfnvmrh2cyjhywcs3pykf1dg58sy0frflnsdzs6prx"))))
+                "13q4mnrxr03wz2dkhzy73j384g299m4d545cnhxcaznvdwfany4h"))))
     (build-system gnu-build-system)
     (inputs `(("shflags" ,shflags)))
     (arguments
