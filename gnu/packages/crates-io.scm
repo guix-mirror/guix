@@ -5431,8 +5431,7 @@ primitives to an @code{io::Write}.")
          "1q2w80v8p2pbfm8ayhjs6zi11a1hp4535z4ck8kg872z8ldnrc37"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2))
        #:cargo-development-inputs
        (("rust-futures" ,rust-futures-0.1)
