@@ -14,7 +14,9 @@
         (title (en "@command{guix pull} now supports SSH authenticated
 repositories")
                (de "@command{guix pull} unterstützt nun SSH-authentifizierte
-Repositorys"))
+Repositorys")
+               (fr "@command{guix pull} prend maintenant en charge
+l'authentification en SSH pour les dépôts."))
         (body (en "The @command{guix pull} command now supports SSH
 authenticated repositories as argument of @option{--url} and in custom
 channels definitions.  The authentication requires that an @command{ssh-agent}
@@ -22,11 +24,16 @@ is running.")
               (de "Der Befehl @command{guix pull} unterstützt nun über SSH
 authentifizierte Repositorys als Argument von @option{--url} und in
 selbstgeschriebenen Kanaldefinitionen. Zur Authentisierung muss ein
-@command{ssh-agent} laufen.")))
+@command{ssh-agent} laufen.")
+              (fr "La commande @command{guix pull} prend maintenant en
+charge l'authentification SSH pour les dépôts dans l'argument @option{--url}
+et dans le définitions de canaux personnalisés.  L'authentification
+nécessite qu'un @command{ssh-agent} soit lancé.")))
 
  (entry (commit "8234fe653e61d0090138cbd4c48d877568355439")
         (title (en "Guix now runs on Guile 3.0")
                (de "Guix läuft jetzt auf Guile 3.0")
+               (fr "Guix tourne maintenant sous Guile 3.0")
                (nl "Guix draait nu op Guile 3.0"))
         (body (en "The Guix revision you just pulled runs on version 3.0 of
 GNU@tie{}Guile (previously it would run on version 2.2).  Guile 3.0 improves
@@ -40,6 +47,11 @@ erzeugt werden (JIT-Kompilierung).  Der Wechsel sollte für Sie völlig
 transparent sein und Guix verhält sich gleich.  Siehe
 @uref{https://gnu.org/software/guile} für weitere Informationen zu Guile
 3.0.")
+              (fr "La révision de Guix que tu viens de récupérer tourne sous
+la version 3.0 de GNU@tie{}Guile (Guix tournait avant sous la version 2.2).
+Guile 3.0 améliore la performance en générant du code natif à la volée (JIT).
+Le changement devrait être totalement transparent pour toi.  Voir
+@uref{https://gnu.org/software/guile} pour plus d'information sur Guile 3.0.")
               (nl "De Guix die u net heeft gepulld gebruikt versie 3.0 van
 GNU@tie{}Guile (voorheen was dat versie 2.2).  Guile@tie{}3.0 draait dezelfde
 programma's doorgaans sneller door ze ‘just-in-time’ (JIT) te vertalen naar
@@ -49,7 +61,8 @@ Guile@tie{}3.0.")))
 
  (entry (commit "828a39da68a9169ef1d9f9ff02a1c66b1bcbe884")
         (title (en "New @option{--diff} option for @command{guix challenge}")
-               (de "Neue @option{--diff}-Option für @command{guix challenge}"))
+               (de "Neue @option{--diff}-Option für @command{guix challenge}")
+               (fr "Nouvelle option @option{--diff} sur @command{guix challenge}"))
         (body (en "The @command{guix challenge} command, which compares
 binaries provided by different substitute servers as well as those built
 locally, has a new @option{--diff} option.  With @option{--diff=simple} (the
@@ -57,6 +70,13 @@ default), @command{guix challenge} automatically downloads binaries and
 reports the list of differing files; @option{--diff=diffoscope} instructs it
 to pass them to @command{diffoscope}, which simplifies the comparison process.
 Run @command{info \"(guix) Invoking guix challenge\"}, for more info.")
+              (fr "La command @command{uix challenge} qui compare les binaires
+fournis par différents serveurs de substituts aux contsructions locales a une
+nouvelle option @option{--diff}.  Avec @option{--diff=simple} (par défaut),
+@command{guix challenge} télécharge automatiquement les binaires et rapporte
+la liste des fichiers différents@tie{}; @option{--diff=diffoscope} lui dit
+de les passer à @command{diffoscope} qui simplifie le processus de comparaison.
+Lance @command{info \"(guix.fr) Invoquer guix challenge\"} pour plus d'info.")
               (de "Der Befehl @command{guix challenge}, mit dem Binärdateien
 von unterschiedlichen Substitut-Servern oder lokale Erstellungen miteinander
 verglichen werden können, hat eine neue Befehlszeilenoption @option{--diff}
