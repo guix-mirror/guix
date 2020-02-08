@@ -4120,7 +4120,7 @@ Lisp.")
      `(("sbcl-cffi-grovel" ,sbcl-cffi-grovel)
        ("sbcl-cffi" ,sbcl-cffi)))
     (build-system asdf-build-system/sbcl)
-    (home-page "http://common-lisp.net/projects/iolib/")
+    (home-page "https://github.com/sionescu/static-vectors")
     (synopsis "Allocate SIMPLE-ARRAYs in static memory")
     (description
      "With @code{static-vectors}, you can create vectors allocated in static
