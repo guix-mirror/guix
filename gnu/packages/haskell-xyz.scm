@@ -24,6 +24,7 @@
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 JoJo <jo@jo.zone>
+;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8163,6 +8164,33 @@ easily work with command-line options.")
     (synopsis "Utilities and combinators for parsing command line options")
     (description "This package provides utilities and combinators for parsing
 command line options in Haskell.")
+    (license license:bsd-3)))
+
+(define-public ghc-doclayout
+  (package
+    (name "ghc-doclayout")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/doclayout/"
+             "doclayout-" version ".tar.gz"))
+       (sha256
+        (base32 "1wmnwq28jcyd6c80srivsnd5znmyl9sgmwwnlk2crwiiwqadbal7"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-safe" ,ghc-safe)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-golden" ,ghc-tasty-golden)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+    (home-page "https://github.com/jgm/doclayout")
+    (synopsis "Pretty-printing library for laying out text documents")
+    (description
+     "doclayout is a pretty-printing library for laying out text documents,
+with several features not present in pretty-printing libraries designed for
+code.  It was designed for use in @code{Pandoc}.")
     (license license:bsd-3)))
 
 (define-public ghc-pandoc
