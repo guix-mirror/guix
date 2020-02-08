@@ -3286,9 +3286,8 @@ is configured via an environment variable.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-backtrace" ,rust-backtrace-0.3))
-       #:cargo-development-inputs
-       (("rust-version-check" ,rust-version-check-0.9))))
+       (("rust-backtrace" ,rust-backtrace-0.3)
+        ("rust-version-check" ,rust-version-check-0.1))))
     (home-page "https://github.com/rust-lang-nursery/error-chain")
     (synopsis "Yet another error boilerplate library")
     (description
