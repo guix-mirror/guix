@@ -12563,7 +12563,7 @@ futures efficiently")
        #:cargo-inputs
        (("rust-crossbeam-queue" ,rust-crossbeam-queue-0.1)
         ("rust-futures" ,rust-futures-0.1)
-        ("rust-lazy-static" ,rust-lazy-static-13)
+        ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-log" ,rust-log-0.4)
         ("rust-mio" ,rust-mio-0.6)
