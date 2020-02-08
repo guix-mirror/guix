@@ -16,7 +16,9 @@ repositories")
                (de "@command{guix pull} unterstützt nun SSH-authentifizierte
 Repositorys")
                (fr "@command{guix pull} prend maintenant en charge
-l'authentification en SSH pour les dépôts."))
+l'authentification en SSH pour les dépôts.")
+               (nl "@command{guix pull} ondersteunt nu SSH-geauthenticeerde
+repository's."))
         (body (en "The @command{guix pull} command now supports SSH
 authenticated repositories as argument of @option{--url} and in custom
 channels definitions.  The authentication requires that an @command{ssh-agent}
@@ -28,7 +30,11 @@ selbstgeschriebenen Kanaldefinitionen. Zur Authentisierung muss ein
               (fr "La commande @command{guix pull} prend maintenant en
 charge l'authentification SSH pour les dépôts dans l'argument @option{--url}
 et dans le définitions de canaux personnalisés.  L'authentification
-nécessite qu'un @command{ssh-agent} soit lancé.")))
+nécessite qu'un @command{ssh-agent} soit lancé.")
+              (nl "Het @command{guix pull}-commando ondersteunt nu
+SSH-geauthenticeerde opslag als argument na @option{--url} en bij het
+schrijven van eigen kanaaldefinities.  Hiervoor moet een @command{ssh-agent}
+gestart zijn.")))
 
  (entry (commit "8234fe653e61d0090138cbd4c48d877568355439")
         (title (en "Guix now runs on Guile 3.0")
