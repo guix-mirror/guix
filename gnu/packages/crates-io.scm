@@ -5656,8 +5656,7 @@ requires non-const function calls to be computed.")
          (base32
           "052ac27w189hrf1j3hz7sga46rp84zl2hqnzyihxv78mgzr2jmxw"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs (("rust-spin" ,rust-spin-0.5))))))
+     `(#:cargo-inputs (("rust-spin" ,rust-spin-0.5))))))
 
 (define-public rust-lazycell-1.2
   (package
