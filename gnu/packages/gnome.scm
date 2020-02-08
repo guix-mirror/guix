@@ -2240,7 +2240,7 @@ from forcing GEXP-PROMISE."
                     ("itertools" . #+(package-source rust-itertools-0.8))
                     ("itoa" . #+(package-source rust-itoa-0.4))
                     ("language-tags" . #+(package-source rust-language-tags-0.2))
-                    ("lazy_static" . #+(package-source rust-lazy-static-1.3))
+                    ("lazy_static" . #+(package-source rust-lazy-static-1))
                     ("libc" . #+(package-source rust-libc-0.2))
                     ("libm" . #+(package-source rust-libm-0.1))
 ;; locale_config 0.3
