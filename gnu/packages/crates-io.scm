@@ -10842,8 +10842,31 @@ proven statistical guarantees.")
        (("rust-clippy" ,rust-clippy-0.0))
        #:tests? #f))))
 
-;; Circular dev dependency on bincode.
-;; Probably not going away: https://github.com/rust-lang/cargo/issues/4242
+(define-public rust-serde-big-array-0.1
+  (package
+    (name "rust-serde-big-array")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serde-big-array" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0gkyqxk760mp1lfcg6lhjk95ajc89nr0qdd0vl4ic0g8pyxcy9mr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0))
+       #:cargo-development-inputs
+       (("rust-serde-json" ,rust-serde-json-1.0))))
+    (home-page "https://github.com/est31/serde-big-array")
+    (synopsis "Big array helper for serde")
+    (description "This package provides a big array helper for serde.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-serde-bytes-0.11
   (package
     (name "rust-serde-bytes")
