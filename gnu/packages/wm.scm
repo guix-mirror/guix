@@ -32,6 +32,7 @@
 ;;; Copyright © 2019 Noodles! <nnoodle@chiru.no>
 ;;; Copyright © 2019 Alexandru-Sergiu Marton <brown121407@member.fsf.org>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -96,6 +97,7 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages suckless)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
@@ -1293,6 +1295,7 @@ its size
        ("xcb-util-xrm" ,xcb-util-xrm)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("python-sphinx" ,python-sphinx) ; for the manual
        ("python-2" ,python-2)           ; lib/xpp depends on python 2
        ("python" ,python)))             ; xcb-proto depends on python 3
     (home-page "https://polybar.github.io/")
