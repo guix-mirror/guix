@@ -1436,6 +1436,10 @@ ALLOWED_HOSTS = [
           allowed-hosts))
 "]
 
+DEFAULT_FROM_EMAIL = '" #$default-from-email "'
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+NOTIFICATION_FROM_EMAIL = DEFAULT_FROM_EMAIL
+
 ADMINS = [
 " #$(string-concatenate
      (map (match-lambda
