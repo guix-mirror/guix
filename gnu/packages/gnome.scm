@@ -47,6 +47,7 @@
 ;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2020 raingloom <raingloom@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -118,6 +119,7 @@
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libunistring)
+  #:use-module (gnu packages libunwind)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lirc)
@@ -9956,3 +9958,93 @@ manage remote and virtual systems.")
               license:cc-by2.0
               ;; For all others.
               license:lgpl2.0+))))
+
+(define-public geary
+  (package
+    (name "geary")
+    (version "3.34.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.gnome.org/GNOME/geary")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "01cc921kyh3zxz07biqbdzkjgmdcc36kwjyajm4y382a75cl5zg7"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'disable-failing-tests
+                    (lambda _
+                      (substitute* "test/meson.build"
+                        (("test\\('client-tests', geary_test_client_bin\\)")
+                         ""))
+                      #t))
+                  (add-after 'unpack 'disable-postinstall-script
+                    (lambda _
+                      (substitute* "meson.build"
+                        (("meson.add_install_script\\(\
+join_paths\\('build-aux', 'post_install.py'\\)\\)")
+                         ""))
+                      #t))
+                  (add-before 'check 'setup-xvfb
+                    (lambda _
+                      (system "Xvfb :1 &")
+                      (setenv "DISPLAY" ":1")
+                      #t)))))
+    (inputs
+     `(("enchant" ,enchant)
+       ("folks" ,folks)
+       ("gcr" ,gcr)
+       ("glib" ,glib)
+       ("gmime" ,gmime-2.6)
+       ("gnome-online-accounts:lib"
+        ,gnome-online-accounts "lib")
+       ("gspell" ,gspell)
+       ("gtk+" ,gtk+)
+       ("iso-codes" ,iso-codes)
+       ("json-glib" ,json-glib)
+       ("libcanberra" ,libcanberra)
+       ("libgee" ,libgee)
+       ("libhandy" ,libhandy)
+       ("libpeas" ,libpeas)
+       ("libsecret" ,libsecret)
+       ("libunwind" ,libunwind)
+       ("sqlite" ,sqlite)
+       ("webkitgtk" ,webkitgtk)
+       ("ytnef" ,ytnef)))
+    (native-inputs
+     `(("appstream-glib" ,appstream-glib)
+       ("cmake-minimal" ,cmake-minimal)
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("gettext" ,gnu-gettext)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("itstool" ,itstool)
+       ("libarchive" ,libarchive)
+       ("libxml2" ,libxml2)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)
+       ("xvfb" ,xorg-server-for-tests)))
+    (synopsis "GNOME email application built around conversations")
+    (description
+     "Geary collects related messages together into conversations,
+making it easy to find and follow your discussions.  Full-text and keyword
+search makes it easy to find the email you are looking for.  Geary's
+full-featured composer lets you send rich, styled text with images, links, and
+lists, but also send lightweight, easy to read text messages.  Geary
+automatically picks up your existing GNOME Online Accounts, and adding more is
+easy.  Geary has a clean, fast, modern interface that works like you want it
+to.")
+    (home-page "https://wiki.gnome.org/Apps/Geary")
+    (license (list
+              ;; geary
+              license:lgpl2.1+
+              ;; icons
+              license:cc-by3.0
+              license:cc-by-sa3.0
+              license:public-domain
+              ;; snowball
+              license:bsd-2))))
