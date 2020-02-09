@@ -25,6 +25,7 @@
   #:use-module (guix packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crates-io)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tls)
@@ -226,7 +227,24 @@ provides defaults for 80% of the use cases.")
         ("rust-termcolor" ,rust-termcolor-1.0))
        #:cargo-development-inputs
        (("rust-serde" ,rust-serde-1.0)
-        ("rust-serde-derive" ,rust-serde-derive-1.0))))
+        ("rust-serde-derive" ,rust-serde-derive-1.0))
+       #:modules ((ice-9 match)
+                  (guix build cargo-build-system)
+                  (guix build utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'install-manpage
+           ;; NOTE: This is done before 'check so that there's only one output
+           ;; directory with the man page.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (match (find-files "target" "^rg\\.1$")
+               ((manpage)
+                (install-file manpage (string-append
+                                        (assoc-ref outputs "out")
+                                        "/share/man/man1"))))
+             #t)))))
+    (native-inputs
+     `(("asciidoc" ,asciidoc)))
     (home-page "https://github.com/BurntSushi/ripgrep")
     (synopsis "Line-oriented search tool")
     (description
