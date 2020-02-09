@@ -409,7 +409,8 @@ history mechanism, job control and a C-like syntax.")
                (base32
                 "1s3yww0mzgvpc48kp0x868mm3gbna42sbgzya0nknj0x5hn2jq3j"))))
     (build-system gnu-build-system)
-    (arguments `(#:configure-flags '("--with-tcsetpgrp" "--enable-pcre")
+    (arguments `(#:configure-flags '("--with-tcsetpgrp" "--enable-pcre"
+                                     "--enable-maildir-support")
                  #:phases
                  (modify-phases %standard-phases
                    (add-before 'configure 'fix-sh
