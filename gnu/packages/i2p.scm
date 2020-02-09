@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.lonestar.org>
+;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
