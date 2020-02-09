@@ -25,6 +25,7 @@
 ;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -497,17 +498,11 @@ any X11 window.")
                                 "sed" "tree" "which" "xclip"))))
                (wrap-program (string-append out "/bin/pass")
                  `("PATH" ":" prefix (,(string-join path ":"))))
-               #t)))
-         (add-after 'wrap-path 'install-shell-completions
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out      (assoc-ref outputs "out"))
-                    (bashcomp (string-append out "/etc/bash_completion.d")))
-               ;; TODO: install fish and zsh completions.
-               (mkdir-p bashcomp)
-               (copy-file "src/completion/pass.bash-completion"
-                          (string-append bashcomp "/pass"))
                #t))))
-       #:make-flags (list "CC=gcc" (string-append "PREFIX=" %output))
+       #:make-flags (list "CC=gcc" (string-append "PREFIX=" %output)
+                          "WITH_ALLCOMP=yes"
+                          (string-append "BASHCOMPDIR="
+                                         %output "/etc/bash_completion.d"))
        ;; Parallel tests may cause a race condition leading to a
        ;; timeout in some circumstances.
        #:parallel-tests? #f
