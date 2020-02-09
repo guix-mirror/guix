@@ -36,6 +36,7 @@
 ;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 ;;; Copyright © 2019 Daniel Schaefer <git@danielschaefer.me>
 ;;; Copyright © 2019 Diego N. Barbato <dnbarbato@posteo.de>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2823,6 +2824,43 @@ to be a teaching tool and presents the subnetting results as
 easy-to-understand binary values.")
     (home-page "http://jodies.de/ipcalc")
     (license license:gpl2+)))
+
+(define-public tunctl
+  (package
+    (name "tunctl")
+    (version "1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/tunctl/"
+                           "tunctl-" version ".tar.gz"))
+       (sha256
+        (base32 "1zsgn7w6l2zh2q0j6qaw8wsx981qcr536qlz1lgb3b5zqr66qama"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'bootstrap)            ;there is no configure.ac file
+         (delete 'configure)            ;there is no configure script
+         (delete 'check)                ;there are no tests
+         (replace 'build
+           (lambda _
+             (setenv "CC" "gcc")
+             (invoke "make" "tunctl")))
+         ;; TODO: Requires docbook2x to generate man page from SGML.
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (install-file "tunctl" bin))
+             #t)))))
+    (home-page "http://tunctl.sourceforge.net")
+    (synopsis  "Utility to set up and maintain TUN/TAP network interfaces")
+    (description "Tunctl is used to set up and maintain persistent TUN/TAP
+network interfaces, enabling user applications to simulate network traffic.
+Such interfaces are useful for VPN software, virtualization, emulation,
+simulation, and a number of other applications.")
+    (license license:gpl2)))
 
 (define-public vde2
   (package
