@@ -9183,8 +9183,7 @@ useful types and distributions, and some randomness-related algorithms.")
          (base32
           "1jl4449jcl4wgmzld6ffwqj5gwxrp8zvx8w573g1z368qg6xlwbd"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
         ("rust-log" ,rust-log-0.4)
         ("rust-packed-simd" ,rust-packed-simd-0.3)
@@ -9199,7 +9198,8 @@ useful types and distributions, and some randomness-related algorithms.")
         ("rust-winapi" ,rust-winapi-0.3)
         ("rust-autocfg" ,rust-autocfg-0.1)) ; build-dependency
        #:cargo-development-inputs
-       (("rust-rand-xoshiro" ,rust-rand-xoshiro-0.1))))))
+       (("rust-average" ,rust-average-0.9)
+        ("rust-rand-xoshiro" ,rust-rand-xoshiro-0.1))))))
 
 (define-public rust-rand-0.5
   (package
