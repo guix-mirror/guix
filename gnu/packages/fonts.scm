@@ -28,6 +28,7 @@
 ;;; Copyright © 2019 Baptiste Strazzulla <bstrazzull@hotmail.fr>
 ;;; Copyright © 2019 Alva <alva@skogen.is>
 ;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
+;;; Copyright © 2020 Damien Cassou <damien@cassou.me>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
