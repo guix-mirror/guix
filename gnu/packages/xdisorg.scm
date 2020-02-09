@@ -32,6 +32,7 @@
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 David Wilson <david@daviwil.com>
 ;;; Copyright © 2020 Ivan Vilata i Balaguer <ivan@selidor.net>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -153,58 +154,53 @@ program.")
     (license license:gpl3+)))
 
 (define-public autorandr
-  ;; Use latest commit since 1.7 lacks many new features such as the
-  ;; autorandr_launcher.
-  (let ((commit "b484c0ea9c9a4838278bbd661a7cc384333c1df8"))
-    (package
-      (name "autorandr")
-      (version (git-version "1.7" "1" commit))
-      (home-page "https://github.com/phillipberndt/autorandr")
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url home-page)
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0da17kzsisjv3s993j5idkk1n2d2cvjdn7pngs2b0ic1r2h5z02h"))))
-      (build-system python-build-system)
-      (native-inputs
-       `(("man-db" ,man-db)))
-      (inputs
-       `(("xrandr" ,xrandr)
-         ("libxcb" ,libxcb)))
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-before 'build 'configure
-             (lambda* (#:key inputs #:allow-other-keys)
+  (package
+    (name "autorandr")
+    (version "1.9")
+    (home-page "https://github.com/phillipberndt/autorandr")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1bb0l7fcm5lcx9y02zdxv7pfdqf4v4gsc5br3v1x9gzjvqj64l7n"))))
+    (build-system python-build-system)
+    (inputs
+     `(("xrandr" ,xrandr)
+       ("libxcb" ,libxcb)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((xrandr (string-append (assoc-ref inputs "xrandr")
+                                          "/bin/xrandr")))
+               (substitute* "contrib/etc/xdg/autostart/autorandr.desktop"
+                 (("/usr") (assoc-ref outputs "out")))
                (substitute* "autorandr.py"
-                 (("popen\\(\"xrandr") (string-append "popen(\""
-                                                      (assoc-ref inputs "xrandr")
-                                                      "/bin/xrandr"))
-                 (("\\[\"xrandr") (string-append "[\""
-                                                 (assoc-ref inputs "xrandr")
-                                                 "/bin/xrandr")))
-               #t))
-           (add-after 'install 'install-contrib
-             (lambda* (#:key outputs #:allow-other-keys)
-               (invoke "make"
-                       (string-append "DESTDIR=" (assoc-ref outputs "out"))
-                       "PREFIX="
-                       "BASH_COMPLETIONS_DIR=etc/bash_completiond.d"
-                       "install_manpage"
-                       "install_bash_completion"
-                       "install_launcher"))))))
-      (synopsis "Auto-detect connected displays and load appropriate setup")
-      (description "Autorandr wraps around xrandr to help with X11
+                 (("popen\\(\"xrandr") (string-append "popen(\"" xrandr))
+                 (("\\[\"xrandr") (string-append "[\"" xrandr))))
+             #t))
+         (add-after 'install 'install-contrib
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "make"
+                     (string-append "DESTDIR=" (assoc-ref outputs "out"))
+                     "PREFIX="
+                     "BASH_COMPLETIONS_DIR=etc/bash_completiond.d"
+                     "install_manpage"
+                     "install_bash_completion"
+                     "install_launcher"
+                     "install_autostart_config"))))))
+    (synopsis "Auto-detect connected displays and load appropriate setup")
+    (description "Autorandr wraps around xrandr to help with X11
 multi-screen configuration management.  It allows the user to create profiles
 for various multi-screen setups.  Autorandr automatically detects the profiles
 that can be activated based on the connected hardware.  Hook scripts can be
 used to further tweak the behaviour of the different profiles.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public bemenu
   (package
