@@ -8811,6 +8811,32 @@ in terms of the upstream unstable API.")
      "This package provides a pull parser for CommonMark.")
     (license license:expat)))
 
+(define-public rust-quantiles-0.7
+  (package
+    (name "rust-quantiles")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "quantiles" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wjp16a3d4bmldq9w2wds0q4gjz4mnsqac3g38r6ryr6zc9sh3y1"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0))
+       #:cargo-development-inputs
+       (("rust-quickcheck" ,rust-quickcheck-0.5))))
+    (home-page "https://github.com/postmates/quantiles")
+    (synopsis "Collection of approximate quantile algorithms")
+    (description
+     "This package provides a collection of approximate quantile algorithms.")
+    (license license:expat)))
+
 (define-public rust-quick-error-1.2
   (package
     (name "rust-quick-error")
