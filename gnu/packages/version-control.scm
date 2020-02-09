@@ -609,20 +609,33 @@ write native speed custom Git applications in any language with bindings.")
     (inputs
      `(("git" ,git)
        ("openssl" ,openssl)))
+    (native-inputs
+     `(("docbook-xsl" ,docbook-xsl)
+       ("libxslt" ,libxslt)))
     (arguments
      `(#:tests? #f ; No tests.
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
+         (add-after 'unpack 'patch-makefile
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl")
+                (string-append (assoc-ref inputs "docbook-xsl")
+                               "/xml/xsl/docbook-xsl-"
+                               ,(package-version docbook-xsl)
+                               "/manpages/docbook.xsl")))
+             #t))
          (replace 'build
            (lambda _
-             (invoke "make")))
+             (invoke "make" "ENABLE_MAN=yes")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (invoke "make" "install"
+                       "ENABLE_MAN=yes"
                        (string-append "PREFIX=" out))))))))
-    (home-page "https://www.agwa.name/projects/git-crypt")
+    (home-page "https://www.agwa.name/projects/git-crypt/")
     (synopsis "Transparent encryption of files in a git repository")
     (description "git-crypt enables transparent encryption and decryption of
 files in a git repository.  Files which you choose to protect are encrypted when
