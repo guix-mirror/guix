@@ -10025,6 +10025,25 @@ uses finite automata and guarantees linear time matching on all inputs.")
        #:cargo-inputs
        (("rust-ucd-util" ,rust-ucd-util-0.1))))))
 
+(define-public rust-regex-syntax-0.3
+  (package
+    (inherit rust-regex-syntax-0.6)
+    (name "rust-regex-syntax")
+    (version "0.3.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "regex-syntax" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ms9hgdhhsxw9w920i7gipydvagf100bb56jbs192rz86ln01v7r"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-development-inputs
+       (("rust-quickcheck" ,rust-quickcheck-0.2)
+        ("rust-rand" ,rust-rand-0.3))))))
+
 (define-public rust-remove-dir-all-0.5
   (package
     (name "rust-remove-dir-all")
