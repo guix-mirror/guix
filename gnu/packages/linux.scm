@@ -4037,6 +4037,13 @@ and copy/paste text in the console and in xterm.")
                "static"))      ; static versions of the binaries in "out"
     (arguments
      '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-makefile
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (substitute* "Makefile"
+                        (("\\$\\(DESTDIR\\)\\$\\(udevruledir\\)")
+                         (string-append (assoc-ref outputs "out")
+                                        "/lib/udev/rules.d")))
+                      #t))
                  (add-after 'build 'build-static
                    (lambda _ (invoke "make" "static")))
                  (add-after 'install 'install-bash-completion
@@ -4057,7 +4064,7 @@ and copy/paste text in the console and in xterm.")
        #:tests? #f            ; XXX: require the 'btrfs' kernel module.
        #:test-target "test"
        #:parallel-tests? #f)) ; tests fail when run in parallel
-    (inputs `(("e2fsprogs" ,e2fsprogs)
+    (inputs `(("e2fsprogs" ,e2fsprogs)  ; for btrfs-convert
               ("libblkid" ,util-linux)
               ("libblkid:static" ,util-linux "static")
               ("libuuid" ,util-linux)
@@ -4077,6 +4084,8 @@ and copy/paste text in the console and in xterm.")
                      ;; For tests.
                      ("acl" ,acl)
                      ("which" ,which)
+                     ("dmsetup" ,lvm2)
+                     ("udevadm" ,eudev)
                      ;; The tests need 'grep' with perl regexp support.
                      ("grep" ,grep)))
     (home-page "https://btrfs.wiki.kernel.org/index.php/Main_Page")
