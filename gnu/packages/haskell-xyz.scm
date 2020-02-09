@@ -8241,7 +8241,7 @@ require aeson
        ("ghc-errors" ,ghc-errors)))
     (native-inputs
      `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-hspec-discover" ,ghc-hspec-discover)))
+       ("hspec-discover" ,hspec-discover)))
     (home-page "https://github.com/cjdev/text-conversions#readme")
     (synopsis "Safe conversions between textual types")
     (description "Safe conversions between textual types")
