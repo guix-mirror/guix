@@ -91,6 +91,15 @@
       ,(base32 "1j51gv08sfg277yxj73xd564wjq3f8xwd6s9rbcg8v9gms47m4cx"))
      ("xz"
       ,(base32 "1d779rwsrasphg5g3r37qppcqy3p7ay1jb1y83w7x4i3qsc7zjy2")))
+    ("powerpc-linux"
+     ("bash"
+      ,(base32 "0hwlw5lcyjzadprf5fm0cv4zb6jw667g9amnmhq0lbixasy7j72j"))
+     ("mkdir"
+      ,(base32 "12lfwh5p8pp06250wgi9mdvjv1jdfpd5xpmvfc0616aj0xqh09hp"))
+     ("tar"
+      ,(base32 "00sbmwl8qh6alxv9mw4hvj1j4yipwmw5mrw6qad8bi2pr7ya5386"))
+     ("xz"
+      ,(base32 "0hi47y6zh5zz137i59l5ibw92x6g54zn7ris1b1ym9rvavsasg7b")))
     ("armhf-linux"
      ("bash"
       ,(base32 "0s6f1s26g4dsrrkl39zblvwpxmbzi6n9mgqf6vxsqz42gik6bgyn"))
@@ -141,6 +150,7 @@
   ;; This is where the bootstrap executables come from.
   '("https://git.savannah.gnu.org/cgit/guix.git/plain/gnu/packages/bootstrap/"
     "https://alpha.gnu.org/gnu/guix/bootstrap/"
+    "http://flashner.co.il/guix/bootstrap/"
     "http://lilypond.org/janneke/guix/"))
 
 (define (bootstrap-executable-file-name system program)
@@ -148,6 +158,7 @@
   (match system
     ("powerpc64le-linux" (string-append system "/20210106/" program))
     ("i586-gnu" (string-append system "/20200326/" program))
+    ("powerpc-linux" (string-append system "/20200923/bin/" program))
     (_ (string-append system "/" program
                       "?id=44f07d1dc6806e97c4e9ee3e6be883cc59dc666e"))))
 
@@ -343,6 +354,8 @@ or false to signal an error."
                  (match system
                    ("aarch64-linux"
                     "/20170217/guile-2.0.14.tar.xz")
+                   ("powerpc-linux"
+                    "/20200923/guile-2.0.14.tar.xz")
                    ("armhf-linux"
                     "/20150101/guile-2.0.11.tar.xz")
                    ("i586-gnu"
@@ -368,7 +381,9 @@ or false to signal an error."
     ("aarch64-linux"
      (base32 "1giy2aprjmn5fp9c4s9r125fljw4wv6ixy5739i5bffw4jgr0f9r"))
     ("i586-gnu"
-     (base32 "0wgqpsmvg25rnqn49ap7kwd2qxccd8dr4lllzp7i3rjvgav27vac"))))
+     (base32 "0wgqpsmvg25rnqn49ap7kwd2qxccd8dr4lllzp7i3rjvgav27vac"))
+    ("powerpc-linux"
+     (base32 "1by2p7s27fbyjzfkcw8h65h4kkqh7d23kv4sgg5jppjn2qx7swq4"))))
 
 (define (bootstrap-guile-origin system)
   "Return an <origin> object for the Guile tarball of SYSTEM."
@@ -501,6 +516,8 @@ $out/bin/guile --version~%"
                                              "/20210106/static-binaries-0-powerpc64le-linux-gnu.tar.xz")
                                             ("i586-gnu"
                                              "/20200326/static-binaries-0-i586-pc-gnu.tar.xz")
+                                            ("powerpc-linux"
+                                             "/20200923/static-binaries.tar.xz")
                                             (_
                                              "/20131110/static-binaries.tar.xz")))
                                      %bootstrap-base-urls))
@@ -524,6 +541,9 @@ $out/bin/guile --version~%"
                               ("i586-gnu"
                                (base32
                                 "17kllqnf3fg79gzy9ansgi801c46yh9c23h4d923plvb0nfm1cfn"))
+                              ("powerpc-linux"
+                               (base32
+                                "0kspxy0yczan2vlih6aa9hailr2inz000fqa0gn5x9d1fxxa5y8m"))
                               ("mips64el-linux"
                                (base32
                                 "072y4wyfsj1bs80r6vbybbafy8ya4vfy7qj25dklwk97m6g71753"))))))
@@ -574,6 +594,8 @@ $out/bin/guile --version~%"
                                              "/20210106/binutils-static-stripped-2.34-powerpc64le-linux-gnu.tar.xz")
                                             ("i586-gnu"
                                              "/20200326/binutils-static-stripped-2.34-i586-pc-gnu.tar.xz")
+                                            ("powerpc-linux"
+                                             "/20200923/binutils-2.35.1.tar.xz")
                                             (_
                                              "/20131110/binutils-2.23.2.tar.xz")))
                                      %bootstrap-base-urls))
@@ -597,6 +619,9 @@ $out/bin/guile --version~%"
                               ("i586-gnu"
                                (base32
                                 "11kykv1kmqc5wln57rs4klaqa13hm952smkc57qcsyss21kfjprs"))
+                              ("powerpc-linux"
+                               (base32
+                                "0asbg1c4avkrvh057mx0942xwddd136jni382zqsxzn79ls42yq8"))
                               ("mips64el-linux"
                                (base32
                                 "1x8kkhcxmfyzg1ddpz2pxs6fbdl6412r7x0nzbmi5n7mj8zw2gy7"))))))
@@ -654,6 +679,8 @@ $out/bin/guile --version~%"
                                        "/20210106/glibc-stripped-2.31-powerpc64le-linux-gnu.tar.xz")
                                       ("i586-gnu"
                                        "/20200326/glibc-stripped-2.31-i586-pc-gnu.tar.xz")
+                                      ("powerpc-linux"
+                                       "/20200923/glibc-2.32.tar.xz")
                                       (_
                                        "/20131110/glibc-2.18.tar.xz")))
                                %bootstrap-base-urls))
@@ -677,6 +704,9 @@ $out/bin/guile --version~%"
                         ("i586-gnu"
                          (base32
                           "14ddm10lpbas8bankmn5bcrlqvz1v5dnn1qjzxb19r57vd2w5952"))
+                        ("powerpc-linux"
+                         (base32
+                          "0smmssyjrlk5cvx49586smmk81gkwff0i6r91n4rir4jm6ba25sb"))
                         ("mips64el-linux"
                          (base32
                           "0k97a3whzx3apsi9n2cbsrr79ad6lh00klxph9hw4fqyp1abkdsg")))))))))
@@ -750,6 +780,8 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                                         "/20210106/gcc-stripped-5.5.0-powerpc64le-linux-gnu.tar.xz")
                                        ("i586-gnu"
                                         "/20200326/gcc-stripped-5.5.0-i586-pc-gnu.tar.xz")
+                                       ("powerpc-linux"
+                                        "/20200923/gcc-5.5.0.tar.xz")
                                        (_
                                         "/20131110/gcc-4.8.2.tar.xz")))
                                 %bootstrap-base-urls))
@@ -773,6 +805,9 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                          ("i586-gnu"
                           (base32
                            "1j2zc58wzil71a34h7c70sd68dmqvcscrw3rmn2whq79vd70zvv5"))
+                         ("powerpc-linux"
+                          (base32
+                           "1p7df3yixhm87dw5sccc6yn1i9db1r9hnmsg87wq5xi4rfmirq7w"))
                          ("mips64el-linux"
                           (base32
                            "1m5miqkyng45l745n0sfafdpjkqv9225xf44jqkygwsipj2cv9ks")))))))))

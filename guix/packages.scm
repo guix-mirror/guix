@@ -353,7 +353,7 @@ name of its URI."
   ;; This is the list of system types that are supported.  By default, we
   ;; expect all packages to build successfully here.
   '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "mips64el-linux" "i586-gnu"
-    "powerpc64le-linux"))
+    "powerpc64le-linux" "powerpc-linux"))
 
 (define %hurd-systems
   ;; The GNU/Hurd systems for which support is being developed.
@@ -364,7 +364,7 @@ name of its URI."
   ;;
   ;; XXX: MIPS is unavailable in CI:
   ;; <https://lists.gnu.org/archive/html/guix-devel/2017-03/msg00790.html>.
-  (fold delete %supported-systems '("mips64el-linux")))
+  (fold delete %supported-systems '("mips64el-linux" "powerpc-linux")))
 
 
 ;; A package.
