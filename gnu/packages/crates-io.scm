@@ -7361,7 +7361,7 @@ combinators library.")
 (define-public rust-num-integer-0.1
   (package
     (name "rust-num-integer")
-    (version "0.1.41")
+    (version "0.1.42")
     (source
      (origin
        (method url-fetch)
@@ -7370,12 +7370,15 @@ combinators library.")
         (string-append name "-" version ".crate"))
        (sha256
         (base32
-         "02dwjjpfbi16c71fq689s4sw3ih52cvfzr5z5gs6qpr5z0g58pmq"))))
+         "1fpw8yr9xwsf3qrh91rm7mzqaiwlc2dmnalsxv9pr9w1klpacviz"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-autocfg" ,rust-autocfg-1.0))))
     (home-page "https://github.com/rust-num/num-integer")
     (synopsis "Integer traits and functions")
     (description "Integer traits and functions.")
-    (properties '((hidden? . #t)))
     ;; Dual licensed.
     (license (list license:asl2.0
                    license:expat))))
