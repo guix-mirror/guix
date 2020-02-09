@@ -1563,3 +1563,24 @@ have been designed to be very distinguishable from each other.")
 displays (7SEG, 14SEG).  DSEG includes the roman alphabet and symbol glyphs.
 This package provides the TrueType fonts.")
     (license license:silofl1.1)))
+
+(define-public font-jetbrains-mono
+  (package
+    (name "font-jetbrains-mono")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://download.jetbrains.com/fonts/"
+                       "JetBrainsMono-" version ".zip"))
+       (sha256
+        (base32 "0qlp4902i1v6ni04b6gdip8rxw6wpkdk9w7dir1yn9an5mvbkyar"))))
+    (build-system font-build-system)
+    (home-page "https://www.jetbrains.com/lp/mono/")
+    (synopsis "Mono typeface for developers")
+    (description
+     "JetBrains Mono is a font family dedicated to developers.  JetBrains
+Mono’s typeface forms are simple and free from unnecessary details.  Rendered
+in small sizes, the text looks crisper.")
+    (license license:asl2.0)))
