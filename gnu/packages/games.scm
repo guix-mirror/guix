@@ -9666,3 +9666,47 @@ challenges.")
                    license:bsd-3        ;src/md5sum
                    license:lgpl2.1+     ;src/iqsort.h
                    license:expat))))
+
+(define-public eboard
+  (package
+    (name "eboard")
+    (version "1.1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fbergo/eboard.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1z4pwpqyvxhlda99h6arh2rjk90fbms9q29fqizjblrdn01dlxn1"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+" ,gtk+-2)
+       ("libpng" ,libpng)
+       ("gstreamer" ,gstreamer)))
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (make-file-writable "eboard-config")
+             (setenv "CC" "gcc")
+             (invoke "./configure"
+                     (string-append "--prefix=" (assoc-ref outputs "out")))
+             #t))
+         (add-before 'install 'make-required-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out")
+                                     "/share/eboard"))
+             #t)))))
+    (synopsis "Graphical user interface to play chess")
+    (description
+     "Eboard is a chess board interface for ICS (Internet Chess Servers)
+and chess engines.")
+    (home-page "https://www.bergo.eng.br/eboard/")
+    (license license:gpl2+)))
