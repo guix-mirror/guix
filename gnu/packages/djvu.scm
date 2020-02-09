@@ -73,11 +73,20 @@ utilities.")
      `(("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
     (inputs
-     `(("glib" ,glib)
+     `(("djvulibre" ,djvulibre)
+       ("glib" ,glib)
        ("libxt" ,libxt)
        ("libtiff" ,libtiff)
-       ("qtbase" ,qtbase)
-       ("djvulibre" ,djvulibre)))
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-desktop-file
+           ;; Executable is "djview", not "djview4".
+           (lambda _
+             (substitute* "desktopfiles/djvulibre-djview4.desktop"
+               (("Exec=djview4 %f") "Exec=djview %f"))
+             #t)))))
     (home-page "http://djvu.sourceforge.net/")
     (synopsis "Viewer for the DjVu image format")
     (description "DjView is a standalone viewer for DjVu files.
