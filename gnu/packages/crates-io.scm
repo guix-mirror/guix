@@ -2450,6 +2450,31 @@ intrinsics.")
     (properties '((hidden? . #t)))
     (license license:expat)))
 
+(define-public rust-custom-derive-0.1
+  (package
+    (name "rust-custom-derive")
+    (version "0.1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "custom_derive" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1f81bavw1wnykwh21hh4yyzigs6zl6f6pkk9p3car8kq95yfb2pg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-development-inputs
+       (("rust-rustc-serialize" ,rust-rustc-serialize-0.3))))
+    (home-page
+     "https://github.com/DanielKeep/rust-custom-derive/tree/custom_derive-master")
+    (synopsis "Custom derivation macro for Rust")
+    (description
+     "This crate provides a macro that enables the use of custom @code{derive}
+attributes.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-data-encoding-2.1
   (package
     (name "rust-data-encoding")
