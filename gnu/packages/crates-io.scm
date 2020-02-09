@@ -1855,6 +1855,34 @@ that logs panics to @code{console.error}.")
 It is inspired by the Linux kernel's @code{crypto_memneq}.")
     (license license:cc0)))
 
+(define-public rust-conv-0.3
+  (package
+    (name "rust-conv")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "conv" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "168j1npqrif1yqxbgbk0pdrx9shzhs5ylc5a4xw49b6hbxi11zvq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t     ; Package needs 'unicode' crate.
+       #:cargo-inputs
+       (("rust-custom-derive" ,rust-custom-derive-0.1))
+       #:cargo-development-inputs
+       (("rust-quickcheck" ,rust-quickcheck-0.2)
+        ("rust-winapi" ,rust-winapi-0.2))))
+    (home-page "https://github.com/DanielKeep/rust-conv")
+    (synopsis "Conversion traits with more specific semantics")
+    (description
+     "This crate provides a number of conversion traits with more specific
+semantics than those provided by @code{as} or @code{From}/@code{Into}.")
+    (license license:expat)))
+
 (define-public rust-core-arch-0.1
   (package
     (name "rust-core-arch")
