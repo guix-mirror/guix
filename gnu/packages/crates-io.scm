@@ -3289,6 +3289,25 @@ is configured via an environment variable.")
        (("rust-log" ,rust-log-0.3)
         ("rust-regex" ,rust-regex-0.2))))))
 
+(define-public rust-env-logger-0.3
+  (package
+    (inherit rust-env-logger-0.7)
+    (name "rust-env-logger")
+    (version "0.3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "env_logger" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0bvcjgkw4s3k1rd7glpflgc8s9a393zjd6jfdgvs8gjvwj0dgaqm"))))
+    (arguments
+     `(#:skip-build? #t     ; Cannot find dependent crates.
+       #:cargo-inputs
+       (;("rust-regex" ,rust-regex-0.1)
+        ("rust-log" ,rust-log-0.3))))))
+
 (define-public rust-envmnt-0.6
   (package
     (name "rust-envmnt")
