@@ -87,7 +87,7 @@ utilities.")
              (substitute* "desktopfiles/djvulibre-djview4.desktop"
                (("Exec=djview4 %f") "Exec=djview %f"))
              #t)))))
-    (home-page "http://djvu.sourceforge.net/")
+    (home-page "http://djvu.sourceforge.net/djview4.html")
     (synopsis "Viewer for the DjVu image format")
     (description "DjView is a standalone viewer for DjVu files.
 
