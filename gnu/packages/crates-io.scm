@@ -11754,6 +11754,32 @@ and Jaro-Winkler.")
          (base32
           "0sjsm7hrvjdifz661pjxq5w4hf190hx53fra8dfvamacvff139cf"))))))
 
+(define-public rust-structopt-derive-0.2
+  (package
+    (name "rust-structopt-derive")
+    (version "0.2.18")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "structopt-derive" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "01sis9z5kqmyhvzbnmlzpdxcry99a0b9blypksgnhdsbm1hh40ak"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-heck" ,rust-heck-0.3)
+        ("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-0.6)
+        ("rust-syn" ,rust-syn-0.15))))
+    (home-page "https://github.com/TeXitoi/structopt")
+    (synopsis
+     "Parse command line argument by defining a struct, derive crate")
+    (description
+     "Parse command line argument by defining a struct, derive crate.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-syn-1.0
   (package
     (name "rust-syn")
