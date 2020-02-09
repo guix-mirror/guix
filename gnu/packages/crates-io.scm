@@ -3705,6 +3705,29 @@ Reader/Writer streams.  Contains bindings for zlib, deflate, and gzip-based
 streams.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-float-ord-0.2
+  (package
+    (name "rust-float-ord")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "float-ord" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0kin50365sr3spnbscq43lksymybi99ai9rkqdw90m6vixhlibbv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.3))))
+    (home-page "https://github.com/notriddle/rust-float-ord")
+    (synopsis "Total ordering for floating-point numbers")
+    (description
+     "This package provides a total ordering for floating-point numbers.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-fnv-1.0
   (package
     (name "rust-fnv")
