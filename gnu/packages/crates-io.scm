@@ -13510,8 +13510,33 @@ including Canonical and Compatible Decomposition and Recomposition, as
 described in Unicode Standard Annex #15.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-unicode-segmentation-1.6
+  (package
+    (name "rust-unicode-segmentation")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "unicode-segmentation" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1h7d48mzpi8hwf5cvnq07warkv86pvapzzzf32hvbjsk20yiagp8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-quickcheck" ,rust-quickcheck-0.7))))
+    (home-page "https://github.com/unicode-rs/unicode-segmentation")
+    (synopsis "Grapheme Cluster, Word and Sentence boundaries")
+    (description
+     "This crate provides Grapheme Cluster, Word and Sentence
+boundaries according to Unicode Standard Annex #29 rules.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-unicode-segmentation-1.3
   (package
+    (inherit rust-unicode-segmentation-1.6)
     (name "rust-unicode-segmentation")
     (version "1.3.0")
     (source
@@ -13522,18 +13547,7 @@ described in Unicode Standard Annex #15.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1a9jqg7rb1yq6w2xc9jgxcs111yk5vxm9afjfvykfnrmzk6z8rqr"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-development-inputs
-       (("rust-quickcheck" ,rust-quickcheck-0.7))))
-    (home-page "https://github.com/unicode-rs/unicode-segmentation")
-    (synopsis "Grapheme Cluster, Word and Sentence boundaries")
-    (description
-     "This crate provides Grapheme Cluster, Word and Sentence
-boundaries according to Unicode Standard Annex #29 rules.")
-    (license (list license:expat license:asl2.0))))
+         "1a9jqg7rb1yq6w2xc9jgxcs111yk5vxm9afjfvykfnrmzk6z8rqr"))))))
 
 (define-public rust-unicode-width-0.1
   (package
