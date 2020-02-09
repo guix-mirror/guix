@@ -6860,7 +6860,6 @@ checking.")
       "Chaining APIs for both self -> Self and &mut self methods.")
     (description
       "Chaining APIs for both self -> Self and &mut self methods.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-natord-1.0
