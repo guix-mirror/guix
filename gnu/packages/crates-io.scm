@@ -5443,6 +5443,26 @@ immutable interval tree.")
      "Extra iterator adaptors, iterator methods, free functions, and macros.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-itertools-0.7
+  (package
+    (inherit rust-itertools-0.8)
+    (name "rust-itertools")
+    (version "0.7.11")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "itertools" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "03cpsj26xmyamcalclqzr1i700vwx8hnbgxbpjvs354f8mnr8iqd"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-either" ,rust-either-1.5))
+       #:cargo-development-inputs
+       (("rust-permutohedron" ,rust-permutohedron-0.2)
+        ("rust-quickcheck" ,rust-quickcheck-0.5))))))
+
 (define-public rust-itertools-num-0.1
   (package
     (name "rust-itertools-num")
