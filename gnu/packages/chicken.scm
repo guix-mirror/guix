@@ -21,20 +21,21 @@
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
+  #:use-module (gnu packages commencement)
   #:use-module ((guix licenses)
                 #:select (bsd-3)))
 
 (define-public chicken
   (package
     (name "chicken")
-    (version "5.0.0")
+    (version "5.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://code.call-cc.org/releases/"
                                   version "/chicken-" version ".tar.gz"))
               (sha256
                (base32
-                "15b5yrzfa8aimzba79x7v6y282f898rxqxfxrr446sjx9jwlpfd8"))))
+                "0jsbp3kp0134f318j3wpd1n85gf8qzh034fn198gvazsv2l024aw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -57,6 +58,7 @@
 
        ;; Parallel builds are not supported, as noted in README.
        #:parallel-build? #f))
+    (propagated-inputs `(("gcc-toolchain", gcc-toolchain)))
     (home-page "http://www.call-cc.org/")
     (synopsis "R5RS Scheme implementation that compiles native code via C")
     (description
