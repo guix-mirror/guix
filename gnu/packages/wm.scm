@@ -1296,6 +1296,8 @@ its size
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python-sphinx" ,python-sphinx) ; for the manual
+       ;; XXX: "python" input must be located after "python-2", or the package
+       ;; fails to build with "missing required python module: xcbgen".
        ("python-2" ,python-2)           ; lib/xpp depends on python 2
        ("python" ,python)))             ; xcb-proto depends on python 3
     (home-page "https://polybar.github.io/")
