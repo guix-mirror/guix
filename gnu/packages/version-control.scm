@@ -26,6 +26,7 @@
 ;;; Copyright © 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -594,7 +595,7 @@ write native speed custom Git applications in any language with bindings.")
 (define-public git-crypt
   (package
     (name "git-crypt")
-    (version "0.5.0")
+    (version "0.6.0")
     (source
      (origin
        (method git-fetch)
@@ -603,7 +604,7 @@ write native speed custom Git applications in any language with bindings.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1x9209n3k49k998saadr2d0lmvs01smjinx7gzzyjdwj9l904sii"))))
+        (base32 "1ba5s0fvmd9hhnfhfsjrm40v0qpxfnwc8vmm55m0k4dryzkzx66q"))))
     (build-system gnu-build-system)
     (inputs
      `(("git" ,git)
