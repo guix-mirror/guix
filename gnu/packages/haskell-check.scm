@@ -11,7 +11,6 @@
 ;;; Copyright © 2018 Tonton <tonton@riseup.net>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
-;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -771,29 +770,6 @@ Haskell, inspired by the Ruby library RSpec.")
     (synopsis "Contributed functionality for Hspec")
     (description
      "This package provides contributed Hspec extensions.")
-    (license license:expat)))
-
-(define-public ghc-hspec-discover
-  (package
-    (name "ghc-hspec-discover")
-    (version "2.7.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/hspec-discover/"
-             "hspec-discover-" version ".tar.gz"))
-       (sha256
-        (base32 "0r47fm94wa6qrhp8cc1zzkjrxc32rnagfn9m9ga4dm6p6ydw4c8b"))))
-    (build-system haskell-build-system)
-    (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-hspec-meta" ,ghc-hspec-meta)))
-    (home-page "http://hspec.github.io/")
-    (synopsis "Automatically discover and run Hspec tests")
-    (description
-     "Automatically discover and run Hspec tests.  See
-@url{http://hspec.github.io/hspec-discover.html}.")
     (license license:expat)))
 
 (define-public ghc-hspec-expectations
