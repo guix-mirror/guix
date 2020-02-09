@@ -27,6 +27,7 @@
   #:use-module (gnu packages crates-io)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages jemalloc)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control))
@@ -242,9 +243,22 @@ provides defaults for 80% of the use cases.")
                 (install-file manpage (string-append
                                         (assoc-ref outputs "out")
                                         "/share/man/man1"))))
-             #t)))))
+             #t))
+         (replace 'install
+           ;; Adapted from (guix build cargo-build-system). The flags need to
+           ;; be passed to `cargo install' too, as otherwise it will build
+           ;; another binary, without the features.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p out)
+               (setenv "CARGO_TARGET_DIR" "./target")
+               (invoke "cargo" "install" "--path" "." "--root" out
+                       "--features" "pcre2")))))
+       #:cargo-build-flags '("--release" "--features" "pcre2")))
     (native-inputs
-     `(("asciidoc" ,asciidoc)))
+     `(("asciidoc" ,asciidoc)
+       ("pcre2" ,pcre2)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://github.com/BurntSushi/ripgrep")
     (synopsis "Line-oriented search tool")
     (description
