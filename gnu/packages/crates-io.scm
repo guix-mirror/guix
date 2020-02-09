@@ -8907,6 +8907,26 @@ to write.")
         ("rust-log" ,rust-log-0.3)
         ("rust-rand" ,rust-rand-0.3))))))
 
+(define-public rust-quickcheck-0.2
+  (package
+    (inherit rust-quickcheck-0.8)
+    (name "rust-quickcheck")
+    (version "0.2.27")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "quickcheck" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vb4acppaavlnchzc1jmn5wlkgir9x9gmhgp97bavyxxqxgsg1nh"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-env-logger" ,rust-env-logger-0.3)
+        ("rust-log" ,rust-log-0.3)
+        ("rust-rand" ,rust-rand-0.3))
+       #:skip-build? #t))))  ; Package needs 'unicode' crate.
+
 (define-public rust-quote-1.0
   (package
     (name "rust-quote")
