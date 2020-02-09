@@ -9763,8 +9763,7 @@ and supports the use of a mouse.")
     (build-system gnu-build-system)
     (native-inputs `(("emacs" ,emacs-minimal)))
     (arguments
-     (let ((elisp-dir (string-append "/share/emacs/site-lisp/guix.d"
-                                     "/gnuplot-" version)))
+     (let ((elisp-dir "/share/emacs/site-lisp"))
        `(#:modules ((guix build gnu-build-system)
                     (guix build utils)
                     (guix build emacs-utils))
