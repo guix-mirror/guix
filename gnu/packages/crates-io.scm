@@ -7186,7 +7186,7 @@ prove a function can't ever panic.")
 (define-public rust-nodrop-0.1
   (package
     (name "rust-nodrop")
-    (version "0.1.13")
+    (version "0.1.14")
     (source
       (origin
         (method url-fetch)
@@ -7194,13 +7194,15 @@ prove a function can't ever panic.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0if9ifn6rvar5jirx4b3qh4sl5kjkmcifycvzhxa9j3crkfng5ig"))))
+          "1fz1v9r8ijacf0hlq0pdv5l9mz8vgqg1snmhvpjmi9aci1b4mvvj"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-nodrop-union" ,rust-nodrop-union-0.1))))
     (home-page "https://github.com/bluss/arrayvec")
     (synopsis "Wrapper type to inhibit drop (destructor)")
     (description "This package provides a wrapper type to inhibit drop
 (destructor).  Use @code{std::mem::ManuallyDrop} instead!")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
