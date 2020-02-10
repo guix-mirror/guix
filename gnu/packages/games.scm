@@ -9818,3 +9818,55 @@ challenges.")
 and chess engines.")
     (home-page "https://www.bergo.eng.br/eboard/")
     (license license:gpl2+)))
+
+(define-public chessx
+  (package
+    (name "chessx")
+    (version "1.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/chessx/chessx/"
+                           version "/chessx-" version ".tgz"))
+       (sha256
+        (base32 "09rqyra28w3z9ldw8sx07k5ap3sjlli848p737maj7c240rasc6i"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("qttools" ,qttools)))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtsvg" ,qtsvg)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "chessx.pro"
+               (("\\$\\$\\[QT_INSTALL_BINS\\]/lrelease")
+                (string-append (assoc-ref inputs "qttools") "/bin/lrelease")))
+             #t))
+         (add-after 'fix-paths 'make-qt-deterministic
+           (lambda _
+             (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")
+             #t))
+         (replace 'configure
+           (lambda _
+             (invoke "qmake")
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "release/chessx" (string-append out "/bin"))
+               (install-file "unix/chessx.desktop"
+                             (string-append out "/share/applications")))
+             #t)))))
+    (synopsis "Chess game database")
+    (description
+     "ChessX is a chess database.  With ChessX you can operate on your
+collection of chess games in many ways: browse, edit, add, organize, analyze,
+etc.  You can also play games on FICS or against an engine.")
+    (home-page "http://chessx.sourceforge.net/")
+    (license license:gpl2+)))
