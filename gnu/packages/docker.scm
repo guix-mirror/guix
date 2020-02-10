@@ -490,6 +490,7 @@ built-in registry server of Docker.")
              (delete-file "daemon/graphdriver/btrfs/btrfs_test.go")
              (delete-file "daemon/graphdriver/overlay/overlay_test.go")
              (delete-file "daemon/graphdriver/overlay2/overlay_test.go")
+             (delete-file "pkg/chrootarchive/archive_unix_test.go")
              #t))
          (replace 'configure
            (lambda _
