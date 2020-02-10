@@ -407,7 +407,6 @@ to result in system-wide compromise.")
      `(("expat" ,expat)
        ("libevent" ,libevent)
        ("protobuf" ,protobuf)
-       ("python" ,python-3)
        ("python-wrapper" ,python-wrapper)
        ("openssl" ,openssl)))
     (arguments
