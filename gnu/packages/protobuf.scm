@@ -203,14 +203,14 @@ encoder in C++.  The developer using protozero has to manually translate the
 (define-public python-protobuf
   (package
     (name "python-protobuf")
-    (version "3.10.0")
+    (version "3.11.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "protobuf" version))
        (sha256
         (base32
-         "1zjq3qi0wgqi0fwxgqlgwvj9ri1m4kmnz3jnpd803lqc5k0vb0yv"))))
+         "07qby3yc2a8a1vsxnc79j687q4r68k1d3npni7bldwmd3m6rfz67"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)))
