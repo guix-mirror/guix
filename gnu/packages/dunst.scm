@@ -2,6 +2,7 @@
 ;;; Copyright © 2015, 2017, 2018 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -52,9 +54,16 @@
                           ;; Otherwise it tries to install service file
                           ;; to "dbus" store directory.
                           (string-append "SERVICEDIR_DBUS=" %output
-                                         "/share/dbus-1/services"))
+                                         "/share/dbus-1/services")
+                          "dunstify")
        #:phases (modify-phases %standard-phases
-                  (delete 'configure))))
+                  (delete 'configure)
+                  (add-after 'install 'install-dunstify
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (install-file "dunstify"
+                                      (string-append out "/bin")))
+                      #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("perl" ,perl)                   ; for pod2man
@@ -65,6 +74,7 @@
        ("glib" ,glib)
        ("cairo" ,cairo)
        ("pango" ,pango)
+       ("libnotify" ,libnotify)         ; for dunstify
        ("libx11" ,libx11)
        ("libxscrnsaver" ,libxscrnsaver)
        ("libxinerama" ,libxinerama)
