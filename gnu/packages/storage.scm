@@ -53,14 +53,14 @@
 (define-public ceph
   (package
     (name "ceph")
-    (version "14.2.5")
+    (version "14.2.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.ceph.com/tarballs/ceph-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0wbkdplxs8higmlj57a7rydmx9rq08h0arjrmxmp0s80bn0v5x2c"))
+                "0qiqhm6hvz299q54k3i4crnb5dhpq6xnn2yqih9pxn9van0dq1ln"))
               (patches
                (search-patches "ceph-boost-compat.patch"
                                "ceph-volume-respect-PATH.patch"
