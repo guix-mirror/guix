@@ -384,3 +384,52 @@ Batch job submission, @code{pytools.batchjob}.
 A lexer, @code{pytools.lex}.
 @end itemize\n")
     (license license:expat)))
+
+(define-public python-pyopencl
+  (package
+    (name "python-pyopencl")
+    (version "2019.1.1")
+    (source
+     (origin
+       ;; The tarball on PyPI lacks test programs such as
+       ;; 'pygpu_language_opencl.cpp' so fetch it from Git.
+       ;; XXX: The server at git.tiker.net is unreliable.
+       (method git-fetch)
+       (uri (git-reference
+             (url "http://git.tiker.net/trees/pyopencl.git")
+             (commit (string-append "v" version))
+             (recursive? #t)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "12q0rs8yla571vcfpsh0mfrjbdiayv0hi8r1rq0f178m3i3qjz80"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'build 'set-home
+                    (lambda _
+                      ;; Some of the Python build scripts expect 'HOME' to be
+                      ;; set.
+                      (setenv "HOME" (getcwd))
+                      #t)))
+
+       ;; Tests in 'compyte/ndarray/setup_opencl.py' appear to rely on
+       ;; 'nvcc', which is not an option.
+       #:tests? #f))
+    (inputs
+     `(("opencl-headers" ,opencl-headers-1.2)   ;POCL only supports OpenCL 1.2
+       ("pybind11" ,pybind11)
+       ("ocl-icd" ,ocl-icd)))                     ;libOpenCL
+    (propagated-inputs
+     `(("python-appdirs" ,python-appdirs)
+       ("python-decorator" ,python-decorator)
+       ("python-numpy" ,python-numpy)
+       ("python-pytools" ,python-pytools)
+       ("python-six" ,python-six)
+       ("python-mako" ,python-mako)))
+    (home-page "http://mathema.tician.de/software/pyopencl")
+    (synopsis "Python wrapper for OpenCL")
+    (description
+     "PyOpenCL lets you access parallel computing devices such as GPUs from
+Python @i{via} OpenCL.")
+    (license license:expat)))
