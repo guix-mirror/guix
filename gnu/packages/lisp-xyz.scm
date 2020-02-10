@@ -10238,3 +10238,35 @@ them as PNG files.")
 
 (define-public ecl-hdf5-cffi
   (sbcl-package->ecl-package sbcl-hdf5-cffi))
+
+(define-public sbcl-cl-randist
+  (package
+    (name "sbcl-cl-randist")
+    (version "0.4.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/lvaruzza/cl-randist.git")
+             (commit "f088a54b540a7adefab7c04094a6103f9edda3d0")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0l8hyd6nbxb7f50vyxz3rbbm7kgr1fnadc40jywy4xj5vi5kpj5g"))))
+    (build-system asdf-build-system/sbcl)
+    (synopsis "Random distributions for Common Lisp")
+    (description
+     "Manual translation from C to Common Lisp of some random number
+generation functions from the GSL library.")
+    (home-page "https://github.com/lvaruzza/cl-randist")
+    (license license:bsd-2)
+    (arguments
+     `(#:asd-system-name "cl-randist"
+       #:asd-file "cl-randist.asd"
+       #:tests? #f))))
+
+(define-public cl-randist
+  (sbcl-package->cl-source-package sbcl-cl-randist))
+
+(define-public ecl-cl-randist
+  (sbcl-package->ecl-package sbcl-cl-randist))
