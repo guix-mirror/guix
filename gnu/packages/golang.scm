@@ -3142,6 +3142,12 @@ common task.")
     (description "This package provides a way to format messages for use
 with gotest-tools.")))
 
+(define-public go-gotest-tools-internal-difflib
+  (package (inherit (go-gotest-tools-package "internal/difflib"))
+    (synopsis "Differences for use with gotest-tools")
+    (description "This package computes differences for use
+with gotest-tools.")))
+
 (define-public go-gotest-tools-assert
   (package (inherit (go-gotest-tools-package "assert"))
     (name "go-gotest-tools-assert")
