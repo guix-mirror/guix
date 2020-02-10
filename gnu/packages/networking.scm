@@ -2832,7 +2832,7 @@ easy-to-understand binary values.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/tunctl/"
+       (uri (string-append "mirror://sourceforge/tunctl/tunctl/" version "/"
                            "tunctl-" version ".tar.gz"))
        (sha256
         (base32 "1zsgn7w6l2zh2q0j6qaw8wsx981qcr536qlz1lgb3b5zqr66qama"))))
