@@ -1133,7 +1133,7 @@ including field and record folding.")))
 (define-public rocksdb
   (package
     (name "rocksdb")
-    (version "6.5.2")
+    (version "6.6.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1142,7 +1142,7 @@ including field and record folding.")))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "01f5lcrcr809jhkkvxhv743hwpcxszj4r30hy9qy1i0mvjky02vf"))
+                "1h7y31b05w4vv4v509l368j9qlbv5assmdq9hp2788zipqbpywc0"))
               (modules '((guix build utils)))
               (snippet
                '(begin
