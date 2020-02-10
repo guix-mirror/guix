@@ -5664,7 +5664,7 @@ into your tests.  It automatically starts up a HTTP server in a separate thread 
 (define-public http-parser
   (package
     (name "http-parser")
-    (version "2.9.2")
+    (version "2.9.3")
     (home-page "https://github.com/nodejs/http-parser")
     (source (origin
               (method git-fetch)
@@ -5673,7 +5673,7 @@ into your tests.  It automatically starts up a HTTP server in a separate thread 
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1qs6x3n2nrcj1wiik5pg5i16inykf7rcfdfdy7rwyzf40pvdl3c2"))))
+                "189zi61vczqgmqjd2myjcjbbi5icrk7ccs0kn6nj8hxqiv5j3811"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
