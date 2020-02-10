@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2016 Stefan Reichoer <stefan@xsteve.at>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,7 +51,7 @@
 (define-public libical
   (package
     (name "libical")
-    (version "3.0.6")
+    (version "3.0.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -58,7 +59,22 @@
                     version "/libical-" version ".tar.gz"))
               (sha256
                (base32
-                "15sdmh8w4vszd7jhv9fdpd48anpkniq2k1jw7siy9v1jnz1232jw"))))
+                "1z33wzaazbd7drl6qbh1750whd78xl2cg0gjnxyya9m83vgndgha"))
+              (patches
+               ;; Add a patch slated for 3.0.8 which preserves backwards-
+               ;; compatibility in the icalattach_new_from_data() function,
+               ;; which accidentally changed in 3.0.7 and could break some uses.
+               ;; https://gitlab.gnome.org/GNOME/evolution-data-server/issues/185
+               ;; http://lists.infradead.org/pipermail/libical-devel/2020-January/000907.html
+               (list (origin
+                       (method url-fetch)
+                       (uri (string-append
+                             "https://github.com/libical/libical/commit/"
+                             "ae394010c889e4c185160da5e81527849f9de350.patch"))
+                       (file-name "libical-3.0.7-preserve-icalattach-api.patch")
+                       (sha256
+                        (base32
+                         "0v8qcxn8a6sh78grzxd61j9478928dx38l5mf8mkdrbxv47vmvvp")))))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; test suite appears broken
@@ -67,7 +83,8 @@
        (modify-phases %standard-phases
          (add-before 'configure 'patch-paths
            (lambda* (#:key inputs #:allow-other-keys)
-             ;; FIXME: This should be patched to use TZDIR so we can drop
+             ;; TODO: libical 3.1.0 supports using TZDIR instead of a hard-coded
+             ;; zoneinfo database.  When that is released we can drop
              ;; the tzdata dependency.
              (let ((tzdata (assoc-ref inputs "tzdata")))
                (substitute* "src/libical/icaltz-util.c"

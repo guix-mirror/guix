@@ -107,6 +107,7 @@
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages kde)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages libunistring)
@@ -829,6 +830,50 @@ project)
 instances, while JSON's objects will be mapped to @code{QVariantMap}.")
     ;; Only version 2.1 of the license
     (license license:lgpl2.1)))
+
+(define-public qoauth
+  (package
+    (name "qoauth")
+    (version "2.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ayoy/qoauth.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1b2jdqs526ac635yb2whm049spcsk7almnnr6r5b4yqhq922anw3"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("qca" ,qca)
+       ("qtbase" ,qtbase)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-code
+           (lambda _
+             (make-file-writable "src/qoauth.pc")
+             (substitute* "src/src.pro"
+               (("/lib64") "/lib"))
+             #t))
+         (delete 'configure) ; no configure script
+         (delete 'check) ; no test target
+         (add-before 'build 'qmake
+           (lambda _
+             (let ((qca (assoc-ref %build-inputs "qca")))
+               (invoke
+                "qmake"
+                (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                (string-append "QMAKE_INCDIR+=" qca "/include/Qca-qt5/QtCrypto")
+                (string-append "LIBS+=-L" qca "/lib")
+                (string-append "LIBS+=-lqca-qt5"))))))))
+    (home-page "https://github.com/ayoy/qoauth")
+    (synopsis "Qt-based C++ library for OAuth authorization scheme")
+    (description "QOAuth is an attempt to support interaction with
+OAuth-powered network services in a Qt way, i.e. simply, clearly and
+efficiently.  It gives the application developer no more than 4 methods.")
+    (license license:lgpl2.1+)))
 
 (define-public krona-tools
   (package

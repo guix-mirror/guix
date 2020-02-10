@@ -3692,7 +3692,7 @@ alternative implementations like XRandR or TwinView.")
 (define-public xinput
   (package
     (name "xinput")
-    (version "1.6.2")
+    (version "1.6.3")
     (source
       (origin
         (method url-fetch)
@@ -3702,7 +3702,7 @@ alternative implementations like XRandR or TwinView.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1i75mviz9dyqyf7qigzmxq8vn31i86aybm662fzjz5c086dx551n"))))
+            "1vb6xdd1xmk5f7pwc5zcbxfray5sf1vbnscqwf2yl8lv7gfq38im"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxrender" ,libxrender)
@@ -3837,7 +3837,7 @@ extension to the X11 protocol.  It includes:
 (define-public xkeyboard-config
   (package
     (name "xkeyboard-config")
-    (version "2.27")
+    (version "2.28")
     (source
       (origin
         (method url-fetch)
@@ -3847,7 +3847,7 @@ extension to the X11 protocol.  It includes:
               ".tar.bz2"))
         (sha256
           (base32
-            "07wh443lhwv1j0q6xnxnji7f7ahh7xphxj90fv02cdd6zv4aw3b9"))))
+            "1kmxc8hdw4qpvdlzp4ag8ygl34lqhs6sn3pcz1sl0kn61xdv5bb9"))))
     (build-system gnu-build-system)
     (inputs
       `(("gettext" ,gettext-minimal)

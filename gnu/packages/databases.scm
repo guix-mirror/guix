@@ -881,6 +881,11 @@ Language.")
               (rename-file (string-append out "/bin/mysql_config")
                            (string-append dev "/bin/mysql_config"))
 
+
+              (substitute*  (string-append out "/bin/mysql_install_db")
+                (("\\$basedir/share/mysql")
+                 (string-append lib "/share/mysql")))
+
               ;; Embed an absolute reference to OpenSSL in mysql_config
               ;; and the pkg-config file to avoid propagation.
               (substitute* (list (string-append dev "/bin/mysql_config")
@@ -915,33 +920,6 @@ Language.")
      "MariaDB is a multi-user and multi-threaded SQL database server, designed
 as a drop-in replacement of MySQL.")
     (license license:gpl2)))
-
-;; TODO: mysql_install_db is broken in MariaDB.  This package is here as
-;; a workaround for packages that need it.  Merge with 'mariadb' in the next
-;; rebuild cycle.
-(define-public mariadb/fixed-install-db
-  (hidden-package
-   (package/inherit
-    mariadb
-    (name "mariadb-fixed")
-    (native-inputs '())
-    (inputs
-     `(("mariadb" ,mariadb)
-       ("mariadb:lib" ,mariadb "lib")))
-    (outputs '("out"))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules ((guix build utils)))
-         (let ((out (assoc-ref %outputs "out")))
-           (copy-recursively (assoc-ref %build-inputs "mariadb") out)
-           (substitute*  (string-append out "/bin/mysql_install_db")
-             (("\\$basedir/share/mysql")
-              (string-append (assoc-ref %build-inputs "mariadb:lib")
-                             "/share/mysql")))
-           #t)))))))
 
 (define-public mariadb-connector-c
   (package
@@ -3305,7 +3283,7 @@ simultaneous database connections by using this framework.")
      `(;; For tests.
        ("inetutils" ,inetutils)
        ("glibc-locales" ,glibc-locales)
-       ("mariadb" ,mariadb/fixed-install-db)))
+       ("mariadb" ,mariadb)))
     (inputs
      `(("libdbi" ,libdbi)
        ("mariadb:dev" ,mariadb "dev")

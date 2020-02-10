@@ -284,8 +284,11 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/kawa.scm				\
   %D%/packages/kde.scm				\
   %D%/packages/kde-frameworks.scm		\
+  %D%/packages/kde-internet.scm			\
   %D%/packages/kde-multimedia.scm		\
+  %D%/packages/kde-pim.scm			\
   %D%/packages/kde-plasma.scm			\
+  %D%/packages/kde-systemtools.scm		\
   %D%/packages/kde-utils.scm			\
   %D%/packages/kerberos.scm			\
   %D%/packages/key-mon.scm			\
@@ -708,6 +711,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/aegisub-icu59-include-unistr.patch	\
   %D%/packages/patches/aegisub-boost68.patch                    \
   %D%/packages/patches/agg-am_c_prototype.patch			\
+  %D%/packages/patches/akonadi-paths.patch		\
+  %D%/packages/patches/akonadi-Revert-Make-installation-properly-relocatabl.patch \
+  %D%/packages/patches/akonadi-timestamps.patch		\
   %D%/packages/patches/allegro-mesa-18.2.5-and-later.patch	\
   %D%/packages/patches/amule-crypto-6.patch			\
   %D%/packages/patches/antiword-CVE-2014-8123.patch			\
@@ -768,6 +774,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ceph-disable-cpu-optimizations.patch	\
   %D%/packages/patches/ceph-volume-respect-PATH.patch		\
   %D%/packages/patches/chmlib-inttypes.patch			\
+  %D%/packages/patches/choqok-Fix-building-under-Qt-5.13.patch	\
   %D%/packages/patches/clamav-config-llvm-libs.patch		\
   %D%/packages/patches/clamav-system-tomsfastmath.patch		\
   %D%/packages/patches/clang-3.5-libc-search-path.patch		\
@@ -837,6 +844,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/eudev-rules-directory.patch		\
   %D%/packages/patches/evilwm-lost-focus-bug.patch		\
   %D%/packages/patches/evolution-data-server-locales.patch	\
+  %D%/packages/patches/evolution-data-server-libical-compat.patch	\
   %D%/packages/patches/exiv2-CVE-2017-14860.patch		\
   %D%/packages/patches/exiv2-CVE-2017-14859-14862-14864.patch	\
   %D%/packages/patches/extundelete-e2fsprogs-1.44.patch		\
@@ -1062,6 +1070,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/kodi-increase-test-timeout.patch		\
   %D%/packages/patches/kodi-set-libcurl-ssl-parameters.patch		\
   %D%/packages/patches/kodi-skip-test-449.patch		\
+  %D%/packages/patches/konversation-Fix-build-with-Qt-5.11.patch	\
   %D%/packages/patches/laby-make-install.patch			\
   %D%/packages/patches/lcalc-default-parameters-1.patch		\
   %D%/packages/patches/lcalc-default-parameters-2.patch		\
@@ -1185,7 +1194,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/mozjs38-tracelogger.patch		\
   %D%/packages/patches/mozjs38-version-detection.patch		\
   %D%/packages/patches/mrrescue-support-love-11.patch		\
-  %D%/packages/patches/mrustc-0.8.0-fix-variable-length-integer-receiving.patch \
   %D%/packages/patches/mtools-mformat-uninitialized.patch	\
   %D%/packages/patches/mumps-build-parallelism.patch		\
   %D%/packages/patches/mumps-shared-libseq.patch		\

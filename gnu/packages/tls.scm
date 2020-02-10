@@ -424,7 +424,7 @@ required structures.")
   (package
     (inherit openssl)
     (name "openssl")
-    (version "1.0.2t")
+    (version "1.0.2u")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -436,7 +436,7 @@ required structures.")
                                         "/openssl-" version ".tar.gz")))
               (sha256
                (base32
-                "1g67ra0ph7gpz6fgvv1i96d792jmd6ymci5kk53vbikszr74djql"))
+                "05lxcs4hzyfqd5jn0d9p0fvqna62v2s4pc9qgmq0dpcknkzwdl7c"))
               (patches (search-patches "openssl-runpath.patch"
                                        "openssl-c-rehash-in.patch"))))
     (outputs '("out"

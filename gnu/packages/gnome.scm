@@ -6260,7 +6260,8 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
-              (patches (search-patches "evolution-data-server-locales.patch"))
+              (patches (search-patches "evolution-data-server-locales.patch"
+                                       "evolution-data-server-libical-compat.patch"))
               (sha256
                (base32
                 "0zsc9xwy6ixk3x0dx69ax5isrdw8qxjdxg2i5fr95s40nss7rxl3"))))

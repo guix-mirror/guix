@@ -47,7 +47,7 @@ Copyright @copyright{} 2017 Thomas Danckaert@*
 Copyright @copyright{} 2017 humanitiesNerd@*
 Copyright @copyright{} 2017 Christopher Allan Webber@*
 Copyright @copyright{} 2017, 2018, 2019 Marius Bakke@*
-Copyright @copyright{} 2017, 2019 Hartmut Goebel@*
+Copyright @copyright{} 2017, 2019, 2020 Hartmut Goebel@*
 Copyright @copyright{} 2017, 2019, 2020 Maxim Cournoyer@*
 Copyright @copyright{} 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice@*
 Copyright @copyright{} 2017 George Clemmer@*
@@ -6460,10 +6460,24 @@ Which Perl package is used can be specified with @code{#:perl}.
 This variable is exported by @code{(guix build-system qt)}.  It
 is intended for use with applications using Qt or KDE.
 
-This build system adds the phase @code{qt-wrap} to the ones defined by
-@code{cmake-build-system}, after the @code{install} phase.
+This build system adds the following two phases to the ones defined by
+@code{cmake-build-system}:
 
-This phase searches for Qt5 plugin paths, QML paths and some XDG in the inputs
+@table @code
+@item check-setup
+The phase @code{check-setup} prepares the environment for running
+the checks as commonly used by Qt test programs.
+For now this only sets some environment variables:
+@code{QT_QPA_PLATFORM=offscreen},
+@code{DBUS_FATAL_WARNINGS=0} and
+@code{CTEST_OUTPUT_ON_FAILURE=1}.
+
+This phase is added before the @code{check} phase.
+It's a separate phase to ease adjusting if necessary.
+
+@item qt-wrap
+The phase @code{qt-wrap}
+searches for Qt5 plugin paths, QML paths and some XDG in the inputs
 and output.  In case some path is found, all programs in the output's
 @file{bin/}, @file{sbin/}, @file{libexec/} and @file{lib/libexec/} directories
 are wrapped in scripts defining the necessary environment variables.
@@ -6473,6 +6487,9 @@ by listing their names in the @code{#:qt-wrap-excluded-outputs} parameter.
 This is useful when an output is known not to contain any Qt binaries, and
 where wrapping would gratuitously add a dependency of that output on Qt, KDE,
 or such.
+
+This phase is added after the @code{install} phase.
+@end table
 @end defvr
 
 @defvr {Scheme Variable} r-build-system

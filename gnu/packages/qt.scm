@@ -14,6 +14,7 @@
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Mike Rosset <mike.rosset@gmail.com>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -339,7 +340,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtbase
   (package
     (name "qtbase")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -348,7 +349,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "09wz7zs1x5mpgs2y4xnl2zv3naqls4sz6v2arwl1fz2dsx4jddba"))
+               "0pb68d30clksdhgy8n6rrs838bb3qcsfq4pv463yy2nr4p5kk2di"))
              ;; Use TZDIR to avoid depending on package "tzdata".
              (patches (search-patches "qtbase-use-TZDIR.patch"))
              (modules '((guix build utils)))
@@ -364,6 +365,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
     (build-system gnu-build-system)
     (propagated-inputs
      `(("mesa" ,mesa)
+       ;; Use which the package, not the function
        ("which" ,(@ (gnu packages base) which))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -408,6 +410,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ("xcb-util-keysyms" ,xcb-util-keysyms)
        ("xcb-util-renderutil" ,xcb-util-renderutil)
        ("xcb-util-wm" ,xcb-util-wm)
+       ("xdg-utils" ,xdg-utils)
        ("zlib" ,zlib)))
     (native-inputs
      `(("bison" ,bison)
@@ -428,6 +431,14 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                             "mkspecs/features/qt_functions.prf"
                             "qmake/library/qmakebuiltins.cpp")
                           (("/bin/sh") (which "sh")))
+             #t))
+         (add-after 'configure 'patch-xdg-open
+           (lambda _
+             (substitute* '("src/platformsupport/services/genericunix/qgenericunixservices.cpp")
+                          (("^.*const char \\*browsers.*$" all)
+                           (string-append "*browser = QStringLiteral(\""
+                                          (which "xdg-open")
+                                          "\"); return true; \n" all)))
              #t))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
@@ -595,7 +606,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtsvg
   (package (inherit qtbase)
     (name "qtsvg")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -604,7 +615,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "13zg5095ffm88dsrybyi075i9zw3yrkibqzvj57an9sq89n3w926"))))
+               "1f3vqv3s83gjillhgi0wghyf3825fgy1ffhvkxhdk673shb0kxjb"))))
     (propagated-inputs `())
     (native-inputs `(("perl" ,perl)))
     (inputs
@@ -670,7 +681,7 @@ HostData=lib/qt5
 (define-public qtimageformats
   (package (inherit qtsvg)
     (name "qtimageformats")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -679,7 +690,7 @@ HostData=lib/qt5
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0n3qc5rx7kzb4csmcxaxdm2bqpciz2j2pz2zdfrlpi1ml4liq39k"))
+               "02zpcbx71dz6xvga07dnzqwdfz9pjmy673n706fj8pxq9zi9xlcv"))
              (modules '((guix build utils)))
              (snippet
               '(begin
@@ -701,7 +712,7 @@ support for MNG, TGA, TIFF and WBMP image formats.")))
 (define-public qtx11extras
   (package (inherit qtsvg)
     (name "qtx11extras")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -710,7 +721,7 @@ support for MNG, TGA, TIFF and WBMP image formats.")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0sqx785kb4kfxfl3cmg848dlxlxmfdg8jnfh3rrk8q0iazsr2faz"))))
+               "15hb90n47khsp3qnzyjd3mh8gi9qvy07dqdr4qspiww43r5mz293"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
@@ -725,7 +736,7 @@ from within Qt 5.")))
 (define-public qtxmlpatterns
   (package (inherit qtsvg)
     (name "qtxmlpatterns")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -734,7 +745,7 @@ from within Qt 5.")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1l44476ibb8rv4rf80vbjdc3712lmrl1xcxswa513ip66k47p5vn"))))
+               "0ys1kf0zdn8gak1ik9p7i7bdyfz2frvklcyz013s9wm1550h20lh"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:tests? _ #f) #f) ; TODO: Enable the tests
@@ -756,7 +767,7 @@ xmlpatternsvalidator.")))
 (define-public qtdeclarative
   (package (inherit qtsvg)
     (name "qtdeclarative")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -765,7 +776,7 @@ xmlpatternsvalidator.")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1lw6nr26cjdrshin3gq5xwqb0bvslg0ml99cw8rx9wb2anpd3c9l"))))
+               "1gg9xbv8ah4p55ws97brwn0csl0k3j1x6zdknrrsnh7j6nh0bp2w"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
@@ -788,7 +799,7 @@ with JavaScript and C++.")))
 (define-public qtconnectivity
   (package (inherit qtsvg)
     (name "qtconnectivity")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -797,7 +808,7 @@ with JavaScript and C++.")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1ni2x848dxf0c7ilk461vz0z46qis8zv6jxbpyhpbhzdg9rcdw8h"))))
+               "06h71pd5w5prh722mcbgmx7l71xvh5xpjrlbg17yblx0n6wlhwb4"))))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
@@ -812,7 +823,7 @@ with Bluetooth and NFC.")))
 (define-public qtwebsockets
   (package (inherit qtsvg)
     (name "qtwebsockets")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -821,7 +832,7 @@ with Bluetooth and NFC.")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "07nnzqhsnb4q8pbka9dk5nxmqinbg9yicag7f4rlq2p6ffmgn2zh"))))
+               "05rv52pp5zg4g14zh7c6jc77l426056b8xyr40ps6cpmb0jkrlbg"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
@@ -839,7 +850,7 @@ consume data received from the server, or both.")))
 (define-public qtsensors
   (package (inherit qtsvg)
     (name "qtsensors")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -848,7 +859,7 @@ consume data received from the server, or both.")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1x8f55qyix5bsd0hl9rzi56ndyv4h16z2qh8is9nv13jpk0a9nsr"))))
+               "0h77h34rn6cgy5qiqq163pj3bhbka1ydkfgjcx01ns1g9sgym6ib"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:parallel-tests? _ #f) #f) ; can lead to race condition
@@ -872,7 +883,7 @@ recognition API for devices.")))
 (define-public qtmultimedia
   (package (inherit qtsvg)
     (name "qtmultimedia")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -881,7 +892,7 @@ recognition API for devices.")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0w4mcxmj41b9phwirppn9ws1vxy3sww7prvhhmh0jsnaca4hwn4z"))
+               "07fvnjywn3hkrxfbxasmy83jr6jq9lf1grasfwij54hz6y0smg98"))
              (modules '((guix build utils)))
              (snippet
               '(begin
@@ -923,7 +934,7 @@ set of plugins for interacting with pulseaudio and GStreamer.")))
 (define-public qtwayland
   (package (inherit qtsvg)
     (name "qtwayland")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -932,7 +943,7 @@ set of plugins for interacting with pulseaudio and GStreamer.")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1i2i4d6qa512njm6gvd1ygcyb5p4d6axciqg9ys380yw9nl6m77s"))
+               "1ib61zh6jrab3yz592p47ldfgphi4i184kqf14vhwn31akibh6pw"))
              (modules '((guix build utils)))
              (snippet
                ;; The examples try to build and cause the build to fail
@@ -975,7 +986,7 @@ compositor libraries.")))
 (define-public qtserialport
   (package (inherit qtsvg)
     (name "qtserialport")
-    (version "5.12.5")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -984,7 +995,7 @@ compositor libraries.")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0qmq3yppc54vf7xrwyrwk91h6x04w0hf4bnw5b3y5kwyllhh7vzq"))))
+               "07vjv3p7n7n5v15wdpi8x5sbnvyjqdh85qfzf9mz8l6ppqp2hk12"))))
     (native-inputs `(("perl" ,perl)))
     (inputs
      `(("qtbase" ,qtbase)
@@ -1009,7 +1020,7 @@ interacting with serial ports from within Qt.")))
 (define-public qtserialbus
   (package (inherit qtsvg)
     (name "qtserialbus")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1018,7 +1029,7 @@ interacting with serial ports from within Qt.")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1ppmrwshj42lpx21m2gxblrlbigjf10fwg3fk5x5130ih89446q7"))))
+               "1bkyk1v7bcq657n88a6675lj55vl9y8v46h4kf27v58yjzgiw842"))))
     (inputs
      `(("qtbase" ,qtbase)
        ("qtserialport" ,qtserialport)))
@@ -1030,7 +1041,7 @@ and others.")))
 (define-public qtwebchannel
   (package (inherit qtsvg)
     (name "qtwebchannel")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1039,7 +1050,7 @@ and others.")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1my8vcsidx9r5wpd1iax8skhp5ac3234g9r7ax04k9z17mqd2i97"))))
+               "0xff3fbbpcl0kkq0rg9npj127ycirygicbkxlf0v593sjpjp5bmh"))))
     (native-inputs
      `(("perl" ,perl)
        ("qtdeclarative" ,qtdeclarative)
@@ -1054,7 +1065,7 @@ popular web engines, Qt WebKit 2 and Qt WebEngine.")))
 (define-public qtwebglplugin
   (package (inherit qtsvg)
     (name "qtwebglplugin")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1063,7 +1074,7 @@ popular web engines, Qt WebKit 2 and Qt WebEngine.")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1pahdyhinhq1xhsc7lsfprjjpz6fn9vgwqcyi72hc3wzyr98in11"))))
+               "0fswnmhb8fm7wqgzv8cjy1j2sgb5mhx80jl411laawn7bf2ysjg0"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:phases phases)
@@ -1089,7 +1100,7 @@ OpenGL ES 2.0 and can be used in HTML5 canvas elements")))
 (define-public qtwebview
   (package (inherit qtsvg)
     (name "qtwebview")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1098,7 +1109,7 @@ OpenGL ES 2.0 and can be used in HTML5 canvas elements")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0ykjwz3cwv718gvgvnlhq7wia8gllnj3cdzw3amj0rh63hy65h22"))))
+               "1rvvkg6dl34hklllnlzlcffik746f15lzxdnwggc97dmx8n2vy6k"))))
     (native-inputs
      `(("perl" ,perl)))
     (inputs
@@ -1112,7 +1123,7 @@ native APIs where it makes sense.")))
 (define-public qtlocation
   (package (inherit qtsvg)
     (name "qtlocation")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1121,7 +1132,7 @@ native APIs where it makes sense.")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0y12vs6jwiwljdn57jqs1dwi6wfw1l5l95dvj9g93h739p533qks"))))
+               "07vq4aycayq2bg8yi4awidb25xyvws2ajbnrmad3rnpg1fw0bsfi"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
@@ -1142,7 +1153,7 @@ positioning and geolocation plugins.")))
 (define-public qttools
   (package (inherit qtsvg)
     (name "qttools")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1151,7 +1162,7 @@ positioning and geolocation plugins.")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0xy7sf8w2lln1l59lhrf0kb687avwirrh63izp7509jwi33r2jg9"))))
+               "0j1rl368sjknsmwp2f7bwqcb0sx13l3l4dxbm70873si9l8rf2l6"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
@@ -1170,7 +1181,7 @@ that helps in Qt development.")))
 (define-public qtscript
   (package (inherit qtsvg)
     (name "qtscript")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1179,7 +1190,7 @@ that helps in Qt development.")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0z3p4bb2ddylb7y2xvagjbn7fc5d0ic08cmrrb67h8wf6fnq5051"))
+               "06a02230mj4bd8qvjaf2q97grzbj1c1rq36x7236fnhjsikbq7fa"))
              (patches (search-patches "qtscript-disable-tests.patch"))))
     (native-inputs
      `(("perl" ,perl)
@@ -1194,7 +1205,7 @@ ECMAScript and Qt.")))
 (define-public qtquickcontrols
   (package (inherit qtsvg)
     (name "qtquickcontrols")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1203,7 +1214,7 @@ ECMAScript and Qt.")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "169cvwiav5d538cw81rbdimb1pis0z6fkaxlwhd4z4pzhyhrd3f4"))))
+               "1rar337vv0dx52r2gxwiwy1axn0fpy79rka09xizjlxsdg3vnf0h"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
@@ -1218,7 +1229,7 @@ can be used to build complete interfaces in Qt Quick.")))
 (define-public qtquickcontrols2
   (package (inherit qtsvg)
     (name "qtquickcontrols2")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1227,7 +1238,7 @@ can be used to build complete interfaces in Qt Quick.")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0w5910wblzc7q2llyb7fyfcbmy1fl369c6w5d6r5sh26z490gasw"))))
+               "0dx2jag6l5a80220fvmf49z1psliqf1ijqx6jsvvzv81mpjjd59s"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
@@ -1243,7 +1254,7 @@ not available.")))
 (define-public qtgraphicaleffects
   (package (inherit qtsvg)
     (name "qtgraphicaleffects")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1252,7 +1263,7 @@ not available.")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1vvpq34433j94n9yyhh4if4yv51i8xiffpvyn3xgffx14iv35l6y"))))
+               "1knapc14a80cn2f5bbfj7lhq9flr3v0gwjg9ka7xl8y642235w02"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
@@ -1270,7 +1281,7 @@ coloring, and many more.")))
 (define-public qtgamepad
   (package (inherit qtsvg)
     (name "qtgamepad")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1279,7 +1290,7 @@ coloring, and many more.")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1cxkqnhx0baxh3csjl7ar151v0zizf86f4338rr38liwb7rwbsz1"))))
+               "150y7bc755l9y8w7nkg3gfw5n6rlj9hhq0ibc9g1xgllpr18qqq7"))))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)))
@@ -1300,7 +1311,7 @@ and mobile applications targeting TV-like form factors.")))
 (define-public qtscxml
   (package (inherit qtsvg)
     (name "qtscxml")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1309,7 +1320,7 @@ and mobile applications targeting TV-like form factors.")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "12y6ga7j6xby9rz1c9h17r9ih4i16i1ylr6b4vmrn7svidy87msk"))
+               "1dpvjkvwc3fj86vay8q8vzym73cix7ri2ianx87ck0gqjny51adg"))
              (modules '((guix build utils)))
              (snippet
               '(begin
@@ -1331,7 +1342,7 @@ also contains functionality to support data models and executable content.")))
 (define-public qtpurchasing
   (package (inherit qtsvg)
     (name "qtpurchasing")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1340,7 +1351,7 @@ also contains functionality to support data models and executable content.")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1kbhmzrw612yb4brxi3fwslil31j31vm0zqpb52vcma7vbivg80z"))))
+               "0xjsn7p629ni68vk4xlw2cvcs53ipcqv1pa4hck0nabddcgcnzkg"))))
     (inputs
      `(("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)))
@@ -1351,7 +1362,7 @@ purchasing goods and services.")))
 (define-public qtcanvas3d
   (package (inherit qtsvg)
     (name "qtcanvas3d")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1360,7 +1371,7 @@ purchasing goods and services.")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "024xglrb321rp3wb3fhprw7pl6zvmpgfkpwgabbyx8p58k4yccrd"))
+               "0l0c1p6jwz5rygyxslfw7jw3wbd23w5n9zg04aqlh5g15qx52fmn"))
              (modules '((guix build utils)))
              (snippet
               '(begin
@@ -1390,7 +1401,7 @@ drawing calls from Qt Quick JavaScript.")))
 (define-public qtcharts
   (package (inherit qtsvg)
     (name "qtcharts")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1399,7 +1410,7 @@ drawing calls from Qt Quick JavaScript.")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0gdark4z2g8j0kzjg1aqq91ap04h6hzjl163g8xlwxwdn5dxpnql"))))
+               "0pyg2lpxmhf4amj57zihp5ry0y9m39xq5hbcx4hqj78bdm96ah23"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
@@ -1417,7 +1428,7 @@ selecting one of the charts themes.")
 (define-public qtdatavis3d
   (package (inherit qtsvg)
     (name "qtdatavis3d")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1426,7 +1437,7 @@ selecting one of the charts themes.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1zm4xfi2ijqr3n3g0lfs3yzil6w7c54r8vsj1d541lz7wnm92ka1"))))
+               "09wbv4g29sq5z2fphk2910albr3iv3l14nch3ml77w6drw9mgzq7"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
@@ -1444,7 +1455,7 @@ customized by using themes or by adding custom items and labels to them.")
 (define-public qtnetworkauth
   (package (inherit qtsvg)
     (name "qtnetworkauth")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1453,7 +1464,7 @@ customized by using themes or by adding custom items and labels to them.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1gba6rdhcvljc4dnzhnkxrdlaxm3y095ljqg1sz3p1k0m632s4pa"))))
+               "0sspni7zllhspk70yjj2d0li9r4rs3iflnksj8mvjx2yl9qpryyb"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:phases phases)
@@ -1473,7 +1484,7 @@ implementation of OAuth and OAuth2 authenticathon methods for Qt.")))
 (define-public qtremoteobjects
   (package (inherit qtsvg)
     (name "qtremoteobjects")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1482,7 +1493,7 @@ implementation of OAuth and OAuth2 authenticathon methods for Qt.")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "16fna70pljn45yj6hv3g4qvb1imcnfj43jchvydspdhg08ykbda9"))))
+               "03qjj7l63wn1zqkmlja9yrnc38rf6b3apnmsn0kw0h61x72awskd"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:phases phases)
@@ -1506,7 +1517,7 @@ processes or computers.")))
 (define-public qtspeech
   (package (inherit qtsvg)
     (name "qtspeech")
-    (version "5.12.6")
+    (version "5.12.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1515,7 +1526,7 @@ processes or computers.")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "12l7rycjfa6d9gnnjd6i097pf1qqzjnz9c1jgxhpldvkf0n7pbi7"))))
+               "0q30m9l28zsdzdmny7wjskd2fjfrgh1l595wir6bhwhil95g3i0c"))))
 
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
@@ -1549,7 +1560,8 @@ message.")))
                            "/submodules/" name "-everywhere-src-"
                            version ".tar.xz"))
        (sha256
-        (base32 "08c60nh95m98mcqk444axs76xi6m9x0wvdxrzk9c2cxwqdbz59fa"))
+        (base32
+         "1yj6pcj945fpbc7nihav0plxpx8ikylmxjy7wqdv5znslgf59dw3"))
        (modules '((ice-9 ftw)
                   (ice-9 match)
                   (srfi srfi-1)

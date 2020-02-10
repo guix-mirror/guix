@@ -28,7 +28,7 @@
 (define-public dejagnu
   (package
     (name "dejagnu")
-    (version "1.6.1")
+    (version "1.6.2")
     (source
      (origin
       (method url-fetch)
@@ -36,7 +36,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "14hnq1mh91vqprc43xdy4f15sycw6fbajrh7zi6cw2kyg6xjhnxz"))))
+        "0qfj2wd4qk1yn9yzam6g8nmyxfazcc0knjyyibycb2ainkhp21hd"))))
     (build-system gnu-build-system)
     (inputs `(("expect" ,expect)))
     (arguments

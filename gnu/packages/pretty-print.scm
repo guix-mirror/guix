@@ -190,7 +190,7 @@ to @code{IOStreams}.")
 (define-public source-highlight
   (package
     (name "source-highlight")
-    (version "3.1.8")
+    (version "3.1.9")
     (source
      (origin
       (method url-fetch)
@@ -198,7 +198,7 @@ to @code{IOStreams}.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "18xdalxg7yzrxc1njzgw7aryq2jdm7zq2yqz41sc7k6il5z6lcq1"))))
+        "148w47k3zswbxvhg83z38ifi85f9dqcpg7icvvw1cm6bg21x4zrs"))))
     (build-system gnu-build-system)
     ;; The ctags that comes with emacs does not support the --excmd options,
     ;; so can't be used

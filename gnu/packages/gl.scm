@@ -96,7 +96,7 @@ as ASCII text.")
 (define-public freeglut
   (package
     (name "freeglut")
-    (version "3.0.0")
+    (version "3.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -104,16 +104,15 @@ as ASCII text.")
                     version "/freeglut-" version ".tar.gz"))
               (sha256
                (base32
-                "18knkyczzwbmyg8hr4zh8a1i5ga01np2jzd1rwmsh7mh2n2vwhra"))))
+                "0s6sk49q8ijgbsrrryb7dzqx2fa744jhx1wck5cz5jia2010w06l"))))
     (build-system cmake-build-system)
-    (arguments '(#:tests? #f)) ; no test target
-    (inputs `(("mesa" ,mesa)
-              ("libx11" ,libx11)
+    (arguments
+     '(#:tests? #f                      ;no test target
+       #:configure-flags '("-DFREEGLUT_BUILD_STATIC_LIBS=OFF")))
+    (inputs `(("libx11" ,libx11)
               ("libxi" ,libxi)
               ("libxrandr" ,libxrandr)
-              ("libxxf86vm" ,libxxf86vm)
-              ("xorgproto" ,xorgproto)
-              ("xinput" ,xinput)))
+              ("libxxf86vm" ,libxxf86vm)))
     (propagated-inputs
      ;; Headers from Mesa and GLU are needed.
      `(("glu" ,glu)
@@ -147,7 +146,9 @@ the X-Consortium license.")
               (sha256
                (base32
                 "16lrxxxd9ps9l69y3zsw6iy0drwjsp6m26d1937xj71alqk6dr6x"))))
-    (build-system gnu-build-system)))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))))
 
 (define-public ftgl
   (package
@@ -230,7 +231,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "19.2.7")
+    (version "19.3.2")
     (source
       (origin
         (method url-fetch)
@@ -242,7 +243,7 @@ also known as DXTn or DXTC) for Mesa.")
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "17jp8ghipgz62vqqz5llskxypkcmgf8gnlgnj0pyvnbgi6vryyg3"))
+          "1hg1gvcwvayksrdh9z8rfz66h3z1ffspmm2qgyy2nd8n8qrfwfjf"))
         (patches
          (search-patches "mesa-skip-disk-cache-test.patch"))))
     (build-system meson-build-system)
