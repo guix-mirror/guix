@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2018, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -23,6 +23,7 @@
   #:use-module (gnu installer utils)
   #:use-module (gnu installer user)
   #:use-module (gnu services herd)
+  #:use-module (guix build syscalls)
   #:use-module (guix build utils)
   #:use-module (gnu build accounts)
   #:use-module ((gnu system shadow) #:prefix sys:)
@@ -96,6 +97,15 @@ USERS."
   (write-passwd password (string-append etc "/passwd"))
   (write-shadow shadow (string-append etc "/shadow")))
 
+(define (umount-cow-store)
+  "Remove the store overlay and the bind-mount on /tmp created by the
+cow-store service."
+  (let ((tmp-dir "/remove"))
+    (mkdir-p tmp-dir)
+    (mount (%store-directory) tmp-dir "" MS_MOVE)
+    (umount tmp-dir)
+    (umount "/tmp")))
+
 (define* (install-system locale #:key (users '()))
   "Create /etc/shadow and /etc/passwd on the installation target for USERS.
 Start COW-STORE service on target directory and launch guix install command in
@@ -114,5 +124,16 @@ or #f.  Return #t on success and #f on failure."
     ;; passwords that we've put in there.
     (create-user-database users (%installer-target-dir))
 
-    (start-service 'cow-store (list (%installer-target-dir)))
-    (run-shell-command install-command #:locale locale)))
+    (dynamic-wind
+      (lambda ()
+        (start-service 'cow-store (list (%installer-target-dir))))
+      (lambda ()
+        (run-shell-command install-command #:locale locale))
+      (lambda ()
+        (stop-service 'cow-store)
+        ;; Remove the store overlay created at cow-store service start.
+        ;; Failing to do that will result in further umount calls to fail
+        ;; because the target device is seen as busy. See:
+        ;; https://lists.gnu.org/archive/html/guix-devel/2018-12/msg00161.html.
+        (umount-cow-store)
+        #f))))
