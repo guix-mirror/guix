@@ -3115,6 +3115,8 @@ common task.")
     (sha256
      (base32 sha256-base32-hash))))
 
+;; Note that version 3.0.0 is incompatible to 2.3.0.
+;; See also <https://github.com/gotestyourself/gotest.tools/issues/166>.
 (define (go-gotest-tools-package suffix)
   (package
     (name (string-append "go-gotest-tools-"
