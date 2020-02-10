@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2017 Eric Bavier <bavier@member.fsf.org>
@@ -15408,9 +15408,18 @@ under Python 2.7.")
     (build-system cmake-build-system)
     (native-inputs
      `(("python" ,python)
-       ("python-pytest" ,python-pytest)))
+
+       ;; The following dependencies are used for tests.
+       ("python-pytest" ,python-pytest)
+       ("catch" ,catch-framework2-1)
+       ("eigen" ,eigen)))
     (arguments
-     `(#:test-target "check"))
+     `(#:configure-flags
+       (list (string-append "-DCATCH_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "catch")
+                            "/include/catch"))
+
+       #:test-target "check"))
     (home-page "https://github.com/pybind/pybind11/")
     (synopsis "Seamless operability between C++11 and Python")
     (description "pybind11 is a lightweight header-only library that exposes
