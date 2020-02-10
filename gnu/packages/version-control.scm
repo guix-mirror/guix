@@ -15,7 +15,7 @@
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 André <eu@euandre.org>
-;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
@@ -163,6 +163,10 @@ as well as the classic centralized workflow.")
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
+      ;; Add bash-minimal explicitly to ensure it comes before bash-for-tests,
+      ;; see <https://bugs.gnu.org/39513>.
+      ("bash" ,bash-minimal)
+      ("bash-for-tests" ,bash)
       ("gettext" ,gettext-minimal)
       ("git-manpages"
        ,(origin
@@ -184,10 +188,6 @@ as well as the classic centralized workflow.")
       ("perl" ,perl)
       ("python" ,python-2) ; CAVEAT: incompatible with python-3 according to INSTALL
       ("zlib" ,zlib)
-
-      ;; Note: we keep this in inputs rather than native-inputs to work around
-      ;; a problem in 'patch-shebangs'; see <https://bugs.gnu.org/31952>.
-      ("bash-for-tests" ,bash)
 
       ;; For PCRE support in git grep (USE_LIBPCRE2).
       ("pcre" ,pcre2)
@@ -539,15 +539,16 @@ everything from small to very large projects with speed and efficiency.")
         `(,perl ,@lst))))
     (outputs '("out"))
     (native-inputs
-     `(("native-perl" ,perl)
+     `(("bash" ,bash-minimal)
+       ("bash-for-tests" ,bash)
+       ("native-perl" ,perl)
        ("gettext" ,gettext-minimal)))
     (inputs
      `(("curl" ,curl)                             ;for HTTP(S) access
        ("expat" ,expat)                           ;for 'git push' over HTTP(S)
        ("openssl" ,openssl)
        ("perl" ,perl)
-       ("zlib" ,zlib)
-       ("bash-for-tests" ,bash)))))
+       ("zlib" ,zlib)))))
 
 (define-public libgit2
   (package
