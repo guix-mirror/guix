@@ -960,6 +960,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/foomatic-filters-CVE-2015-8327.patch	\
   %D%/packages/patches/foomatic-filters-CVE-2015-8560.patch	\
   %D%/packages/patches/fontconfig-hurd-path-max.patch		\
+  %D%/packages/patches/freedink-engine-fix-sdl-hints.patch	\
   %D%/packages/patches/freeimage-unbundle.patch		\
   %D%/packages/patches/fuse-overlapping-headers.patch				\
   %D%/packages/patches/ganeti-deterministic-manual.patch	\

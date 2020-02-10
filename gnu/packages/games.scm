@@ -2732,6 +2732,7 @@ interface or via an external visual interface such as GNU XBoard.")
               (method url-fetch)
               (uri (string-append "mirror://gnu/freedink/freedink-" version
                                   ".tar.gz"))
+              (patches (search-patches "freedink-engine-fix-sdl-hints.patch"))
               (sha256
                (base32
                 "00hhk1bjdrc1np2qz44sa5n1mb62qzwxbvsnws3vpms6iyn3a2sy"))))
