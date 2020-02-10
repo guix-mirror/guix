@@ -767,14 +767,14 @@ connection alive.")
                                       bind-release-version)))
     (package
       (name "isc-dhcp")
-      (version "4.4.1")
+      (version "4.4.2")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "https://ftp.isc.org/isc/dhcp/"
                                     version "/dhcp-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "025nfqx4zwdgv4b3rkw26ihcj312vir08jk6yi57ndmb4a4m08ia"))))
+                  "08a5003zdxgl41b29zjkxa92h2i40zyjgxg0npvnhpkfl5jcsz0s"))))
       (build-system gnu-build-system)
       (arguments
        `(#:parallel-build? #f
@@ -783,17 +783,6 @@ connection alive.")
          (modify-phases %standard-phases
            (add-after 'unpack 'replace-bundled-bind
              (lambda* (#:key inputs native-inputs #:allow-other-keys)
-               ;; XXX TODO: Remove the following invocation of 'patch' when
-               ;; isc-dhcp is updated.  It should be needed only for 4.4.1.
-               (let ((patch (string-append (assoc-ref (or native-inputs inputs)
-                                                      "patch")
-                                           "/bin/patch"))
-                     (the-patch (assoc-ref (or native-inputs inputs)
-                                           "fixes-for-newer-bind.patch")))
-                 (format #t "applying '~a'...~%" the-patch)
-                 (invoke patch "--force" "--no-backup-if-mismatch"
-                         "-p1" "--input" the-patch))
-
                (delete-file "bind/bind.tar.gz")
                (copy-file (assoc-ref inputs "bind-source-tarball")
                           "bind/bind.tar.gz")
@@ -881,20 +870,14 @@ connection alive.")
 
       (native-inputs
        `(("perl" ,perl)
-         ("file" ,file)
-
-         ;; XXX TODO: Remove the following patch, and also the 'patch'
-         ;; program, when isc-dhcp is updated.
-         ("fixes-for-newer-bind.patch"
-          ,(search-patch "isc-dhcp-4.4.1-fixes-for-newer-bind.patch"))
-         ("patch" ,patch)))
+         ("file" ,file)))
 
       (inputs `(("inetutils" ,inetutils)
                 ("net-tools" ,net-tools)
                 ("iproute" ,iproute)
 
-                ;; XXX isc-dhcp bundles a copy of bind that has security
-                ;; flaws, so we use a newer version.
+                ;; isc-dhcp bundles a copy of BIND, which has proved vulnerable
+                ;; in the past.  Use a BIND-VERSION of our choosing instead.
                 ("bind-source-tarball"
                  ,(origin
                     (method url-fetch)
