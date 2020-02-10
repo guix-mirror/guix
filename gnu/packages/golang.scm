@@ -3105,19 +3105,23 @@ common task.")
       (home-page "https://godoc.org/golang.org/x/sync/errgroup")
       (license license:bsd-3))))
 
+(define (go-gotest-tools-source version sha256-base32-hash)
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "https://github.com/gotestyourself/gotest.tools.git")
+          (commit (string-append "v" version))))
+    (file-name (git-file-name "go-gotest-tools" version))
+    (sha256
+     (base32 sha256-base32-hash))))
+
 (define-public go-gotest-tools-assert
   (package
     (name "go-gotest-tools-assert")
     (version "3.0.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/gotestyourself/gotest.tools.git")
-                     (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "18sg8ih4b4h7g065zsfn9s00wplifmjvn77sqnp0lsmz91h91r5c"))))
+    (source
+     (go-gotest-tools-source version
+                            "0071rjxp4xzcr3vprkaj1hdk35a3v45bx8v0ipk16wwc5hx84i2i"))
     (build-system go-build-system)
     (arguments
      `(#:import-path "gotest.tools/assert"
