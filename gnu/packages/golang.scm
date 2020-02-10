@@ -3104,3 +3104,42 @@ and Context cancelation for groups of goroutines working on subtasks of a
 common task.")
       (home-page "https://godoc.org/golang.org/x/sync/errgroup")
       (license license:bsd-3))))
+
+(define-public go-gotest-tools-assert
+  (package
+    (name "go-gotest-tools-assert")
+    (version "3.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/gotestyourself/gotest.tools.git")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "18sg8ih4b4h7g065zsfn9s00wplifmjvn77sqnp0lsmz91h91r5c"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "gotest.tools/assert"
+       #:unpack-path "gotest.tools"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-more
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (source (string-append (getenv "GOPATH")
+                                           "/src/gotest.tools/assert"))
+                    (dest (string-append out "/src/gotest.tools/v3/assert")))
+             (write source)
+             (newline)
+             (copy-recursively source dest #:keep-mtime? #t)
+             #t))))))
+    (native-inputs
+     `(("go-github-com-pkg-errors" ,go-github-com-pkg-errors)
+       ("go-github-com-google-go-cmp-cmp"
+        ,go-github-com-google-go-cmp-cmp)))
+    (synopsis "Compare values and fail a test when a comparison fails")
+    (description "This package provides a way to compare values and fail a
+test when a comparison fails.")
+    (home-page "https://github.com/gotestyourself/gotest.tools")
+    (license license:asl2.0)))
