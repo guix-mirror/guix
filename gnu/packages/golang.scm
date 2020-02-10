@@ -3204,6 +3204,17 @@ test when a comparison fails.")
        ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
        ("go-gotest-tools-assert" ,go-gotest-tools-assert)
        ("go-github-com-google-go-cmp-cmp"
+        ,go-github-com-google-go-cmp-cmp)
+       ;; TODO: This would be better as a propagated-input of
+       ;; go-gotest-tools-assert, but that does not work for
+       ;; some reason.
+       ("go-gotest-tools-internal-format"
+        ,go-gotest-tools-internal-format)
+       ("go-gotest-tools-internal-difflib"
+        ,go-gotest-tools-internal-difflib)
+       ("go-gotest-tools-internal-source"
+        ,go-gotest-tools-internal-source)
+       ("go-github-com-google-go-cmp-cmp"
         ,go-github-com-google-go-cmp-cmp)))
     (synopsis "Go test runner with output optimized for humans")
     (description "This package provides a @code{go test} runner with output
