@@ -3148,6 +3148,15 @@ with gotest-tools.")))
     (description "This package computes differences for use
 with gotest-tools.")))
 
+(define-public go-gotest-tools-internal-source
+  (package (inherit (go-gotest-tools-package "internal/source"))
+    (native-inputs
+     `(("go-github-com-pkg-errors" ,go-github-com-pkg-errors)
+       ("go-github-com-google-go-cmp-cmp" ,go-github-com-google-go-cmp-cmp)))
+    (synopsis "Source code AST formatters for gotest-tools")
+    (description "This package provides source code AST formatters for
+gotest-tools.")))
+
 (define-public go-gotest-tools-assert
   (package (inherit (go-gotest-tools-package "assert"))
     (name "go-gotest-tools-assert")
