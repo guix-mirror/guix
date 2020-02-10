@@ -7838,6 +7838,105 @@ Skorl.  Maybe it would be an idea to try and escape...")
   (make-lure-package
    "lure-it" "it" "1ks6n39r1cllisrrh6pcr39swsdv7ng3gx5c47vaw71zzfr70hjj"))
 
+(define (make-queen-package name file-prefix release language hash)
+  (package
+    (name name)
+    (version release)
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/scummvm/extras/"
+                           "Flight%20of%20the%20Amazon%20Queen/"
+                           file-prefix release ".zip"))
+       (sha256
+        (base32 hash))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((out (assoc-ref %outputs "out"))
+                (share (string-append out "/share"))
+                (data (string-append share "/" ,name))
+                (apps (string-append share "/applications"))
+                (bin (string-append out "/bin"))
+                (executable (string-append bin "/" ,name))
+                (scummvm (assoc-ref %build-inputs "scummvm")))
+           (let ((unzip (string-append (assoc-ref %build-inputs "unzip")
+                                       "/bin/unzip")))
+             (invoke unzip "-j" (assoc-ref %build-inputs "source")))
+           (let ((doc (string-append share "/doc/" ,name "-" ,version)))
+             (install-file "readme.txt" doc))
+           (install-file "queen.1c" data)
+           (mkdir-p bin)
+           (let ((bash (assoc-ref %build-inputs "bash")))
+             (with-output-to-file executable
+               (lambda ()
+                 (format #t "#!~a/bin/bash~%" bash)
+                 (format #t "exec ~a/bin/scummvm -q fr -p ~a queen~%"
+                         scummvm data))))
+           (chmod executable #o755)
+           ;; Create desktop file.  There is no dedicated
+           ;; icon for the game, so we borrow SCUMMVM's.
+           (mkdir-p apps)
+           (with-output-to-file (string-append apps "/" ,name ".desktop")
+             (lambda _
+               (format #t
+                       "[Desktop Entry]~@
+                       Name=Flight of the Amazon Queen~@
+                       GenericName=Queen~@
+                       Comment=Embark on a quest to rescue a kidnapped princess and in the process, discover the true sinister intentions of a suspiciously located Lederhosen company~@
+                       Comment[de]=Begib dich auf ein Abenteuer, um eine entführte Prinzessin zu retten und entdecke die wahren, finsteren Absichten eines verdächtig erscheinenden Lederhosen-Unternehmens~@
+                       Type=Application~@
+                       Exec=~a~@
+                       Icon=~a/share/icons/hicolor/scalable/apps/scummvm.svg~@
+                       Categories=AdventureGame;Game;RolePlaying;~@
+                       Keywords=adventure;game;roleplaying;fantasy;~%"
+                       executable scummvm))))
+         #t)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (inputs
+     `(("bash" ,bash)
+       ("scummvm" ,scummvm)))
+    (home-page "https://www.scummvm.org/")
+    (synopsis "Classic 2D point and click adventure game")
+    (description "Flight of the Amazon Queen is a 2D point-and-click
+adventure game set in the 1940s.
+
+You assume the role of Joe King, a pilot for hire who is given the job
+of flying Faye Russell (a famous movie star) into the Amazon jungle
+for a photo shoot.  Of course, things never go according to plans.
+After an unfortunate turn of events they find themselves stranded in
+the heart of the Amazon jungle, where Joe will embark on a quest to
+rescue a kidnapped princess and in the process, discover the true
+sinister intentions of a suspiciously located Lederhosen company.  In
+a rich 2D environment, Joe will cross paths with a variety of unlikely
+jungle inhabitants including, but not limited to, a tribe of Amazon
+women and 6-foot-tall pygmies.")
+    (license (license:non-copyleft "file:///readme.txt"))))
+
+(define-public queen
+  (make-queen-package
+   "queen" "FOTAQ_Talkie-" "1.1" "en"
+   "1a6q71q1dl9vvw2qqsxk5h1sv0gaqy6236zr5905w2is01gdsp52"))
+
+(define-public queen-de
+  (make-queen-package
+   "queen-de" "FOTAQ_Ger_talkie-" "1.0" "de"
+   "13vn43x7214vyprlpqabvv71k890nff3d6fjscflr1ll7acjca3f"))
+
+(define-public queen-fr
+  (make-queen-package
+   "queen-fr" "FOTAQ_Fr_Talkie_" "1.0" "fr"
+   "0hq5g4qrkcwm2kn5i4kv4hijs9hi7bw9xl1vrwd1l69qqn30crwy"))
+
+(define-public queen-it
+  (make-queen-package
+   "queen-it" "FOTAQ_It_Talkie_" "1.0" "it"
+   "1h76y70lrpzfjkm53n4nr364nhyka54vbz9r7sadzyzl7c7ilv4d"))
+
 (define-public gnurobots
   (package
     (name "gnurobots")
