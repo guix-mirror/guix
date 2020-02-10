@@ -15422,12 +15422,12 @@ under Python 2.7.")
        #:test-target "check"))
     (home-page "https://github.com/pybind/pybind11/")
     (synopsis "Seamless operability between C++11 and Python")
-    (description "pybind11 is a lightweight header-only library that exposes
-C++ types in Python and vice versa, mainly to create Python bindings of
-existing C++ code.  Its goals and syntax are similar to the excellent
-Boost.Python library by David Abrahams: to minimize boilerplate code in
-traditional extension modules by inferring type information using compile-time
-introspection.")
+    (description
+     "@code{pybind11} is a lightweight header-only library that exposes C++
+types in Python and vice versa, mainly to create Python bindings of existing
+C++ code.  Its goals and syntax are similar to the @code{Boost.Python}
+library: to minimize boilerplate code in traditional extension modules by
+inferring type information using compile-time introspection.")
     (license license:bsd-3)))
 
 (define-public python-fasteners
