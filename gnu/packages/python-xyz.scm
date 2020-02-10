@@ -15395,7 +15395,7 @@ under Python 2.7.")
 (define-public pybind11
   (package
     (name "pybind11")
-    (version "2.3.0")
+    (version "2.4.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -15403,7 +15403,7 @@ under Python 2.7.")
                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "11b6dniri8m05spfd2a19irz82shf4sdca73566bniggrf3zclnf"))
+                "0k89w4bsfbpzw963ykg1cyszi3h3nk393qd31m6y46pcfxkqh4rd"))
               (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (native-inputs
