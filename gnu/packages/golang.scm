@@ -3132,6 +3132,16 @@ common task.")
     (home-page "https://github.com/gotestyourself/gotest.tools")
     (license license:asl2.0)))
 
+(define-public go-gotest-tools-internal-format
+  (package (inherit (go-gotest-tools-package "internal/format"))
+    (native-inputs
+     `(("go-github-com-pkg-errors" ,go-github-com-pkg-errors)
+       ("go-github-com-google-go-cmp-cmp"
+        ,go-github-com-google-go-cmp-cmp)))
+    (synopsis "Formats messages for use with gotest-tools")
+    (description "This package provides a way to format messages for use
+with gotest-tools.")))
+
 (define-public go-gotest-tools-assert
   (package (inherit (go-gotest-tools-package "assert"))
     (name "go-gotest-tools-assert")
