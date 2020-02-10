@@ -7,7 +7,7 @@
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 HiPhish <hiphish@posteo.de>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2019 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2019, 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -68,7 +68,7 @@
 (define-public vim
   (package
     (name "vim")
-    (version "8.2.0069")
+    (version "8.2.0236")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -77,7 +77,7 @@
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "0kxzfcpv96s1lbx97g6451p1i7yanws5bvzl05jh1ywaqv5f4y7g"))))
+               "0ixwr7kkxc1cj837v1bbgghkd68gbynfn7pc4rb87ah9sm6bgaz3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -189,9 +189,20 @@ with the editor vim.")))
              "--enable-xim"
              "--disable-selinux"
              "--enable-gui")
+       ;; This flag fixes the following error:
+       ;; .../libpython3.7m.a(pyexpat.o): undefined reference to symbol 'XML_FreeContentModel'
+       ;; .../libexpat.so.1: error adding symbols: DSO missing from command line
+       #:make-flags '("LDFLAGS=-lexpat")
        ,@(substitute-keyword-arguments (package-arguments vim)
            ((#:phases phases)
             `(modify-phases ,phases
+               (add-before 'check 'skip-previewpopup
+                 ;; This test fails when the path to the source is long. See:
+                 ;; https://github.com/vim/vim/issues/5615
+                 (lambda _
+                   (substitute* "src/testdir/test_popupwin.vim"
+                     ((".*Test_previewpopup.*" line)
+                      (string-append line "return\n")))))
                (add-before 'check 'skip-test87
                  ;; This test fails for unknown reasons after switching
                  ;; to a git checkout.
