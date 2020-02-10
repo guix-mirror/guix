@@ -491,6 +491,13 @@ built-in registry server of Docker.")
              (delete-file "daemon/graphdriver/overlay/overlay_test.go")
              (delete-file "daemon/graphdriver/overlay2/overlay_test.go")
              (delete-file "pkg/chrootarchive/archive_unix_test.go")
+             (delete-file "daemon/container_unix_test.go")
+             ;; This file uses cgroups and /proc.
+             (delete-file "pkg/sysinfo/sysinfo_linux_test.go")
+             ;; This file uses cgroups.
+             (delete-file "runconfig/config_test.go")
+             ;; This file uses /var.
+             (delete-file "daemon/oci_linux_test.go")
              #t))
          (replace 'configure
            (lambda _
