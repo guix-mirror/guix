@@ -10273,3 +10273,37 @@ generation functions from the GSL library.")
 
 (define-public ecl-cl-randist
   (sbcl-package->ecl-package sbcl-cl-randist))
+
+(define-public sbcl-float-features
+  (package
+    (name "sbcl-float-features")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Shinmera/float-features.git")
+             (commit "d3ef60181635b0849aa28cfc238053b7ca4644b0")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0yj419k7n59x6rh3grwr6frgwwyria2il6f7wxpfazm8cskv4lzr"))))
+    (build-system asdf-build-system/sbcl)
+    (synopsis "Common Lisp IEEE float portability library")
+    (description
+     "Portability library for IEEE float features that are not
+covered by the Common Lisp standard.")
+    (home-page "https://github.com/Shinmera/float-features")
+    (license license:zlib)
+    (inputs
+     `(("documentation-utils" ,sbcl-documentation-utils)))
+    (arguments
+     `(#:asd-system-name "float-features"
+       #:asd-file "float-features.asd"
+       #:tests? #f))))
+
+(define-public cl-float-features
+  (sbcl-package->cl-source-package sbcl-float-features))
+
+(define-public ecl-float-features
+  (sbcl-package->ecl-package sbcl-float-features))
