@@ -9870,3 +9870,41 @@ collection of chess games in many ways: browse, edit, add, organize, analyze,
 etc.  You can also play games on FICS or against an engine.")
     (home-page "http://chessx.sourceforge.net/")
     (license license:gpl2+)))
+
+(define-public stockfish
+  (package
+    (name "stockfish")
+    (version "11")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/official-stockfish/Stockfish.git")
+             (commit (string-append "sf_" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "12mppipinymj8s1ipq9a7is453vncly49c32ym9wvyklsgyxfzlk"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:make-flags (list "-C" "src"
+                          "build"
+                          (string-append "PREFIX="
+                                         (assoc-ref %outputs "out"))
+                          (string-append "ARCH="
+                                         ,(match (%current-system)
+                                            ("x86_64-linux" "x86-64")
+                                            ("i686-linux" "x86-32")
+                                            ("aarch64-linux" "general-64")
+                                            ("armhf-linux" "armv7")
+                                            ("mips64el-linux" "general-64")
+                                            (_ "general-32"))))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))))
+    (synopsis "Strong chess engine")
+    (description
+     "Stockfish is a very strong chess engines.  It is much stronger than the
+best human chess grandmasters.  It can be used with UCI-compatible GUIs like
+ChessX.")
+    (home-page "https://stockfishchess.org/")
+    (license license:gpl3+)))
