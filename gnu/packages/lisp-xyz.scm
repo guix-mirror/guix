@@ -7555,6 +7555,9 @@ docstrings for your library.")
 (define-public cl-documentation-utils
   (sbcl-package->cl-source-package sbcl-documentation-utils))
 
+(define-public ecl-documentation-utils
+  (sbcl-package->ecl-package sbcl-documentation-utils))
+
 (define-public sbcl-form-fiddle
   (let ((commit "e0c23599dbb8cff3e83e012f3d86d0764188ad18")
         (revision "0"))
