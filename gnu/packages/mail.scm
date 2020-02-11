@@ -2306,14 +2306,14 @@ transfer protocols.")
 (define-public opensmtpd
   (package
     (name "opensmtpd")
-    (version "6.6.2p1")
+    (version "6.6.3p1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.opensmtpd.org/archives/"
                            "opensmtpd-" version ".tar.gz"))
        (sha256
-        (base32 "16nz2n4s3djlasd6m6dqfwggf6igyfxzq5igny5i0qb8lnn13f33"))))
+        (base32 "1dqysjlyl0x3qzdzc9sjrla0063vpmlyq735lzf88p7wgzmw1xwy"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)
