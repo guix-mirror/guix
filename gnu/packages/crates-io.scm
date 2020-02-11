@@ -11568,12 +11568,20 @@ stack.")
          (base32
           "11bdcz04i106g4q7swkll0qxrb4287srqd2k3aq2q6i22zjlvdz8"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; tests require network access
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-redox-syscall" ,rust-redox-syscall-0.1)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir-0.3))))
     (home-page "https://github.com/alexcrichton/socket2-rs")
     (synopsis "Networking sockets in Rust")
     (description
      "This package provides utilities for handling networking sockets with a
 maximal amount of configuration possible intended.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
