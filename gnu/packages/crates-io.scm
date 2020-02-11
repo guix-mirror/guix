@@ -14127,13 +14127,10 @@ boundaries according to Unicode Standard Annex #29 rules.")
          (base32
           "0z09fn515xm7zyr0mmdyxa9mx2f7azcpv74pqmg611iralwpcvl2"))))
     (build-system cargo-build-system)
-    (home-page
-      "https://github.com/unicode-rs/unicode-xid")
+    (home-page "https://github.com/unicode-rs/unicode-xid")
     (synopsis "Determine Unicode XID related properties")
     (description "Determine whether characters have the XID_Start
 or XID_Continue properties according to Unicode Standard Annex #31.")
-    (properties '((hidden? . #t)))
-    ;; Dual licensed.
     (license (list license:asl2.0 license:expat))))
 
 (define-public rust-unicode-xid-0.1
