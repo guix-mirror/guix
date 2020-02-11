@@ -8701,11 +8701,15 @@ used in Cargo build scripts.")
          (base32
           "1q7nghkpvxxr168y2jnzh3w7qc9vfrby9n7ygy3xpj0bj71hsshs"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-typemap" ,rust-typemap-0.3))
+       #:cargo-development-inputs
+       (("rust-void" ,rust-void-1.0))))
     (home-page "https://github.com/reem/rust-plugin")
     (synopsis "Lazily evaluated, order-independent plugins for extensible types")
     (description
      "Lazily evaluated, order-independent plugins for extensible types.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-pocket-resources-0.3
