@@ -8639,7 +8639,6 @@ algorithms.")
     (home-page "https://github.com/rust-lang-nursery/pin-utils")
     (synopsis "Utilities for pinning")
     (description "This crate provides utilities for pinning values on the stack.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
