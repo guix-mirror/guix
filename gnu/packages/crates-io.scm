@@ -1547,27 +1547,30 @@ depending on a large number of #[cfg] parameters.  Structured like an
       (origin
         (method url-fetch)
         (uri (crate-uri "clang-sys" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0ls8zcqi5bmmrvrk3b6r1ym4wlivinbv590d2dvg2xn9f44mbpl1"))))
     (build-system cargo-build-system)
-    ;(arguments
-    ; `(#:phases
-    ;   (modify-phases %standard-phases
-    ;     (add-after 'unpack 'set-environmental-variable
-    ;       (lambda* (#:key inputs #:allow-other-keys)
-    ;         (let ((clang (assoc-ref inputs "libclang")))
-    ;           (setenv "LIBCLANG_PATH"
-    ;                   (string-append clang "/lib")))
-    ;         #t)))))
-    ;(inputs
-    ; `(("libclang" ,clang)))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-glob" ,rust-glob-0.3)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-libloading" ,rust-libloading-0.5))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-environmental-variable
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((clang (assoc-ref inputs "libclang")))
+               (setenv "LIBCLANG_PATH"
+                       (string-append clang "/lib")))
+             #t)))))
+    (inputs
+     `(("libclang" ,clang)))
     (home-page "https://github.com/KyleMayes/clang-sys")
     (synopsis "Rust bindings for libclang")
     (description
      "This package provides Rust bindings for @code{libclang}.")
-    (properties '((hidden? . #t)))
     (license license:asl2.0)))
 
 (define-public rust-clang-sys-0.26
@@ -1595,10 +1598,7 @@ depending on a large number of #[cfg] parameters.  Structured like an
              (let ((clang (assoc-ref inputs "libclang")))
                (setenv "LIBCLANG_PATH"
                        (string-append clang "/lib")))
-             #t)))))
-    (inputs
-     `(("libclang" ,clang)))
-    (properties '())))
+             #t)))))))
 
 (define-public rust-clap-2
   (package
