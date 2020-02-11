@@ -10465,3 +10465,41 @@ code.  The main target of this macro is speed.")
 
 (define-public cl-specialized-function
   (sbcl-package->cl-source-package sbcl-specialized-function))
+
+(define-public sbcl-constantfold
+  (let ((commit "0ff1d97a3fbcb89264f6a2af6ce62b73e7b421f4")
+        (revision "1"))
+    (package
+      (name "sbcl-constantfold")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/numcl/constantfold.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "153h0569z6bff1qbad0bdssplwwny75l7ilqwcfqfdvzsxf9jh06"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Support library for numcl")
+      (description
+       "Support library for numcl.  Registers a function as an
+additional form that is considered as a candidate for a constant.")
+      (home-page "https://github.com/numcl/constantfold")
+      (license license:lgpl3+)
+      (inputs
+       `(("trivia" ,sbcl-trivia)
+         ("alexandria" ,sbcl-alexandria)
+         ("iterate" ,sbcl-iterate)
+         ("lisp-namespace" ,sbcl-lisp-namespace)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (arguments
+       `(#:asd-system-name "constantfold"
+         #:asd-file "constantfold.asd"
+         #:test-asd-file "constantfold.test.asd")))))
+
+(define-public cl-constantfold
+  (sbcl-package->cl-source-package sbcl-constantfold))
