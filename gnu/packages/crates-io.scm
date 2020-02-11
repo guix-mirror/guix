@@ -12057,7 +12057,7 @@ developed as part of the Servo project.")
 (define-public rust-strsim-0.9
   (package
     (name "rust-strsim")
-    (version "0.9.2")
+    (version "0.9.3")
     (source
       (origin
         (method url-fetch)
@@ -12065,14 +12065,13 @@ developed as part of the Servo project.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1xphwhf86yxxmcpvm4mikj8ls41f6nf7gqyjm98b74mfk81h6b03"))))
+          "0k497pv882qn3q977ckznm13vxx927g8s1swvcv68j3c1pccwik4"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/dguo/strsim-rs")
     (synopsis "Rust implementations of string similarity metrics")
     (description "This crate includes implementations of string similarity
 metrics.  It includes Hamming, Levenshtein, OSA, Damerau-Levenshtein, Jaro,
 and Jaro-Winkler.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-strsim-0.8
