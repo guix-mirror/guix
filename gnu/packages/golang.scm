@@ -16,6 +16,7 @@
 ;;; Copyright @ 2019 Giovanni Biscuolo <g@xelera.eu>
 ;;; Copyright @ 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -216,11 +217,11 @@ in the style of communicating sequential processes (@dfn{CSP}).")
     (supported-systems '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux"))
     (license license:bsd-3)))
 
-(define-public go-1.12
+(define-public go-1.13
   (package
     (inherit go-1.4)
     (name "go")
-    (version "1.12.16")
+    (version "1.13.7")
     (source
      (origin
        (method url-fetch)
@@ -228,7 +229,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                            name version ".src.tar.gz"))
        (sha256
         (base32
-         "1y0x10fsvgpc1x24b9q9y6kv9b0kwf7879am3p0gym2abgc5wvnf"))))
+         "1x21kfpzfkvmqd42pan6nl862m7jjl4niqxxpcgm46awbz645bg4"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.4)
        ((#:phases phases)
@@ -367,7 +368,6 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                       (docs (string-append doc_out "/share/doc/" ,name "-" ,version))
                       (src (string-append
                             (assoc-ref outputs "tests") "/share/" ,name "-" ,version)))
-                 (delete-file-recursively "../pkg/bootstrap")
                  ;; Prevent installation of the build cache, which contains
                  ;; store references to most of the tools used to build Go and
                  ;; would unnecessarily increase the size of Go's closure if it
@@ -405,7 +405,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
        ,@(package-native-inputs go-1.4)))
     (supported-systems %supported-systems)))
 
-(define-public go go-1.12)
+(define-public go go-1.13)
 
 (define-public go-github-com-alsm-ioprogress
   (let ((commit "063c3725f436e7fba0c8f588547bee21ffec7ac5")
