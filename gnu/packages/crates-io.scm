@@ -8296,7 +8296,6 @@ the @code{take_while} predicate returned false after dropping the @code{by_ref}.
     (home-page "https://github.com/servo/rust-url/")
     (synopsis "Percent encoding and decoding")
     (description "This crate provides percent encoding and decoding.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
