@@ -11639,7 +11639,7 @@ track of where each new file and line starts.")
 (define-public rust-spin-0.5
   (package
     (name "rust-spin")
-    (version "0.5.0")
+    (version "0.5.2")
     (source
       (origin
         (method url-fetch)
@@ -11647,14 +11647,13 @@ track of where each new file and line starts.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0m9clchsj0rf13bggsgvbv9haiy0f6rhvnvkpvkk8720a5pkydj4"))))
+          "0b84m6dbzrwf2kxylnw82d3dr8w06av7rfkr8s85fb5f43rwyqvf"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/mvdnes/spin-rs")
     (synopsis "Synchronization primitives based on spinning")
     (description "This crate provides synchronization primitives based on
 spinning.  They may contain data, are usable without @code{std},and static
 initializers are available.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-stable-deref-trait-1.1
