@@ -13550,11 +13550,13 @@ serializing Rust structures.")
          (base32
           "1xm1gbvz9qisj1l6d36hrl9pw8imr8ngs6qyanjnsad3h0yfcfv5"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-unsafe-any" ,rust-unsafe-any-0.4))))
     (home-page "https://github.com/reem/rust-typemap")
     (synopsis "Typesafe store for many value types")
     (description
      "A typesafe store for many value types.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-typenum-1.10
