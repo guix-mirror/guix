@@ -10423,3 +10423,45 @@ correctly.")
 
 (define-public cl-trivialib-type-unify
   (sbcl-package->cl-source-package sbcl-trivialib-type-unify))
+
+(define-public sbcl-specialized-function
+  (let ((commit "b96b6afaf8358bf91cc0703e62a5a4ee20d2b7bc")
+        (revision "1"))
+    (package
+      (name "sbcl-specialized-function")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/numcl/specialized-function.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "12j45ff0n26578vmfbhb9mfbdchw4wy023k0m2ppgl9s0z4bhjaj"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Julia-like dispatch for Common Lisp")
+      (description
+       "This library is part of NUMCL.  It provides a macro
+@code{SPECIALIZED} that performs a Julia-like dispatch on the arguments,
+lazily compiling a type-specific version of the function from the same
+code.  The main target of this macro is speed.")
+      (home-page "https://github.com/numcl/specialized-function")
+      (license license:lgpl3+)
+      (inputs
+       `(("trivia" ,sbcl-trivia)
+         ("alexandria" ,sbcl-alexandria)
+         ("iterate" ,sbcl-iterate)
+         ("lisp-namespace" ,sbcl-lisp-namespace)
+         ("type-r" ,sbcl-type-r)
+         ("trivial-cltl2" ,sbcl-trivial-cltl2)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (arguments
+       `(#:asd-system-name "specialized-function"
+         #:asd-file "specialized-function.asd"
+         #:test-asd-file "specialized-function.test.asd")))))
+
+(define-public cl-specialized-function
+  (sbcl-package->cl-source-package sbcl-specialized-function))
