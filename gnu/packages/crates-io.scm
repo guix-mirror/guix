@@ -13425,7 +13425,6 @@ serializing Rust structures.")
     (home-page "https://github.com/reem/rust-traitobject")
     (synopsis "Unsafe helpers for dealing with raw trait objects")
     (description "Unsafe helpers for dealing with raw trait objects.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
