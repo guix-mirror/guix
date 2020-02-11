@@ -11470,7 +11470,6 @@ words, like Python's shlex.")
     (synopsis "Pre-allocated storage for a uniform data type")
     (description "This create provides a pre-allocated storage for a uniform
 data type.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-sleef-sys-0.1
