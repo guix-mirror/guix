@@ -4129,12 +4129,15 @@ featuring zero allocations, composability, and iterator-like interfaces.")
          (base32
           "1r32456gpblzfvnkf60545v8acqk7gh5zhyhi1jn669k9gicv45b"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-futures" ,rust-futures-0.1)
+        ("rust-num-cpus" ,rust-num-cpus-1.11))))
     (home-page "https://github.com/rust-lang-nursery/futures-rs")
     (synopsis "Implementation of thread pools which hand out futures")
     (description
      "An implementation of thread pools which hand out futures to the results of
 the computation on the threads themselves.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
