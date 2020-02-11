@@ -10543,3 +10543,50 @@ type correctness in Common Lisp.  It is based on CLtL2 extensions.")
 
 (define-public cl-gtype
   (sbcl-package->cl-source-package sbcl-gtype))
+
+(define-public sbcl-numcl
+  (let ((commit "1cf7dfa59f763a24a501092870e9c5ee745d0c17")
+        (revision "1"))
+    (package
+      (name "sbcl-numcl")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/numcl/numcl.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0i3jby9hf4ii7blivgyza80g0vmjfhk8537i5i7kqqk0i5sdnym2"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Numpy clone in Common Lisp")
+      (description
+       "This is a Numpy clone in Common Lisp.  At the moment the
+library is written in pure Common Lisp, focusing more on correctness
+and usefulness, not speed.  Track the progress at
+@url{https://github.com/numcl/numcl/projects/1}.")
+      (home-page "https://github.com/numcl/numcl")
+      (license license:lgpl3+)
+      (inputs
+       `(("trivia" ,sbcl-trivia)
+         ("alexandria" ,sbcl-alexandria)
+         ("iterate" ,sbcl-iterate)
+         ("lisp-namespace" ,sbcl-lisp-namespace)
+         ("type-r" ,sbcl-type-r)
+         ("constantfold" ,sbcl-constantfold)
+         ("cl-randist" ,sbcl-cl-randist)
+         ("float-features" ,sbcl-float-features)
+         ("function-cache" ,sbcl-function-cache)
+         ("specialized-function" ,sbcl-specialized-function)
+         ("gtype" ,sbcl-gtype)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (arguments
+       `(#:asd-system-name "numcl"
+         #:asd-file "numcl.asd"
+         #:test-asd-file "numcl.test.asd")))))
+
+(define-public cl-numcl
+  (sbcl-package->cl-source-package sbcl-numcl))
