@@ -26534,9 +26534,10 @@ service activation programs and then spawns the GNU@tie{}Shepherd, the
 initialization system.
 
 @item --root=@var{root}
-Mount @var{root} as the root file system.  @var{root} can be a
-device name like @code{/dev/sda1}, a file system label, or a file system
-UUID.
+Mount @var{root} as the root file system.  @var{root} can be a device
+name like @code{/dev/sda1}, a file system label, or a file system UUID.
+When unspecified, the device name from the root file system of the
+operating system declaration is used.
 
 @item --system=@var{system}
 Have @file{/run/booted-system} and @file{/run/current-system} point to
