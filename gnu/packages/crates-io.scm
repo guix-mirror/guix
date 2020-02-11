@@ -9119,10 +9119,15 @@ to write.")
          (base32
           "1zkc46ryacf2jdkc6krsy2z615xbk1x8kp1830rcxz3irj5qqfh5"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1.0))
+       #:cargo-development-inputs
+       (("rust-rustversion" ,rust-rustversion-0.1)
+        ("rust-trybuild" ,rust-trybuild-1.0))))
     (home-page "https://github.com/dtolnay/quote")
     (synopsis "Quasi-quoting macro quote!(...)")
     (description "Quasi-quoting macro quote!(...)")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0 license:expat))))
 
 (define-public rust-quote-0.6
@@ -9139,8 +9144,7 @@ to write.")
          (base32
           "1qgqq48jymp5h4y082aanf25hrw6bpb678xh3zw993qfhxmkpqkc"))))
     (arguments
-     `(#:cargo-inputs (("rust-proc-macro2" ,rust-proc-macro2-0.4))))
-    (properties '())))
+     `(#:cargo-inputs (("rust-proc-macro2" ,rust-proc-macro2-0.4))))))
 
 (define-public rust-quote-0.3
   (package
