@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -161,29 +161,22 @@
              (waitpid fork-pid)
              result))))))))
 
-;; XXX: Skip this test when running Linux > 4.7.5 to work around
-;; <https://bugzilla.kernel.org/show_bug.cgi?id=183461>.
-(when (or (not perform-container-tests?)
-          (version>? (utsname:release (uname)) "4.7.5")
-
-          ;; Skip on Ubuntu's 4.4 kernels, which contain a backport of the
-          ;; faulty code: <https://bugs.gnu.org/25476>.
-          (member (utsname:release (uname))
-                  '("4.4.0-21-generic" "4.4.0-59-generic"
-                    "4.4.0-116-generic")))
+(when (not perform-container-tests?)
   (test-skip 1))
 (test-equal "pivot-root"
-  #t
-  (match (pipe)
-    ((in . out)
+  'success!
+  (match (socketpair AF_UNIX SOCK_STREAM 0)
+    ((parent . child)
      (match (clone (logior CLONE_NEWUSER CLONE_NEWNS SIGCHLD))
        (0
         (dynamic-wind
           (const #t)
           (lambda ()
-            (close in)
+            (close parent)
             (call-with-temporary-directory
              (lambda (root)
+               (display "ready\n" child)
+               (read child)                       ;wait for "go!"
                (let ((put-old (string-append root "/real-root")))
                  (mount "none" root "tmpfs")
                  (mkdir put-old)
@@ -192,18 +185,32 @@
                      (display "testing\n" port)))
                  (pivot-root root put-old)
                  ;; The test file should now be located inside the root directory.
-                 (write (file-exists? "/test") out)
-                 (close out)))))
+                 (write (and (file-exists? "/test") 'success!) child)
+                 (close child)))))
           (lambda ()
             (primitive-exit 0))))
        (pid
-        (close out)
-        (let ((result (read in)))
-          (close in)
-          (and (zero? (match (waitpid pid)
-                        ((_ . status)
-                         (status:exit-val status))))
-               (eq? #t result))))))))
+        (close child)
+        (match (read parent)
+          ('ready
+           ;; Set up the UID/GID mapping so that we can mkdir on the tmpfs:
+           ;; <https://bugzilla.kernel.org/show_bug.cgi?id=183461>.
+           (call-with-output-file (format #f "/proc/~d/setgroups" pid)
+             (lambda (port)
+               (display "deny" port)))
+           (call-with-output-file (format #f "/proc/~d/uid_map" pid)
+             (lambda (port)
+               (format port "0 ~d 1" (getuid))))
+           (call-with-output-file (format #f "/proc/~d/gid_map" pid)
+             (lambda (port)
+               (format port "0 ~d 1" (getgid))))
+           (display "go!\n" parent)
+           (let ((result (read parent)))
+             (close parent)
+             (and (zero? (match (waitpid pid)
+                           ((_ . status)
+                            (status:exit-val status))))
+                  result)))))))))
 
 (test-equal "scandir*, ENOENT"
   ENOENT
