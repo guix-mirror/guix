@@ -11598,12 +11598,14 @@ maximal amount of configuration possible intended.")
          (base32
           "1lwa6973zs4bgj29my7agfjgk4nw9hp6j7dfnr13nid85fw7rxsb"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-tempfile" ,rust-tempfile-3.1))))
     (home-page "https://github.com/derekdreery/sourcefile-rs")
     (synopsis "Concatenate source from multiple files")
     (description
      "A library for concatenating source from multiple files, whilst keeping
 track of where each new file and line starts.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
