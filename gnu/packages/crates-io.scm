@@ -7532,7 +7532,7 @@ combinators library.")
 (define-public rust-num-iter-0.1
   (package
     (name "rust-num-iter")
-    (version "0.1.39")
+    (version "0.1.40")
     (source
       (origin
         (method url-fetch)
@@ -7540,13 +7540,17 @@ combinators library.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0bhk2qbr3261r6zvfc58lz4spfqjhvdripxgz5mks5rd85r55gbn"))))
+          "005wif3bk23b5jdg7l0cprzqzyc4jg0xjyzyykciv2ci08581c6z"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num-integer" ,rust-num-integer-0.1)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-autocfg" ,rust-autocfg-1.0))))
     (home-page "https://github.com/rust-num/num-iter")
     (synopsis "External iterators for generic mathematics")
     (description
      "This crate provides external iterators for generic mathematics.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
