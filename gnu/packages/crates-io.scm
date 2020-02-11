@@ -9073,12 +9073,11 @@ to write.")
          "0mkl4wnvvjk4m32aq3an4ayfyvnmbxnzcybfm7n3fbsndb1xjdcw"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-env-logger" ,rust-env-logger-0.6)
         ("rust-log" ,rust-log-0.4)
-        ("rust-rand" ,rust-rand-0.4)
-        ("rust-rand-core" ,rust-rand-core-0.5))))
+        ("rust-rand" ,rust-rand-0.6)
+        ("rust-rand-core" ,rust-rand-core-0.4))))
     (home-page
      "https://github.com/BurntSushi/quickcheck")
     (synopsis
