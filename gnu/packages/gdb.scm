@@ -131,6 +131,16 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
 (define-public gdb/next
   (package/inherit
    gdb-8.3
+   (version "9.1")
+   (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/gdb/gdb-" version ".tar.xz"))
+             (sha256
+              (base32
+               "0dqp1p7w836iwijg1zb4a784n0j4pyjiw5v6h8fg5lpx6b40x7k9"))))
+   (arguments
+    `(#:out-of-source? #t
+      ,@(package-arguments gdb-8.3)))
    (inputs
     `(("source-highlight" ,source-highlight)
       ,@(package-inputs gdb-8.3)))
