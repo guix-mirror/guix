@@ -932,6 +932,52 @@ It grants direct and undocumented access to your hardware that may cause damage
 and should be used with caution, especially on untested models.")
     (license license:gpl3+)))           ; see README.md (no licence headers)
 
+(define-public rtl8812au-aircrack-ng-linux-module
+  (let ((commit "945d6ed6505c32f0993b1dba576388e92e78101b")
+        (revision "0"))
+    (package
+      (name "rtl8812au-aircrack-ng-linux-module")
+      (version (git-version "5.6.4.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/aircrack-ng/rtl8812au.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1pjws7qb5l4z9k80vgz4zdxmqhbwxjjrmkpf0hijf821byyddvi7"))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             ;; Remove bundled tarballs, APKs, word lists, speadsheets,
+             ;; and other unnecessary unlicenced things.
+             (for-each delete-file-recursively (list "android"
+                                                     "docs"
+                                                     "tools"))
+             #t))))
+      (build-system linux-module-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (replace 'build
+             (lambda* (#:key inputs make-flags #:allow-other-keys)
+               (apply invoke "make"
+                      (string-append "KSRC="
+                                     (assoc-ref inputs "linux-module-builder")
+                                     "/lib/modules/build")
+                      (or make-flags '())))))
+         #:tests? #f))                  ; no test suite
+      (supported-systems '("x86_64-linux" "i686-linux"))
+      (home-page "https://github.com/aircrack-ng/rtl8812au")
+      (synopsis "Linux driver for Realtek USB wireless network adapters")
+      (description
+       "This is Realtek's rtl8812au Linux driver for USB 802.11n wireless
+network adapters, modified by the aircrack-ng project to support monitor mode
+and frame injection.  It provides a @code{88XXau} kernel module that supports
+RTL8812AU, RTL8821AU, and RTL8814AU chips.")
+      (license license:gpl2+))))
+
 (define-public vhba-module
   (package
     (name "vhba-module")
