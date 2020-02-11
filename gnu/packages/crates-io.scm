@@ -11677,7 +11677,6 @@ types which deref to a fixed address which is valid even when the containing
 type is moved.  For example, Box, Vec, Rc, Arc and String implement this trait.
 Additionally, it defines CloneStableDeref for types like Rc where clones deref
 to the same address.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
