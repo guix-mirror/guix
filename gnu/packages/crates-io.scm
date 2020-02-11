@@ -8729,7 +8729,6 @@ used in Cargo build scripts.")
     (synopsis "Include resources in your applications")
     (description "This crate allows you to include resources in your
 applications.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-ppv-lite86-0.2
