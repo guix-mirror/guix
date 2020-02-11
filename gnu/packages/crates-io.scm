@@ -33,9 +33,11 @@
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages version-control))
+  #:use-module (gnu packages version-control)
+  #:use-module (gnu packages xorg))
 
 ;;;
 ;;; Please: Try to add new module packages in alphabetic order.
@@ -15230,17 +15232,23 @@ extended attributes.")
          "19i2pm8alpn2f0m4jg8bsw6ckw8irj1wjh55h9pi2fcb2diny1b2"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
+     `(#:tests? #f  ; Building all the features tests the code.
+       #:cargo-build-flags '("--features" "debug_all")
        #:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
         ("rust-log" ,rust-log-0.4)
-        ("rust-x11" ,rust-x11-2))
-       #:cargo-development-inputs
-       (("rust-libc" ,rust-libc-0.2))))
+        ("rust-x11" ,rust-x11-2))))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxcb" ,libxcb)
+       ("xcb-proto" ,xcb-proto)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python)))
     (home-page "https://github.com/rtbo/rust-xcb")
     (synopsis "Rust bindings and wrappers for XCB")
     (description
-     "Rust bindings and wrappers for XCB")
+     "This package provides Rust bindings and wrappers for XCB.")
     (license license:expat)))
 
 (define-public rust-xdg-2.2
