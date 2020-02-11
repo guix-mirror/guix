@@ -7798,7 +7798,6 @@ Things in odds may move to more appropriate crates if we find them.")
     (description
      "This package provides a tool to find SSL certificate locations on the
 system for OpenSSL.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
