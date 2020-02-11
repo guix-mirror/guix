@@ -362,12 +362,12 @@ the last argument of `mknod'."
   "Mount the root file system of type TYPE at device ROOT. If VOLATILE-ROOT? is
 true, mount ROOT read-only and make it an overlay with a writable tmpfs using
 the kernel built-in overlayfs. FLAGS and OPTIONS indicates the options to use
-to mount ROOT."
+to mount ROOT, and behave the same as for the `mount' procedure."
 
   (if volatile-root?
       (begin
         (mkdir-p "/real-root")
-        (mount root "/real-root" type MS_RDONLY options)
+        (mount root "/real-root" type (logior MS_RDONLY flags) options)
         (mkdir-p "/rw-root")
         (mount "none" "/rw-root" "tmpfs")
 
