@@ -10967,7 +10967,6 @@ proven statistical guarantees.")
     (home-page "https://github.com/steveklabnik/semver-parser")
     (synopsis "Parsing of the semver spec")
     (description "This package provides for parsing of the semver spec.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
