@@ -10503,3 +10503,43 @@ additional form that is considered as a candidate for a constant.")
 
 (define-public cl-constantfold
   (sbcl-package->cl-source-package sbcl-constantfold))
+
+(define-public sbcl-gtype
+  (let ((commit "42275e3606242ae91e9c8dfa30c18ced50a35b66")
+        (revision "1"))
+    (package
+      (name "sbcl-gtype")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/numcl/gtype.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1f56dba998v945jcxhha391557n6md1ql25b7icfwwfivhmlaa9b"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "C++/Julia-like parametric types in Common Lisp")
+      (description
+       "Support library for numcl that provides Julia-like runtime parametric
+type correctness in Common Lisp.  It is based on CLtL2 extensions.")
+      (home-page "https://github.com/numcl/gtype")
+      (license license:lgpl3+)
+      (inputs
+       `(("trivialib.type-unify" ,sbcl-trivialib-type-unify)
+         ("trivial-cltl2" ,sbcl-trivial-cltl2)
+         ("trivia" ,sbcl-trivia)
+         ("alexandria" ,sbcl-alexandria)
+         ("iterate" ,sbcl-iterate)
+         ("type-r" ,sbcl-type-r)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (arguments
+       `(#:asd-system-name "gtype"
+         #:asd-file "gtype.asd"
+         #:test-asd-file "gtype.test.asd")))))
+
+(define-public cl-gtype
+  (sbcl-package->cl-source-package sbcl-gtype))
