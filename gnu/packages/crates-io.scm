@@ -11371,7 +11371,6 @@ proven statistical guarantees.")
     (synopsis "Split a string into shell words, like Python's shlex")
     (description "This crate provides a method to split a string into shell
 words, like Python's shlex.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
