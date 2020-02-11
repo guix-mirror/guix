@@ -11706,7 +11706,7 @@ to the same address.")
 (define-public rust-stacker-0.1
   (package
     (name "rust-stacker")
-    (version "0.1.5")
+    (version "0.1.6")
     (source
       (origin
         (method url-fetch)
@@ -11714,14 +11714,21 @@ to the same address.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0js0axz5nla1mkr2dm2vrv9rj964ng1lrv4l43sqlnfgawplhygv"))))
+          "12igajfgqz96c7vcwi91xdfsphawik6g36ndlglqih0a7bqw8vyr"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-psm" ,rust-psm-0.1)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-cc" ,rust-cc-1.0))))
     (home-page "https://github.com/rust-lang/stacker")
     (synopsis "Manual segmented stacks for Rust")
     (description
      "This package provides a stack growth library useful when implementing
 deeply recursive algorithms that may accidentally blow the stack.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
