@@ -11901,7 +11901,7 @@ crate.")
 (define-public rust-stdweb-internal-test-macro-0.1
   (package
     (name "rust-stdweb-internal-test-macro")
-    (version "0.1.0")
+    (version "0.1.1")
     (source
       (origin
         (method url-fetch)
@@ -11909,13 +11909,16 @@ crate.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "12rrm7p77xnm3xacgn3rgniiyyjb4gq7902wpbljsvbx045z69l2"))))
+          "0wx3jlm98qrg1pdw149fprzs9x3x3igqkm5ll23jv2v62yddfrjf"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1.0)
+        ("rust-quote" ,rust-quote-1.0))))
     (home-page "https://github.com/koute/stdweb")
     (synopsis "Internal crate of the `stdweb` crate")
     (description
      "Internal crate of the @code{stdweb} crate.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
