@@ -8912,6 +8912,29 @@ in terms of the upstream unstable API.")
      "Hypothesis-like property-based testing and shrinking.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-psm-0.1
+  (package
+    (name "rust-psm")
+    (version "0.1.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "psm" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1q1hdbnp2j3zz1vhzp1xhds6ynan3mg5bhjlhfy5m1sg8n5wckxi"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-cc" ,rust-cc-1.0))))
+    (home-page "https://github.com/rust-lang/stacker/")
+    (synopsis "Stack manipulation and introspection routines")
+    (description "This crate provides very portable functions to control the
+stack pointer and inspect the properties of the stack.")
+    (license (list license:isc license:asl2.0))))
+
 (define-public rust-pulldown-cmark-0.4
   (package
     (name "rust-pulldown-cmark")
