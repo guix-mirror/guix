@@ -10627,12 +10627,17 @@ using a fork-like interface.")
          (base32
           "1j0h74f1xqf9hjkhanp8i20mqc1aw35kr1iq9i79q7713mn51a5z"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-no-panic" ,rust-no-panic-0.1))
+       #:cargo-development-inputs
+       (("rust-num-cpus" ,rust-num-cpus-1.11)
+        ("rust-rand" ,rust-rand-0.5))))
     (home-page "https://github.com/dtolnay/ryu")
-    (synopsis
-      "Fast floating point to string conversion")
+    (synopsis "Fast floating point to string conversion")
     (description
-      "Fast floating point to string conversion")
-    (properties '((hidden? . #t)))
+     "This package provides a pure Rust implementation of Ryū, an algorithm to
+quickly convert floating point numbers to decimal strings.")
     (license (list license:asl2.0 license:boost1.0))))
 
 (define-public rust-safemem-0.3
