@@ -30,6 +30,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages jemalloc)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages ssh)
@@ -1581,7 +1582,23 @@ depending on a large number of #[cfg] parameters.  Structured like an
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1r50dwy5hj5gq07dn0qf8222d07qv0970ymx0j8n9779yayc3w3f"))))))
+          "1r50dwy5hj5gq07dn0qf8222d07qv0970ymx0j8n9779yayc3w3f"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-glob" ,rust-glob-0.2)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-libloading" ,rust-libloading-0.5))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-environmental-variable
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((clang (assoc-ref inputs "libclang")))
+               (setenv "LIBCLANG_PATH"
+                       (string-append clang "/lib")))
+             #t)))))
+    (inputs
+     `(("libclang" ,clang)))
+    (properties '())))
 
 (define-public rust-clap-2
   (package
