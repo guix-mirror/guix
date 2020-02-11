@@ -18,7 +18,7 @@
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
-;;; Copyright © 2017, 2018, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2018, 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017, 2018, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017, 2018 Kyle Meyer <kyle@kyleam.com>
@@ -21431,3 +21431,25 @@ or post you read or write, and collects them in a SQLite database, which can
 be easily and quickly queried to determine the completion list.  It optionally
 uses BBDB and Message-X.")
       (license license:gpl3+))))
+
+(define-public emacs-auto-dictionary-mode
+  (package
+    (name "emacs-auto-dictionary-mode")
+    (version "1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nschum/auto-dictionary-mode")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "191294k92qp8gmfypf0q8j8qrym96aqikzvyb9p03wqvbr3r1dsk"))))
+    (build-system emacs-build-system)
+    (home-page "http://nschum.de/src/emacs/auto-dictionary/")
+    (synopsis "Automatic dictionary switcher for Emacs spell checking")
+    (description "@code{auto-dictionary} is a minor mode that hooks into
+Flyspell's on-the-fly spell checking and extends these checks to also detect
+language.  Auto-dictionary then sets @code{ispell-dictionary} to use the
+detected language.")
+    (license license:gpl2+)))
