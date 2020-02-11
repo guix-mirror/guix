@@ -9479,10 +9479,18 @@ generator that uses the HC-128 algorithm.")
          (base32
           "027flpjr4znx2csxk7gxb7vrf9c7y5mydmvg5az2afgisp4rgnfy"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-rand-core" ,rust-rand-core-0.3)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0))
+       #:cargo-development-inputs
+       (("rust-bincode" ,rust-bincode-1.1))))
     (home-page "https://crates.io/crates/rand_isaac")
     (synopsis "ISAAC random number generator")
-    (description "ISAAC random number generator")
-    (properties '((hidden? . #t)))
+    (description "This package implements the @code{ISAAC} and @code{ISAAC-64}
+random number generators.  ISAAC stands for \"Indirection, Shift, Accumulate,
+Add, and Count\" which are the principal bitwise operations employed.")
     (license (list license:asl2.0
                    license:expat))))
 
