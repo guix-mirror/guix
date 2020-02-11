@@ -9507,12 +9507,16 @@ Add, and Count\" which are the principal bitwise operations employed.")
          (base32
           "16z387y46bfz3csc42zxbjq89vcr1axqacncvv8qhyy93p4xarhi"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-rand-core" ,rust-rand-core-0.4)
+        ("rust-winapi" ,rust-winapi-0.3)
+        ("rust-log" ,rust-log-0.4))))
     (home-page "https://github.com/rust-random/rand")
-    (synopsis
-      "Random number generator based on timing jitter")
-    (description
-      "Random number generator based on timing jitter")
-    (properties '((hidden? . #t)))
+    (synopsis "Random number generator based on timing jitter")
+    (description "This package provides a non-physical true random number
+generator based on timing jitter.")
     (license (list license:asl2.0
                    license:expat))))
 
