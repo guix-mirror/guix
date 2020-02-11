@@ -7629,11 +7629,11 @@ giga, kibi.")
          (base32
           "1vs9rhggqbql1p26x8nkha1j06wawwgb2jp5fs88b5gi7prvvy5q"))))
     (build-system cargo-build-system)
+    (arguments '(#:tests? #f))
     (home-page "https://gitlab.com/mmstick/numtoa")
     (synopsis "Convert numbers into stack-allocated byte arrays")
     (description
      "This package can convert numbers into stack-allocated byte arrays.")
-    (properties '((hidden? . #t)))
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-object-0.12
