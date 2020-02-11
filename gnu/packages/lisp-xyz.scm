@@ -10307,3 +10307,43 @@ covered by the Common Lisp standard.")
 
 (define-public ecl-float-features
   (sbcl-package->ecl-package sbcl-float-features))
+
+(define-public sbcl-function-cache
+  (package
+    (name "sbcl-function-cache")
+    (version "1.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/AccelerationNet/function-cache.git")
+             (commit "6a5ada401e57da2c8abf046f582029926e61fce8")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "000vmd3f5rx5hs9nvphfric0gkzaadns31c6mxaslpv0k7pkrmc6"))))
+    (build-system asdf-build-system/sbcl)
+    (synopsis "Function caching / memoization library for Common Lisp")
+    (description
+     "A common lisp library that provides extensible function result
+caching based on arguments (an expanded form of memoization).")
+    (home-page "https://github.com/AccelerationNet/function-cache")
+    (license
+     (license:non-copyleft
+      "https://github.com/AccelerationNet/function-cache/blob/master/README.md"))
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("cl-interpol" ,sbcl-cl-interpol)
+       ("iterate" ,sbcl-iterate)
+       ("symbol-munger" ,sbcl-symbol-munger)
+       ("closer-mop" ,sbcl-closer-mop)))
+    (arguments
+     `(#:asd-system-name "function-cache"
+       #:asd-file "function-cache.asd"
+       #:tests? #f))))
+
+(define-public cl-function-cache
+  (sbcl-package->cl-source-package sbcl-function-cache))
+
+(define-public ecl-function-cache
+  (sbcl-package->ecl-package sbcl-function-cache))
