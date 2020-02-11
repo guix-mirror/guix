@@ -13898,11 +13898,13 @@ whitespace from a string.")
          (base32
           "0zwwphsqkw5qaiqmjwngnfpv9ym85qcsyj7adip9qplzjzbn00zk"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-traitobject" ,rust-traitobject-0.1))))
     (home-page "https://tokio.rs")
     (synopsis "Traits and implementations for unchecked downcasting")
     (description
      "Traits and implementations for unchecked downcasting.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-untrusted-0.7
