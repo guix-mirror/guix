@@ -11776,7 +11776,6 @@ deeply recursive algorithms that may accidentally blow the stack.")
     (description
      "This package provides compile-time assertions to ensure that invariants
 are met.")
-    (properties '((hidden? . #t)))
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-stdweb-0.4
