@@ -10347,3 +10347,40 @@ caching based on arguments (an expanded form of memoization).")
 
 (define-public ecl-function-cache
   (sbcl-package->ecl-package sbcl-function-cache))
+
+(define-public sbcl-type-r
+  (let ((commit "83c89e38f2f7a7b16f1012777ecaf878cfa6a267")
+        (revision "1"))
+    (package
+      (name "sbcl-type-r")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/guicho271828/type-r.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1arsxc2539rg8vbrdirz4xxj1b06mc6g6rqndz7a02g127qvk2sm"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Parser interface for Common Lisp built-in compound types")
+      (description
+       "Collections of accessor functions and patterns to access
+the elements in compound type specifier, e.g. @code{dimensions} in
+@code{(array element-type dimensions)}")
+      (home-page "https://github.com/guicho271828/type-r")
+      (license license:lgpl3+)
+      (inputs
+       `(("trivia" ,sbcl-trivia)
+         ("alexandria" ,sbcl-alexandria)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (arguments
+       `(#:asd-system-name "type-r"
+         #:asd-file "type-r.asd"
+         #:test-asd-file "type-r.test.asd")))))
+
+(define-public cl-type-r
+  (sbcl-package->cl-source-package sbcl-type-r))
