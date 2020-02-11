@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018, 2019 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -67,7 +67,7 @@
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("check" ,check)                 ; for tests
+       ("check" ,check-0.12)            ; for tests
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
     (inputs
