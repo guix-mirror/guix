@@ -44,14 +44,14 @@
 (define-public clamav
   (package
     (name "clamav")
-    (version "0.102.1")
+    (version "0.102.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.clamav.net/downloads/production/"
                                   "clamav-" version ".tar.gz"))
               (sha256
                (base32
-                "1mpdgn3isz26hd1j6p8lcb76v8hjs54k1wb655rnil4hv78aig8d"))
+                "1lq7r6r2yl8pp3fkn32b0bsmbbl9pg90kpvhsa2clad3xg0drz49"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -67,7 +67,7 @@
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("check" ,check-0.12)            ; for tests
+       ("check" ,check)                 ; for tests
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
     (inputs
