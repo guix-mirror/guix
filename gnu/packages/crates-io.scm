@@ -8645,7 +8645,7 @@ algorithms.")
 (define-public rust-pkg-config-0.3
   (package
     (name "rust-pkg-config")
-    (version "0.3.14")
+    (version "0.3.17")
     (source
       (origin
         (method url-fetch)
@@ -8653,16 +8653,18 @@ algorithms.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "135ia995lqzr0gxpk85h0bjxf82kj6hbxdx924sh9jdln6r8wvk7"))))
+          "0xynnaxdv0gzadlw4h79j855k0q7rj4zb9xb1vk00nc6ss559nh5"))))
     (build-system cargo-build-system)
-    ;(inputs
-    ; `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/rust-lang/pkg-config-rs")
     (synopsis "Library to run the pkg-config system tool")
     (description
      "A library to run the pkg-config system tool at build time in order to be
 used in Cargo build scripts.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
