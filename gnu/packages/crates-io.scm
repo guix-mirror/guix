@@ -8685,7 +8685,6 @@ used in Cargo build scripts.")
     (synopsis "Rust library that allows reinterpreting data safely")
     (description "This package provides a small Rust library that allows users
  to reinterpret data of certain types safely.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
