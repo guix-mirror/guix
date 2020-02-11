@@ -10384,3 +10384,42 @@ the elements in compound type specifier, e.g. @code{dimensions} in
 
 (define-public cl-type-r
   (sbcl-package->cl-source-package sbcl-type-r))
+
+(define-public sbcl-trivialib-type-unify
+  (let ((commit "62492ebf04db567dcf435ae84c50b7b8202ecf99")
+        (revision "1"))
+    (package
+      (name "sbcl-trivialib-type-unify")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/guicho271828/trivialib.type-unify.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1bkyfzbwv75p50zp8n1n9rh2r29pw3vgz91gmn2gzzkyq3khj1vh"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Common Lisp type unification")
+      (description
+       "Unifies a parametrized type specifier against an actual type specifier.
+Importantly, it handles complicated array-subtypes and number-related types
+correctly.")
+      (home-page "https://github.com/guicho271828/trivialib.type-unify")
+      (license license:lgpl3+)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("trivia" ,sbcl-trivia)
+         ("introspect-environment" ,sbcl-introspect-environment)
+         ("type-r" ,sbcl-type-r)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (arguments
+       `(#:asd-system-name "trivialib.type-unify"
+         #:asd-file "trivialib.type-unify.asd"
+         #:test-asd-file "trivialib.type-unify.test.asd")))))
+
+(define-public cl-trivialib-type-unify
+  (sbcl-package->cl-source-package sbcl-trivialib-type-unify))
