@@ -8123,7 +8123,7 @@ synchronization primitives.")
 (define-public rust-parity-wasm-0.40
   (package
     (name "rust-parity-wasm")
-    (version "0.40.1")
+    (version "0.40.3")
     (source
       (origin
         (method url-fetch)
@@ -8131,14 +8131,17 @@ synchronization primitives.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1p84f0k36q05j18jy66n122lyali794cj78hbxgy9wj6si84plqd"))))
+          "03qycy21avz4970zc7aj8rj5h4wvi4qsrc90a6hpws1a56mglf8y"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f
+       #:cargo-development-inputs
+       (("rust-time" ,rust-time-0.1))))
     (home-page "https://github.com/paritytech/parity-wasm")
     (synopsis "Low-level WebAssembly format library")
     (description
      "This package provides a WebAssembly binary format serialization,
 deserialization, and interpreter in Rust.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
