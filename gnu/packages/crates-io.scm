@@ -8277,7 +8277,6 @@ deserialization, and interpreter in Rust.")
 value.  This allows you to use @code{Iterator::by_ref} and
 @code{Iterator::take_while} together, and still get the first value for which
 the @code{take_while} predicate returned false after dropping the @code{by_ref}.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
