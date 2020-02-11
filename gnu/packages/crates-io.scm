@@ -11881,7 +11881,7 @@ Web.")
 (define-public rust-stdweb-internal-runtime-0.1
   (package
     (name "rust-stdweb-internal-runtime")
-    (version "0.1.4")
+    (version "0.1.5")
     (source
       (origin
         (method url-fetch)
@@ -11889,13 +11889,12 @@ Web.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1nhpyra7glbwcpakhpj5a3d7h7kx1ynif473nzshmk226m91f8ym"))))
+          "1h0nkppb4r8dbrbms2hw9n5xdcs392m0r5hj3b6lsx3h6fx02dr1"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/koute/stdweb")
     (synopsis "Internal runtime for the @code{stdweb} crate")
     (description "This crate provides internal runtime for the @code{stdweb}
 crate.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
