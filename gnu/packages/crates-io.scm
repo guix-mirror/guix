@@ -11949,7 +11949,7 @@ crate.")
 (define-public rust-streaming-stats-0.2
   (package
     (name "rust-streaming-stats")
-    (version "0.2.2")
+    (version "0.2.3")
     (source
       (origin
         (method url-fetch)
@@ -11957,13 +11957,15 @@ crate.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0l7xz4g6709s80zqpvlhrg0qhgz64r94cwhmfsg8xhabgznbp2px"))))
+          "0iz5dlq51w5hxjrv6a4hpf8rrj91kgvy0s9mhj0j12il9v771mmh"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num-traits" ,rust-num-traits-0.2))))
     (home-page "https://github.com/BurntSushi/rust-stats")
     (synopsis "Compute basic statistics on streams")
     (description
      "Experimental crate for computing basic statistics on streams.")
-    (properties '((hidden? . #t)))
     (license (list license:unlicense
                    license:expat))))
 
