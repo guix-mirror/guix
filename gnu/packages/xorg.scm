@@ -2386,7 +2386,8 @@ XC-APPGROUP, XTEST.")
          "0xca343ff12wh6nsq76r0nbsfrm8dypjrzm4fqz9vv9v8i8kfrp1"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
+     `(#:configure-flags '("--disable-static")
+       #:phases (modify-phases %standard-phases
                   (add-before 'configure 'pedantry
                     (lambda _
                       ;; XXX: libevdev includes kernel headers, which causes this
