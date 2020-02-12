@@ -2780,7 +2780,7 @@ time.")
 (define-public lvm2
   (package
     (name "lvm2")
-    (version "2.03.07")
+    (version "2.03.08")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "ftp://sourceware.org/pub/lvm2/LVM2."
@@ -2789,7 +2789,7 @@ time.")
                                         version ".tgz")))
               (sha256
                (base32
-                "1s818ghgl0cxqak3r4cc99anh2xnm46kl03cyk089a1cr2ai0by7"))
+                "1j0yis658564rk1ddabkl8vbavp0fdd10gd6qhgyzc3akzf620kf"))
               (modules '((guix build utils)))
               (snippet
                '(begin
