@@ -142,16 +142,11 @@
 (define (bootable-kernel-arguments system root-device)
   "Return a list of kernel arguments (gexps) to boot SYSTEM from ROOT-DEVICE."
   (list (string-append "--root="
-                       (cond ((uuid? root-device)
-
-                              ;; Note: Always use the DCE format because that's
-                              ;; what (gnu build linux-boot) expects for the
-                              ;; '--root' kernel command-line option.
-                              (uuid->string (uuid-bytevector root-device)
-                                            'dce))
-                             ((file-system-label? root-device)
-                              (file-system-label->string root-device))
-                             (else root-device)))
+                       ;; Note: Always use the DCE format because that's what
+                       ;; (gnu build linux-boot) expects for the '--root'
+                       ;; kernel command-line option.
+                       (file-system-device->string root-device
+                                                   #:uuid-type 'dce))
         #~(string-append "--system=" #$system)
         #~(string-append "--load=" #$system "/boot")))
 
