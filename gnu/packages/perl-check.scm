@@ -243,7 +243,6 @@ using @code{Test::Class}.")
        ("perl-test-requires" ,perl-test-requires)
        ("perl-test-deep" ,perl-test-deep)
        ("perl-test-warnings" ,perl-test-warnings)
-       ("perl-test-tester" ,perl-test-tester)
        ("perl-test-needs" ,perl-test-needs)))
     (propagated-inputs
      `(("perl-namespace-clean" ,perl-namespace-clean)
