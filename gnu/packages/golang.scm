@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2016, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Petter <petter@mykolab.ch>
-;;; Copyright © 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017, 2018, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Sergei Trofimovich <slyfox@inbox.ru>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -3222,3 +3222,28 @@ optimized for humans, JUnit XML for CI integration, and a summary of the
 test results.")
     (home-page "https://github.com/gotestyourself/gotestsum")
     (license license:asl2.0)))
+
+(define-public go-github-com-golang-protobuf-proto
+  (package
+    (name "go-github-com-golang-protobuf-proto")
+    (version "1.3.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/golang/protobuf.git")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "15am4s4646qy6iv0g3kkqq52rzykqjhm4bf08dk0fy2r58knpsyl"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/golang/protobuf/proto"
+       #:unpack-path "github.com/golang/protobuf"
+       ;; Requires unpackaged golang.org/x/sync/errgroup
+       #:tests? #f))
+    (synopsis "Go support for Protocol Buffers")
+    (description "This package provides Go support for the Protocol Buffers
+data serialization format.")
+    (home-page "https://github.com/golang/protobuf")
+    (license license:bsd-3)))

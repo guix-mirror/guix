@@ -761,31 +761,6 @@ bounds.")
       (home-page "https://github.com/beorn7/perks")
       (license expat))))
 
-(define-public go-github-com-golang-protobuf-proto
-    (package
-      (name "go-github-com-golang-protobuf-proto")
-      (version "1.3.1")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                       (url "https://github.com/golang/protobuf.git")
-                       (commit (string-append "v" version))))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "15am4s4646qy6iv0g3kkqq52rzykqjhm4bf08dk0fy2r58knpsyl"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/golang/protobuf/proto"
-         #:unpack-path "github.com/golang/protobuf"
-         #:tests? #f ; requires unpackaged golang.org/x/sync/errgroup
-         ))
-      (synopsis "Go support for Protocol Buffers")
-      (description "This package provides Go support for the Protocol Buffers
-data serialization format.")
-      (home-page "https://github.com/golang/protobuf")
-      (license bsd-3)))
-
 (define-public go-github-com-prometheus-client-model
   (let ((commit "14fe0d1b01d4d5fc031dd4bec1823bd3ebbe8016")
         (revision "2"))
