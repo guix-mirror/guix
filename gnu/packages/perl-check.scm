@@ -1042,7 +1042,6 @@ usually called epsilon.  This module provides such a function for use with
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-capture-tiny" ,perl-capture-tiny)
-       ("perl-test-tester" ,perl-test-tester)
        ("perl-sub-exporter" ,perl-sub-exporter)))
     (synopsis "Utilities to test STDOUT and STDERR messages")
     (description
