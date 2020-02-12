@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
@@ -54,8 +54,11 @@
 
 (define %gcc-include-paths
   ;; Environment variables for header search paths.
-  ;; Note: See <http://bugs.gnu.org/30756> for why not 'C_INCLUDE_PATH' & co.
-  '("CPATH"))
+  ;; Note: See <http://bugs.gnu.org/22186> for why not 'CPATH'.
+  '("C_INCLUDE_PATH"
+    "CPLUS_INCLUDE_PATH"
+    "OBJC_INCLUDE_PATH"
+    "OBJCPLUS_INCLUDE_PATH"))
 
 (define %gcc-cross-include-paths
   ;; Search path for target headers when cross-compiling.
@@ -177,19 +180,7 @@ base compiler and using LIBC (which may be either a libc package or #f.)"
                      ,flags))
             flags))
        ((#:phases phases)
-        `(cross-gcc-build-phases
-          ,target
-          (modify-phases ,phases
-            (add-before 'configure 'treat-glibc-as-system-header
-              (lambda* (#:key inputs #:allow-other-keys)
-                (let ((libc (assoc-ref inputs "libc")))
-                  (when libc
-                    ;; For GCC6 and later, make sure Glibc is treated as a "system
-                    ;; header" such that #include_next does the right thing.
-                    (for-each (lambda (var)
-                                (setenv var (string-append libc "/include")))
-                              '("CROSS_C_INCLUDE_PATH" "CROSS_CPLUS_INCLUDE_PATH")))
-                  #t))))))))))
+        `(cross-gcc-build-phases ,target ,phases))))))
 
 (define (cross-gcc-patches xgcc target)
   "Return GCC patches needed for XGCC and TARGET."
@@ -262,27 +253,31 @@ target that libc."
                              #:binutils xbinutils))
        ("binutils-cross" ,xbinutils)
 
-       ;; Call it differently so that the builder can check whether the "libc"
-       ;; input is #f.
-       ("libc-native" ,@(assoc-ref (%final-inputs) "libc"))
-
-       ;; Remaining inputs.
        ,@(let ((inputs (append (package-inputs xgcc)
-                               (alist-delete "libc" (%final-inputs)))))
+                               (fold alist-delete (%final-inputs)
+                                     '("libc" "libc:static"))
+
+                               ;; Call it differently so that the builder can
+                               ;; check whether the "libc" input is #f.
+                               `(("libc-native"
+                                  ,@(assoc-ref (%final-inputs) "libc"))
+                                 ("libc-native:static"
+                                  ,@(assoc-ref (%final-inputs)
+                                               "libc:static"))))))
            (cond
             ((target-mingw? target)
              (if libc
-                 `(("libc" ,libc)
-                   ,@inputs)
-                 `(("mingw-source" ,(package-source mingw-w64))
-                   ,@inputs)))
+                 `(,@inputs
+                   ("libc" ,libc))
+                 `(,@inputs
+                   ("mingw-source" ,(package-source mingw-w64)))))
             (libc
-             `(("libc" ,libc)
+             `(,@inputs
+               ("libc" ,libc)
                ("libc:static" ,libc "static")
                ("xkernel-headers"                ;the target headers
                 ,@(assoc-ref (package-propagated-inputs libc)
-                             "kernel-headers"))
-               ,@inputs))
+                             "kernel-headers"))))
             (else inputs)))))
 
     (inputs '())
@@ -294,7 +289,15 @@ target that libc."
                         (map (lambda (variable)
                                (search-path-specification
                                 (variable variable)
-                                (files '("include"))))
+
+                                ;; Add 'include/c++' here so that <cstdlib>'s
+                                ;; "#include_next <stdlib.h>" finds GCC's
+                                ;; <stdlib.h>, not libc's.
+                                (files (match variable
+                                         ("CROSS_CPLUS_INCLUDE_PATH"
+                                          '("include/c++" "include"))
+                                         (_
+                                          '("include"))))))
                              %gcc-cross-include-paths)))
     (native-search-paths '())))
 

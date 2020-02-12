@@ -460,13 +460,19 @@ is one of `host' or `target'."
            (libc      (module-ref cross 'cross-libc)))
       (case kind
         ((host)
+         ;; Cross-GCC appears once here, so that it's in $PATH...
          `(("cross-gcc" ,(gcc target
                               #:xbinutils (binutils target)
                               #:libc (libc target)))
            ("cross-binutils" ,(binutils target))))
         ((target)
          (let ((libc (libc target)))
-           `(("cross-libc" ,libc)
+           ;; ... and once here, so that libstdc++ & co. are in
+           ;; CROSS_CPLUS_INCLUDE_PATH, etc.
+           `(("cross-gcc" ,(gcc target
+                                #:xbinutils (binutils target)
+                                #:libc libc))
+             ("cross-libc" ,libc)
 
              ;; MinGW's libc doesn't have a "static" output.
              ,@(if (member "static" (package-outputs libc))

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
@@ -38,8 +38,11 @@
 
 (define %gcc-include-paths
   ;; Environment variables for header search paths.
-  ;; Note: See <http://bugs.gnu.org/30756> for why not 'C_INCLUDE_PATH' & co.
-  '("CPATH"))
+  ;; Note: See <http://bugs.gnu.org/22186> for why not 'CPATH'.
+  '("C_INCLUDE_PATH"
+    "CPLUS_INCLUDE_PATH"
+    "OBJC_INCLUDE_PATH"
+    "OBJCPLUS_INCLUDE_PATH"))
 
 (define %gcc-cross-include-paths
   ;; Search path for target headers when cross-compiling.
