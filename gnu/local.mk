@@ -794,6 +794,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/coda-use-system-libs.patch		\
   %D%/packages/patches/combinatorial-blas-awpm.patch		\
   %D%/packages/patches/combinatorial-blas-io-fix.patch		\
+  %D%/packages/patches/containerd-test-with-go1.13.patch		\
   %D%/packages/patches/cpufrequtils-fix-aclocal.patch		\
   %D%/packages/patches/crawl-upgrade-saves.patch		\
   %D%/packages/patches/crda-optional-gcrypt.patch		\

@@ -183,7 +183,9 @@ Python without keeping their credentials in a Docker configuration file.")
             (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "0npbzixf3c0jvzm159vygvkydrr8h36c9sq50yv0mdinrys2bvg0"))))
+       (base32 "0npbzixf3c0jvzm159vygvkydrr8h36c9sq50yv0mdinrys2bvg0"))
+      (patches
+        (search-patches "containerd-test-with-go1.13.patch"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/containerd/containerd"
