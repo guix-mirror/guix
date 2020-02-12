@@ -2459,6 +2459,20 @@ for Python.")
         (base32
          "0l72c11n959yzb8d3ankckb6yhjhm6x729zm7rkpk040qzxpy64k"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          (begin
+                            (setenv "PYTHONPATH"
+                                    (string-append "./build/lib:"
+                                                   (getenv "PYTHONPATH")))
+                            (invoke "pytest" "-vv"))
+                          (format #t "test suite not run~%"))
+                      #t)))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-markupsafe" ,python-markupsafe)))
     (home-page "http://jinja.pocoo.org/")
