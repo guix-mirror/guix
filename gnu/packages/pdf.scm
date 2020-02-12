@@ -676,26 +676,14 @@ line tools for batch rendering @command{pdfdraw}, rewriting files
 (define-public qpdf
   (package
    (name "qpdf")
-   (version "9.1.0")
+   (version "9.1.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/qpdf/qpdf/" version
                                 "/qpdf-" version ".tar.gz"))
             (sha256
              (base32
-              "0ygd80wxcmh613n04x2kmf8wlsl0drxyd5wwdcrm1rzj0xwvpfrs"))
-            (modules '((guix build utils)))
-            (snippet
-             ;; Replace shebang with the bi-lingual shell/Perl trick to remove
-             ;; dependency on Perl.
-             '(begin
-                (substitute* "qpdf/fix-qdf"
-                  (("#!/usr/bin/env perl")
-                   "\
-eval '(exit $?0)' && eval 'exec perl -wS \"$0\" ${1+\"$@\"}'
-  & eval 'exec perl -wS \"$0\" $argv:q'
-    if 0;\n"))
-                #t))))
+              "0dj27wb9xg6pg95phbflfvy9rwxn1gh3kc4n175g0pf41r0zrim2"))))
    (build-system gnu-build-system)
    (arguments
     `(#:disallowed-references (,perl)
