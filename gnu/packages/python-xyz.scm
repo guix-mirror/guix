@@ -2635,14 +2635,14 @@ structure for Python.")
 (define-public python-docutils
   (package
     (name "python-docutils")
-    (version "0.14")
+    (version "0.16")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "docutils" version))
        (sha256
         (base32
-         "0x22fs3pdmr42kvz6c654756wja305qv6cx1zbhwlagvxgr4xrji"))))
+         "1z3qliszqca9m719q3qhdkh0ghh90g500avzdgi7pl77x5h3mpn2"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; no setup.py test command
