@@ -35,7 +35,7 @@
 (define-public libtirpc
   (package
     (name "libtirpc")
-    (version "1.1.4")
+    (version "1.2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/libtirpc/libtirpc/"
@@ -43,7 +43,7 @@
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "07anqypf7c719x9y683qz65cxllmzlgmlab2hlahrqcj4bq2k99c"))))
+                "1jl6a5kkw2vrp4gb6pmvf72rqimywvwfb9f7iz2xjg4wgq63bdpk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")
