@@ -2137,7 +2137,7 @@ be served with a HTTP file server of your choice.")
 (define-public gource
   (package
     (name "gource")
-    (version "0.49")
+    (version "0.51")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2145,7 +2145,7 @@ be served with a HTTP file server of your choice.")
                     "/gource-" version "/gource-" version ".tar.gz"))
               (sha256
                (base32
-                "12hf5ipcsp9dxsqn84n4kr63xaiskrnf5a084wr29qk171lj7pd9"))))
+                "16p7b1x4r0915w883lp374jcdqqja37fnb7m8vnsfnl2n64gi8qr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
