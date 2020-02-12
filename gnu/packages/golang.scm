@@ -665,8 +665,8 @@ for the Go language.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-net
-  (let ((commit "d28f0bde5980168871434b95cfc858db9f2a7a99")
-        (revision "3"))
+  (let ((commit "ba9fcec4b297b415637633c5a6e8fa592e4a16c3")
+        (revision "4"))
     (package
       (name "go-golang-org-x-net")
       (version (git-version "0.0.0" revision commit))
@@ -678,7 +678,7 @@ for the Go language.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "18xj31h70m7xxb7gc86n9i21w6d7djbjz67zfaljm4jqskz6hxkf"))))
+                  "1hbqvy6r0s5h0dpdqw8fynl3cq0acin3iyqki9xvl5r8h33yb9bx"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net"
