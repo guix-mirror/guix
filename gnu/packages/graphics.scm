@@ -330,7 +330,7 @@ many more.")
 (define-public ilmbase
   (package
     (name "ilmbase")
-    (version "2.4.0")
+    (version "2.4.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -339,7 +339,7 @@ many more.")
               (file-name (git-file-name "ilmbase" version))
               (sha256
                (base32
-                "0g3rz11cvb7gnphp2np9z7bfl7v4dprq4w5hnsvx7yrasgsdyn8s"))
+                "020gyl8zv83ag6gbcchmqiyx9rh2jca7j8n52zx1gk4rck7kwc01"))
               (patches (search-patches "ilmbase-fix-tests.patch"
                                        "ilmbase-openexr-pkg-config.patch"))))
     (build-system cmake-build-system)
