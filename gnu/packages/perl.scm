@@ -4635,15 +4635,15 @@ allowing data to be efficiently communicated between processes.")
 (define-public perl-ipc-system-simple
   (package
     (name "perl-ipc-system-simple")
-    (version "1.25")
+    (version "1.26")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://cpan/authors/id/P/PJ/PJF/IPC-System-Simple-"
+                    "mirror://cpan/authors/id/J/JK/JKEENAN/IPC-System-Simple-"
                     version ".tar.gz"))
               (sha256
                (base32
-                "0fsdb81shjj4hifyyzvj7vpkhq5jrfhlcpw2xbjfi1mqz8fsmdpi"))))
+                "1zb5ni8ikaq6s60amwdsq69nz8gxl484yiga6ax5nqp8v0hpy5sp"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/IPC-System-Simple")
     (synopsis "Run commands simply, with detailed diagnostics")
