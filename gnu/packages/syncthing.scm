@@ -30,7 +30,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "1.2.2")
+    (version "1.3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -38,7 +38,7 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "1wdjh8xw09s1nfkpc95v04619gqa4dpbygp2y5l35ww4g916lv3s"))
+                "025fhfqzcl5qd38zak8485pd67iqkzsf6frm02cl25s3ggv2f0p4"))
               (modules '((guix build utils)))
               ;; Delete bundled ("vendored") free software source code.
               (snippet '(begin
@@ -100,7 +100,10 @@
        ("go-github-com-d4l3k-messagediff" ,go-github-com-d4l3k-messagediff)))
 
     (arguments
-     `(#:import-path "github.com/syncthing/syncthing"
+     `(#:modules ((srfi srfi-26) ; for cut
+                  (guix build utils)
+                  (guix build go-build-system))
+       #:import-path "github.com/syncthing/syncthing"
        ;; We don't need to install the source code for end-user applications.
        #:install-source? #f
        #:phases
@@ -114,7 +117,13 @@
          (replace 'build
            (lambda _
              (with-directory-excursion "src/github.com/syncthing/syncthing"
-               (invoke "go" "run" "build.go" "-no-upgrade"))))
+               ;; XXX The only way to build Syncthing without its automatic
+               ;; updater and to build the utilities is to "build all" and then
+               ;; "build syncthing" again with -no-upgrade.
+               ;; https://github.com/syncthing/syncthing/issues/6118
+               (invoke "go" "run" "build.go" "build" "all")
+               (delete-file "syncthing")
+               (invoke "go" "run" "build.go" "-no-upgrade" "build" "syncthing"))))
 
          (replace 'check
            (lambda _
@@ -124,14 +133,16 @@
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
-                   (utils (assoc-ref outputs "utils"))
-                   (src "src/github.com/syncthing/syncthing/bin/"))
-               (install-file (string-append src "/syncthing")
-                             (string-append out "/bin"))
-               (delete-file (string-append src "/syncthing"))
-               (copy-recursively "src/github.com/syncthing/syncthing/bin/"
-                                 (string-append utils "/bin"))
-               #t)))
+                   (utils (assoc-ref outputs "utils")))
+               (with-directory-excursion "src/github.com/syncthing/syncthing"
+                 (install-file "syncthing" (string-append out "/bin"))
+                 (for-each (cut install-file <> utils)
+                           '("stcli" "stcompdirs" "stcrashreceiver"
+                             "stdisco" "stdiscosrv" "stevents" "stfileinfo"
+                             "stfinddevice" "stfindignored" "stgenfiles"
+                             "stindex" "strelaypoolsrv" "strelaysrv" "stsigtool"
+                             "stvanity" "stwatchfile" "uraggregate" "ursrv"))
+                 #t))))
 
          (add-after 'install 'install-docs
            (lambda* (#:key outputs #:allow-other-keys)
@@ -920,7 +931,8 @@ system, kernel, and process metrics from the @file{/proc} pseudo file system.")
           ,go-github-com-prometheus-client-model)
          ("go-github-com-prometheus-common"
           ,go-github-com-prometheus-common)
-         ("go-github-com-prometheus-procfs" ,go-github-com-prometheus-procfs)))
+         ("go-github-com-prometheus-procfs" ,go-github-com-prometheus-procfs)
+         ("go-github-com-cespare-xxhash" ,go-github-com-cespare-xxhash)))
       (synopsis "HTTP server and client tools for Prometheus")
       (description "This package @code{promhttp} provides HTTP client and
 server tools for Prometheus metrics.")
