@@ -37,6 +37,7 @@
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.org>
 ;;; Copyright © 2019 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
+;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4828,6 +4829,46 @@ developed as part of the Netsurf project.")
      "LibCSS is a CSS (Cascading Style Sheet) parser and selection engine,
 written in C.  It is developed as part of the NetSurf project.")
     (license license:expat)))
+
+(define-public libcyaml
+  (package
+    (name "libcyaml")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tlsa/libcyaml.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0h5ydyqdl8kzh526np3jsi0pm7ks16nh1hjkdsjcd6pacw7y6i6z"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "CC=gcc"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (replace 'check
+           (lambda _
+             (setenv "CC" "gcc")
+             (invoke "make" "test"))))))
+    (inputs
+     `(("libyaml" ,libyaml)))
+    (native-inputs
+     `(("git", git)
+       ("pkg-config", pkg-config)))
+    (synopsis "C library for reading and writing YAML")
+    (description
+     "LibCYAML is a C library written in ISO C11 for reading and writing
+structured YAML documents.  The fundamental idea behind CYAML is to allow
+applications to construct schemas which describe both the permissible
+structure of the YAML documents to read/write, and the C data structure(s)
+in which the loaded data is arranged in memory.")
+    (home-page "https://github.com/tlsa/libcyaml")
+    (license license:isc)))
 
 (define-public libdom
   (package
