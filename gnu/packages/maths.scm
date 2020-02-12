@@ -3105,7 +3105,7 @@ parts of it.")
 (define-public openblas
   (package
     (name "openblas")
-    (version "0.3.7")
+    (version "0.3.8")
     (source
      (origin
        (method url-fetch)
@@ -3114,7 +3114,7 @@ parts of it.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0jbdjsi0qsxahdcm42agnn1y7xpmg0hrhwjsxg0zbhs9wwy3p568"))))
+         "0f7n911vlriphlr4dgfdxk2x4lmjpf8kcl8w9lb584w2nwfkbdk9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
