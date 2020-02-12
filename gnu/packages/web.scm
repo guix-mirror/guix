@@ -3176,15 +3176,15 @@ IO::Socket::INET, so you can perform socket operations directly on it too.")
 (define-public perl-http-date
   (package
     (name "perl-http-date")
-    (version "6.02")
+    (version "6.05")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "mirror://cpan/authors/id/G/GA/GAAS/HTTP-Date-"
+                   "mirror://cpan/authors/id/O/OA/OALDERS/HTTP-Date-"
                    version ".tar.gz"))
              (sha256
               (base32
-               "0cz357kafhhzw7w59iyi0wvhw7rlh5g1lh38230ckw7rl0fr9fg8"))))
+               "0awjdbz7x0jd5pna55dwxhs3k6xp3sw6b2zg3p2yndxxvya64p9n"))))
     (build-system perl-build-system)
     (license license:perl-license)
     (synopsis "Perl date conversion routines")
