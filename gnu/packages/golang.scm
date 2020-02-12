@@ -693,8 +693,8 @@ for the Go language.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-sys
-  (let ((commit "04f50cda93cbb67f2afa353c52f342100e80e625")
-        (revision "4"))
+  (let ((commit "749cb33beabd9aa6d3178e3de05bcc914f70b2bf")
+        (revision "5"))
     (package
       (name "go-golang-org-x-sys")
       (version (git-version "0.0.0" revision commit))
@@ -706,7 +706,7 @@ for the Go language.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0hmfsz9y1ingwsn482hlzzmzs7kr3cklm0ana0mbdk70isw2bxnw"))))
+                  "0dm3257q3rv2kyn5lmqqim2fqg634v6rhrqq4glvbk4wx4l3v337"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/sys"
