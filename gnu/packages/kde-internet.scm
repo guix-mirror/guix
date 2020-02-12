@@ -100,7 +100,7 @@ microblogging services.
 Other notable features include:
 @itemize
 @item Support for user + friends time-lines.
-@item Support for @Reply time-lines.
+@item Support for @@Reply time-lines.
 @item Support for sending and receiving direct messages.
 @item Twitpic.com integration.
 @item The ability to use multiple accounts simultaneously.
