@@ -93,14 +93,14 @@ backend which implements them.")
 (define-public wpebackend-fdo
   (package
     (name "wpebackend-fdo")
-    (version "1.4.0")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://wpewebkit.org/releases/"
                                   "wpebackend-fdo-" version ".tar.xz"))
               (sha256
                (base32
-                "1bwbs47v4nlzhsqrw9fpyny5m3n9ry0kfzsvk90zjif4bd5cl6d9"))))
+                "1799vf6wc78z15l39sfh39l5rrvlqpi29ynjm0324rpsrfvs0jb2"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests
