@@ -348,8 +348,7 @@ specification.")
                (base32
                 "1kdy06r0yg7zwarqglc9163vbfb0sfc4s6ld4pw5q7i9f7mghzi0"))))
     (build-system perl-build-system)
-    (inputs `(("perl-test-tester" ,perl-test-tester)
-              ("perl-test-nowarnings" ,perl-test-nowarnings)))
+    (inputs `(("perl-test-nowarnings" ,perl-test-nowarnings)))
     (synopsis "Flexible deep comparison for the Test::Builder framework")
     (description
      "Test::Deep compares two structures by going through each level, ensuring
