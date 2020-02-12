@@ -3826,7 +3826,13 @@ Linux Device Mapper multipathing driver:
        (list "CC=gcc" (string-append "prefix=" %output))
        #:test-target "partcheck" ; need root for a full 'check'
        #:phases
-       (modify-phases %standard-phases (delete 'configure)))) ; no configure script
+       (modify-phases %standard-phases
+         (delete 'configure) ;no configure script
+         (add-after 'install 'delete-static-library
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (delete-file (string-append out "/lib/libaio.a"))
+               #t))))))
     (home-page "https://pagure.io/libaio")
     (synopsis "Linux-native asynchronous I/O access library")
     (description
