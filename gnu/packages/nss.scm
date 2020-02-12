@@ -48,7 +48,8 @@
      `(("perl" ,perl)))
     (arguments
      `(#:tests? #f ; no check target
-       #:configure-flags (list "--enable-64bit"
+       #:configure-flags (list "--disable-static"
+                               "--enable-64bit"
                                (string-append "LDFLAGS=-Wl,-rpath="
                                               (assoc-ref %outputs "out")
                                               "/lib"))
