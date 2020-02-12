@@ -11791,14 +11791,14 @@ Record Format (DWARF).")
 (define-public python-imagesize
   (package
     (name "python-imagesize")
-    (version "1.1.0")
+    (version "1.2.0")
     (source
       (origin
       (method url-fetch)
       (uri (pypi-uri "imagesize" version))
       (sha256
        (base32
-        "1dg3wn7qpwmhgqc0r9na2ding1wif9q5spz3j9zn2riwphc2k0zk"))))
+        "1cd24x0vqbd6c8ym1n21qc0aj54mfb7rzdqglmwk9xxixajbbxmi"))))
     (build-system python-build-system)
     (home-page "https://github.com/shibukawa/imagesize_py")
     (synopsis "Gets image size of files in various formats in Python")
