@@ -3543,16 +3543,18 @@ not have DNS.  We might not have a network card at all!")
 (define-public perl-lwp-mediatypes
   (package
     (name "perl-lwp-mediatypes")
-    (version "6.02")
+    (version "6.04")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "mirror://cpan/authors/id/G/GA/GAAS/LWP-MediaTypes-"
+                   "mirror://cpan/authors/id/O/OA/OALDERS/LWP-MediaTypes-"
                    version ".tar.gz"))
              (sha256
               (base32
-               "0xmnblp962qy02akah30sji8bxrqcyqlff2w95l199ghql60ny8q"))))
+               "1n8rg6csv3dsvymg06cmxipimr6cb1g9r903ghm1qsmiv89cl6wg"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)))
     (license license:perl-license)
     (synopsis "Perl module to guess the media type for a file or a URL")
     (description
