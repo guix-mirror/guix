@@ -7937,6 +7937,94 @@ women and 6-foot-tall pygmies.")
    "queen-it" "FOTAQ_It_Talkie_" "1.0" "it"
    "1h76y70lrpzfjkm53n4nr364nhyka54vbz9r7sadzyzl7c7ilv4d"))
 
+(define-public sky
+  (package
+    (name "sky")
+    (version "1.2")                     ;1.3 is floppy version
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/scummvm/extras/"
+                           "Beneath%20a%20Steel%20Sky/"
+                           "bass-cd-" version ".zip"))
+       (sha256
+        (base32 "14s5jz67kavm8l15gfm5xb7pbpn8azrv460mlxzzvdpa02a9n82k"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((out (assoc-ref %outputs "out"))
+                (share (string-append out "/share"))
+                (data (string-append share "/" ,name))
+                (apps (string-append share "/applications"))
+                (bin (string-append out "/bin"))
+                (executable (string-append bin "/" ,name))
+                (scummvm (assoc-ref %build-inputs "scummvm")))
+           (let ((unzip (string-append (assoc-ref %build-inputs "unzip")
+                                       "/bin/unzip")))
+             (invoke unzip "-j" (assoc-ref %build-inputs "source")))
+           (let ((doc (string-append share "/doc/bass-" ,version)))
+             (install-file "readme.txt" doc))
+           (for-each (lambda (f) (install-file f data))
+                     (find-files "." "^sky\\."))
+           ;; Build the executable.
+           (mkdir-p bin)
+           (let ((bash (assoc-ref %build-inputs "bash")))
+             (with-output-to-file executable
+               (lambda ()
+                 (format #t "#!~a/bin/bash~%" bash)
+                 (format #t "exec ~a/bin/scummvm -p ~a sky~%" scummvm data))))
+           (chmod executable #o755)
+           ;; Create desktop file.  There is no dedicated
+           ;; icon for the game, so we borrow SCUMMVM's.
+           (mkdir-p apps)
+           (with-output-to-file (string-append apps "/" ,name ".desktop")
+             (lambda _
+               (format #t
+                       "[Desktop Entry]~@
+                       Name=Beneath a Steel Sky~@
+                       GenericName=Bass~@
+                       Exec=~a~@
+                       Icon=~a/share/icons/hicolor/scalable/apps/scummvm.svg~@
+                       Categories=AdventureGame;Game;RolePlaying;~@
+                       Keywords=adventure;game;roleplaying;cyberpunk;~@
+                       Comment=A science-fiction adventure game set in a bleak post-apocalyptic vision of the future~@
+                       Comment[de]=Ein Science-Fiction-Abenteuerspiel \
+angesiedelt in einer düsteren, postapokalyptischen Vision der Zukunft~@
+                       Type=Application~%"
+                       executable scummvm)))
+           #t))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (inputs
+     `(("bash" ,bash)
+       ("scummvm" ,scummvm)))
+    (home-page "https://www.scummvm.org/")
+    (synopsis "Classic 2D point an click science-fiction adventure game")
+    (description
+     "Beneath a Steel Sky is a science-fiction thriller set in a bleak
+post-apocalyptic vision of the future.  It revolves around Union City,
+where selfishness, rivalry, and corruption by its citizens seems to be
+all too common, those who can afford it live underground, away from
+the pollution and social problems which are plaguing the city.
+
+You take on the role of Robert Foster, an outcast of sorts from the
+city since a boy who was raised in a remote environment outside of
+Union City simply termed ``the gap''.  Robert's mother took him away
+from Union City as a child on their way to ``Hobart'' but the
+helicopter crashed on its way.  Unfortunately, Robert's mother died,
+but he survived and was left to be raised by a local tribe from the
+gap.
+
+Years later, Union City security drops by and abducts Robert, killing
+his tribe in the process; upon reaching the city the helicopter taking
+him there crashes with him escaping, high upon a tower block in the
+middle of the city.  He sets out to discover the truth about his past,
+and to seek vengeance for the killing of his tribe.")
+    (license (license:non-copyleft "file:///readme.txt"))))
+
 (define-public gnurobots
   (package
     (name "gnurobots")
