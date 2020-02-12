@@ -787,8 +787,8 @@ data serialization format.")
       (license bsd-3)))
 
 (define-public go-github-com-prometheus-client-model
-  (let ((commit "fd36f4220a901265f90734c3183c5f0c91daa0b8")
-        (revision "1"))
+  (let ((commit "14fe0d1b01d4d5fc031dd4bec1823bd3ebbe8016")
+        (revision "2"))
     (package
       (name "go-github-com-prometheus-client-model")
       (version (git-version "0.0.2" revision commit))
@@ -800,7 +800,7 @@ data serialization format.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1bs5d72k361llflgl94c22n0w53j30rsfh84smgk8mbjbcmjsaa5"))))
+                  "0zdmk6rbbx39cvfz0r59v2jg5sg9yd02b4pds5n5llgvivi99550"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/prometheus/client_model"
