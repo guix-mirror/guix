@@ -6812,7 +6812,6 @@ parallelize and optimize.")
          (base32
           "17b2xm4h4cvxsdjsf3kdrzqv2za60kak961xzi5kmw6g6djcssvy"))))
     (build-system cargo-build-system)
-    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/stainless-steel/md5")
     (synopsis "MD5 hash function in Rust")
     (description "The package provides the MD5 hash function.")
@@ -6832,8 +6831,7 @@ parallelize and optimize.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0j2s8aqdkhwhy7awga2bmv5n8qq8bgy8672iha9f3y871dm6vibr"))))
-    (arguments '())))
+         "0j2s8aqdkhwhy7awga2bmv5n8qq8bgy8672iha9f3y871dm6vibr"))))))
 
 (define-public rust-memchr-2.2
   (package
