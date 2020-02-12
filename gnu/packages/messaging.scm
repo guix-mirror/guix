@@ -1816,7 +1816,7 @@ QMatrixClient project.")
     (synopsis "Graphical client for the Matrix instant messaging protocol")
     (description "Quaternion is a Qt5 desktop client for the Matrix instant
 messaging protocol.  It uses libqmatrixclient and is its reference client
-implementation.  Quaternion and libqmatriclient together form the
+implementation.  Quaternion and libqmatrixclient together form the
 QMatrixClient project.")
     (license (list license:gpl3+        ; all source code
                    license:lgpl3+))))   ; icons/breeze
