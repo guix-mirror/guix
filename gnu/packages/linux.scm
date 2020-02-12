@@ -5185,15 +5185,16 @@ interface in sysfs, which can be accomplished with the included udev rules.")
 (define-public tlp
   (package
     (name "tlp")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/linrunner/TLP/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/linrunner/TLP.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "169k3xypq5rq0xiggrlpr73yr2r2x7b2d9vcr9ac96qrgph7sk7r"))))
+        (base32 "14fcnaz9pw534v4d8dddqq4wcvpf1kghr8zlrk62r5lrl46sp1p5"))))
     (native-inputs
      `(("shellcheck" ,shellcheck)))
     (inputs
