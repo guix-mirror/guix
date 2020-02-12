@@ -1430,7 +1430,9 @@ following features:
                "19zc215mhpnm92mlyl5jbv57r5zqp6cavr3s2g9yglp6j4kfgj0q"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     '(#:parallel-tests? #f             ; TODO Seems to cause test failures on
+                                        ; i686-linux
+       #:phases
        (modify-phases %standard-phases
          (add-after 'configure 'patch-libtool-wrapper-ls
            (lambda* (#:key inputs #:allow-other-keys)
@@ -1449,8 +1451,10 @@ following features:
                (("#!/bin/sh") (string-append "#!" (which "sh"))))
              #t))
          (add-before 'check 'set-PARALLEL
-           (lambda _
-             (setenv "PARALLEL" (number->string (parallel-job-count)))
+           (lambda* (#:key parallel-tests? #:allow-other-keys)
+             (if parallel-tests?
+                 (setenv "PARALLEL" (number->string (parallel-job-count)))
+                 (simple-format #t "parallel-tests? are disabled\n"))
              #t))
          (add-after 'install 'install-perl-bindings
            (lambda* (#:key outputs #:allow-other-keys)
