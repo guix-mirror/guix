@@ -689,7 +689,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.1.43")
+    (version "10.1.44")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.com/MariaDB"
@@ -697,7 +697,7 @@ Language.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1pxyq37q4p7515by7k8hs3l3css68f3bm3akx99vw4m1rxwwbm63"))
+                "0fah6d50hldq0farxwr8mj3jnniwdz0d1wsha07nx37fc79h7wi1"))
               (patches (search-patches "mariadb-client-test-32bit.patch"))
               (modules '((guix build utils)))
               (snippet
@@ -789,6 +789,7 @@ Language.")
                       ;; See <https://jira.mariadb.org/browse/MDEV-7761>.
                       "main.join_cache"
                       "main.explain_non_select"
+                      "main.stat_tables"
                       "main.stat_tables_innodb"
                       "roles.acl_statistics"
 
@@ -823,6 +824,10 @@ Language.")
                (substitute* "mysql-test/r/gis_notembedded.result"
                  (("latin1_swedish_ci") "utf8_general_ci")
                  (("\tlatin1") "\tutf8"))
+
+               (substitute* "mysql-test/suite/binlog/t/binlog_mysqlbinlog_stop_never.test"
+                 (("/bin/bash")
+                  (which "bash")))
 
                (substitute* "mysql-test/mysql-test-run.pl"
                  (("/bin/ls") (which "ls"))
