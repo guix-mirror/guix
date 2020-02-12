@@ -3280,14 +3280,14 @@ provides additional functionality on the produced Mallard documents.")
 (define-public python-cython
   (package
     (name "python-cython")
-    (version "0.29.13")
+    (version "0.29.15")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Cython" version))
        (sha256
         (base32
-         "13k37lrcgagwwnzr5bzririsscb793vndj234d475x1h9ad0d7f2"))))
+         "0c5cjyxfvba6c0vih1fvhywp8bpz30vwvbjqdm1q1k55xzhmkn30"))))
     (build-system python-build-system)
     ;; we need the full python package and not just the python-wrapper
     ;; because we need libpython3.3m.so
@@ -3299,24 +3299,6 @@ provides additional functionality on the produced Mallard documents.")
          (add-before 'check 'set-HOME
            ;; some tests require access to "$HOME/.cython"
            (lambda _ (setenv "HOME" "/tmp") #t))
-
-         ;; FIXME: These tests started failing on armhf after the 0.28 update
-         ;; (commit c69d11c5930), both with an error such as this:
-         ;;  compiling (cpp) and running dictcomp ...
-         ;;  === C/C++ compiler error output: ===
-         ;;  â€˜
-         ;;  dictcomp.cpp:5221: confused by earlier errors, bailing out
-         ;; See <https://hydra.gnu.org/build/2948724> for logs.
-         ,@(if (target-arm32?)
-               `((add-before 'check 'disable-failing-tests
-                  (lambda _
-                    (let ((disabled-tests (open-file "tests/bugs.txt" "a")))
-                      (for-each (lambda (test)
-                                  (format disabled-tests "~a\n" test))
-                                '("memslice" "dictcomp"))
-                      (close-port disabled-tests)))))
-               '())
-
          (replace 'check
            (lambda _
              ;; Disable compiler optimizations to greatly reduce the running
