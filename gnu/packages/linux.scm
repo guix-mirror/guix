@@ -2746,7 +2746,8 @@ to the in-kernel OOM killer.")
              (let ((out (assoc-ref outputs "out")))
                (invoke (string-append out "/bin/udevadm")
                        "hwdb" "--update")))))
-       #:configure-flags (list "--enable-manpages")))
+       #:configure-flags (list "--enable-manpages"
+                               "--disable-static")))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
