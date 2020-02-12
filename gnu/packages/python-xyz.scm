@@ -6731,14 +6731,14 @@ Python.")
 (define-public python-markdown
   (package
     (name "python-markdown")
-    (version "3.1.1")
+    (version "3.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Markdown" version))
        (sha256
         (base32
-         "0yhylk4ffqqs7x086fav4pnfsl1021v7lghznzkififprmmqfl1f"))))
+         "1gwqrhrp0n9xllgmjc8n1p260968kr0dd2jncjkj4r617q61imss"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)
@@ -6750,10 +6750,21 @@ Python.")
 Markdown.  The library features international input, various Markdown
 extensions, and several HTML output formats.  A command line wrapper
 markdown_py is also provided to convert Markdown files to HTML.")
+    (properties `((python2-variant . ,(delay python2-markdown))))
     (license license:bsd-3)))
 
+;; Markdown 3.2 dropped support for Python 2.
 (define-public python2-markdown
-  (package-with-python2 python-markdown))
+  (let ((base (package-with-python2 (strip-python2-variant python-markdown))))
+    (package/inherit
+     base
+     (version "3.1.1")
+     (source (origin
+               (method url-fetch)
+               (uri (pypi-uri "Markdown" version))
+               (sha256
+                (base32
+                 "0yhylk4ffqqs7x086fav4pnfsl1021v7lghznzkififprmmqfl1f")))))))
 
 (define-public python-ptyprocess
   (package
