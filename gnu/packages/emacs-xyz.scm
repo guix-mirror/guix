@@ -12623,8 +12623,8 @@ automatically fetched from well-curated sources, and formatted as BibTeX.")
     (license license:gpl3+)))
 
 (define-public emacs-helm-bibtex
-  (let ((commit "8ed898fb5a68f18e9bb9973832a5c1f8abcfc463")
-        (revision "1"))
+  (let ((commit "d4471232be26793fbf56c0ac3690b5f537c378b9")
+        (revision "2"))
     (package
       (name "emacs-helm-bibtex")
       (version (string-append "2.0.0" "-" revision "."
@@ -12638,7 +12638,7 @@ automatically fetched from well-curated sources, and formatted as BibTeX.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "14lyx0vbqr97p3anzrsp7m3q0kqclyjcdwplpraim403fcklzbnz"))))
+           "1bkzhic6qckb267025il1r3xcpz99kisphxiafni1pxvf9jafr0j"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-helm" ,emacs-helm)
