@@ -11580,13 +11580,13 @@ focus on building massively scalable web applications.")
 (define-public python-snowballstemmer
   (package
     (name "python-snowballstemmer")
-    (version "1.2.1")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "snowballstemmer" version))
               (sha256
                (base32
-                "0a0idq4y5frv7qsg2x62jd7rd272749xk4x99misf5rcifk2d7wi"))))
+                "0ligk61idlz8kkgd5hpip5whm172riwglb6xydii7h62yhysqfyz"))))
     (build-system python-build-system)
     (arguments
      `(;; No tests exist
