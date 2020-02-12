@@ -995,7 +995,6 @@ code.")
                (base32
                 "0v385ch0hzz9naqwdw2az3zdqi15gka76pmiwlgsy6diiijmg2k3"))))
     (build-system perl-build-system)
-    (inputs `(("perl-test-tester" ,perl-test-tester)))
     (synopsis "Ensure no warnings are produced while testing")
     (description
      "This modules causes any warnings during testing to be captured and
