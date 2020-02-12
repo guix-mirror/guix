@@ -2645,7 +2645,13 @@ structure for Python.")
          "1z3qliszqca9m719q3qhdkh0ghh90g500avzdgi7pl77x5h3mpn2"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f)) ; no setup.py test command
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          (invoke "python" "test/alltests.py")
+                          (format #t "test suite not run~%"))
+                      #t)))))
     (home-page "http://docutils.sourceforge.net/")
     (synopsis "Python Documentation Utilities")
     (description
