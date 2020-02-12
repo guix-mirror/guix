@@ -750,8 +750,8 @@ support for low-level interaction with the operating system.")
     (license license:bsd-3)))
 
 (define-public go-golang-org-x-time
-  (let ((commit "6dc17368e09b0e8634d71cac8168d853e869a0c7")
-        (revision "1"))
+  (let ((commit "9d24e82272b4f38b78bc8cff74fa936d31ccd8ef")
+        (revision "2"))
     (package
       (name "go-golang-org-x-time")
       (version (git-version "0.0.0" revision commit))
@@ -763,7 +763,7 @@ support for low-level interaction with the operating system.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1fx4cf5fpdz00g3c7vxzy92hdcg0vh4yqw00qp5s52j72qixynbk"))))
+                  "1f5nkr4vys2vbd8wrwyiq2f5wcaahhpxmia85d1gshcbqjqf8dkb"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/time"
