@@ -453,32 +453,30 @@ GeoLite2 and GeoIP2 databases in Go.")
     (license isc)))
 
 (define-public go-github-com-oschwald-maxminddb-golang
-  (let ((commit "26fe5ace1c706491c2936119e1dc69c1a9c04d7f")
-        (revision "0"))
-    (package
-      (name "go-github-com-oschwald-maxminddb-golang")
-      (version (git-version "1.2.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/oschwald/maxminddb-golang")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1i6d935f3cv9djpjvc2ibh8aps8jqvg454b9pkwg2h98al759ggk"))))
-      (build-system go-build-system)
-      (propagated-inputs
-       `(("go-golang-org-x-sys" ,go-golang-org-x-sys)))
-      (arguments
-       `(#:import-path "github.com/oschwald/maxminddb-golang"
-         #:tests? #f)) ; Requires some unpackaged software and test data
-      (synopsis "MaxMind DB Reader for Go")
-      (description "This is a Go reader for the MaxMind DB format.  Although
+  (package
+    (name "go-github-com-oschwald-maxminddb-golang")
+    (version "1.4.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/oschwald/maxminddb-golang")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "100wd5qv00pkcm6cb8c4x5gavc9jnn7drh6xrqh85hzci4rils66"))))
+    (build-system go-build-system)
+    (propagated-inputs
+     `(("go-golang-org-x-sys" ,go-golang-org-x-sys)))
+    (arguments
+     `(#:import-path "github.com/oschwald/maxminddb-golang"
+       #:tests? #f)) ; Requires some unpackaged software and test data
+    (synopsis "MaxMind DB Reader for Go")
+    (description "This is a Go reader for the MaxMind DB format.  Although
 this can be used to read GeoLite2 and GeoIP2 databases, @code{geoip2} provides a
 higher-level API for doing so.")
-      (home-page "https://github.com/oschwald/maxminddb-golang")
-      (license isc))))
+    (home-page "https://github.com/oschwald/maxminddb-golang")
+    (license isc)))
 
 (define-public go-github-com-stathat-go
   (let ((commit "74669b9f388d9d788c97399a0824adbfee78400e")
