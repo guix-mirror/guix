@@ -3811,7 +3811,7 @@ Linux Device Mapper multipathing driver:
 (define-public libaio
   (package
     (name "libaio")
-    (version "0.3.111")
+    (version "0.3.112")
     (source (origin
               (method url-fetch)
               (uri (list
@@ -3819,7 +3819,7 @@ Linux Device Mapper multipathing driver:
                                    name "-" version ".tar.gz")))
               (sha256
                (base32
-                "0ajhzbqjwsmz51gwccfyw6w9k4j4gmxcl2ph30sfn2gxv0d8gkv2"))))
+                "14mlqdapjqq1dhpkdgy5z83mvsaz36fcxca7a4z6hinmr7r6415b"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
