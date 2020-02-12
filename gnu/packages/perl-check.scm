@@ -1337,8 +1337,7 @@ cause a test fail unless it is exactly as @code{perltidy} would like it to be.")
      `(("perl-module-build" ,perl-module-build)
        ("perl-test-simple" ,perl-test-simple)))
     (propagated-inputs
-     `(("perl-test-tester" ,perl-test-tester)
-       ("perl-data-dump" ,perl-data-dump)))
+     `(("perl-data-dump" ,perl-data-dump)))
     (home-page "https://metacpan.org/release/Test-Trap")
     (synopsis "Trap exit codes, exceptions, output, and so on")
     (description "This module is primarily (but not exclusively) for use in
