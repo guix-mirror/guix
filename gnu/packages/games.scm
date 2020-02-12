@@ -446,7 +446,7 @@ canyons and wait for the long I-shaped block to clear four rows at a time.")
          ("sdl2-image" ,sdl2-image)
          ("sdl2-ttf" ,sdl2-ttf)
          ("sdl2-mixer" ,sdl2-mixer)))
-      (home-page "http://en.cataclysmdda.com/")
+      (home-page "https://cataclysmdda.org/")
       (synopsis "Survival horror roguelike video game")
       (description
        "Cataclysm: Dark Days Ahead (or \"DDA\" for short) is a roguelike set
