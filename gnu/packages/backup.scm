@@ -423,7 +423,7 @@ rdiff-backup is easy to use and settings have sensible defaults.")
 (define-public rsnapshot
   (package
     (name "rsnapshot")
-    (version "1.4.2")
+    (version "1.4.3")
     (source
      (origin
        (method url-fetch)
@@ -431,8 +431,7 @@ rdiff-backup is easy to use and settings have sensible defaults.")
              "https://github.com/rsnapshot/rsnapshot/releases/download/"
              version "/rsnapshot-" version ".tar.gz"))
        (sha256
-        (base32
-         "05jfy99a0xs6lvsjfp3wz21z0myqhmwl2grn3jr9clijbg282ah4"))))
+        (base32 "1lavqmmsf53pim0nvming7fkng6p0nk2a51k2c2jdq0l7snpl31b"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -444,6 +443,10 @@ rdiff-backup is easy to use and settings have sensible defaults.")
                             "t/backup_exec/conf/backup_exec.conf")
                (("/bin/true") (which "true"))
                (("/bin/false") (which "false")))
+
+             ;; Disable a test that tries to connect to localhost on port 22.
+             (delete-file "t/ssh_args/ssh_args.t.in")
+
              (invoke "make" "test"))))))
     (inputs
      `(("perl" ,perl)
