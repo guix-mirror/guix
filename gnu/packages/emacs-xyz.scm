@@ -169,6 +169,7 @@
              (uri (git-reference
                    (url "https://gitlab.com/jaor/geiser/")
                    (commit version)))
+             (file-name (git-file-name name version))
              (sha256
               (base32
                "0fb2h984hn7bnyiziplp7kgk29zdzc9yainsv0k1li436irlp9dd"))))
