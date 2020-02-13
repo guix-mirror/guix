@@ -11,7 +11,7 @@
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
-;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2019, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -819,4 +819,31 @@ is commonly written.")
 Scheme.  It provides both the shell interface, as well as a Guile
 library for parsing shell scripts.  Gash is designed to bootstrap Bash
 as part of the Guix bootstrap process.")
+    (license gpl3+)))
+
+(define-public gash-utils
+  (package
+    (name "gash-utils")
+    (version "0.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/gash/gash-utils-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0ib2p52qmbac5n0s5bys4fiwim461ps546976l1n7pwbs0avh7fk"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,guile-2.2)
+       ("gash" ,gash)))
+    (home-page "https://savannah.nongnu.org/projects/gash/")
+    (synopsis "Core POSIX utilities written in Guile Scheme")
+    (description "Gash-Utils provides Scheme implementations of many
+common POSIX utilities (there are about 40 of them, ranging in
+complexity from @command{false} to @command{awk}).  The utilities are
+designed to be capable of bootstrapping their standard GNU counterparts.
+Underpinning these utilities are many Scheme interfaces for manipulating
+files and text.")
     (license gpl3+)))
