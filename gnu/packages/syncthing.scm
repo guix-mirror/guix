@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
-;;; Copyright © 2016, 2017, 2018, 2019 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1056,3 +1056,25 @@ virtual connections from a single physical connection.")
 and RFC 5389).")
       (home-page "https://github.com/ccding/go-stun")
       (license asl2.0))))
+
+(define-public go-github-com-cespare-xxhash
+  (package
+    (name "go-github-com-cespare-xxhash")
+    (version "2.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/cespare/xxhash")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "12ad3z7ki9j07c4kx3ywkl6188i2afsjg7sl60wd21p6zkkpfjxq"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/cespare/xxhash"))
+    (synopsis "Go implementation of xxHash")
+    (description "This package provides of Go implementation of the 64-bit
+xxHash algorithm (XXH64).")
+    (home-page "https://github.com/cespare/xxhash/")
+    (license expat)))
