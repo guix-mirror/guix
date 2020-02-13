@@ -1792,7 +1792,7 @@ and lookup requests.  Browse requests are not supported yet.")
 (define-public go-github-com-gogo-protobuf
   (package
     (name "go-github-com-gogo-protobuf")
-    (version "1.2.1")
+    (version "1.3.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1801,7 +1801,7 @@ and lookup requests.  Browse requests are not supported yet.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "06yqa6h0kw3gr5pc3qmas7f7435a96zf7iw7p0l00r2hqf6fqq6m"))))
+                "0x77x64sxjgfhmbijqfzmj8h4ar25l2w97h01q3cqs1wk7zfnkhp"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/gogo/protobuf"
