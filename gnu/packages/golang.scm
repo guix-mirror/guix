@@ -2490,6 +2490,29 @@ building command line apps in Go.  The goal is to enable developers to write
 fast and distributable command line applications in an expressive way.")
     (license license:expat)))
 
+(define-public go-github-com-shurcool-sanitized-anchor-name
+  (package
+    (name "go-github-com-shurcool-sanitized-anchor-name")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/shurcooL/sanitized_anchor_name")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1gv9p2nr46z80dnfjsklc6zxbgk96349sdsxjz05f3z6wb6m5l8f"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/shurcooL/sanitized_anchor_name"))
+    (home-page "https://github.com/shurcooL/sanitized_anchor_name")
+    (synopsis "Create sanitized anchor names")
+    (description "This package provides a Go program for creating sanitized
+anchor names.")
+    (license license:expat)))
+
 (define-public go-github-com-pmezard-go-difflib
   (package
     (name "go-github-com-pmezard-go-difflib")
