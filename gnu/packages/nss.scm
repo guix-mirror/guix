@@ -85,7 +85,13 @@ in the Mozilla clients.")
                 "19rv0vp9nmvn6dy29qsv8f4v7wn5kizrpm59vbszahsjfwcz6p8q"))
               ;; Create nss.pc and nss-config.
               (patches (search-patches "nss-pkgconfig.patch"
-                                       "nss-increase-test-timeout.patch"))))
+                                       "nss-increase-test-timeout.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file-recursively "nss/lib/zlib")
+                  (delete-file-recursively "nss/lib/sqlite")
+                  #t))))
     (build-system gnu-build-system)
     (outputs '("out" "bin"))
     (arguments
