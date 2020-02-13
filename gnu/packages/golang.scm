@@ -2490,6 +2490,33 @@ building command line apps in Go.  The goal is to enable developers to write
 fast and distributable command line applications in an expressive way.")
     (license license:expat)))
 
+(define-public go-github-com-russross-blackfriday
+  (package
+    (name "go-github-com-russross-blackfriday")
+    (version "2.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/russross/blackfriday")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0nlz7isdd4rgnwzs68499hlwicxz34j2k2a0b8jy0y7ycd2bcr5j"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/russross/blackfriday"))
+    (propagated-inputs
+     `(("go-github-com-shurcool-sanitized-anchor-name"
+        ,go-github-com-shurcool-sanitized-anchor-name)))
+    (native-inputs
+     `(("go-github-com-pmezard-go-difflib" ,go-github-com-pmezard-go-difflib)))
+    (home-page "https://github.com/russross/blackfriday")
+    (synopsis "Markdown processor in Go")
+    (description "Blackfriday is a Markdown processor in Go.")
+    (license license:bsd-2)))
+
 (define-public go-github-com-shurcool-sanitized-anchor-name
   (package
     (name "go-github-com-shurcool-sanitized-anchor-name")
