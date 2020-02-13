@@ -52,8 +52,8 @@
     ;; When updating Syncthing, check 'go.mod' in the source distribution to
     ;; ensure we are using the correct versions of these dependencies.
     (inputs
-     `(("go-github-com-audriusbutkevicius-go-nat-pmp"
-        ,go-github-com-audriusbutkevicius-go-nat-pmp)
+     `(("go-github-com-jackpal-go-nat-pmp"
+        ,go-github-com-jackpal-go-nat-pmp)
        ("go-github-com-bkaradzic-go-lz4" ,go-github-com-bkaradzic-go-lz4)
        ("go-github-com-calmh-xdr" ,go-github-com-calmh-xdr)
        ("go-github-com-chmduquesne-rollinghash"
@@ -163,29 +163,28 @@ Protocol.")
     (home-page "https://github.com/syncthing/syncthing")
     (license mpl2.0)))
 
-(define-public go-github-com-audriusbutkevicius-go-nat-pmp
-  (let ((commit "452c97607362b2ab5a7839b8d1704f0396b640ca")
-        (revision "0"))
-    (package
-      (name "go-github-com-audriusbutkevicius-go-nat-pmp")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/AudriusButkevicius/go-nat-pmp")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32 "1accmpl1llk16a19nlyy991fqrgfay6l53gb64hgmdfmqljdvbk7"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "github.com/AudriusButkevicius/go-nat-pmp"))
-      (synopsis "Port mapping and discovery of external IP address")
-      (description "This package provides a Go client for the NAT-PMP internet
+(define-public go-github-com-jackpal-go-nat-pmp
+  (package
+    (name "go-github-com-jackpal-go-nat-pmp")
+    (version "1.0.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jackpal/go-nat-pmp")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1p2yrzfbkazc9nisr2iqjwzhb6q16zj6finyxxn2ikk7iiighl1g"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/jackpal/go-nat-pmp"))
+    (synopsis "Port mapping and discovery of external IP address")
+    (description "This package provides a Go client for the NAT-PMP internet
 protocol for port mapping and discovering the external IP address of a
 firewall.")
-      (home-page "https://github.com/AudriusButkevicius/go-nat-pmp")
-      (license asl2.0))))
+    (home-page "https://github.com/jackpal/go-nat-pmp")
+    (license asl2.0)))
 
 (define-public go-github-com-audriusbutkevicius-recli
   (package
