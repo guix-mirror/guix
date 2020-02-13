@@ -893,7 +893,7 @@ system, kernel, and process metrics from the @file{/proc} pseudo file system.")
 (define-public go-github-com-prometheus-client-golang
     (package
       (name "go-github-com-prometheus-client-golang")
-      (version "1.1.0")
+      (version "1.2.1")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -902,7 +902,7 @@ system, kernel, and process metrics from the @file{/proc} pseudo file system.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1r0irxkmfnj6ininb06w6ybknini5lz02idawrbkk2i5lq1qcvvf"))))
+                  "0zs49psk23n9z8wrl02d5vib5wclpym8kaxcy6n5pk696i419065"))))
       (build-system go-build-system)
       (arguments
        '(#:tests? #f
