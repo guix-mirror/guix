@@ -190,6 +190,7 @@ working directory."
               (if (executable-file? script)
                   (begin
                     (patch-shebang script)
+                    (setenv "NOCONFIGURE" "true")
                     (invoke script))
                   (invoke "sh" script)))
             (if (or (file-exists? "configure.ac")
