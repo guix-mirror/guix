@@ -151,6 +151,8 @@
     ("nckx (2nd)"
      ;; primary: "F5BC 5534 C36F 0087 B39D  36EF 1C9D C4FE B9DB 7C4B"
      "F5DA 2032 4B87 3D0B 7A38  7672 0DB0 FF88 4F55 6D79")
+    ("niedzejkob"
+     "E576 BFB2 CF6E B13D F571  33B9 E315 A758 4613 1564")
     ("ngz"
      "ED0E F1C8 E126 BA83 1B48  5FE9 DA00 B4F0 48E9 2F2D")
     ("pelzflorian"
