@@ -2936,28 +2936,26 @@ network protocol.")
     (license license:expat)))
 
 (define-public go-github-com-pkg-errors
-  (let ((commit "27936f6d90f9c8e1145f11ed52ffffbfdb9e0af7")
-        (revision "0"))
-    (package
-      (name "go-github-com-pkg-errors")
-      (version (git-version "0.8.1" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/pkg/errors.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0yzmgi6g4ak4q8y7w6x0n5cbinlcn8yc3gwgzy4yck00qdn25d6y"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "github.com/pkg/errors"))
-      (synopsis "Go error handling primitives")
-      (description "This package provides @code{error}, which offers simple
+  (package
+    (name "go-github-com-pkg-errors")
+    (version "0.9.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/pkg/errors.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1hlivqlcnm9wrj0v7h43gamw7mvg6svz9sm31fx28zn4ll25ablh"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/pkg/errors"))
+    (synopsis "Go error handling primitives")
+    (description "This package provides @code{error}, which offers simple
 error handling primitives in Go.")
-      (home-page "https://github.com/pkg/errors")
-      (license license:bsd-2))))
+    (home-page "https://github.com/pkg/errors")
+    (license license:bsd-2)))
 
 (define-public go-github-com-maruel-panicparse
   (package
