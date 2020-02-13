@@ -16,7 +16,7 @@
 ;;; Copyright © 2019 Steve Sprang <scs@stevesprang.com>
 ;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -1061,7 +1061,10 @@ requirements.")
     (native-inputs
      `(("xorg-server" ,xorg-server-for-tests)))
     (inputs
-     `(("glew" ,glew)
+     `(;; The test suite fails when using Mesa 19.3.2, so we provide this newer
+       ;; version.  Remove this input when the 'mesa' package is updated.
+       ("mesa" ,mesa-19.3.3)
+       ("glew" ,glew)
        ("libxrandr" ,libxrandr)
        ("libxcursor" ,libxcursor)
        ("libxinerama" ,libxinerama)
