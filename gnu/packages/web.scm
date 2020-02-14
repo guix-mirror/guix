@@ -38,6 +38,7 @@
 ;;; Copyright © 2019 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
+;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,6 +91,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages gcc)
@@ -7217,3 +7219,44 @@ of the DOM tree
     (license (list license:lgpl2.0
                    license:gpl2
                    license:asl2.0))))
+
+(define-public librocket
+  (package
+    (name "librocket")
+    (version "1.3.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/libRocket/libRocket")
+         (commit (string-append "release-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1n6gq007vqijyfasfnfg6c8d2rc9qarl4bhzbgkz062m4h5izlfs"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ; No tests.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "Build"))))))
+    (inputs
+     `(("freetype" ,freetype)))
+    (home-page "https://github.com/libRocket/libRocket") ; http://librocket.com/ is down.
+    (synopsis "HTML/CSS user interface library")
+    (description "libRocket is a C++ user interface package based on the HTML
+and CSS standards.  libRocket uses the open standards XHTML1.0 and
+CSS2.0 (while borrowing features from HTML5 and CSS3), and extends them with
+features suited towards real-time applications.  It is designed as a complete
+solution for any project's interface needs:
+
+@itemize
+@item Dynamic layout system.
+@item Efficient application-wide styling, with a custom-built templating engine.
+@item Fully featured control set: buttons, sliders, drop-downs, etc.
+@item Runtime visual debugging suite.
+@item Easily integrated and extensible with Python or Lua scripting.
+@end itemize\n")
+    (license license:expat)))
