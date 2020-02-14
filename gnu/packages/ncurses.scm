@@ -40,7 +40,7 @@
 (define-public ncurses
   (package
     (name "ncurses")
-    (version "6.1-20190609")
+    (version "6.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/ncurses/ncurses-"
@@ -48,7 +48,7 @@
                                   ".tar.gz"))
               (sha256
                (base32
-                "05qdmbmrrn88ii9f66rkcmcyzp1kb1ymkx7g040lfkd1nkp7w1da"))))
+                "17bcm2z1rdx5gmzj5fb8cp7f28aw5b4g2z4qvvqg3yg0fq66wc1h"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                ;1 MiB of man pages
@@ -188,8 +188,6 @@
               ,@(if (target-mingw?) '("--enable-term-driver") '()))))
          #:tests? #f                  ; no "check" target
          #:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'apply-rollup-patch
-                      ,apply-rollup-patch-phase)
                     (replace 'configure ,configure-phase)
                     (add-after 'install 'post-install
                       ,post-install-phase)
@@ -201,18 +199,6 @@
      `(,@(if (%current-target-system)
              `(("self" ,this-package))            ;for `tic'
              '())
-
-       ("rollup-patch"
-        ,(origin
-           (method url-fetch)
-           (uri (string-append
-                 "https://invisible-mirror.net/archives/ncurses/"
-                 (car (string-split version #\-))
-                 "/ncurses-" version "-patch.sh.bz2"))
-           (sha256
-            (base32
-             "0hqlqdqmh7lfs6dwj763qksb4j9nk0pv6crzx5gnp6n4caz3i46g"))))
-
        ("pkg-config" ,pkg-config)))
     (native-search-paths
      (list (search-path-specification
