@@ -3038,3 +3038,36 @@ SHA-512).")
     (name "guile3.0-hashing")
     (native-inputs
      `(("guile" ,guile-next)))))
+
+(define-public guile-webutils
+  (let ((commit "8541904f761066dc9c27b1153e9a838be9a55299")
+        (revision "0"))
+    (package
+      (name "guile-webutils")
+      (version (git-version "0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://notabug.org/cwebber/guile-webutils.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1s9n3hbxd7lfpdi0x8wr0cfvlsf6g62ird9gbspxdrp5p05rbi64"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)
+         ("texinfo" ,texinfo)))
+      (inputs
+       `(("guile" ,guile-2.2)))
+      (propagated-inputs
+       `(("guile-irregex" ,guile-irregex)
+         ("guile-gcrypt" ,guile-gcrypt)))
+      (home-page "https://notabug.org/cwebber/guile-webutils")
+      (synopsis "Web application authoring utilities for Guile")
+      (description
+       "This package provides tooling to write web applications in Guile, such
+as signed sessions, multipart message support, etc.")
+      (license license:gpl3+))))
