@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
@@ -423,26 +423,16 @@ key-value pair databases and a real LDAP database.")
 (define-public ppp
   (package
     (name "ppp")
-    (version "2.4.7")
+    (version "2.4.8")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://www.samba.org/ftp/ppp/ppp-"
-                                  version ".tar.gz"))
-              (patches
-               (list (origin
-                       ;; Use OpenSSL for cryptography instead of the obsolete glibc
-                       ;; crypto functions that were removed in glibc 2.28.
-                       (method url-fetch)
-                       (uri (string-append "https://github.com/paulusmack/ppp/commit/"
-                                           "3c7b86229f7bd2600d74db14b1fe5b3896be3875"
-                                           ".patch"))
-                       (file-name "ppp-use-openssl-crypto.patch")
-                       (sha256
-                        (base32
-                         "0qlbi247lx3injpy8a1gcij9yilik0vfaibkpvdp88k3sa1rs69z")))))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/paulusmack/ppp")
+                    (commit (string-append "ppp-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0c7vrjxl52pdwi4ckrvfjr08b31lfpgwf3pp0cqy76a77vfs7q02"))))
+                "1i88m79h6g3fzsb4yw3k8bq1grsx3hsyawm7id2vcaab0gfqzjjv"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no check target

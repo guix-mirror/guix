@@ -8,6 +8,7 @@
 ;;; Copyright © 2018, 2019 Meiyo Peng <meiyo@riseup.net>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019, 2020 Reza Alizadeh Majd <r.majd@pantherx.org>
+;;; Copyright © 2020 Fakhri Sajadi <f.sajadi@pantherx.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -379,6 +380,7 @@ the operating system LXQt is running on.")
        ("qtx11extras" ,qtx11extras)
        ("solid" ,solid)
        ("xf86-input-libinput" ,xf86-input-libinput)
+       ("xkeyboard-config" ,xkeyboard-config)
        ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -394,6 +396,14 @@ the operating system LXQt is running on.")
                (("DESTINATION \"\\$\\{LXQT_ETC_XDG_DIR\\}")
                 "DESTINATION \"etc/xdg"))
              #t))
+         (add-after 'unpack 'set-xkeyboard-config-file-name
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Set the file name to xkeyboard-config.
+             (let ((xkb (assoc-ref inputs "xkeyboard-config")))
+               (substitute* "lxqt-config-input/keyboardlayoutconfig.h"
+                 (("/usr/share/X11/xkb/rules/base.lst")
+                  (string-append xkb "/share/X11/xkb/rules/base.lst")))
+               #t)))
          (add-after 'unpack 'patch-translations-dir
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* '("lxqt-config-file-associations/CMakeLists.txt"

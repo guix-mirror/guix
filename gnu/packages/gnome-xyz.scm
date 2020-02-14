@@ -114,6 +114,40 @@ which haven't been updated for some years.  The new app icons are ported from
 the Obsidian icon theme.")
     (license license:gpl3)))
 
+(define-public gnome-shell-extension-appindicator
+  (package
+    (name "gnome-shell-extension-appindicator")
+    (version "30")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url
+                     "https://github.com/ubuntu/gnome-shell-extension-appindicator.git")
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "1fjhx23jqwv3d0smwhnjvc35gqhwk9p5f96ic22pfax653cn5vh8"))
+              (file-name (git-file-name name version))))
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((source (assoc-ref %build-inputs "source"))
+                (install-dir (string-append (assoc-ref %outputs "out")
+                                            "/share/gnome-shell/extensions"
+                                            "/appindicatorsupport@rgcjonas.gmail.com")))
+           (mkdir-p install-dir)
+           (copy-recursively source install-dir)
+           #t))))
+    (synopsis "Adds KStatusNotifierItem support to GNOME Shell")
+    (description "This extension integrates Ubuntu AppIndicators
+and KStatusNotifierItems (KDE's successor of the systray) into
+GNOME Shell.")
+    (home-page "https://github.com/ubuntu/gnome-shell-extension-appindicator/")
+    (license license:gpl2+)))
+
 (define-public gnome-shell-extension-dash-to-dock
   (package
     (name "gnome-shell-extension-dash-to-dock")

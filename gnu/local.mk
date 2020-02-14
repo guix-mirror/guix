@@ -109,6 +109,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/check.scm			\
   %D%/packages/chemistry.scm			\
   %D%/packages/chez.scm				\
+  %D%/packages/chicken.scm				\
   %D%/packages/chromium.scm			\
   %D%/packages/ci.scm				\
   %D%/packages/cinnamon.scm			\
@@ -818,10 +819,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/docbook-xsl-nonrecursive-string-subst.patch	\
   %D%/packages/patches/doc++-include-directives.patch		\
   %D%/packages/patches/doc++-segfault-fix.patch			\
-  %D%/packages/patches/docker-adjust-tests-for-changes-in-go.patch	\
-  %D%/packages/patches/docker-engine-test-noinstall.patch	\
   %D%/packages/patches/docker-fix-tests.patch			\
-  %D%/packages/patches/docker-use-fewer-modprobes.patch		\
   %D%/packages/patches/dovecot-trees-support-dovecot-2.3.patch	\
   %D%/packages/patches/doxygen-test.patch			\
   %D%/packages/patches/doxygen-1.8.17-runtests.patch		\
@@ -1029,7 +1027,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/inkscape-poppler-0.76.patch		\
   %D%/packages/patches/intltool-perl-compatibility.patch	\
   %D%/packages/patches/irrlicht-use-system-libs.patch		\
-  %D%/packages/patches/isc-dhcp-4.4.1-fixes-for-newer-bind.patch	\
   %D%/packages/patches/isl-0.11.1-aarch64-support.patch	\
   %D%/packages/patches/jacal-fix-texinfo.patch			\
   %D%/packages/patches/jamvm-arm.patch				\
@@ -1116,8 +1113,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libmpeg2-global-symbol-test.patch	\
   %D%/packages/patches/libmygpo-qt-fix-qt-5.11.patch		\
   %D%/packages/patches/libmygpo-qt-missing-qt5-modules.patch	\
-  %D%/packages/patches/libreoffice-icu.patch			\
-  %D%/packages/patches/libreoffice-glm.patch			\
   %D%/packages/patches/libseccomp-open-aarch64.patch		\
   %D%/packages/patches/libsndfile-armhf-type-checks.patch	\
   %D%/packages/patches/libsndfile-CVE-2017-8361-8363-8365.patch	\
@@ -1353,6 +1348,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/qemu-CVE-2020-7039.patch			\
   %D%/packages/patches/qemu-CVE-2020-7211.patch			\
   %D%/packages/patches/qemu-fix-documentation-build-failure.patch	\
+  %D%/packages/patches/qrcodegen-cpp-make-install.patch		\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtbase-use-TZDIR.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
@@ -1370,6 +1366,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/readline-link-ncurses.patch		\
   %D%/packages/patches/readline-6.2-CVE-2014-2524.patch		\
   %D%/packages/patches/reposurgeon-add-missing-docbook-files.patch	\
+  %D%/packages/patches/reprotest-support-guix.patch		\
   %D%/packages/patches/ri-li-modernize_cpp.patch		\
   %D%/packages/patches/ripperx-missing-file.patch		\
   %D%/packages/patches/rpcbind-CVE-2017-8779.patch		\
@@ -1385,6 +1382,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/rust-bootstrap-stage0-test.patch		\
   %D%/packages/patches/rust-coresimd-doctest.patch		\
   %D%/packages/patches/rust-reproducible-builds.patch		 \
+  %D%/packages/patches/rust-openssl-sys-no-vendor.patch	\
   %D%/packages/patches/rxvt-unicode-escape-sequences.patch	\
   %D%/packages/patches/sbcl-graph-asdf-definitions.patch	\
   %D%/packages/patches/scalapack-blacs-mpi-deprecations.patch	\

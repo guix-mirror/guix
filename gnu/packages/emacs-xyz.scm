@@ -18,7 +18,7 @@
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
-;;; Copyright © 2017, 2018, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2018, 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017, 2018, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017, 2018 Kyle Meyer <kyle@kyleam.com>
@@ -163,14 +163,16 @@
 (define-public emacs-geiser
   (package
     (name "emacs-geiser")
-    (version "0.10")
+    (version "0.11")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://savannah/geiser/" version
-                                 "/geiser-" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://gitlab.com/jaor/geiser/")
+                   (commit version)))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "0pj3l7p8d60c9b4vfprnv6g5l61d74pls4b5dvd84cn4ky9mzwjv"))))
+               "0fb2h984hn7bnyiziplp7kgk29zdzc9yainsv0k1li436irlp9dd"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -183,7 +185,11 @@
                                      "geiser-autoloads.el"))
              #t)))))
     (inputs `(("guile" ,guile-2.2)))
-    (native-inputs `(("emacs" ,emacs-minimal)))
+    (native-inputs
+     `(("emacs" ,emacs-minimal)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("texinfo" ,texinfo)))
     (home-page "https://nongnu.org/geiser/")
     (synopsis "Collection of Emacs modes for Guile and Racket hacking")
     (description
@@ -1980,6 +1986,27 @@ single buffer.")
 additional features to @code{tabulated-list-mode}: it adds marks,
 filters, new key bindings and faces.  It can be enabled by
 @code{tablist-mode} or @code{tablist-minor-mode} commands.")
+    (license license:gpl3+)))
+
+(define-public emacs-djvu
+  (package
+    (name "emacs-djvu")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "djvu-" version ".el"))
+       (sha256
+        (base32 "0njgyx09q225hliacsnjk8wallg5i6xkz6bj501pb05nwqfbvfk7"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/djvu.html")
+    (synopsis "Edit and view Djvu files via djvused")
+    (description
+     "This package is a front end for the command-line program djvused from
+DjVuLibre, see @url{http://djvu.sourceforge.net/}.  It assumes you have the
+programs @command{djvused}, @command{djview}, @command{ddjvu}, and
+@command{djvm} installed.")
     (license license:gpl3+)))
 
 (define-public emacs-pdf-tools
@@ -7353,8 +7380,8 @@ sly-quickload command that prompts the user for a package to install. ")
       (license license:gpl3+))))
 
 (define-public emacs-sly-asdf
-  (let ((commit "4e323bc28da2f07fd799b6a31b94fd93848b5f3c")
-        (revision "2"))
+  (let ((commit "ad248056ded3099b0528b6111ba335e835d9e5a7")
+        (revision "3"))
     (package
       (name "emacs-sly-asdf")
       (version (git-version "0.1.0" revision commit))
@@ -7368,10 +7395,11 @@ sly-quickload command that prompts the user for a package to install. ")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "16sc33jhc6ik4ilsyqc3cjpi6v0wdmwjlwrzjwd6yym11bscsmad"))))
+           "0lip0spmglny3y612pxn3rfnpdaj12c9f7ya7bprryg2gvcdippa"))))
       (build-system emacs-build-system)
       (propagated-inputs
-       `(("emacs-sly" ,emacs-sly)))
+       `(("emacs-sly" ,emacs-sly)
+         ("emacs-popup" ,emacs-popup)))
       (arguments
        '(#:include (cons* "\\.lisp$" "\\.asd$" %default-include)))
       (synopsis "ASDF contrib for SLY")
@@ -8050,13 +8078,13 @@ passive voice.")
     (name "emacs-org")
     ;; emacs-org-contrib inherits from this package.  Please update it as
     ;; well.
-    (version "9.3.2")
+    (version "9.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/org-" version ".tar"))
        (sha256
-        (base32 "1275s3hzyka2wwxl6nc2sndnwyl7kbc1nnl0hrznxb3wpy2abfd6"))))
+        (base32 "0yafckcx5ka2rpmv24x7ns6f3s1h216x2lbgaxsf1dmklbjcfvwv"))))
     (build-system emacs-build-system)
     (home-page "https://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
@@ -8070,14 +8098,14 @@ programming and reproducible research.")
   (package
     (inherit emacs-org)
     (name "emacs-org-contrib")
-    (version "20200126")
+    (version "20200206")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://orgmode.org/elpa/"
                            "org-plus-contrib-" version ".tar"))
        (sha256
-        (base32 "08yik0i8ya2x5j4vsnwxdcdlcxbiq58lvy30vcbdbf0hqrd40kjv"))))
+        (base32 "1fdxh8zgjnb500wkcl0bc0fdzbsln6p044b4s4nz85wkfw0jkfs5"))))
     (arguments
      `(#:modules ((guix build emacs-build-system)
                   (guix build utils)
@@ -8094,11 +8122,11 @@ programming and reproducible research.")
                      (map basename (find-files out)))
                     (org+contrib-files
                      (map basename (find-files org)))
-                    (duplicates (lset-intersection
-                                 string=? contrib-files org+contrib-files)))
+                    (duplicates (lset-intersection string=?
+                                                   contrib-files
+                                                   org+contrib-files)))
                (with-directory-excursion
-                   (string-append
-                    out "/share/emacs/site-lisp")
+                   (string-append out "/share/emacs/site-lisp")
                  (for-each delete-file duplicates))
                #t))))))
     (propagated-inputs
@@ -8574,35 +8602,35 @@ been adapted to work with mu4e.")
 (define-public emacs-yasnippet
   (package
     (name "emacs-yasnippet")
-    (version "0.13.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/joaotavora/yasnippet.git")
-                    (commit version)))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0fkkplycrw8f8r30hjjxl1wm7p2irq2ipzzc1g7cc52abaal796p"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; YASnippet expects a "snippets" subdirectory in the same
-                  ;; directory as yasnippet.el, but we don't install it
-                  ;; because it's a git submodule pointing to an external
-                  ;; repository.  Adjust `yas-snippet-dirs' to prevent
-                  ;; warnings about a missing directory.
-                  (substitute* "yasnippet.el"
-                    (("^ +'yas-installed-snippets-dir\\)\\)\n")
-                     "))\n"))
-                  #t))))
+    (version "0.14.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/joaotavora/yasnippet.git")
+             (commit version)))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0via9dzw8m5lzymg1h78xkwjssh39zr3g6ccyamlf1rjzjsyxknv"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; YASnippet expects a "snippets" subdirectory in the same
+           ;; directory as yasnippet.el, but we don't install it because it's
+           ;; a git submodule pointing to an external repository.  Adjust
+           ;; `yas-snippet-dirs' to prevent warnings about a missing
+           ;; directory.
+           (substitute* "yasnippet.el"
+             (("^ +'yas-installed-snippets-dir\\)\\)\n")
+              "))\n"))
+           #t))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
        #:test-command '("emacs" "--batch"
                         "-l" "yasnippet-tests.el"
                         "-f" "ert-run-tests-batch-and-exit")
-       ;; FIXME: one failing test
+       ;; FIXME: one failing test.
        #:phases
        (modify-phases %standard-phases
          (add-before 'check 'make-tests-writable
@@ -8612,11 +8640,10 @@ been adapted to work with mu4e.")
          (add-before 'check 'delete-rebinding-test
            (lambda _
              (emacs-batch-edit-file "yasnippet-tests.el"
-               `(progn (progn (goto-char (point-min))
-                              (re-search-forward
-                               "ert-deftest test-rebindings")
-                              (beginning-of-line)
-                              (kill-sexp))
+               `(progn (goto-char (point-min))
+                       (re-search-forward "ert-deftest test-rebindings")
+                       (beginning-of-line)
+                       (kill-sexp)
                        (basic-save-buffer)))
              #t)))))
     (home-page "https://github.com/joaotavora/yasnippet")
@@ -8627,50 +8654,40 @@ abbreviation and automatically expand it into function templates.")
     (license license:gpl3+)))
 
 (define-public emacs-yasnippet-snippets
-  (let ((commit "885050d34737e2fb36a3e7759d60c09347bd4ce0")
-        (revision "1"))
-    (package
-      (name "emacs-yasnippet-snippets")
-      (version (string-append "1-" revision "." (string-take commit 8)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/AndreaCrotti/yasnippet-snippets")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1m935zgglw0iakzrixld5rcjz3wnj84f8wy2mvc3pggjri9l0qr9"))))
-      (build-system trivial-build-system)
-      (arguments
-       `(#:modules ((ice-9 ftw)
-                    (ice-9 regex)
-                    (guix build utils))
-         #:builder
-         (begin
-           (use-modules (ice-9 ftw)
-                        (ice-9 regex)
-                        (guix build utils))
-           (with-directory-excursion (assoc-ref %build-inputs "source")
-             (for-each (lambda (dir)
-                         (copy-recursively
-                          dir
-                          (string-append %output
-                                         "/share/emacs/yasnippet-snippets/"
-                                         dir)))
-                       (scandir "." (lambda (fname)
-                                      (and (string-match "-mode$" fname)
-                                           (directory-exists? fname))))))
-           #t)))
-      (home-page "https://github.com/AndreaCrotti/yasnippet-snippets")
-      (synopsis "Collection of YASnippet snippets for many languages")
-      (description
-       "Provides Andrea Crotti's collection of YASnippet snippets.  After installation,
+  (package
+    (name "emacs-yasnippet-snippets")
+    (version "0.20")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/AndreaCrotti/yasnippet-snippets")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "095w7cdmfwmmr6426mbq15n0a5izgbmv9408m9yh1pqz5x3v3vsx"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((source (assoc-ref %build-inputs "source"))
+                (out (assoc-ref %outputs "out"))
+                (snippet-dir
+                 (string-append out "/share/emacs/yasnippet-snippets/")))
+           (with-directory-excursion source
+             (mkdir-p snippet-dir)
+             (copy-recursively "snippets" snippet-dir)))
+         #t)))
+    (home-page "https://github.com/AndreaCrotti/yasnippet-snippets")
+    (synopsis "Collection of YASnippet snippets for many languages")
+    (description
+     "Provides Andrea Crotti's collection of YASnippet snippets.  After installation,
 the snippets will be in \"~/.guix-profile/share/emacs/yasnippet-snippets/\".
 To make YASnippet aware of these snippets, add the above directory to
 @code{yas-snippet-dirs}.")
-      (license license:expat))))
+    (license license:gpl3+)))
 
 (define-public emacs-helm-c-yasnippet
   (let ((commit "65ca732b510bfc31636708aebcfe4d2d845b59b0")
@@ -12604,8 +12621,8 @@ automatically fetched from well-curated sources, and formatted as BibTeX.")
     (license license:gpl3+)))
 
 (define-public emacs-helm-bibtex
-  (let ((commit "8ed898fb5a68f18e9bb9973832a5c1f8abcfc463")
-        (revision "1"))
+  (let ((commit "d4471232be26793fbf56c0ac3690b5f537c378b9")
+        (revision "2"))
     (package
       (name "emacs-helm-bibtex")
       (version (string-append "2.0.0" "-" revision "."
@@ -12619,7 +12636,7 @@ automatically fetched from well-curated sources, and formatted as BibTeX.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "14lyx0vbqr97p3anzrsp7m3q0kqclyjcdwplpraim403fcklzbnz"))))
+           "1bkzhic6qckb267025il1r3xcpz99kisphxiafni1pxvf9jafr0j"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-helm" ,emacs-helm)
@@ -21374,3 +21391,64 @@ sense on the @samp{Newsgroups} header, whereas mail alias expansion makes
 sense in the @samp{To} and @samp{Cc} headers).  When in the message body, this
 executes a different function (default: @code{indent-relative}).")
       (license license:gpl2+))))
+
+(define-public emacs-gnus-harvest
+  (let ((commit "feda071a87b799bd5d23cacde3ee71f0b166e75d")
+        (revision "0"))
+    (package
+      (name "emacs-gnus-harvest")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jwiegley/gnus-harvest.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "08zb7vc3v3wdxkzgi902vlc5ybfvm8fxrvm5drnwfsjj9873pbcb"))))
+      (build-system emacs-build-system)
+      (inputs
+       `(("sqlite" ,sqlite)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'build 'patch-exec-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((sqlite (assoc-ref inputs "sqlite"))
+                     (file "gnus-harvest.el"))
+                 (make-file-writable file)
+                 (emacs-substitute-variables file
+                   ("gnus-harvest-sqlite-program"
+                    (string-append sqlite "/bin/sqlite3"))))
+               #t)))))
+      (home-page "https://github.com/jwiegley/gnus-harvest")
+      (synopsis
+       "Harvest email addresses from read/written Gnus articles")
+      (description "@code{gnus-harvest} notices email address in every message
+or post you read or write, and collects them in a SQLite database, which can
+be easily and quickly queried to determine the completion list.  It optionally
+uses BBDB and Message-X.")
+      (license license:gpl3+))))
+
+(define-public emacs-auto-dictionary-mode
+  (package
+    (name "emacs-auto-dictionary-mode")
+    (version "1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nschum/auto-dictionary-mode")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "191294k92qp8gmfypf0q8j8qrym96aqikzvyb9p03wqvbr3r1dsk"))))
+    (build-system emacs-build-system)
+    (home-page "http://nschum.de/src/emacs/auto-dictionary/")
+    (synopsis "Automatic dictionary switcher for Emacs spell checking")
+    (description "@code{auto-dictionary} is a minor mode that hooks into
+Flyspell's on-the-fly spell checking and extends these checks to also detect
+language.  Auto-dictionary then sets @code{ispell-dictionary} to use the
+detected language.")
+    (license license:gpl2+)))

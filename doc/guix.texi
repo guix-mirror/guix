@@ -46,7 +46,7 @@ Copyright @copyright{} 2017, 2018 Carlo Zancanaro@*
 Copyright @copyright{} 2017 Thomas Danckaert@*
 Copyright @copyright{} 2017 humanitiesNerd@*
 Copyright @copyright{} 2017 Christopher Allan Webber@*
-Copyright @copyright{} 2017, 2018, 2019 Marius Bakke@*
+Copyright @copyright{} 2017, 2018, 2019, 2020 Marius Bakke@*
 Copyright @copyright{} 2017, 2019, 2020 Hartmut Goebel@*
 Copyright @copyright{} 2017, 2019, 2020 Maxim Cournoyer@*
 Copyright @copyright{} 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice@*
@@ -72,6 +72,7 @@ Copyright @copyright{} 2019 Guillaume Le Vaillant@*
 Copyright @copyright{} 2020 Leo Prikler@*
 Copyright @copyright{} 2019, 2020 Simon Tournier@*
 Copyright @copyright{} 2020 Wiktor Żelazny@*
+Copyright @copyright{} 2020 Damien Cassou@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -3292,8 +3293,10 @@ $ guix build emacs --dry-run
 @end example
 
 @noindent
-This indicates that substitutes from @code{@value{SUBSTITUTE-SERVER}} are usable and
-will be downloaded, when possible, for future builds.
+The text changed from ``The following derivations would be built'' to
+``112.3 MB would be downloaded''.  This indicates that substitutes from
+@code{@value{SUBSTITUTE-SERVER}} are usable and will be downloaded, when
+possible, for future builds.
 
 @cindex substitutes, how to disable
 The substitute mechanism can be disabled globally by running
@@ -4158,7 +4161,7 @@ say, on another machine, by providing a channel specification in
       (channel
        (name 'my-personal-packages)
        (url "https://example.org/personal-packages.git")
-       (branch "dd3df5e2c8818760a8fc0bd699e55d3b69fef2bb")))
+       (commit "dd3df5e2c8818760a8fc0bd699e55d3b69fef2bb")))
 @end lisp
 
 The @command{guix describe --format=channels} command can even generate this
@@ -5057,12 +5060,21 @@ Alternatively, you can produce a pack in the Docker image format using
 the following command:
 
 @example
-guix pack -f docker guile emacs geiser
+guix pack -f docker -S /bin=bin guile guile-readline
 @end example
 
 @noindent
 The result is a tarball that can be passed to the @command{docker load}
-command.  See the
+command, followed by @code{docker run}:
+
+@example
+docker load < @var{file}
+docker run -ti guile-guile-readline /bin/guile
+@end example
+
+@noindent
+where @var{file} is the image returned by @var{guix pack}, and
+@code{guile-guile-readline} is its ``image tag''.  See the
 @uref{https://docs.docker.com/engine/reference/commandline/load/, Docker
 documentation} for more information.
 
@@ -8443,6 +8455,11 @@ As an example, @var{file} might contain a package definition like this
 @lisp
 @include package-hello.scm
 @end lisp
+
+@item --manifest=@var{manifest}
+@itemx -m @var{manifest}
+Build all packages listed in the given @var{manifest}
+(@pxref{profile-manifest, @option{--manifest}}).
 
 @item --expression=@var{expr}
 @itemx -e @var{expr}

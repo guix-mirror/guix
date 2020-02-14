@@ -36,6 +36,7 @@
 ;;; Copyright © 2019 Arne Babenhauserheide <arne_bab@web.de>
 ;;; Copyright © 2019 Riku Viitanen <riku.viitanen@protonmail.com>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 Josh Holland <josh@inv.alid.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1728,7 +1729,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
 (define-public youtube-viewer
   (package
     (name "youtube-viewer")
-    (version "3.7.0")
+    (version "3.7.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1737,7 +1738,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1h0m8rn7najdrzvg5md9albiax287273b40ncrihh9amsvvb47c9"))))
+                "1plsm1sc04lwlg5h2gapxpykc3cpd4frjll14lamql89dm4a50vi"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
@@ -2182,14 +2183,14 @@ and custom quantization matrices.")
 (define-public streamlink
   (package
     (name "streamlink")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "streamlink" version))
         (sha256
          (base32
-          "0593ffjpz82jrljnzxfafkcmcqad3r1ijjan0hm04xjcnxc9cr00"))))
+          "0cnlg3ra3g6dml4xfy9ysy9b4qwyn458fadd8ac44cfwi3v4gq6y"))))
     (build-system python-build-system)
     (home-page "https://github.com/streamlink/streamlink")
     (native-inputs

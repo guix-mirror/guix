@@ -182,7 +182,7 @@
                  (copy-file "run_rustc/Makefile"
                             (string-append run_rustc "/Makefile"))
                  #t))))))
-      (synopsis "Compiler for the Rust progamming language")
+      (synopsis "Compiler for the Rust programming language")
       (description "Rust is a systems programming language that provides memory
 safety and thread safety guarantees.")
       (home-page "https://github.com/thepowersgang/mrustc")

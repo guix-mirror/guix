@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,28 +21,68 @@
 
 (define-module (guix import gem)
   #:use-module (ice-9 match)
-  #:use-module (ice-9 pretty-print)
   #:use-module (srfi srfi-1)
-  #:use-module (rnrs bytevectors)
-  #:use-module (json)
-  #:use-module (web uri)
+  #:use-module (guix json)
   #:use-module ((guix download) #:prefix download:)
   #:use-module (guix import utils)
   #:use-module (guix import json)
   #:use-module (guix packages)
   #:use-module (guix upstream)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix base16)
   #:use-module (guix base32)
-  #:use-module (guix build-system ruby)
+  #:use-module ((guix build-system ruby) #:select (rubygems-uri))
   #:export (gem->guix-package
             %gem-updater
             gem-recursive-import))
 
+;; Gems as defined by the API at <https://rubygems.org/api/v1/gems>.
+(define-json-mapping <gem> make-gem gem?
+  json->gem
+  (name          gem-name)                        ;string
+  (platform      gem-platform)                    ;string
+  (version       gem-version)                     ;string
+  (authors       gem-authors)                     ;string
+  (licenses      gem-licenses "licenses"          ;list of strings
+                 (lambda (licenses)
+                   ;; This is sometimes #nil (the JSON 'null' value).  Arrange
+                   ;; to always return a list.
+                   (cond ((not licenses) '())
+                         ((vector? licenses) (vector->list licenses))
+                         (else '()))))
+  (info          gem-info)
+  (sha256        gem-sha256 "sha"                 ;bytevector
+                 base16-string->bytevector)
+  (home-page     gem-home-page "homepage_uri")    ;string
+  (dependencies  gem-dependencies "dependencies"  ;<gem-dependencies>
+                 json->gem-dependencies))
+
+(define-json-mapping <gem-dependencies> make-gem-dependencies
+  gem-dependencies?
+  json->gem-dependencies
+  (development   gem-dependencies-development     ;list of <gem-dependency>
+                 "development"
+                 json->gem-dependency-list)
+  (runtime       gem-dependencies-runtime         ;list of <gem-dependency>
+                 "runtime"
+                 json->gem-dependency-list))
+
+(define (json->gem-dependency-list vector)
+  (if vector
+      (map json->gem-dependency (vector->list vector))
+      '()))
+
+(define-json-mapping <gem-dependency> make-gem-dependency gem-dependency?
+  json->gem-dependency
+  (name          gem-dependency-name)             ;string
+  (requirements  gem-dependency-requirements))    ;string
+
+
 (define (rubygems-fetch name)
-  "Return an alist representation of the RubyGems metadata for the package NAME,
-or #f on failure."
-  (json-fetch
-   (string-append "https://rubygems.org/api/v1/gems/" name ".json")))
+  "Return a <gem> record for the package NAME, or #f on failure."
+  (and=> (json-fetch
+          (string-append "https://rubygems.org/api/v1/gems/" name ".json"))
+         json->gem))
 
 (define (ruby-package-name name)
   "Given the NAME of a package on RubyGems, return a Guix-compliant name for
@@ -49,41 +90,6 @@ the package."
   (if (string-prefix? "ruby-" name)
       (snake-case name)
       (string-append "ruby-" (snake-case name))))
-
-(define (hex-string->bytevector str)
-  "Convert the hexadecimal encoded string STR to a bytevector."
-  (define hex-char->int
-    (match-lambda
-     (#\0 0)
-     (#\1 1)
-     (#\2 2)
-     (#\3 3)
-     (#\4 4)
-     (#\5 5)
-     (#\6 6)
-     (#\7 7)
-     (#\8 8)
-     (#\9 9)
-     (#\a 10)
-     (#\b 11)
-     (#\c 12)
-     (#\d 13)
-     (#\e 14)
-     (#\f 15)))
-
-  (define (read-byte i)
-    (let ((j (* 2 i)))
-      (+ (hex-char->int (string-ref str (1+ j)))
-         (* (hex-char->int (string-ref str j)) 16))))
-
-  (let* ((len (/ (string-length str) 2))
-         (bv  (make-bytevector len)))
-    (let loop ((i 0))
-      (if (= i len)
-          bv
-          (begin
-            (bytevector-u8-set! bv i (read-byte i))
-            (loop (1+ i)))))))
 
 (define (make-gem-sexp name version hash home-page synopsis description
                        dependencies licenses)
@@ -97,8 +103,7 @@ VERSION, HASH, HOME-PAGE, DESCRIPTION, DEPENDENCIES, and LICENSES."
                (uri (rubygems-uri ,name version))
                (sha256
                 (base32
-                 ,(bytevector->nix-base32-string
-                   (hex-string->bytevector hash))))))
+                 ,(bytevector->nix-base32-string hash)))))
      (build-system ruby-build-system)
      ,@(if (null? dependencies)
            '()
@@ -120,31 +125,25 @@ VERSION, HASH, HOME-PAGE, DESCRIPTION, DEPENDENCIES, and LICENSES."
 (define* (gem->guix-package package-name #:optional (repo 'rubygems) version)
   "Fetch the metadata for PACKAGE-NAME from rubygems.org, and return the
 `package' s-expression corresponding to that package, or #f on failure."
-  (let ((package (rubygems-fetch package-name)))
-    (and package
-         (let* ((name         (assoc-ref package "name"))
-                (version      (assoc-ref package "version"))
-                (hash         (assoc-ref package "sha"))
-                (synopsis     (assoc-ref package "info")) ; nothing better to use
-                (description  (beautify-description
-                               (assoc-ref package "info")))
-                (home-page    (assoc-ref package "homepage_uri"))
-                (dependencies-names (map (lambda (dep) (assoc-ref dep "name"))
-                                         (vector->list
-                                          (assoc-ref* package
-                                                      "dependencies"
-                                                      "runtime"))))
-                (dependencies (map (lambda (dep)
-                                     (if (string=? dep "bundler")
-                                         "bundler" ; special case, no prefix
-                                         (ruby-package-name dep)))
-                                   dependencies-names))
-                (licenses     (map string->license
-                                   (vector->list
-                                    (assoc-ref package "licenses")))))
-           (values (make-gem-sexp name version hash home-page synopsis
-                                  description dependencies licenses)
-                   dependencies-names)))))
+  (let ((gem (rubygems-fetch package-name)))
+    (if gem
+        (let* ((dependencies-names (map gem-dependency-name
+                                        (gem-dependencies-runtime
+                                         (gem-dependencies gem))))
+               (dependencies (map (lambda (dep)
+                                    (if (string=? dep "bundler")
+                                        "bundler" ; special case, no prefix
+                                        (ruby-package-name dep)))
+                                  dependencies-names))
+               (licenses     (map string->license (gem-licenses gem))))
+          (values (make-gem-sexp (gem-name gem) (gem-version gem)
+                                 (gem-sha256 gem) (gem-home-page gem)
+                                 (gem-info gem)
+                                 (beautify-description (gem-info gem))
+                                 dependencies
+                                 licenses)
+                  dependencies-names))
+        (values #f '()))))
 
 (define (guix-package->gem-name package)
   "Given a PACKAGE built from rubygems.org, return the name of the
@@ -185,9 +184,9 @@ package on RubyGems."
 (define (latest-release package)
   "Return an <upstream-source> for the latest release of PACKAGE."
   (let* ((gem-name (guix-package->gem-name package))
-         (metadata (rubygems-fetch gem-name))
-         (version (assoc-ref metadata "version"))
-         (url (rubygems-uri gem-name version)))
+         (gem      (rubygems-fetch gem-name))
+         (version  (gem-version gem))
+         (url      (rubygems-uri gem-name version)))
     (upstream-source
      (package (package-name package))
      (version version)

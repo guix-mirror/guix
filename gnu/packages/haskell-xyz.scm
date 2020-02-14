@@ -24,6 +24,7 @@
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 JoJo <jo@jo.zone>
+;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8163,6 +8164,114 @@ easily work with command-line options.")
     (synopsis "Utilities and combinators for parsing command line options")
     (description "This package provides utilities and combinators for parsing
 command line options in Haskell.")
+    (license license:bsd-3)))
+
+(define-public ghc-jira-wiki-markup
+  (package
+    (name "ghc-jira-wiki-markup")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/jira-wiki-markup/"
+             "jira-wiki-markup-" version ".tar.gz"))
+       (sha256
+        (base32 "1sl2jjcsqg61si33mxjwpf8zdn56kbbgcwqqqzbgifx2qbv4wmf8"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+    (home-page "https://github.com/tarleb/jira-wiki-markup")
+    (synopsis "Handle Jira wiki markup")
+    (description
+     "Parse jira wiki text into an abstract syntax tree for easy transformation
+to other formats.")
+    (license license:expat)))
+
+(define-public ghc-emojis
+  (package
+    (name "ghc-emojis")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/emojis/"
+             "emojis-" version ".tar.gz"))
+       (sha256
+        (base32 "1c6zkj9gmk1y90gbdrn50hyp7mw1mggzhnr2khqd728ryipw60ss"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)))
+    (home-page "https://github.com/jgm/emojis#readme")
+    (synopsis "Conversion between emoji characters and their names.")
+    (description
+     "This package provides functions for converting emoji names to emoji
+characters and vice versa.
+
+How does it differ from the @code{emoji} package?
+@itemize
+@item It supports a fuller range of emojis, including all those supported by
+GitHub
+@item It supports lookup of emoji aliases from emoji
+@item It uses Text rather than String
+@item It has a lighter dependency footprint: in particular, it does not
+require aeson
+@item It does not require TemplateHaskell
+@end itemize")
+    (license license:bsd-3)))
+
+(define-public ghc-text-conversions
+  (package
+    (name "ghc-text-conversions")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/text-conversions/"
+             "text-conversions-" version ".tar.gz"))
+       (sha256
+        (base32 "089c56vdj9xysqfr1hnvbnrghlg83q6w10xk02gflpsidcpvwmhp"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-base16-bytestring" ,ghc-base16-bytestring)
+       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-errors" ,ghc-errors)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)))
+    (home-page "https://github.com/cjdev/text-conversions#readme")
+    (synopsis "Safe conversions between textual types")
+    (description "Safe conversions between textual types")
+    (license license:isc)))
+
+(define-public ghc-doclayout
+  (package
+    (name "ghc-doclayout")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/doclayout/"
+             "doclayout-" version ".tar.gz"))
+       (sha256
+        (base32 "1wmnwq28jcyd6c80srivsnd5znmyl9sgmwwnlk2crwiiwqadbal7"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-safe" ,ghc-safe)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-golden" ,ghc-tasty-golden)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+    (home-page "https://github.com/jgm/doclayout")
+    (synopsis "Pretty-printing library for laying out text documents")
+    (description
+     "doclayout is a pretty-printing library for laying out text documents,
+with several features not present in pretty-printing libraries designed for
+code.  It was designed for use in @code{Pandoc}.")
     (license license:bsd-3)))
 
 (define-public ghc-pandoc

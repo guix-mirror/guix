@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Aljosha Papsch <misc@rpapsch.de>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
@@ -34,11 +34,13 @@
 ;;; Copyright © 2019 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.lonestar.org>
+;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.org>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Pierre-Moana Levesque <pierre.moana.levesque@gmail.com>
 ;;; Copyright © 2019 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
+;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
+;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -91,6 +93,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages gcc)
@@ -4831,6 +4834,46 @@ developed as part of the Netsurf project.")
 written in C.  It is developed as part of the NetSurf project.")
     (license license:expat)))
 
+(define-public libcyaml
+  (package
+    (name "libcyaml")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tlsa/libcyaml.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0h5ydyqdl8kzh526np3jsi0pm7ks16nh1hjkdsjcd6pacw7y6i6z"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "CC=gcc"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (replace 'check
+           (lambda _
+             (setenv "CC" "gcc")
+             (invoke "make" "test"))))))
+    (inputs
+     `(("libyaml" ,libyaml)))
+    (native-inputs
+     `(("git", git)
+       ("pkg-config", pkg-config)))
+    (synopsis "C library for reading and writing YAML")
+    (description
+     "LibCYAML is a C library written in ISO C11 for reading and writing
+structured YAML documents.  The fundamental idea behind CYAML is to allow
+applications to construct schemas which describe both the permissible
+structure of the YAML documents to read/write, and the C data structure(s)
+in which the loaded data is arranged in memory.")
+    (home-page "https://github.com/tlsa/libcyaml")
+    (license license:isc)))
+
 (define-public libdom
   (package
     (name "libdom")
@@ -5156,7 +5199,7 @@ w3c webidl files and a binding configuration file.")
                (copy-file "frontends/gtk/res/netsurf-gtk.desktop"
                           desktop)
                (substitute* desktop
-                 (("netsurf-gtk") (string-append out "/bin/netsurf-gtk"))
+                 (("netsurf-gtk") (string-append out "/bin/netsurf-gtk3"))
                  (("netsurf.png") (string-append out "/share/netsurf/"
                                                  "netsurf.xpm")))
                (install-file "docs/netsurf-gtk.1"
@@ -5367,13 +5410,13 @@ deployments.")
   (package
     (name "varnish")
     (home-page "https://varnish-cache.org/")
-    (version "6.3.1")
+    (version "6.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page "_downloads/varnish-" version ".tgz"))
               (sha256
                (base32
-                "0xa14pd68zpi5hxcax3arl14rcmh5d1cdwa8gv4l5f23mmynr8ni"))))
+                "1f5ahzdh3am6fij5jhiybv3knwl11rhc5r3ig1ybzw55ai7788q8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib")
@@ -5666,7 +5709,7 @@ into your tests.  It automatically starts up a HTTP server in a separate thread 
 (define-public http-parser
   (package
     (name "http-parser")
-    (version "2.9.2")
+    (version "2.9.3")
     (home-page "https://github.com/nodejs/http-parser")
     (source (origin
               (method git-fetch)
@@ -5675,7 +5718,7 @@ into your tests.  It automatically starts up a HTTP server in a separate thread 
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1qs6x3n2nrcj1wiik5pg5i16inykf7rcfdfdy7rwyzf40pvdl3c2"))))
+                "189zi61vczqgmqjd2myjcjbbi5icrk7ccs0kn6nj8hxqiv5j3811"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -6865,14 +6908,13 @@ features include:
                 "0s7b5whqsmfa57prbgl66ym551kg6ly0z14h5dgrlx4lqm70y2yw"))))
     (build-system trivial-build-system)
     (arguments
-     `(#:modules ((guix build utils)
-                  (srfi srfi-1)
-                  (srfi srfi-26))
+     `(#:modules ((guix build utils))
        #:builder
        (begin
          (use-modules (guix build utils)
                       (srfi srfi-1)
                       (srfi srfi-26))
+
          (let ((source (assoc-ref %build-inputs "source"))
                (php-dir (string-append %output "/share/web/" ,name "/")))
            ;; The cache directory must not be in the store, but in a writable
@@ -7178,3 +7220,44 @@ of the DOM tree
     (license (list license:lgpl2.0
                    license:gpl2
                    license:asl2.0))))
+
+(define-public librocket
+  (package
+    (name "librocket")
+    (version "1.3.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/libRocket/libRocket")
+         (commit (string-append "release-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1n6gq007vqijyfasfnfg6c8d2rc9qarl4bhzbgkz062m4h5izlfs"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ; No tests.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "Build"))))))
+    (inputs
+     `(("freetype" ,freetype)))
+    (home-page "https://github.com/libRocket/libRocket") ; http://librocket.com/ is down.
+    (synopsis "HTML/CSS user interface library")
+    (description "libRocket is a C++ user interface package based on the HTML
+and CSS standards.  libRocket uses the open standards XHTML1.0 and
+CSS2.0 (while borrowing features from HTML5 and CSS3), and extends them with
+features suited towards real-time applications.  It is designed as a complete
+solution for any project's interface needs:
+
+@itemize
+@item Dynamic layout system.
+@item Efficient application-wide styling, with a custom-built templating engine.
+@item Fully featured control set: buttons, sliders, drop-downs, etc.
+@item Runtime visual debugging suite.
+@item Easily integrated and extensible with Python or Lua scripting.
+@end itemize\n")
+    (license license:expat)))

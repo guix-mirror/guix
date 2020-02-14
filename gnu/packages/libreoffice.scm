@@ -41,6 +41,7 @@
   #:use-module (guix utils)
   #:use-module (ice-9 match)
   #:use-module (gnu packages)
+  #:use-module (gnu packages aidc)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
@@ -67,6 +68,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages logging)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages openldap)
@@ -85,7 +87,7 @@
 (define-public ixion
   (package
     (name "ixion")
-    (version "0.14.1")
+    (version "0.15.0")
     (source
      (origin
        (method url-fetch)
@@ -93,13 +95,14 @@
                            version ".tar.xz"))
        (sha256
         (base32
-         "14gdd6div4l22vnz3jn2qjxgjly98ck6p8c1v7386c41rx7kilba"))))
+         "1rmrl2zjzi4z0abf2cd54acypkccdhx2065dlyzy6xg83gv0mxmi"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("mdds" ,mdds)
-       ("python" ,python)))
+       ("python" ,python)
+       ("spdlog" ,spdlog)))
     (home-page "https://gitlab.com/ixion/ixion")
     (synopsis "General purpose formula parser and interpreter")
     (description "Ixion is a library for calculating the results of formula
@@ -111,7 +114,7 @@ their dependencies automatically upon calculation.")
 (define-public orcus
   (package
     (name "orcus")
-    (version "0.14.1")
+    (version "0.15.3")
     (source
      (origin
        (method url-fetch)
@@ -119,7 +122,7 @@ their dependencies automatically upon calculation.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1ays13a1x15j81dsrq0d3697v1bbqd3bfz3ajn6kb9d61y2drlgj"))))
+         "14gbnqsv5n2fm4sxa17014f440clrzls6p2w2ixk9wipg4950v9s"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -362,14 +365,14 @@ AbiWord documents.")
 (define-public libcdr
   (package
     (name "libcdr")
-    (version "0.1.5")
+    (version "0.1.6")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://dev-www.libreoffice.org/src/" name "/"
                           name "-" version ".tar.xz"))
       (sha256 (base32
-               "0j1skr11jwvafn0l6p37v3i4lqc8wcn489g8f7c4mqwbk94mrkka"))))
+               "0qgqlw6i25zfq1gf7f6r5hrhawlrgh92sg238kjpf2839aq01k81"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cppunit" ,cppunit)
@@ -401,7 +404,7 @@ CorelDRAW documents of all versions.")
                "0jhsbdimiyijdqriy0zzkjjgc4wi6fjimhdg4mdybrlwg7l7f5p6"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--with-mdds=1.4")))
+     `(#:configure-flags '("--with-mdds=1.5")))
     (native-inputs
      `(("cppunit" ,cppunit)
        ("doxygen" ,doxygen)
@@ -939,7 +942,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
 (define-public libreoffice
   (package
     (name "libreoffice")
-    (version "6.3.4.2")
+    (version "6.4.0.3")
     (source
      (origin
        (method url-fetch)
@@ -949,17 +952,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
          (version-prefix version 3) "/libreoffice-" version ".tar.xz"))
        (sha256
         (base32
-         "1774vmf3lr5x24ikpn1z5vqcdwrhiwfkjy7sx09jqkvpm6d5awnb"))
-       (patches (search-patches "libreoffice-icu.patch"
-                                "libreoffice-glm.patch"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           (for-each (lambda (file)
-                       ;; Adjust to renamed function in Poppler 0.72.
-                       (substitute* file (("getCString") "c_str")))
-                     (find-files "sdext/source/pdfimport/xpdfwrapper"))
-           #t))))
+         "09ra8a3ylb08xhy8wy233fs0f87klkpsbi9n3zss0c688afxjcf5"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -1032,6 +1025,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
        ("postgresql" ,postgresql)
        ("python" ,python)
        ("python-lxml" ,python-lxml)
+       ("qrcodegen-cpp" ,qrcodegen-cpp)
        ("redland" ,redland)
        ("sane-backends" ,sane-backends)
        ("unixodbc" ,unixodbc)

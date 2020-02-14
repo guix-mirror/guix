@@ -178,7 +178,7 @@ _guix_complete ()
 		_guix_complete_installed_package "$word_at_point"
             elif _guix_is_command "build"
             then
-                if _guix_is_dash_L
+                if _guix_is_dash_L || _guix_is_dash_m
                 then
                     _guix_complete_file
 		else

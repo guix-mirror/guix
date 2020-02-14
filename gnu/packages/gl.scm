@@ -11,6 +11,7 @@
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -421,6 +422,24 @@ specifications - systems for rendering interactive 3D graphics.  A variety of
 device drivers allows Mesa to be used in many different environments ranging
 from software emulation to complete hardware acceleration for modern GPUs.")
     (license license:x11)))
+
+;; Mesa 19.3.2 causes a test failure in some packages, so add this newer
+;; version separately until the next rebuild cycle.
+(define-public mesa-19.3.3
+  (package/inherit
+   mesa
+   (version "19.3.3")
+   (source (origin
+             (inherit (package-source mesa))
+             (uri (list (string-append "https://mesa.freedesktop.org/archive/"
+                                       "mesa-" version ".tar.xz")
+                        (string-append "ftp://ftp.freedesktop.org/pub/mesa/"
+                                       "mesa-" version ".tar.xz")
+                        (string-append "ftp://ftp.freedesktop.org/pub/mesa/"
+                                       version "/mesa-" version ".tar.xz")))
+             (sha256
+              (base32
+               "02czqdqf64i3az5p1allnxycyjad3x35cj0hz0017mi5pc84ikl1"))))))
 
 (define-public mesa-opencl
   (package

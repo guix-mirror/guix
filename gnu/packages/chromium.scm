@@ -69,7 +69,8 @@
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (ice-9 match))
 
 (define %preserved-third-party-files
   '("base/third_party/cityhash" ;Expat
@@ -278,9 +279,9 @@ from forcing GEXP-PROMISE."
           (url "https://salsa.debian.org/chromium-team/chromium.git")
           (commit %debian-revision)))
     (file-name (git-file-name "debian-chromium-packaging"
-                              (if (string-prefix? "debian/" %debian-revision)
-                                  (cadr (string-split %debian-revision #\/))
-                                  (string-take %debian-revision 7))))
+                              (match (string-split %debian-revision #\/)
+                                ((_ revision) revision)
+                                (_ (string-take %debian-revision 7)))))
     (sha256
      (base32
       "1rbzxcwfp7v0c6rkvn9jl9by7p363cnbdyqazwiak1z03kmw3nkz"))))

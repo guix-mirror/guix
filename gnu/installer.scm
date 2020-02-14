@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2018, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -389,8 +389,9 @@ selected keymap."
                      ;; We did it!  Let's reboot!
                      (sync)
                      (stop-service 'root))
-                    (_                            ;installation failed
-                     ;; TODO: Honor the result of 'run-install-failed-page'.
+                    (_
+                     ;; The installation failed, exit so that it is restarted
+                     ;; by login.
                      #f)))
                 (const #f)
                 (lambda (key . args)

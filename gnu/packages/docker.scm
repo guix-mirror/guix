@@ -46,7 +46,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages virtualization))
 
-(define %docker-version "18.09.5")
+(define %docker-version "19.03.5")
 
 (define-public python-docker-py
   (package
@@ -313,12 +313,9 @@ built-in registry server of Docker.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0cirpd9l2qazp2jyanwzvrkx2m98nksjdvn43ff38p89w6133ipb"))
+        (base32 "1dlknwn0fh82nbzdzxdk6pfhqwph9vcw3vs3111wfr19y5hwncq9"))
        (patches
-        (search-patches "docker-engine-test-noinstall.patch"
-                        "docker-fix-tests.patch"
-                        "docker-use-fewer-modprobes.patch"
-                        "docker-adjust-tests-for-changes-in-go.patch"))))
+        (search-patches "docker-fix-tests.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules
@@ -419,6 +416,7 @@ built-in registry server of Docker.")
                                                   "/" relative-path
                                                   "\"")) ...)))))
                  (substitute-LookPath*
+                  ("containerd" "containerd" "bin/containerd")
                   ("ps" "procps" "bin/ps")
                   ("mkfs.xfs" "xfsprogs" "bin/mkfs.xfs")
                   ("lvmdiskscan" "lvm2" "sbin/lvmdiskscan")
@@ -492,6 +490,14 @@ built-in registry server of Docker.")
              (delete-file "daemon/graphdriver/btrfs/btrfs_test.go")
              (delete-file "daemon/graphdriver/overlay/overlay_test.go")
              (delete-file "daemon/graphdriver/overlay2/overlay_test.go")
+             (delete-file "pkg/chrootarchive/archive_unix_test.go")
+             (delete-file "daemon/container_unix_test.go")
+             ;; This file uses cgroups and /proc.
+             (delete-file "pkg/sysinfo/sysinfo_linux_test.go")
+             ;; This file uses cgroups.
+             (delete-file "runconfig/config_test.go")
+             ;; This file uses /var.
+             (delete-file "daemon/oci_linux_test.go")
              #t))
          (replace 'configure
            (lambda _
@@ -558,6 +564,7 @@ built-in registry server of Docker.")
     (native-inputs
      `(("eudev" ,eudev)      ; TODO: Should be propagated by lvm2 (.pc -> .pc)
        ("go" ,go)
+       ("gotestsum" ,gotestsum)
        ("pkg-config" ,pkg-config)))
     (synopsis "Docker container component library, and daemon")
     (description "This package provides a framework to assemble specialized
@@ -579,7 +586,7 @@ provisioning etc.")
             (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "0mxxjzkwdny8p2dmyjich7x1gn7hdlfppzjy2skk2k5bwv7nxpmi"))))
+       (base32 "07ldz46y74b3la4ah65v5bzbfx09yy6kncvxrr0zfx0s1214ar3m"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/docker/cli"

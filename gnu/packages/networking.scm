@@ -36,6 +36,8 @@
 ;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 ;;; Copyright © 2019 Daniel Schaefer <git@danielschaefer.me>
 ;;; Copyright © 2019 Diego N. Barbato <dnbarbato@posteo.de>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -64,6 +66,7 @@
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages adns)
@@ -2824,6 +2827,43 @@ easy-to-understand binary values.")
     (home-page "http://jodies.de/ipcalc")
     (license license:gpl2+)))
 
+(define-public tunctl
+  (package
+    (name "tunctl")
+    (version "1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/tunctl/tunctl/" version "/"
+                           "tunctl-" version ".tar.gz"))
+       (sha256
+        (base32 "1zsgn7w6l2zh2q0j6qaw8wsx981qcr536qlz1lgb3b5zqr66qama"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'bootstrap)            ;there is no configure.ac file
+         (delete 'configure)            ;there is no configure script
+         (delete 'check)                ;there are no tests
+         (replace 'build
+           (lambda _
+             (setenv "CC" "gcc")
+             (invoke "make" "tunctl")))
+         ;; TODO: Requires docbook2x to generate man page from SGML.
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (install-file "tunctl" bin))
+             #t)))))
+    (home-page "http://tunctl.sourceforge.net")
+    (synopsis  "Utility to set up and maintain TUN/TAP network interfaces")
+    (description "Tunctl is used to set up and maintain persistent TUN/TAP
+network interfaces, enabling user applications to simulate network traffic.
+Such interfaces are useful for VPN software, virtualization, emulation,
+simulation, and a number of other applications.")
+    (license license:gpl2)))
+
 (define-public vde2
   (package
     (name "vde2")
@@ -2853,3 +2893,46 @@ cables.")
                    (license:non-copyleft ; slirpvde
                     "file://COPYING.slirpvde"
                     "See COPYING.slirpvde in the distribution.")))))
+
+(define-public haproxy
+  (package
+    (name "haproxy")
+    (version "2.1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.haproxy.org/download/"
+                                  (version-major+minor version)
+                                  "/src/haproxy-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0n8bw3d6gikr8c56ycrvksp1sl0b4yfzp19867cxkl3l0daqwrxv"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (let* ((out (assoc-ref %outputs "out")))
+         (list (string-append "PREFIX=" out)
+               (string-append "DOCDIR=" out "/share/" ,name)
+               "TARGET=linux-glibc"
+               "USE_LUA=1"
+               "USE_OPENSSL=1"
+               "USE_ZLIB=1"
+               "USE_PCRE_2=1"))
+       #:tests? #f  ; there are only regression tests, using varnishtest
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs
+     `(("lua" ,lua)
+       ("openssl" ,openssl)
+       ("pcre2" ,pcre2)
+       ("zlib" ,zlib)))
+    (home-page "https://www.haproxy.org/")
+    (synopsis "Reliable, high performance TCP/HTTP load balancer")
+    (description "HAProxy is a free, very fast and reliable solution offering
+high availability, load balancing, and proxying for TCP and HTTP-based
+applications.  It is particularly suited for web sites crawling under very
+high loads while needing persistence or Layer7 processing.  Supporting tens of
+thousands of connections is clearly realistic with today's hardware.")
+    (license (list license:gpl2+
+                   license:lgpl2.1
+                   license:lgpl2.1+))))

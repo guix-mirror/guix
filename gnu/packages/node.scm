@@ -117,6 +117,10 @@
              ;; This requires a DNS resolver.
              (delete-file "test/parallel/test-dns.js")
 
+             ;; FIXME: This test fails randomly:
+             ;; https://github.com/nodejs/node/issues/31213
+             (delete-file "test/parallel/test-net-listen-after-destroying-stdin.js")
+
              ;; These tests have an expiry date: they depend on the validity of
              ;; TLS certificates that are bundled with the source.  We want this
              ;; package to be reproducible forever, so remove those.

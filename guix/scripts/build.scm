@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +35,7 @@
 
   #:use-module (guix monads)
   #:use-module (guix gexp)
+  #:use-module (guix profiles)
   #:autoload   (guix http-client) (http-fetch http-get-error?)
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
@@ -680,6 +682,9 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
   -f, --file=FILE        build the package or derivation that the code within
                          FILE evaluates to"))
   (display (G_ "
+  -m, --manifest=FILE    build the packages that the manifest given in FILE
+                         evaluates to"))
+  (display (G_ "
   -S, --source           build the packages' source derivations"))
   (display (G_ "
       --sources[=TYPE]   build source derivations; TYPE may optionally be one
@@ -768,6 +773,9 @@ must be one of 'package', 'all', or 'transitive'~%")
          (option '(#\f "file") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'file arg result)))
+         (option '(#\m "manifest") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'manifest arg result)))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'dry-run? #t (alist-cons 'graft? #f result))))
@@ -804,6 +812,14 @@ build---packages, gexps, derivations, and so on."
       (for-each validate-type lst)
       lst))
 
+  ;; Note: Taken from (guix scripts refresh).
+  (define (manifest->packages manifest)
+    "Return the list of packages in MANIFEST."
+    (filter-map (lambda (entry)
+                  (let ((item (manifest-entry-item entry)))
+                    (if (package? item) item #f)))
+                (manifest-entries manifest)))
+
   (append-map (match-lambda
                 (('argument . (? string? spec))
                  (cond ((derivation-path? spec)
@@ -827,6 +843,9 @@ build---packages, gexps, derivations, and so on."
                         (list (specification->package spec)))))
                 (('file . file)
                  (ensure-list (load* file (make-user-module '()))))
+                (('manifest . manifest)
+                 (manifest->packages
+                  (load* manifest (make-user-module '((guix profiles) (gnu))))))
                 (('expression . str)
                  (ensure-list (read/eval str)))
                 (('argument . (? derivation? drv))

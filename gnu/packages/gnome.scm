@@ -40,7 +40,7 @@
 ;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2019 Jonathan Frederickson <jonathan@terracrypt.net>
 ;;; Copyright © 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
-;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2019, 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;; Copyright © 2019, 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
@@ -2170,6 +2170,10 @@ from forcing GEXP-PROMISE."
                      #+(canonical-package tar)))
               (invoke "tar" "xvf" #+upstream-source)
               (with-directory-excursion (string-append "librsvg-" #$version)
+                ;; The following crate(s) are needed in addition to the ones replaced:
+                (begin
+                  (invoke
+                   "tar" "xvf" #+(package-source rust-autocfg-0.1) "-C" "vendor"))
                 (for-each
                   (lambda (crate)
                     (delete-file-recursively (string-append "vendor/" (car crate)))
@@ -2179,7 +2183,7 @@ from forcing GEXP-PROMISE."
                     ("approx" . #+(package-source rust-approx-0.3))
                     ("arrayvec" . #+(package-source rust-arrayvec-0.4))
                     ("atty" . #+(package-source rust-atty-0.2))
-                    ("autocfg" . #+(package-source rust-autocfg-0.1))
+                    ("autocfg" . #+(package-source rust-autocfg-1.0))
                     ("bitflags" . #+(package-source rust-bitflags-1))
 ;; block 0.1
                     ("bstr" . #+(package-source rust-bstr-0.2))
@@ -2228,9 +2232,9 @@ from forcing GEXP-PROMISE."
                     ("itertools" . #+(package-source rust-itertools-0.8))
                     ("itoa" . #+(package-source rust-itoa-0.4))
                     ("language-tags" . #+(package-source rust-language-tags-0.2))
-                    ("lazy_static" . #+(package-source rust-lazy-static-1.3))
+                    ("lazy_static" . #+(package-source rust-lazy-static-1))
                     ("libc" . #+(package-source rust-libc-0.2))
-;; libm 0.1
+                    ("libm" . #+(package-source rust-libm-0.1))
 ;; locale_config 0.3
                     ("log" . #+(package-source rust-log-0.4))
                     ("mac" . #+(package-source rust-mac-0.1))
@@ -3761,7 +3765,7 @@ and the GLib main loop, to integrate well with GNOME applications.")
 (define-public libsecret
   (package
     (name "libsecret")
-    (version "0.19.1")
+    (version "0.20.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3770,7 +3774,7 @@ and the GLib main loop, to integrate well with GNOME applications.")
                     "libsecret-" version ".tar.xz"))
               (sha256
                (base32
-                "0fhflcsr70b1pps2pcvqcbdhip2ny5am9nbm634f4sj5g40y30w5"))))
+                "0ir4ynpf8b64xss1azvsi5x6697lik7hkf3z0xxa2qv2xja3xxsp"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -4069,43 +4073,34 @@ output devices.")
 (define-public geoclue
   (package
     (name "geoclue")
-    (version "2.4.8")
+    (version "2.5.5")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://www.freedesktop.org/software/" name
-                           "/releases/" (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
+       (uri
+        (string-append "https://gitlab.freedesktop.org/geoclue/geoclue/-/archive/"
+                       version "/geoclue-" version ".tar.bz2"))
        (sha256
         (base32
-         "08yg1r7m0n9hwyvcy769qkmkf8lslqwv69cjfffwnc3zm5km25qj"))
+         "1b7jqrsn4x7mxjxj8hvb2dl2cmhrpb9vibs4rvkkanky5nsx3sai"))
        (patches (search-patches "geoclue-config.patch"))))
-    (build-system glib-or-gtk-build-system)
+    (build-system meson-build-system)
     (arguments
-     '(;; The tests want to run the system bus.
-       #:tests? #f
-       #:configure-flags (list ;; Disable bits requiring ModemManager.
-                               "--disable-3g-source"
-                               "--disable-cdma-source"
-                               "--disable-modem-gps-source"
-                               "--with-dbus-service-user=geoclue")
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'patch-/bin/true
-                     (lambda _
-                       (substitute* "configure"
-                         (("/bin/true") (which "true")))
-                       #t)))))
+     '(#:configure-flags (list "-Dbus-srv-user=geoclue")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("gobject-introspection" ,gobject-introspection)
+       ("modem-manager" ,modem-manager)
+       ("libnotify" ,libnotify)
+       ("gtk-doc", gtk-doc)
        ("intltool" ,intltool)))
     (inputs
      `(("avahi" ,avahi)
-       ("glib" ,glib)
+       ("glib:bin" ,glib "bin")
+       ("glib-networking" ,glib-networking)
        ("json-glib" ,json-glib)
        ("libsoup" ,libsoup)))
-    (home-page "https://www.freedesktop.org/wiki/Software/GeoClue/")
+    (home-page "https://gitlab.freedesktop.org/geoclue/geoclue/-/wikis/home")
     (synopsis "Geolocation service")
     (description "Geoclue is a D-Bus service that provides location
 information.  The primary goal of the Geoclue project is to make creating

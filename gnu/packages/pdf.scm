@@ -17,6 +17,7 @@
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Ben Sturmfels <ben@sturm.com.au>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +46,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
@@ -55,6 +57,7 @@
   #:use-module (gnu packages djvu)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages game-development)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
@@ -74,6 +77,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-web)
@@ -82,8 +86,10 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages tex)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (srfi srfi-1))
 
@@ -750,6 +756,94 @@ program capable of converting PDF into other formats.")
     (description
      "Xournal is an application for notetaking, sketching, keeping a journal
 using a stylus.")
+    (license license:gpl2+)))
+
+(define-public xournalpp
+  (package
+    (name "xournalpp")
+    (version "1.0.17")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/xournalpp/xournalpp.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0xw2mcgnm4sa9hrhfgp669lfypw97drxjmz5w8i5whaprpvmkxzw"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags (list "-DENABLE_CPPUNIT=ON") ;enable tests
+       #:imported-modules ((guix build glib-or-gtk-build-system)
+                           ,@%cmake-build-system-modules)
+       #:modules (((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
+                  (guix build cmake-build-system)
+                  (guix build utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-permissions-on-po-files
+           (lambda _
+             ;; Always generate translations.  A recent upstream patch
+             ;; disabled it.
+             (substitute* "po/CMakeLists.txt"
+               (("gettext_create_translations \\(\"\\$\\{potfile\\}\"\\)")
+                "gettext_create_translations (\"${potfile}\" ALL)"))
+             ;; Make sure 'msgmerge' can modify the PO files.
+             (for-each (lambda (po) (chmod po #o666))
+                       (find-files "." "\\.po$"))
+             #t))
+         (add-after 'install 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
+    (native-inputs
+     `(("cppunit" ,cppunit)
+       ("gcc" ,gcc-8)                   ;requires gcc 8+
+       ("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("libsndfile" ,libsndfile)
+       ("libxml2" ,libxml2)
+       ("libzip" ,libzip)
+       ("lua" ,lua)                    ;FIXME: It cannot find the Lua library.
+       ("poppler" ,poppler)
+       ("portaudio" ,portaudio)
+       ("texlive-bin" ,texlive-bin)))
+    (home-page "https://github.com/xournalpp/xournalpp")
+    (synopsis "Handwriting notetaking software with PDF annotation support")
+    (description "Xournal++ is a hand note taking software written in
+C++ with the target of flexibility, functionality and speed.  Stroke
+recognizer and other parts are based on Xournal code.
+
+Xournal++ features:
+
+@itemize
+@item Support for Pen pressure, e.g., Wacom Tablet
+@item Support for annotating PDFs
+@item Fill shape functionality
+@item PDF Export (with and without paper style)
+@item PNG Export (with and without transparent background)
+@item Allow to map different tools / colors etc. to stylus buttons /
+mouse buttons
+@item Sidebar with Page Previews with advanced page sorting, PDF
+Bookmarks and Layers (can be individually hidden, editing layer can be
+selected)
+@item enhanced support for image insertion
+@item Eraser with multiple configurations
+@item LaTeX support
+@item bug reporting, autosave, and auto backup tools
+@item Customizeable toolbar, with multiple configurations, e.g., to
+optimize toolbar for portrait / landscape
+@item Page Template definitions
+@item Shape drawing (line, arrow, circle, rectangle)
+@item Shape resizing and rotation
+@item Rotation snapping every 45 degrees
+@item Rect snapping to grid
+@item Audio recording and playback alongside with handwritten notes
+@item Multi Language Support, Like English, German, Italian...
+@item Plugins using LUA Scripting
+@end itemize")
     (license license:gpl2+)))
 
 (define-public python-reportlab

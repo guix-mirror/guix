@@ -26,6 +26,7 @@
 ;;; Copyright © 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -625,7 +626,7 @@ write native speed custom Git applications in any language with bindings.")
 (define-public git-crypt
   (package
     (name "git-crypt")
-    (version "0.5.0")
+    (version "0.6.0")
     (source
      (origin
        (method git-fetch)
@@ -634,25 +635,38 @@ write native speed custom Git applications in any language with bindings.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1x9209n3k49k998saadr2d0lmvs01smjinx7gzzyjdwj9l904sii"))))
+        (base32 "1ba5s0fvmd9hhnfhfsjrm40v0qpxfnwc8vmm55m0k4dryzkzx66q"))))
     (build-system gnu-build-system)
     (inputs
      `(("git" ,git)
        ("openssl" ,openssl)))
+    (native-inputs
+     `(("docbook-xsl" ,docbook-xsl)
+       ("libxslt" ,libxslt)))
     (arguments
      `(#:tests? #f ; No tests.
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
+         (add-after 'unpack 'patch-makefile
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl")
+                (string-append (assoc-ref inputs "docbook-xsl")
+                               "/xml/xsl/docbook-xsl-"
+                               ,(package-version docbook-xsl)
+                               "/manpages/docbook.xsl")))
+             #t))
          (replace 'build
            (lambda _
-             (invoke "make")))
+             (invoke "make" "ENABLE_MAN=yes")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (invoke "make" "install"
+                       "ENABLE_MAN=yes"
                        (string-append "PREFIX=" out))))))))
-    (home-page "https://www.agwa.name/projects/git-crypt")
+    (home-page "https://www.agwa.name/projects/git-crypt/")
     (synopsis "Transparent encryption of files in a git repository")
     (description "git-crypt enables transparent encryption and decryption of
 files in a git repository.  Files which you choose to protect are encrypted when
@@ -1038,16 +1052,16 @@ will work.")
     (name "git-flow")
     ;; This version has not be officially released yet, so we build it
     ;; directly from the git repository.
-    (version "0.4.2-pre")
+    (version "1.12.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/nvie/gitflow/")
-                    (commit "15aab26490facf285acef56cb5d61025eacb3a69")))
+                    (url "https://github.com/petervanderdoes/gitflow-avh/")
+                    (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "01fs97q76fdfnvmrh2cyjhywcs3pykf1dg58sy0frflnsdzs6prx"))))
+                "13q4mnrxr03wz2dkhzy73j384g299m4d545cnhxcaznvdwfany4h"))))
     (build-system gnu-build-system)
     (inputs `(("shflags" ,shflags)))
     (arguments
@@ -1447,7 +1461,9 @@ following features:
                "19zc215mhpnm92mlyl5jbv57r5zqp6cavr3s2g9yglp6j4kfgj0q"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     '(#:parallel-tests? #f             ; TODO Seems to cause test failures on
+                                        ; i686-linux
+       #:phases
        (modify-phases %standard-phases
          (add-after 'configure 'patch-libtool-wrapper-ls
            (lambda* (#:key inputs #:allow-other-keys)
@@ -1464,6 +1480,12 @@ following features:
            (lambda _
              (substitute* "subversion/tests/libsvn_repos/repos-test.c"
                (("#!/bin/sh") (string-append "#!" (which "sh"))))
+             #t))
+         (add-before 'check 'set-PARALLEL
+           (lambda* (#:key parallel-tests? #:allow-other-keys)
+             (if parallel-tests?
+                 (setenv "PARALLEL" (number->string (parallel-job-count)))
+                 (simple-format #t "parallel-tests? are disabled\n"))
              #t))
          (add-after 'install 'install-perl-bindings
            (lambda* (#:key outputs #:allow-other-keys)
@@ -2150,7 +2172,7 @@ be served with a HTTP file server of your choice.")
 (define-public gource
   (package
     (name "gource")
-    (version "0.49")
+    (version "0.51")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2158,7 +2180,7 @@ be served with a HTTP file server of your choice.")
                     "/gource-" version "/gource-" version ".tar.gz"))
               (sha256
                (base32
-                "12hf5ipcsp9dxsqn84n4kr63xaiskrnf5a084wr29qk171lj7pd9"))))
+                "16p7b1x4r0915w883lp374jcdqqja37fnb7m8vnsfnl2n64gi8qr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -2177,7 +2199,7 @@ be served with a HTTP file server of your choice.")
        ("mesa"      ,mesa)
        ("pcre"      ,pcre)
        ("sdl-union" ,(sdl-union (list sdl2 sdl2-image)))))
-    (home-page "http://gource.io/")
+    (home-page "https://gource.io/")
     (synopsis "3D visualisation tool for source control repositories")
     (description "@code{gource} provides a software version control
 visualization.  The repository is displayed as a tree where the root of the

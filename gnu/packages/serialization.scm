@@ -95,7 +95,7 @@
             #t)))))
     (native-inputs
      `(("doxygen" ,doxygen)))
-    (home-page "http://uscilab.github.io/cereal/")
+    (home-page "https://uscilab.github.io/cereal/")
     (synopsis "C++11 library for serialization")
     (description
      "Cereal is a header-only C++11 serialization library.  Cereal takes

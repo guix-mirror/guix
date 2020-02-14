@@ -93,7 +93,7 @@
     `(("exiv2" ,exiv2)
       ("bzip2" ,bzip2)
       ("flac" ,flac)
-      ("ffmpeg" ,ffmpeg-3.4)
+      ("ffmpeg" ,ffmpeg)
       ("file" ,file)                           ;libmagic, for the MIME plug-in
       ("glib" ,glib)
       ("gstreamer" ,gstreamer)

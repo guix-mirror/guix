@@ -537,7 +537,7 @@ particularly easy to create complete web applications using httpuv alone.")
                (base32
                 "0lyvhnr6n57h3a89bvipii7x17nvfaycm9j5j50bfrlr48jv9ic8"))))
     (build-system r-build-system)
-    (home-page "http://arxiv.org/abs/1403.2805")
+    (home-page "https://arxiv.org/abs/1403.2805")
     (synopsis "Robust, high performance JSON parser and generator for R")
     (description
      "The jsonlite package provides a fast JSON parser and generator optimized
@@ -2645,7 +2645,7 @@ contexts.")
          "0v4ax1v8diw2w7fdhfzz1z0bwixkmcrc39ax3y116f399rc06qbs"))))
     (properties `((upstream-name . "SQUAREM")))
     (build-system r-build-system)
-    (home-page "http://www.jhsph.edu/agingandhealth/People/Faculty_personal_pages/Varadhan.html")
+    (home-page "https://coah.jhu.edu/people/Faculty_personal_Pages/Varadhan.html")
     (synopsis "Squared Extrapolation Methods for Accelerating EM-Like Monotone Algorithms")
     (description
      "This package provides algorithms for accelerating the convergence of
@@ -3994,7 +3994,7 @@ Markdown documents.")
        ("r-registry" ,r-registry)
        ("r-tsp" ,r-tsp)))
     (native-inputs `(("gfortran" ,gfortran)))
-    (home-page "http://s2.smu.edu/IDA/seriation/")
+    (home-page "https://s2.smu.edu/IDA/seriation/")
     (synopsis "Infrastructure for ordering objects using seriation")
     (description
      "This package provides infrastructure for seriation with an
@@ -5240,7 +5240,7 @@ regression and information measures are implemented.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ttr" ,r-ttr)))
-    (home-page "http://cran.r-project.org/web/packages/smoother")
+    (home-page "https://cran.r-project.org/web/packages/smoother")
     (synopsis "Functions relating to the smoothing of numerical data")
     (description
      "This package provides a collection of methods for smoothing numerical
@@ -6248,7 +6248,7 @@ to help insert or delete content at a specific location in the document.")
        ("r-rcpp" ,r-rcpp)
        ("r-rcpparmadillo" ,r-rcpparmadillo)
        ("r-rjags" ,r-rjags)))
-    (home-page "http://www.r-bayesian-networks.org")
+    (home-page "https://r-bayesian-networks.org/")
     (synopsis "Modelling multivariate data with additive bayesian networks")
     (description
      "Bayesian network analysis is a form of probabilistic graphical models
@@ -8360,7 +8360,7 @@ correlation, censored, ordered and multivariate problems.")
        ("r-rlang" ,r-rlang)
        ("r-tibble" ,r-tibble)
        ("r-tidyselect" ,r-tidyselect)))
-    (home-page "http://mc-stan.org/bayesplot")
+    (home-page "https://mc-stan.org/bayesplot")
     (synopsis "Plotting for Bayesian models")
     (description
      "This package provides plotting functions for posterior analysis, model
@@ -14559,7 +14559,7 @@ analysis.")
     (inputs
      `(("libpng" ,libpng)
        ("zlib" ,zlib)))
-    (home-page "http://www.rforge.net/png/")
+    (home-page "https://www.rforge.net/png/")
     (synopsis "Read and write PNG images")
     (description
      "This package provides an easy and simple way to read, write and display
@@ -15443,7 +15443,7 @@ customize styles using a readable syntax.")
         (base32 "02p3612rpydk195n2qr77lp1j2w8zsw1ckkk98c8angm4r5q8dsc"))))
     (build-system r-build-system)
     (native-inputs `(("gfortran" ,gfortran)))
-    (home-page "http://www-stat.stanford.edu/~tibs/glasso")
+    (home-page "https://statweb.stanford.edu/~tibs/glasso/")
     (synopsis "Graphical Lasso: estimation of Gaussian graphical models")
     (description
      "This is a package for estimation of a sparse inverse covariance matrix
@@ -16363,7 +16363,7 @@ long-term reliability under stochastic load profiles.")
      `(("r-slam" ,r-slam)))
     (inputs
      `(("glpk" ,glpk)))
-    (home-page "http://R-Forge.R-project.org/projects/rglp/")
+    (home-page "https://r-forge.r-project.org/projects/rglp/")
     (synopsis "R interface to the GNU Linear Programming Kit")
     (description
      "This package provides an R interface to the GNU Linear Programming Kit,

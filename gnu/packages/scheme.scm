@@ -368,47 +368,6 @@ applications in many fields such as multimedia (web galleries, music players,
 mashups, office (web agendas, mail clients, ...), etc.")
     (license gpl2+)))
 
-(define-public chicken
-  (package
-    (name "chicken")
-    (version "5.0.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://code.call-cc.org/releases/"
-                                  version "/chicken-" version ".tar.gz"))
-              (sha256
-               (base32
-                "15b5yrzfa8aimzba79x7v6y282f898rxqxfxrr446sjx9jwlpfd8"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (srfi srfi-1))
-
-       ;; No `configure' script; run "make check" after "make install" as
-       ;; prescribed by README.
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (delete 'check)
-         (add-after 'install 'check
-           (assoc-ref %standard-phases 'check)))
-
-       #:make-flags (let ((out (assoc-ref %outputs "out")))
-                      (list "PLATFORM=linux"
-                            (string-append "PREFIX=" out)
-                            (string-append "VARDIR=" out "/var/lib")))
-
-       ;; Parallel builds are not supported, as noted in README.
-       #:parallel-build? #f))
-    (home-page "http://www.call-cc.org/")
-    (synopsis "R5RS Scheme implementation that compiles native code via C")
-    (description
-     "CHICKEN is a compiler for the Scheme programming language.  CHICKEN
-produces portable and efficient C, supports almost all of the R5RS Scheme
-language standard, and includes many enhancements and extensions.")
-    (license bsd-3)))
-
 (define-public scheme48
   (package
     (name "scheme48")

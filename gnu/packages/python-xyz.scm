@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2017 Eric Bavier <bavier@member.fsf.org>
@@ -1990,6 +1990,28 @@ between Julian dates and Gregorian dates.")
 (define-public python2-jdcal
   (package-with-python2 python-jdcal))
 
+(define-public python-jsondiff
+  (package
+   (name "python-jsondiff")
+   (version "1.2.0")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (pypi-uri "jsondiff" version))
+     (sha256
+      (base32
+       "00v3689175aqzdscrxpffm712ylp8jvcpqdg51ca22ni6721p51l"))))
+   (build-system python-build-system)
+   (native-inputs
+    `(("python-nose" ,python-nose)
+      ("python-nose-random" ,python-nose-random)))
+   (home-page
+    "https://github.com/fzumstein/jsondiff")
+   (synopsis "Compare JSON and JSON-like structures in Python")
+   (description "@code{jsondiff} is a Python library which lets you
+compare, diff, and patch JSON and JSON-like structures in Python.")
+   (license license:expat)))
+
 (define-public python-jsonschema
   (package
     (name "python-jsonschema")
@@ -2921,6 +2943,27 @@ for SSH and SFTP.  It has the following main usages:
 @item Ensuring that files and directories exist on the remote machine.
 @end itemize")
     (license license:asl2.0)))
+
+(define-public python-rstr
+  (package
+   (name "python-rstr")
+   (version "2.2.6")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (pypi-uri "rstr" version))
+     (sha256
+      (base32
+       "197dw8mbq0pjjz1l6h1ksi62vgn7x55d373ch74y06744qiq5sjx"))))
+   (build-system python-build-system)
+   (home-page
+    "http://bitbucket.org/leapfrogdevelopment/rstr/overview")
+   (synopsis "Generate random strings in Python")
+   (description "This package provides a python module for generating
+random strings of various types.  It could be useful for fuzz testing,
+generating dummy data, or other applications.  It has no dependencies
+outside the standard library.")
+   (license license:bsd-3)))
 
 (define-public python-scp
   (package
@@ -6716,14 +6759,14 @@ Python.")
 (define-public python-markdown
   (package
     (name "python-markdown")
-    (version "3.1.1")
+    (version "3.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Markdown" version))
        (sha256
         (base32
-         "0yhylk4ffqqs7x086fav4pnfsl1021v7lghznzkififprmmqfl1f"))))
+         "1gwqrhrp0n9xllgmjc8n1p260968kr0dd2jncjkj4r617q61imss"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)
@@ -6735,10 +6778,21 @@ Python.")
 Markdown.  The library features international input, various Markdown
 extensions, and several HTML output formats.  A command line wrapper
 markdown_py is also provided to convert Markdown files to HTML.")
+    (properties `((python2-variant . ,(delay python2-markdown))))
     (license license:bsd-3)))
 
+;; Markdown 3.2 dropped support for Python 2.
 (define-public python2-markdown
-  (package-with-python2 python-markdown))
+  (let ((base (package-with-python2 (strip-python2-variant python-markdown))))
+    (package/inherit
+     base
+     (version "3.1.1")
+     (source (origin
+               (method url-fetch)
+               (uri (pypi-uri "Markdown" version))
+               (sha256
+                (base32
+                 "0yhylk4ffqqs7x086fav4pnfsl1021v7lghznzkififprmmqfl1f")))))))
 
 (define-public python-ptyprocess
   (package
@@ -7427,14 +7481,14 @@ responses, rather than doing any computation.")
 (define-public python-pip
   (package
     (name "python-pip")
-    (version "19.2.1")
+    (version "20.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pip" version))
        (sha256
         (base32
-         "100sd12ss4mbdj5lf3wawad29cm573b27765mq098x6xhcj71395"))))
+         "0zwnlsjn6mb742cr995zfbk9v56ygxp8w3k49601r9by9kmcic3x"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f))          ; there are no tests in the pypi archive.
@@ -8867,7 +8921,7 @@ Pytest but stripped of Pytest specific details.")
     `(; FIXME: Missing: ("python-pytest-timeout" ,python-pytest-timeout)
       ("python-pytest" ,python-pytest)  ; >= 2.3.5
       ("python-setuptools-scm" ,python-setuptools-scm)))
-   (home-page "http://tox.testrun.org/")
+   (home-page "https://tox.readthedocs.io")
    (synopsis "Virtualenv-based automation of test activities")
    (description "Tox is a generic virtualenv management and test command line
 tool.  It can be used to check that a package installs correctly with
@@ -10505,13 +10559,13 @@ Wikipedia code samples at
 (define-public python-cleo
   (package
     (name "python-cleo")
-    (version "0.6.8")
+    (version "0.7.6")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "cleo" version))
               (sha256
                (base32
-                "06zp695hq835rkaq6irr1ds1dp2qfzyf32v60vxpd8rcnxv319l5"))))
+                "02dlc0rn43zgvw0s5v4j80bca9n1jfpwy3r78gn9qjgk0qj39kwr"))))
     (build-system python-build-system)
     (native-inputs
      `( ;; For testing
@@ -10520,6 +10574,7 @@ Wikipedia code samples at
        ("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-backpack" ,python-backpack)
+       ("python-clikit" ,python-clikit)
        ("python-pastel" ,python-pastel)
        ("python-pylev" ,python-pylev)))
     (home-page "https://github.com/sdispater/cleo")
@@ -10535,14 +10590,14 @@ docstring and colored output.")
 (define-public python-tomlkit
   (package
     (name "python-tomlkit")
-    (version "0.5.7")
+    (version "0.5.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tomlkit" version))
        (sha256
         (base32
-         "18820ga5z3if1w8dvykxrfm000akracq01ic402xrbljgbn5grn4"))))
+         "0sf2a4q61kf344hjbw8kb6za1hlccl89j9lzqw0l2zpddp0hrh9j"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
@@ -10602,14 +10657,14 @@ more, possibly remote, memcached servers.")
 (define-public python-clikit
   (package
     (name "python-clikit")
-    (version "0.2.4")
+    (version "0.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "clikit" version))
        (sha256
         (base32
-         "0dc8czib5f4j9px1ivcpqnmivnx2zjpc0xb00ldrhsqylks7r06n"))))
+         "10gab65pq0jdf589n33sj2513pxal2lisl4xwf1ijysdjxmpdr4a"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pastel" ,python-pastel)
@@ -15453,7 +15508,7 @@ under Python 2.7.")
 (define-public pybind11
   (package
     (name "pybind11")
-    (version "2.3.0")
+    (version "2.4.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -15461,23 +15516,43 @@ under Python 2.7.")
                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "11b6dniri8m05spfd2a19irz82shf4sdca73566bniggrf3zclnf"))
+                "0k89w4bsfbpzw963ykg1cyszi3h3nk393qd31m6y46pcfxkqh4rd"))
               (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("python" ,python)
-       ("python-pytest" ,python-pytest)))
+     `(("python" ,python-wrapper)
+
+       ;; The following dependencies are used for tests.
+       ("python-pytest" ,python-pytest)
+       ("catch" ,catch-framework2-1)
+       ("eigen" ,eigen)))
     (arguments
-     `(#:test-target "check"))
+     `(#:configure-flags
+       (list (string-append "-DCATCH_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "catch")
+                            "/include/catch"))
+
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'install-python
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (with-directory-excursion "../source"
+                          (setenv "PYBIND11_USE_CMAKE" "yes")
+                          (invoke "python" "setup.py" "install"
+                                  "--single-version-externally-managed"
+                                  "--root=/"
+                                  (string-append "--prefix=" out)))))))
+
+       #:test-target "check"))
     (home-page "https://github.com/pybind/pybind11/")
     (synopsis "Seamless operability between C++11 and Python")
-    (description "pybind11 is a lightweight header-only library that exposes
-C++ types in Python and vice versa, mainly to create Python bindings of
-existing C++ code.  Its goals and syntax are similar to the excellent
-Boost.Python library by David Abrahams: to minimize boilerplate code in
-traditional extension modules by inferring type information using compile-time
-introspection.")
-    (license license:expat)))
+    (description
+     "@code{pybind11} is a lightweight header-only library that exposes C++
+types in Python and vice versa, mainly to create Python bindings of existing
+C++ code.  Its goals and syntax are similar to the @code{Boost.Python}
+library: to minimize boilerplate code in traditional extension modules by
+inferring type information using compile-time introspection.")
+    (license license:bsd-3)))
 
 (define-public python-fasteners
   (package

@@ -397,9 +397,11 @@ aliasing facilities to work just as they would on normal mail.")
      `(("cyrus-sasl" ,cyrus-sasl)
        ("gdbm" ,gdbm)
        ("gpgme" ,gpgme)
+       ("libidn2" ,libidn2)
        ("ncurses" ,ncurses)
        ("openssl" ,openssl)
-       ("perl" ,perl)))
+       ("perl" ,perl)
+       ("sqlite" ,sqlite)))
     (arguments
      `(#:configure-flags '("--enable-smtp"
                            "--enable-imap"
@@ -407,8 +409,11 @@ aliasing facilities to work just as they would on normal mail.")
                            "--enable-gpgme"
                            "--enable-hcache" ; for header caching
                            "--enable-sidebar"
+                           "--enable-autocrypt"
                            "--with-ssl"
                            "--with-sasl"
+                           "--with-sqlite3" ; required for Autocrypt
+                           "--with-idn2" ; recommended for Autocrypt
                            ;; so that mutt does not check whether the path
                            ;; exists, which it does not in the chroot
                            "--with-mailpath=/var/mail")))
@@ -2301,14 +2306,14 @@ transfer protocols.")
 (define-public opensmtpd
   (package
     (name "opensmtpd")
-    (version "6.6.2p1")
+    (version "6.6.3p1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.opensmtpd.org/archives/"
                            "opensmtpd-" version ".tar.gz"))
        (sha256
-        (base32 "16nz2n4s3djlasd6m6dqfwggf6igyfxzq5igny5i0qb8lnn13f33"))))
+        (base32 "1dqysjlyl0x3qzdzc9sjrla0063vpmlyq735lzf88p7wgzmw1xwy"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)

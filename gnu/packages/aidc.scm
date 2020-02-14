@@ -4,6 +4,7 @@
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -154,3 +155,41 @@ For application developers, language bindings are included for C, C++ and
 Python as well as GUI widgets for GTK and Qt.")
     (home-page "https://github.com/mchehab/zbar")
     (license license:lgpl2.1+)))
+
+(define-public qrcodegen-cpp
+  ;; Currently this project's installation mechanism only exists as a GitHub
+  ;; pull request, so we build from a recent commit that the proposed patch
+  ;; applies to.
+  (let ((commit "6ea933f1596d818bd21e9a6b8d2e851fb8b4bcf1")
+        (revision "0"))
+    (package
+      (name "qrcodegen-cpp")
+      (version (git-version "1.5.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/nayuki/QR-Code-generator.git")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (patches (search-patches "qrcodegen-cpp-make-install.patch"))
+                (sha256
+                 (base32
+                  "19fcwqmfk2n9p2n01dv2j4x2y2mqip0j1wbmfbxjp34rqkjwcwxm"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; no test suite
+         #:make-flags
+         (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure) ; No ./configure script
+           ;; Only build the C++ variant.
+           (add-after 'unpack 'chdir
+             (lambda _
+               (chdir "cpp")
+               #t)))))
+      (synopsis "QR Code generator library")
+      (description "qrcodegen-cpp is a QR code generator library in C++.  The
+project also offers Java, Javascript, Python, C, and Rust implementations.")
+      (home-page "https://www.nayuki.io/page/qr-code-generator-library")
+      (license license:expat))))

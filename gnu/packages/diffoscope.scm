@@ -44,6 +44,7 @@
   #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages mono)
   #:use-module (gnu packages ocaml)
   #:use-module (gnu packages package-management)
@@ -217,8 +218,79 @@
        "Diffoscope tries to get to the bottom of what makes files or directories
 different.  It recursively unpacks archives of many kinds and transforms
 various binary formats into more human readable forms to compare them.  It can
-compare two tarballs, ISO images, or PDFs just as easily.")
+compare two tarballs, ISO images, or PDFs just as easily.
+
+Diffoscope has many optional dependencies; @code{diffoscope
+--list-missing-tools guix} will display optional packages to
+install.")
       (license license:gpl3+))))
+
+(define-public reprotest
+  (package
+    (name "reprotest")
+    (version "0.7.13")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://salsa.debian.org/reproducible-builds/reprotest.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (patches (search-patches "reprotest-support-guix.patch"))
+       (sha256
+        (base32
+         "0jj9sqxbdpypnc0y8md352wwzh1by6nyhmx5fwqnvrbznrng332f"))))
+    (inputs
+     `(("python-debian" ,python-debian)
+       ("python-distro" ,python-distro)
+       ("python-libarchive-c", python-libarchive-c)
+       ("python-rstr" ,python-rstr)))
+    (native-inputs
+     `(("diffoscope" ,diffoscope)
+       ("help2man" ,help2man)
+       ("libfaketime" ,libfaketime)
+       ("python-coverage" ,python-coverage)
+       ("python-docutils" ,python-docutils)
+       ("python-pytest " ,python-pytest)
+       ("python-tlsh" ,python-tlsh)
+       ("python-tox" ,python-tox)
+       ("unzip" ,unzip)
+       ("xxd" ,xxd)))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Neither glibc-locales nor glibc-utf8-locales have the C.UTF-8
+         ;; locale or several other locales used in reprotest.
+         (add-after 'unpack 'adjust-locales
+           (lambda _
+             (substitute* "reprotest/build.py"
+               (("'C.UTF-8'") "'en_US.UTF-8'")
+               (("'ru_RU.CP1251'") "'ru_RU.KOI8-R'")
+               (("'kk_KZ.RK1048'") "'kk_KZ'"))
+             (substitute* "reprotest/lib/adt_testbed.py"
+               (("export LANG=C.UTF-8") "export LANG=en_US.UTF-8"))
+             #t))
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((mandir1 (string-append
+                              (assoc-ref outputs "out") "/share/man/man1"))
+                    (docdir (string-append
+                             (assoc-ref outputs "out") "/share/doc/" ,name "-" ,version)))
+               (invoke "make" "-C" "doc")
+               (mkdir-p mandir1)
+               (install-file "doc/reprotest.1" mandir1)
+               (mkdir-p docdir)
+               (install-file "./README.rst" docdir)
+               (install-file "./README-dev.rst" docdir))
+             #t)))))
+    (home-page "https://salsa.debian.org/reproducible-builds/reprotest")
+    (synopsis "Build software and check it for reproducibility")
+    (description "Reprotest builds the same source code twice in different
+environments, and then checks the binaries produced by each build for
+differences.  If any are found, then diffoscope or diff is used to display
+them in detail for later analysis.")
+    (license (list license:gpl3+ license:gpl2+))))
 
 (define-public trydiffoscope
  (package

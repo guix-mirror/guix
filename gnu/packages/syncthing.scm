@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
-;;; Copyright © 2016, 2017, 2018, 2019 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +30,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "1.2.2")
+    (version "1.3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -38,7 +38,7 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "1wdjh8xw09s1nfkpc95v04619gqa4dpbygp2y5l35ww4g916lv3s"))
+                "025fhfqzcl5qd38zak8485pd67iqkzsf6frm02cl25s3ggv2f0p4"))
               (modules '((guix build utils)))
               ;; Delete bundled ("vendored") free software source code.
               (snippet '(begin
@@ -52,8 +52,8 @@
     ;; When updating Syncthing, check 'go.mod' in the source distribution to
     ;; ensure we are using the correct versions of these dependencies.
     (inputs
-     `(("go-github-com-audriusbutkevicius-go-nat-pmp"
-        ,go-github-com-audriusbutkevicius-go-nat-pmp)
+     `(("go-github-com-jackpal-go-nat-pmp"
+        ,go-github-com-jackpal-go-nat-pmp)
        ("go-github-com-bkaradzic-go-lz4" ,go-github-com-bkaradzic-go-lz4)
        ("go-github-com-calmh-xdr" ,go-github-com-calmh-xdr)
        ("go-github-com-chmduquesne-rollinghash"
@@ -100,7 +100,10 @@
        ("go-github-com-d4l3k-messagediff" ,go-github-com-d4l3k-messagediff)))
 
     (arguments
-     `(#:import-path "github.com/syncthing/syncthing"
+     `(#:modules ((srfi srfi-26) ; for cut
+                  (guix build utils)
+                  (guix build go-build-system))
+       #:import-path "github.com/syncthing/syncthing"
        ;; We don't need to install the source code for end-user applications.
        #:install-source? #f
        #:phases
@@ -114,7 +117,13 @@
          (replace 'build
            (lambda _
              (with-directory-excursion "src/github.com/syncthing/syncthing"
-               (invoke "go" "run" "build.go" "-no-upgrade"))))
+               ;; XXX The only way to build Syncthing without its automatic
+               ;; updater and to build the utilities is to "build all" and then
+               ;; "build syncthing" again with -no-upgrade.
+               ;; https://github.com/syncthing/syncthing/issues/6118
+               (invoke "go" "run" "build.go" "build" "all")
+               (delete-file "syncthing")
+               (invoke "go" "run" "build.go" "-no-upgrade" "build" "syncthing"))))
 
          (replace 'check
            (lambda _
@@ -124,14 +133,16 @@
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
-                   (utils (assoc-ref outputs "utils"))
-                   (src "src/github.com/syncthing/syncthing/bin/"))
-               (install-file (string-append src "/syncthing")
-                             (string-append out "/bin"))
-               (delete-file (string-append src "/syncthing"))
-               (copy-recursively "src/github.com/syncthing/syncthing/bin/"
-                                 (string-append utils "/bin"))
-               #t)))
+                   (utils (assoc-ref outputs "utils")))
+               (with-directory-excursion "src/github.com/syncthing/syncthing"
+                 (install-file "syncthing" (string-append out "/bin"))
+                 (for-each (cut install-file <> utils)
+                           '("stcli" "stcompdirs" "stcrashreceiver"
+                             "stdisco" "stdiscosrv" "stevents" "stfileinfo"
+                             "stfinddevice" "stfindignored" "stgenfiles"
+                             "stindex" "strelaypoolsrv" "strelaysrv" "stsigtool"
+                             "stvanity" "stwatchfile" "uraggregate" "ursrv"))
+                 #t))))
 
          (add-after 'install 'install-docs
            (lambda* (#:key outputs #:allow-other-keys)
@@ -163,29 +174,28 @@ Protocol.")
     (home-page "https://github.com/syncthing/syncthing")
     (license mpl2.0)))
 
-(define-public go-github-com-audriusbutkevicius-go-nat-pmp
-  (let ((commit "452c97607362b2ab5a7839b8d1704f0396b640ca")
-        (revision "0"))
-    (package
-      (name "go-github-com-audriusbutkevicius-go-nat-pmp")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/AudriusButkevicius/go-nat-pmp")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32 "1accmpl1llk16a19nlyy991fqrgfay6l53gb64hgmdfmqljdvbk7"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "github.com/AudriusButkevicius/go-nat-pmp"))
-      (synopsis "Port mapping and discovery of external IP address")
-      (description "This package provides a Go client for the NAT-PMP internet
+(define-public go-github-com-jackpal-go-nat-pmp
+  (package
+    (name "go-github-com-jackpal-go-nat-pmp")
+    (version "1.0.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jackpal/go-nat-pmp")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1p2yrzfbkazc9nisr2iqjwzhb6q16zj6finyxxn2ikk7iiighl1g"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/jackpal/go-nat-pmp"))
+    (synopsis "Port mapping and discovery of external IP address")
+    (description "This package provides a Go client for the NAT-PMP internet
 protocol for port mapping and discovering the external IP address of a
 firewall.")
-      (home-page "https://github.com/AudriusButkevicius/go-nat-pmp")
-      (license asl2.0))))
+    (home-page "https://github.com/jackpal/go-nat-pmp")
+    (license asl2.0)))
 
 (define-public go-github-com-audriusbutkevicius-recli
   (package
@@ -306,32 +316,30 @@ structs in the Go programming language.")
     (license expat)))
 
 (define-public go-github-com-gobwas-glob
-  (let ((commit "51eb1ee00b6d931c66d229ceeb7c31b985563420")
-        (revision "0"))
-    (package
-      (name "go-github-com-gobwas-glob")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                       (url "https://github.com/gobwas/glob")
-                       (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "090wzpwsjana1qas8ipwh1pj959gvc4b7vwybzi01f3bmd79jwlp"))))
-      (build-system go-build-system)
-      (arguments
-        `(#:import-path "github.com/gobwas/glob"))
-      (synopsis "Go globbing library")
-      (description "This package provides a Go implementation of globs.")
-      (home-page "https://github.com/gobwas/glob")
-      (license expat))))
+  (package
+    (name "go-github-com-gobwas-glob")
+    (version "0.2.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/gobwas/glob")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0jxk1x806zn5x86342s72dq2qy64ksb3zrvrlgir2avjhwb18n6z"))))
+    (build-system go-build-system)
+    (arguments
+      `(#:import-path "github.com/gobwas/glob"))
+    (synopsis "Go globbing library")
+    (description "This package provides a Go implementation of globs.")
+    (home-page "https://github.com/gobwas/glob")
+    (license expat)))
 
 
 (define-public go-github-com-golang-groupcache-lru
-  (let ((commit "84a468cf14b4376def5d68c722b139b881c450a4")
-        (revision "1"))
+  (let ((commit "869f871628b6baa9cfbc11732cdf6546b17c1298")
+        (revision "2"))
     (package
       (name "go-github-com-golang-groupcache-lru")
       (version (git-version "0.0.0" revision commit))
@@ -343,7 +351,7 @@ structs in the Go programming language.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1ky1r9qh54yi9zp2769qrjngzndgd8fn7mja2qfac285n06chmcn"))))
+                  "0r4nk8129bvx50qb4xzjaay39b2h6k7cbdqqzdlanmc82ygczsbw"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "github.com/golang/groupcache/lru"
@@ -381,28 +389,26 @@ compression format.")
       (license bsd-3))))
 
 (define-public go-github-com-jackpal-gateway
-  (let ((commit "5795ac81146e01d3fab7bcf21c043c3d6a32b006")
-        (revision "0"))
-    (package
-      (name "go-github-com-jackpal-gateway")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/jackpal/gateway")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0fkwkwmhfadwk3cha8616bhqxfkr9gjjnynhhxyldlphixgs3f25"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "github.com/jackpal/gateway"))
-      (synopsis "Discover the address of a LAN gateway")
-      (description "@code{gateway} is a Go library for discovering the IP
+  (package
+    (name "go-github-com-jackpal-gateway")
+    (version "1.0.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jackpal/gateway")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ird5xmizj632l3dq24s2xgb8w1dn6v8xznlqz252gvngyr2gjl1"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/jackpal/gateway"))
+    (synopsis "Discover the address of a LAN gateway")
+    (description "@code{gateway} is a Go library for discovering the IP
 address of the default LAN gateway.")
-      (home-page "https://github.com/jackpal/gateway")
-      (license bsd-3))))
+    (home-page "https://github.com/jackpal/gateway")
+    (license bsd-3)))
 
 (define-public go-github-com-lib-pq
   (package
@@ -432,7 +438,7 @@ database/sql package.")
 (define-public go-github-com-oschwald-geoip2-golang
   (package
     (name "go-github-com-oschwald-geoip2-golang")
-    (version "1.3.0")
+    (version "1.4.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -441,7 +447,7 @@ database/sql package.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0jivzl15jb8n16rm1b2w97kf7vna5dd3kcz865wfi233qay075j2"))))
+                "1jj4rbdpy87rbl79czg5hs5dyn6xlbnk0bnvyzi71dsxan57nixw"))))
     (build-system go-build-system)
     (propagated-inputs
      `(("go-github-com-oschwald-maxminddb-golang"
@@ -457,32 +463,30 @@ GeoLite2 and GeoIP2 databases in Go.")
     (license isc)))
 
 (define-public go-github-com-oschwald-maxminddb-golang
-  (let ((commit "26fe5ace1c706491c2936119e1dc69c1a9c04d7f")
-        (revision "0"))
-    (package
-      (name "go-github-com-oschwald-maxminddb-golang")
-      (version (git-version "1.2.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/oschwald/maxminddb-golang")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1i6d935f3cv9djpjvc2ibh8aps8jqvg454b9pkwg2h98al759ggk"))))
-      (build-system go-build-system)
-      (propagated-inputs
-       `(("go-golang-org-x-sys" ,go-golang-org-x-sys)))
-      (arguments
-       `(#:import-path "github.com/oschwald/maxminddb-golang"
-         #:tests? #f)) ; Requires some unpackaged software and test data
-      (synopsis "MaxMind DB Reader for Go")
-      (description "This is a Go reader for the MaxMind DB format.  Although
+  (package
+    (name "go-github-com-oschwald-maxminddb-golang")
+    (version "1.4.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/oschwald/maxminddb-golang")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "100wd5qv00pkcm6cb8c4x5gavc9jnn7drh6xrqh85hzci4rils66"))))
+    (build-system go-build-system)
+    (propagated-inputs
+     `(("go-golang-org-x-sys" ,go-golang-org-x-sys)))
+    (arguments
+     `(#:import-path "github.com/oschwald/maxminddb-golang"
+       #:tests? #f)) ; Requires some unpackaged software and test data
+    (synopsis "MaxMind DB Reader for Go")
+    (description "This is a Go reader for the MaxMind DB format.  Although
 this can be used to read GeoLite2 and GeoIP2 databases, @code{geoip2} provides a
 higher-level API for doing so.")
-      (home-page "https://github.com/oschwald/maxminddb-golang")
-      (license isc))))
+    (home-page "https://github.com/oschwald/maxminddb-golang")
+    (license isc)))
 
 (define-public go-github-com-stathat-go
   (let ((commit "74669b9f388d9d788c97399a0824adbfee78400e")
@@ -508,8 +512,8 @@ higher-level API for doing so.")
       (license expat))))
 
 (define-public go-github-com-rcrowley-go-metrics
-  (let ((commit "e181e095bae94582363434144c61a9653aff6e50")
-        (revision "1"))
+  (let ((commit "cac0b30c2563378d434b5af411844adff8e32960")
+        (revision "2"))
     (package
       (name "go-github-com-rcrowley-go-metrics")
       (version (git-version "0.0.0" revision commit))
@@ -521,7 +525,7 @@ higher-level API for doing so.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1pwkyw801hy7n94skzk6h177zqcil6ayrmb5gs3jdpsfayh8ia5w"))))
+                  "1hfxffnpaw49pr3wrkbzq3pnv3nyzsvk5dxndv0yz70xlrbg8a04"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "github.com/rcrowley/go-metrics"))
@@ -558,8 +562,8 @@ run-time in Go.")
     (license asl2.0)))
 
 (define-public go-github-com-syndtr-goleveldb
-  (let ((commit "c3a204f8e96543bb0cc090385c001078f184fc46")
-        (revision "3"))
+  (let ((commit "758128399b1df3a87e92df6c26c1d2063da8fabe")
+        (revision "4"))
     (package
       (name "go-github-com-syndtr-goleveldb")
       (version (git-version "1.0.1" revision commit))
@@ -571,7 +575,7 @@ run-time in Go.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "18cac90dim2z5g28vazzibxa058q2ynihsmf0vbscwzba6l5s5ms"))))
+                  "0mnkzrz4di13g6ggd54my7bkb9nwk8f5k672dyasn467wsg7bf8f"))))
       (build-system go-build-system)
       (propagated-inputs
        `(("go-github-com-golang-snappy" ,go-github-com-golang-snappy)))
@@ -668,8 +672,8 @@ hashes.")
       (license expat))))
 
 (define-public go-github-com-petermattis-goid
-  (let ((commit "3db12ebb2a599ba4a96bea1c17b61c2f78a40e02")
-        (revision "0"))
+  (let ((commit "b0b1615b78e5ee59739545bb38426383b2cda4c9")
+        (revision "1"))
     (package
       (name "go-github-com-petermattis-goid")
       (version (git-version "0.0.0" revision commit))
@@ -680,9 +684,8 @@ hashes.")
                        (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
-
                  (base32
-                  "0z18a3mr72c52g7g94n08gxw0ksnaafbfwdl5p5jav2sffirb0kd"))))
+                  "0ghfxn045r0bbn2vszw897lxzmhnm4k59aypjvpxl0pbzsw9ab2c"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/petermattis/goid"))
@@ -693,8 +696,8 @@ the current goroutine's ID.")
       (license asl2.0))))
 
 (define-public go-github-com-kballard-go-shellquote
-  (let ((commit "cd60e84ee657ff3dc51de0b4f55dd299a3e136f2")
-        (revision "0"))
+  (let ((commit "95032a82bc518f77982ea72343cc1ade730072f0")
+        (revision "1"))
     (package
       (name "go-github-com-kballard-go-shellquote")
       (version (git-version "0.0.0" revision commit))
@@ -706,7 +709,7 @@ the current goroutine's ID.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1xjpin4jq1zl84dcn96xhjmn9bsfyszf6g9aqyj2dc0xfi6c88y0"))))
+                  "1rspvmnsikdq95jmx3dykxd4k1rmgl98ryjrysvl0cf18hl1vq80"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/kballard/go-shellquote"))
@@ -768,34 +771,9 @@ bounds.")
       (home-page "https://github.com/beorn7/perks")
       (license expat))))
 
-(define-public go-github-com-golang-protobuf-proto
-    (package
-      (name "go-github-com-golang-protobuf-proto")
-      (version "1.3.1")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                       (url "https://github.com/golang/protobuf.git")
-                       (commit (string-append "v" version))))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "15am4s4646qy6iv0g3kkqq52rzykqjhm4bf08dk0fy2r58knpsyl"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/golang/protobuf/proto"
-         #:unpack-path "github.com/golang/protobuf"
-         #:tests? #f ; requires unpackaged golang.org/x/sync/errgroup
-         ))
-      (synopsis "Go support for Protocol Buffers")
-      (description "This package provides Go support for the Protocol Buffers
-data serialization format.")
-      (home-page "https://github.com/golang/protobuf")
-      (license bsd-3)))
-
 (define-public go-github-com-prometheus-client-model
-  (let ((commit "fd36f4220a901265f90734c3183c5f0c91daa0b8")
-        (revision "1"))
+  (let ((commit "14fe0d1b01d4d5fc031dd4bec1823bd3ebbe8016")
+        (revision "2"))
     (package
       (name "go-github-com-prometheus-client-model")
       (version (git-version "0.0.2" revision commit))
@@ -807,7 +785,7 @@ data serialization format.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1bs5d72k361llflgl94c22n0w53j30rsfh84smgk8mbjbcmjsaa5"))))
+                  "0zdmk6rbbx39cvfz0r59v2jg5sg9yd02b4pds5n5llgvivi99550"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/prometheus/client_model"
@@ -901,7 +879,7 @@ Prometheus metrics.")
 (define-public go-github-com-prometheus-procfs
     (package
       (name "go-github-com-prometheus-procfs")
-      (version "0.0.3")
+      (version "0.0.4")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -910,7 +888,7 @@ Prometheus metrics.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "18c4m795fwng8f8qa395f3crvamlbk5y5afk8b5rzyisnmjq774y"))))
+                  "1z5jq5rjala0a0di4nwk1rai0z9f73qwqj6mgcbpjbg2qknlb544"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/prometheus/procfs"
@@ -926,7 +904,7 @@ system, kernel, and process metrics from the @file{/proc} pseudo file system.")
 (define-public go-github-com-prometheus-client-golang
     (package
       (name "go-github-com-prometheus-client-golang")
-      (version "0.9.4")
+      (version "1.2.1")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -935,7 +913,7 @@ system, kernel, and process metrics from the @file{/proc} pseudo file system.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0s134fj4i7k6pxdmxwkdi7amb1882yq33spv15hg3pkpbd3h311p"))))
+                  "0zs49psk23n9z8wrl02d5vib5wclpym8kaxcy6n5pk696i419065"))))
       (build-system go-build-system)
       (arguments
        '(#:tests? #f
@@ -953,7 +931,8 @@ system, kernel, and process metrics from the @file{/proc} pseudo file system.")
           ,go-github-com-prometheus-client-model)
          ("go-github-com-prometheus-common"
           ,go-github-com-prometheus-common)
-         ("go-github-com-prometheus-procfs" ,go-github-com-prometheus-procfs)))
+         ("go-github-com-prometheus-procfs" ,go-github-com-prometheus-procfs)
+         ("go-github-com-cespare-xxhash" ,go-github-com-cespare-xxhash)))
       (synopsis "HTTP server and client tools for Prometheus")
       (description "This package @code{promhttp} provides HTTP client and
 server tools for Prometheus metrics.")
@@ -963,7 +942,7 @@ server tools for Prometheus metrics.")
 (define-public go-gopkg.in-asn1-ber.v1
   (package
     (name "go-gopkg.in-asn1-ber.v1")
-    (version "1.2")
+    (version "1.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -972,7 +951,7 @@ server tools for Prometheus metrics.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1y8bvzbxpw0lfnn7pbcdwzqj4l90qj6xf88dvv9pxd9yl5g6cskx"))))
+                "00ixms8x3lrhywbvq5v2sagcqsxa1pcnlk17dp5lnwckv3xg4psb"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "gopkg.in/asn1-ber.v1"
@@ -1089,3 +1068,25 @@ virtual connections from a single physical connection.")
 and RFC 5389).")
       (home-page "https://github.com/ccding/go-stun")
       (license asl2.0))))
+
+(define-public go-github-com-cespare-xxhash
+  (package
+    (name "go-github-com-cespare-xxhash")
+    (version "2.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/cespare/xxhash")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "12ad3z7ki9j07c4kx3ywkl6188i2afsjg7sl60wd21p6zkkpfjxq"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/cespare/xxhash"))
+    (synopsis "Go implementation of xxHash")
+    (description "This package provides of Go implementation of the 64-bit
+xxHash algorithm (XXH64).")
+    (home-page "https://github.com/cespare/xxhash/")
+    (license expat)))

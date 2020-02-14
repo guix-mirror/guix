@@ -554,7 +554,7 @@ version)")
   ;; This package provides 32-bit dxvk libraries on 64-bit systems.
   (package
     (name "dxvk32")
-    (version "1.5")
+    (version "1.5.4")
     (home-page "https://github.com/doitsujin/dxvk/")
     (source (origin
               (method git-fetch)
@@ -564,7 +564,7 @@ version)")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "009p99jkskrmy186gsqrf0p3v9z3lskw51r4vdp35af057q26a6x"))))
+                "0yhxd5rnn5mcvcb2n062z9wqqwxjq5c0rzfbjz1z9ppznj8gn37i"))))
     (build-system meson-build-system)
     (arguments
      `(#:system "i686-linux"
@@ -633,6 +633,5 @@ Use @command{setup_dxvk} to install the required libraries to a Wine prefix.")
        ,@(match (%current-system)
            ("x86_64-linux"
             `(("dxvk32" ,dxvk32)))
-           (_ '()))
-       ))
+           (_ '()))))
     (supported-systems '("i686-linux" "x86_64-linux"))))

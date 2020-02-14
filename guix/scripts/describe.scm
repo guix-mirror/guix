@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -20,18 +20,22 @@
 (define-module (guix scripts describe)
   #:use-module ((guix config) #:select (%guix-version))
   #:use-module ((guix ui) #:hide (display-profile-content))
+  #:use-module ((guix utils) #:select (string-replace-substring))
   #:use-module (guix channels)
   #:use-module (guix scripts)
   #:use-module (guix describe)
   #:use-module (guix profiles)
-  #:use-module ((guix scripts pull) #:select (display-profile-content))
   #:use-module (git)
   #:use-module (json)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
   #:autoload   (ice-9 pretty-print) (pretty-print)
-  #:export (guix-describe))
+  #:use-module (web uri)
+  #:export (display-profile-content
+            channel-commit-hyperlink
+
+            guix-describe))
 
 
 ;;;
@@ -172,6 +176,76 @@ in the format specified by FMT."
                         (channel->recutils channel (current-output-port)))))
                   channels))))
   (display-package-search-path fmt))
+
+(define (display-profile-content profile number)
+  "Display the packages in PROFILE, generation NUMBER, in a human-readable
+way and displaying details about the channel's source code."
+  (display-generation profile number)
+  (for-each (lambda (entry)
+              (format #t "  ~a ~a~%"
+                      (manifest-entry-name entry)
+                      (manifest-entry-version entry))
+              (match (assq 'source (manifest-entry-properties entry))
+                (('source ('repository ('version 0)
+                                       ('url url)
+                                       ('branch branch)
+                                       ('commit commit)
+                                       _ ...))
+                 (let ((channel (channel (name 'nameless)
+                                         (url url)
+                                         (branch branch)
+                                         (commit commit))))
+                   (format #t (G_ "    repository URL: ~a~%") url)
+                   (when branch
+                     (format #t (G_ "    branch: ~a~%") branch))
+                   (format #t (G_ "    commit: ~a~%")
+                           (if (supports-hyperlinks?)
+                               (channel-commit-hyperlink channel commit)
+                               commit))))
+                (_ #f)))
+
+            ;; Show most recently installed packages last.
+            (reverse
+             (manifest-entries
+              (profile-manifest (if (zero? number)
+                                    profile
+                                    (generation-file-name profile number)))))))
+
+(define %vcs-web-views
+  ;; Hard-coded list of host names and corresponding web view URL templates.
+  ;; TODO: Allow '.guix-channel' files to specify a URL template.
+  (let ((labhub-url (lambda (repository-url commit)
+                      (string-append
+                       (if (string-suffix? ".git" repository-url)
+                           (string-drop-right repository-url 4)
+                           repository-url)
+                       "/commit/" commit))))
+    `(("git.savannah.gnu.org"
+       ,(lambda (repository-url commit)
+          (string-append (string-replace-substring repository-url
+                                                   "/git/" "/cgit/")
+                         "/commit/?id=" commit)))
+      ("notabug.org" ,labhub-url)
+      ("framagit.org" ,labhub-url)
+      ("gitlab.com" ,labhub-url)
+      ("gitlab.inria.fr" ,labhub-url)
+      ("github.com" ,labhub-url))))
+
+(define* (channel-commit-hyperlink channel
+                                   #:optional
+                                   (commit (channel-commit channel)))
+  "Return a hyperlink for COMMIT in CHANNEL, using COMMIT as the hyperlink's
+text.  The hyperlink links to a web view of COMMIT, when available."
+  (let* ((url  (channel-url channel))
+         (uri  (string->uri url))
+         (host (and uri (uri-host uri))))
+    (if host
+        (match (assoc host %vcs-web-views)
+          (#f
+           commit)
+          ((_ template)
+           (hyperlink (template url commit) commit)))
+        commit)))
 
 
 ;;;

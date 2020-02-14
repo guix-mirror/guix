@@ -1543,7 +1543,7 @@ expressed genes in DNA microarray experiments.")
      `(("r-codetools" ,r-codetools)
        ("r-graph" ,r-graph)
        ("r-xml" ,r-xml)))
-    (home-page "http://cran.r-project.org/web/packages/CodeDepends")
+    (home-page "https://cran.r-project.org/web/packages/CodeDepends")
     (synopsis "Analysis of R code for reproducible research and code comprehension")
     (description
      "This package provides tools for analyzing R expressions or blocks of
@@ -2455,7 +2455,7 @@ gene and isoform level using RNA-seq data")
        ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://r-forge.r-project.org/projects/rsymphony")
+    (home-page "https://r-forge.r-project.org/projects/rsymphony")
     (synopsis "Symphony integer linear programming solver in R")
     (description
      "This package was derived from Rsymphony.  The package provides an R
@@ -7224,7 +7224,7 @@ access.")
        ("r-s4vectors" ,r-s4vectors)
        ("r-summarizedexperiment" ,r-summarizedexperiment)
        ("r-tidyr" ,r-tidyr)))
-    (home-page "http://waldronlab.io/MultiAssayExperiment/")
+    (home-page "https://waldronlab.io/MultiAssayExperiment/")
     (synopsis "Integration of multi-omics experiments in Bioconductor")
     (description
      "MultiAssayExperiment harmonizes data management of multiple assays

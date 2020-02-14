@@ -1,0 +1,23 @@
+https://sources.debian.org/data/main/r/rust-openssl-sys/0.9.53-1/debian/patches/disable-vendor.patch
+"MIT" licensed according to debian/copyright file
+slightly modified to only change the vendored openssl-src dependency
+
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -31,14 +31,11 @@
+ [build-dependencies.cc]
+ version = "1.0"
+ 
+-[build-dependencies.openssl-src]
+-version = "111.0.1"
+-optional = true
+-
+ [build-dependencies.pkg-config]
+ version = "0.3.9"
+ 
+ [features]
+ vendored = ["openssl-src"]
++openssl-src = []
+ [target."cfg(target_env = \"msvc\")".build-dependencies.vcpkg]
+ version = "0.2"
+

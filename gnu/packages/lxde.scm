@@ -281,7 +281,7 @@ with freedesktop.org standard.")
                                (string-append "--sysconfdir="
                                               (assoc-ref %outputs "out")
                                               "/etc"))))
-    (home-page "http://ignorantguru.github.io/spacefm/")
+    (home-page "https://ignorantguru.github.io/spacefm/")
     (synopsis "Multi-panel tabbed file manager")
     (description "SpaceFM is a graphical, multi-panel, tabbed file manager
 based on PCManFM with built-in virtual file system, udev-based device manager,

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019, 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,14 +25,184 @@
   #:use-module (guix packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crates-io)
+  #:use-module (gnu packages documentation)
+  #:use-module (gnu packages jemalloc)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control))
 
+(define-public exa
+  (package
+    (name "exa")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "exa" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1s902xgplz1167k0r7x235p914lprpsqy2if0kpa1mlb0fswqqq4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-ansi-term" ,rust-ansi-term-0.12)
+        ("rust-datetime" ,rust-datetime-0.4)
+        ("rust-env-logger" ,rust-env-logger-0.6)
+        ("rust-git2" ,rust-git2-0.9)
+        ("rust-glob" ,rust-glob-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-locale" ,rust-locale-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-natord" ,rust-natord-1.0)
+        ("rust-num-cpus" ,rust-num-cpus-1.11)
+        ("rust-number-prefix" ,rust-number-prefix-0.3)
+        ("rust-scoped-threadpool" ,rust-scoped-threadpool-0.1)
+        ("rust-term-grid" ,rust-term-grid-0.1)
+        ("rust-term-size" ,rust-term-size-0.3)
+        ("rust-unicode-width" ,rust-unicode-width-0.1)
+        ("rust-users" ,rust-users-0.9)
+        ("rust-zoneinfo-compiled" ,rust-zoneinfo-compiled-0.4))
+       #:cargo-development-inputs
+       (("rust-datetime" ,rust-datetime-0.4))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'dont-vendor-sources
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((openssl (assoc-ref inputs "openssl")))
+               (setenv "OPENSSL_DIR" openssl))
+             #t))
+         ;; Ignoring failing tests.
+         ;; Reported in https://github.com/ogham/exa/issues/318
+         (add-before 'check 'disable-failing-tests
+           (lambda _
+             (substitute* "src/options/mod.rs"
+               (("^.*fn oneline_across.*" oneline-across)
+                (string-append "#[ignore]\n" oneline-across)))
+
+             (substitute* "src/options/view.rs"
+               (("test!\\(across:.*") "")
+               (("test!\\(empty:.*") "")
+               (("test!\\(gracross:.*") "")
+               (("test!\\(grid:.*") "")
+               (("test!\\(icons:.*") "")
+               (("test!\\(just_binary:.*") "")
+               (("test!\\(just_blocks:.*") "")
+               (("test!\\(just_bytes:.*") "")
+               (("test!\\(just_git:.*") "")
+               (("test!\\(just_group:.*") "")
+               (("test!\\(just_header:.*") "")
+               (("test!\\(just_inode:.*") "")
+               (("test!\\(just_links:.*") "")
+               (("test!\\(leg:.*") "")
+               (("test!\\(lid:.*") "")
+               (("test!\\(original_g:.*") ""))
+             #t))
+         (add-after 'install 'install-extras
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (share (string-append out "/share"))
+                    (man1  (string-append share "/man/man1")))
+               (install-file "contrib/man/exa.1" man1)
+               (mkdir-p (string-append out "/etc/bash_completion.d"))
+               (mkdir-p (string-append share "/fish/vendor_completions.d"))
+               (mkdir-p (string-append share "/zsh/site-functions"))
+               (copy-file "contrib/completions.bash"
+                          (string-append out "/etc/bash_completion.d/exa"))
+               (copy-file "contrib/completions.fish"
+                          (string-append share "/fish/vendor_completions.d/exa.fish"))
+               (copy-file "contrib/completions.zsh"
+                          (string-append share "/zsh/site-functions/_exa"))
+               #t))))))
+    (inputs
+     `(("libgit2" ,libgit2)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://the.exa.website/")
+    (synopsis "Modern replacement for ls")
+    (description "@code{exa} is a modern replacement for the command-line
+program @code{ls}.  It uses colours to distinguish file types and metadata.  It
+also knows about symlinks, extended attributes, and Git.")
+    (license license:expat)))
+
+(define-public fd
+  (package
+    (name "fd")
+    (version "7.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "fd-find" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "147m872zff0srwq9vaxkkbab06g3fkklbk1g2lx90vdhgs37f5xj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-ansi-term" ,rust-ansi-term-0.12)
+        ("rust-atty" ,rust-atty-0.2)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-ctrlc" ,rust-ctrlc-3.1)
+        ("rust-globset" ,rust-globset-0.4)
+        ("rust-humantime" ,rust-humantime-1.3)
+        ("rust-ignore" ,rust-ignore-0.4)
+        ("rust-jemallocator" ,rust-jemallocator-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-lscolors" ,rust-lscolors-0.6)
+        ("rust-num-cpus" ,rust-num-cpus-1.10)
+        ("rust-regex" ,rust-regex-1.3)
+        ("rust-regex-syntax" ,rust-regex-syntax-0.6)
+        ("rust-version-check" ,rust-version-check-0.9))
+       #:cargo-development-inputs
+       (("rust-diff" ,rust-diff-0.1)
+        ("rust-filetime" ,rust-filetime-0.2)
+        ("rust-tempdir" ,rust-tempdir-0.3))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-jemalloc
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((jemalloc (assoc-ref inputs "jemalloc")))
+               (setenv "JEMALLOC_OVERRIDE"
+                       (string-append jemalloc "/lib/libjemalloc.so")))
+             #t))
+         (add-after 'install 'install-extra
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (install-completion
+                     (lambda (completion out-dir)
+                       (for-each
+                        (lambda (f)
+                          (install-file f (string-append out out-dir)))
+                        (find-files "target/release/build/" completion)))))
+               ;; Manpages
+               (install-file "doc/fd.1" (string-append out "/share/man/man1"))
+               ;; Completions
+               (install-completion "^fd.bash$" "/etc/bash-completion.d")
+               (install-completion "^fd.fish$" "/share/fish/vendor_completions.d")
+               (install-completion "^_fd$" "/share/zsh/site-functions")
+               (rename-file (string-append out "/etc/bash-completion.d/fd.bash")
+                            (string-append out "/etc/bash-completion.d/fd"))
+               #t))))))
+    (inputs `(("jemalloc" ,jemalloc)))
+    (home-page "https://github.com/sharkdp/fd")
+    (synopsis "Simple, fast and user-friendly alternative to find")
+    (description
+     "@code{fd} is a simple, fast and user-friendly alternative to @code{find}.
+While it does not seek to mirror all of find's powerful functionality, it
+provides defaults for 80% of the use cases.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public ripgrep
   (package
     (name "ripgrep")
-    (version "11.0.1")
+    (version "11.0.2")
     (source
      (origin
        (method url-fetch)
@@ -40,25 +211,54 @@
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0bn40lz9n08llq615p4qqqbi24zbkf0appfx3zgxg34a86ga9zds"))))
+         "0vqjr96s2rs45715hzf0g0wjahig4zjyiqfijmzzg4jyh9ni80yr"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-bstr" ,rust-bstr-0.1)
+       (("rust-bstr" ,rust-bstr-0.2)
         ("rust-clap" ,rust-clap-2)
         ("rust-grep" ,rust-grep-0.2)
         ("rust-ignore" ,rust-ignore-0.4)
-        ("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-jemallocator" ,rust-jemallocator-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-log" ,rust-log-0.4)
         ("rust-num-cpus" ,rust-num-cpus-1.10)
         ("rust-regex" ,rust-regex-1.1)
         ("rust-serde-json" ,rust-serde-json-1.0)
         ("rust-termcolor" ,rust-termcolor-1.0))
        #:cargo-development-inputs
-       (("rust-clap" ,rust-clap-2)
-        ("rust-lazy-static" ,rust-lazy-static-1.3)
-        ("rust-serde" ,rust-serde-1.0)
-        ("rust-serde-derive" ,rust-serde-derive-1.0))))
+       (("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0))
+       #:modules ((ice-9 match)
+                  (guix build cargo-build-system)
+                  (guix build utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'install-manpage
+           ;; NOTE: This is done before 'check so that there's only one output
+           ;; directory with the man page.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (match (find-files "target" "^rg\\.1$")
+               ((manpage)
+                (install-file manpage (string-append
+                                        (assoc-ref outputs "out")
+                                        "/share/man/man1"))))
+             #t))
+         (replace 'install
+           ;; Adapted from (guix build cargo-build-system). The flags need to
+           ;; be passed to `cargo install' too, as otherwise it will build
+           ;; another binary, without the features.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p out)
+               (setenv "CARGO_TARGET_DIR" "./target")
+               (invoke "cargo" "install" "--path" "." "--root" out
+                       "--features" "pcre2")))))
+       #:cargo-build-flags '("--release" "--features" "pcre2")))
+    (native-inputs
+     `(("asciidoc" ,asciidoc)
+       ("pcre2" ,pcre2)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://github.com/BurntSushi/ripgrep")
     (synopsis "Line-oriented search tool")
     (description
@@ -70,7 +270,7 @@ gitignore rules.")
 (define-public rust-cbindgen
   (package
     (name "rust-cbindgen")
-    (version "0.12.2")
+    (version "0.13.0")
     (source
       (origin
         (method url-fetch)
@@ -78,7 +278,7 @@ gitignore rules.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "13jzbmjz1bmmfr0i80hw6ar484mgabx3hbpb2ynhk0ddqi0yr58m"))))
+          "1kywaz62cglg8fv0p7mp1m946gwmrf62s8ffndd5zpf1mz21j472"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -134,7 +334,7 @@ gitignore rules.")
        (("rust-git2" ,rust-git2-0.11)
         ("rust-handlebars" ,rust-handlebars-2.0)
         ("rust-ignore" ,rust-ignore-0.4)
-        ("rust-lazy-static" ,rust-lazy-static-1.4)
+        ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-regex" ,rust-regex-1.3)
         ("rust-serde-json" ,rust-serde-json-1.0)
         ("rust-tempfile" ,rust-tempfile-3.0))

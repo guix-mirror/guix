@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2018, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -27,6 +27,7 @@
   #:use-module (guix i18n)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
+  #:use-module (ice-9 match)
   #:use-module (newt)
   #:export (run-final-page))
 
@@ -73,12 +74,18 @@ press the button to reboot."))
   'success)
 
 (define (run-install-failed-page)
-  (choice-window
-   (G_ "Installation failed")
-   (G_ "Restart installer")
-   (G_ "Retry system install")
-   (G_ "The final system installation step failed.  You can retry the \
-last step, or restart the installer.")))
+  (match (choice-window
+          (G_ "Installation failed")
+          (G_ "Resume")
+          (G_ "Restart the installer")
+          (G_ "The final system installation step failed.  You can resume from \
+a specific step, or restart the installer."))
+    (1 (raise
+        (condition
+         (&installer-step-abort))))
+    (2
+     ;; Keep going, the installer will be restarted later on.
+     #t)))
 
 (define* (run-install-shell locale
                             #:key (users '()))

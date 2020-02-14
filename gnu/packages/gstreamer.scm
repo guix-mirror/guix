@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -474,6 +475,39 @@ distribution problems in some jurisdictions, e.g. due to patent threats.")
     (description
      "This GStreamer plugin supports a large number of audio and video
 compression formats through the use of the libav library.")
+    (license license:gpl2+)))
+
+(define-public gst-editing-services
+  (package
+    (name "gst-editing-services")
+    (version "1.16.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://gstreamer.freedesktop.org/src/" name "/"
+                    "gstreamer-editing-services-" version ".tar.xz"))
+              (sha256
+               (base32
+                "05hcf3prna8ajjnqd53221gj9syarrrjbgvjcbhicv0c38csc1hf"))))
+    (build-system meson-build-system)
+    (arguments
+     ;; FIXME: 16/22 failing tests.
+     `(#:tests? #f))
+    (inputs
+     `(("gst-plugins-base" ,gst-plugins-base)
+       ("libxml2" ,libxml2)))
+    (native-inputs
+     `(("flex" ,flex)
+       ("gst-plugins-bad" ,gst-plugins-bad)
+       ("gst-plugins-good" ,gst-plugins-good)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)))
+    (home-page "https://gstreamer.freedesktop.org/")
+    (synopsis "GStreamer library for non-linear editors")
+    (description
+     "This is a high-level library for facilitating the creation of audio/video
+non-linear editors.")
     (license license:gpl2+)))
 
 (define-public python-gst

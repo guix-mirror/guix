@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2016 David Thompson <dthompson2@worcester.edu>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
 ;;; Copyright © 2014, 2015, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
@@ -446,7 +446,7 @@ canyons and wait for the long I-shaped block to clear four rows at a time.")
          ("sdl2-image" ,sdl2-image)
          ("sdl2-ttf" ,sdl2-ttf)
          ("sdl2-mixer" ,sdl2-mixer)))
-      (home-page "http://en.cataclysmdda.com/")
+      (home-page "https://cataclysmdda.org/")
       (synopsis "Survival horror roguelike video game")
       (description
        "Cataclysm: Dark Days Ahead (or \"DDA\" for short) is a roguelike set
@@ -4033,7 +4033,7 @@ throwing people around in pseudo-randomly generated buildings.")
 (define-public hyperrogue
   (package
     (name "hyperrogue")
-    (version "11.2d")
+    (version "11.2q")
     ;; When updating this package, be sure to update the "hyperrogue-data"
     ;; origin in native-inputs.
     (source (origin
@@ -4044,7 +4044,7 @@ throwing people around in pseudo-randomly generated buildings.")
                     "-src.tgz"))
               (sha256
                (base32
-                "1b532s94zv1jsni7bvh848m42arxcclsr0x3n7c689iamwqzrxmn"))))
+                "1w4khi2limxhgiq7xnz0rc9nzbk86bhbyzrcd5hdghnhsviaiggq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -4122,7 +4122,7 @@ throwing people around in pseudo-randomly generated buildings.")
              "-win.zip"))
            (sha256
             (base32
-             "0vq4l1xaqpjj3hmxn1vn2b3bbkn1hrag42ck9f30blinv347bwhf"))))
+             "1k81zrbq5gmrccjac1i5c6v8j2iilfg2vwrnm8snjmmcnh5z1fgj"))))
        ("unzip" ,unzip)))
     (inputs
      `(("font-dejavu" ,font-dejavu)
@@ -5556,7 +5556,7 @@ elements to achieve a simple goal in the most complex way possible.")
 (define-public pioneer
   (package
     (name "pioneer")
-    (version "20190203")
+    (version "20200203")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5565,7 +5565,7 @@ elements to achieve a simple goal in the most complex way possible.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1g34wvgyvz793dhm1k64kl82ib0cavkbg0f2p3fp05b457ycljff"))))
+                "1011xsi94jhw98mhm8kryq8ajig0qfbrdx5xdasi92bd4nk7lcp8"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -7720,6 +7720,301 @@ the World and demonstrating that he is even more evil than his brother Vlad.")
     ;; Drascula uses a BSD-like license.
     (license (license:non-copyleft "file:///readme.txt"))))
 
+(define (make-lure-package name language hash)
+  (package
+    (name name)
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://sourceforge/scummvm/extras/"
+             "Lure%20of%20the%20Temptress/"
+             name "-" version ".zip"))
+       (sha256
+        (base32 hash))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((out (assoc-ref %outputs "out"))
+                (share (string-append out "/share"))
+                (data (string-append share "/" ,name "/" ,language))
+                (apps (string-append share "/applications"))
+                (bin (string-append out "/bin"))
+                (executable (string-append bin "/" ,name))
+                (scummvm (assoc-ref %build-inputs "scummvm")))
+           (let ((unzip (string-append (assoc-ref %build-inputs "unzip")
+                                       "/bin/unzip")))
+             (invoke unzip "-j" (assoc-ref %build-inputs "source")))
+           (let ((doc (string-append share "/doc/" ,name "-" ,version)))
+             (for-each (lambda (f) (install-file f doc))
+                       (find-files "." "\\.(txt|PDF|pdf)$")))
+           (for-each (lambda (f) (install-file f data))
+                     (find-files "." "\\.(vga|VGA)$"))
+           ;; Build the executable.
+           (mkdir-p bin)
+           (let ((bash (assoc-ref %build-inputs "bash")))
+             (with-output-to-file executable
+               (lambda ()
+                 (format #t "#!~a/bin/bash~%" bash)
+                 (format #t "exec ~a/bin/scummvm -q ~a -p ~a lure~%"
+                         scummvm ,language data))))
+           (chmod executable #o755)
+           ;; Create desktop file.  There is no dedicated
+           ;; icon for the game, so we borrow SCUMMVM's.
+           (mkdir-p apps)
+           (with-output-to-file (string-append apps "/" ,name ".desktop")
+             (lambda _
+               (format #t
+                       "[Desktop Entry]~@
+                     Name=Lure of the Temptress~@
+                     GenericName=Lure~@
+                     Exec=~a~@
+                     Icon=~a/share/icons/hicolor/scalable/apps/scummvm.svg~@
+                     Categories=AdventureGame;Game;RolePlaying;~@
+                     Keywords=game;adventure;roleplaying;2D,fantasy;~@
+                     Comment=Classic 2D point and click adventure game~@
+                     Comment[de]=klassisches 2D-Abenteuerspiel in Zeigen-und-Klicken-Manier~@
+                     Comment[fr]=Jeu classique d'aventure pointer-et-cliquer en 2D~@
+                     Comment[it]=Gioco classico di avventura punta e clicca 2D~@
+                     Type=Application~%"
+                       executable scummvm)))
+           #t))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (inputs
+     `(("bash" ,bash)
+       ("scummvm" ,scummvm)))
+    (home-page "https://www.scummvm.org")
+    (synopsis "2D point and click fantasy adventure game")
+    (description
+     "Lure of the Temptress is a classic 2D point and click adventure game.
+
+You are Diermot, an unwilling hero who'd prefer a quiet life, and are, to all
+intents and purposes, a good man.  After decades of unrest the King has united
+the warring factions in his kingdom and all his lands are at peace, except
+a remote region around a town called Turnvale.  A revolt has recently taken
+place in Turnvale, a revolt orchestrated by an apprentice sorceress called
+Selena, the titular temptress.  The king calls together his finest horsemen
+and heads off (with you in tow) to Turnvale just to witness how hellish
+mercenary monsters called Skorl are invading the town.
+
+The king's men are defeated, the king is killed and you fall of your horse and
+bang your head heavily on the ground.  You have been *unconscious for a while
+when you realize that you are in a dingy cell guarded by a not so friendly
+Skorl.  Maybe it would be an idea to try and escape...")
+    (license (license:non-copyleft "file:///README"))))
+
+(define-public lure
+  (make-lure-package
+   "lure" "en" "0201i70qcs1m797kvxjx3ygkhg6kcl5yf49sihba2ga8l52q45zk"))
+
+(define-public lure-de
+  (make-lure-package
+   "lure-de" "de" "0sqq7h5llml6rv85x0bfv4bgzwhs4c82p4w4zmfcaab6cjlad0sy"))
+
+(define-public lure-es
+  (make-lure-package
+   "lure-es" "es" "1dvv5znvlsakw6w5r16calv9jkgw27aymgybsf4q22lcmpxbj1lk"))
+
+(define-public lure-fr
+  (make-lure-package
+   "lure-fr" "fr" "1y51jjb7f8023832g44vd1jsb6ni85586pi2n5hjg9qjk6gi90r9"))
+
+(define-public lure-it
+  (make-lure-package
+   "lure-it" "it" "1ks6n39r1cllisrrh6pcr39swsdv7ng3gx5c47vaw71zzfr70hjj"))
+
+(define (make-queen-package name file-prefix release language hash)
+  (package
+    (name name)
+    (version release)
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/scummvm/extras/"
+                           "Flight%20of%20the%20Amazon%20Queen/"
+                           file-prefix release ".zip"))
+       (sha256
+        (base32 hash))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((out (assoc-ref %outputs "out"))
+                (share (string-append out "/share"))
+                (data (string-append share "/" ,name))
+                (apps (string-append share "/applications"))
+                (bin (string-append out "/bin"))
+                (executable (string-append bin "/" ,name))
+                (scummvm (assoc-ref %build-inputs "scummvm")))
+           (let ((unzip (string-append (assoc-ref %build-inputs "unzip")
+                                       "/bin/unzip")))
+             (invoke unzip "-j" (assoc-ref %build-inputs "source")))
+           (let ((doc (string-append share "/doc/" ,name "-" ,version)))
+             (install-file "readme.txt" doc))
+           (install-file "queen.1c" data)
+           (mkdir-p bin)
+           (let ((bash (assoc-ref %build-inputs "bash")))
+             (with-output-to-file executable
+               (lambda ()
+                 (format #t "#!~a/bin/bash~%" bash)
+                 (format #t "exec ~a/bin/scummvm -q fr -p ~a queen~%"
+                         scummvm data))))
+           (chmod executable #o755)
+           ;; Create desktop file.  There is no dedicated
+           ;; icon for the game, so we borrow SCUMMVM's.
+           (mkdir-p apps)
+           (with-output-to-file (string-append apps "/" ,name ".desktop")
+             (lambda _
+               (format #t
+                       "[Desktop Entry]~@
+                       Name=Flight of the Amazon Queen~@
+                       GenericName=Queen~@
+                       Comment=Embark on a quest to rescue a kidnapped princess and in the process, discover the true sinister intentions of a suspiciously located Lederhosen company~@
+                       Comment[de]=Begib dich auf ein Abenteuer, um eine entführte Prinzessin zu retten und entdecke die wahren, finsteren Absichten eines verdächtig erscheinenden Lederhosen-Unternehmens~@
+                       Type=Application~@
+                       Exec=~a~@
+                       Icon=~a/share/icons/hicolor/scalable/apps/scummvm.svg~@
+                       Categories=AdventureGame;Game;RolePlaying;~@
+                       Keywords=adventure;game;roleplaying;fantasy;~%"
+                       executable scummvm))))
+         #t)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (inputs
+     `(("bash" ,bash)
+       ("scummvm" ,scummvm)))
+    (home-page "https://www.scummvm.org/")
+    (synopsis "Classic 2D point and click adventure game")
+    (description "Flight of the Amazon Queen is a 2D point-and-click
+adventure game set in the 1940s.
+
+You assume the role of Joe King, a pilot for hire who is given the job
+of flying Faye Russell (a famous movie star) into the Amazon jungle
+for a photo shoot.  Of course, things never go according to plans.
+After an unfortunate turn of events they find themselves stranded in
+the heart of the Amazon jungle, where Joe will embark on a quest to
+rescue a kidnapped princess and in the process, discover the true
+sinister intentions of a suspiciously located Lederhosen company.  In
+a rich 2D environment, Joe will cross paths with a variety of unlikely
+jungle inhabitants including, but not limited to, a tribe of Amazon
+women and 6-foot-tall pygmies.")
+    (license (license:non-copyleft "file:///readme.txt"))))
+
+(define-public queen
+  (make-queen-package
+   "queen" "FOTAQ_Talkie-" "1.1" "en"
+   "1a6q71q1dl9vvw2qqsxk5h1sv0gaqy6236zr5905w2is01gdsp52"))
+
+(define-public queen-de
+  (make-queen-package
+   "queen-de" "FOTAQ_Ger_talkie-" "1.0" "de"
+   "13vn43x7214vyprlpqabvv71k890nff3d6fjscflr1ll7acjca3f"))
+
+(define-public queen-fr
+  (make-queen-package
+   "queen-fr" "FOTAQ_Fr_Talkie_" "1.0" "fr"
+   "0hq5g4qrkcwm2kn5i4kv4hijs9hi7bw9xl1vrwd1l69qqn30crwy"))
+
+(define-public queen-it
+  (make-queen-package
+   "queen-it" "FOTAQ_It_Talkie_" "1.0" "it"
+   "1h76y70lrpzfjkm53n4nr364nhyka54vbz9r7sadzyzl7c7ilv4d"))
+
+(define-public sky
+  (package
+    (name "sky")
+    (version "1.2")                     ;1.3 is floppy version
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/scummvm/extras/"
+                           "Beneath%20a%20Steel%20Sky/"
+                           "bass-cd-" version ".zip"))
+       (sha256
+        (base32 "14s5jz67kavm8l15gfm5xb7pbpn8azrv460mlxzzvdpa02a9n82k"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((out (assoc-ref %outputs "out"))
+                (share (string-append out "/share"))
+                (data (string-append share "/" ,name))
+                (apps (string-append share "/applications"))
+                (bin (string-append out "/bin"))
+                (executable (string-append bin "/" ,name))
+                (scummvm (assoc-ref %build-inputs "scummvm")))
+           (let ((unzip (string-append (assoc-ref %build-inputs "unzip")
+                                       "/bin/unzip")))
+             (invoke unzip "-j" (assoc-ref %build-inputs "source")))
+           (let ((doc (string-append share "/doc/bass-" ,version)))
+             (install-file "readme.txt" doc))
+           (for-each (lambda (f) (install-file f data))
+                     (find-files "." "^sky\\."))
+           ;; Build the executable.
+           (mkdir-p bin)
+           (let ((bash (assoc-ref %build-inputs "bash")))
+             (with-output-to-file executable
+               (lambda ()
+                 (format #t "#!~a/bin/bash~%" bash)
+                 (format #t "exec ~a/bin/scummvm -p ~a sky~%" scummvm data))))
+           (chmod executable #o755)
+           ;; Create desktop file.  There is no dedicated
+           ;; icon for the game, so we borrow SCUMMVM's.
+           (mkdir-p apps)
+           (with-output-to-file (string-append apps "/" ,name ".desktop")
+             (lambda _
+               (format #t
+                       "[Desktop Entry]~@
+                       Name=Beneath a Steel Sky~@
+                       GenericName=Bass~@
+                       Exec=~a~@
+                       Icon=~a/share/icons/hicolor/scalable/apps/scummvm.svg~@
+                       Categories=AdventureGame;Game;RolePlaying;~@
+                       Keywords=adventure;game;roleplaying;cyberpunk;~@
+                       Comment=A science-fiction adventure game set in a bleak post-apocalyptic vision of the future~@
+                       Comment[de]=Ein Science-Fiction-Abenteuerspiel \
+angesiedelt in einer düsteren, postapokalyptischen Vision der Zukunft~@
+                       Type=Application~%"
+                       executable scummvm)))
+           #t))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (inputs
+     `(("bash" ,bash)
+       ("scummvm" ,scummvm)))
+    (home-page "https://www.scummvm.org/")
+    (synopsis "Classic 2D point an click science-fiction adventure game")
+    (description
+     "Beneath a Steel Sky is a science-fiction thriller set in a bleak
+post-apocalyptic vision of the future.  It revolves around Union City,
+where selfishness, rivalry, and corruption by its citizens seems to be
+all too common, those who can afford it live underground, away from
+the pollution and social problems which are plaguing the city.
+
+You take on the role of Robert Foster, an outcast of sorts from the
+city since a boy who was raised in a remote environment outside of
+Union City simply termed ``the gap''.  Robert's mother took him away
+from Union City as a child on their way to ``Hobart'' but the
+helicopter crashed on its way.  Unfortunately, Robert's mother died,
+but he survived and was left to be raised by a local tribe from the
+gap.
+
+Years later, Union City security drops by and abducts Robert, killing
+his tribe in the process; upon reaching the city the helicopter taking
+him there crashes with him escaping, high upon a tower block in the
+middle of the city.  He sets out to discover the truth about his past,
+and to seek vengeance for the killing of his tribe.")
+    (license (license:non-copyleft "file:///readme.txt"))))
+
 (define-public gnurobots
   (package
     (name "gnurobots")
@@ -9656,3 +9951,137 @@ challenges.")
                    license:bsd-3        ;src/md5sum
                    license:lgpl2.1+     ;src/iqsort.h
                    license:expat))))
+
+(define-public eboard
+  (package
+    (name "eboard")
+    (version "1.1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fbergo/eboard.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1z4pwpqyvxhlda99h6arh2rjk90fbms9q29fqizjblrdn01dlxn1"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+" ,gtk+-2)
+       ("libpng" ,libpng)
+       ("gstreamer" ,gstreamer)))
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (make-file-writable "eboard-config")
+             (setenv "CC" "gcc")
+             (invoke "./configure"
+                     (string-append "--prefix=" (assoc-ref outputs "out")))
+             #t))
+         (add-before 'install 'make-required-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out")
+                                     "/share/eboard"))
+             #t)))))
+    (synopsis "Graphical user interface to play chess")
+    (description
+     "Eboard is a chess board interface for ICS (Internet Chess Servers)
+and chess engines.")
+    (home-page "https://www.bergo.eng.br/eboard/")
+    (license license:gpl2+)))
+
+(define-public chessx
+  (package
+    (name "chessx")
+    (version "1.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/chessx/chessx/"
+                           version "/chessx-" version ".tgz"))
+       (sha256
+        (base32 "09rqyra28w3z9ldw8sx07k5ap3sjlli848p737maj7c240rasc6i"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("qttools" ,qttools)))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtsvg" ,qtsvg)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "chessx.pro"
+               (("\\$\\$\\[QT_INSTALL_BINS\\]/lrelease")
+                (string-append (assoc-ref inputs "qttools") "/bin/lrelease")))
+             #t))
+         (add-after 'fix-paths 'make-qt-deterministic
+           (lambda _
+             (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")
+             #t))
+         (replace 'configure
+           (lambda _
+             (invoke "qmake")
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "release/chessx" (string-append out "/bin"))
+               (install-file "unix/chessx.desktop"
+                             (string-append out "/share/applications")))
+             #t)))))
+    (synopsis "Chess game database")
+    (description
+     "ChessX is a chess database.  With ChessX you can operate on your
+collection of chess games in many ways: browse, edit, add, organize, analyze,
+etc.  You can also play games on FICS or against an engine.")
+    (home-page "http://chessx.sourceforge.net/")
+    (license license:gpl2+)))
+
+(define-public stockfish
+  (package
+    (name "stockfish")
+    (version "11")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/official-stockfish/Stockfish.git")
+             (commit (string-append "sf_" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "12mppipinymj8s1ipq9a7is453vncly49c32ym9wvyklsgyxfzlk"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:make-flags (list "-C" "src"
+                          "build"
+                          (string-append "PREFIX="
+                                         (assoc-ref %outputs "out"))
+                          (string-append "ARCH="
+                                         ,(match (%current-system)
+                                            ("x86_64-linux" "x86-64")
+                                            ("i686-linux" "x86-32")
+                                            ("aarch64-linux" "general-64")
+                                            ("armhf-linux" "armv7")
+                                            ("mips64el-linux" "general-64")
+                                            (_ "general-32"))))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))))
+    (synopsis "Strong chess engine")
+    (description
+     "Stockfish is a very strong chess engines.  It is much stronger than the
+best human chess grandmasters.  It can be used with UCI-compatible GUIs like
+ChessX.")
+    (home-page "https://stockfishchess.org/")
+    (license license:gpl3+)))

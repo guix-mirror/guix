@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,7 +39,6 @@
             request-rate-limit-reached?
 
             origin?
-            origin-id
             origin-type
             origin-url
             origin-visits
@@ -247,7 +246,6 @@ FALSE-IF-404? is true, return #f upon 404 responses."
 ;; <https://archive.softwareheritage.org/api/1/origin/https://github.com/guix-mirror/guix/get>
 (define-json-mapping <origin> make-origin origin?
   json->origin
-  (id origin-id)
   (visits-url origin-visits-url "origin_visits_url")
   (type origin-type)
   (url origin-url))

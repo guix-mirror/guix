@@ -358,42 +358,42 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-(define-public linux-libre-5.4-version "5.4.17")
+(define-public linux-libre-5.4-version "5.4.19")
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "1fbl5knf6pini9lsx8mqkdmf3qbsydqvaxggh6nd1vk9mzv2npwl")))
+        (hash (base32 "1f3pzg8vai5qz19gy9gf3rxs2z4dsw78zjkkfnha8iiy2mqvk14m")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.101")
+(define-public linux-libre-4.19-version "4.19.103")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "1i4bkwankl5q95kgqmmyzdkwmf3b8ppkb8ild9bw12mkpmm1a9my")))
+        (hash (base32 "0hxvqkjy63370sr9j4j0a1kzqwxxdn3i8i6wwc5c2gbzpmqlay5l")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.169")
+(define-public linux-libre-4.14-version "4.14.170")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "0jc24zvqz3vsv65xxcivzkj6nv27vsy62l50n2h1ysy5jdwsk3nq")))
+        (hash (base32 "1hqp3spi4cqgkqkzx5g2nbp6isz0kdcsj56ilsp6siqiglj662ll")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.212")
+(define-public linux-libre-4.9-version "4.9.213")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "0c5yjilaq86j6i2hzlxbp2ia7jhnf7kv952ffv7jxdf90sk3irxd")))
+        (hash (base32 "0r7bqpvbpiiniwsm338b38mv6flfgm1r09avxqsakhkh8rvgz1dg")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.212")
+(define-public linux-libre-4.4-version "4.4.213")
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "0mx3qyj6w6h7gw7drsfsgl4iyz1695sjnf9hqh4kczci48kw5rj7")))
+        (hash (base32 "1cmwn9zvz14jqjy6qkszglhs2p5h6yh82b2269cbzvibg8y3rxq0")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -1538,7 +1538,7 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
 (define-public strace
   (package
     (name "strace")
-    (version "5.4")
+    (version "5.5")
     (home-page "https://strace.io")
     (source (origin
              (method url-fetch)
@@ -1546,7 +1546,7 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
                                  "/strace-" version ".tar.xz"))
              (sha256
               (base32
-               "0hd7sb7l99y9rcj8jjc1b6m3ryds17krsymdg3dvd40jsla0bl7p"))))
+               "1zrhpzjlgfwfl8dd53llswmmharm5rbi0zch7lln5sjris69an4z"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -2840,14 +2840,16 @@ time.")
 (define-public lvm2
   (package
     (name "lvm2")
-    (version "2.02.177")
+    (version "2.03.08")
     (source (origin
               (method url-fetch)
-              (uri (string-append "ftp://sources.redhat.com/pub/lvm2/releases/LVM2."
-                                  version ".tgz"))
+              (uri (list (string-append "ftp://sourceware.org/pub/lvm2/LVM2."
+                                        version ".tgz")
+                         (string-append "ftp://sources.redhat.com/pub/lvm2/releases/LVM2."
+                                        version ".tgz")))
               (sha256
                (base32
-                "1wl0isn0yz5wvglwylnlqkppafwmvhliq5bd92vjqp5ir4za49a0"))
+                "1j0yis658564rk1ddabkl8vbavp0fdd10gd6qhgyzc3akzf620kf"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -2855,7 +2857,7 @@ time.")
 
                   ;; Honor sysconfdir.
                   (substitute* "make.tmpl.in"
-                    (("confdir = .*$")
+                    (("^confdir = .*$")
                      "confdir = @sysconfdir@\n")
                     (("DEFAULT_SYS_DIR = @DEFAULT_SYS_DIR@")
                      "DEFAULT_SYS_DIR = @sysconfdir@"))
@@ -2866,7 +2868,8 @@ time.")
      `(("pkg-config" ,pkg-config)
        ("procps" ,procps)))                       ;tests use 'pgrep'
     (inputs
-     `(("udev" ,eudev)))
+     `(("libaio" ,libaio)
+       ("udev" ,eudev)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -2892,14 +2895,6 @@ time.")
                                ;; Make sure programs such as 'dmsetup' can
                                ;; find libdevmapper.so.
                                (string-append "LDFLAGS=-Wl,-rpath="
-                                              (assoc-ref %outputs "out")
-                                              "/lib,-rpath="
-                                              (assoc-ref %outputs "out")
-                                              "/lib/device-mapper")
-                               ;; TODO: Patch make.tmpl.in to take LDFLAGS
-                               ;; into account so that we don't need to also
-                               ;; set CLDFLAGS.
-                               (string-append "CLDFLAGS=-Wl,-rpath="
                                               (assoc-ref %outputs "out")
                                               "/lib,-rpath="
                                               (assoc-ref %outputs "out")
@@ -2936,7 +2931,26 @@ mapper.  Kernel components are part of Linux-libre.")
      (substitute-keyword-arguments (package-arguments lvm2)
        ((#:configure-flags flags '())
         ;; LVM2 doesn't use Libtool, hence the custom option.
-        `(cons "--enable-static_link" ,flags))))
+        `(append '("--enable-static_link")
+                 ;; Building dmeventd statically is complicated due to a
+                 ;; requirement on libdevmapper.a, which is being phased out
+                 ;; in favor of libdevice-mapper.a, which in turn is is not
+                 ;; easily made available at dmeventd build time.  Just ignore
+                 ;; it until the situation improves.
+                 (delete "--enable-dmeventd" ,flags)))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'configure 'adjust-Makefile
+             (lambda _
+               ;; These fixes are related to the upstream libdm->device_mapper
+               ;; migration and will hopefully be fixed upstream in due time.
+               (substitute* "tools/Makefile.in"
+                 ;; This variable is empty in a static configuration and causes
+                 ;; an erroneous GCC command line.
+                 (("-L\\$\\(interfacebuilddir\\)") "")
+                 ;; Remove obsolete reference to libdevmapper.a.
+                 (("-ldevmapper") ""))
+               #t))))))
     (synopsis "Logical volume management for Linux (statically linked)")))
 
 (define-public wireless-tools
@@ -5258,15 +5272,16 @@ interface in sysfs, which can be accomplished with the included udev rules.")
 (define-public tlp
   (package
     (name "tlp")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/linrunner/TLP/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/linrunner/TLP.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "169k3xypq5rq0xiggrlpr73yr2r2x7b2d9vcr9ac96qrgph7sk7r"))))
+        (base32 "14fcnaz9pw534v4d8dddqq4wcvpf1kghr8zlrk62r5lrl46sp1p5"))))
     (native-inputs
      `(("shellcheck" ,shellcheck)))
     (inputs

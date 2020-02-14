@@ -55,7 +55,7 @@
       { \"name\": \"bundler\" },
     ]
   },
-  \"licenses\": [\"MIT\", \"Apache 2.0\"]
+  \"licenses\": null
 }")
 
 (define test-bundler-json
@@ -138,7 +138,7 @@
               ('synopsis "Another cool gem")
               ('description "Another cool gem")
               ('home-page "https://example.com")
-              ('license ('list 'license:expat 'license:asl2.0)))
+              ('license #f))                      ;no licensing info
             ('package
               ('name "ruby-bundler")
               ('version "1.14.2")

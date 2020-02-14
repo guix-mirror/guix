@@ -24,6 +24,7 @@
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Stephen J. Scheck <sscheck@cpan.org>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1370,6 +1371,26 @@ counterpart.  It reduces the effort required to implement a configuration file
 parser in your Perl programme and allows sharing configuration files between
 languages.")
     (license bsd-3)))
+
+(define-public perl-config-grammar
+  (package
+    (name "perl-config-grammar")
+    (version "1.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DS/DSCHWEI/"
+                           "Config-Grammar-" version ".tar.gz"))
+       (sha256
+        (base32 "1qynf5bk6mnk90nggm3z8rdz2535kmqg46s0vj93pi68r6ia7cx8"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Config-Grammar")
+    (synopsis "Grammar-based config parser")
+    (description
+     "Config::Grammar is a module to parse configuration files.  The
+configuration may consist of multiple-level sections with assignments and
+tabular data.")
+    (license (package-license perl))))
 
 (define-public perl-config-any
   (package

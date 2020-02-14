@@ -74,6 +74,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
+  #:use-module (gnu packages dbm)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages flex)
@@ -1491,7 +1492,7 @@ can solve two kinds of problems:
 (define-public octave-cli
   (package
     (name "octave-cli")
-    (version "5.1.0")
+    (version "5.2.0")
     (source
      (origin
       (method url-fetch)
@@ -1499,11 +1500,12 @@ can solve two kinds of problems:
                           version ".tar.lz"))
       (sha256
        (base32
-        "11wwxpy2q1bhxs2v41bqn05i2sb0905cj1xil6mg8l4k2kka4cq6"))))
+        "1848dq6nxzal8gwjrcp6xhi5gq96w89nss9d9rz75q408gb3mbl6"))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("arpack" ,arpack-ng)
+       ("bdb" ,bdb)
        ("curl" ,curl)
        ("fftw" ,fftw)
        ("fftwf" ,fftwf)

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
-;;; Copyright © 2017, 2018 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2017, 2018, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2014 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.org>
@@ -416,7 +416,7 @@ scripts/input/X11/C/Shell/HTML/Dired): 49KB.
 (define-public ghostwriter
   (package
     (name "ghostwriter")
-    (version "1.7.4")
+    (version "1.8.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -425,7 +425,7 @@ scripts/input/X11/C/Shell/HTML/Dired): 49KB.
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1pqlr08z5syqcq5p282asxwzrrm7c1w94baxyb467swh8yp3fj5m"))))
+                "13yn82m1l2pq93wbl569a2lzpc3sn8a8g30hsgdch1l9xlmhwran"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -433,9 +433,13 @@ scripts/input/X11/C/Shell/HTML/Dired): 49KB.
     (inputs
      `(("hunspell" ,hunspell)
        ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
        ("qtmultimedia" ,qtmultimedia)
+       ("qtquickcontrols" ,qtquickcontrols)
        ("qtsvg" ,qtsvg)
-       ("qtwebkit" ,qtwebkit)))
+       ("qtwebchannel" ,qtwebchannel)))
+    (propagated-inputs                  ; To get native-search-path
+     `(("qtwebengine" ,qtwebengine)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases

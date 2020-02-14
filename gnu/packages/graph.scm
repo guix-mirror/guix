@@ -4,6 +4,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2020 Alexander Krotov <krotov@iitp.ru>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,6 +39,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cran)
+  #:use-module (gnu packages gd)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
@@ -500,4 +502,31 @@ isolating planarity obstructions.")
     (synopsis "Rank-width and rank-decomposition of graphs")
     (description "rw computes rank-width and rank-decompositions
 of graphs.")
+    (license license:gpl2+)))
+
+(define-public mscgen
+  (package
+    (name "mscgen")
+    (version "0.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.mcternan.me.uk/mscgen/software/mscgen-src-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "08yw3maxhn5fl1lff81gmcrpa4j9aas4mmby1g9w5qcr0np82d1w"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gd" ,gd)))
+    (home-page "http://www.mcternan.me.uk/mscgen/")
+    (synopsis "Message Sequence Chart Generator")
+    (description "Mscgen is a small program that parses Message Sequence Chart
+descriptions and produces PNG, SVG, EPS or server side image maps (ismaps) as
+the output.  Message Sequence Charts (MSCs) are a way of representing entities
+and interactions over some time period and are often used in combination with
+SDL.  MSCs are popular in Telecoms to specify how protocols operate although
+MSCs need not be complicated to create or use.  Mscgen aims to provide a simple
+text language that is clear to create, edit and understand, which can also be
+transformed into common image formats for display or printing.")
     (license license:gpl2+)))

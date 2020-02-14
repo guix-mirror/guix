@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -141,6 +142,10 @@ dependencies, so it should be self-contained."
   ;; Using the current working directory as GOPATH makes it easier for packagers
   ;; who need to manipulate the unpacked source code.
   (setenv "GOPATH" (getcwd))
+  ;; Go 1.13 uses go modules by default. The go build system does not
+  ;; currently support modules, so turn modules off to continue using the old
+  ;; GOPATH behavior.
+  (setenv "GO111MODULE" "off")
   (setenv "GOBIN" (string-append (assoc-ref outputs "out") "/bin"))
   (let ((tmpdir (tmpnam)))
     (match (go-inputs inputs)

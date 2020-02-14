@@ -10,6 +10,7 @@
 ;;; Copyright © 2016 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
+;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +35,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages tls)
@@ -338,40 +340,130 @@ secure session between the peers.")
 (define-public lua5.2-sec
   (make-lua-sec "lua5.2-sec" lua-5.2))
 
-(define-public lua-lgi
+(define-public lua-penlight
   (package
-    (name "lua-lgi")
-    (version "0.9.2")
+    (name "lua-penlight")
+    (version "1.7.0")
     (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://github.com/pavouk/lgi")
-               (commit version)))
-        (file-name (git-file-name name version))
-        (sha256
-         (base32
-          "03rbydnj411xpjvwsyvhwy4plm96481d7jax544mvk7apd8sd5jj"))))
-    (build-system gnu-build-system)
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Tieske/Penlight.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0qc2d1riyr4b5a0gnsmdw2lz5pw65s4ac60hc34w3mmk9l6yg6nl"))))
+    (build-system trivial-build-system)
+    (inputs
+     `(("lua" ,lua)))
+    (propagated-inputs
+     `(("lua-filesystem" ,lua-filesystem)))
     (arguments
-     '(#:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" (assoc-ref %outputs "out")))
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((source (assoc-ref %build-inputs "source"))
+                (lua-version ,(version-major+minor (package-version lua)))
+                (destination (string-append (assoc-ref %outputs "out")
+                                            "/share/lua/" lua-version)))
+           (mkdir-p destination)
+           (with-directory-excursion source
+             (copy-recursively "lua/" destination)))
+         #t)))
+    (home-page "http://tieske.github.io/Penlight/")
+    (synopsis "Collection of general purpose libraries for the Lua language")
+    (description "Penlight is a set of pure Lua libraries focusing on
+input data handling (such as reading configuration files), functional
+programming (such as map, reduce, placeholder expressions,etc), and OS
+path management.  Much of the functionality is inspired by the Python
+standard libraries.")
+    (license license:expat)))
+
+(define-public lua-ldoc
+  (package
+    (name "lua-ldoc")
+    (version "1.4.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/stevedonovan/LDoc.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1h0cf7bp4am54r0j8lhjs2l1c7q5vz74ba0jvw9qdbaqimls46g8"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("lua" ,lua)))
+    (propagated-inputs
+     `(("lua-penlight" ,lua-penlight)))
+    (arguments
+     `(#:tests? #f                 ;tests must run after installation.
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure) ; no configure script
+         (add-after 'unpack 'fix-installation-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (lua-version ,(version-major+minor (package-version lua))))
+               (substitute* "makefile"
+                 (("LUA=.*") "#\n")
+                 (("(LUA_PREFIX=).*" _ prefix)
+                  (string-append prefix out "\n"))
+                 (("(LUA_BINDIR=).*" _ prefix)
+                  (string-append prefix out "/bin\n"))
+                 (("(LUA_SHAREDIR=).*" _ prefix)
+                  (string-append prefix out "/share/lua/" lua-version "\n"))))
+             #t))
+         (delete 'configure)
+         (add-before 'install 'create-bin-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/bin"))
+             #t)))))
+    (home-page "http://stevedonovan.github.io/ldoc/")
+    (synopsis "Lua documentation generator")
+    (description
+     "LDoc is a LuaDoc-compatible documentation generation system for
+Lua source code.  It parses the declaration and documentation comments
+in a set of Lua source files and produces a set of XHTML pages
+describing the commented declarations and functions.")
+    (license license:expat)))
+
+(define (make-lua-lgi name lua)
+  (package
+    (name name)
+    (version "0.9.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pavouk/lgi")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "03rbydnj411xpjvwsyvhwy4plm96481d7jax544mvk7apd8sd5jj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
          (add-before 'build 'set-env
            (lambda* (#:key inputs #:allow-other-keys)
-             ;; we need to load cairo dynamically
-             (let* ((cairo (string-append
-                             (assoc-ref inputs "cairo") "/lib" )))
+             ;; We need to load cairo dynamically.
+             (let* ((cairo (string-append (assoc-ref inputs "cairo") "/lib")))
                (setenv "LD_LIBRARY_PATH" cairo)
                #t)))
          (add-before 'build 'set-lua-version
            (lambda _
-             ;; lua version and therefore install directories are hardcoded
-             ;; FIXME: This breaks when we update lua to >=5.3
+             ;; Lua version and therefore install directories are hardcoded.
              (substitute* "./lgi/Makefile"
-               (("LUA_VERSION=5.1") "LUA_VERSION=5.2"))
+               (("LUA_VERSION=5.1")
+                (format #f
+                        "LUA_VERSION=~a"
+                        ,(version-major+minor (package-version lua)))))
              #t))
          (add-before 'check 'skip-test-gtk
            (lambda _
@@ -392,25 +484,34 @@ secure session between the peers.")
                              (assoc-ref inputs "xorg-server")))
              (setenv "DISPLAY" ":1")
              #t)))))
-    (inputs
-     `(("gobject-introspection" ,gobject-introspection)
-       ("glib" ,glib)
-       ("pango" ,pango)
-       ("gtk" ,gtk+-2)
-       ("lua" ,lua)
-       ("cairo" ,cairo)
-       ("libffi" ,libffi)
-       ("xorg-server" ,xorg-server)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("dbus" ,dbus)))                          ;tests use 'dbus-run-session'
+     `(("dbus" ,dbus)                   ;tests use 'dbus-run-session'
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("glib" ,glib)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk" ,gtk+-2)
+       ("libffi" ,libffi)
+       ("lua" ,lua)
+       ("pango" ,pango)
+       ("xorg-server" ,xorg-server)))
     (home-page "https://github.com/pavouk/lgi/")
     (synopsis "Lua bridge to GObject based libraries")
     (description
-     "LGI is gobject-introspection based dynamic Lua binding to GObject
-based libraries.  It allows using GObject-based libraries directly from Lua.
+     "LGI is gobject-introspection based dynamic Lua binding to GObject based
+libraries.  It allows using GObject-based libraries directly from Lua.
 Notable examples are GTK+, GStreamer and Webkit.")
     (license license:expat)))
+
+(define-public lua-lgi
+  (make-lua-lgi "lua-lgi" lua))
+
+(define-public lua5.1-lgi
+  (make-lua-lgi "lua5.1-lgi" lua-5.1))
+
+(define-public lua5.2-lgi
+  (make-lua-lgi "lua5.2-lgi" lua-5.2))
 
 (define (make-lua-lpeg name lua)
   (package

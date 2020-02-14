@@ -1999,7 +1999,7 @@ msgstr "Wie ein solches entsteht."
 #: doc/guix.texi:184 doc/guix.texi:2039 doc/guix.texi:2041
 #, no-wrap
 msgid "Keyboard Layout and Networking and Partitioning"
-msgstr "Tastaturbelegung@comma{} Netzwerkanbindung und Partitionierung"
+msgstr "Tastaturbelegung und Netzwerkanbindung und Partitionierung"
 
 #. type: menuentry
 #: doc/guix.texi:184 doc/guix.texi:2039

@@ -1306,7 +1306,7 @@ adapted for other output formats, such as HTML or LaTeX.")
                (base32
                 "1nsxbrx31k3y6yql30qkrvdfyznlia2qfvwv95mfiy7m7wdn4rm3"))))
     (build-system r-build-system)
-    (home-page "http://yihui.name/formatR")
+    (home-page "https://yihui.org/formatr/")
     (synopsis "Format R code automatically")
     (description
      "This package provides a function to format R source code.  Spaces and
@@ -3221,7 +3221,7 @@ analysis of large sparse or dense matrices.")
     `(("r-foreach" ,r-foreach)
       ("r-matrix" ,r-matrix)
       ("r-shape" ,r-shape)))
-   (home-page "http://www.jstatsoft.org/v33/i01")
+   (home-page "https://www.jstatsoft.org/article/view/v033i01")
    (synopsis "Lasso and elastic-net regularized generalized linear models")
    (description
     "The glmnet package provides efficient procedures for fitting the entire
@@ -5441,7 +5441,7 @@ genome-wide association studies can be analyzed efficiently.")
        ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.rforge.net/Cairo/")
+    (home-page "https://www.rforge.net/Cairo/")
     (synopsis "R graphics device using Cairo graphics library")
     (description
      "This package provides a Cairo graphics device that can be use to
@@ -5823,7 +5823,7 @@ Java package that provides routines for various statistical distributions.")
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     (let ((base-directory "/share/emacs/site-lisp/guix.d/ess"))
+     (let ((base-directory "/share/emacs/site-lisp"))
        `(#:make-flags (list (string-append "PREFIX=" %output)
                             (string-append "ETCDIR=" %output "/"
                                            ,base-directory "/etc")

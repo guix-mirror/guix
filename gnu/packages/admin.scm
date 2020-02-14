@@ -25,7 +25,7 @@
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
-;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.lonestar.org>
+;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.org>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
@@ -451,7 +451,7 @@ hostname.")
 (define-public shadow
   (package
     (name "shadow")
-    (version "4.8")
+    (version "4.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -459,7 +459,7 @@ hostname.")
                     "download/" version "/shadow-" version ".tar.xz"))
               (sha256
                (base32
-                "0r5c1p8mfwhw11gb6mjsx1k7d4c32dxai7yss8n5pwy1p61ndd34"))))
+                "0qmfq50sdhz6xilgxvinblll8j2iqfl7hwk45bq744y4plq4dbd3"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Assume System V `setpgrp (void)', which is the default on GNU
@@ -771,14 +771,14 @@ connection alive.")
                                       bind-release-version)))
     (package
       (name "isc-dhcp")
-      (version "4.4.1")
+      (version "4.4.2")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "https://ftp.isc.org/isc/dhcp/"
                                     version "/dhcp-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "025nfqx4zwdgv4b3rkw26ihcj312vir08jk6yi57ndmb4a4m08ia"))))
+                  "08a5003zdxgl41b29zjkxa92h2i40zyjgxg0npvnhpkfl5jcsz0s"))))
       (build-system gnu-build-system)
       (arguments
        `(#:parallel-build? #f
@@ -787,17 +787,6 @@ connection alive.")
          (modify-phases %standard-phases
            (add-after 'unpack 'replace-bundled-bind
              (lambda* (#:key inputs native-inputs #:allow-other-keys)
-               ;; XXX TODO: Remove the following invocation of 'patch' when
-               ;; isc-dhcp is updated.  It should be needed only for 4.4.1.
-               (let ((patch (string-append (assoc-ref (or native-inputs inputs)
-                                                      "patch")
-                                           "/bin/patch"))
-                     (the-patch (assoc-ref (or native-inputs inputs)
-                                           "fixes-for-newer-bind.patch")))
-                 (format #t "applying '~a'...~%" the-patch)
-                 (invoke patch "--force" "--no-backup-if-mismatch"
-                         "-p1" "--input" the-patch))
-
                (delete-file "bind/bind.tar.gz")
                (copy-file (assoc-ref inputs "bind-source-tarball")
                           "bind/bind.tar.gz")
@@ -885,20 +874,14 @@ connection alive.")
 
       (native-inputs
        `(("perl" ,perl)
-         ("file" ,file)
-
-         ;; XXX TODO: Remove the following patch, and also the 'patch'
-         ;; program, when isc-dhcp is updated.
-         ("fixes-for-newer-bind.patch"
-          ,(search-patch "isc-dhcp-4.4.1-fixes-for-newer-bind.patch"))
-         ("patch" ,patch)))
+         ("file" ,file)))
 
       (inputs `(("inetutils" ,inetutils)
                 ("net-tools" ,net-tools)
                 ("iproute" ,iproute)
 
-                ;; XXX isc-dhcp bundles a copy of bind that has security
-                ;; flaws, so we use a newer version.
+                ;; isc-dhcp bundles a copy of BIND, which has proved vulnerable
+                ;; in the past.  Use a BIND-VERSION of our choosing instead.
                 ("bind-source-tarball"
                  ,(origin
                     (method url-fetch)
@@ -1588,7 +1571,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20191213")
+    (version "20200110")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1596,7 +1579,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1106d5b7q8jlgc2z0gz83jdah1yml4fz5z0jjcs7a52pv00c9am8"))))
+                "1hb4g6r7w8s4bhlkk36fmb4qxghnrwvad7f18cpn6zz0b4sjs7za"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
@@ -1622,14 +1605,13 @@ development, not the kernel implementation of ACPI.")
 (define-public s-tui
   (package
     (name "s-tui")
-    (version "0.8.3")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "s-tui" version))
        (sha256
-        (base32
-         "00lsh2v4i8rwfyjyxx5lijd6rnk9smcfffhzg5sv94ijpcnh216m"))))
+        (base32 "0r5yhlsi5xiy7ii1w4kqkaxz9069v5bbfwi3x3xnxhk51yjfgr8n"))))
     (build-system python-build-system)
     (inputs
      `(("python-psutil" ,python-psutil)

@@ -3,23 +3,34 @@ and libm via libdevmapper.a.
 
 --- LVM2.2.02.166/tools/Makefile.in	2016-11-22 21:31:15.521045149 +0100
 +++ LVM2.2.02.166/tools/Makefile.in	2016-11-22 21:31:24.085082767 +0100
-@@ -148,7 +148,7 @@ endif
- 
- lvm.static: $(OBJECTS) lvm-static.o $(top_builddir)/lib/liblvm-internal.a  $(interfacebuilddir)/libdevmapper.a
- 	$(CC) $(CFLAGS) $(LDFLAGS) -static -L$(interfacebuilddir) -o $@ \
--	      $(OBJECTS) lvm-static.o $(LVMLIBS) $(STATIC_LIBS) $(LIBS)
-+	      $(OBJECTS) lvm-static.o $(LVMLIBS) $(STATIC_LIBS) $(LIBS) $(PTHREAD_LIBS) $(M_LIBS)
+@@ -137,7 +137,7 @@
+ lvm.static: $(OBJECTS) lvm-static.o $(LVMINTERNAL_LIBS)
+ 	@echo "    [CC] $@"
+ 	$(Q) $(CC) $(CFLAGS) $(LDFLAGS) -static -L$(interfacebuilddir) -o $@ $+ \
+-	      $(DMEVENT_LIBS) $(STATIC_LIBS) $(LVMLIBS)
++	      $(DMEVENT_LIBS) $(STATIC_LIBS) $(LVMLIBS) $(PTHREAD_LIBS)
  
  liblvm2cmd.a: $(top_builddir)/lib/liblvm-internal.a $(OBJECTS) lvmcmdlib.o lvm2cmd.o
- 	cat $(top_builddir)/lib/liblvm-internal.a > $@
+ 	@echo "    [AR] $@"
 --- a/make.tmpl.in     2018-07-31 22:00:39.969983104 +0200
 +++ b/make.tmpl.in     2018-07-31 22:00:58.467613682 +0200
-@@ -53,7 +53,7 @@
+@@ -63,7 +63,7 @@
  
- LIBS = @LIBS@
+ LIBS += @LIBS@ $(SELINUX_LIBS) $(UDEV_LIBS) $(BLKID_LIBS) $(RT_LIBS) $(M_LIBS)
  # Extra libraries always linked with static binaries
 -STATIC_LIBS = $(SELINUX_LIBS) $(UDEV_LIBS) $(BLKID_LIBS)
 +STATIC_LIBS = $(SELINUX_LIBS) $(UDEV_LIBS) $(BLKID_LIBS) $(M_LIBS)
+ DEFS += @DEFS@
+ # FIXME set this only where it's needed, not globally?
+ CFLAGS ?= @COPTIMISE_FLAG@ @CFLAGS@
+--- a/libdm/make.tmpl.in	2018-12-18 15:22:34.000000000 +0100
++++ b/libdm/make.tmpl.in	2019-01-29 21:45:33.637345799 +0100
+@@ -57,7 +57,7 @@
+ LIBS = @LIBS@
+ LIBS += $(SELINUX_LIBS) $(UDEV_LIBS) $(BLKID_LIBS) $(RT_LIBS) -lm
+ # Extra libraries always linked with static binaries
+-STATIC_LIBS = $(SELINUX_LIBS) $(UDEV_LIBS) $(BLKID_LIBS)
++STATIC_LIBS = $(SELINUX_LIBS) $(UDEV_LIBS) $(BLKID_LIBS) $(PTHREAD_LIBS) $(M_LIBS)
  DEFS += @DEFS@
  # FIXME set this only where it's needed, not globally?
  CFLAGS ?= @COPTIMISE_FLAG@ @CFLAGS@

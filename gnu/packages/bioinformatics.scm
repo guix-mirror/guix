@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2018 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
@@ -4733,7 +4733,17 @@ interrupted by stop codons.  OrfM finds and prints these ORFs.")
                (base32
                 "1kjmv891d6qbpp4shhhvkl02ff4q5xlpnls2513sm2cjcrs52f1i"))))
     (build-system python-build-system)
-    (arguments `(#:python ,python-2)) ; pbcore requires Python 2.7
+    (arguments
+     `(#:python ,python-2               ;pbcore < 2.0 requires Python 2.7
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'remove-sphinx-dependency
+                    (lambda _
+                      ;; Sphinx is only required for documentation tests, which
+                      ;; we do not run; furthermore it depends on python2-sphinx
+                      ;; which is no longer maintained.
+                      (substitute* "requirements-dev.txt"
+                        (("^sphinx") ""))
+                      #t)))))
     (propagated-inputs
      `(("python-cython" ,python2-cython)
        ("python-numpy" ,python2-numpy)
@@ -4741,7 +4751,6 @@ interrupted by stop codons.  OrfM finds and prints these ORFs.")
        ("python-h5py" ,python2-h5py)))
     (native-inputs
      `(("python-nose" ,python2-nose)
-       ("python-sphinx" ,python2-sphinx)
        ("python-pyxb" ,python2-pyxb)))
     (home-page "https://pacificbiosciences.github.io/pbcore/")
     (synopsis "Library for reading and writing PacBio data files")

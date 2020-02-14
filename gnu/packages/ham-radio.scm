@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2019 Evan Straw <evan.straw99@gmail.com>
+;;; Copyright © 2019, 2020 Evan Straw <evan.straw99@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +22,8 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages libusb)
@@ -29,6 +31,7 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages sdr)
   #:use-module (gnu packages xml)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
@@ -127,3 +130,49 @@ satellites, the POES NOAA weather satellite series.  These transmissions are
 on a frequency of 137 MHz.  They can be received using an inexpensive antenna
 and a dedicated receiver.")
     (license license:gpl2+)))
+
+(define-public redsea
+  (package
+    (name "redsea")
+    (version "0.18")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/windytan/redsea")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1y96g0ra2krjb2kypm8s5gdfia45yci4f36klsvyzg8d53v5cwhn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; The configure.ac file does not explicitly link against libiconv
+         ;; except on Mac OS, causing the build to fail. This phase comments
+         ;; out the original AC_SUBST macro (located inside a conditional) and
+         ;; adds an explicit use of it underneath, so that libiconv is always
+         ;; linked against.
+         (add-after 'unpack 'patch-libiconv
+           (lambda _
+             (substitute* "configure.ac"
+               (("^ +AC_SUBST")
+                "# AC_SUBST")
+               (("esac")
+                "esac\nAC_SUBST([ICONV], [\"-liconv\"])"))
+             #t)))))
+    (inputs
+     `(("libiconv" ,libiconv)
+       ("libsndfile" ,libsndfile)
+       ("liquid-dsp" ,liquid-dsp)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (home-page "https://github.com/windytan/redsea")
+    (synopsis "Lightweight RDS to JSON decoder")
+    (description "redsea is a lightweight command-line @dfn{FM Radio Data
+System} (FM-RDS) decoder.  Redsea can be used with any RTL-SDR USB radio stick
+with the rtl_fm tool, or any other @dfn{software-defined radio} (SDR) via
+csdr, for example.  It can also decode raw ASCII bitstream, the hex format
+used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
+    (license license:expat)))

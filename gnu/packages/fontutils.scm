@@ -120,7 +120,7 @@ anti-aliased glyph bitmap generation with 256 gray levels.")
 finely hand-hinting the last 1%.  It is ideal for web fonts and supports many
 scripts.")
     (license (list license:gpl2+ license:freetype)) ;choose one or the other
-    (home-page "http://www.freetype.org/ttfautohint/")))
+    (home-page "https://www.freetype.org/ttfautohint/")))
 
 (define-public woff-tools
   (package
