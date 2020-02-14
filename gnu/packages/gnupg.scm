@@ -79,7 +79,7 @@
 (define-public libgpg-error
   (package
     (name "libgpg-error")
-    (version "1.36")
+    (version "1.37")
     (source
      (origin
       (method url-fetch)
@@ -87,16 +87,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "0z696dmhfxm2n6pmr8b857wwljq9h633yi99bhbn7h88f91rigds"))
-      (patches (search-patches "libgpg-error-gawk-compat.patch"))
-      ;; XXX: Remove this snippet with the gawk patch above.  It avoids having
-      ;; to call autoreconf for the Makefile.am change to take effect.
-      (modules '((guix build utils)))
-      (snippet
-       '(begin
-          (substitute* "src/Makefile.in"
-            (("namespace=errnos") "pkg_namespace=errnos"))
-          #t))))
+        "0qwpx8mbc2l421a22l0l1hpzkip9jng06bbzgxwpkkvk5bvnybdk"))))
     (build-system gnu-build-system)
     (arguments
      (if (%current-target-system)
