@@ -3,7 +3,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
@@ -140,14 +140,14 @@ http://gcide.gnu.org.ua/")
   ;; Not quite a dictionary, not quite a spell checker either…
   (package
     (name "diction")
-    (version "1.11")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/diction/diction-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1xi4l1x1vvzmzmbhpx0ghmfnwwrhabjwizrpyylmy3fzinzz3him"))))
+    (version "1.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.moria.de/~michael/diction/diction-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1z6p5x3l1a00h4v4s33qa82fznzc1jdqdnlc4dnmd9nblnrjy0fs"))))
     (build-system gnu-build-system)
     (synopsis "Identifies wordy and commonly misused phrases")
     (description
