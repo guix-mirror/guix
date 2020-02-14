@@ -1061,10 +1061,7 @@ requirements.")
     (native-inputs
      `(("xorg-server" ,xorg-server-for-tests)))
     (inputs
-     `(;; The test suite fails when using Mesa 19.3.2, so we provide this newer
-       ;; version.  Remove this input when the 'mesa' package is updated.
-       ("mesa" ,mesa-19.3.3)
-       ("glew" ,glew)
+     `(("glew" ,glew)
        ("libxrandr" ,libxrandr)
        ("libxcursor" ,libxcursor)
        ("libxinerama" ,libxinerama)
