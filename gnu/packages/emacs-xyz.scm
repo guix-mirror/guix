@@ -7380,8 +7380,8 @@ sly-quickload command that prompts the user for a package to install. ")
       (license license:gpl3+))))
 
 (define-public emacs-sly-asdf
-  (let ((commit "4e323bc28da2f07fd799b6a31b94fd93848b5f3c")
-        (revision "2"))
+  (let ((commit "ad248056ded3099b0528b6111ba335e835d9e5a7")
+        (revision "3"))
     (package
       (name "emacs-sly-asdf")
       (version (git-version "0.1.0" revision commit))
@@ -7395,10 +7395,11 @@ sly-quickload command that prompts the user for a package to install. ")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "16sc33jhc6ik4ilsyqc3cjpi6v0wdmwjlwrzjwd6yym11bscsmad"))))
+           "0lip0spmglny3y612pxn3rfnpdaj12c9f7ya7bprryg2gvcdippa"))))
       (build-system emacs-build-system)
       (propagated-inputs
-       `(("emacs-sly" ,emacs-sly)))
+       `(("emacs-sly" ,emacs-sly)
+         ("emacs-popup" ,emacs-popup)))
       (arguments
        '(#:include (cons* "\\.lisp$" "\\.asd$" %default-include)))
       (synopsis "ASDF contrib for SLY")
