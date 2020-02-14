@@ -58,6 +58,7 @@
 ;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2020 Robert Smith <robertsmith@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21455,3 +21456,24 @@ Flyspell's on-the-fly spell checking and extends these checks to also detect
 language.  Auto-dictionary then sets @code{ispell-dictionary} to use the
 detected language.")
     (license license:gpl2+)))
+
+(define-public emacs-persist
+  (package
+    (name "emacs-persist")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "persist-" version ".tar"))
+       (sha256
+        (base32 "0gpxy41qawzss2526j9a7lys60vqma1lvamn4bfabwza7gfhac0q"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/persist.html")
+    (synopsis "Persist variables between Emacs sessions")
+    (description
+     "This package provides variables which persist across sessions.
+Values are stored in a directory in @code{user-emacs-directory}, using
+one file per value.  This makes it easy to delete or remove unused
+variables.")
+    (license license:gpl3+)))
