@@ -2149,7 +2149,7 @@ format changes.")
 (define-public xvid
   (package
     (name "xvid")
-    (version "1.3.6")
+    (version "1.3.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2157,21 +2157,19 @@ format changes.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "0zppakvcgq5a42mhqqsbliclpg2jrhbmbfgrzalyfzr47jqmhssy"))))
+                "1xyg3amgg27zf7188kss7y248s0xhh1vv8rrk0j9bcsd5nasxsmf"))))
     (build-system gnu-build-system)
     (native-inputs `(("yasm" ,yasm)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-before
-          'configure 'pre-configure
+         (add-before 'configure 'pre-configure
           (lambda _
             (chdir "build/generic")
             (substitute* "configure"
               (("#! /bin/sh") (string-append "#!" (which "sh"))))
             #t)))
-       ;; No 'check' target.
-       #:tests? #f))
+       #:tests? #f)) ; no test suite
     (home-page "https://www.xvid.com/")
     (synopsis "MPEG-4 Part 2 Advanced Simple Profile video codec")
     (description "Xvid is an MPEG-4 Part 2 Advanced Simple Profile (ASP) video
