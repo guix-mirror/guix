@@ -5195,7 +5195,7 @@ w3c webidl files and a binding configuration file.")
                (copy-file "frontends/gtk/res/netsurf-gtk.desktop"
                           desktop)
                (substitute* desktop
-                 (("netsurf-gtk") (string-append out "/bin/netsurf-gtk"))
+                 (("netsurf-gtk") (string-append out "/bin/netsurf-gtk3"))
                  (("netsurf.png") (string-append out "/share/netsurf/"
                                                  "netsurf.xpm")))
                (install-file "docs/netsurf-gtk.1"
