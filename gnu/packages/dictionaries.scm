@@ -31,6 +31,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
+  #:use-module (guix build-system copy)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
@@ -109,25 +110,10 @@ acronyms distributed as an info document.")
               (sha256
                (base32
                 "1n3bp91sik66z3ca7mjqbr9nck3hg5ck0c8g84xc0qnfpx5vznh2"))))
-    (build-system trivial-build-system)
+    (build-system copy-build-system)
     (arguments
-     '(#:builder (begin
-                   (use-modules (guix build utils))
-                   (let* ((src     (assoc-ref %build-inputs "source"))
-                          (tar     (assoc-ref %build-inputs "tar"))
-                          (xz      (assoc-ref %build-inputs "xz"))
-                          (out     (assoc-ref %outputs "out"))
-                          (datadir (string-append out "/share/gcide")))
-                     (set-path-environment-variable "PATH" '("bin")
-                                                    (list tar xz))
-                     (mkdir-p datadir)
-                     (invoke "tar" "-C" datadir
-                             "--strip-components=1"
-                             "-xvf" src)))
-       #:modules ((guix build utils))))
-    (native-inputs
-     `(("tar" ,tar)
-       ("xz" ,xz)))
+     '(#:install-plan
+       '(("." "share/gcide/" #:exclude ("COPYING")))))
     (synopsis "GNU Collaborative International Dictionary of English")
     (description
      "GCIDE is a free dictionary based on a combination of sources.  It can
