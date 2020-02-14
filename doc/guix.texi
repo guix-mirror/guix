@@ -4964,7 +4964,7 @@ shared and will change to the user's home directory within the container
 instead.  See also @code{--user}.
 
 @item --expose=@var{source}[=@var{target}]
-@item --share=@var{source}[=@var{target}]
+@itemx --share=@var{source}[=@var{target}]
 For containers, @code{--expose} (resp. @code{--share}) exposes the file
 system @var{source} from the host system as the read-only
 (resp. writable) file system @var{target} within the container.  If
