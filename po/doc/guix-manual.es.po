@@ -36569,7 +36569,7 @@ msgstr "body"
 #. type: table
 #: doc/guix.texi:18968
 msgid "Body of the location block, specified as a list of strings. This can contain many configuration directives.  For example, to pass requests to a upstream server group defined using an @code{nginx-upstream-configuration} block, the following directive would be specified in the body @samp{(list \"proxy_pass http://upstream-name;\")}."
-msgstr "Cuerpo del bloque de localización «location», especificado como una lista de cadenas. Puede contener muchas directivas de configuración. Por ejemplo, para pasar las peticiones a un grupo de servidores proveedores definido mediante el uso de un bloque @code{nginx-upstream-configuration}, se especificaría la siguiente directiva en el cuerpo @samp{(list \"proxy_pass http://upstream-name;\")}."
+msgstr "Cuerpo del bloque de localización «location», especificado como una lista de cadenas. Puede contener muchas directivas de configuración. Por ejemplo, para pasar las peticiones a un grupo de servidores proveedores definido mediante el uso de un bloque @code{nginx-upstream-configuration}, se especificaría la siguiente directiva en el cuerpo @samp{"
 
 #. type: deftp
 #: doc/guix.texi:18972
