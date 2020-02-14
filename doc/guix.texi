@@ -6154,6 +6154,70 @@ parameters available to cargo.  It will also remove an included
 if they are defined by the crate.
 @end defvr
 
+
+@defvr {Scheme Variable} copy-build-system
+@cindex (copy build system)
+This variable is exported by @code{(guix build-system copy)}.  It
+supports builds of simple packages that don't require much compiling,
+mostly just moving files around.
+
+It adds much of the @code{gnu-build-system} packages to the set of
+inputs.  Because of this, the @code{copy-build-system} does not require
+all the boilerplate code often needed for the
+@code{trivial-build-system}.
+
+To further simplify the file installation process, an
+@code{#:install-plan} argument is exposed to let the packager specify
+which files go where.
+The install plan is a list of @code{(SOURCE TARGET [FILTERS])}.
+@code{FILTERS} are optional.
+
+@itemize
+@item When @code{SOURCE} matches a file or directory without trailing slash, install it to @code{TARGET}.
+  @itemize
+  @item If @code{TARGET} has a trailing slash, install @code{SOURCE} basename beneath @code{TARGET}.
+  @item Otherwise install @code{SOURCE} as @code{TARGET}.
+  @end itemize
+
+@item When @code{SOURCE} is a directory with a trailing slash, or when @code{FILTERS} are used,
+  the trailing slash of @code{TARGET} is implied with the same meaning
+  as above.
+  @itemize
+  @item Without @code{FILTERS}, install the full @code{SOURCE} @emph{content} to @code{TARGET}.
+  @item With @code{FILTERS} among @code{#:include}, @code{#:include-regexp}, @code{exclude},
+    @code{#:exclude-regexp}, only select files are installed depending on
+    the filters.  Each filters is specified by a list of strings.
+    @itemize
+      @item With @code{#:include}, install all the files which path suffix exactly matches
+        one of the elements in the given list.
+      @item With @code{#:include-regexp}, install all the files which subpaths match the
+        regular expressions in the given list.
+      @item The @code{#:exclude} and @code{#:exclude-regexp} filters
+        are the complement of their inclusion counterpart.  Without @code{#:include} flags,
+        install all files but those matching the exclusion filters.
+        If both inclusions and exclusions are specified, the exclusions are done
+        on top of the inclusions.
+    @end itemize
+  @end itemize
+  In all cases, the paths relative to @code{SOURCE} are preserved within
+  @code{TARGET}.
+@end itemize
+
+Examples:
+
+@itemize
+@item @code{("foo/bar" "share/my-app/")}: Install @code{bar} to @code{share/my-app/bar}.
+@item @code{("foo/bar" "share/my-app/baz")}: Install @code{bar} to @code{share/my-app/baz}.
+@item @code{("foo/" "share/my-app")}: Install the content of @code{foo} inside @code{share/my-app},
+  e.g. install @code{foo/sub/file} to @code{share/my-app/sub/file}.
+@item @code{("foo/" "share/my-app" #:include ("sub/file"))}: Install only @code{foo/sub/file} to
+@code{share/my-app/sub/file}.
+@item @code{("foo/sub" "share/my-app" #:include ("file"))}: Install @code{foo/sub/file} to
+@code{share/my-app/file}.
+@end itemize
+@end defvr
+
+
 @cindex Clojure (programming language)
 @cindex simple Clojure build system
 @defvr {Scheme Variable} clojure-build-system
