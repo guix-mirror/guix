@@ -69,6 +69,7 @@
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2019 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 sirgazil <sirgazil@zoho.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17541,3 +17542,31 @@ extensive support of PNG features.  It can also read and write Netpbm PAM
 files, with a focus on its use as an intermediate format for implementing
 custom PNG processing.")
     (license license:expat)))
+
+(define-public python-fuzzywuzzy
+  (package
+    (name "python-fuzzywuzzy")
+    (version "0.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "fuzzywuzzy" version))
+       (sha256
+        (base32
+         "1s00zn75y2dkxgnbw8kl8dw4p1mc77cv78fwfa4yb0274s96w0a5"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-hypothesis" ,python-hypothesis)
+       ("python-pycodestyle" ,python-pycodestyle)
+       ("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-levenshtein" ,python-levenshtein)))
+    (home-page "https://github.com/seatgeek/fuzzywuzzy")
+    (synopsis "Fuzzy string matching in python")
+    (description "Approximate string matching using
+@emph{Levenshtein Distance} to calculate the differences between
+sequences.")
+    (license license:gpl2)))
+
+(define-public python2-fuzzywuzzy
+  (package-with-python2 python-fuzzywuzzy))
