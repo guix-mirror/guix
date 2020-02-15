@@ -1310,12 +1310,20 @@ bindings for Python, Java, OCaml and more.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://radare.org/")
-    (synopsis "Portable reversing framework")
+    (synopsis "Reverse engineering framework")
     (description
-      "Radare project started as a forensics tool, a scriptable commandline
-hexadecimal editor able to open disk files, but later support for analyzing
-binaries, disassembling code, debugging programs, attaching to remote gdb
-servers, ...")
+     "Radare2 is a complete framework for reverse-engineering, debugging, and
+analyzing binaries.  It is composed of a set of small utilities that can be
+used together or independently from the command line.
+
+Radare2 is built around a scriptable disassembler and hexadecimal editor that
+support a variety of executable formats for different processors and operating
+systems, through multiple back ends for local and remote files and disk
+images.
+
+It can also compare (@dfn{diff}) binaries with graphs and extract information
+like relocation symbols.  It is able to deal with malformed binaries, making
+it suitable for security research and analysis.")
     (license license:lgpl3)))
 
 (define-public asco
