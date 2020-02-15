@@ -2739,6 +2739,21 @@ to the in-kernel OOM killer.")
                 (string-append (assoc-ref inputs "xsltproc")
                                "/bin/xsltproc")))
             #t))
+         (add-after 'install 'move-static-library
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (static (assoc-ref outputs "static"))
+                    (source (string-append out "/lib/libudev.a"))
+                    (target (string-append static "/lib/libudev.a")))
+               (mkdir-p (dirname target))
+               (link source target)
+               (delete-file source)
+               ;; Remove reference to the static library from the .la file
+               ;; such that Libtool looks for it in the usual places.
+               (substitute* (string-append out "/lib/libudev.la")
+                 (("old_library=.*")
+                  "old_library=''\n"))
+               #t)))
          (add-after 'install 'build-hwdb
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Build OUT/etc/udev/hwdb.bin.  This allows 'lsusb' and
@@ -2746,8 +2761,7 @@ to the in-kernel OOM killer.")
              (let ((out (assoc-ref outputs "out")))
                (invoke (string-append out "/bin/udevadm")
                        "hwdb" "--update")))))
-       #:configure-flags (list "--enable-manpages"
-                               "--disable-static")))
+       #:configure-flags (list "--enable-manpages")))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -2768,6 +2782,7 @@ to the in-kernel OOM killer.")
      ;; which contains the rules to do that.
      `(("util-linux" ,util-linux)                 ;for blkid
        ("kmod" ,kmod)))
+    (outputs '("out" "static"))
     (home-page "https://wiki.gentoo.org/wiki/Project:Eudev")
     (synopsis "Userspace device management")
     (description "Udev is a daemon which dynamically creates and removes
@@ -2860,8 +2875,7 @@ mapper.  Kernel components are part of Linux-libre.")
     (name "lvm2-static")
 
     ;; Propagate udev because libdevmapper.a depends on libudev.
-    (inputs (alist-delete "udev" (package-inputs lvm2)))
-    (propagated-inputs `(("udev" ,eudev)))
+    (propagated-inputs `(("udev:static" ,eudev "static")))
 
     (arguments
      (substitute-keyword-arguments (package-arguments lvm2)
