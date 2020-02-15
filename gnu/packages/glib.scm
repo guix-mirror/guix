@@ -805,6 +805,7 @@ up the Gnome environment, and are used in many unrelated projects.")
          "1symyzbjmxvksn2ifdkk50lafjm2llf2sbmky062gq2pz3cg23cy"))
        (patches
         (list
+         (search-patch "telepathy-glib-channel-memory-leak.patch")
          ;; Don't use the same test name for multiple tests.
          ;; <https://bugs.freedesktop.org/show_bug.cgi?id=92245>
          (origin
