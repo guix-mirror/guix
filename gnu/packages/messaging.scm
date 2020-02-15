@@ -48,6 +48,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cpp)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
@@ -68,6 +69,7 @@
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages logging)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages man)
   #:use-module (gnu packages ncurses)
@@ -1786,6 +1788,56 @@ Matrix instant messaging protocol.  Quaternion is the reference client
 implementation.  Quaternion and libqmatrixclient together form the
 QMatrixClient project.")
     (license license:lgpl2.1+)))
+
+(define-public mtxclient
+  (package
+    (name "mtxclient")
+    (version "0.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Nheko-Reborn/mtxclient.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0pycznrvj57ff6gbwfn1xj943d2dr4vadl79hii1z16gn0nzxpmj"))))
+    (arguments
+     `(#:configure-flags
+       (list
+        ;; Disable example binaries (not installed)
+        "-DBUILD_LIB_EXAMPLES=OFF")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'disable-network-tests
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("add_test\\((BasicConnectivity|ClientAPI|MediaAPI|Encryption)")
+                "# add_test"))
+             #t))
+         (add-before 'configure 'set-home
+           (lambda _
+             ;; Tries to create package registry file
+             ;; So, set HOME.
+             (setenv "HOME" "/tmp")
+             #t)))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("boost" ,boost)
+       ("json-modern-cxx" ,json-modern-cxx)
+       ("libolm" ,libolm)
+       ("libsodium" ,libsodium)
+       ("openssl" ,openssl)
+       ("spdlog" ,spdlog)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("googletest" ,googletest)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/Nheko-Reborn/mtxclient")
+    (synopsis "Client API library for the Matrix protocol")
+    (description "@code{mtxclient} is a C++ library that implements client API
+for the Matrix protocol.  It is built on to of @code{Boost.Asio}.")
+    (license license:expat)))
 
 (define-public quaternion
   (package
