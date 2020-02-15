@@ -2327,30 +2327,29 @@ tester module.")
   (sbcl-package->ecl-package sbcl-ptester))
 
 (define-public sbcl-puri
-  (package
-    (name "sbcl-puri")
-    (version "20180228")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://beta.quicklisp.org/archive/puri/"
-                           (date->string (string->date version "~Y~m~d") "~Y-~m-~d")
-                           "/puri-"
-                           version
-                           "-git.tgz"))
-       (sha256
-        (base32
-         "1s4r5adrjy5asry45xbcbklxhdjydvf6n55z897nvyw33bigrnbz"))))
-    (build-system asdf-build-system/sbcl)
-    ;; REVIEW: Webiste down?
-    (native-inputs
-     `(("ptester" ,sbcl-ptester)))
-    (home-page "http://files.kpe.io/puri/")
-    (synopsis "Portable URI Library")
-    (description
-     "This is portable Universal Resource Identifier library for Common Lisp
-programs.  It parses URI according to the RFC 2396 specification")
-    (license license:lgpl3+)))
+  (let ((commit "ef5afb9e5286c8e952d4344f019c1a636a717b97")
+        (revision "1"))
+    (package
+      (name "sbcl-puri")
+      (version (git-version "1.5.7" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "http://git.kpe.io/puri.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1vm25pdl92laj72p5vyd538kf3cjy2655z6bdc99h20ana2p231s"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("ptester" ,sbcl-ptester)))
+      (home-page "http://quickdocs.org/puri/")
+      (synopsis "Portable URI Library")
+      (description
+       "This is a portable Universal Resource Identifier library for Common
+Lisp programs.  It parses URI according to the RFC 2396 specification.")
+      (license license:llgpl))))
 
 (define-public cl-puri
   (sbcl-package->cl-source-package sbcl-puri))
