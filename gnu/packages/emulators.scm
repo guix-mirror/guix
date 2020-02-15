@@ -344,15 +344,18 @@ and a game metadata scraper.")
            (delete 'configure)
            (add-before 'build 'chdir-to-higan
              (lambda _
-               (chdir "higan")))
+               (chdir "higan")
+               #t))
            (add-before 'install 'create-/share/applications
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out")))
                  ;; It seems the author forgot to do this in the Makefile.
-                 (mkdir-p (string-append out "/share/applications")))))
+                 (mkdir-p (string-append out "/share/applications"))
+                 #t)))
            (add-after 'install 'chdir-to-icarus
              (lambda _
-               (chdir "../icarus")))
+               (chdir "../icarus")
+               #t))
            (add-after 'chdir-to-icarus 'build-icarus build-phase)
            (add-after 'build-icarus 'install-icarus install-phase)
            (add-after 'install-icarus 'wrap-higan-executable
@@ -383,7 +386,8 @@ and a game metadata scraper.")
                  (chmod higan #o555)
                  ;; Second, make sure higan will find icarus in PATH.
                  (wrap-program higan
-                   `("PATH" ":" prefix (,bin))))))))
+                   `("PATH" ":" prefix (,bin)))
+                 #t)))))
        #:make-flags
        (list "compiler=g++"
              (string-append "prefix=" (assoc-ref %outputs "out")))
