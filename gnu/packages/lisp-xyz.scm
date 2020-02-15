@@ -2298,27 +2298,27 @@ utilities that make it even easier to manipulate text in Common Lisp.  It has
   (sbcl-package->ecl-package sbcl-cl-string-match))
 
 (define-public sbcl-ptester
-  (package
-    (name "sbcl-ptester")
-    (version "20160929")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://beta.quicklisp.org/archive/ptester/"
-                           (date->string (string->date version "~Y~m~d") "~Y-~m-~d")
-                           "/ptester-"
-                           version
-                           "-git.tgz"))
-       (sha256
-        (base32
-         "04rlq1zljhxc65pm31bah3sq3as24l0sdivz440s79qlnnyh13hz"))))
-    (build-system asdf-build-system/sbcl)
-    (home-page "http://quickdocs.org/ptester/")
-    (synopsis "Portable test harness package")
-    (description
-     "@command{ptester} is a portable testing framework based on Franz's
+  (let ((commit "fe69fde54f4bce00ce577feb918796c293fc7253")
+        (revision "1"))
+    (package
+      (name "sbcl-ptester")
+      (version (git-version "2.1.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "http://git.kpe.io/ptester.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1l0lfl7cdnr2qf4zh38hi4llxg22c49zkm639bdkmvlkzwj3ndwf"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "http://quickdocs.org/ptester/")
+      (synopsis "Portable test harness package")
+      (description
+       "@command{ptester} is a portable testing framework based on Franz's
 tester module.")
-    (license license:lgpl3+)))
+      (license license:llgpl))))
 
 (define-public cl-ptester
   (sbcl-package->cl-source-package sbcl-ptester))
