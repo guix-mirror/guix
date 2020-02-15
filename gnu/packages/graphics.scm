@@ -88,14 +88,14 @@
 (define-public blender
   (package
     (name "blender")
-    (version "2.81a")
+    (version "2.82")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.blender.org/source/"
                                   "blender-" version ".tar.xz"))
               (sha256
                (base32
-                "1zl0ar95qkxsrbqw9miz2hrjijlqjl06vg3clfk9rm7krr2l3b2j"))))
+                "0rgw8nilvn6k6r7p28y2l1rwpami1cc8xz473jaahn7wa4ndyah0"))))
     (build-system cmake-build-system)
     (arguments
       (let ((python-version (version-major+minor (package-version python))))
@@ -127,11 +127,11 @@
          (modify-phases %standard-phases
            ;; XXX This file doesn't exist in the Git sources but will probably
            ;; exist in the eventual 2.80 source tarball.
-;           (add-after 'unpack 'fix-broken-import
-;             (lambda _
-;               (substitute* "release/scripts/addons/io_scene_fbx/json2fbx.py"
-;                 (("import encode_bin") "from . import encode_bin"))
-;               #t))
+           (add-after 'unpack 'fix-broken-import
+             (lambda _
+               (substitute* "release/scripts/addons/io_scene_fbx/json2fbx.py"
+                 (("import encode_bin") "from . import encode_bin"))
+               #t))
            (add-after 'set-paths 'add-ilmbase-include-path
              (lambda* (#:key inputs #:allow-other-keys)
                ;; OpenEXR propagates ilmbase, but its include files do not appear
