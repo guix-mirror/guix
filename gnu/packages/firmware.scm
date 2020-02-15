@@ -6,6 +6,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages assembly)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages cross-base)
@@ -83,8 +85,11 @@
 
     ;; The firmware is cross-compiled using a "bare bones" compiler (no libc.)
     ;; Use our own tool chain for that.
-    (native-inputs `(("cross-gcc" ,(cross-gcc "xtensa-elf"))
-                     ("cross-binutils" ,(cross-binutils "xtensa-elf"))
+    (native-inputs `(("cross-gcc" ,(cross-gcc
+                                    "xtensa-elf"
+                                    #:xbinutils (cross-binutils "xtensa-elf"
+                                                                binutils-2.33)))
+                     ("cross-binutils" ,(cross-binutils "xtensa-elf" binutils-2.33))
                      ("cmake" ,cmake-minimal)
                      ("perl" ,perl)))
     (home-page "http://wireless.kernel.org/en/users/Drivers/ath9k_htc")

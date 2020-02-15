@@ -466,6 +466,25 @@ included.")
       ((#:make-flags _ ''()) ''())))
    (properties '())))
 
+;; FIXME: ath9k-firmware-htc-binutils.patch do not apply on 2.34 because of a
+;; big refactoring of xtensa-modules.c (commit 567607c11fbf7105 upstream).
+;; Keep this version around until the patch is updated.
+(define-public binutils-2.33
+  (package/inherit
+   binutils
+   (version "2.33.1")
+   (source (origin
+             (inherit (package-source binutils))
+             (uri (string-append "mirror://gnu/binutils/binutils-"
+                                 version ".tar.bz2"))
+             (sha256
+              (base32
+               "1cmd0riv37bqy9mwbg6n3523qgr8b3bbm5kwj19sjrasl4yq9d0c"))))
+   (arguments
+    (substitute-keyword-arguments (package-arguments binutils)
+      ((#:make-flags _ ''()) ''())))
+   (properties '())))
+
 (define-public binutils-gold
   (package
     (inherit binutils)

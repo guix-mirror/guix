@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Carl Dong <contact@carldong.me>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -79,8 +79,8 @@
     (source (origin (inherit (package-source original))
               (patches (list patch))))))
 
-(define (cross-binutils target)
-  "Return a cross-Binutils for TARGET."
+(define* (cross-binutils target #:optional (binutils binutils))
+  "Return a cross-Binutils for TARGET using BINUTILS."
   (let ((binutils (package (inherit binutils)
                     (arguments
                      (substitute-keyword-arguments (package-arguments
