@@ -313,13 +313,13 @@ and a game metadata scraper.")
     (version "106")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://gitlab.com/higan/higan/repository/archive.tar.gz?ref=v"
-             version))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/byuu/higan/")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0y42pra0dxzlbkyzcp3r8a39pji2bj3p9fl40425f60af2igr4rw"))
+        (base32 "1mxivf8124vz4hl0b0xa1yqv0z9m3i12v9psmbpqkprrbq0wbgn1"))
        (patches (search-patches "higan-remove-march-native-flag.patch"))))
     (build-system gnu-build-system)
     (native-inputs
