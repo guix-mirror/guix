@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -89,6 +90,7 @@ in the Mozilla clients.")
               (modules '((guix build utils)))
               (snippet
                '(begin
+                  ;; Delete the bundled copy of these libraries.
                   (delete-file-recursively "nss/lib/zlib")
                   (delete-file-recursively "nss/lib/sqlite")
                   #t))))
