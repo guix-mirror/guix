@@ -4952,33 +4952,37 @@ the CFFI approach used by burgled-batteries, but has the same goal.")
   (sbcl-package->ecl-package sbcl-py4cl))
 
 (define-public sbcl-parse-declarations
-  (package
-    (name "sbcl-parse-declarations")
-    (version "1.0.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "http://beta.quicklisp.org/archive/parse-declarations/"
-             "2010-10-06/parse-declarations-20101006-darcs.tgz"))
-       (sha256
-        (base32
-         "0r85b0jfacd28kr65kw9c13dx4i6id1dpmby68zjy63mqbnyawrd"))))
-    (build-system asdf-build-system/sbcl)
-    (arguments
-     `(#:asd-file "parse-declarations-1.0.asd"
-       #:asd-system-name "parse-declarations-1.0"))
-    (home-page "https://common-lisp.net/project/parse-declarations/")
-    (synopsis "Parse, filter, and build declarations")
-    (description
-     "Parse-Declarations is a Common Lisp library to help writing
+  (let ((commit "549aebbfb9403a7fe948654126b9c814f443f4f2")
+        (revision "1"))
+    (package
+      (name "sbcl-parse-declarations")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url (string-append
+                     "https://gitlab.common-lisp.net/parse-declarations/"
+                     "parse-declarations.git"))
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "03g5qks4c59nmxa48pbslxkfh77h8hn8566jddp6m9pl15dzzpxd"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:asd-file "parse-declarations-1.0.asd"
+         #:asd-system-name "parse-declarations-1.0"))
+      (home-page "https://common-lisp.net/project/parse-declarations/")
+      (synopsis "Parse, filter, and build declarations")
+      (description
+       "Parse-Declarations is a Common Lisp library to help writing
 macros which establish bindings.  To be semantically correct, such
 macros must take user declarations into account, as these may affect
 the bindings they establish.  Yet the ANSI standard of Common Lisp does
 not provide any operators to work with declarations in a convenient,
 high-level way.  This library provides such operators.")
-    ;; MIT License
-    (license license:expat)))
+      ;; MIT License
+      (license license:expat))))
 
 (define-public cl-parse-declarations
   (sbcl-package->cl-source-package sbcl-parse-declarations))
