@@ -307,6 +307,14 @@ and a game metadata scraper.")
       (home-page "http://www.emulationstation.org")
       (license license:expat))))
 
+;; Note: higan v107 has been released, but as explained by the dialog that
+;; appears after starting the new version, it's an experimental release. The
+;; author recommends v106 for general use.
+;;
+;; When updating to v107 (or probably beyond), sdl will have to be replaced
+;; with sdl2, and libxrandr will need to be added to inputs. The patch
+;; `higan-remove-march-native-flag.patch' will not be necessary, since the flag
+;; is now being added only for `platform=local', which is not the default.
 (define-public higan
   (package
     (name "higan")
