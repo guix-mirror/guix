@@ -272,41 +272,37 @@ television and DVD.  It is also known as AC-3.")
     (license license:gpl2+)))
 
 (define-public libaom
-  ;; The 1.0.0-errata1 release installs a broken pkg-config .pc file.  This
-  ;; is fixed in libaom commit 0ddc150, but we use an even later commit.
-  (let ((commit "22b150bf040608028a56d8bf39e72f771383d836")
-        (revision "0"))
-    (package
-      (name "libaom")
-      (version (git-version "1.0.0-errata1" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://aomedia.googlesource.com/aom/")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1pdd5h3n42607n6qmggz4yv8izhjr2kl6knb3kh7gh4v0vy47h1r"))))
-      (build-system cmake-build-system)
-      (native-inputs
-       `(("perl" ,perl)
-         ("pkg-config" ,pkg-config)
-         ("python" ,python))) ; to detect the version
-      (arguments
-       `(#:tests? #f  ;no check target
-         #:configure-flags
-           ;; build dynamic library
-         (list "-DBUILD_SHARED_LIBS=YES"
-               "-DENABLE_PIC=TRUE"
-               "-DAOM_TARGET_CPU=generic"
-               (string-append "-DCMAKE_INSTALL_PREFIX="
-                                (assoc-ref %outputs "out")))))
-      (home-page "https://aomedia.googlesource.com/aom/")
-      (synopsis "AV1 video codec")
-      (description "Libaom is the reference implementation of AV1.  It includes
-a shared library and encoder and decoder command-line executables.")
-      (license license:bsd-2))))
+  (package
+    (name "libaom")
+    (version "1.0.0-errata1-avif")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://aomedia.googlesource.com/aom/")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "169yfgh7zigc21h71qclfyr7s4wwp2i9vbr4z6pkabypvass4v7m"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python))) ; to detect the version
+    (arguments
+     `(#:tests? #f  ;no check target
+       #:configure-flags
+         ;; build dynamic library
+       (list "-DBUILD_SHARED_LIBS=YES"
+             "-DENABLE_PIC=TRUE"
+             "-DAOM_TARGET_CPU=generic"
+             (string-append "-DCMAKE_INSTALL_PREFIX="
+                              (assoc-ref %outputs "out")))))
+    (home-page "https://aomedia.googlesource.com/aom/")
+    (synopsis "AV1 video codec")
+    (description "Libaom is the reference implementation of AV1.  It includes a
+shared library and encoder and decoder command-line executables.")
+    (license license:bsd-2)))
 
 (define-public libmpeg2
   (package
