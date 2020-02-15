@@ -274,19 +274,21 @@ older games.")
     (license license:gpl2+)))
 
 (define-public emulation-station
-  (let ((commit "646bede3d9ec0acf0ae378415edac136774a66c5"))
+  ;; No release for a long time, new commits fix build issues
+  (let ((commit "9cc42adff67946175d2b7e25c6ae69cc374e98a0")
+        (revision "1"))
     (package
       (name "emulation-station")
-      (version "2.0.1")
+      (version (git-version "2.0.1" revision commit))
       (source (origin
                 (method git-fetch) ; no tarball available
                 (uri (git-reference
                       (url "https://github.com/Aloshi/EmulationStation.git")
                       (commit commit))) ; no version tag
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0cm0sq2wri2l9cvab1l0g02za59q7klj0h3p028vr96n6njj4w9v"))))
+                  "1cva0ns650v17lfn8in095zci6lc43d23f1x3mlzc41qfqa6mbd1"))))
       (build-system cmake-build-system)
       (arguments
        '(#:tests? #f)) ; no tests
