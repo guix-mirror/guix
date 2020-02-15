@@ -1596,23 +1596,26 @@ Common Lisp.")
   (sbcl-package->ecl-package sbcl-cl-fad))
 
 (define-public sbcl-rt
-  (package
-    (name "sbcl-rt")
-    (version "1990.12.19")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://beta.quicklisp.org/archive/rt/2010-10-06/rt-"
-                           "20101006-git" ".tgz"))
-       (sha256
-        (base32
-         "1jncar0xwkqk8yrc2dln389ivvgzs7ijdhhs3zpfyi5d21f0qa1v"))))
-    (build-system asdf-build-system/sbcl)
-    (synopsis "MIT Regression Tester")
-    (description
-     "RT provides a framework for writing regression test suites.")
-    (home-page "https://github.com/sharplispers/nibbles")
-    (license license:unlicense)))
+  (let ((commit "a6a7503a0b47953bc7579c90f02a6dba1f6e4c5a")
+        (revision "1"))
+    (package
+      (name "sbcl-rt")
+      (version (git-version "1990.12.19" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "http://git.kpe.io/rt.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "13si2rrxaagbr0bkvg6sqicxxpyshabx6ad6byc9n2ik5ysna69b"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "MIT Regression Tester")
+      (description
+       "RT provides a framework for writing regression test suites.")
+      (home-page "https://www.cliki.net/rt")
+      (license license:expat))))
 
 (define-public cl-rt
   (sbcl-package->cl-source-package sbcl-rt))
