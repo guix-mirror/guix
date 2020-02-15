@@ -18,6 +18,7 @@
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019, 2020 Timotej Lazar <timotej.lazar@araneo.si>
+;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -72,6 +73,7 @@
   #:use-module (gnu packages logging)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages man)
+  #:use-module (gnu packages markup)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages pcre)
@@ -1838,6 +1840,80 @@ QMatrixClient project.")
     (description "@code{mtxclient} is a C++ library that implements client API
 for the Matrix protocol.  It is built on to of @code{Boost.Asio}.")
     (license license:expat)))
+
+(define-public nheko
+  (package
+    (name "nheko")
+    (version "0.6.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Nheko-Reborn/nheko.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "19dkc98l1q4070v6mli4ybqn0ip0za607w39hjf0x8rqdxq45iwm"))))
+    (arguments
+     `(#:tests? #f                      ;no test target
+       #:configure-flags
+       (list
+        "-DCMAKE_BUILD_TYPE=Release"
+        "-DCMAKE_CXX_FLAGS=-fpermissive")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-Werror
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("-Werror") ""))
+             #t))
+         (add-after 'unpack 'fix-determinism
+           (lambda _
+             ;; Make Qt deterministic.
+             (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")
+             #t)))))
+    (build-system qt-build-system)
+    (inputs
+     `(("boost" ,boost)
+       ("cmark" ,cmark)
+       ("json-modern-cxx" ,json-modern-cxx)
+       ("libolm" ,libolm)
+       ("lmdb" ,lmdb)
+       ("lmdbxx" ,lmdbxx)
+       ("mtxclient" ,mtxclient)
+       ("openssl" ,openssl)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("qtmultimedia" ,qtmultimedia)
+       ("spdlog" ,spdlog)
+       ("tweeny" ,tweeny)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qtlinguist" ,qttools)))
+    (home-page "https://github.com/Nheko-Reborn/nheko")
+    (synopsis "Desktop client for Matrix using Qt and C++14")
+    (description "@code{Nheko} want to provide a native desktop app for the
+Matrix protocol that feels more like a mainstream chat app and less like an IRC
+client.
+
+There is support for:
+@itemize
+@item E2E encryption (text messages only: attachments are currently sent unencrypted).
+@item User registration.
+@item Creating, joining & leaving rooms.
+@item Sending & receiving invites.
+@item Sending & receiving files and emoji.
+@item Typing notifications.
+@item Username auto-completion.
+@item Message & mention notifications.
+@item Redacting messages.
+@item Read receipts.
+@item Basic communities support.
+@item Room switcher (@key{ctrl-K}).
+@item Light, Dark & System themes.
+@end itemize")
+    (license license:gpl3+)))
 
 (define-public quaternion
   (package
