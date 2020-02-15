@@ -17562,7 +17562,7 @@ custom PNG processing.")
     (propagated-inputs
      `(("python-levenshtein" ,python-levenshtein)))
     (home-page "https://github.com/seatgeek/fuzzywuzzy")
-    (synopsis "Fuzzy string matching in python")
+    (synopsis "Fuzzy string matching in Python")
     (description "Approximate string matching using
 @emph{Levenshtein Distance} to calculate the differences between
 sequences.")
