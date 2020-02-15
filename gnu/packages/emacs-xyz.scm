@@ -8098,14 +8098,14 @@ programming and reproducible research.")
   (package
     (inherit emacs-org)
     (name "emacs-org-contrib")
-    (version "20200206")
+    (version "20200213")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://orgmode.org/elpa/"
                            "org-plus-contrib-" version ".tar"))
        (sha256
-        (base32 "1fdxh8zgjnb500wkcl0bc0fdzbsln6p044b4s4nz85wkfw0jkfs5"))))
+        (base32 "0g6rrrwplrifz4ip0jg638m4kvpvdg03hwnyghd813w0lm935mh5"))))
     (arguments
      `(#:modules ((guix build emacs-build-system)
                   (guix build utils)
