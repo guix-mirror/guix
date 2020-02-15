@@ -5988,6 +5988,8 @@ This package uses fare-quasiquote with named-readtable.")))
                     (lib (string-append out "/lib/" (%lisp-type))))
                (mkdir-p lib)
                (install-file "fare-quasiquote-extras.asd" lib)
+               (make-file-writable
+                (string-append lib "/fare-quasiquote-extras.asd"))
                #t)))
          (add-after 'create-asd-file 'fix-asd-file
            (lambda* (#:key outputs #:allow-other-keys)
