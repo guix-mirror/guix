@@ -8946,7 +8946,8 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
               (patches (search-patches "gspell-dash-test.patch"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     '(#:phases
+     '(#:configure-flags (list "--enable-vala")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'check 'pre-check
            (lambda* (#:key inputs #:allow-other-keys)
@@ -8971,6 +8972,7 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
      `(("glib" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)
+       ("vala" ,vala)                             ;for VAPI, needed by Geary
        ("xmllint" ,libxml2)
 
        ;; For tests.
