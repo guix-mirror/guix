@@ -962,18 +962,15 @@ else @code{parse-number} signals an error of type @code{invalid-number}.")
 (define-public sbcl-iterate
   (package
     (name "sbcl-iterate")
-    ;; The latest official release (1.4.3) fails to build so we have to take
-    ;; the current darcs tarball from quicklisp.
-    (version "20160825")
+    (version "1.5")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://beta.quicklisp.org/archive/iterate/"
-                           "2016-08-25/iterate-"
-                           version "-darcs.tgz"))
+       (uri (string-append "https://common-lisp.net/project/iterate/releases/"
+                           "iterate-" version ".tar.gz"))
        (sha256
         (base32
-         "0kvz16gnxnkdz0fy1x8y5yr28nfm7i2qpvix7mgwccdpjmsb4pgm"))))
+         "1lqsbhrkfl0yif46aymvb7l3nb9wdcmj4jyw485blj32jb4famzn"))))
     (build-system asdf-build-system/sbcl)
     (native-inputs
      `(("rt" ,sbcl-rt)))
