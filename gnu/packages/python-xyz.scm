@@ -6732,14 +6732,14 @@ Python.")
 (define-public python-markdown
   (package
     (name "python-markdown")
-    (version "3.2")
+    (version "3.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Markdown" version))
        (sha256
         (base32
-         "1gwqrhrp0n9xllgmjc8n1p260968kr0dd2jncjkj4r617q61imss"))))
+         "00k91gwhxnm8jdnm2v5xjz9irj6dbi7afywz2hpakqdbxs1ydzlh"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)
