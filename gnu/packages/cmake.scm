@@ -60,26 +60,6 @@
         (substitute* "Auxiliary/CMakeLists.txt"
           ((".*cmake-mode.el.*") ""))
         #t))
-    (add-after 'unpack 'use-system-libarchive
-      ;; 'Source/cm_get_date.c' includes archive_getdate.c wholesale,
-      ;; so it needs to be available along with the header file.
-      (lambda* (#:key native-inputs inputs #:allow-other-keys)
-        (let ((libarchive-source (assoc-ref (or native-inputs inputs)
-                                            "libarchive:source"))
-              ;; XXX: We can not use ,(package-version libarchive) here due to
-              ;; a cyclic module reference at the top-level.
-              (libarchive-version "3.4.1")
-              (files-to-unpack '("libarchive/archive_getdate.c"
-                                 "libarchive/archive_getdate.h")))
-          (mkdir-p "Utilities/cmlibarchive")
-          (apply invoke "tar" "-xvf" libarchive-source
-                 "--strip-components=1"
-                 "-C" "Utilities/cmlibarchive"
-                 (map (lambda (file)
-                        (string-append "libarchive-" libarchive-version
-                                       "/" file))
-                      files-to-unpack))
-          #t)))
     (add-before 'configure 'patch-bin-sh
       (lambda _
         ;; Replace "/bin/sh" by the right path in... a lot of
@@ -105,6 +85,12 @@
     ;; This test requires 'ldconfig' which is not available in Guix.
     "RunCMake.install"))
 
+(define %preserved-third-party-files
+  '(;; 'Source/cm_getdate.c' includes archive_getdate.c wholesale, so it must
+    ;; be available along with the required headers.
+    "Utilities/cmlibarchive/libarchive/archive_getdate.c"
+    "Utilities/cmlibarchive/libarchive/archive_getdate.h"))
+
 ;;; The "bootstrap" CMake.  It is used to build 'cmake-minimal' below, as well
 ;;; as any dependencies that need cmake-build-system.
 (define-public cmake-bootstrap
@@ -122,26 +108,44 @@
               (modules '((guix build utils)
                          (ice-9 ftw)))
               (snippet
-               '(begin
-                  (with-directory-excursion "Utilities"
-                    ;; CMake bundles its dependencies below "Utilities" with a
-                    ;; "cm" prefix in the directory name.  Delete those to ensure
-                    ;; the system libraries are used.
-                    (for-each delete-file-recursively
-                              (scandir
-                               "."
-                               (lambda (file)
-                                 (and (string-prefix? "cm" file)
-                                      (eq? 'directory (stat:type (stat file)))
+               `(begin
+                  ;; CMake bundles its dependencies in the "Utilities" directory.
+                  ;; Delete those to ensure the system libraries are used.
+                  (define preserved-files
+                    '(,@%preserved-third-party-files
+                      ;; Use the bundled JsonCpp during bootstrap to work around
+                      ;; a circular dependency.  TODO: JsonCpp can be built with
+                      ;; Meson instead of CMake, but meson-build-system currently
+                      ;; does not support cross-compilation.
+                      "Utilities/cmjsoncpp"
+                      ;; LibUV is required to bootstrap the initial build system.
+                      "Utilities/cmlibuv"))
 
-                                      ;; These inputs are required to bootstrap
-                                      ;; the initial build system.  They are
-                                      ;; deleted in 'cmake-minimal' below.
-                                      ;; TODO: Consider building jsoncpp with
-                                      ;; Meson instead, once meson-build-system
-                                      ;; learns cross-compilation.
-                                      (not (string=? "cmjsoncpp" file))
-                                      (not (string=? "cmlibuv" file)))))))
+                  (file-system-fold (lambda (dir stat result)         ;enter?
+                                      (or (string=? "Utilities" dir)  ;init
+                                          ;; The bundled dependencies are
+                                          ;; distinguished by having a "cm"
+                                          ;; prefix to their upstream names.
+                                          (and (string-prefix? "Utilities/cm" dir)
+                                               (not (member dir preserved-files)))))
+                                    (lambda (file stat result)        ;leaf
+                                      (unless (or (member file preserved-files)
+                                                  ;; Preserve top-level files.
+                                                  (string=? "Utilities"
+                                                            (dirname file)))
+                                        (delete-file file)))
+                                    (const #t)                        ;down
+                                    (lambda (dir stat result)         ;up
+                                      (when (equal? (scandir dir) '("." ".."))
+                                        (rmdir dir)))
+                                    (const #t)                        ;skip
+                                    (lambda (file stat errno result)
+                                      (format (current-error-port)
+                                              "warning: failed to delete ~a: ~a~%"
+                                              file (strerror errno)))
+                                    #t
+                                    "Utilities"
+                                    lstat)
                   #t))
               (patches (search-patches "cmake-curl-certificates.patch"))))
     (build-system gnu-build-system)
@@ -196,8 +200,6 @@
          (replace 'configure
            (lambda* (#:key (configure-flags '()) #:allow-other-keys)
              (apply invoke "./configure" configure-flags))))))
-    (native-inputs
-     `(("libarchive:source" ,(package-source libarchive))))
     (inputs
      `(("bzip2" ,bzip2)
        ("curl" ,curl-minimal)
@@ -245,12 +247,10 @@ and workspaces that can be used in the compiler environment of your choice.")
               (inherit (package-source cmake-bootstrap))
               (snippet
                (match (origin-snippet (package-source cmake-bootstrap))
-                 ((begin exp ...)
+                 ((_ _ exp ...)
                   ;; Now we can delete the remaining software bundles.
-                  (append '(begin
-                             (for-each delete-file-recursively
-                                       '("Utilities/cmjsoncpp"
-                                         "Utilities/cmlibuv")))
+                  (append `(begin
+                             (define preserved-files ',%preserved-third-party-files))
                           exp))))))
     (inputs
      `(("curl" ,curl)
