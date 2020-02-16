@@ -1095,16 +1095,21 @@ for efficient socket-like bidirectional reliable communication channels.")
     (description "WABT (pronounced: wabbit) is a suite of tools for
 WebAssembly, including:
 
-* wat2wasm: translate from WebAssembly text format to the WebAssembly binary
-  format
-* wasm2wat: the inverse of wat2wasm, translate from the binary format back
-  to the text format (also known as a .wat)
-* wasm-objdump: print information about a wasm binary.  Similar to objdump.
-* wasm-interp: decode and run a WebAssembly binary file using a stack-based
-  interpreter
-* wat-desugar: parse .wat text form as supported by the spec interpreter
-  (s-expressions, flat syntax, or mixed) and print canonical flat format
-* wasm2c: convert a WebAssembly binary file to a C source and header
+@enumerate
+@item @command{wat2wasm} translates from WebAssembly text format to the
+WebAssembly binary format
+@item @command{wasm2wat} is the inverse; it translates from the binary format
+back to the text format (also known as a .wat)
+@item @command{wasm-objdump} prints information about a wasm binary, similarly
+to @command{objdump}.
+@item @command{wasm-interp} decodes ands run a WebAssembly binary file using a
+stack-based interpreter
+@item @command{wat-desugar} parses .wat text form as supported by the spec
+interpreter (s-expressions, flat syntax, or mixed) and prints the canonical
+flat format
+@item @command{wasm2c} converts a WebAssembly binary file to a C source and
+header file.
+@end enumerate
 
 These tools are intended for use in (or for development of) toolchains or
 other systems that want to manipulate WebAssembly files.")
