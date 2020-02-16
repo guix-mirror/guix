@@ -329,14 +329,24 @@ server and embedded PowerPC, and S390 guests.")
        (list (string-append "-Dwith-usb-ids-path="
                             (assoc-ref %build-inputs "usb.ids"))
              (string-append "-Dwith-pci-ids-path="
-                            (assoc-ref %build-inputs "pci.ids")))))
+                            (assoc-ref %build-inputs "pci.ids")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-osinfo-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "osinfo/osinfo_loader.c"
+               (("path = DATA_DIR.*")
+                (string-append "path = \"" (assoc-ref inputs "osinfo-db")
+                               "/share/osinfo\";")))
+             #t)))))
     (inputs
      `(("libsoup" ,libsoup)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
-       ("gobject-introspection" ,gobject-introspection)))
+       ("osinfo-db" ,osinfo-db)))
     (native-inputs
      `(("glib" ,glib "bin")  ; glib-mkenums, etc.
+       ("gobject-introspection" ,gobject-introspection)
        ("gtk-doc" ,gtk-doc)
        ("vala" ,vala)
        ("intltool" ,intltool)
