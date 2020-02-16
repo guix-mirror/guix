@@ -972,6 +972,23 @@ libraries for KiCad 5.")
     (synopsis "Official KiCad footprint libraries")
     (description "This package contains the official KiCad footprint libraries.")))
 
+(define-public kicad-packages3d
+  (package
+    (inherit kicad-symbols)
+    (name "kicad-packages3d")
+    (version "5.1.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/KiCad/kicad-packages3d.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0cff2ms1bsw530kqb1fr1m2pjixyxzwa81mxgac3qpbcf8fnpvaz"))))
+    (synopsis "Official KiCad 3D model libraries")
+    (description "This package contains the official KiCad 3D model libraries.")))
+
 (define-public linsmith
   (package
     (name "linsmith")
