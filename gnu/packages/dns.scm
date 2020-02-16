@@ -278,22 +278,18 @@ the two.")
 (define-public libasr
   (package
     (name "libasr")
-    (version "1.0.3")
+    (version "1.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.opensmtpd.org/archives/"
                            "libasr-" version ".tar.gz"))
        (sha256
-        (base32 "13fn4sr4vlcx1xijpl26nmnxawyls4lr5q3mi11jdm76f80qxn4w"))))
+        (base32 "1d6s8njqhvayx2gp47409sp1fn8m608ws26hr1srfp6i23nnpyqr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (replace 'bootstrap
-           ;; ‘GNU build system bootstrapping not needed’, the default lies.
-           (lambda _
-             (invoke "sh" "./bootstrap")))
          (add-after 'install 'install-documentation
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
