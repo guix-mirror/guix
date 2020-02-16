@@ -809,7 +809,7 @@ LuaJIT, both a resolver library and a daemon.")
            (for-each (cut install-file <> (string-append out
                                                          "/share/ddclient"))
                      (find-files "." "sample.*$"))))))
-    (home-page "https://sourceforge.net/projects/ddclient/")
+    (home-page "https://ddclient.net/")
     (synopsis "Address updating utility for dynamic DNS services")
     (description "This package provides a client to update dynamic IP
 addresses with several dynamic DNS service providers, such as
