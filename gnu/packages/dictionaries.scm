@@ -312,7 +312,7 @@ translation engines from your terminal.")
 (define-public lttoolbox
   (package
     (name "lttoolbox")
-    (version "3.5.0")
+    (version "3.5.1")
     (source
      (origin
        (method url-fetch)
@@ -320,14 +320,24 @@ translation engines from your terminal.")
              "https://github.com/apertium/lttoolbox/releases/download/v"
              version "/lttoolbox-" version ".tar.gz"))
        (sha256
-        (base32
-         "08y6pf1hl7prwygy1g8h6ndqww18pmb9f3r5988q0pcrp8w6xz6b"))
+        (base32 "14yyrkzyqlsrii3v3ggg4dyvwlrcqcqc0aprphz5781a44jsrcwz"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'bootstrap
+           ;; The included ./autogen.sh unconditionally runs ./configure before
+           ;; its shebangs have been patched.
+           (lambda _
+             (invoke "autoreconf" "-vfi"))))))
     (inputs
      `(("libxml2" ,libxml2)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
     (home-page "http://wiki.apertium.org/wiki/Lttoolbox")
     (synopsis "Lexical processing toolbox")
     (description "Lttoolbox is a toolbox for lexical processing, morphological
