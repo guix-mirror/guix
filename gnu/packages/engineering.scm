@@ -882,9 +882,9 @@ electrical diagrams), gerbview (viewing Gerber files) and others.")
     (arguments
      `(#:tests? #f))                    ; no tests exist
     (home-page "https://kicad-pcb.org/")
-    (synopsis "Official KiCad schematic symbol libraries for KiCad 5")
+    (synopsis "Official KiCad schematic symbol libraries")
     (description "This package contains the official KiCad schematic symbol
-libraries for KiCad 5.")
+libraries.")
     ;; TODO: Exception: "To the extent that the creation of electronic designs
     ;; that use 'Licensed Material' can be considered to be 'Adapted Material',
     ;; then the copyright holder waives article 3 of the license with respect to
