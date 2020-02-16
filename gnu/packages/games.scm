@@ -8146,23 +8146,15 @@ win.")
 (define-public freeorion
   (package
     (name "freeorion")
-    (version "0.4.8")
+    (version "0.4.9")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/freeorion/freeorion.git")
-             ;; Most recent stable release uses boost_signals (v1) which was
-             ;; later replaced with boost-signals2 and no longer exists.  This
-             ;; commit builds and runs.
-             ;;
-             ;; TODO: Update this when the next stable release when it is
-             ;; available.
-             (commit "470d0711537804df3c2ca25532f674ab4bec58af")))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (string-append "https://github.com/freeorion/freeorion/releases/"
+                           "download/v" version "/FreeOrion_v" version
+                           "_2020-02-02.db53471_Source.tar.gz"))
        (sha256
-        (base32
-         "1wsw632l1cj17px6i88nqjzs0dngp5rsr67n6qkkjlfjfxi69j0f"))
+        (base32 "1qfnqkysagh8dw26plk229qh17mv4prjxs6qhfyczrmrrakb72an"))
        (modules '((guix build utils)))
        (snippet
         '(begin
