@@ -93,6 +93,7 @@
   #:use-module (guix build-system go)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -1418,4 +1419,40 @@ which is a hypervisor.")
     (synopsis "Tools for managing the osinfo database")
     (description "This package contains a set of tools to assist
 administrators and developers in managing the database.")
+    (license license:lgpl2.0+)))
+
+(define-public osinfo-db
+  (package
+    (name "osinfo-db")
+    (version "20200203")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://releases.pagure.org/libosinfo/osinfo-db-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1zjq1dhlci00j17dij7s3l30hybzmaykpk5b6bd5xbllp745njn5"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((out (assoc-ref %outputs "out"))
+                (osinfo-dir (string-append out "/share/osinfo"))
+                (source (assoc-ref %build-inputs "source"))
+                (osinfo-db-import
+                 (string-append (assoc-ref %build-inputs "osinfo-db-tools")
+                                "/bin/osinfo-db-import")))
+           (mkdir-p osinfo-dir)
+           (invoke osinfo-db-import "--dir" osinfo-dir source)
+           #t))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("osinfo-db-tools" ,osinfo-db-tools)))
+    (home-page "https://gitlab.com/libosinfo/osinfo-db")
+    (synopsis "Database of information about operating systems")
+    (description "Osinfo-db provides the database files for use with the
+libosinfo library.  It provides information about guest operating systems for
+use with virtualization provisioning tools")
     (license license:lgpl2.0+)))
