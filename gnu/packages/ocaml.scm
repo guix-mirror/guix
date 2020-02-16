@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016-2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Peter Kreye <kreyepr@gmail.com>
 ;;; Copyright © 2018, 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
@@ -528,7 +528,7 @@ Git-friendly development workflow.")
 (define-public camlp5
   (package
     (name "camlp5")
-    (version "7.10")
+    (version "7.11")
     (source
      (origin
        (method git-fetch)
@@ -537,7 +537,7 @@ Git-friendly development workflow.")
              (commit (string-append "rel" (string-delete #\. version)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1a1lgsc8350afdwmsznsys7m0c0cks4nw6irqz2f92g8g4vkk9b7"))))
+        (base32 "1s1f9i0r0czxlbnsaz4kvs2ahknmqxcm5ypl75g7scjcbl0an2x4"))))
     (build-system gnu-build-system)
     (inputs
      `(("ocaml" ,ocaml)))
