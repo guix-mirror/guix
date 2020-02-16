@@ -461,8 +461,8 @@ manage system or application containers.")
          (add-before 'configure 'disable-broken-tests
            (lambda _
              (let ((tests (list "commandtest"      ; hangs idly
-				"qemuxml2argvtest" ; fails
-				"qemuhotplugtest"  ; fails
+                                "qemuxml2argvtest" ; fails
+                                "qemuhotplugtest"  ; fails
                                 "virnetsockettest" ; tries to network
                                 "virshtest")))     ; fails
                (substitute* "tests/Makefile.in"
@@ -629,8 +629,8 @@ virtualization library.")
          (add-after 'unpack 'fix-qemu-img-reference
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "virtconv/formats.py"
-	       (("/usr(/bin/qemu-img)" _ suffix)
-		(string-append (assoc-ref inputs "qemu") suffix)))
+               (("/usr(/bin/qemu-img)" _ suffix)
+                (string-append (assoc-ref inputs "qemu") suffix)))
              #t))
          (add-after 'unpack 'fix-default-uri
            (lambda* (#:key inputs #:allow-other-keys)
