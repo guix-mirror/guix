@@ -989,6 +989,24 @@ libraries for KiCad 5.")
     (synopsis "Official KiCad 3D model libraries")
     (description "This package contains the official KiCad 3D model libraries.")))
 
+(define-public kicad-templates
+  (package
+    (inherit kicad-symbols)
+    (name "kicad-templates")
+    (version "5.1.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/KiCad/kicad-templates.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0cs3bm3zb5ngw5ldn0lzw5bvqm4kvcidyrn76438alffwiz2b15g"))))
+    (synopsis "Official KiCad project and worksheet templates")
+    (description "This package contains the official KiCad project and
+worksheet templates.")))
+
 (define-public linsmith
   (package
     (name "linsmith")
