@@ -14,6 +14,7 @@
 ;;; Copyright © 2019 Jovany Leandro G.C <bit4bit@riseup.net>
 ;;; Copyright © 2019 Steve Sprang <scs@stevesprang.com>
 ;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -953,6 +954,23 @@ libraries for KiCad 5.")
     ;; the 'Licensed Material'."
     ;; See <https://github.com/KiCad/kicad-symbols/blob/master/LICENSE.md>.
     (license license:cc-by-sa4.0)))
+
+(define-public kicad-footprints
+  (package
+    (inherit kicad-symbols)
+    (name "kicad-footprints")
+    (version "5.1.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/KiCad/kicad-footprints.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1c4whgn14qhz4yqkl46w13p6rpv1k0hsc9s9h9368fxfcz9knb2j"))))
+    (synopsis "Official KiCad footprint libraries")
+    (description "This package contains the official KiCad footprint libraries.")))
 
 (define-public linsmith
   (package
