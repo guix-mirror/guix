@@ -6,6 +6,7 @@
 ;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2020 shtwzrd <shtwzrd@protonmail.com>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -103,6 +104,8 @@
             gdm-configuration
             gdm-service-type
             gdm-service
+
+            handle-xorg-configuration
             set-xorg-configuration))
 
 ;;; Commentary:
@@ -459,6 +462,25 @@ desktop session from the system or user profile will be used."
 
   (program-file "xinitrc" builder))
 
+(define-syntax handle-xorg-configuration
+  (syntax-rules ()
+    "Generate the `compose' and `extend' entries of a login manager
+`service-type' to handle specifying the `xorg-configuration' through
+a `service-extension', as used by `set-xorg-configuration'."
+    ((_ configuration-record service-type-definition)
+     (service-type
+       (inherit service-type-definition)
+       (compose (lambda (extensions)
+                  (match extensions
+                    (() #f)
+                    ((config . _) config))))
+       (extend (lambda (config xorg-configuration)
+                 (if xorg-configuration
+                     (configuration-record
+                      (inherit config)
+                      (xorg-configuration xorg-configuration))
+                     config)))))))
+
 
 ;;;
 ;;; SLiM log-in manager.
@@ -584,18 +606,20 @@ reboot_cmd " shepherd "/sbin/reboot\n"
            (respawn? #t)))))
 
 (define slim-service-type
-  (service-type (name 'slim)
-                (extensions
-                 (list (service-extension shepherd-root-service-type
-                                          slim-shepherd-service)
-                       (service-extension pam-root-service-type
-                                          slim-pam-service)
+  (handle-xorg-configuration slim-configuration
+    (service-type (name 'slim)
+                  (extensions
+                   (list (service-extension shepherd-root-service-type
+                                            slim-shepherd-service)
+                         (service-extension pam-root-service-type
+                                            slim-pam-service)
 
-                       ;; Unconditionally add xterm to the system profile, to
-                       ;; avoid bad surprises.
-                       (service-extension profile-service-type
-                                          (const (list xterm)))))
-                (default-value (slim-configuration))))
+                         ;; Unconditionally add xterm to the system profile, to
+                         ;; avoid bad surprises.
+                         (service-extension profile-service-type
+                                            (const (list xterm)))))
+
+                  (default-value (slim-configuration)))))
 
 (define-deprecated (slim-service #:key (slim slim)
                                  (allow-empty-passwords? #t) auto-login?
@@ -946,44 +970,30 @@ the GNOME desktop environment.")
          (respawn? #t))))
 
 (define gdm-service-type
-  (service-type (name 'gdm)
-                (extensions
-                 (list (service-extension shepherd-root-service-type
-                                          gdm-shepherd-service)
-                       (service-extension activation-service-type
-                                          (const %gdm-activation))
-                       (service-extension account-service-type
-                                          (const %gdm-accounts))
-                       (service-extension pam-root-service-type
-                                          gdm-pam-service)
-                       (service-extension profile-service-type
-                                          gdm-configuration-gnome-shell-assets)
-                       (service-extension dbus-root-service-type
-                                          (compose list
-                                                   gdm-configuration-gdm))
-                       (service-extension localed-service-type
-                                          (compose
-                                           xorg-configuration-keyboard-layout
-                                           gdm-configuration-xorg))))
-
-                ;; For convenience, this service can be extended with an
-                ;; <xorg-configuration> record.  Take the first one that
-                ;; comes.
-                (compose (lambda (extensions)
-                           (match extensions
-                             (() #f)
-                             ((config . _) config))))
-                (extend (lambda (config xorg-configuration)
-                          (if xorg-configuration
-                              (gdm-configuration
-                               (inherit config)
-                               (xorg-configuration xorg-configuration))
-                              config)))
-
-                (default-value (gdm-configuration))
-                (description
-                 "Run the GNOME Desktop Manager (GDM), a program that allows
-you to log in in a graphical session, whether or not you use GNOME.")))
+  (handle-xorg-configuration gdm-configuration
+    (service-type (name 'gdm)
+                  (extensions
+                   (list (service-extension shepherd-root-service-type
+                                            gdm-shepherd-service)
+                         (service-extension activation-service-type
+                                            (const %gdm-activation))
+                         (service-extension account-service-type
+                                            (const %gdm-accounts))
+                         (service-extension pam-root-service-type
+                                            gdm-pam-service)
+                         (service-extension profile-service-type
+                                            gdm-configuration-gnome-shell-assets)
+                         (service-extension dbus-root-service-type
+                                            (compose list
+                                                     gdm-configuration-gdm))
+                         (service-extension localed-service-type
+                                            (compose
+                                             xorg-configuration-keyboard-layout
+                                             gdm-configuration-xorg))))
+                  (default-value (gdm-configuration))
+                  (description
+                   "Run the GNOME Desktop Manager (GDM), a program that allows
+you to log in in a graphical session, whether or not you use GNOME."))))
 
 (define-deprecated (gdm-service #:key (gdm gdm)
                                 (allow-empty-passwords? #t)
