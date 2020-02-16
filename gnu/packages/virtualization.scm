@@ -12,6 +12,7 @@
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +35,7 @@
   #:use-module (gnu packages assembly)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
@@ -1383,3 +1385,37 @@ which is a hypervisor.")
     ;; TODO: Some files are licensed differently.  List those.
     (license license:gpl2)
     (supported-systems '("i686-linux" "x86_64-linux" "armhf-linux"))))
+
+(define-public osinfo-db-tools
+  (package
+    (name "osinfo-db-tools")
+    (version "1.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://releases.pagure.org/libosinfo/osinfo-db-tools-"
+                                  version ".tar.xz"))
+
+              (sha256
+               (base32
+                "08x8mrafphyll0d35xdc143rip3ahrz6bmzhc85nwhq7yk2vxpab"))))
+    (build-system meson-build-system)
+    (inputs
+     `(("libsoup" ,libsoup)
+       ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)
+       ("json-glib" ,json-glib)
+       ("libarchive" ,libarchive)))
+    (native-inputs
+     `(("perl" ,perl)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)
+       ;; Tests
+       ("python" ,python)
+       ("pytest" ,python-pytest)
+       ("requests" ,python-requests)))
+    (home-page "https://gitlab.com/libosinfo/osinfo-db-tools")
+    (synopsis "Tools for managing the osinfo database")
+    (description "This package contains a set of tools to assist
+administrators and developers in managing the database.")
+    (license license:lgpl2.0+)))
