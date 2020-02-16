@@ -17,6 +17,7 @@
 ;;; Copyright © 2019 Reza Alizadeh Majd <r.majd@pantherx.org>
 ;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Rene Saavedra <pacoon@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -934,6 +935,11 @@ message bus.")
          "--enable-elogind")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-/bin/cat
+           (lambda _
+             (substitute* "src/user.c"
+               (("/bin/cat") (which "cat")))
+             #t))
          (add-before
           'configure 'pre-configure
           (lambda* (#:key inputs #:allow-other-keys)
