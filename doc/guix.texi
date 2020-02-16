@@ -14458,7 +14458,7 @@ Command to run when halting.
 Command to run when rebooting.
 
 @item @code{theme} (default "maldives")
-Theme to use. Default themes provided by SDDM are "elarun" or "maldives".
+Theme to use. Default themes provided by SDDM are "elarun", "maldives" or "maya".
 
 @item @code{themes-directory} (default "/run/current-system/profile/share/sddm/themes")
 Directory to look for themes.
@@ -14533,7 +14533,7 @@ Relogin after logout.
 @cindex X11 login
 @defvr {Scheme Variable} sddm-service-type
 This is the type of the service to run the
-@uref{https://github.com/sddm/sddm,SSDM display manager}.  Its value
+@uref{https://github.com/sddm/sddm,SDDM display manager}.  Its value
 must be a @code{sddm-configuration} record (see below).
 
 Here's an example use:
