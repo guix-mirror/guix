@@ -11,6 +11,7 @@
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -671,7 +672,6 @@ virtualization library.")
        ("libvirt-glib" ,libvirt-glib)
        ("libosinfo" ,libosinfo)
        ("vte" ,vte)
-       ("gobject-introspection" ,gobject-introspection)
        ("python-libvirt" ,python-libvirt)
        ("python-requests" ,python-requests)
        ("python-ipaddress" ,python-ipaddress)
@@ -684,6 +684,7 @@ virtualization library.")
      `(("qemu" ,qemu)))
     (native-inputs
      `(("glib" ,glib "bin")             ; glib-compile-schemas
+       ("gobject-introspection" ,gobject-introspection)
        ("gtk+" ,gtk+ "bin")             ; gtk-update-icon-cache
        ("perl" ,perl)                   ; pod2man
        ("intltool" ,intltool)))
