@@ -2802,14 +2802,7 @@ buffers.")
         (base32 "1gpdjs5aj6vsnzwcjvw5bb120lgffvvshi4202phr0bzw3b92ky8"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f              ; many of the tests try to load kernel modules
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'bootstrap
-           (lambda _
-             ;; Don't run configure in this phase.
-             (setenv "NOCONFIGURE" "1")
-             (invoke "sh" "autogen.sh"))))))
+     `(#:tests? #f))            ; many of the tests try to load kernel modules
     (inputs
      `(("cairo" ,cairo)
        ("elfutils" ,elfutils)           ; libdw

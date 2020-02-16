@@ -2980,13 +2980,7 @@ X server.")
                                     (string-prefix? "x86_64-" system)))
                %supported-systems))
       (arguments
-       '(#:configure-flags '("--with-default-accel=uxa")
-         #:phases (modify-phases %standard-phases
-                    (add-before 'bootstrap 'pre-bootstrap
-                      (lambda _
-                        ;; Inhibit autogen.sh from running configure.
-                        (setenv "NOCONFIGURE" "1")
-                        #t)))))
+       '(#:configure-flags '("--with-default-accel=uxa")))
       (home-page "https://www.x.org/wiki/")
       (synopsis "Intel video driver for X server")
       (description
@@ -6079,12 +6073,6 @@ Conventions Manual) and some of the @dfn{EWMH}
         (base32 "11i7vyk3pynw8q8aczpy56qncm84y0cmhlvyja3sj8dgy60g03q2"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'autogen
-                              (lambda _
-                                (setenv "NOCONFIGURE" "t")
-                                (invoke "sh" "autogen.sh"))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("autoconf" ,autoconf)

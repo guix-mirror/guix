@@ -1217,15 +1217,6 @@ objects.")
        ("libtool" ,libtool)))
     (propagated-inputs
      `(("gmp" ,gmp))) ; gmp++.h includes gmpxx.h
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'bootstrap 'setenv
-           ;; Prevent the autogen.sh script to carry out the configure
-           ;; script, which has not yet been patched to replace /bin/sh.
-           (lambda _
-             (setenv "NOCONFIGURE" "yes")
-             #t)))))
     (synopsis "Algebraic computations with exact rings and fields")
     (description
      "Givaro is a C++ library implementing the basic arithmetic of various
@@ -1264,15 +1255,7 @@ compound objects, such as vectors, matrices and univariate polynomials.")
      `(#:configure-flags
        (list (string-append "--with-blas-libs="
                             (assoc-ref %build-inputs "openblas")
-                            "/lib/libopenblas.so"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'bootstrap 'setenv
-           ;; Prevent the autogen.sh script to carry out the configure
-           ;; script, which has not yet been patched to replace /bin/sh.
-           (lambda _
-             (setenv "NOCONFIGURE" "yes")
-             #t)))))
+                            "/lib/libopenblas.so"))))
     (synopsis "C++ library for linear algebra over finite fields")
     (description
      "FFLAS-FFPACK is a C++ template library for basic linear algebra
@@ -1308,15 +1291,6 @@ algebra, such as the row echelon form.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("fflas-ffpack" ,fflas-ffpack)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'bootstrap 'setenv
-           ;; Prevent the autogen.sh script to carry out the configure
-           ;; script, which has not yet been patched to replace /bin/sh.
-           (lambda _
-             (setenv "NOCONFIGURE" "yes")
-             #t)))))
     (synopsis "C++ library for linear algebra over exact rings")
     (description
      "LinBox is a C++ template library for exact linear algebra computation

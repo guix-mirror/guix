@@ -1133,13 +1133,7 @@ useful features.")
        ("expat" ,expat)
        ("zlib" ,zlib)))
     (arguments
-      '(#:phases
-        (modify-phases %standard-phases
-          (replace 'bootstrap
-            (lambda _
-              (setenv "NOCONFIGURE" "true")
-              (invoke "sh" "autogen.sh"))))
-        #:configure-flags
+      '(#:configure-flags
         '("--disable-static" "--disable-db")))
     (home-page "https://www.etpan.org/libetpan.html")
     (synopsis "Portable middleware for email access")

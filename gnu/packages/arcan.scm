@@ -216,13 +216,7 @@ engine programmable using Lua.")
                            (assoc-ref %build-inputs "xkbcomp")
                            "/bin")
            ,(string-append "--with-xkb-output="
-                           "/tmp"))     ; FIXME: Copied from xorg
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'noconfigure
-             (lambda _
-               (setenv "NOCONFIGURE" "true")
-               #t)))))
+                           "/tmp"))))   ; FIXME: Copied from xorg
       (native-inputs
        `(("pkg-config" ,pkg-config)
          ("autoconf" ,autoconf)

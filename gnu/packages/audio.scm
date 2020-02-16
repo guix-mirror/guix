@@ -2444,13 +2444,6 @@ tempo and pitch of an audio recording independently of one another.")
                (base32
                 "1k962ljpnwyjw9jjiky2372khhri1wqvrj5qsalfpys31xqzw31p"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'bootstrap 'noconfigure
-           (lambda _
-             (setenv "NOCONFIGURE" "yes")
-             #t)))))
     (inputs
      `(("jack" ,jack-1)
        ("alsa-lib" ,alsa-lib)))

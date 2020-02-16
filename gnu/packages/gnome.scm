@@ -911,13 +911,6 @@ useful as a tutorial and users' guide for new or less experienced users.")
          ("perl" ,perl)
          ("pkg-config" ,pkg-config)
          ("python-wrapper" ,python-wrapper)))
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-before 'bootstrap 'dont-configure-during-bootstrap
-             (lambda _
-               (setenv "NOCONFIGURE" "true")
-               #t)))))
       (home-page "https://wiki.gnome.org/Apps/Dia")
       (synopsis "Diagram creation for GNOME")
       (description "Dia can be used to draw different types of diagrams, and
@@ -3505,13 +3498,7 @@ and objects.")
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'no-configure
-           (lambda* _
-            (setenv "NOCONFIGURE" "1")
-            #t)))
-       #:configure-flags
+     '(#:configure-flags
        (list (string-append "--with-xkb-base="
                             (assoc-ref %build-inputs "xkeyboard-config")
                             "/share/X11/xkb")
@@ -7924,7 +7911,7 @@ documents and diagrams, playing media, scanning, and much more.")
       (arguments
        '(#:phases
          (modify-phases %standard-phases
-           (replace 'bootstrap
+           (add-before 'bootstrap 'build-without-Werror
              (lambda _
                ;; The build system cleverly detects that we're not building from
                ;; a release tarball and turns on -Werror for GCC.
@@ -7932,11 +7919,7 @@ documents and diagrams, playing media, scanning, and much more.")
                ;; causes the build to fail unnecessarily, so we remove the flag.
                (substitute* '("configure.ac")
                  (("-Werror") ""))
-               ;; The autogen.sh script in gnome-common will run ./configure
-               ;; by default, which is problematic because source shebangs
-               ;; have not yet been patched.
-               (setenv "NOCONFIGURE" "t")
-               (zero? (system* "sh" "autogen.sh")))))))
+               #t)))))
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)

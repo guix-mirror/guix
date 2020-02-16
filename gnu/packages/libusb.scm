@@ -318,14 +318,7 @@ wrapper for accessing libusb-1.0.")
         (base32 "02vraf4j46bp746s0gz7vga2gv2dy3zd1v1bsy9x8algg9fpcb7n"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'bootstrap 'configure-later
-           ;; Don't run ./configure during bootstrap.
-           (lambda _
-             (setenv "NOCONFIGURE" "set")
-             #t)))
-       ;; Tests fail randomly when run in parallel because several of them write
+     `(;; Tests fail randomly when run in parallel because several of them write
        ;; and read to/from the same file--e.g., "4.plist" is accessed by
        ;; 'large.test' and 'largecmp.test'.
        #:parallel-tests? #f))

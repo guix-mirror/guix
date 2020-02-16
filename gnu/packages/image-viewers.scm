@@ -155,7 +155,6 @@ actions.")
                  write-dummy-changelog)
                (call-with-output-file "ChangeLog.html"
                  write-dummy-changelog)
-               (setenv "NOCONFIGURE" "true")
 
                ;; Don't try to run 'git' for the version number.
                (substitute* "configure.ac"

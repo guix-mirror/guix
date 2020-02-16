@@ -51,13 +51,6 @@
                (base32
                 "18mjy80ly9361npjhxpm3n0pkmrwviaqr2kixjb7hyxa6kzzh5xw"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'bootstrap 'skip-premature-configure
-           (lambda _
-             (setenv "NOCONFIGURE" "set")
-             #t)))))
     ;; TODO: package 'libgsystem'.
     (inputs
      `(("accountsservice" ,accountsservice)

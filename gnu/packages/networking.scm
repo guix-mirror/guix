@@ -934,12 +934,6 @@ live network and disk I/O bandwidth monitor.")
                         (("/bin/sh")
                          (which "sh")))
                       #t))
-                  (replace 'bootstrap
-                    (lambda _
-                      ;; Patch shebangs in generated files before running
-                      ;; ./configure.
-                      (setenv "NOCONFIGURE" "please")
-                      (invoke "bash" "./autogen.sh")))
                   (add-after 'build 'absolutize-tools
                     (lambda* (#:key inputs #:allow-other-keys)
                       (let ((ethtool (string-append (assoc-ref inputs "ethtool")
