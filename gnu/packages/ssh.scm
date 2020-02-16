@@ -129,14 +129,14 @@ a server that supports the SSH-2 protocol.")
 (define-public openssh
   (package
    (name "openssh")
-   (version "8.0p1")
+   (version "8.2p1")
    (source (origin
              (method url-fetch)
              (uri (string-append "mirror://openbsd/OpenSSH/portable/"
                                  "openssh-" version ".tar.gz"))
              (sha256
               (base32
-               "0s7xh4s0qcipnjh9ls5blxcpvhyd116z9dxn3q1yi64lwrwki55x"))))
+               "0wg6ckzvvklbzznijxkk28fb8dnwyjd0w30ra0afwv6gwr8m34j3"))))
    (build-system gnu-build-system)
    (native-inputs `(("groff" ,groff)
                     ("pkg-config" ,pkg-config)))
@@ -145,7 +145,7 @@ a server that supports the SSH-2 protocol.")
              ("pam" ,linux-pam)
              ("mit-krb5" ,mit-krb5)
              ("zlib" ,zlib)
-             ("xauth" ,xauth)))                   ;for 'ssh -X' and 'ssh -Y'
+             ("xauth" ,xauth)))         ; for 'ssh -X' and 'ssh -Y'
    (arguments
     `(#:test-target "tests"
       ;; Otherwise, the test scripts try to use a nonexistent directory and
@@ -156,12 +156,12 @@ a server that supports the SSH-2 protocol.")
                            ;; Default value of 'PATH' used by sshd.
                           "--with-default-path=/run/current-system/profile/bin"
 
-                          ;; configure needs to find krb5-config
+                          ;; configure needs to find krb5-config.
                           ,(string-append "--with-kerberos5="
                                           (assoc-ref %build-inputs "mit-krb5")
                                           "/bin")
 
-                          ;; libedit needed for sftp completion
+                          ;; libedit is needed for sftp completion.
                           "--with-libedit"
 
                           ;; Enable PAM support in sshd.
@@ -178,14 +178,18 @@ a server that supports the SSH-2 protocol.")
              #t)))
         (add-before 'check 'patch-tests
          (lambda _
-           ;; remove 't-exec' regress target which requires user 'sshd'
-           (substitute* "regress/Makefile"
-             (("^(REGRESS_TARGETS=.*) t-exec(.*)" all pre post)
+           (substitute* "regress/test-exec.sh"
+             (("/bin/sh") (which "sh")))
+
+           ;; Remove 't-exec' regress target which requires user 'sshd'.
+           (substitute* (list "Makefile"
+                              "regress/Makefile")
+             (("^(tests:.*) t-exec(.*)" all pre post)
               (string-append pre post)))
            #t))
         (replace 'install
          (lambda* (#:key outputs (make-flags '()) #:allow-other-keys)
-           ;; install without host keys and system configuration files
+           ;; Install without host keys and system configuration files.
            (apply invoke "make" "install-nosysconf" make-flags)
            (install-file "contrib/ssh-copy-id"
                          (string-append (assoc-ref outputs "out")
