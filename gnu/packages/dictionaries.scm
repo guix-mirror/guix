@@ -320,8 +320,7 @@ translation engines from your terminal.")
              "https://github.com/apertium/lttoolbox/releases/download/v"
              version "/lttoolbox-" version ".tar.gz"))
        (sha256
-        (base32 "14yyrkzyqlsrii3v3ggg4dyvwlrcqcqc0aprphz5781a44jsrcwz"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "14yyrkzyqlsrii3v3ggg4dyvwlrcqcqc0aprphz5781a44jsrcwz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
