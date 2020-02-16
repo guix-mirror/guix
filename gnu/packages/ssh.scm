@@ -133,7 +133,7 @@ a server that supports the SSH-2 protocol.")
    (source (origin
              (method url-fetch)
              (uri (string-append "mirror://openbsd/OpenSSH/portable/"
-                                 name "-" version ".tar.gz"))
+                                 "openssh-" version ".tar.gz"))
              (sha256
               (base32
                "0s7xh4s0qcipnjh9ls5blxcpvhyd116z9dxn3q1yi64lwrwki55x"))))
