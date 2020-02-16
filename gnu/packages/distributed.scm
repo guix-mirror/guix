@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Brant Gardner <brantcgardner@brantware.com>
-;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,7 +43,7 @@
 (define-public boinc-client
   (package
     (name "boinc-client")
-    (version "7.16.3")
+    (version "7.16.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -54,7 +54,7 @@
               (file-name (git-file-name "boinc" version))
               (sha256
                (base32
-                "1l181s7wnx0xd7m62qjixdjw4ri87q47xi0x662m2jsh9lzb8khf"))))
+                "08xx2kzb7c46k1zb91w74kyig3b5kilxdw5ilfs67r8p55mxk0g1"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--disable-server")))
     (inputs `(("openssl" ,openssl)
