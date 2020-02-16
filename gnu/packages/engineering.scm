@@ -794,76 +794,123 @@ language.")
 (define-public ao
   (deprecated-package "ao-cad" libfive))
 
+;; TODO Add doc https://gitlab.com/kicad/services/kicad-doc/-/tree/master
 (define-public kicad
-    (package
-      (name "kicad")
-      (version "5.1.5")
-      (source
-       (origin
-         (method url-fetch)
-         (file-name (string-append name "-" version ".tar.xz"))
-         (uri (string-append
-                "https://launchpad.net/kicad/" (version-major version)
-                ".0/" version "/+download/kicad-" version ".tar.xz"))
-         (sha256
-          (base32 "0x3417f2pa7p65s9f7l49rqbnrzy8gz6i0n07mlbxqbnm0fmlql0"))))
-      (build-system cmake-build-system)
-      (arguments
-       `(#:out-of-source? #t
-         #:tests? #f ; no tests
-         #:build-type "Release"
-         #:configure-flags
-         (list "-DKICAD_SCRIPTING_PYTHON3=ON"
-               "-DKICAD_SCRIPTING_WXPYTHON_PHOENIX=ON"
-               "-DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE")
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'install 'wrap-program
-             ;; Ensure correct Python at runtime.
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (python (assoc-ref inputs "python"))
-                      (file (string-append out "/bin/kicad"))
-                      (path (string-append
-                             out
-                             "/lib/python"
-                             ,(version-major+minor
-                                (package-version python))
-                             "/site-packages:"
-                             (getenv "PYTHONPATH"))))
-                 (wrap-program file
-                   `("PYTHONPATH" ":" prefix (,path))
-                   `("PATH" ":" prefix
-                     (,(string-append python "/bin:")))))
-               #t)))))
-      (native-inputs
-       `(("boost" ,boost)
-         ("gettext" ,gnu-gettext)
-         ("pkg-config" ,pkg-config)
-         ("swig" ,swig)
-         ("zlib" ,zlib)))
-      (inputs
-       `(("cairo" ,cairo)
-         ("curl" ,curl)
-         ("desktop-file-utils" ,desktop-file-utils)
-         ("glew" ,glew)
-         ("glm" ,glm)
-         ("hicolor-icon-theme" ,hicolor-icon-theme)
-         ("libngspice" ,libngspice)
-         ("libsm" ,libsm)
-         ("mesa" ,mesa)
-         ("opencascade-oce" ,opencascade-oce)
-         ("openssl" ,openssl)
-         ("python" ,python)
-         ("wxwidgets" ,wxwidgets)
-         ("wxpython" ,python-wxpython)))
-      (home-page "https://kicad-pcb.org/")
-      (synopsis "Electronics Design Automation Suite")
-      (description "Kicad is a program for the formation of printed circuit
+  (package
+    (name "kicad")
+    (version "5.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (file-name (string-append name "-" version ".tar.xz"))
+       (uri (string-append
+             "https://launchpad.net/kicad/" (version-major version)
+             ".0/" version "/+download/kicad-" version ".tar.xz"))
+       (sha256
+        (base32 "0x3417f2pa7p65s9f7l49rqbnrzy8gz6i0n07mlbxqbnm0fmlql0"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:out-of-source? #t
+       #:tests? #f                      ; no tests
+       #:build-type "Release"
+       #:configure-flags
+       (list "-DKICAD_SCRIPTING_PYTHON3=ON"
+             "-DKICAD_SCRIPTING_WXPYTHON_PHOENIX=ON"
+             "-DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-translations
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (copy-recursively (assoc-ref inputs "kicad-i18l")
+                               (assoc-ref outputs "out"))
+             #t))
+         (add-after 'install 'wrap-program
+           ;; Ensure correct Python at runtime.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (python (assoc-ref inputs "python"))
+                    (file (string-append out "/bin/kicad"))
+                    (path (string-append
+                           out
+                           "/lib/python"
+                           ,(version-major+minor
+                             (package-version python))
+                           "/site-packages:"
+                           (getenv "PYTHONPATH"))))
+               (wrap-program file
+                 `("PYTHONPATH" ":" prefix (,path))
+                 `("PATH" ":" prefix
+                   (,(string-append python "/bin:")))))
+             #t)))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "KICAD_TEMPLATE_DIR")
+            (files '("share/kicad/template")))
+           (search-path-specification
+            (variable "KICAD_SYMBOL_DIR") ; symbol path
+            (files '("share/kicad/library")))
+           (search-path-specification
+            (variable "KISYSMOD")       ; footprint path
+            (files '("share/kicad/modules")))
+           (search-path-specification
+            (variable "KISYS3DMOD")     ; 3D model path
+            (files '("share/kicad/modules/packages3d")))))
+    (native-inputs
+     `(("boost" ,boost)
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("gettext" ,gnu-gettext)
+       ("kicad-i18l" ,kicad-i18l)
+       ("pkg-config" ,pkg-config)
+       ("swig" ,swig)
+       ("zlib" ,zlib)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("curl" ,curl)
+       ("glew" ,glew)
+       ("glm" ,glm)
+       ("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("libngspice" ,libngspice)
+       ("libsm" ,libsm)
+       ("mesa" ,mesa)
+       ("opencascade-oce" ,opencascade-oce)
+       ("openssl" ,openssl)
+       ("python" ,python-wrapper)
+       ("wxwidgets" ,wxwidgets)
+       ("wxpython" ,python-wxpython)))
+    (home-page "https://kicad-pcb.org/")
+    (synopsis "Electronics Design Automation Suite")
+    (description "Kicad is a program for the formation of printed circuit
 boards and electrical circuits.  The software has a number of programs that
 perform specific functions, for example, pcbnew (Editing PCB), eeschema (editing
 electrical diagrams), gerbview (viewing Gerber files) and others.")
-      (license license:gpl3+)))
+    (license license:gpl3+)))
+
+(define kicad-i18l
+  (package
+    (name "kicad-i18l")
+    (version "5.1.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.com/kicad/code/kicad-i18n.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1rfpifl8vky1gba2angizlb2n7mwmsiai3r6ip6qma60wdj8sbd3"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'build)
+         (delete 'check))))
+    (native-inputs
+     `(("gettext" ,gnu-gettext)))
+    (home-page "https://kicad-pcb.org/")
+    (synopsis "KiCad GUI translations")
+    (description "This package contains the po files that are used for the GUI
+translations for KiCad.")
+    (license license:gpl3+)))
 
 (define-public kicad-symbols
   (package
