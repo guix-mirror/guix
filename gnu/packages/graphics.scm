@@ -474,9 +474,9 @@ visual effects work for film.")
        ("libxrandr" ,libxrandr)
        ("ffmpeg" ,ffmpeg)
        ("mesa" ,mesa)))
-    (synopsis "High performance real-time graphics toolkit")
+    (synopsis "High-performance real-time graphics toolkit")
     (description
-     "The OpenSceneGraph is a high performance 3D graphics toolkit
+     "The OpenSceneGraph is a high-performance 3D graphics toolkit
 used by application developers in fields such as visual simulation, games,
 virtual reality, scientific visualization and modeling.")
     (home-page "http://www.openscenegraph.org")
