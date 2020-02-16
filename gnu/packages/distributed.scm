@@ -71,7 +71,7 @@
        ("automake" ,automake)
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
-    (synopsis "BOINC lets you help cutting-edge science research using your computer")
+    (synopsis "Help cutting-edge science research using your computer")
     (description "BOINC is a platform for high-throughput computing on a large
 scale (thousands or millions of computers).  It can be used for volunteer
 computing (using consumer devices) or grid computing (using organizational
