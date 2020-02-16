@@ -769,23 +769,24 @@ of existing remote shell facilities such as SSH.")
 (define-public endlessh
   (package
     (name "endlessh")
-    (version "1.0")
+    (version "1.1")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/skeeto/endlessh/releases/"
-                            "download/" version "/endlessh-" version ".tar.xz"))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/skeeto/endlessh.git")
+              (commit version)))
+        (file-name (git-file-name name version))
         (sha256
-         (base32
-          "0hhsr65hzrcb7ylskmxyr92svzndhks8hqzn8hvg7f7j89rkvq5k"))))
+         (base32 "0ziwr8j1frsp3dajr8h5glkm1dn5cci404kazz5w1jfrp0736x68"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
                           "CC=gcc")
-       #:tests? #f ; no test target
+       #:tests? #f                      ; no test target
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)))) ; no configure script
+         (delete 'configure))))         ; no configure script
     (home-page "https://github.com/skeeto/endlessh")
     (synopsis "SSH tarpit that slowly sends an endless banner")
     (description
