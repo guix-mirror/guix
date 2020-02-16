@@ -741,20 +741,20 @@ LuaJIT, both a resolver library and a daemon.")
 (define-public ddclient
   (package
     (name "ddclient")
-    (version "3.9.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/ddclient/ddclient/ddclient-"
-                                  version "/ddclient-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0fwyhab8yga2yi1kdfkbqxa83wxhwpagmj1w1mwkg2iffh1fjjlw"))))
+    (version "3.9.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ddclient/ddclient.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0hf377g4j9r9sac75xp17nk2h58mazswz4vkg4g2gl2yyhvzq91w"))))
     (build-system trivial-build-system) ; no Makefile.PL
     (native-inputs
      `(("bash" ,bash)
-       ("gzip" ,gzip)
-       ("perl" ,perl)
-       ("tar" ,tar)))
+       ("perl" ,perl)))
     (inputs
      `(("inetutils" ,inetutils)         ; logger
        ("net-tools" ,net-tools)
@@ -770,47 +770,45 @@ LuaJIT, both a resolver library and a daemon.")
          (use-modules (guix build utils)
                       (ice-9 match)
                       (srfi srfi-26))
-         ;; bootstrap
          (setenv "PATH" (string-append
                          (assoc-ref %build-inputs "bash") "/bin" ":"
-                         (assoc-ref %build-inputs "tar") "/bin" ":"
-                         (assoc-ref %build-inputs "gzip") "/bin" ":"
                          (assoc-ref %build-inputs "perl") "/bin"))
-         ;; extract source
-         (invoke "tar" "xvf" (assoc-ref %build-inputs "source"))
-         ;; package
-         (with-directory-excursion (string-append ,name "-" ,version)
-           (let* ((out (assoc-ref %outputs "out"))
-                  (bin (string-append out "/bin")))
-             (let ((file "ddclient"))
-               (substitute* file
-                 (("/usr/bin/perl") (which "perl"))
-                 ;; Strictly use ‘/etc/ddclient/ddclient.conf’.
-                 (("\\$\\{program\\}\\.conf") "/etc/ddclient/ddclient.conf")
-                 (("\\$etc\\$program.conf") "/etc/ddclient/ddclient.conf")
-                 ;; Strictly use ‘/var/cache/ddclient/ddclient.cache’
-                 (("\\$cachedir\\$program\\.cache")
-                  "/var/cache/ddclient/ddclient.cache"))
-               (install-file file bin)
-               (wrap-program (string-append bin "/" file)
-                 `("PATH" ":" =
-                   ("$PATH"
-                    ,@(map (lambda (input)
-                             (match input
-                               ((name . store)
-                                (string-append store "/bin"))))
-                           %build-inputs)))
-                 `("PERL5LIB" ":" =
-                   ,(delete
-                     ""
-                     (map (match-lambda
-                            (((? (cut string-prefix? "perl-" <>) name) . dir)
-                             (string-append dir "/lib/perl5/site_perl"))
-                            (_ ""))
-                          %build-inputs)))))
-             (for-each (cut install-file <> (string-append out
-                                                           "/share/ddclient"))
-                       (find-files "." "sample.*$")))))))
+
+         ;; Copy the (read-only) source into the (writable) build directory.
+         (copy-recursively (assoc-ref %build-inputs "source") ".")
+
+         ;; Install.
+         (let* ((out (assoc-ref %outputs "out"))
+                (bin (string-append out "/bin")))
+           (let ((file "ddclient"))
+             (substitute* file
+               (("/usr/bin/perl") (which "perl"))
+               ;; Strictly use ‘/etc/ddclient/ddclient.conf’.
+               (("\\$\\{program\\}\\.conf") "/etc/ddclient/ddclient.conf")
+               (("\\$etc\\$program.conf") "/etc/ddclient/ddclient.conf")
+               ;; Strictly use ‘/var/cache/ddclient/ddclient.cache’
+               (("\\$cachedir\\$program\\.cache")
+                "/var/cache/ddclient/ddclient.cache"))
+             (install-file file bin)
+             (wrap-program (string-append bin "/" file)
+               `("PATH" ":" =
+                 ("$PATH"
+                  ,@(map (lambda (input)
+                           (match input
+                                  ((name . store)
+                                   (string-append store "/bin"))))
+                         %build-inputs)))
+               `("PERL5LIB" ":" =
+                 ,(delete
+                   ""
+                   (map (match-lambda
+                         (((? (cut string-prefix? "perl-" <>) name) . dir)
+                          (string-append dir "/lib/perl5/site_perl"))
+                         (_ ""))
+                        %build-inputs)))))
+           (for-each (cut install-file <> (string-append out
+                                                         "/share/ddclient"))
+                     (find-files "." "sample.*$"))))))
     (home-page "https://sourceforge.net/projects/ddclient/")
     (synopsis "Address updating utility for dynamic DNS services")
     (description "This package provides a client to update dynamic IP
