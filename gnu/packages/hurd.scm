@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -129,11 +130,11 @@ communication.")
 (define-public hurd-headers
   ;; Resort to a post-0.9 snapshot that provides the 'file_utimens' and
   ;; 'file_exec_paths' RPCs that glibc 2.28 expects.
-  (let ((revision "0")
-        (commit "98b33905c89b7e5c309c74ae32302a5745901a6e"))
+  (let ((revision "1")
+        (commit "91a51672ff4cfe1f1a0712b4c542ded3081c825b"))
    (package
      (name "hurd-headers")
-     (version "0.9")
+     (version (git-version "0.9" revision commit))
      (source (origin
                (method git-fetch)
                (uri (git-reference
@@ -141,7 +142,7 @@ communication.")
                      (commit commit)))
                (sha256
                 (base32
-                 "1mj22sxgscas2675vrbxr477mwbxdj68pqcrh65lbir8qlssrgrf"))
+                 "16k9wkahz9wasviijz53n6i13nmiwa9fs64ikf1jqh8rl60hw7cz"))
                (file-name (git-file-name name version))))
      (build-system gnu-build-system)
      (native-inputs
@@ -167,6 +168,7 @@ communication.")
                             "--disable-ncursesw"
                             "--disable-test"
                             "--without-libbz2"
+                            "--without-libcrypt"
                             "--without-libz"
                             ;; Skip the clnt_create check because it expects
                             ;; a working glibc causing a circular dependency.
