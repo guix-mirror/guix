@@ -191,13 +191,15 @@ working directory."
 
         (if script
             (let ((script (string-append "./" script)))
+              (setenv "NOCONFIGURE" "true")
               (format #t "running '~a'~%" script)
               (if (executable-file? script)
                   (begin
                     (patch-shebang script)
-                    (setenv "NOCONFIGURE" "true")
                     (invoke script))
-                  (invoke "sh" script)))
+                  (invoke "sh" script))
+              ;; Let's clean up after ourselves.
+              (unsetenv "NOCONFIGURE"))
             (if (or (file-exists? "configure.ac")
                     (file-exists? "configure.in"))
                 (invoke "autoreconf" "-vif")
