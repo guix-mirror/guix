@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,7 +48,7 @@
 (define-public flashrom
   (package
     (name "flashrom")
-    (version "1.1")
+    (version "1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -56,7 +56,7 @@
                     version ".tar.bz2"))
               (sha256
                (base32
-                "06afq680n9p34hi3vrkn12vd1pfyq2062db9qqbi4hi21k3skbdf"))))
+                "0ax4kqnh7kd3z120ypgp73qy1knz47l6qxsqzrfkd97mh5cdky71"))))
     (build-system gnu-build-system)
     (inputs `(("dmidecode" ,dmidecode)
               ("pciutils" ,pciutils)
