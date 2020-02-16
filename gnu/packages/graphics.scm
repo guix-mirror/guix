@@ -441,7 +441,7 @@ visual effects work for film.")
 (define-public openscenegraph
   (package
     (name "openscenegraph")
-    (version "3.6.4")
+    (version "3.6.5")
     (source
      (origin
        (method git-fetch)
@@ -449,14 +449,13 @@ visual effects work for film.")
              (url "https://github.com/openscenegraph/OpenSceneGraph")
              (commit (string-append "OpenSceneGraph-" version))))
        (sha256
-        (base32
-         "0x8hdbzw0b71j91fzp9cwmy9a7ava8v8wwyj8nxijq942vdx1785"))
+        (base32 "00i14h82qg3xzcyd8p02wrarnmby3aiwmz0z43l50byc9f8i05n1"))
        (file-name (git-file-name name version))))
     (properties
      `((upstream-name . "OpenSceneGraph")))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ; no test target available
+     `(#:tests? #f                      ; no test target available
        ;; Without this flag, 'rd' will be added to the name of the
        ;; library binaries and break linking with other programs.
        #:build-type "Release"
@@ -469,7 +468,7 @@ visual effects work for film.")
        ("unzip" ,unzip)))
     (inputs
      `(("giflib" ,giflib)
-       ("libjpeg" ,libjpeg)             ; Required for the JPEG texture plugin.
+       ("libjpeg" ,libjpeg)             ; required by the JPEG texture plugin
        ("jasper" ,jasper)
        ("librsvg" ,librsvg)
        ("libxrandr" ,libxrandr)
