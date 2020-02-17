@@ -1473,7 +1473,8 @@ them.  If PORT is a terminal, print at most a full screen of results."
                                  #:hyperlinks? links?
                                  #:extra-fields
                                  `((relevance . ,score)))))))
-         (if (and max-rows
+         (if (and (not (getenv "INSIDE_EMACS"))
+                  max-rows
                   (> (port-line port) first-line) ;print at least one result
                   (> (+ 4 (line-count text) (port-line port))
                      max-rows))
