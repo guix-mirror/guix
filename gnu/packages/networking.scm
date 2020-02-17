@@ -178,7 +178,7 @@ residing in IPv4-only networks, even when they are behind a NAT device.")
 (define-public socat
   (package
     (name "socat")
-    (version "1.7.3.3")
+    (version "1.7.3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -186,9 +186,9 @@ residing in IPv4-only networks, even when they are behind a NAT device.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "0jnhjijyq74g3wa4ph0am83z6vq7qna7ac0xqjma8s4197z3zmhd"))))
+                "1z7xgnwiqpcv1j6aghhj9nqbx7cg3gpc4n9j7vi9hm7nhv5788wp"))))
     (build-system gnu-build-system)
-    (arguments '(#:tests? #f))                    ;no 'check' phase
+    (arguments '(#:tests? #f))          ; no test suite
     (inputs `(("openssl" ,openssl)))
     (home-page "http://www.dest-unreach.org/socat/")
     (synopsis
