@@ -585,6 +585,34 @@ sounds from presets such as \"explosion\" or \"powerup\".")
     (home-page "http://www.drpetter.se/project_sfxr.html")
     (license license:expat)))
 
+(define-public surgescript
+  (package
+    (name "surgescript")
+    (version "0.5.4.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/alemart/surgescript.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "13q81439zg1bn7gskligskjgcfq0rdapp6f3llmrlk48vnyq49s0"))))
+     (build-system cmake-build-system)
+     (arguments
+      '(#:configure-flags
+        (let ((share (string-append (assoc-ref %outputs "out") "/share")))
+          (list (string-append "-DICON_PATH=" share "/pixmaps")
+                (string-append "-DMETAINFO_PATH=" share "/metainfo")))
+        #:tests? #f))
+     (home-page "https://docs.opensurge2d.org")
+     (synopsis "Scripting language for games")
+     (description "@code{SurgeScript} is a dynamically typed object-oriented
+scripting language designed for games.  Each object is a state machine that
+can be customized by attaching other objects.  The language supports automatic
+garbage collection and can be extended with plugins.")
+    (license license:asl2.0)))
+
 (define-public physfs
   (package
     (name "physfs")
