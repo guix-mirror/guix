@@ -131,8 +131,7 @@ that subsequent output will not have any colors in effect."
 
 (define (color-output? port)
   "Return true if we should write colored output to PORT."
-  (and (not (getenv "INSIDE_EMACS"))
-       (not (getenv "NO_COLOR"))
+  (and (not (getenv "NO_COLOR"))
        (isatty?* port)))
 
 (define (coloring-procedure color)
