@@ -15183,7 +15183,7 @@ Unix users and groups.")
 (define-public rust-vcpkg-0.2
   (package
     (name "rust-vcpkg")
-    (version "0.2.7")
+    (version "0.2.8")
     (source
       (origin
         (method url-fetch)
@@ -15191,14 +15191,18 @@ Unix users and groups.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "15dzk1b96q946v9aisbd1bbhi33n93wvgziwh1shmscn1xflbp9k"))))
+          "0s1ijdrsg6917imja2hb07l0z4vbx7ydm8m2i1n9g62fg7r3ki1z"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; Tests want mysql, harfbuzz, graphite2.
+       #:cargo-development-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-tempdir" ,rust-tempdir-0.3))))
     (home-page "https://github.com/mcgoo/vcpkg-rs")
     (synopsis "Find native dependencies in a vcpkg tree at build time")
     (description
      "This package provides a library to find native dependencies in a
 @code{vcpkg} tree at build time in order to be used in Cargo build scripts.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
