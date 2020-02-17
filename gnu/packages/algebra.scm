@@ -91,7 +91,7 @@ implement the floating point approach to complex multiplication are
 implemented.  On the other hand, these comprise asymptotically fast
 multiplication routines such as Toom–Cook and the FFT.")
    (license license:lgpl3+)
-   (home-page "http://mpfrcx.multiprecision.org/")))
+   (home-page "http://www.multiprecision.org/mpfrcx/")))
 
 (define-public gf2x
   (package
@@ -140,7 +140,7 @@ multiplication via floating point approximations.  It consists of libraries
 that can be called from within a C program and of executable command
 line applications.")
    (license license:gpl3+)
-   (home-page "http://cm.multiprecision.org/")))
+   (home-page "http://www.multiprecision.org/cm/")))
 
 (define-public fplll
   (package
