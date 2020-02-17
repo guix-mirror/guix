@@ -316,7 +316,7 @@ reading and editing of existing PDF files.")
    (description
     "Xpdf is a viewer for Portable Document Format (PDF) files.")
    (license license:gpl3) ; or gpl2, but not gpl2+
-   (home-page "http://www.foolabs.com/xpdf/")))
+   (home-page "https://www.xpdfreader.com/")))
 
 (define-public zathura-cb
   (package
