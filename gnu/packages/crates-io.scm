@@ -15260,7 +15260,8 @@ If that fails, no determination is made, and calls return None.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1pf91pvj8n6akh7w6j5ypka6aqz08b3qpzgs0ak2kjf4frkiljwi"))))))
+          "1pf91pvj8n6akh7w6j5ypka6aqz08b3qpzgs0ak2kjf4frkiljwi"))))
+    (properties '())))
 
 (define-public rust-version-sync-0.8
   (package
