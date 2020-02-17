@@ -26,8 +26,7 @@
 
 (define-module (gnu packages mpi)
   #:use-module (guix packages)
-  #:use-module ((guix licenses)
-                #:hide (expat zlib))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix deprecation)
@@ -130,7 +129,7 @@ exploit it accordingly and efficiently.
 hwloc may display the topology in multiple convenient formats.  It also offers
 a powerful programming interface to gather information about the hardware,
 bind processes, and much more.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public hwloc-2
   ;; Note: 2.0 isn't the default yet, see above.
@@ -275,7 +274,7 @@ from all across the High Performance Computing community in order to build the
 best MPI library available.  Open MPI offers advantages for system and
 software vendors, application developers and computer science researchers.")
     ;; See file://LICENSE
-    (license bsd-2)))
+    (license license:bsd-2)))
 
 ;; TODO: javadoc files contain timestamps.
 (define-public java-openmpi
@@ -394,7 +393,7 @@ object oriented interface which closely follows MPI-2 C++ bindings.  It
 supports point-to-point and collective communications of any picklable Python
 object as well as optimized communications of Python objects (such as NumPy
 arrays) that expose a buffer interface.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public mpich
   (package
@@ -471,4 +470,4 @@ communication platforms including commodity clusters, high-speed networks (10
 Gigabit Ethernet, InfiniBand, Myrinet, Quadrics), and proprietary high-end
 computing systems (Blue Gene, Cray).  It enables research in MPI through a
 modular framework for other derived implementations.")
-    (license bsd-2)))
+    (license license:bsd-2)))
