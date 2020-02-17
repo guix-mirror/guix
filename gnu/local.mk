@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Andreas Enge <andreas@enge.fr>
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 # Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Mark H Weaver <mhw@netris.org>
@@ -806,6 +806,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/cvs-CVE-2017-12836.patch		\
   %D%/packages/patches/cyrus-sasl-ac-try-run-fix.patch		\
   %D%/packages/patches/darkice-workaround-fpermissive-error.patch	\
+  %D%/packages/patches/datefudge-gettimeofday.patch		\
   %D%/packages/patches/dbus-helper-search-path.patch		\
   %D%/packages/patches/dbus-c++-gcc-compat.patch		\
   %D%/packages/patches/dbus-c++-threading-mutex.patch		\

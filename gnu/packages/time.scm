@@ -39,6 +39,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
+  #:use-module (gnu packages)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages perl)
@@ -429,7 +430,8 @@ datetime type.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0r9g8v9xnv60hq3j20wqy34kyig3sc2pisjxl4irn7jjx85f1spv"))))
+                "0r9g8v9xnv60hq3j20wqy34kyig3sc2pisjxl4irn7jjx85f1spv"))
+              (patches (search-patches "datefudge-gettimeofday.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
