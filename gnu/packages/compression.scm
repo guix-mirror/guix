@@ -1922,24 +1922,21 @@ decompression is a little bit slower.")
        (list "all")
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (delete 'check)
-         (delete 'install)
+         (delete 'configure)            ; no configure script
+         (delete 'check)                ; no test suite
          (add-before 'build 'patch-exec-bin-sh
            (lambda _
-             (substitute* (find-files "Makefile")
-               (("/bin/sh") (which "sh")))
-             (substitute* "src/Makefile"
+             (substitute* (list "Makefile"
+                                "src/Makefile")
                (("/bin/sh") (which "sh")))
              #t))
-         (add-after 'build 'install-upx
+         (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                   (bin (string-append out "/bin")))
+                    (bin (string-append out "/bin")))
                (mkdir-p bin)
                (copy-file "src/upx.out" (string-append bin "/upx")))
-             #t))
-         )))
+             #t)))))
     (home-page "https://upx.github.io/")
     (synopsis "Compression tool for executables")
     (description
