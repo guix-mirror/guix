@@ -201,7 +201,11 @@ way and displaying details about the channel's source code."
                    (format #t (G_ "    commit: ~a~%")
                            (if (supports-hyperlinks?)
                                (channel-commit-hyperlink channel commit)
-                               commit))))
+                               commit))
+                   (when (not (supports-hyperlinks?))
+                     (format #t (G_ "    URL: ~a~%")
+                             (channel-commit-hyperlink channel commit
+                                                       (lambda (url msg) url))))))
                 (_ #f)))
 
             ;; Show most recently installed packages last.
@@ -233,9 +237,12 @@ way and displaying details about the channel's source code."
 
 (define* (channel-commit-hyperlink channel
                                    #:optional
-                                   (commit (channel-commit channel)))
+                                   (commit (channel-commit channel))
+                                   (transformer hyperlink))
   "Return a hyperlink for COMMIT in CHANNEL, using COMMIT as the hyperlink's
-text.  The hyperlink links to a web view of COMMIT, when available."
+text.  The hyperlink links to a web view of COMMIT, when available.
+TRANSFORMER is a procedure of 2 arguments, a URI and text, and returns a
+string for display."
   (let* ((url  (channel-url channel))
          (uri  (string->uri url))
          (host (and uri (uri-host uri))))
@@ -244,7 +251,7 @@ text.  The hyperlink links to a web view of COMMIT, when available."
           (#f
            commit)
           ((_ template)
-           (hyperlink (template url commit) commit)))
+           (transformer (template url commit) commit)))
         commit)))
 
 

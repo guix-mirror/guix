@@ -1637,7 +1637,7 @@ DURATION-RELATION with the current time."
     (let* ((file   (generation-file-name profile number))
            (link   (if (supports-hyperlinks?)
                        (cut file-hyperlink file <>)
-                       identity))
+                       (cut format #f (G_ "~a~%file: ~a") <> file)))
            (header (format #f (link (highlight (G_ "Generation ~a\t~a")))
                            number
                            (date->string
