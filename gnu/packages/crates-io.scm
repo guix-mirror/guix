@@ -15312,7 +15312,6 @@ updated when the crate version changes.")
     (synopsis "Void type for use in statically impossible cases")
     (description
      "The uninhabited void type for use in statically impossible cases.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-wait-timeout-0.2
