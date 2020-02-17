@@ -1843,46 +1843,16 @@ Both commands are targeted at system administrators.")
 (define-public ebtables
   (package
     (name "ebtables")
-    (version "2.0.10-4")
+    (version "2.0.11")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "mirror://netfilter.org/ebtables/ebtables-v"
+                   "mirror://netfilter.org/ebtables/ebtables-"
                    version ".tar.gz"))
              (sha256
               (base32
-               "0pa5ljlk970yfyhpf3iqwfpbc30j8mgn90fapw9cfz909x47nvyw"))))
+               "0apxgmkhsk3vxn9q3libxn3dgrdljrxyy4mli2gk49m7hi3na7xp"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:tests? #f                      ; no test suite
-       #:make-flags
-       (let* ((out (assoc-ref %outputs "out"))
-              (bin (string-append out "/sbin"))
-              (lib (string-append out "/lib"))
-              (man (string-append out "/share/man"))
-              (iptables   (assoc-ref %build-inputs "iptables"))
-              (ethertypes (string-append iptables "/etc/ethertypes")))
-         (list (string-append "LIBDIR=" lib)
-               (string-append "MANDIR=" man)
-               (string-append "BINDIR=" bin)
-               (string-append "ETHERTYPESFILE=" ethertypes)
-               ;; With the default CFLAGS, it falis with:
-               ;;   communication.c:259:58: error: variable ‘ret’ set but not
-               ;;   used [-Werror=unused-but-set-variable]
-               "CFLAGS=-Wall"))
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           ;; no configure script
-           (lambda _
-             (substitute* "Makefile"
-               ;; Remove user and group options from install commands,
-               ;; otherwise it fails with: invalid user 'root'.
-               (("-o root -g root") "")
-               ;; Remove 'ethertypes' from the install target.
-               (("install: .*")
-                "install: $(MANDIR)/man8/ebtables.8 exec scripts\n"))
-             #t)))))
     (inputs
      `(("perl" ,perl)
        ("iptables" ,iptables)))
