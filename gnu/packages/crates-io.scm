@@ -9763,8 +9763,7 @@ integers, floats, tuples, booleans, lists, strings, options and results.")
          (base32
           "1dyazm2fcq0v9fscq1a7597zsvdl9f0j8c2bfj1jm2nlzz2sn6y0"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-env-logger" ,rust-env-logger-0.5)
         ("rust-log" ,rust-log-0.4)
         ("rust-rand" ,rust-rand-0.4))))))
