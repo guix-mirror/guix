@@ -12485,7 +12485,7 @@ you to define custom reference types outside of the @code{stdweb} library.")
 (define-public rust-stdweb-internal-macros-0.2
   (package
     (name "rust-stdweb-internal-macros")
-    (version "0.2.7")
+    (version "0.2.9")
     (source
      (origin
        (method url-fetch)
@@ -12494,23 +12494,22 @@ you to define custom reference types outside of the @code{stdweb} library.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1yjrmkc6sb1035avic383pa3avk2s9k3n17yjcza8yb9nw47v3z6"))))
+         "049fq8fl5ny9l5if2qv7kxwng7g6ns95h4fbm3zx360dmpv5zyjq"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-base-x" ,rust-base-x-0.2)
-        ("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-proc-macro2" ,rust-proc-macro2-1.0)
         ("rust-quote" ,rust-quote-1.0)
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0)
         ("rust-serde-json" ,rust-serde-json-1.0)
         ("rust-sha1" ,rust-sha1-0.6)
-        ("rust-syn" ,rust-syn-0.15))))
+        ("rust-syn" ,rust-syn-1.0))))
     (home-page "https://github.com/koute/stdweb")
     (synopsis "Internal procedural macros for the stdweb crate")
     (description
-     "Internal procedural macros for the stdweb crate.")
+     "Internal procedural macros for the @code{stdweb} crate.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-stdweb-internal-runtime-0.1
