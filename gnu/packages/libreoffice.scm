@@ -148,8 +148,8 @@ CSV, CSS and XML.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://sourceforge/libwpd/" name "/" name "-"
-                          version "/" name "-" version ".tar.xz"))
+      (uri (string-append "mirror://sourceforge/libwpd/librevenge/librevenge-"
+                          version "/librevenge-" version ".tar.xz"))
       (sha256 (base32
                "1cj76cz4mqcy2mgv9l5xlc95bypyk8zbq0ls9cswqrs2y0lhfgwk"))))
     (build-system gnu-build-system)
