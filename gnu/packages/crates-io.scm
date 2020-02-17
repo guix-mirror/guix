@@ -10341,8 +10341,7 @@ random number generators.")
          "0ac9ha6ll8b6l1930bd99k29jrjpsbpddvr6ycrnbi5rkwb1id03"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-byteorder" ,rust-byteorder-1.3)
         ("rust-rand-core" ,rust-rand-core-0.3))
        #:cargo-development-inputs
