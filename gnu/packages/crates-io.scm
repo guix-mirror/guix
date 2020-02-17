@@ -14992,7 +14992,6 @@ whitespace from a string.")
     (description
      "Safe, fast, zero-panic, zero-crashing, zero-allocation parsing of
 untrusted inputs in Rust.")
-    (properties '((hidden? . #t)))
     (license license:isc)))
 
 (define-public rust-url-2.1
