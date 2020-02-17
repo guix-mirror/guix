@@ -894,7 +894,7 @@ transferred and the continuation of the transfer as a thunk."
     (x x)))
 
 (define patch-shebang
-  (let ((shebang-rx (make-regexp "^[[:blank:]]*([[:graph:]]+)[[:blank:]]*([[:graph:]]*)(.*)$")))
+  (let ((shebang-rx (make-regexp "^[[:blank:]]*(/[[:graph:]]+)[[:blank:]]*([[:graph:]]*)(.*)$")))
     (lambda* (file
               #:optional
               (path (search-path-as-string->list (getenv "PATH")))
