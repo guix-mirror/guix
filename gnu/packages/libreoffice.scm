@@ -118,8 +118,8 @@ their dependencies automatically upon calculation.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://kohei.us/files/" name "/src/lib"
-                           name "-" version ".tar.xz"))
+       (uri (string-append "http://kohei.us/files/orcus/src/lib"
+                           "orcus-" version ".tar.xz"))
        (sha256
         (base32
          "14gbnqsv5n2fm4sxa17014f440clrzls6p2w2ixk9wipg4950v9s"))))
