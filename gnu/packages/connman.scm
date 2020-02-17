@@ -3,7 +3,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,14 +44,14 @@
 (define-public connman
   (package
     (name "connman")
-    (version "1.37")
+    (version "1.38")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "mirror://kernel.org/linux/network/connman/"
                             "connman-" version ".tar.xz"))
     (sha256
-     (base32 "05kfjiqhqfmbbwc4snnyvi5hc4zxanac62f6gcwaf5mvn0z9pqkc"))))
+     (base32 "0awkqigvhwwxiapw0x6yd4whl465ka8a4al0v2pcqy9ggjlsqc6b"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -74,6 +74,7 @@
        ("glib" ,glib)
        ("gnutls" ,gnutls)
        ("iptables" ,iptables)
+       ("libmnl" ,libmnl)
        ("readline" ,readline)
        ;; These inputs are needed for connman to include the interface to
        ;; these technologies so IF they are installed they can be used.
