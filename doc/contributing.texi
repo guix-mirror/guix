@@ -347,6 +347,7 @@ needed is to review and apply the patch.
 * Python Modules::              A touch of British comedy.
 * Perl Modules::                Little pearls.
 * Java Packages::               Coffee break.
+* Rust Crates::                 Beware of oxidation.
 * Fonts::                       Fond of fonts.
 @end menu
 
@@ -683,6 +684,40 @@ we use the lowercase class name, replace all occurrences of @code{.} by
 dashes and prepend the prefix @code{java-}.  So the class
 @code{apache.commons.cli} becomes package
 @code{java-apache-commons-cli}.
+
+
+@node Rust Crates
+@subsection Rust Crates
+
+@cindex rust
+Rust programs standing for themselves are named as any other package, using the
+lowercase upstream name.
+
+To prevent namespace collisions we prefix all other Rust packages with the
+@code{rust-} prefix.  The name should be changed to lowercase as appropriate and
+dashes should remain in place.
+
+In the rust ecosystem it is common for multiple incompatible versions of a
+package to be used at any given time, so all packages should have a versioned
+suffix.  If a package has passed version 1.0.0 then just the major version
+number is sufficient (e.g.@: @code{rust-clap-2}), otherwise the version suffix
+should contain both the major and minor version (e.g.@: @code{rust-rand-0.6}).
+
+Because of the difficulty in reusing rust packages as pre-compiled inputs for
+other packages the Cargo build system (@pxref{Build Systems,
+@code{cargo-build-system}}) presents the @code{#:cargo-inputs} and
+@code{cargo-development-inputs} keywords as build system arguments.  It would be
+helpful to think of these as similar to @code{propagated-inputs} and
+@code{native-inputs}.  Rust @code{dependencies} and @code{build-dependencies}
+should go in @code{#:cargo-inputs}, and @code{dev-dependencies} should go in
+@code{#:cargo-development-inputs}.  If a Rust package links to other libraries
+then the standard placement in @code{inputs} and the like should be used.
+
+Care should be taken to ensure the correct version of dependencies are used; to
+this end we try to refrain from skipping the tests or using @code{#:skip-build?}
+when possible.  Of course this is not always possible, as the package may be
+developed for a different Operating System, depend on features from the Nightly
+Rust compiler, or the test suite may have atrophied since it was released.
 
 
 @node Fonts
