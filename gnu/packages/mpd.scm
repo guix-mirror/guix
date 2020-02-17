@@ -183,7 +183,7 @@ player daemon.")
 (define-public ncmpc
   (package
     (name "ncmpc")
-    (version "0.36")
+    (version "0.37")
     (source (origin
               (method url-fetch)
               (uri
@@ -192,7 +192,7 @@ player daemon.")
                               "/ncmpc-" version ".tar.xz"))
               (sha256
                (base32
-                "0b1yg93is9057p9d7vfv5nz85d11p6jq94fw07jn3zlfzhyqfcj6"))))
+                "0p31jpv1vj01bqf1589mnfpv9618cfsv259rlnbqybg1yqkvg3kw"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
