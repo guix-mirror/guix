@@ -11663,7 +11663,7 @@ proven statistical guarantees.")
 (define-public rust-security-framework-sys-0.3
   (package
     (name "rust-security-framework-sys")
-    (version "0.3.1")
+    (version "0.3.3")
     (source
       (origin
         (method url-fetch)
@@ -11671,13 +11671,15 @@ proven statistical guarantees.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0mlsakq9kmqyc0fg2hcbgm6rjk55mb0rhjw2wid3hqdzkjcghdln"))))
+          "15gqhhi206lzynd0pcbswxhvqc4p9bmpl2h9qnwfnpb16zy96573"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-core-foundation-sys" ,rust-core-foundation-sys-0.6))))
     (home-page "https://lib.rs/crates/security-framework-sys")
     (synopsis "Apple `Security.framework` low-level FFI bindings")
     (description
-     "Apple `Security.framework` low-level FFI bindings.")
-    (properties '((hidden? . #t)))
+     "Apple @code{Security.framework} low-level FFI bindings.")
     (license (list license:asl2.0
                    license:expat))))
 
