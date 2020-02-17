@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018, 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2018, 2019, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -31,7 +31,6 @@
   #:use-module (gnu packages c)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages m4)
-  #:use-module (gnu packages file)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
@@ -2709,6 +2708,12 @@ exec " gcc "/bin/" program
                        ,flags)))
              (package-arguments findutils))))))
 
+(define file
+  (package
+    (inherit (@ (gnu packages file) file))
+    (arguments
+     `(#:configure-flags '("--disable-bzlib")))))
+
 (define file-boot0
   (package
     (inherit file)
@@ -2718,10 +2723,12 @@ exec " gcc "/bin/" program
      `(("make" ,gnu-make-boot0)
        ,@(%bootstrap-inputs+toolchain)))
     (arguments
-     `(#:implicit-inputs? #f
+     `(#:tests? #f                      ; merge test fails
+       #:implicit-inputs? #f
        #:guile ,%bootstrap-guile
        #:strip-binaries? #f
-       #:validate-runpath? #f))))
+       #:validate-runpath? #f
+       ,@(package-arguments file)))))
 
 (define (%boot0-inputs)
   `(("make" ,gnu-make-boot0)
