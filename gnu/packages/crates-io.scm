@@ -15383,7 +15383,6 @@ specified across Unix and Windows platforms.")
     (synopsis "Experimental WASI API bindings for Rust")
     (description "This package contains experimental WASI API bindings
 in Rust.")
-    (properties '((hidden? . #t)))
     (license license:asl2.0)))
 
 (define-public rust-wasm-bindgen-0.2
