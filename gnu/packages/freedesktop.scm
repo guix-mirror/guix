@@ -506,7 +506,7 @@ with localed.  This package is extracted from the broader systemd package.")
 (define-public packagekit
   (package
     (name "packagekit")
-    (version "1.1.12")
+    (version "1.1.13")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -515,7 +515,7 @@ with localed.  This package is extracted from the broader systemd package.")
                    "PackageKit-" version ".tar.xz"))
              (sha256
               (base32
-               "00css16dv3asaxrklvyxy9dyjzhw82wmfrqxqpca9w2xryz58i8z"))))
+               "1dr1laic65ld95abp2yxbwvijnngh0dwyb1x49x4wjm5rhq43dl8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
