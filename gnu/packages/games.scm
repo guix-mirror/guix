@@ -856,6 +856,74 @@ and much more stand between you and the exit.  Record your moves and let your
 shadow mimic them to reach blocks you couldn't reach alone.")
     (license license:gpl3+)))
 
+(define-public opensurge
+  (package
+    (name "opensurge")
+    (version "0.5.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/alemart/opensurge.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ih7hlqjnp9rv0m4lqf7c0s1ai532way5i4pk45jq1gqm8325dbv"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ;there are no tests
+       #:configure-flags
+       (let* ((out (assoc-ref %outputs "out"))
+              (share (string-append out "/share")))
+         (list (string-append "-DCMAKE_INSTALL_PREFIX=" out "/bin")
+               (string-append "-DGAME_DATADIR=" share "/" ,name)
+               (string-append "-DDESKTOP_ENTRY_PATH=" share "/applications")
+               (string-append "-DDESKTOP_ICON_PATH=" share "/pixmaps")
+               (string-append "-DDESKTOP_METAINFO_PATH=" share "/metainfo")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-xdg-open-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Look for xdg-open in the store.
+             (substitute* "src/core/web.c"
+               (("/usr(/bin/xdg-open)" _ bin)
+                (string-append (assoc-ref inputs "xdg-utils") bin)))
+             #t))
+         (add-after 'unpack 'unbundle-fonts
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Replace bundled Roboto fonts with links to the store.
+             (with-directory-excursion "fonts"
+               (let ((roboto-dir (string-append
+                                  (assoc-ref inputs "font-google-roboto")
+                                  "/share/fonts/truetype/")))
+                 (for-each
+                  (lambda (font)
+                    (delete-file font)
+                    (symlink (string-append roboto-dir font) font))
+                  '("Roboto-Black.ttf" "Roboto-Bold.ttf" "Roboto-Medium.ttf")))
+               #t))))))
+    (inputs
+     `(("allegro" ,allegro)
+       ("font-google-roboto" ,font-google-roboto)
+       ("surgescript" ,surgescript)
+       ("xdg-utils" ,xdg-utils)))
+    (home-page "https://opensurge2d.org")
+    (synopsis "2D retro side-scrolling game")
+    (description "@code{Open Surge} is a 2D retro side-scrolling platformer
+inspired by the Sonic games.  The player runs at high speeds through each
+level while collecting items and avoiding obstacles.  The game includes a
+built-in level editor.")
+    (license
+     ;; Code is under GPL 3+, assets are under various licenses.
+     ;; See src/misc/credits.c for details.
+     (list license:gpl3+
+           license:cc0
+           license:cc-by3.0
+           license:cc-by-sa3.0
+           license:expat
+           license:public-domain
+           license:silofl1.1))))
+
 (define-public knights
   (package
     (name "knights")
