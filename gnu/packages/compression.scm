@@ -1907,7 +1907,7 @@ decompression is a little bit slower.")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/upx/upx/releases/download/v"
-                                 version "/" name "-" version "-src.tar.xz"))
+                                 version "/upx-" version "-src.tar.xz"))
              (sha256
               (base32
                "08anybdliqsbsl6x835iwzljahnm9i7v26icdjkcv33xmk6p5vw1"))
