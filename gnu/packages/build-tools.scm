@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Corentin Bocquillon <corentin@nybble.fr>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
@@ -80,7 +80,7 @@ makes a few sacrifices to acquire fast full and incremental build times.")
 (define-public bear
   (package
     (name "bear")
-    (version "2.4.2")
+    (version "2.4.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -89,7 +89,7 @@ makes a few sacrifices to acquire fast full and incremental build times.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1w1kyjzvvy5lj16kn3yyf7iil2cqlfkszi8kvagql7f5h5l6w9b1"))))
+                "19fk4flfykbzhb89ppmzqf0zlrkbjm6ajl9fsayndj9km5ys0041"))))
     (build-system cmake-build-system)
     (inputs
      `(("python" ,python-wrapper)))
