@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
@@ -225,7 +225,8 @@ living in the same process.")
     (native-inputs
      `(("net-tools" ,net-tools)
        ("pkg-config" ,pkg-config)
-       ("which" ,which)))
+       ("which" ,which)
+       ("datefudge" ,datefudge)))                 ;tests rely on 'datefudge'
     (inputs
      `(("guile" ,guile-2.2)))
     (propagated-inputs

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2013, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2017, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2017 Leo Famulari <leo@famulari.name>
@@ -36,7 +36,6 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
@@ -423,14 +422,17 @@ datetime type.")
     (name "datefudge")
     (version "1.23")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://salsa.debian.org/debian/datefudge.git")
-                    (commit (string-append "debian/" version))))
-              (file-name (git-file-name name version))
+              ;; Source code is available from
+              ;; <https://salsa.debian.org/debian/datefudge.git>.  However,
+              ;; for bootstrapping reasons, we do not rely on 'git-fetch' here
+              ;; (since Git -> GnuTLS -> datefudge).
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://debian/pool/main/d/datefudge/datefudge_"
+                    version ".tar.xz"))
               (sha256
                (base32
-                "0r9g8v9xnv60hq3j20wqy34kyig3sc2pisjxl4irn7jjx85f1spv"))
+                "0ifnlb0mc8qc2kb5042pbz0ns6rwcb7201di8wyrsphl0yhnhxiv"))
               (patches (search-patches "datefudge-gettimeofday.patch"))))
     (build-system gnu-build-system)
     (arguments
