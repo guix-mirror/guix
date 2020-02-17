@@ -433,7 +433,7 @@ Apple Keynote documents.  It currently supports Keynote versions 2 to 5.")
       (origin
         (method url-fetch)
         (uri (string-append "https://bitbucket.org/tagoh/liblangtag/downloads/"
-                            name "-" version ".tar.bz2"))
+                            "liblangtag-" version ".tar.bz2"))
         (sha256
          (base32
           "0bnm4hllr8cfrybm8rw7b8n0nlhzhnv73bkg1bxk452g6a82f96n"))))
