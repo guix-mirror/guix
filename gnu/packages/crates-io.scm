@@ -15790,7 +15790,6 @@ winapi.")
     (description "This package provides import libraries for the
 x86_64-pc-windows-gnu target.  Please don't use this crate directly, depend on
 @code{winapi} instead.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
