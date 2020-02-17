@@ -15244,7 +15244,6 @@ version requirements.  The version is queried by calling the Rust compiler with
 @code{--version}.  The path to the compiler is determined first via the
 @code{RUSTC} environment variable.  If it is not set, then @code{rustc} is used.
 If that fails, no determination is made, and calls return None.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
@@ -15260,8 +15259,7 @@ If that fails, no determination is made, and calls return None.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1pf91pvj8n6akh7w6j5ypka6aqz08b3qpzgs0ak2kjf4frkiljwi"))))
-    (properties '())))
+          "1pf91pvj8n6akh7w6j5ypka6aqz08b3qpzgs0ak2kjf4frkiljwi"))))))
 
 (define-public rust-version-sync-0.8
   (package
