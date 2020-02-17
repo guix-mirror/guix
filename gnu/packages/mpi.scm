@@ -27,13 +27,15 @@
 (define-module (gnu packages mpi)
   #:use-module (guix packages)
   #:use-module ((guix licenses)
-                #:hide (expat))
+                #:hide (expat zlib))
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix deprecation)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages fabric-management)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages java)
@@ -393,3 +395,80 @@ supports point-to-point and collective communications of any picklable Python
 object as well as optimized communications of Python objects (such as NumPy
 arrays) that expose a buffer interface.")
     (license bsd-3)))
+
+(define-public mpich
+  (package
+    (name "mpich")
+    (version "3.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.mpich.org/static/downloads/"
+                                  version "/mpich-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1farz5zfx4cd0c3a0wb9pgfypzw0xxql1j1294z1sxslga1ziyjb"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("zlib" ,zlib)
+       ("hwloc" ,hwloc-2 "lib")
+       ("slurm" ,slurm)
+       ,@(if (and (not (%current-target-system))
+                  (member (%current-system) (package-supported-systems ucx)))
+             `(("ucx" ,ucx))
+             '())))
+    (native-inputs
+     `(("perl" ,perl)
+       ("which" ,which)
+       ("gfortran" ,gfortran)))
+    (outputs '("out" "debug"))
+    (arguments
+     `(#:configure-flags
+       (list "--disable-silent-rules"             ;let's see what's happening
+             "--enable-debuginfo"
+             ;; "--with-device=ch4:ucx" ; --with-device=ch4:ofi segfaults in tests
+             (string-append "--with-hwloc-prefix="
+                            (assoc-ref %build-inputs "hwloc"))
+
+             ,@(if (assoc "ucx" (package-inputs this-package))
+                   `((string-append "--with-ucx="
+                                    (assoc-ref %build-inputs "ucx")))
+                   '()))
+
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-sources
+                    (lambda _
+                      (substitute* "./maint/gen_subcfg_m4"
+                        (("/usr/bin/env") (which "env")))
+                      (substitute* "src/glue/romio/all_romio_symbols"
+                        (("/usr/bin/env") (which "env")))
+                      (substitute* (find-files "." "buildiface")
+                        (("/usr/bin/env") (which "env")))
+                      (substitute* "maint/extracterrmsgs"
+                        (("/usr/bin/env") (which "env")))
+                      (substitute* (find-files "." "f77tof90")
+                        (("/usr/bin/env") (which "env")))
+                      (substitute* (find-files "." "\\.sh$")
+                        (("/bin/sh") (which "sh")))
+                      #t))
+                  (add-before 'configure 'fix-makefile
+                    (lambda _
+                      ;; Remove "@hwloclib@" from 'pmpi_convenience_libs'.
+                      ;; This fixes "No rule to make target '-lhwloc', needed
+                      ;; by 'lib/libmpi.la'".
+                      (substitute* "Makefile.in"
+                        (("^pmpi_convenience_libs = (.*) @hwloclib@ (.*)$" _
+                          before after)
+                         (string-append "pmpi_convenience_libs = "
+                                        before " " after)))
+                      #t)))))
+    (home-page "https://www.mpich.org/")
+    (synopsis "Implementation of the Message Passing Interface (MPI)")
+    (description
+     "MPICH is a high-performance and portable implementation of the Message
+Passing Interface (MPI) standard (MPI-1, MPI-2 and MPI-3).  MPICH provides an
+MPI implementation that efficiently supports different computation and
+communication platforms including commodity clusters, high-speed networks (10
+Gigabit Ethernet, InfiniBand, Myrinet, Quadrics), and proprietary high-end
+computing systems (Blue Gene, Cray).  It enables research in MPI through a
+modular framework for other derived implementations.")
+    (license bsd-2)))
