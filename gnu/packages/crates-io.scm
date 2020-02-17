@@ -12456,7 +12456,7 @@ Web.")
 (define-public rust-stdweb-derive-0.5
   (package
     (name "rust-stdweb-derive")
-    (version "0.5.1")
+    (version "0.5.3")
     (source
      (origin
        (method url-fetch)
@@ -12465,20 +12465,21 @@ Web.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0c1rxx6rqcc4iic5hx320ki3vshpi8k58m5600iqzq4x2zcyn88f"))))
+         "1vsh7g0gaxn4kxqq3knhymdn02p2pfxmnd2j0vplpj6c1yj60yn8"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
+     `(#:tests? #f
        #:cargo-inputs
-       (("rust-proc-macro2" ,rust-proc-macro2-0.4)
+       (("rust-proc-macro2" ,rust-proc-macro2-1.0)
         ("rust-quote" ,rust-quote-1.0)
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0)
-        ("rust-syn" ,rust-syn-0.15))))
+        ("rust-syn" ,rust-syn-1.0))))
     (home-page "https://github.com/koute/stdweb")
     (synopsis "Derive macros for the stdweb crate")
     (description
-     "Derive macros for the @code{stdweb} crate.")
+     "This crate currently defines a derive macro for @code{stdweb} which allows
+you to define custom reference types outside of the @code{stdweb} library.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-stdweb-internal-macros-0.2
