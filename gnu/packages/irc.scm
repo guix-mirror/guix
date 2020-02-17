@@ -5,7 +5,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -170,14 +170,14 @@ SILC and ICB protocols via plugins.")
 (define-public weechat
   (package
     (name "weechat")
-    (version "2.6")
+    (version "2.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://weechat.org/files/src/weechat-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0j2iflnfvv31q2l9r67r8aj3ipggqfm2r2dpy7pvdpxgwwq337ps"))))
+                "1rwrwfsy6k5bq3aasd95ydr68pjsh5ax38lmgz17prgcmyj45z2n"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -192,14 +192,17 @@ SILC and ICB protocols via plugins.")
               ("gnutls" ,gnutls)
 
               ;; Scripting language plug-ins.
-              ("guile" ,guile-2.0)
+              ("guile" ,guile-2.2)
               ("lua" ,lua-5.1)
               ("python" ,python)
               ("perl" ,perl)
               ("tcl" ,tcl)))
     (arguments
      `(#:configure-flags
-       (list "-DENABLE_TESTS=ON")       ; ‘make test’ fails otherwise
+       (list "-DENABLE_JAVASCRIPT=OFF"
+             "-DENABLE_PHP=OFF"
+             "-DENABLE_RUBY=OFF"
+             "-DENABLE_TESTS=ON")       ; ‘make test’ fails otherwise
        ;; Tests hang indefinately on non-Intel platforms.
        #:tests? ,(if (any (cute string-prefix? <> (or (%current-target-system)
                                                       (%current-system)))
