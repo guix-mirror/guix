@@ -15744,7 +15744,6 @@ UTF-32 types are provided, including support for malformed encoding.")
     (description "This crate provides import libraries for the
 i686-pc-windows-gnu target.  Please don't use this crate directly, depend on
 @code{winapi} instead.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
