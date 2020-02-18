@@ -654,7 +654,9 @@ type system, elevating types to first-class status.")
                 "0c5i3d16hp7gp9rd78vk9zc45js8bphf92m4lbb5gyi4l1yl7kkm"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("guile" ,guile-2.2)
+       ("guile-bytestructures" ,guile-bytestructures)))
     (inputs
      `(("guile" ,guile-2.2)
        ("libgit2" ,libgit2)))
