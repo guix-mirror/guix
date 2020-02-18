@@ -1346,7 +1346,7 @@ streaming protocols.")
                                         (nix-system->gnu-triplet
                                          (%current-system)))))))
                       "--disable-iwmmxt")))))))
-    (home-page "https://www.mplayerhq.hu/design7/news.html")
+    (home-page "https://www.mplayerhq.hu")
     (synopsis "Audio and video player")
     (description "MPlayer is a movie player.  It plays most MPEG/VOB, AVI,
 Ogg/OGM, VIVO, ASF/WMA/WMV, QT/MOV/MP4, RealMedia, Matroska, NUT,
