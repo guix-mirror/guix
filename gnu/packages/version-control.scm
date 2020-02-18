@@ -1580,12 +1580,14 @@ RCS, PRCS, and Aegis packages.")
        #:parallel-build? #f         ; parallel a2x commands fail spectacularly
        #:make-flags
        (list "CC=gcc" (string-append "prefix?=" (assoc-ref %outputs "out")))))
-    (inputs `(("git" ,git)))
-    (native-inputs `(("asciidoc"    ,asciidoc)
-                     ;; These are needed for the tests.
-                     ("cvs"    ,cvs)
-                     ("python" ,python-2)
-                     ("rcs"    ,rcs)))
+    (inputs
+     `(("git" ,git)
+       ("python" ,python-wrapper)))
+    (native-inputs
+     `(("asciidoc" ,asciidoc)
+       ;; These are needed for the tests.
+       ("cvs" ,cvs)
+       ("rcs" ,rcs)))
     (home-page "http://www.catb.org/esr/cvs-fast-export/")
     (synopsis "Export an RCS or CVS history as a fast-import stream")
     (description "This program analyzes a collection of RCS files in a CVS
