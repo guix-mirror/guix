@@ -392,7 +392,7 @@ driven and does not detract you from your daily work.")
 (define next-gtk-webkit
   (package
     (name "next-gtk-webkit")
-    (version "1.4.0")
+    (version "1.5.0")
     (source
      (origin
        (method git-fetch)
@@ -403,7 +403,7 @@ driven and does not detract you from your daily work.")
              (commit version)))
        (sha256
         (base32
-         "1gkmr746rqqg94698a051gv79fblc8n9dq0zg04llba44adhpmjl"))
+         "1gqkp185wcwaxr8py90hqk44nqjblrrdwvig19gizrbzr2gx2zhy"))
        (file-name (git-file-name "next" version))))
     (build-system glib-or-gtk-build-system)
     (arguments
@@ -424,11 +424,10 @@ driven and does not detract you from your daily work.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://next.atlas.engineer")
-    (synopsis "Infinitely extensible web-browser (user interface only)")
+    (synopsis "Extensible web-browser in Common Lisp")
     (description "Next is a keyboard-oriented, extensible web-browser
-inspired by Emacs and designed for power users.  The application has familiar
-key-bindings, is fully configurable and extensible in Lisp, and has powerful
-features for productive professionals.")
+designed for power users.  The application has familiar Emacs and VI
+key-bindings and is fully configurable and extensible in Common Lisp.")
     (license license:bsd-3)))
 
 (define sbcl-next-download-manager
@@ -450,7 +449,7 @@ features for productive professionals.")
     (native-inputs
      `(("trivial-features" ,sbcl-trivial-features)
        ("prove-asdf" ,sbcl-prove-asdf)))
-    (synopsis "Infinitely extensible web-browser (download manager)")))
+    (synopsis "Extensible web-browser in Common Lisp (download manager)")))
 
 (define sbcl-next-ring
   (package
@@ -464,7 +463,7 @@ features for productive professionals.")
     (native-inputs
      `(("trivial-features" ,sbcl-trivial-features)
        ("prove-asdf" ,sbcl-prove-asdf)))
-    (synopsis "Infinitely extensible web-browser (ring)")))
+    (synopsis "Extensible web-browser in Common Lisp (ring)")))
 
 (define sbcl-next-history-tree
   (package
@@ -478,7 +477,7 @@ features for productive professionals.")
     (native-inputs
      `(("trivial-features" ,sbcl-trivial-features)
        ("prove-asdf" ,sbcl-prove-asdf)))
-    (synopsis "Infinitely extensible web-browser (history-tree)")))
+    (synopsis "Extensible web-browser in Common Lisp (history-tree)")))
 
 (define sbcl-next-password-manager
   (package
@@ -498,7 +497,7 @@ features for productive professionals.")
     (native-inputs
      `(("trivial-features" ,sbcl-trivial-features)
        ("prove-asdf" ,sbcl-prove-asdf)))
-    (synopsis "Infinitely extensible web-browser (password manager)")))
+    (synopsis "Extensible web-browser in Common Lisp (password manager)")))
 
 (define sbcl-next-hooks
   (package
@@ -617,7 +616,7 @@ features for productive professionals.")
        `(("trivial-features" ,sbcl-trivial-features)
          ("trivial-types" ,sbcl-trivial-types)
          ("prove-asdf" ,sbcl-prove-asdf)))
-      (synopsis "Infinitely extensible web-browser (with Lisp development files)"))))
+      (synopsis "Extensible web-browser in Common Lisp"))))
 
 (define-public sbcl-next
   (deprecated-package "sbcl-next" next))
