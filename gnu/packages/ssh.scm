@@ -291,7 +291,8 @@ Additionally, various channel-specific options can be negotiated.")
                      ("libtool" ,libtool)
                      ("texinfo" ,texinfo)
                      ("pkg-config" ,pkg-config)
-                     ("which" ,which)))
+                     ("which" ,which)
+                     ("guile" ,guile-2.2))) ;needed when cross-compiling.
     (inputs `(("guile" ,guile-2.2)
               ("libssh" ,libssh)
               ("libgcrypt" ,libgcrypt)))
@@ -306,6 +307,9 @@ libssh library.")
   (package
     (inherit guile-ssh)
     (name "guile2.0-ssh")
+    (native-inputs
+     `(("guile" ,guile-2.0) ;needed when cross-compiling.
+       ,@(alist-delete "guile" (package-native-inputs guile-ssh))))
     (inputs `(("guile" ,guile-2.0)
               ,@(alist-delete "guile" (package-inputs guile-ssh))))))
 
@@ -313,6 +317,9 @@ libssh library.")
   (package
     (inherit guile-ssh)
     (name "guile3.0-ssh")
+    (native-inputs
+     `(("guile" ,guile-next) ;needed when cross-compiling.
+       ,@(alist-delete "guile" (package-native-inputs guile-ssh))))
     (inputs `(("guile" ,guile-next)
               ,@(alist-delete "guile" (package-inputs guile-ssh))))))
 
