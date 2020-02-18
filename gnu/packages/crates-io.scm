@@ -14685,7 +14685,7 @@ Unicode character database.")
 (define-public rust-ucd-util-0.1
   (package
     (name "rust-ucd-util")
-    (version "0.1.5")
+    (version "0.1.7")
     (source
       (origin
         (method url-fetch)
@@ -14693,13 +14693,12 @@ Unicode character database.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0x088q5z0m09a2jqcfgsnq955y8syn1mgn35cl78qinkxm4kp6zs"))))
+          "13ng291mkc9b132jjf4laj76f5nqm5qd2447rm8bry3wxbdc5kaw"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/BurntSushi/ucd-generate")
     (synopsis "library for working with the Unicode character database")
     (description "This package provides a small utility library for working
 with the Unicode character database.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
