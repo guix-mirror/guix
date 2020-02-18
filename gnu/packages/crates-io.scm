@@ -4517,12 +4517,14 @@ the futures-rs library.")
          (base32
           "1r4d0gy73hdxkh5g1lrhl1kjnwp6mywjgcj70v0z78b921da42a3"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-futures-core-preview" ,rust-futures-core-preview-0.3))))
     (home-page "https://rust-lang-nursery.github.io/futures-rs/")
     (synopsis  "Asynchronous `Sink` trait for the futures-rs library")
     (description
      "This package provides the asynchronous @code{Sink} trait for the
 futures-rs library.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
