@@ -14844,7 +14844,7 @@ boundaries according to Unicode Standard Annex #29 rules.")
 (define-public rust-unicode-width-0.1
   (package
     (name "rust-unicode-width")
-    (version "0.1.6")
+    (version "0.1.7")
     (source
       (origin
         (method url-fetch)
@@ -14852,13 +14852,17 @@ boundaries according to Unicode Standard Annex #29 rules.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "082f9hv1r3gcd1xl33whjhrm18p0w9i77zhhhkiccb5r47adn1vh"))))
+          "0yflmxkxmm89ckrb3sz58whn491aycrj8cxra0hzzlb72x9rvana"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
+        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1.0)
+        ("rust-rustc-std-workspace-std" ,rust-rustc-std-workspace-std-1.0))))
     (home-page "https://github.com/unicode-rs/unicode-width")
     (synopsis "Determine displayed width according to Unicode rules")
     (description "This crate allows you to determine displayed width of
 @code{char} and @code{str} types according to Unicode Standard Annex #11 rules.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
