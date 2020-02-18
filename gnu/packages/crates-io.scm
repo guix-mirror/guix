@@ -1352,6 +1352,25 @@ little-endian.")
      "Types and traits for working with bytes.")
     (license license:expat)))
 
+(define-public rust-bytes-0.3
+  (package
+    (inherit rust-bytes-0.4)
+    (name "rust-bytes")
+    (version "0.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "bytes" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "09vcp9kh12pva2xn2ir79k90v1a0id8f4sdv1abn5ifw2bqsyaf1"))))
+    (arguments
+     `(#:tests? #f      ; Tests not distributed in crate.
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.3))))))
+
 (define-public rust-c2-chacha-0.2
   (package
     (name "rust-c2-chacha")
