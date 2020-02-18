@@ -14072,10 +14072,12 @@ futures efficiently")
          (base32
           "1y7q83qfk9ljjfvs82b453pmz9x1v3d6kr4x55j8mal01s6790dw"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-futures" ,rust-futures-0.1))))
     (home-page  "https://github.com/carllerche/tokio-mock-task")
     (synopsis "Mock a Tokio task")
-    (description "Mock a Tokio task")
-    (properties '((hidden? . #t)))
+    (description "Mock a Tokio task.")
     (license license:expat)))
 
 (define-public rust-tokio-process-0.2
