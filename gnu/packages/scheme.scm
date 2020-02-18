@@ -11,6 +11,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
 ;;; Copyright © 2018 Gabriel Hondet <gabrielhondet@gmail.com>
+;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,7 +32,7 @@
   #:use-module (gnu packages)
   #:use-module ((guix licenses)
                 #:select (gpl2+ lgpl2.0+ lgpl2.1+ lgpl3+ asl2.0 bsd-3
-                          cc-by-sa4.0 non-copyleft))
+                          cc-by-sa4.0 non-copyleft expat))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -394,7 +395,7 @@ implementation techniques and as an expository tool.")
 (define-public racket
   (package
     (name "racket")
-    (version "7.3")
+    (version "7.6")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "http://mirror.racket-lang.org/installers/"
@@ -404,7 +405,7 @@ implementation techniques and as an expository tool.")
                           version "/racket-" version "-src.tgz")))
               (sha256
                (base32
-                "0h6072njhb87rkz4arijvahxgjzn8r14s4wns0ijvxm89bg136yl"))
+                "0yagy7qrnz96gwafnj3whh2vs54788k1ci3vkm100h68gsw638b8"))
               (patches (search-patches
                         "racket-store-checksum-override.patch"))))
     (build-system gnu-build-system)
@@ -502,14 +503,15 @@ implementation techniques and as an expository tool.")
        ("sqlite" ,sqlite)
        ("unixodbc" ,unixodbc)
        ("libedit" ,libedit)))
-    (home-page "http://racket-lang.org")
+    (home-page "https://racket-lang.org")
     (synopsis "Implementation of Scheme and related languages")
     (description
      "Racket is an implementation of the Scheme programming language (R5RS and
 R6RS) and related languages, such as Typed Racket.  It features a compiler and
 a virtual machine with just-in-time native compilation, as well as a large set
 of libraries.")
-    (license lgpl2.0+)))
+    ;; https://download.racket-lang.org/license.html
+    (license (list lgpl3+ asl2.0 expat))))
 
 (define-public gambit-c
   (package

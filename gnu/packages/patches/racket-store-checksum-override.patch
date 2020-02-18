@@ -11,26 +11,15 @@ See <https://debbugs.gnu.org/30680> for details.
 ---
 --- a/collects/compiler/private/cm-minimal.rkt
 +++ b/collects/compiler/private/cm-minimal.rkt
-@@ -7,6 +7,7 @@
+@@ -6,6 +6,7 @@
           racket/list
           racket/path
           racket/promise
 +         racket/string
           file/sha1
-          setup/collects
           setup/cross-system
-@@ -940,6 +941,10 @@
-       #f
-       (list src-hash recorded-hash)))
- 
-+(define (store-reference? path)
-+  (let ([store-prefix (or (getenv "NIX_STORE") "/gnu/store")])
-+    (string-prefix? (path->string path) store-prefix)))
-+
- (define (rkt->ss p)
-   (if (path-has-extension? p #".rkt")
-       (path-replace-extension p #".ss")
-@@ -1015,6 +1020,7 @@
+          compiler/compilation-path
+@@ -268,7 +269,8 @@
                 (trace-printf "newer src... ~a > ~a" path-time path-zo-time)
                 (maybe-compile-zo deps path->mode roots path orig-path read-src-syntax up-to-date collection-cache new-seen
                                   #:trying-sha1? sha1-only?)]
@@ -40,3 +29,14 @@ See <https://debbugs.gnu.org/30680> for details.
                 => (lambda (difference)
                      (trace-printf "different src hash ~a for ~a..." difference path)
                      (maybe-compile-zo deps path->mode roots path orig-path read-src-syntax up-to-date collection-cache new-seen
+@@ -1012,5 +1014,9 @@
+       #f
+       (list src-hash recorded-hash)))
+
++(define (store-reference? path)
++  (let ([store-prefix (or (getenv "NIX_STORE") "/gnu/store")])
++    (string-prefix? (path->string path) store-prefix)))
++
+ ;; Make sure `recompile-from` is machine-independent so that
+ ;; recompilation makes sense.
+ ;; The compilation lock must is held for the source of `recompile-from`.
