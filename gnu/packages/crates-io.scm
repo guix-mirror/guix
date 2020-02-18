@@ -13071,7 +13071,6 @@ cryptographic implementations.")
     (synopsis "Helper test traits for synstructure doctests")
     (description
      "This package provides helper test traits for synstructure doctests.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-syntex-0.58
