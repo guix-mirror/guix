@@ -13,7 +13,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017, 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 nee <nee.git@hidamari.blue>
 ;;; Copyright © 2018 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -2621,7 +2621,7 @@ tune-in sender list from @url{http://opml.radiotime.com}.")
 (define-public pianobar
   (package
     (name "pianobar")
-    (version "2016.06.02")
+    (version "2019.02.14")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2630,10 +2630,10 @@ tune-in sender list from @url{http://opml.radiotime.com}.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "058fbdxp7n35hxwy3b8slfy4pb4n63cb173vfmywqa06wh1dv6f6"))))
+                "1bfabkj3m9kmhxl64w4azmi0xf7w52fmqfbw2ag28hbb5yy01k1m"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no tests
+     `(#:tests? #f                      ; no tests
        #:make-flags (list "CC=gcc" "CFLAGS=-std=c99"
                           (string-append "PREFIX=" %output))
        #:phases (modify-phases %standard-phases
@@ -2643,7 +2643,7 @@ tune-in sender list from @url{http://opml.radiotime.com}.")
        ("curl" ,curl)
        ("libgcrypt" ,libgcrypt)
        ("json-c" ,json-c)
-       ("ffmpeg" ,ffmpeg-3.4)))
+       ("ffmpeg" ,ffmpeg)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://6xq.net/pianobar/")
