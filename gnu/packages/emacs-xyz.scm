@@ -14300,8 +14300,8 @@ perform regression test for packages that provide font-lock rules.")
       (license license:gpl3+))))
 
 (define-public emacs-racket-mode
-  (let ((commit "2a9a102a097d04fbcd2a443fec84078036c2e277")
-        (revision "4"))
+  (let ((commit "5f396fa91fc22310f5c519aa658436a1a5251846")
+        (revision "5"))
     (package
       (name "emacs-racket-mode")
       (version (git-version "0.0.2" revision commit))
@@ -14314,15 +14314,15 @@ perform regression test for packages that provide font-lock rules.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1n71dxxh62jixq20b5haapv651dxc0zyrxpl1d0yqsg8ncp726bl"))))
+           "1214y08i0c51d1vzw9jzyf79vyfqizdy6m0980qs13qbdwsj32v0"))))
       (build-system emacs-build-system)
       (arguments
        `(#:include '("\\.el$" "\\.rkt$")))
       (propagated-inputs
        `(("emacs-faceup" ,emacs-faceup)
          ("emacs-s" ,emacs-s)))
-      (home-page "https://github.com/greghendershott/racket-mode")
-      (synopsis "Major mode for Racket language")
+      (home-page "https://www.racket-mode.com/")
+      (synopsis "Major mode for the Racket language")
       (description "@code{racket-mode} provides:
 
 @itemize
