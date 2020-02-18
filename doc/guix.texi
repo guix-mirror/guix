@@ -35,7 +35,7 @@ Copyright @copyright{} 2016, 2017, 2018 Chris Marusich@*
 Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016, 2017 Nikita Gillmann@*
-Copyright @copyright{} 2016, 2017, 2018, 2019 Jan Nieuwenhuizen@*
+Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Jan Nieuwenhuizen@*
 Copyright @copyright{} 2016 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
 Copyright @copyright{} 2016, 2017, 2018, 2019 Christopher Baines@*
@@ -28761,10 +28761,8 @@ Binutils, libc, and the other packages mentioned above---the
 @dfn{bootstrap binaries}.
 
 These bootstrap binaries are ``taken for granted'', though we can also
-re-create them if needed (more on that later).
-
-For @code{i686-linux} and @code{x86_64-linux} the Guix bootstrap process is
-more elaborate, @pxref{Reduced Binary Seed Bootstrap}.
+re-create them if needed (@pxref{Preparing to Use the Bootstrap
+Binaries}).
 
 @menu
 * Reduced Binary Seed Bootstrap::  A Bootstrap worthy of GNU.
@@ -28780,60 +28778,71 @@ Coreutils, Awk, Findutils, `sed', and `grep' and Guile, GCC, Binutils, and the
 GNU C Library (@pxref{Bootstrapping}).  Usually, these bootstrap binaries are
 ``taken for granted.''
 
-Taking these binaries for granted means that we consider them to be a correct
-and trustworthy `seed' for building the complete system.  Therein lies a
-problem: the current combined size of these bootstrap binaries is about 250MB
-(@pxref{Bootstrappable Builds,,, mes, GNU Mes}).  Auditing or even inspecting
-these is next to impossible.
+Taking the bootstrap binaries for granted means that we consider them to
+be a correct and trustworthy ``seed'' for building the complete system.
+Therein lies a problem: the combined size of these bootstrap binaries is
+about 250MB (@pxref{Bootstrappable Builds,,, mes, GNU Mes}).  Auditing
+or even inspecting these is next to impossible.
 
-For @code{i686-linux} and @code{x86_64-linux}, Guix now features a ``Reduced
-Binary Seed'' bootstrap @footnote{We would like to say: ``Full Source
-Bootstrap'' and while we are working towards that goal it would be hyperbole
-to use that term for what we do now.}.
+For @code{i686-linux} and @code{x86_64-linux}, Guix now features a
+``Reduced Binary Seed'' bootstrap @footnote{We would like to say: ``Full
+Source Bootstrap'' and while we are working towards that goal it would
+be hyperbole to use that term for what we do now.}.
 
 The Reduced Binary Seed bootstrap removes the most critical tools---from a
 trust perspective---from the bootstrap binaries: GCC, Binutils and the GNU C
 Library are replaced by: @code{bootstrap-mescc-tools} (a tiny assembler and
 linker) and @code{bootstrap-mes} (a small Scheme Interpreter and a C compiler
-written in Scheme and the Mes C Library, built for TinyCC and for GCC).  Using
-these new binary seeds and a new set of
-@c
-packages@footnote{@c
-nyacc-boot,
-mes-boot,
-tcc-boot0,
-tcc-boot,
-make-mesboot0,
-diffutils-mesboot,
-binutils-mesboot0,
-gcc-core-mesboot,
-mesboot-headers,
-glibc-mesboot0,
-gcc-mesboot0,
-binutils-mesboot,
-make-mesboot,
-gcc-mesboot1,
-gcc-mesboot1-wrapper,
-glibc-headers-mesboot,
-glibc-mesboot,
-gcc-mesboot,
-and
-gcc-mesboot-wrapper.
-}
-@c
-the ``missing'' Binutils, GCC, and the GNU C Library are built from source.
-From here on the more traditional bootstrap process resumes.  This approach
-has reduced the bootstrap binaries in size to about 130MB.  Work is ongoing to
-reduce this further.  If you are interested, join us on @code{#bootstrappable}
-on the Freenode IRC network.
+written in Scheme and the Mes C Library, built for TinyCC and for GCC).
 
-@c ./pre-inst-env guix graph --type=bag -e '(begin (use-modules (guix packages)) (%current-system "i686-linux") (@@ (gnu packages commencement) gcc-mesboot))' > doc/images/gcc-mesboot-bag-graph.dot
-@c dot -T png doc/images/gcc-mesboot-bag-graph.dot > doc/images/gcc-mesboot-bag-graph.png
+Using these new binary seeds the ``missing'' Binutils, GCC, and the GNU
+C Library are built from source.  From here on the more traditional
+bootstrap process resumes.  This approach has reduced the bootstrap
+binaries in size to about 145MB in Guix v1.1.
 
-Below is the generated dependency graph for @code{gcc-mesboot}, the bootstrap
-compiler used to build the rest of GuixSD.
+The next step that Guix has taken is to replace the shell and all its
+utilities with implementations in Guile Scheme, the @emph{Scheme-only
+bootstrap}.  Gash (@pxref{Gash,,, gash, The Gash manual}) is a
+POSIX-compatible shell that replaces Bash, and it comes with Gash Utils
+which has minimalist replacements for Awk, the GNU Core Utilities, Grep,
+Gzip, Sed, and Tar.  The rest of the bootstrap binary seeds that were
+removed are now built from source.
 
-@image{images/gcc-mesboot-bag-graph,6in,,Dependency graph of the gcc-mesboot}
+Building the GNU System from source is currently only possibly by adding
+some historical GNU packages as intermediate steps@footnote{Packages
+such as @code{gcc-2.95.3}, @code{binutils-2.14}, @code{glibc-2.2.5},
+@code{gzip-1.2.4}, @code{tar-1.22}, and some others.  For details, see
+@file{gnu/packages/commencement.scm}.}.  As Gash and Gash Utils mature,
+and GNU packages become more bootstrappable again (e.g., new releases of
+GNU Sed will also ship as gzipped tarballs again, as alternative to the
+hard to bootstrap @code{xz}-compression), this set of added packages can
+hopefully be reduced again.
+
+The graph below shows the resulting dependency graph for
+@code{gcc-core-mesboot0}, the bootstrap compiler used for the
+traditional bootstrap of the rest of the Guix System.
+
+@c ./pre-inst-env guix graph -e '(@@ (gnu packages commencement) gcc-core-mesboot0)' | sed -re 's,((bootstrap-mescc-tools|bootstrap-mes|guile-bootstrap).*shape =) box,\1 ellipse,' > doc/images/gcc-core-mesboot0-graph.dot
+@image{images/gcc-core-mesboot0-graph,6in,,Dependency graph of gcc-core-mesboot0}
+
+The only significant binary bootstrap seeds that remain@footnote{
+Ignoring the 68KB @code{mescc-tools}; that will be removed later,
+together with @code{mes}.} are a Scheme intepreter and a Scheme
+compiler: GNU Mes and GNU Guile@footnote{Not shown in this graph are the
+static binaries for @file{bash}, @code{tar}, and @code{xz} that are used
+to get Guile running.}.
+
+This further reduction has brought down the size of the binary seed to
+about 60MB for @code{i686-linux} and @code{x86_64-linux}.
+
+Work is ongoing to remove all binary blobs from our free software
+bootstrap stack, working towards a Full Source Bootstrap.  Also ongoing
+is work to bring these bootstraps to the @code{arm-linux} and
+@code{aarch64-linux} architectures and to the Hurd.
+
+If you are interested, join us on @samp{#bootstrappable} on the Freenode
+IRC network or discuss on @email{bug-mes@@gnu.org} or
+@email{gash-devel@@nongnu.org}.
 
 @node Preparing to Use the Bootstrap Binaries
 @section Preparing to Use the Bootstrap Binaries
@@ -28853,7 +28862,7 @@ guix graph -t derivation \
   | dot -Tps > gcc.ps
 @end example
 
-or, for the Reduced Binary Seed bootstrap
+or, for the further Reduced Binary Seed bootstrap
 
 @example
 guix graph -t derivation \
