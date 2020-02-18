@@ -13524,7 +13524,7 @@ writing colored text to a terminal.")
 (define-public rust-termion-1.5
   (package
     (name "rust-termion")
-    (version "1.5.3")
+    (version "1.5.5")
     (source
       (origin
         (method url-fetch)
@@ -13532,13 +13532,19 @@ writing colored text to a terminal.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0c634rg520zjjfhwnxrc2jbfjz7db0rcpsjs1qici0nyghpv53va"))))
+          "01f9787d5nx445bqbj644v38bn0hl2swwjy9baz0dnbqi6fyqb62"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; Tests want a terminal.
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-numtoa" ,rust-numtoa-0.1)
+        ("rust-redox-syscall" ,rust-redox-syscall-0.1)
+        ("rust-redox-termios" ,rust-redox-termios-0.1))))
     (home-page "https://gitlab.redox-os.org/redox-os/termion")
     (synopsis "Library for manipulating terminals")
     (description
      "This package provides a bindless library for manipulating terminals.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-termios-0.3
