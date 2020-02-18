@@ -13554,6 +13554,9 @@ writing colored text to a terminal.")
          (base32
           "09any1p4jp4bphvb5ikagnvwjc3xn2djchy96nkpa782xb2j1dkj"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2))))
     (home-page  "https://github.com/dcuddeback/termios-rs")
     (synopsis "Safe bindings for the termios library")
     (description
@@ -13561,7 +13564,6 @@ writing colored text to a terminal.")
 to the terminal I/O interface implemented by Unix operating systems.  The safe
 bindings are a small wrapper around the raw C functions, which converts integer
 return values to @code{std::io::Result} to indicate success or failure.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-test-assembler-0.1
