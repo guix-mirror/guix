@@ -14631,7 +14631,6 @@ serializing Rust structures.")
 compile time.  It currently supports bits, unsigned integers, and signed
 integers.  It also provides a type-level array of type-level numbers, but its
 implementation is incomplete.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
