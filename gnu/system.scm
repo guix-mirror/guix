@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Meiyo Peng <meiyo.peng@gmail.com>
+;;; Copyright © 2020 Danny Milosavljevic <dannym@scratchpost.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -168,6 +169,8 @@
 
   (kernel operating-system-kernel                 ; package
           (default linux-libre))
+  (kernel-loadable-modules operating-system-kernel-loadable-modules
+                    (default '()))                ; list of packages
   (kernel-arguments operating-system-user-kernel-arguments
                     (default '("quiet")))         ; list of gexps/strings
   (bootloader operating-system-bootloader)        ; <bootloader-configuration>
@@ -472,9 +475,16 @@ OS."
   "Return the basic entries of the 'system' directory of OS for use as the
 value of the SYSTEM-SERVICE-TYPE service."
   (let ((locale (operating-system-locale-directory os)))
-    (mlet %store-monad ((kernel -> (operating-system-kernel os))
-                        (initrd -> (operating-system-initrd-file os))
-                        (params    (operating-system-boot-parameters-file os)))
+    (mlet* %store-monad ((kernel -> (operating-system-kernel os))
+                         (modules ->
+                          (operating-system-kernel-loadable-modules os))
+                         (kernel
+                          (profile-derivation
+                           (packages->manifest
+                            (cons kernel modules))
+                           #:hooks (list linux-module-database)))
+                         (initrd -> (operating-system-initrd-file os))
+                         (params    (operating-system-boot-parameters-file os)))
       (return `(("kernel" ,kernel)
                 ("parameters" ,params)
                 ("initrd" ,initrd)

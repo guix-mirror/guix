@@ -11221,6 +11221,10 @@ The package object of the operating system kernel to use@footnote{Currently
 only the Linux-libre kernel is supported.  In the future, it will be
 possible to use the GNU@tie{}Hurd.}.
 
+@item @code{kernel-loadable-modules} (default: '())
+A list of objects (usually packages) to collect loadable kernel modules
+from--e.g. @code{(list ddcci-driver-linux)}.
+
 @item @code{kernel-arguments} (default: @code{'("quiet")})
 List of strings or gexps representing additional arguments to pass on
 the command-line of the kernel---e.g., @code{("console=ttyS0")}.

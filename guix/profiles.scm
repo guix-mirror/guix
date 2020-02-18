@@ -10,6 +10,7 @@
 ;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Danny Milosavljevic <dannym@scratchpost.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -139,7 +140,9 @@
             %current-profile
             ensure-profile-directory
             canonicalize-profile
-            user-friendly-profile))
+            user-friendly-profile
+
+            linux-module-database))
 
 ;;; Commentary:
 ;;;
@@ -1136,6 +1139,51 @@ for both major versions of GTK+."
                             `((type . profile-hook)
                               (hook . gtk-im-modules)))
           (return #f)))))
+
+(define (linux-module-database manifest)
+  "Return a derivation that unites all the kernel modules of the manifest
+and creates the dependency graph of all these kernel modules.
+
+This is meant to be used as a profile hook."
+  (define kmod  ; lazy reference
+    (module-ref (resolve-interface '(gnu packages linux)) 'kmod))
+  (define build
+     (with-imported-modules
+     (source-module-closure '((guix build utils)
+                              (gnu build linux-modules)))
+      #~(begin
+          (use-modules (ice-9 ftw)
+                       (ice-9 match)
+                       (srfi srfi-1) ; append-map
+                       (gnu build linux-modules))
+          (let* ((inputs '#$(manifest-inputs manifest))
+                 (module-directories
+                  (map (lambda (directory)
+                         (string-append directory "/lib/modules"))
+                       inputs))
+                 (directory-entries
+                  (lambda (directory)
+                    (scandir directory (lambda (basename)
+                                         (not
+                                           (string-prefix? "." basename))))))
+                 ;; Note: Should usually result in one entry.
+                 (versions (delete-duplicates
+                            (append-map directory-entries
+                                        module-directories))))
+              (match versions
+               ((version)
+                (let ((old-path (getenv "PATH")))
+                  (setenv "PATH" #+(file-append kmod "/bin"))
+                  (make-linux-module-directory inputs version #$output)
+                  (setenv "PATH" old-path)))
+               (_ (error "Specified Linux kernel and Linux kernel modules
+are not all of the same version")))))))
+  (gexp->derivation "linux-module-database" build
+                    #:local-build? #t
+                    #:substitutable? #f
+                    #:properties
+                    `((type . profile-hook)
+                      (hook . linux-module-database))))
 
 (define (xdg-desktop-database manifest)
   "Return a derivation that builds the @file{mimeinfo.cache} database from

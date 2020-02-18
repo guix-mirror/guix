@@ -654,7 +654,6 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
      `(("perl" ,perl)
        ("bc" ,bc)
        ("openssl" ,openssl)
-       ("kmod" ,kmod)
        ("elfutils" ,elfutils)  ; Needed to enable CONFIG_STACK_VALIDATION
        ("flex" ,flex)
        ("bison" ,bison)
@@ -678,6 +677,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                   (guix build utils)
                   (srfi srfi-1)
                   (srfi srfi-26)
+                  (ice-9 ftw)
                   (ice-9 match))
        #:phases
        (modify-phases %standard-phases
@@ -750,8 +750,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
            (lambda* (#:key inputs native-inputs outputs #:allow-other-keys)
              (let* ((out    (assoc-ref outputs "out"))
                     (moddir (string-append out "/lib/modules"))
-                    (dtbdir (string-append out "/lib/dtbs"))
-                    (kmod   (assoc-ref (or native-inputs inputs) "kmod")))
+                    (dtbdir (string-append out "/lib/dtbs")))
                ;; Install kernel image, kernel configuration and link map.
                (for-each (lambda (file) (install-file file out))
                          (find-files "." "^(\\.config|bzImage|zImage|Image|vmlinuz|System\\.map|Module\\.symvers)$"))
@@ -763,12 +762,29 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                ;; Install kernel modules
                (mkdir-p moddir)
                (invoke "make"
-                       (string-append "DEPMOD=" kmod "/bin/depmod")
+                       ;; Disable depmod because the Guix system's module directory
+                       ;; is an union of potentially multiple packages.  It is not
+                       ;; possible to use depmod to usefully calculate a dependency
+                       ;; graph while building only one of those packages.
+                       "DEPMOD=true"
                        (string-append "MODULE_DIR=" moddir)
                        (string-append "INSTALL_PATH=" out)
                        (string-append "INSTALL_MOD_PATH=" out)
                        "INSTALL_MOD_STRIP=1"
-                       "modules_install")))))
+                       "modules_install")
+               (let* ((versions (filter (lambda (name)
+                                          (not (string-prefix? "." name)))
+                                        (scandir moddir)))
+                      (version (match versions
+                                ((x) x))))
+                 ;; There are symlinks to the build and source directory,
+                 ;; both of which will point to target /tmp/guix-build*
+                 ;; and thus not be useful in a profile.  Delete the symlinks.
+                 (false-if-file-not-found
+                  (delete-file (string-append moddir "/" version "/build")))
+                 (false-if-file-not-found
+                  (delete-file (string-append moddir "/" version "/source"))))
+               #t))))
        #:tests? #f))
     (home-page "https://www.gnu.org/software/linux-libre/")
     (synopsis "100% free redistribution of a cleaned Linux kernel")
