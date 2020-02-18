@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -204,6 +204,7 @@ MARIONETTE.  Raise an error on failure."
                  (catch 'system-error
                    (lambda ()
                      (connect sock AF_INET INADDR_LOOPBACK ,port)
+                     (close-port sock)
                      'success)
                    (lambda args
                      (if (< i ,timeout)
@@ -227,6 +228,7 @@ accept connections in MARIONETTE.  Raise an error on failure."
                  (catch 'system-error
                    (lambda ()
                      (connect sock AF_UNIX ,file-name)
+                     (close-port sock)
                      'success)
                    (lambda args
                      (if (< i ,timeout)
