@@ -262,11 +262,12 @@ pure Scheme to Tar and decompression in one easy step.")
     (build-system trivial-build-system)
     (arguments
      `(#:guile ,%bootstrap-guile
-       #:modules ((guix build utils)
-                  (srfi srfi-26))
+       #:modules ((guix build utils))
+
        #:builder (begin
                    (use-modules (guix build utils)
                                 (srfi srfi-26))
+
                    (let* ((mes (assoc-ref %build-inputs "mes"))
                           (gash (assoc-ref %build-inputs "gash"))
                           (mes-bin (string-append mes "/bin"))
