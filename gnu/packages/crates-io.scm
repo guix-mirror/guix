@@ -13239,6 +13239,15 @@ syntax extension expansion.")
          (base32
           "1lr6v3cpkfxd2lk5ll2jd8wr1xdskwj35smnh5sfb8xvzzxnn6dk"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; Test tarballs not included in crate.
+       #:cargo-inputs
+       (("rust-filetime" ,rust-filetime-0.2)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-redox-syscall" ,rust-redox-syscall-0.1)
+        ("rust-xattr" ,rust-xattr-0.2))
+       #:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir-0.3))))
     (home-page "https://github.com/alexcrichton/tar-rs")
     (synopsis "Tar file reading/writing for Rust")
     (description
@@ -13247,7 +13256,6 @@ writer.  This library does not currently handle compression, but it is abstract
 over all I/O readers and writers.  Additionally, great lengths are taken to
 ensure that the entire contents are never required to be entirely resident in
 memory all at once.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
