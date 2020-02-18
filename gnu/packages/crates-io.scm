@@ -14566,7 +14566,6 @@ serializing Rust structures.")
     (home-page "https://github.com/reem/rust-typeable")
     (synopsis "Exposes Typeable, for getting TypeIds at runtime")
     (description "Exposes Typeable, for getting TypeIds at runtime.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-typed-arena-1.4
