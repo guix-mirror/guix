@@ -4350,11 +4350,11 @@ featuring zero allocations, composability, and iterator-like interfaces.")
          (base32
           "1xaq8m609k6cz8xydwhwp8xxyxigabcw1w9ngycfy0bnkg7iq52b"))))
     (build-system cargo-build-system)
+    (arguments '(#:tests? #f))
     (home-page "https://rust-lang-nursery.github.io/futures-rs/")
     (synopsis "Core traits and types in for the @code{futures} library.")
     (description "This crate provides the core traits and types in for the
 @code{futures} library.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
