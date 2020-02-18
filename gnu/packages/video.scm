@@ -1284,7 +1284,7 @@ streaming protocols.")
        ("ffmpeg" ,ffmpeg)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
-;;        ("giflib" ,giflib) ; uses QuantizeBuffer, requires version >= 5
+       ("giflib" ,giflib)
        ("lame" ,lame)
        ("libass" ,libass)
        ("libdvdcss" ,libdvdcss)
