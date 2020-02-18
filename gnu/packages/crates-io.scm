@@ -14927,7 +14927,6 @@ or XID_Continue properties according to Unicode Standard Annex #31.")
     (synopsis "Remove a column of leading whitespace from a string")
     (description "This crate allows you to remove a column of leading
 whitespace from a string.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
