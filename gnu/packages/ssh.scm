@@ -12,6 +12,7 @@
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2018 Manuel Graf <graf@init.at>
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
+;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -227,7 +228,7 @@ Additionally, various channel-specific options can be negotiated.")
 (define-public guile-ssh
   (package
     (name "guile-ssh")
-    (version "0.11.3")
+    (version "0.12.0")
     (home-page "https://github.com/artyom-poptsov/guile-ssh")
     (source (origin
               (method git-fetch)
@@ -237,31 +238,12 @@ Additionally, various channel-specific options can be negotiated.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "03bv3hwp2s8f0bqgfjaan9jx4dyab0abv27n2zn2g0izlidv0vl6"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; libssh >= 0.8.0 no longer provides libssh_threads: see
-                  ;; <https://github.com/artyom-poptsov/guile-ssh/issues/9>.
-                  (substitute* "libguile-ssh/Makefile.am"
-                    (("-lssh_threads") ""))
-
-                  ;; This test would wrongfully pick DSS keys when running on
-                  ;; libssh >= 0.8.0, which fails:
-                  ;; <https://github.com/artyom-poptsov/guile-ssh/issues/10>.
-                  (substitute* "tests/server.scm"
-                    (("= %libssh-minor-version 7")
-                     ">= %libssh-minor-version 7"))
-
-                  ;; Allow builds with Guile 3.0.
-                  (substitute* "configure.ac"
-                    (("^GUILE_PKG.*$")
-                     "GUILE_PKG([3.0 2.2 2.0])\n"))
-                  #t))))
+                "054hd9rzfhb48gc1hw3rphhp0cnnd4bs5qmidy5ygsyvy9ravlad"))
+              (modules '((guix build utils)))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
     (arguments
-     '(;; It makes no sense to build libguile-ssh.a.
+     `(;; It makes no sense to build libguile-ssh.a.
        #:configure-flags '("--disable-static")
 
        #:phases (modify-phases %standard-phases
@@ -280,6 +262,15 @@ Additionally, various channel-specific options can be negotiated.")
                           (("\"libguile-ssh\"")
                            (string-append "\"" lib "/libguile-ssh\"")))
                         #t)))
+                  ,@(if (%current-target-system)
+                        '()
+                        '((add-before 'check 'fix-guile-path
+                             (lambda* (#:key inputs #:allow-other-keys)
+                               (let ((guile (assoc-ref inputs "guile")))
+                                 (substitute* "tests/common.scm"
+                                   (("/usr/bin/guile")
+                                    (string-append guile "/bin/guile")))
+                                 #t)))))
                   (add-after 'install 'remove-bin-directory
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
@@ -322,32 +313,6 @@ libssh library.")
   (package
     (inherit guile-ssh)
     (name "guile3.0-ssh")
-    (arguments
-     (substitute-keyword-arguments (package-arguments guile-ssh)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-before 'bootstrap 'delete-old-guile-m4
-             (lambda _
-               ;; The old 'guile.m4' that's shipped would fail to recognize
-               ;; Guile 2.9 as "3.0".
-               (delete-file "m4/guile.m4")
-               #t))
-           (add-before 'build 'adjust-for-guile3
-             (lambda _
-               ;; Adjust for things that are deprecated in 2.2 and removed in
-               ;; 3.0.
-               (substitute* "tests/common.scm"
-                 (("define-module \\(tests common\\)")
-                  "define-module (tests common)
-  #:use-module (ice-9 threads)\n"))
-               (substitute* "modules/ssh/tunnel.scm"
-                 (("define-module \\(ssh tunnel\\)")
-                  "define-module (ssh tunnel)
-  #:use-module (ice-9 threads)"))
-               (substitute* "modules/srfi/srfi-64.upstream.scm"
-                 (("_IOLBF")
-                  "'line"))
-               #t))))))
     (inputs `(("guile" ,guile-next)
               ,@(alist-delete "guile" (package-inputs guile-ssh))))))
 
