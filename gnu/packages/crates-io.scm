@@ -14444,7 +14444,7 @@ serializing Rust structures.")
 (define-public rust-tracing-core-0.1
   (package
     (name "rust-tracing-core")
-    (version "0.1.2")
+    (version "0.1.9")
     (source
       (origin
         (method url-fetch)
@@ -14452,13 +14452,15 @@ serializing Rust structures.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "01fa73wzw2m5ybi3kkd52dgrw97mgc3i6inmhwys46ab28giwnxi"))))
+          "0y0rcvvqq89yaiz0qdx88byxgz8j6hsm9slq8d5vvf3jwc8nz90k"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1))))
     (home-page "https://tokio.rs")
     (synopsis "Core primitives for application-level tracing")
     (description
      "Core primitives for application-level tracing.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
