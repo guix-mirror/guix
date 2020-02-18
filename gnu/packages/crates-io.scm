@@ -7772,12 +7772,10 @@ prove a function can't ever panic.")
     (license (list license:asl2.0
                    license:expat))))
 
-;; This package requires features which are unavailable
-;; on the stable releases of Rust.
 (define-public rust-nodrop-union-0.1
   (package
     (name "rust-nodrop-union")
-    (version "0.1.10")
+    (version "0.1.11")
     (source
       (origin
         (method url-fetch)
@@ -7785,14 +7783,14 @@ prove a function can't ever panic.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0jsnkdn9l8jlmb9h4wssi76sxnyxwnyi00p6y1p2gdq7c1gdw2b7"))))
+          "1h59pph19rxanyqcaid8pg73s7wmzdx3zhjv5snlim5qx606zxkc"))))
     (build-system cargo-build-system)
+    (arguments (#:skip-build? #t))      ; Depends on features not in stable Rust.
     (home-page "https://github.com/bluss/arrayvec")
     (synopsis "Wrapper type to inhibit drop (destructor)")
     (description "This package provides a wrapper type to inhibit drop
-(destructor).  Implementation crate for nodrop, the untagged unions
+(destructor).  Implementation crate for @code{nodrop}, the untagged unions
 implementation (which is unstable / requires nightly).")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
