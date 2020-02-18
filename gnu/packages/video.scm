@@ -25,7 +25,7 @@
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2018, 2019 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2018, 2019, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
@@ -3793,3 +3793,40 @@ Theora videos.  Theorafile was written to be used for FNA's VideoPlayer.")
 DVD using @command{libdvdcss}, but does @strong{not} demux, remux,
 transcode or reformat the videos in any way, producing perfect backups.")
     (license license:gpl3+)))
+
+(define-public svt-av1
+  (package
+    (name "svt-av1")
+    (version "0.8.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/OpenVisualCloud/SVT-AV1.git")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "08sx9zhhks8wzq05f67jqmc1zqmmi7hqkgg2gyjpcsan5qc5476w"))))
+    (build-system cmake-build-system)
+    ;; SVT-AV1 only supports Intel-compatible CPUs.
+    (supported-systems '("x86_64-linux" "i686-linux"))
+    (arguments
+      ;; The test suite tries to download test data and git clone a 3rd-party
+      ;; fork of libaom.  Skip it.
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref %outputs "out"))
+                    (doc (string-append out "/share/doc/svt-av1-" ,version)))
+               (copy-recursively "../source/Docs" doc)
+               #t))))))
+    (native-inputs
+     `(("yasm" ,yasm)))
+    (synopsis "AV1 video codec")
+    (description "SVT-AV1 is an AV1 codec implementation.  The encoder is a
+work-in-progress, aiming to support video-on-demand and live streaming
+applications.  It only supports Intel-compatible CPUs (x86).")
+    (home-page "https://github.com/OpenVisualCloud/SVT-AV1")
+    (license license:bsd-2)))
