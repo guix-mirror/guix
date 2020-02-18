@@ -1288,7 +1288,8 @@ streaming protocols.")
        ("lame" ,lame)
        ("libass" ,libass)
        ("libdvdcss" ,libdvdcss)
-       ("libdvdnav" ,libdvdnav)
+       ("libdvdnav" ,libdvdnav)         ; ignored without libdvdread
+       ("libdvdread" ,libdvdread)       ; ignored without libdvdnav
        ("libjpeg" ,libjpeg)
        ("libmpeg2" ,libmpeg2)
        ("libmpg123" ,mpg123)            ; audio codec for MP3
