@@ -14944,11 +14944,13 @@ whitespace from a string.")
          (base32
           "0mps2il4xy2mjqc3appas27hhn2xmvixc3bzzhfrjj74gy3i0a1q"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-void" ,rust-void-1.0))))
     (home-page "https://github.com/reem/rust-unreachable")
     (synopsis "Unreachable code optimization hint in rust")
     (description
      "This package provides an unreachable code optimization hint in rust.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
