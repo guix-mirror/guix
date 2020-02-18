@@ -1564,26 +1564,20 @@ RCS, PRCS, and Aegis packages.")
 (define-public cvs-fast-export
   (package
     (name "cvs-fast-export")
-    (version "1.45")
+    (version "1.51")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.catb.org/~esr/cvs-fast-export/"
                                   "cvs-fast-export-" version ".tar.gz"))
               (sha256
                (base32
-                "19pxg6p0pcgyd2fbnh3wy1kazv6vcfi5lzc2whhdi1w9kj4r9c4z"))))
+                "0nn5cf8syb5nbjvkn8w561pk25clv187h4hs9pnc700g9w56chzf"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (delete 'configure)            ; no configure script
-         (add-after 'unpack 'remove-optimizations
-           (lambda _
-             ;; Don't optimize for a specific processor architecture.
-             (substitute* "Makefile"
-               (("CFLAGS \\+= -march=native") ""))
-             #t)))
-       #:parallel-build? #f ; parallel a2x commands fail spectacularly
+         (delete 'configure))       ; no configure script
+       #:parallel-build? #f         ; parallel a2x commands fail spectacularly
        #:make-flags
        (list "CC=gcc" (string-append "prefix?=" (assoc-ref %outputs "out")))))
     (inputs `(("git" ,git)))
