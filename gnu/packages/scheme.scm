@@ -412,22 +412,15 @@ implementation techniques and as an expository tool.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'pre-configure
+         (add-before 'configure 'pre-configure-minimal
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Patch dynamically loaded libraries with their absolute paths.
-             (let* ((library-path   (search-path-as-string->list
-                                     (getenv "LIBRARY_PATH")))
-                    (find-so        (lambda (soname)
-                                      (search-path
-                                       library-path
-                                       (format #f "~a.so" soname))))
-                    (patch-ffi-libs (lambda (file libs)
-                                      (for-each
-                                       (lambda (lib)
-                                         (substitute* file
-                                           (((format #f "\"~a\"" lib))
-                                            (format #f "\"~a\"" (find-so lib)))))
-                                       libs))))
+             (let* ((library-path (search-path-as-string->list
+                                   (getenv "LIBRARY_PATH")))
+                    (find-so (lambda (soname)
+                               (search-path
+                                library-path
+                                (format #f "~a.so" soname)))))
                (substitute* "collects/db/private/sqlite3/ffi.rkt"
                  (("ffi-lib sqlite-so")
                   (format #f "ffi-lib \"~a\"" (find-so "libsqlite3"))))
@@ -436,7 +429,25 @@ implementation techniques and as an expository tool.")
                   (format #f "ffi-lib \"~a\"" (find-so "libssl"))))
                (substitute* "collects/openssl/libcrypto.rkt"
                  (("ffi-lib libcrypto-so")
-                  (format #f "ffi-lib \"~a\"" (find-so "libcrypto"))))
+                  (format #f "ffi-lib \"~a\"" (find-so "libcrypto")))))
+             (chdir "src")
+             #t))
+         (add-before 'pre-configure-minimal 'pre-configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Patch dynamically loaded libraries with their absolute paths.
+             (let* ((library-path (search-path-as-string->list
+                                   (getenv "LIBRARY_PATH")))
+                    (find-so (lambda (soname)
+                               (search-path
+                                library-path
+                                (format #f "~a.so" soname))))
+                    (patch-ffi-libs (lambda (file libs)
+                                      (for-each
+                                       (lambda (lib)
+                                         (substitute* file
+                                           (((format #f "\"~a\"" lib))
+                                            (format #f "\"~a\"" (find-so lib)))))
+                                       libs))))
                (substitute* "share/pkgs/math-lib/math/private/bigfloat/gmp.rkt"
                  (("ffi-lib libgmp-so")
                   (format #f "ffi-lib \"~a\"" (find-so "libgmp"))))
@@ -474,15 +485,14 @@ implementation techniques and as an expository tool.")
                    ("libGL"))
                   ("share/pkgs/sgl/gl.rkt"
                    ("libGL" "libGLU")))))
-             (chdir "src")
              #t))
          (add-after 'unpack 'patch-/bin/sh
            (lambda _
              (substitute* "collects/racket/system.rkt"
                (("/bin/sh") (which "sh")))
              #t)))
-       #:tests? #f                      ; XXX: how to run them?
-       ))
+       ;; XXX: how to run them?
+       #:tests? #f))
     (inputs
      `(("libffi" ,libffi)
        ;; Hardcode dynamically loaded libraries for better functionality.
@@ -512,6 +522,44 @@ a virtual machine with just-in-time native compilation, as well as a large set
 of libraries.")
     ;; https://download.racket-lang.org/license.html
     (license (list lgpl3+ asl2.0 expat))))
+
+(define-public racket-minimal
+  (package
+    (inherit racket)
+    (name "racket-minimal")
+    (version (package-version racket))
+    (source (origin
+              (method url-fetch)
+              (uri (list (string-append "http://mirror.racket-lang.org/installers/"
+                                        version "/racket-minimal-" version "-src.tgz")
+                         (string-append
+                          "http://mirror.informatik.uni-tuebingen.de/mirror/racket/"
+                          version "/racket-minimal-" version "-src.tgz")))
+              (sha256
+               (base32
+                "0id094q9024hj2n3907l7dblp3iix1v5289xzskmh5c26xfygp9y"))
+              (patches (search-patches
+                        "racket-store-checksum-override.patch"))))
+    (synopsis "Racket without bundled packages such as Dr. Racket")
+    (arguments
+     (substitute-keyword-arguments (package-arguments racket)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           ;; Delete fix that applies to files not included in the minimal package.
+           (delete 'pre-configure)))))
+    (inputs
+     `(("libffi" ,libffi)
+       ("openssl" ,openssl)
+       ("sqlite" ,sqlite)))
+    (description
+     "Racket is an implementation of the Scheme programming language (R5RS and
+R6RS) and related languages, such as Typed Racket.  It features a compiler and
+a virtual machine with just-in-time native compilation, as well as a large set
+of libraries.
+
+In this minimal package, the essential package racket-libs is included, as
+well as libraries that live in collections.  In particular, @command{raco} and
+the @code{pkg} library are still bundled.")))
 
 (define-public gambit-c
   (package
