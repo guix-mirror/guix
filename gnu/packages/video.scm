@@ -1264,7 +1264,7 @@ streaming protocols.")
 (define-public mplayer
   (package
     (name "mplayer")
-    (version "1.3.0")
+    (version "1.4")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1272,7 +1272,7 @@ streaming protocols.")
                    version ".tar.xz"))
              (sha256
               (base32
-               "0hwqn04bdknb2ic88xd75smffxx63scvz0zvwvjb56nqj9n89l1s"))))
+               "0j5mflr0wnklxsvnpmxvk704hscyn2785hvvihj2i3a7b3anwnc2"))))
     (build-system gnu-build-system)
     ;; FIXME: Add additional inputs once available.
     (native-inputs
@@ -1281,7 +1281,7 @@ streaming protocols.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("cdparanoia" ,cdparanoia)
-       ("ffmpeg" ,ffmpeg-3.4)
+       ("ffmpeg" ,ffmpeg)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
 ;;        ("giflib" ,giflib) ; uses QuantizeBuffer, requires version >= 5
@@ -1291,7 +1291,7 @@ streaming protocols.")
        ("libdvdnav" ,libdvdnav)
        ("libjpeg" ,libjpeg)
        ("libmpeg2" ,libmpeg2)
-       ("libmpg123" ,mpg123)                      ; audio codec for MP3
+       ("libmpg123" ,mpg123)            ; audio codec for MP3
        ("libpng" ,libpng)
        ("libtheora" ,libtheora)
        ("libvdpau" ,libvdpau)
@@ -1310,7 +1310,7 @@ streaming protocols.")
        ("speex" ,speex)
        ("zlib" ,zlib)))
     (arguments
-     `(#:tests? #f ; no test target
+     `(#:tests? #f                      ; no test target
        #:phases
        (modify-phases %standard-phases
         (replace 'configure
