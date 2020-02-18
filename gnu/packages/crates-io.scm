@@ -14674,11 +14674,13 @@ Unicode character database.")
          (base32
           "1hh6kyzh5xygwy96wfmsf8v8czlzhps2lgbcyhj1xzy1w1xys04g"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1))))
     (home-page "https://github.com/BurntSushi/ucd-generate")
     (synopsis "Trie for storing Unicode codepoint sets and maps")
     (description
      "This package provides a trie for storing Unicode codepoint sets and maps.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
