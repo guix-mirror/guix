@@ -14518,7 +14518,6 @@ serializing Rust structures.")
     (synopsis "Lightweight atomic lock")
     (description
      "This package provides a lightweight atomic lock.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-trybuild-1.0
