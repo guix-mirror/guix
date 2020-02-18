@@ -7829,7 +7829,7 @@ prove a function can't ever panic.")
          (base32
           "1h59pph19rxanyqcaid8pg73s7wmzdx3zhjv5snlim5qx606zxkc"))))
     (build-system cargo-build-system)
-    (arguments (#:skip-build? #t))      ; Depends on features not in stable Rust.
+    (arguments '(#:skip-build? #t))   ; depends on features not in stable Rust
     (home-page "https://github.com/bluss/arrayvec")
     (synopsis "Wrapper type to inhibit drop (destructor)")
     (description "This package provides a wrapper type to inhibit drop
