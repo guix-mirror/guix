@@ -13654,12 +13654,16 @@ handle Unicode characters correctly.")
          (base32
           "1h90v19fjz3x9b25ywh68z5yf2zsmm6h5zb4rl302ckbsp4z9yy7"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-redox-syscall" ,rust-redox-syscall-0.1)
+        ("rust-winapi" ,rust-winapi-0.3))))
     (home-page "https://github.com/ruuda/thread-id")
     (synopsis "Get a unique ID for the current thread in Rust")
     (description
      "For diagnostics and debugging it can often be useful to get an ID that is
 different for every thread.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
