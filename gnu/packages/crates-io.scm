@@ -4452,7 +4452,6 @@ for the futures-rs library.")
     (synopsis "Async read and write traits for the futures library")
     (description "This crate provides the @code{AsyncRead} and
 @code{AsyncWrite} traits for the @code{futures-rs} library.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
