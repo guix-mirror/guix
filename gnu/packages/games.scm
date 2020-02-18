@@ -798,7 +798,7 @@ automata.  The following features are available:
 (define-public julius
   (package
     (name "julius")
-    (version "1.2.0")
+    (version "1.3.0")
     (source
      (origin
        (method git-fetch)
@@ -807,7 +807,7 @@ automata.  The following features are available:
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0kgyzfjii4dhpy2h05977alwdmxyxb4jxznnrhlgb21m0ybncmvp"))))
+        (base32 "1ws5lmwdhla73676fj0w26v859n47s0wyxa0mgd0dmkx0x91qriy"))))
     (build-system cmake-build-system)
     (inputs
      `(("sdl2" ,sdl2)
