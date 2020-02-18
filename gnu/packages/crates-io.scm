@@ -14494,11 +14494,13 @@ serializing Rust structures.")
          (base32
           "12wdd4ja7047sd3rx70hv2056hyc8gcdllcx3a41g1rnw64kng98"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1))))
     (home-page "https://github.com/derekjw/try_from")
     (synopsis "TryFrom and TryInto traits for failable conversions")
     (description
-      "TryFrom and TryInto traits for failable conversions that return a Result.")
-    (properties '((hidden? . #t)))
+     "TryFrom and TryInto traits for failable conversions that return a Result.")
     (license license:expat)))
 
 (define-public rust-try-lock-0.2
