@@ -8454,13 +8454,15 @@ under its new name.")
          (base32
           "04zgwy77lin8qz398s6g44467pd6kjhbrlqifkia5rkr47mbi929"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-stable-deref-trait" ,rust-stable-deref-trait-1.1))))
     (home-page "https://github.com/Kimundi/owning-ref-rs")
     (synopsis "Create references that carry their owner with them")
     (description
      "This package provides a library for creating references that carry their
 owner with them.  This can sometimes be useful because Rust borrowing rules
 normally prevent moving a type that has been borrowed from.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-packed-simd-0.3
