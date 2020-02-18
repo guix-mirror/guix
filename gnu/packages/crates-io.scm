@@ -13715,12 +13715,14 @@ different for every thread.")
          (base32
           "0rd89n1q7vy47w4c32cnynibffv9kj3jy3dwr0536n9lbw5ckw72"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num-cpus" ,rust-num-cpus-1.11))))
     (home-page "https://github.com/rust-threadpool/rust-threadpool")
     (synopsis "Thread pool for running jobs on a fixed set of worker threads")
     (description
      "This package provides a thread pool for running a number of jobs on a
 fixed set of worker threads.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
