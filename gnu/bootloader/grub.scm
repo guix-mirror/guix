@@ -4,6 +4,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -162,21 +163,8 @@ system string---e.g., \"x86_64-linux\"."
                (string-append "set gfxmode=" (string-join gfxmode ";"))
                "# Leave 'gfxmode' to 'auto'."))
          "
-  insmod video_bochs
-  insmod video_cirrus
+  insmod all_video
   insmod gfxterm
-
-  if [ \"${grub_platform}\" == efi ]; then
-    # This is for (U)EFI systems (these modules are unavailable in the
-    # non-EFI GRUB.)  If we don't load them, GRUB boots in \"blind mode\",
-    # which isn't convenient.
-    insmod efi_gop
-    insmod efi_uga
-  else
-    # These are specific to non-EFI Intel machines.
-    insmod vbe
-    insmod vga
-  fi
 ")
         ""))
 
