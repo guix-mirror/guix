@@ -111,9 +111,19 @@ cow-store service."
 Start COW-STORE service on target directory and launch guix install command in
 a subshell.  LOCALE must be the locale name under which that command will run,
 or #f.  Return #t on success and #f on failure."
-  (let ((install-command (list "guix" "system" "init" "--fallback"
-                               (%installer-configuration-file)
-                               (%installer-target-dir))))
+  (let* ((options         (catch 'system-error
+                            (lambda ()
+                              ;; If this file exists, it can provide
+                              ;; additional command-line options.
+                              (call-with-input-file
+                                  "/tmp/installer-system-init-options"
+                                read))
+                            (const '())))
+         (install-command (append (list "guix" "system" "init"
+                                        "--fallback")
+                                  options
+                                  (list (%installer-configuration-file)
+                                        (%installer-target-dir)))))
     (mkdir-p (%installer-target-dir))
 
     ;; We want to initialize user passwords but we don't want to store them in
