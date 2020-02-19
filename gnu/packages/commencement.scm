@@ -2584,12 +2584,17 @@ exec " gcc "/bin/" program
 
        ;; The build system assumes we have done a mistake when time_t is 32-bit
        ;; on a 64-bit system.  Ignore that for our bootstrap toolchain.
-       ,@(if (target-64bit?)
-             (substitute-keyword-arguments (package-arguments findutils)
-               ((#:configure-flags flags ''())
-                `(cons "TIME_T_32_BIT_OK=yes"
-                       ,flags)))
-             (package-arguments findutils))))))
+       ,@(substitute-keyword-arguments (package-arguments findutils)
+           ((#:configure-flags flags ''())
+            `(append
+              ,(if (target-64bit?)
+                   ''("TIME_T_32_BIT_OK=yes")
+                   ''())
+              ,(match (%current-system)
+                 ((or "arm-linux" "aarch64-linux")
+                  ''("--disable-dependency-tracking"))
+                 (_ ''()))
+              ,flags)))))))
 
 (define file
   (package
