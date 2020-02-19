@@ -26,10 +26,14 @@
   #:use-module (gnu system install)
   #:use-module (gnu system vm)
   #:use-module ((gnu build vm) #:select (qemu-command))
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages bootloaders)
+  #:use-module (gnu packages cryptsetup)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages ocr)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages virtualization)
+  #:use-module (gnu services networking)
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (guix packages)
@@ -44,7 +48,9 @@
             %test-raid-root-os
             %test-encrypted-root-os
             %test-btrfs-root-os
-            %test-jfs-root-os))
+            %test-jfs-root-os
+
+            %test-gui-installed-os))
 
 ;;; Commentary:
 ;;;
@@ -179,6 +185,7 @@ reboot\n")
 (define* (run-install target-os target-os-source
                       #:key
                       (script %simple-installation-script)
+                      (gui-test #f)
                       (packages '())
                       (os (marionette-operating-system
                            (operating-system
@@ -191,6 +198,7 @@ reboot\n")
                                        packages))
                              (kernel-arguments '("console=ttyS0")))
                            #:imported-modules '((gnu services herd)
+                                                (gnu installer tests)
                                                 (guix combinators))))
                       (installation-disk-image-file-system-type "ext4")
                       (target-size (* 2200 MiB)))
@@ -256,13 +264,21 @@ packages defined in installation-os."
                                 (start 'term-tty1))
                              marionette)
 
-            (marionette-eval '(call-with-output-file "/etc/target-config.scm"
-                                (lambda (port)
-                                  (write '#$target-os-source port)))
-                             marionette)
+            (when #$(->bool script)
+              (marionette-eval '(call-with-output-file "/etc/target-config.scm"
+                                  (lambda (port)
+                                    (write '#$target-os-source port)))
+                               marionette)
+              (exit (marionette-eval '(zero? (system #$script))
+                                     marionette)))
 
-            (exit (marionette-eval '(zero? (system #$script))
-                                   marionette)))))
+            (when #$(->bool gui-test)
+              (wait-for-unix-socket "/var/guix/installer-socket"
+                                    marionette)
+              (format #t "installer socket ready~%")
+              (force-output)
+              (exit #$(and gui-test
+                           (gui-test #~marionette)))))))
 
     (gexp->derivation "installation" install)))
 
@@ -889,5 +905,175 @@ build (current-guix) and then store a couple of full system images.")
                                                %jfs-root-installation-script))
                          (command (qemu-command/writable-image image)))
       (run-basic-test %jfs-root-os command "jfs-root-os")))))
+
+
+;;;
+;;; Installation through the graphical interface.
+;;;
+
+(define %syslog-conf
+  ;; Syslog configuration that dumps to /dev/console, so we can see the
+  ;; installer's messages during the test.
+  (computed-file "syslog.conf"
+                 #~(begin
+                     (copy-file #$%default-syslog.conf #$output)
+                     (chmod #$output #o644)
+                     (let ((port (open-file #$output "a")))
+                       (display "\n*.info /dev/console\n" port)
+                       #t))))
+
+(define (operating-system-with-console-syslog os)
+  "Return OS with a syslog service that writes to /dev/console."
+  (operating-system
+    (inherit os)
+    (services (modify-services (operating-system-user-services os)
+                (syslog-service-type config
+                                     =>
+                                     (syslog-configuration
+                                      (inherit config)
+                                      (config-file %syslog-conf)))))))
+
+(define %root-password "foo")
+
+(define* (gui-test-program marionette #:key (encrypted? #f))
+  #~(let ()
+      (define (screenshot file)
+        (marionette-control (string-append "screendump " file)
+                            #$marionette))
+
+      (setvbuf (current-output-port) 'none)
+      (setvbuf (current-error-port) 'none)
+
+      (marionette-eval '(use-modules (gnu installer tests))
+                       #$marionette)
+
+      ;; Arrange so that 'converse' prints debugging output to the console.
+      (marionette-eval '(let ((console (open-output-file "/dev/console")))
+                          (setvbuf console 'none)
+                          (conversation-log-port console))
+                       #$marionette)
+
+      ;; Tell the installer to not wait for the Connman "online" status.
+      (marionette-eval '(call-with-output-file "/tmp/installer-assume-online"
+                          (const #t))
+                       #$marionette)
+
+      ;; Run 'guix system init' with '--no-grafts', to cope with the lack of
+      ;; network access.
+      (marionette-eval '(call-with-output-file
+                            "/tmp/installer-system-init-options"
+                          (lambda (port)
+                            (write '("--no-grafts" "--no-substitutes")
+                                   port)))
+                       #$marionette)
+
+      (marionette-eval '(define installer-socket
+                          (open-installer-socket))
+                       #$marionette)
+      (screenshot "installer-start.ppm")
+
+      (marionette-eval '(choose-locale+keyboard installer-socket)
+                       #$marionette)
+      (screenshot "installer-locale.ppm")
+
+      ;; Choose the host name that the "basic" test expects.
+      (marionette-eval '(enter-host-name+passwords installer-socket
+                                                   #:host-name "liberigilo"
+                                                   #:root-password
+                                                   #$%root-password
+                                                   #:users
+                                                   '(("alice" "pass1")
+                                                     ("bob" "pass2")))
+                       #$marionette)
+      (screenshot "installer-services.ppm")
+
+      (marionette-eval '(choose-services installer-socket
+                                         #:desktop-environments '()
+                                         #:choose-network-service?
+                                         (const #f))
+                       #$marionette)
+      (screenshot "installer-partitioning.ppm")
+
+      (marionette-eval '(choose-partitioning installer-socket
+                                             #:encrypted? #$encrypted?
+                                             #:passphrase #$%luks-passphrase)
+                       #$marionette)
+      (screenshot "installer-run.ppm")
+
+      (marionette-eval '(conclude-installation installer-socket)
+                       #$marionette)
+
+      (sync)
+      #t))
+
+(define %extra-packages
+  ;; Packages needed when installing with an encrypted root.
+  (list isc-dhcp
+        lvm2-static cryptsetup-static e2fsck/static
+        loadkeys-static))
+
+(define installation-os-for-gui-tests
+  ;; Operating system that contains all of %EXTRA-PACKAGES, needed for the
+  ;; target OS, as well as syslog output redirected to the console so we can
+  ;; see what the installer is up to.
+  (marionette-operating-system
+   (operating-system
+     (inherit (operating-system-with-console-syslog
+               (operating-system-add-packages
+                (operating-system-with-current-guix
+                 installation-os)
+                %extra-packages)))
+     (kernel-arguments '("console=ttyS0")))
+   #:imported-modules '((gnu services herd)
+                        (gnu installer tests)
+                        (guix combinators))))
+
+(define* (guided-installation-test name #:key encrypted?)
+  (define os
+    (operating-system
+      (inherit %minimal-os)
+      (users (append (list (user-account
+                            (name "alice")
+                            (comment "Bob's sister")
+                            (group "users")
+                            (supplementary-groups
+                             '("wheel" "audio" "video")))
+                           (user-account
+                            (name "bob")
+                            (comment "Alice's brother")
+                            (group "users")
+                            (supplementary-groups
+                             '("wheel" "audio" "video"))))
+                     %base-user-accounts))
+      (swap-devices '("/dev/vdb2"))
+      (services (cons (service dhcp-client-service-type)
+                      (operating-system-user-services %minimal-os)))))
+
+  (system-test
+   (name name)
+   (description
+    "Install an OS using the graphical installer and test it.")
+   (value
+    (mlet* %store-monad ((image   (run-install os '(this is unused)
+                                               #:script #f
+                                               #:os installation-os-for-gui-tests
+                                               #:gui-test
+                                               (lambda (marionette)
+                                                 (gui-test-program
+                                                  marionette
+                                                  #:encrypted? encrypted?))))
+                         (command (qemu-command/writable-image image)))
+      (run-basic-test os command name
+                      #:initialization (and encrypted? enter-luks-passphrase)
+                      #:root-password %root-password)))))
+
+(define %test-gui-installed-os
+  (guided-installation-test "gui-installed-os"
+                            #:encrypted? #f))
+
+;; (define %test-gui-installed-os
+;;   ;; FIXME: Fails due to <https://bugs.gnu.org/39712>.
+;;   (guided-installation-test "gui-installed-os-encrypted"
+;;                             #:encrypted? #t))
 
 ;;; install.scm ends here
