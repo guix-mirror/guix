@@ -1177,14 +1177,14 @@ and to generate base64 encoded string from raster matrix.")
 (define-public r-svglite
   (package
     (name "r-svglite")
-    (version "1.2.2")
+    (version "1.2.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "svglite" version))
        (sha256
         (base32
-         "1gwv51wqp6pgm2f9gavsiq65njs77fr49n8y6y9ax60k3a4vvg14"))))
+         "1zivykbi1pxdxhrkc1if1ihdn5p27j0nai2q0abca1dwry3wg2yl"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bh" ,r-bh)
