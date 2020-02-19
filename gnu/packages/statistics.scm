@@ -5560,14 +5560,14 @@ parameters.")
 (define-public r-directlabels
   (package
     (name "r-directlabels")
-    (version "2018.05.22")
+    (version "2020.1.31")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "directlabels" version))
        (sha256
         (base32
-         "0xcpc56ssb9430b0xcdhayk3qaak2qcakyss2pz14y5w2027hblv"))))
+         "08s1gnwp4bn8xahwjaq0f1qzhwh2dvybzhq3z7xyzn8cnyzmis6c"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-quadprog" ,r-quadprog)))
