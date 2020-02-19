@@ -18475,18 +18475,19 @@ used in outliers detection.")
 (define-public r-tolerance
   (package
     (name "r-tolerance")
-    (version "1.3.0")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tolerance" version))
        (sha256
         (base32
-         "17qh4ad1f3fbcpwlxxqh8qr9bnwjcl4yxk0l3fkbr6b2l4rc5p86"))))
+         "001snzr2ipag3zprynydlbi9prkjzrllc054qh7m0qwkb3r19jjd"))))
     (properties `((upstream-name . "tolerance")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-rgl" ,r-rgl)))
+     `(("r-mass" ,r-mass)
+       ("r-rgl" ,r-rgl)))
     (home-page "https://cran.r-project.org/web/packages/tolerance/")
     (synopsis "Statistical tolerance intervals and regions")
     (description
