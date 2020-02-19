@@ -4525,17 +4525,18 @@ letters, as is often required for scientific publications.")
 (define-public r-mixtools
   (package
     (name "r-mixtools")
-    (version "1.1.0")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "mixtools" version))
        (sha256
         (base32
-         "13wdm0xs5bakhpa8ypg6lvhjaqkxyabwz4glxdwn0jwdvkcdhgsl"))))
+         "08whic8hmmzi55b7azwj11l2x5r9s5qbyrv7s9jr08156vqkw0zg"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mass" ,r-mass)
+       ("r-kernlab" ,r-kernlab)
        ("r-segmented" ,r-segmented)
        ("r-survival" ,r-survival)))
     (home-page "https://cran.r-project.org/web/packages/mixtools")
