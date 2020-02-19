@@ -726,18 +726,20 @@ closely reconstructs the mutational profile.")
 (define-public r-nmf
   (package
     (name "r-nmf")
-    (version "0.21.0")
+    (version "0.22.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "NMF" version))
        (sha256
         (base32
-         "1qq25n3k5sgh3srlshb3ic6q92s12c1ilqf5cd5anvq6cqfchc1v"))))
+         "0b2ls3x1nkrnam45hagpys624nzxj3v7kxnp0q216yakvx5h57cq"))))
     (properties `((upstream-name . "NMF")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cluster" ,r-cluster)
+       ("r-biobase" ,r-biobase)
+       ("r-biocmanager" ,r-biocmanager)
        ("r-bigmemory" ,r-bigmemory) ; suggested
        ("r-synchronicity" ,r-synchronicity) ; suggested
        ("r-colorspace" ,r-colorspace)
