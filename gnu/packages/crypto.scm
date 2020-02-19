@@ -70,6 +70,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
+  #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
 
@@ -635,10 +636,14 @@ data on your platform, so the seed itself will be as random as possible.
            ;; Create all the ‘intermediates’ expected by dependent packages.
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (lib (string-append out "/lib")))
+                    (lib (string-append out "/lib"))
+                    (prefix "libcryptopp.so.")
+                    (target (string-append prefix ,version)))
                (with-directory-excursion lib
-                 (symlink "libcryptopp.so.8.0.0" "libcryptopp.so.8.0")
-                 (symlink "libcryptopp.so.8.0.0" "libcryptopp.so.8")
+                 (symlink target
+                          (string-append prefix ,(version-major+minor version)))
+                 (symlink target
+                          (string-append prefix ,(version-major version)))
                  #t))))
          (add-after 'install 'install-pkg-config
            (lambda* (#:key outputs #:allow-other-keys)
