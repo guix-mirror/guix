@@ -11816,20 +11816,17 @@ chosen parallel environment and associated foreach backend.")
 (define-public r-blockmodeling
   (package
     (name "r-blockmodeling")
-    (version "0.3.4")
+    (version "0.3.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "blockmodeling" version))
        (sha256
         (base32
-         "11v9903y9dwlzaqp8sx0fsibcg82phvappddy37r8lnxd4vchsd2"))))
+         "12paf76l3wlxad14bkxn37lw9rg6ka473m86wlcf3yhriw8kbaiz"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-doparallel" ,r-doparallel)
-       ("r-dorng" ,r-dorng)
-       ("r-foreach" ,r-foreach)
-       ("r-matrix" ,r-matrix)))
+     `(("r-matrix" ,r-matrix)))
     (native-inputs `(("gfortran" ,gfortran)))
     (home-page "https://cran.r-project.org/web/packages/blockmodeling")
     (synopsis "Generalized and classical blockmodeling of valued networks")
