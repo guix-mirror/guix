@@ -6409,14 +6409,14 @@ information are missing.")
 (define-public r-sjlabelled
   (package
     (name "r-sjlabelled")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sjlabelled" version))
        (sha256
         (base32
-         "1vnx067mxnvz4jzhmpiarda8ln6habzj02qikvkix5piiy85sqcw"))))
+         "1amq7i9sxf0pkxhskqc53xq5wvc9rdxm7cxyb4b6xh6qsskjnlsj"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-haven" ,r-haven)
