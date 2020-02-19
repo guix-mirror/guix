@@ -3586,14 +3586,14 @@ simplifying cross-class interoperability.")
 (define-public r-performanceanalytics
   (package
     (name "r-performanceanalytics")
-    (version "1.5.3")
+    (version "2.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "PerformanceAnalytics" version))
        (sha256
         (base32
-         "0jhjldwyxwq7a47zmk5y1jjck7hvq92p8rlgjvdfy51hx2dmlqqd"))))
+         "0ci26hsj4wnw9g0mh4vrn0cg986cpcpx169rvw6v6rbnjxq718bq"))))
     (properties
      `((upstream-name . "PerformanceAnalytics")))
     (build-system r-build-system)
