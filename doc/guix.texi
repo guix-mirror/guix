@@ -6811,8 +6811,9 @@ instruct it to listen for TCP connections (@pxref{Invoking guix-daemon,
 @item ssh
 @cindex SSH access to build daemons
 These URIs allow you to connect to a remote daemon over
-SSH@footnote{This feature requires Guile-SSH (@pxref{Requirements}).}.
-A typical URL might look like this:
+SSH. This feature requires Guile-SSH (@pxref{Requirements}) and a working
+@code{guile} binary in @code{PATH} on the destination machine. It supports
+public key and GSSAPI authentication. A typical URL might look like this:
 
 @example
 ssh://charlie@@guix.example.org:22
