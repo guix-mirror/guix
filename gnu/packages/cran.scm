@@ -18304,14 +18304,14 @@ number embedded in the file rather than the file extension.")
 (define-public r-imager
   (package
     (name "r-imager")
-    (version "0.41.2")
+    (version "0.42.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "imager" version))
        (sha256
         (base32
-         "19fqgjhg04garbipx20g72h9dd6k0jj4ac48nby6km4h665vrs4v"))))
+         "1d7a49lcna77wyfjf5q1b89jck3p3vnysnkgz4drb0qkpy6hz76b"))))
     (properties `((upstream-name . "imager")))
     (build-system r-build-system)
     (inputs
@@ -18320,12 +18320,10 @@ number embedded in the file rather than the file extension.")
        ("libx11" ,libx11)
        ("zlib" ,zlib)))
     (propagated-inputs
-     `(("r-cairo" ,r-cairo)
-       ("r-downloader" ,r-downloader)
+     `(("r-downloader" ,r-downloader)
        ("r-igraph" ,r-igraph)
        ("r-jpeg" ,r-jpeg)
        ("r-magrittr" ,r-magrittr)
-       ("r-plyr" ,r-plyr)
        ("r-png" ,r-png)
        ("r-purrr" ,r-purrr)
        ("r-rcpp" ,r-rcpp)
