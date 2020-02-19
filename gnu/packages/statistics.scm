@@ -5224,19 +5224,16 @@ to Applied regression, Second Edition, Sage, 2011.")
 (define-public r-rcppprogress
   (package
     (name "r-rcppprogress")
-    (version "0.4.1")
+    (version "0.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RcppProgress" version))
        (sha256
         (base32
-         "0yk01hfv961zyp569682k9igvhnwqyg5j0n5fm63sxigj82l2xhi"))))
+         "0j2b37gwjpgmrnr00srdzm751hzlpsjb54ph63xxmcdfnwhlnqmi"))))
     (properties `((upstream-name . "RcppProgress")))
     (build-system r-build-system)
-    (propagated-inputs
-     `(("r-devtools" ,r-devtools)
-       ("r-rcpp" ,r-rcpp)))
     (home-page "https://github.com/kforner/rcpp_progress")
     (synopsis "Interruptible progress bar for C++ in R packages")
     (description
