@@ -16401,14 +16401,14 @@ simulation.")
 (define-public r-abcrlda
   (package
     (name "r-abcrlda")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "abcrlda" version))
        (sha256
         (base32
-         "0j29ifsvmxfx2g6v4bpbb4s6miwfpf4vlkpbgj6f2q078s4clc85"))))
+         "0zjdrbg3zx0znqnh0dvmifs9c12b8vjhbaf3nbwab9xh25nsmg75"))))
     (properties `((upstream-name . "abcrlda")))
     (build-system r-build-system)
     (home-page "https://ieeexplore.ieee.org/document/8720003/")
