@@ -2071,14 +2071,14 @@ genes or proteins in these datasets.")
 (define-public r-inspect
   (package
     (name "r-inspect")
-    (version "1.16.2")
+    (version "1.16.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "INSPEcT" version))
        (sha256
         (base32
-         "1g8la7k4pnyr2hvk4yjd1bwvjy6nqbbb0fwxrrh2ifgqf4h21x2p"))))
+         "0y4gpvrbmcipdnyz9lz9ywn0317xnpcriiisqvxygin05vgcpilp"))))
     (properties `((upstream-name . "INSPEcT")))
     (build-system r-build-system)
     (propagated-inputs
