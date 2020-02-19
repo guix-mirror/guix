@@ -5168,14 +5168,14 @@ specific S3-method.")
 (define-public r-vim
   (package
     (name "r-vim")
-    (version "4.8.0")
+    (version "5.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "VIM" version))
        (sha256
         (base32
-         "08x4a4yzgp8adgrv7a3666yma4b60n64mcsnvhzmwdy023f4ysrw"))))
+         "09600piny3qrxrmh8844iwrvgrhwan1c3nlh6irqy1vjha2w4gb3"))))
     (properties `((upstream-name . "VIM")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5184,6 +5184,7 @@ specific S3-method.")
        ("r-data-table" ,r-data-table)
        ("r-e1071" ,r-e1071)
        ("r-laeken" ,r-laeken)
+       ("r-magrittr" ,r-magrittr)
        ("r-mass" ,r-mass)
        ("r-nnet" ,r-nnet)
        ("r-ranger" ,r-ranger)
