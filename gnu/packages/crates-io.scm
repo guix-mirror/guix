@@ -6177,6 +6177,36 @@ wasm-bindgen crate.")
      "This package provides a Rust allocator backed by jemalloc.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-jemallocator-0.1
+  (package
+    (inherit rust-jemallocator-0.3)
+    (name "rust-jemallocator")
+    (version "0.1.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "jemallocator" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1csabk36p06nlh3qxxsg6nkf074b2jq2cld5zriq0xazqqmd834z"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-jemalloc-sys" ,rust-jemalloc-sys-0.1)
+        ("rust-libc" ,rust-libc-0.2))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'override-jemalloc
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((jemalloc (assoc-ref inputs "jemalloc")))
+               (setenv "JEMALLOC_OVERRIDE"
+                       (string-append jemalloc "/lib/libjemalloc_pic.a")))
+             #t)))))
+    (native-inputs
+     `(("jemalloc" ,jemalloc)))))
+
 (define-public rust-json-0.11
   (package
     (name "rust-json")
