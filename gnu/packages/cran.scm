@@ -17962,14 +17962,14 @@ poverty measures.  It provides both empirical and theoretical Lorenz curves.")
 (define-public r-actfrag
   (package
     (name "r-actfrag")
-    (version "0.1.0")
+    (version "0.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ActFrag" version))
        (sha256
         (base32
-         "06l5a679j6289008ls57v420mnzpq9a4ln7svi5bh0vpvws7sr9d"))))
+         "08r3gwjz4fkyy85dxqix0ffm5xyq45032qv3snnzxnlqxslxbqn1"))))
     (properties `((upstream-name . "ActFrag")))
     (build-system r-build-system)
     (propagated-inputs
