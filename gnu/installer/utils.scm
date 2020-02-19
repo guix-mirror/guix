@@ -89,9 +89,13 @@ COMMAND exited successfully, #f otherwise."
                 (format (current-error-port)
                         (G_ "Command failed with exit code ~a.~%")
                         (invoke-error-exit-status c))
+                (syslog "command ~s failed with exit code ~a"
+                        command (invoke-error-exit-status c))
                 (pause)
                 #f))
+       (syslog "running command ~s~%" command)
        (invoke "bash" "--init-file" file)
+       (syslog "command ~s succeeded~%" command)
        (newline)
        (pause)
        #t))))
