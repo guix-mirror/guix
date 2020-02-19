@@ -3071,3 +3071,42 @@ SHA-512).")
        "This package provides tooling to write web applications in Guile, such
 as signed sessions, multipart message support, etc.")
       (license license:gpl3+))))
+
+(define-public guile-lens
+  (let ((commit "14b15d07255f9d3f55d40a3b750d13c9ee3a154f")
+        (revision "0"))
+    (package
+      (name "guile-lens")
+      (version (git-version "0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/a-sassmannshausen/guile-lens.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0w8jzqyla56yrgj7acsgd4nspyir6zgp3vgxid4xmwhg9wmf1ida"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'run-hall
+             (lambda _
+               (setenv "HOME" "/tmp")   ; for ~/.hall
+               (invoke "hall" "dist" "-x"))))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("guile" ,guile-2.2)
+         ("guile-hall" ,guile-hall)
+         ("pkg-config" ,pkg-config)
+         ("texinfo" ,texinfo)))
+      (home-page "https://gitlab.com/a-sassmannshausen/guile-lens.git")
+      (synopsis "Composable lenses for data structures in Guile")
+      (description
+       "Guile-Lens is a library implementing lenses in Guile.  The library is
+currently a re-implementation of the lentes library for Clojure.  Lenses
+provide composable procedures, which can be used to focus, apply functions
+over, or update a value in arbitrary data structures.")
+      (license license:gpl3+))))
