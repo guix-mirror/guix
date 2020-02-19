@@ -16980,14 +16980,14 @@ on Linear Recurrences Modulo 2'', ACM Transactions on Mathematical Software.")
 (define-public r-randtoolbox
   (package
     (name "r-randtoolbox")
-    (version "1.30.0")
+    (version "1.30.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "randtoolbox" version))
        (sha256
         (base32
-         "141p13ajgzmb2s89rlac7zrra92mi1izvpfrngb4kqzlf3igdsqd"))))
+         "0qg20ar6qns858jdzqhmfq7yji81czhr6cim257958gqpj66sn95"))))
     (properties `((upstream-name . "randtoolbox")))
     (build-system r-build-system)
     (propagated-inputs
