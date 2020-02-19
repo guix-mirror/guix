@@ -5902,14 +5902,14 @@ delete entire rows with missing data.")
 (define-public r-depecher
   (package
     (name "r-depecher")
-    (version "1.2.0")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DepecheR" version))
        (sha256
         (base32
-         "1f6zbc0fq7xjflh3mkjx1n83mpppw663dj22rlpxzwp1kpmf6wm5"))))
+         "08ja6ayvbax9m3x9w3xzi72z97miiha2nbsild1gp77n6sgn5i35"))))
     (properties `((upstream-name . "DepecheR")))
     (build-system r-build-system)
     (propagated-inputs
