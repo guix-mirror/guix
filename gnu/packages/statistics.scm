@@ -1781,13 +1781,13 @@ and density estimation.")
 (define-public r-chron
   (package
     (name "r-chron")
-    (version "2.3-54")
+    (version "2.3-55")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "chron" version))
               (sha256
                (base32
-                "0vc7dxqwx0jqzwszax6di3091npsxnhnbvr7sy7rlip0jqzarwqd"))))
+                "09gbs7c1ynlg0kl1m6nkbn75ysk16g13r17snnaws64qwywiywqg"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/chron")
     (synopsis "Chronological R objects which can handle dates and times")
