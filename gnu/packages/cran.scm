@@ -7188,16 +7188,17 @@ and coverage methods to tune the choice of threshold.")
 (define-public r-ggformula
   (package
     (name "r-ggformula")
-    (version "0.9.2")
+    (version "0.9.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggformula" version))
        (sha256
-        (base32 "16ycabhnp78fsiv1dc63ccgh9gmpsy2683vbmq0fdzl6w3pd87sr"))))
+        (base32 "1bpsfp9hx001r91pxfiwgxcn5vw5bl1gclb865wz6g9l0jqjfk2p"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-ggplot2" ,r-ggplot2)
+     `(("r-ggforce" ,r-ggforce)
+       ("r-ggplot2" ,r-ggplot2)
        ("r-ggstance" ,r-ggstance)
        ("r-magrittr" ,r-magrittr)
        ("r-mosaiccore" ,r-mosaiccore)
