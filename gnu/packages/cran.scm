@@ -2412,22 +2412,21 @@ classes in the @code{stats4} package.")
 (define-public r-emdbook
   (package
     (name "r-emdbook")
-    (version "1.3.11")
+    (version "1.3.12")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "emdbook" version))
        (sha256
         (base32
-         "0a515jdzvg87npvrh7md7zp0v5nlz7c2jr7pba5dql6slb0d8j7q"))))
+         "0ls3zxxlwmdv7zn1v9i1y9zc2sn0hbgmyjvsj7zn3ajsw7wwlih6"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bbmle" ,r-bbmle)
        ("r-coda" ,r-coda)
        ("r-lattice" ,r-lattice)
        ("r-mass" ,r-mass)
-       ("r-plyr" ,r-plyr)
-       ("r-rcpp" ,r-rcpp)))
+       ("r-plyr" ,r-plyr)))
     (home-page "http://www.math.mcmaster.ca/bolker/emdbook")
     (synopsis "Support functions and data for \"Ecological Models and Data\"")
     (description
