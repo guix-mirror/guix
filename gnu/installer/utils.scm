@@ -32,7 +32,7 @@
             read-all
             nearest-exact-integer
             read-percentage
-            run-shell-command
+            run-command
 
             syslog-port
             syslog
@@ -68,48 +68,48 @@ number. If no percentage is found, return #f"
     (and result
          (string->number (match:substring result 1)))))
 
-(define* (run-shell-command command #:key locale)
-  "Run COMMAND, a string, with Bash, and in the given LOCALE.  Return true if
+(define* (run-command command #:key locale)
+  "Run COMMAND, a list of strings, in the given LOCALE.  Return true if
 COMMAND exited successfully, #f otherwise."
+  (define env (environ))
+
   (define (pause)
     (format #t (G_ "Press Enter to continue.~%"))
     (send-to-clients '(pause))
+    (environ env)                               ;restore environment variables
     (match (select (cons (current-input-port) (current-clients))
              '() '())
       (((port _ ...) _ _)
        (read-line port))))
 
-  (call-with-temporary-output-file
-   (lambda (file port)
-     (when locale
-       (let ((supported? (false-if-exception
-                          (setlocale LC_ALL locale))))
-         ;; If LOCALE is not supported, then set LANGUAGE, which might at
-         ;; least give us translated messages.
-         (if supported?
-             (format port "export LC_ALL=\"~a\"~%" locale)
-             (format port "export LANGUAGE=\"~a\"~%"
-                     (string-take locale
-                                  (string-index locale #\_))))))
+  (setenv "PATH" "/run/current-system/profile/bin")
 
-     (format port "exec ~a~%" command)
-     (close port)
+  (when locale
+    (let ((supported? (false-if-exception
+                       (setlocale LC_ALL locale))))
+      ;; If LOCALE is not supported, then set LANGUAGE, which might at
+      ;; least give us translated messages.
+      (if supported?
+          (setenv "LC_ALL" locale)
+          (setenv "LANGUAGE"
+                  (string-take locale
+                               (string-index locale #\_))))))
 
-     (guard (c ((invoke-error? c)
-                (newline)
-                (format (current-error-port)
-                        (G_ "Command failed with exit code ~a.~%")
-                        (invoke-error-exit-status c))
-                (syslog "command ~s failed with exit code ~a"
-                        command (invoke-error-exit-status c))
-                (pause)
-                #f))
-       (syslog "running command ~s~%" command)
-       (invoke "bash" "--init-file" file)
-       (syslog "command ~s succeeded~%" command)
-       (newline)
-       (pause)
-       #t))))
+  (guard (c ((invoke-error? c)
+             (newline)
+             (format (current-error-port)
+                     (G_ "Command failed with exit code ~a.~%")
+                     (invoke-error-exit-status c))
+             (syslog "command ~s failed with exit code ~a"
+                     command (invoke-error-exit-status c))
+             (pause)
+             #f))
+    (syslog "running command ~s~%" command)
+    (apply invoke command)
+    (syslog "command ~s succeeded~%" command)
+    (newline)
+    (pause)
+    #t))
 
 
 ;;;

@@ -719,9 +719,8 @@ ITEMS when 'Ok' is pressed."
   (newt-suspend)
   ;; Use Nano because it syntax-highlights Scheme by default.
   ;; TODO: Add a menu to choose an editor?
-  (run-shell-command (string-append "/run/current-system/profile/bin/nano "
-                                    file)
-                     #:locale locale)
+  (run-command (list "/run/current-system/profile/bin/nano" file)
+               #:locale locale)
   (newt-resume))
 
 (define* (run-file-textbox-page #:key

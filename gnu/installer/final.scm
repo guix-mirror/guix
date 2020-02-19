@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -111,10 +111,9 @@ cow-store service."
 Start COW-STORE service on target directory and launch guix install command in
 a subshell.  LOCALE must be the locale name under which that command will run,
 or #f.  Return #t on success and #f on failure."
-  (let ((install-command
-         (format #f "guix system init --fallback ~a ~a"
-                 (%installer-configuration-file)
-                 (%installer-target-dir))))
+  (let ((install-command (list "guix" "system" "init" "--fallback"
+                               (%installer-configuration-file)
+                               (%installer-target-dir))))
     (mkdir-p (%installer-target-dir))
 
     ;; We want to initialize user passwords but we don't want to store them in
@@ -128,7 +127,7 @@ or #f.  Return #t on success and #f on failure."
       (lambda ()
         (start-service 'cow-store (list (%installer-target-dir))))
       (lambda ()
-        (run-shell-command install-command #:locale locale))
+        (run-command install-command #:locale locale))
       (lambda ()
         (stop-service 'cow-store)
         ;; Remove the store overlay created at cow-store service start.
