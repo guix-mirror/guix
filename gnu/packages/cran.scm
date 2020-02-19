@@ -9164,14 +9164,14 @@ al. (2016)).")
 (define-public r-weights
   (package
     (name "r-weights")
-    (version "1.0")
+    (version "1.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "weights" version))
        (sha256
         (base32
-         "0186bfpkhxngrshac6bpg37alp6slwhwd43inrm8hqg0vhpfgc4c"))))
+         "1ka2kvzg464vn80qziqy4mrciy9wwd3jfasgq0d33wbiblhmxkj5"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-gdata" ,r-gdata)
