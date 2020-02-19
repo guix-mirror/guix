@@ -6132,6 +6132,24 @@ wasm-bindgen crate.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-jemalloc-sys-0.1
+  (package
+    (inherit rust-jemalloc-sys-0.3)
+    (name "rust-jemalloc-sys")
+    (version "0.1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "jemalloc-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1bh07rlzgg39ys1lsgnpxgvjj6blagp2h17fx267d0g3a272rimz"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (delete-file-recursively "jemalloc") #t))))))
+
 (define-public rust-jemallocator-0.3
   (package
     (name "rust-jemallocator")
