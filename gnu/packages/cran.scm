@@ -11578,14 +11578,14 @@ lasso, adaptive lasso and Ridge regression based on cross-validation.")
 (define-public r-mcmc
   (package
     (name "r-mcmc")
-    (version "0.9-6")
+    (version "0.9-6.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "mcmc" version))
        (sha256
         (base32
-         "1fc6a6asn53lx7x7pnlb5mb716nv4pcmbp99f1i30y4hzygihfj4"))))
+         "1i1nhdapyijvm58zx38q28zk01ndmi6smjivxk5xs2cx9b6v2av9"))))
     (build-system r-build-system)
     (home-page "http://www.stat.umn.edu/geyer/mcmc/")
     (synopsis "Markov chain Monte Carlo")
