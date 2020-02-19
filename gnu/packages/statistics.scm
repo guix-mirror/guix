@@ -1959,17 +1959,19 @@ chain.")
 (define-public r-ade4
   (package
     (name "r-ade4")
-    (version "1.7-13")
+    (version "1.7-15")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "ade4" version))
         (sha256
           (base32
-            "16z9jk4qj35ghsk4lwmq241dgc770y8a70dlmp9q4gz6d8ssgl7m"))))
+            "1xpxznlqm8wb4d5z2dcrl0wi3jjciq2hr5rcx2b5aaipiiyzm1ij"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-mass" ,r-mass)))
+     `(("r-mass" ,r-mass)
+       ("r-pixmap" ,r-pixmap)
+       ("r-sp" ,r-sp)))
     (home-page "http://pbil.univ-lyon1.fr/ADE-4")
     (synopsis "Multivariate data analysis and graphical display")
     (description
