@@ -14872,14 +14872,14 @@ provides tools to compute this metric.")
 (define-public r-lintr
   (package
     (name "r-lintr")
-    (version "2.0.0")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lintr" version))
        (sha256
         (base32
-         "09gbci4v5n4gsfzminly8332fw7faxdi1kkyvpa10dydx02sjcwb"))))
+         "14yfh641afg6griaadbdciyr3k94fl55s055qwzghgk5gdsj61zy"))))
     (properties `((upstream-name . "lintr")))
     (build-system r-build-system)
     (propagated-inputs
@@ -14892,7 +14892,6 @@ provides tools to compute this metric.")
        ("r-knitr" ,r-knitr)
        ("r-rex" ,r-rex)
        ("r-rstudioapi" ,r-rstudioapi)
-       ("r-stringdist" ,r-stringdist)
        ("r-testthat" ,r-testthat)
        ("r-xml2" ,r-xml2)
        ("r-xmlparsedata" ,r-xmlparsedata)))
