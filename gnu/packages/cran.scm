@@ -423,14 +423,14 @@ such as copy/paste from an R session.")
 (define-public r-callr
   (package
     (name "r-callr")
-    (version "3.4.1")
+    (version "3.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "callr" version))
        (sha256
         (base32
-         "0nyba0knzd44zz2xmr7zd9qh3rny0q8msysxf49843d9rlyv6y70"))))
+         "0bdlp0labwyfl36jqslj2g7zmw7zwr58v9gam435kiblhjimb8fc"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-r6" ,r-r6)
