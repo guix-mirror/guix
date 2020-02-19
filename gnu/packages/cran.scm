@@ -8900,17 +8900,18 @@ ways.")
 (define-public r-summarytools
   (package
     (name "r-summarytools")
-    (version "0.9.4")
+    (version "0.9.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "summarytools" version))
        (sha256
         (base32
-         "1n695baz56mg4f13xjjadfq0xalw5xsn6xicil0yap5hgi8fsr3a"))))
+         "0iv5237478y2ggbqln3cppm0crnqk3myrkf6ydkhwsd1z5q538pd"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-checkmate" ,r-checkmate)
+     `(("r-base64enc" ,r-base64enc)
+       ("r-checkmate" ,r-checkmate)
        ("r-dplyr" ,r-dplyr)
        ("r-htmltools" ,r-htmltools)
        ("r-lubridate" ,r-lubridate)
@@ -8919,7 +8920,6 @@ ways.")
        ("r-pander" ,r-pander)
        ("r-pryr" ,r-pryr)
        ("r-rapportools" ,r-rapportools)
-       ("r-rcurl" ,r-rcurl)
        ("r-tibble" ,r-tibble)
        ("r-tidyr" ,r-tidyr)))
     (home-page "https://github.com/dcomtois/summarytools")
