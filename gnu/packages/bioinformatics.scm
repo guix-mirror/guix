@@ -9504,13 +9504,13 @@ and irregular enzymatic cleavages, mass measurement accuracy, etc.")
 (define-public r-seurat
   (package
     (name "r-seurat")
-    (version "3.1.2")
+    (version "3.1.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "Seurat" version))
               (sha256
                (base32
-                "0m1qi39snbmkkv1p07bzg1r7snc9x6a1y0dghvpk1nzgcfpmnsj4"))))
+                "0962mfgqk1di3wy1j0xdkvnw0q5m3q4xzd67d1l6dijlqiz8nfal"))))
     (properties `((upstream-name . "Seurat")))
     (build-system r-build-system)
     (propagated-inputs
@@ -9549,7 +9549,6 @@ and irregular enzymatic cleavages, mass measurement accuracy, etc.")
        ("r-rtsne" ,r-rtsne)
        ("r-scales" ,r-scales)
        ("r-sctransform" ,r-sctransform)
-       ("r-sdmtools" ,r-sdmtools)
        ("r-tsne" ,r-tsne)
        ("r-uwot" ,r-uwot)))
     (home-page "http://www.satijalab.org/seurat")
