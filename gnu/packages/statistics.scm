@@ -4875,14 +4875,14 @@ multivariate analysis.")
 (define-public r-trimcluster
   (package
     (name "r-trimcluster")
-    (version "0.1-2.1")
+    (version "0.1-5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "trimcluster" version))
        (sha256
         (base32
-         "0013bpyq6mkvjn38qsmwnsxfiwxgwngnqxycxvgpgmiadhm8fjmn"))))
+         "12siv8yx8dcavsz8jk96lwscbj257ar8jpaxksl2zb06987g4fcj"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/trimcluster")
     (synopsis "Cluster analysis with trimming")
