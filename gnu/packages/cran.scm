@@ -18013,19 +18013,18 @@ examples.")
 (define-public r-actigraphy
   (package
     (name "r-actigraphy")
-    (version "1.3.2")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Actigraphy" version))
        (sha256
         (base32
-         "0y0ccmxhdfhdmi4k6pbfvnqknkqbgvfsf2qf7z7rc4xpfgym6574"))))
+         "0bpmvszzv5fm72nar3wgnmfl5am7znqfajmlbv38ihkbi7jbwk20"))))
     (properties `((upstream-name . "Actigraphy")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-fda" ,r-fda)
-       ("r-sdmtools" ,r-sdmtools)))
+     `(("r-fda" ,r-fda)))
     (home-page "https://cran.r-project.org/web/packages/Actigraphy/")
     (synopsis "Actigraphy data analysis")
     (description
