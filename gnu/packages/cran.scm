@@ -12687,14 +12687,14 @@ return the match results in tidy data frames.")
 (define-public r-picante
   (package
     (name "r-picante")
-    (version "1.8")
+    (version "1.8.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "picante" version))
        (sha256
         (base32
-         "1bcq2j7fs89c2jib68qq6la67rxyg9raryf162mwvjakpf6k19l1"))))
+         "1b16zm8zjjsl181b8krkdcrbcw347kf772c4w7y5332qmfi7jhz0"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ape" ,r-ape)
