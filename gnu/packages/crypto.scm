@@ -627,10 +627,12 @@ data on your platform, so the seed itself will be as random as possible.
                ((" -march=native") ""))
              #t))
          (delete 'configure)
-         (add-after 'build 'build-shared
-           (lambda _
-             ;; By default, only the static library is built.
-             (invoke "make" "shared")))
+         (replace 'build
+           ;; By default, only the static library is built.
+           (lambda* (#:key (make-flags '()) #:allow-other-keys)
+             (apply invoke "make" "shared"
+                    "-j" (number->string (parallel-job-count))
+                    make-flags)))
          (add-after 'install 'install-shared-library-links
            ;; By default, only .so and .so.x.y.z are installed.
            ;; Create all the ‘intermediates’ expected by dependent packages.
