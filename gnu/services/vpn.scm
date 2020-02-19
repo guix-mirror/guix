@@ -61,7 +61,7 @@
 (define serialize-string serialize-field)
 (define (serialize-boolean field-name val)
   (if val
-      (serialize-field field-name val)
+      (serialize-field field-name "")
       (format #t "")))
 
 (define (ip-mask? val)
