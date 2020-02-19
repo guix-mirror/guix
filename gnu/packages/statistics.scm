@@ -5245,14 +5245,14 @@ even in multithreaded code, typically using OpenMP.")
 (define-public r-mnormt
   (package
     (name "r-mnormt")
-    (version "1.5-5")
+    (version "1.5-6")
     (source
      (origin
        (method url-fetch)
         (uri (cran-uri "mnormt" version))
         (sha256
           (base32
-           "1b34xxrnf35khsx82mhvmk96sgfr2flyasaah7qkb2976pwxay7z"))))
+           "0k8y08gj6z525yvc7y3dl2kzgnafbj3i7lvpamypsmqxf74zql99"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
