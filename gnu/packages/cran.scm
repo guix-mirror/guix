@@ -14274,14 +14274,14 @@ databases, including ENA, PDB or ChEMBL are also accessible.")
 (define-public r-ggraph
   (package
     (name "r-ggraph")
-    (version "2.0.0")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggraph" version))
        (sha256
         (base32
-         "0qj7w3af0pgmd9mil6y571jikfkln7b8csvzg6b08spwbglfy1s3"))))
+         "0q2yqsb981a2arf9j530kqs61vw38ixyxbhb6yvv7skgbck02r6y"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-digest" ,r-digest)
