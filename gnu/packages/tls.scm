@@ -226,7 +226,8 @@ living in the same process.")
      `(("net-tools" ,net-tools)
        ("pkg-config" ,pkg-config)
        ("which" ,which)
-       ("datefudge" ,datefudge)))                 ;tests rely on 'datefudge'
+       ("datefudge" ,datefudge)                   ;tests rely on 'datefudge'
+       ("util-linux" ,util-linux)))               ;one test needs 'setsid'
     (inputs
      `(("guile" ,guile-2.2)))
     (propagated-inputs
