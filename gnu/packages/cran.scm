@@ -1293,17 +1293,19 @@ coordinates.")
 (define-public r-rgooglemaps
   (package
     (name "r-rgooglemaps")
-    (version "1.4.5.2")
+    (version "1.4.5.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RgoogleMaps" version))
        (sha256
         (base32
-         "1y2dinxmzx6mg6ynpk2q7f4k4rxjm66my185gafdcvpc4rl7svs7"))))
+         "02v8k0bw70q4qwx4lcdy8p25q7n3ql2ll46lfpqllxa1p26svmfi"))))
     (properties `((upstream-name . "RgoogleMaps")))
     (build-system r-build-system)
-    (propagated-inputs `(("r-png" ,r-png)))
+    (propagated-inputs
+     `(("r-png" ,r-png)
+       ("r-sp" ,r-sp)))
     (home-page "https://cran.r-project.org/web/packages/RgoogleMaps")
     (synopsis "Use Google Maps in R")
     (description "This package serves two purposes:
