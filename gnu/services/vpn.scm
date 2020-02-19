@@ -59,6 +59,7 @@
       (format #t "")
       (format #t "~a ~a\n" (uglify-field-name field-name) val)))
 (define serialize-string serialize-field)
+(define-maybe string)
 (define (serialize-boolean field-name val)
   (if val
       (serialize-field field-name "")
@@ -298,6 +299,11 @@ certificate is @code{cert}.")
     "Don't close and reopen TUN/TAP device or run up/down scripts across
 SIGUSR1 or --ping-restart restarts.")
 
+   (fast-io?
+     (boolean #f)
+     "(Experimental) Optimize TUN/TAP/UDP I/O writes by avoiding a call to
+poll/epoll/select prior to the write operation.")
+
    (verbosity
     (number 3)
     "Verbosity level."))
@@ -306,6 +312,12 @@ SIGUSR1 or --ping-restart restarts.")
     (tls-auth-client #f)
     "Add an additional layer of HMAC authentication on top of the TLS control
 channel to protect against DoS attacks.")
+
+   (auth-user-pass
+     (maybe-string 'disabled)
+     "Authenticate with server using username/password.  The option is a file
+containing username/password on 2 lines.  Do not use a file-like object as it
+would be added to the store and readable by any user.")
 
    (verify-key-usage?
     (key-usage #t)

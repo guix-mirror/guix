@@ -21794,6 +21794,13 @@ Defaults to @samp{#t}.
 
 @end deftypevr
 
+@deftypevr {@code{openvpn-client-configuration} parameter} boolean fast-io?
+(Experimental) Optimize TUN/TAP/UDP I/O writes by avoiding a call to
+poll/epoll/select prior to the write operation.
+
+Defaults to @samp{#f}.
+@end deftypevr
+
 @deftypevr {@code{openvpn-client-configuration} parameter} number verbosity
 Verbosity level.
 
@@ -21807,6 +21814,14 @@ channel to protect against DoS attacks.
 
 Defaults to @samp{#f}.
 
+@end deftypevr
+
+@deftypevr {@code{openvpn-client-configuration} parameter} maybe-string auth-user-pass
+Authenticate with server using username/password.  The option is a file
+containing username/password on 2 lines.  Do not use a file-like object as it
+would be added to the store and readable by any user.
+
+Defaults to @samp{'disabled}.
 @end deftypevr
 
 @deftypevr {@code{openvpn-client-configuration} parameter} key-usage verify-key-usage?
@@ -21928,6 +21943,13 @@ SIGUSR1 or --ping-restart restarts.
 
 Defaults to @samp{#t}.
 
+@end deftypevr
+
+@deftypevr {@code{openvpn-server-configuration} parameter} boolean fast-io?
+(Experimental) Optimize TUN/TAP/UDP I/O writes by avoiding a call to
+poll/epoll/select prior to the write operation.
+
+Defaults to @samp{#f}.
 @end deftypevr
 
 @deftypevr {@code{openvpn-server-configuration} parameter} number verbosity
