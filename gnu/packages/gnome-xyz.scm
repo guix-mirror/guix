@@ -2,6 +2,7 @@
 ;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2020 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,7 @@
 (define-module (gnu packages gnome-xyz)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system copy)
   #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
@@ -303,6 +305,32 @@ into a single panel, similar to that found in KDE Plasma and Windows 7+.")
 It uses ES6 syntax and claims to be more actively maintained than others.")
     (home-page "https://extensions.gnome.org/extension/2182/noannoyance/")
     (license license:gpl2)))
+
+(define-public gnome-shell-extension-paperwm
+  (package
+    (name "gnome-shell-extension-paperwm")
+    (version "34.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/paperwm/PaperWM.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1qry75f696pgmd9yzqvwhq5h6cipin2fvk7h881g29cjcpxim37a"))))
+    (build-system copy-build-system)
+    (arguments
+     '(#:install-plan
+       '(("." "share/gnome-shell/extensions/paperwm@hedning:matrix.org"
+          #:include-regexp ("\\.js(on)?$" "\\.css$" "\\.ui$" "\\.png$"
+                            "\\.xml$" "\\.compiled$")))))
+    (home-page "https://github.com/paperwm/PaperWM")
+    (synopsis "Tiled scrollable window management for GNOME Shell")
+    (description "PaperWM is an experimental GNOME Shell extension providing
+scrollable tiling of windows and per monitor workspaces.  It's inspired by paper
+notebooks and tiling window managers.")
+    (license license:gpl3)))
 
 (define-public numix-theme
   (package
