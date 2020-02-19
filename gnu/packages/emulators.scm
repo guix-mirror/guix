@@ -102,7 +102,9 @@
              version "/desmume-" version ".tar.gz"))
        (sha256
         (base32
-         "15l8wdw3q61fniy3h93d84dnm6s4pyadvh95a0j6d580rjk4pcrs"))))
+         "15l8wdw3q61fniy3h93d84dnm6s4pyadvh95a0j6d580rjk4pcrs"))
+       (patches (search-patches "desmume-gcc6-fixes.patch"
+                                "desmume-gcc7-fixes.patch"))))
     (build-system gnu-build-system)
     (arguments
      ;; Enable support for WiFi and microphone.

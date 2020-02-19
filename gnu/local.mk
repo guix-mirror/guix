@@ -809,6 +809,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/debops-constants-for-external-program-names.patch \
   %D%/packages/patches/debops-debops-defaults-fall-back-to-less.patch \
   %D%/packages/patches/deja-dup-use-ref-keyword-for-iter.patch	\
+  %D%/packages/patches/desmume-gcc6-fixes.patch			\
+  %D%/packages/patches/desmume-gcc7-fixes.patch			\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\
   %D%/packages/patches/diffutils-gets-undeclared.patch		\
   %D%/packages/patches/dkimproxy-add-ipv6-support.patch		\
