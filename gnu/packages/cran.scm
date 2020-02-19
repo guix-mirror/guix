@@ -5671,14 +5671,14 @@ reproducible.")
 (define-public r-learnr
   (package
     (name "r-learnr")
-    (version "0.10.0")
+    (version "0.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "learnr" version))
        (sha256
         (base32
-         "0278q9nbkc4nb0rp930kjrwyidf0v7y38d1s187m4f4bs7ha82k6"))))
+         "08xwmms6x58y3dsfbl9c6d03145hb4ij97nqr1cc9dxxilmr6x31"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-checkmate" ,r-checkmate)
