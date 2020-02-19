@@ -663,7 +663,8 @@ data on your platform, so the seed itself will be as random as possible.
                      "Description: Class library of cryptographic schemes"
                      "Version: " ,version "\n"
                      "Libs: -L${libdir} -lcryptopp\n"
-                     "Cflags: -I${includedir}\n"))))))))))
+                     "Cflags: -I${includedir}\n"))
+                   #t))))))))
     (native-inputs
      `(("unzip" ,unzip)))
     (home-page "https://cryptopp.com/")
