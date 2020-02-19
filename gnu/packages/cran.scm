@@ -13271,14 +13271,14 @@ minimum spanning tree and network, and median-joining networks.")
 (define-public r-rmetasim
   (package
     (name "r-rmetasim")
-    (version "3.1.7")
+    (version "3.1.14")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rmetasim" version))
        (sha256
         (base32
-         "0sz4mdprdi6sgkfwfdvh2hr9nxiwq17sw0vggq3cvs7lzb0i6m9r"))))
+         "0rdkhfgyr97r2d1kd9g8ipb2pn563qxm1y4m9z678q0kqan2ddl0"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ade4" ,r-ade4)
