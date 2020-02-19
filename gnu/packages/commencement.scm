@@ -2595,7 +2595,12 @@ exec " gcc "/bin/" program
   (package
     (inherit (@ (gnu packages file) file))
     (arguments
-     `(#:configure-flags '("--disable-bzlib")))))
+     `(#:configure-flags
+       `("--disable-bzlib"
+         ,,@(match (%current-system)
+              ((or "arm-linux" "aarch64-linux")
+               '("--disable-dependency-tracking"))
+              (_ '())))))))
 
 (define file-boot0
   (package
