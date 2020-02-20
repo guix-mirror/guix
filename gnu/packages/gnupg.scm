@@ -4,7 +4,7 @@
 ;;; Copyright © 2014, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
@@ -515,6 +515,9 @@ interface (FFI) of Guile.")
   (package
     (inherit guile-gcrypt)
     (name "guile3.0-gcrypt")
+    (native-inputs
+     `(("guile" ,guile-next)
+       ,@(alist-delete "guile" (package-native-inputs guile-gcrypt))))
     (inputs
      `(("guile" ,guile-next)
        ,@(alist-delete "guile" (package-inputs guile-gcrypt))))))
