@@ -113,8 +113,7 @@ installation of Haskell libraries and programs.")
          (uri (git-reference
                (url "https://github.com/jameysharp/corrode.git")
                (commit "b6699fb2fa552a07c6091276285a44133e5c9789")))
-         (file-name
-          (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32 "02v0yyj6sk4gpg2222wzsdqjxn8w66scbnf6b20x0kbmc69qcz4r"))))
       (build-system haskell-build-system)
