@@ -266,38 +266,13 @@ required structures.")
     (inputs `(("unbound" ,unbound)
               ,@(package-inputs gnutls)))))
 
-(define gnutls-3.6.10
-  ;; This is for 'guile3.0-gnutls', below.  Version 3.6.10 is the first to
-  ;; introduce Guile 2.9/3.0 support.
-  (package
-    (inherit gnutls)
-    (version "3.6.10")
-    (source (origin
-              (inherit (package-source gnutls))
-              (uri (string-append "mirror://gnupg/gnutls/v"
-                                  (version-major+minor version)
-                                  "/gnutls-" version ".tar.xz"))
-              (sha256
-               (base32
-                "14r2h73yfj66cm14k9mnb3kgzq5a7qjg5b31m53bf19vcxkwmwxi"))))))
-
 (define-public guile3.0-gnutls
   (package
-    (inherit gnutls-3.6.10)
+    (inherit gnutls)
     (name "guile3.0-gnutls")
-    (arguments
-     (substitute-keyword-arguments (package-arguments gnutls-3.6.10)
-       ((#:phases phases '%standard-phases)
-        `(modify-phases ,phases
-           (add-before 'build 'leave-guile-stdout-open
-             (lambda _
-               ;; Work around <https://bugs.gnu.org/38348>.
-               (substitute* "guile/Makefile"
-                 (("out=-") "out=/dev/null"))
-               #t))))))
     (inputs `(("guile" ,guile-next)
               ,@(alist-delete "guile"
-                              (package-inputs gnutls-3.6.10))))))
+                              (package-inputs gnutls))))))
 
 (define-public openssl
   (package
