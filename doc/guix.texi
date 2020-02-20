@@ -772,11 +772,11 @@ The following dependencies are optional:
 
 @itemize
 @item
-@c Note: We need at least 0.10.2 for 'channel-send-eof'.
+@c Note: We need at least 0.12.0 for 'userauth-gssapi!'.
 Support for build offloading (@pxref{Daemon Offload Setup}) and
 @command{guix copy} (@pxref{Invoking guix copy}) depends on
 @uref{https://github.com/artyom-poptsov/guile-ssh, Guile-SSH},
-version 0.10.2 or later.
+version 0.12.0 or later.
 
 @item
 When @url{https://www.nongnu.org/lzip/lzlib.html, lzlib} is available, lzlib
