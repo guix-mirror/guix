@@ -466,7 +466,7 @@ gpgpme starting with version 1.7.")
               (sha256
                (base32
                 "0n232iyayc46f7hywmjw0jr7pbmmz5h4b04jskhkzz9gxz0ci99c"))
-              (file-name (string-append name "-" version "-checkout"))))
+              (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
