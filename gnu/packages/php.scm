@@ -59,7 +59,7 @@
 (define-public php
   (package
     (name "php")
-    (version "7.4.1")
+    (version "7.4.3")
     (home-page "https://secure.php.net/")
     (source (origin
               (method url-fetch)
@@ -67,7 +67,7 @@
                                   "php-" version ".tar.xz"))
               (sha256
                (base32
-                "0qn7zwf2jzj3h7p4b1l79lf9gv236mycwkhgw15hj2fmpmkbh6sn"))
+                "0alqqs5hn4jmz1adrbysbw92n55nkw6f9vfivqj829kwhxnqa7yg"))
               (modules '((guix build utils)))
               (snippet
                '(with-directory-excursion "ext"
@@ -237,6 +237,9 @@
                          ;; complete.  It's a warning in both cases and test
                          ;; result is the same.
                          "ext/gd/tests/bug77973.phpt"
+                         ;; New test failures added with 7.4.3
+                         "ext/gd/tests/bug79067.phpt"
+                         "ext/gd/tests/bug79068.phpt"
 
                          ;; XXX: These iconv tests have the expected outcome,
                          ;; but with different error messages.
