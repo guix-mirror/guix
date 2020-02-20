@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2016, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
@@ -31,6 +31,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)            ;for 'which'
   #:use-module (gnu packages compression)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages gcc)
@@ -101,14 +102,18 @@ based on human speech recordings.")
 (define-public espeak-ng
   (package
     (name "espeak-ng")
-    (version "1.49.2")
+    (version "1.50")
     (home-page "https://github.com/espeak-ng/espeak-ng")
+    ;; Note: eSpeak NG publishes release tarballs, but the 1.50 tarball is
+    ;; broken: <https://github.com/espeak-ng/espeak-ng/issues/683>.
+    ;; Download the raw repository to work around it; remove 'native-inputs'
+    ;; below when switching back to the release tarball.
     (source (origin
-              (method url-fetch)
-              (uri (string-append home-page "/releases/download/" version
-                                  "/espeak-ng-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
               (sha256
-               (base32 "1d10x9rbvqi2zwcz65fxh04k0x0scnk7732l37laz6xra1ldhzng"))))
+               (base32 "0jkqhf2h94vbqq7mg7mmm23bq372fa7mdk941my18c3vkldcir1b"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")
@@ -116,6 +121,11 @@ based on human speech recordings.")
        #:parallel-build? #f
        ;; XXX: Some tests require an audio device.
        #:tests? #f))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("which" ,which)))
     (inputs
      `(("libcap" ,libcap)
        ("pcaudiolib" ,pcaudiolib)))
