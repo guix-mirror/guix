@@ -1232,7 +1232,7 @@ wish to perform colour calibration.")
        ("glib" ,glib)
        ("eudev" ,eudev)
        ("pixman" ,pixman)))
-    (home-page "https://www.freedesktop.org/wiki/Software/fprint/libfprint/")
+    (home-page "https://fprint.freedesktop.org/")
     (synopsis "Library to access fingerprint readers")
     (description
      "libfprint is a library designed to make it easy for application
@@ -1273,7 +1273,7 @@ software.")
        ("dbus-glib" ,dbus-glib)
        ("polkit" ,polkit)
        ("linux-pam" ,linux-pam)))                 ;for pam_fprintd
-    (home-page "https://www.freedesktop.org/wiki/Software/fprint/fprintd/")
+    (home-page "https://fprint.freedesktop.org/")
     (synopsis "D-Bus daemon that exposes fingerprint reader functionality")
     (description
      "fprintd is a D-Bus daemon that offers functionality of libfprint, a
