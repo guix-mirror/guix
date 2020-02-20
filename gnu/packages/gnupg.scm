@@ -507,6 +507,9 @@ interface (FFI) of Guile.")
 (define-public guile2.0-gcrypt
   (package (inherit guile-gcrypt)
     (name "guile2.0-gcrypt")
+    (native-inputs
+     `(("guile" ,guile-2.0)
+       ,@(alist-delete "guile" (package-native-inputs guile-gcrypt))))
     (inputs
      `(("guile" ,guile-2.0)
        ,@(alist-delete "guile" (package-inputs guile-gcrypt))))))
