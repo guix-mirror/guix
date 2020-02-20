@@ -876,11 +876,6 @@ interface.  It is implemented as a frontend to @code{klick}.")
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f)) ; no check target
-    (native-inputs
-     `(;; Use gcc-4.9 to work around an internal compiler error that happens
-       ;; when using gcc-5.5.0.  FIXME: Try removing this when the default
-       ;; compiler is no longer gcc-5.5.0.
-       ("gcc" ,gcc-4.9)))
     (home-page "https://bitbucket.org/mpyne/game-music-emu")
     (synopsis "Video game music file playback library")
     (description
