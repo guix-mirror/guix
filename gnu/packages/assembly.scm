@@ -232,7 +232,7 @@ assembler, a C compiler and a linker.  The assembler uses Intel syntax
                 (uri (git-reference
                       (url "https://git.savannah.gnu.org/r/libjit.git")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "0p6wklslkkp3s4aisj3w5a53bagqn5fy4m6088ppd4fcfxgqkrcd"))))
