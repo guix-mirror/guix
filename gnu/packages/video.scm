@@ -1206,6 +1206,10 @@ videoformats depend on the configuration flags of ffmpeg.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("avahi" ,avahi)
+       ;; XXX Try removing dav1d here and testing AV1 playback when FFmpeg 4.3
+       ;; is released.
+       ;; <https://issues.guix.gnu.org/issue/39719>
+       ("dav1d" ,dav1d)
        ("dbus" ,dbus)
        ("eudev" ,eudev)
        ("flac" ,flac)
