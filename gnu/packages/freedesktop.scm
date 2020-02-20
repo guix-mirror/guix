@@ -11,7 +11,7 @@
 ;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Brendan Tildesley <mail@brendan.scot>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Stefan Stefanović <stefanx2ovic@gmail.com>
 ;;; Copyright © 2019 Reza Alizadeh Majd <r.majd@pantherx.org>
@@ -1211,26 +1211,34 @@ wish to perform colour calibration.")
 (define-public libfprint
   (package
     (name "libfprint")
-    (version "0.6.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://people.freedesktop.org/~hadess/"
-                                  name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1giwh2z63mn45galsjb59rhyrvgwcy01hvvp4g01iaa2snvzr0r5"))))
-    (build-system gnu-build-system)
+    (version "1.90.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.freedesktop.org/libfprint/libfprint")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0fdaak7qjr9b4482g7fhhqpyfdqpxq5kpmyzkp7f5i7qq2ynb78a"))))
+    (build-system meson-build-system)
     (arguments
-     '(#:configure-flags (list (string-append "--with-udev-rules-dir="
-                                              (assoc-ref %outputs "out")
-                                              "/lib/udev/rules.d"))))
+     '(#:configure-flags
+       (list (string-append "-Dudev_rules_dir=" (assoc-ref %outputs "out")
+                            "/lib/udev/rules.d"))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("eudev" ,eudev)
+       ("glib:bin" ,glib "bin")         ; for {glib-,}mkenums
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)             ; for 88 KiB of API documentation
+       ("pkg-config" ,pkg-config)))
     (inputs
-     `(("libusb" ,libusb)
-       ("nss" ,nss)
-       ("glib" ,glib)
-       ("eudev" ,eudev)
+     `(("glib" ,glib)
+       ("gusb" ,gusb)
+       ("nss" ,nss)                     ; for the URU4x00 driver
+
+       ;; Replacing this with cairo works but just results in a reference
+       ;; (only) to pixman in the end.
        ("pixman" ,pixman)))
     (home-page "https://fprint.freedesktop.org/")
     (synopsis "Library to access fingerprint readers")
@@ -1243,36 +1251,89 @@ software.")
 (define-public fprintd
   (package
     (name "fprintd")
-    (version "0.7.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://people.freedesktop.org/~hadess/fprintd-"
-                    version ".tar.xz"))
-              (sha256
-               (base32
-                "05915i0bv7q62fqrs5diqwr8dz3pwqa1c1ivcgggkjyw0xk4ldp5"))))
-    (build-system gnu-build-system)
+    (version "1.90.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.freedesktop.org/libfprint/fprintd")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0mbzk263x7f58i9cxhs44mrngs7zw5wkm62j5r6xlcidhmfn03cg"))))
+    (build-system meson-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-before 'build 'set-sysconfdir
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      ;; Work around a bug whereby the 'SYSCONFDIR' macro
-                      ;; expands literally to '${prefix}/etc'.
-                      (let ((out (assoc-ref outputs "out")))
-                        (substitute* "src/main.c"
-                          (("SYSCONFDIR, \"fprintd.conf\"")
-                           (string-append "\"" out "/etc\", "
-                                          "\"fprintd.conf\"")))
-                        #t))))))
+     `(#:configure-flags
+       (list "-Dsystemd_system_unit_dir=/tmp"
+             (string-append "-Ddbus_service_dir=" (assoc-ref %outputs "out")
+                            "/share/dbus-1/system-services")
+             (string-append "-Dpam_modules_dir=" (assoc-ref %outputs "out")
+                            "/lib/security"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-output-directories
+           ;; Install files to our output, not that of the ‘owner’ package.
+           ;; These are not exposed as Meson options and must be patched.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "meson.build"
+                 (("(dbus_interfaces_dir = ).*" _ set)
+                  (string-append set "'" out "/share/dbus-1/interfaces'\n"))
+                 (("(polkit_policy_directory = ).*" _ set)
+                  (string-append set "'" out "/share/polkit-1/actions/'\n"))
+                 (("(dbus_data_dir = ).*" _ set)
+                  (string-append set "get_option('prefix')"
+                                 " / get_option('datadir')\n")))
+               #t)))
+         (add-before 'configure 'patch-mistake
+           (lambda _
+             (substitute* "meson.build"
+               (("(storage_path = )(get_option\\('prefix'\\))(.*)"
+                 _ set mistake value)
+                (string-append set "''" value "\n")))
+             #t))
+         (add-before 'configure 'patch-systemd-dependencies
+           (lambda _
+             (substitute* "meson.build"
+               (("'(libsystemd|systemd)'") "'libelogind'"))
+             #t))
+         (add-before 'configure 'ignore-test-dependencies
+           (lambda _
+             (substitute* "meson.build"
+               (("pam_wrapper_dep .*") "")
+               ((".*'(cairo|dbus|dbusmock|gi|pypamtest)': .*,.*") ""))
+             #t))
+         (add-before 'install 'no-polkit-magic
+           ;; Meson ‘magically’ invokes pkexec, which fails (not setuid).
+           (lambda _
+             (setenv "PKEXEC_UID" "something")
+             #t)))
+       #:tests? #f))                    ; XXX depend on unpackaged packages
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")         ; for glib-genmarshal
+       ("libxslt" ,libxslt)             ; for xsltproc
+       ("perl" ,perl)                   ; for pod2man
+       ("pkg-config" ,pkg-config)))
+       ;; For tests.
+       ;;("pam_wrapper" ,pam_wrapper)
+       ;;("python-pycairo" ,python-pycairo)
+       ;;("python-dbus" ,python-dbus)
+       ;;("python-dbusmock" ,python-dbusmock)
+       ;;("python-pygobject" ,python-pygobject)
+       ;;("python-pypamtest" ,python-pypamtest)
     (inputs
-     `(("libfprint" ,libfprint)
-       ("dbus-glib" ,dbus-glib)
+     `(("dbus-glib" ,dbus-glib)
+       ("elogind" ,elogind)
+       ("libfprint" ,libfprint)
+       ("linux-pam" ,linux-pam)
        ("polkit" ,polkit)
-       ("linux-pam" ,linux-pam)))                 ;for pam_fprintd
+
+       ;; XXX These are in libfprint's Requires.private.  Meson refuses to grant
+       ;; the ‘libfprint-2’ dependency if they are not provided here.
+       ("gusb" ,gusb)
+       ("nss" ,nss)
+       ("pixman" ,pixman)))
     (home-page "https://fprint.freedesktop.org/")
     (synopsis "D-Bus daemon that exposes fingerprint reader functionality")
     (description
