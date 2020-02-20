@@ -51,6 +51,7 @@
                (base32
                 "0g988zqm45sj1hlhhz4il5z4dpi5dl74hzjwzl4md37a09iaqnx6"))))
     (build-system gnu-build-system)
+    (outputs '("out" "bin"))
     (arguments
      ;; This skips some of the tests which fail on armhf and aarch64.
      '(#:configure-flags '("--disable-libevent-regress")))
