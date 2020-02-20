@@ -36,7 +36,7 @@
 ;;; Copyright © 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Stefan Stefanović <stefanx2ovic@gmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2019 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2019, 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
@@ -3947,7 +3947,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
 (define-public bluez
   (package
     (name "bluez")
-    (version "5.52")
+    (version "5.53")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3955,7 +3955,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "02jng21lp6fb3c2bh6vf9y7cj4gaxwk29dfc32ncy0lj0gi4q57p"))))
+                "1g1qg6dz6hl3csrmz75ixr12lwv836hq3ckb259svvrg62l2vaiq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
