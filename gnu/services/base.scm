@@ -11,6 +11,7 @@
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2037,11 +2038,6 @@ item of @var{packages}."
                 (setenv "LINUX_MODULE_DIRECTORY"
                         "/run/booted-system/kernel/lib/modules")
 
-                ;; The first one is for udev, the second one for eudev.
-                (setenv "UDEV_CONFIG_FILE" #$udev.conf)
-                (setenv "EUDEV_RULES_DIRECTORY"
-                        #$(file-append rules "/lib/udev/rules.d"))
-
                 (let* ((kernel-release
                         (utsname:release (uname)))
                        (linux-module-directory
@@ -2058,7 +2054,18 @@ item of @var{packages}."
                     (make-static-device-nodes directory))
                   (umask old-umask))
 
-                (let ((pid (fork+exec-command (list udevd))))
+                (let ((pid (fork+exec-command (list udevd)
+                            #:environment-variables
+                            (cons*
+                             ;; The first one is for udev, the second one for
+                             ;; eudev.
+                             (string-append "UDEV_CONFIG_FILE=" #$udev.conf)
+                             (string-append "EUDEV_RULES_DIRECTORY="
+                                            #$(file-append
+                                               rules "/lib/udev/rules.d"))
+                             (string-append "LINUX_MODULE_DIRECTORY="
+                                            (getenv "LINUX_MODULE_DIRECTORY"))
+                             (default-environment-variables)))))
                   ;; Wait until udevd is up and running.  This appears to
                   ;; be needed so that the events triggered below are
                   ;; actually handled.
