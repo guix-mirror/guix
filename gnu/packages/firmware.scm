@@ -52,7 +52,7 @@
               (sha256
                (base32
                 "16jbj8avg5jkgvq5lxm0hdxxn4c3zn7fx8b4nxllvr024apk9w23"))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (patches (search-patches "ath9k-htc-firmware-objcopy.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -106,7 +106,7 @@ Linux-libre.")
          (uri (git-reference
                (url "http://git.bues.ch/git/b43-tools.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "1wgmj4d65izbhprwb5bcwimc2ryv19b9066lqzy4sa5m6wncm9cn"))))
