@@ -4791,10 +4791,10 @@ with the mouse isn’t always trivial.")
     (synopsis "Abstract puzzle game")
     (description "Chroma is an abstract puzzle game. A variety of colourful
 shapes are arranged in a series of increasingly complex patterns, forming
- fiendish traps that must be disarmed and mysterious puzzles that must be
- manipulated in order to give up their subtle secrets. Initially so
- straightforward that anyone can pick it up and begin to play, yet gradually
- becoming difficult enough to tax even the brightest of minds.")
+fiendish traps that must be disarmed and mysterious puzzles that must be
+manipulated in order to give up their subtle secrets.  Initially so
+straightforward that anyone can pick it up and begin to play, yet gradually
+becoming difficult enough to tax even the brightest of minds.")
     (license license:gpl2+)))
 
 (define-public fillets-ng
