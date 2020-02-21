@@ -3,6 +3,7 @@
 ;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -318,13 +319,23 @@ It uses ES6 syntax and claims to be more actively maintained than others.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1qry75f696pgmd9yzqvwhq5h6cipin2fvk7h881g29cjcpxim37a"))))
+                "1qry75f696pgmd9yzqvwhq5h6cipin2fvk7h881g29cjcpxim37a"))
+              (snippet
+               '(begin (delete-file "schemas/gschemas.compiled")))))
     (build-system copy-build-system)
     (arguments
      '(#:install-plan
        '(("." "share/gnome-shell/extensions/paperwm@hedning:matrix.org"
-          #:include-regexp ("\\.js(on)?$" "\\.css$" "\\.ui$" "\\.png$"
-                            "\\.xml$" "\\.compiled$")))))
+          #:include-regexp ("\\.js(on)?$" "\\.css$" "\\.ui$" "\\.png$" "\\.xml$")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'compile-schemas
+           (lambda _
+             (with-directory-excursion "schemas"
+               (invoke "make"))
+             #t)))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin"))) ; for glib-compile-schemas
     (home-page "https://github.com/paperwm/PaperWM")
     (synopsis "Tiled scrollable window management for GNOME Shell")
     (description "PaperWM is an experimental GNOME Shell extension providing
