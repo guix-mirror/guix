@@ -1634,14 +1634,14 @@ are both supported).")
 (define-public profanity
   (package
     (name "profanity")
-    (version "0.7.1")
+    (version "0.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://profanity-im.github.io/profanity-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0nxh81j8ky0fzv47pip1jb7rs5rrin3jx0f3h632bvpjiya45r1z"))))
+                "15yrx2ir2bilxpjfaxpjb93yjpvpvcvh5r7wbsjx6kmmy7qg2zvb"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
