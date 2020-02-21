@@ -17,6 +17,7 @@
 ;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
+;;; Copyright © 2020 Dimakis Dimakakos <me@bendersteed.tech>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -10645,3 +10646,35 @@ lightweight messaging kernel.")
 
 (define-public ecl-pzmq
   (sbcl-package->ecl-package sbcl-pzmq))
+
+(define-public sbcl-clss
+  (let ((revision "1")
+        (commit "2a8e8615ab55870d4ca01928f3ed3bbeb4e75c8d"))
+    (package
+      (name "sbcl-clss")
+      (version (git-version "0.3.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/Shinmera/clss.git")
+           (commit commit)))
+         (sha256
+          (base32 "0la4dbcda78x29szanylccrsljqrn9d1mhh569sqkyp44ni5fv91"))
+         (file-name (git-file-name name version))))
+      (inputs
+       `(("array-utils" ,sbcl-array-utils)
+         ("plump" ,sbcl-plump)))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "DOM tree searching engine based on CSS selectors")
+      (description "CLSS is a DOM traversal engine based on CSS
+selectors.  It makes use of the Plump-DOM and is used by lQuery.")
+      (home-page "https://github.com/Shinmera/clss")
+      (license license:zlib))))
+
+(define-public cl-clss
+  (sbcl-package->cl-source-package sbcl-clss))
+
+(define-public ecl-clss
+  (sbcl-package->ecl-package sbcl-clss))
