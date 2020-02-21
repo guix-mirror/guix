@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Dennis Mungai <dmngaie@gmail.com>
 ;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
@@ -479,7 +479,8 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
 
 (define-public clang-9
   (clang-from-llvm llvm-9 clang-runtime-9
-                   "0426ma80i41qsgzm1qdz81mjskck426diygxi2k5vji2gkpixa3v"))
+                   "0426ma80i41qsgzm1qdz81mjskck426diygxi2k5vji2gkpixa3v"
+                   #:patches '("clang-9.0-libc-search-path.patch")))
 
 (define-public clang-toolchain-9
   (make-clang-toolchain clang-9))
