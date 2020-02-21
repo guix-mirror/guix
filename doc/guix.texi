@@ -6173,33 +6173,33 @@ which files go where.  The install plan is a list of @code{(@var{source}
 
 @itemize
 @item When @var{source} matches a file or directory without trailing slash, install it to @var{target}.
-  @itemize
-  @item If @var{target} has a trailing slash, install @var{source} basename beneath @var{target}.
-  @item Otherwise install @var{source} as @var{target}.
-  @end itemize
+@itemize
+@item If @var{target} has a trailing slash, install @var{source} basename beneath @var{target}.
+@item Otherwise install @var{source} as @var{target}.
+@end itemize
 
 @item When @var{source} is a directory with a trailing slash, or when @var{filters} are used,
-  the trailing slash of @var{target} is implied with the same meaning
-  as above.
-  @itemize
-  @item Without @var{filters}, install the full @var{source} @emph{content} to @var{target}.
-  @item With @var{filters} among @code{#:include}, @code{#:include-regexp}, @code{#:exclude},
-    @code{#:exclude-regexp}, only select files are installed depending on
-    the filters.  Each filters is specified by a list of strings.
-    @itemize
-      @item With @code{#:include}, install all the files which path suffix exactly matches
-        one of the elements in the given list.
-      @item With @code{#:include-regexp}, install all the files which subpaths match the
-        regular expressions in the given list.
-      @item The @code{#:exclude} and @code{#:exclude-regexp} filters
-        are the complement of their inclusion counterpart.  Without @code{#:include} flags,
-        install all files but those matching the exclusion filters.
-        If both inclusions and exclusions are specified, the exclusions are done
-        on top of the inclusions.
-    @end itemize
-  @end itemize
-  In all cases, the paths relative to @var{source} are preserved within
-  @var{target}.
+the trailing slash of @var{target} is implied with the same meaning
+as above.
+@itemize
+@item Without @var{filters}, install the full @var{source} @emph{content} to @var{target}.
+@item With @var{filters} among @code{#:include}, @code{#:include-regexp}, @code{#:exclude},
+@code{#:exclude-regexp}, only select files are installed depending on
+the filters.  Each filters is specified by a list of strings.
+@itemize
+@item With @code{#:include}, install all the files which path suffix exactly matches
+one of the elements in the given list.
+@item With @code{#:include-regexp}, install all the files which subpaths match the
+regular expressions in the given list.
+@item The @code{#:exclude} and @code{#:exclude-regexp} filters
+are the complement of their inclusion counterpart.  Without @code{#:include} flags,
+install all files but those matching the exclusion filters.
+If both inclusions and exclusions are specified, the exclusions are done
+on top of the inclusions.
+@end itemize
+@end itemize
+In all cases, the paths relative to @var{source} are preserved within
+@var{target}.
 @end itemize
 
 Examples:
@@ -6208,7 +6208,7 @@ Examples:
 @item @code{("foo/bar" "share/my-app/")}: Install @file{bar} to @file{share/my-app/bar}.
 @item @code{("foo/bar" "share/my-app/baz")}: Install @file{bar} to @file{share/my-app/baz}.
 @item @code{("foo/" "share/my-app")}: Install the content of @file{foo} inside @file{share/my-app},
-  e.g., install @file{foo/sub/file} to @file{share/my-app/sub/file}.
+e.g., install @file{foo/sub/file} to @file{share/my-app/sub/file}.
 @item @code{("foo/" "share/my-app" #:include ("sub/file"))}: Install only @file{foo/sub/file} to
 @file{share/my-app/sub/file}.
 @item @code{("foo/sub" "share/my-app" #:include ("file"))}: Install @file{foo/sub/file} to
