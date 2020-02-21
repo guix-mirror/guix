@@ -326,7 +326,8 @@ It uses ES6 syntax and claims to be more actively maintained than others.")
     (arguments
      '(#:install-plan
        '(("." "share/gnome-shell/extensions/paperwm@hedning:matrix.org"
-          #:include-regexp ("\\.js(on)?$" "\\.css$" "\\.ui$" "\\.png$" "\\.xml$")))
+          #:include-regexp ("\\.js(on)?$" "\\.css$" "\\.ui$" "\\.png$"
+                            "\\.xml$" "\\.compiled$")))
        #:phases
        (modify-phases %standard-phases
          (add-before 'install 'compile-schemas
