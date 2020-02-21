@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,6 +55,7 @@
       ("guile-json" (ref '(gnu packages guile) 'guile-json-4))
       ("guile-ssh"  (ref '(gnu packages ssh)   'guile-ssh))
       ("guile-git"  (ref '(gnu packages guile) 'guile-git))
+      ("guile-semver"  (ref '(gnu packages guile-xyz) 'guile3.0-semver))
       ("guile-sqlite3" (ref '(gnu packages guile) 'guile-sqlite3))
       ("guile-zlib" (ref '(gnu packages guile) 'guile-zlib))
       ("guile-lzlib" (ref '(gnu packages guile) 'guile-lzlib))
@@ -809,6 +811,9 @@ Info manual."
   (define guile-gcrypt
     (specification->package "guile-gcrypt"))
 
+  (define guile-semver
+    (specification->package "guile-semver"))
+
   (define gnutls
     (specification->package "gnutls"))
 
@@ -817,8 +822,8 @@ Info manual."
                          (cons (list "x" package)
                                (package-transitive-propagated-inputs package)))
                        (list guile-gcrypt gnutls guile-git guile-avahi
-                             guile-json guile-ssh guile-sqlite3 guile-zlib
-                             guile-lzlib))
+                             guile-json guile-semver guile-ssh guile-sqlite3
+                             guile-zlib guile-lzlib))
       (((labels packages _ ...) ...)
        packages)))
 
