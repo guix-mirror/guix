@@ -380,18 +380,10 @@ into a single panel, similar to that found in KDE Plasma and Windows 7+.")
                (base32
                 "0fa8l3xlh8kbq07y4385wpb908zm6x53z81q16xlmin97dln32hh"))
               (file-name (git-file-name name version))))
-    (build-system trivial-build-system)
+    (build-system copy-build-system)
     (arguments
-     '(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((dst (string-append
-                     (assoc-ref %outputs "out")
-                     "/share/gnome-shell/extensions/"
-                     "noannoyance@daase.net")))
-           (mkdir-p dst)
-           (copy-recursively (assoc-ref %build-inputs "source") dst)))))
+     '(#:install-plan
+       '(("." "share/gnome-shell/extensions/noannoyance@daase.net"))))
     (synopsis "Removes 'Window is ready' annotation")
     (description "One of the many extensions, that remove this message.
 It uses ES6 syntax and claims to be more actively maintained than others.")
