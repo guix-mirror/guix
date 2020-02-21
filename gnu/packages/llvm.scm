@@ -76,6 +76,13 @@ as \"x86_64-linux\"."
              ("x86_64"      => "X86")
              ("i686"        => "X86"))))
 
+(define (llvm-download-uri component version)
+  (if (version>=? version "9.0.1")
+      (string-append "https://github.com/llvm/llvm-project/releases/download"
+                     "/llvmorg-" version "/" component "-" version ".src.tar.xz")
+      (string-append "https://releases.llvm.org/" version "/" component "-"
+                     version ".src.tar.xz")))
+
 (define-public llvm-8
   (package
     (name "llvm")
@@ -83,8 +90,7 @@ as \"x86_64-linux\"."
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://llvm.org/releases/"
-                          version "/llvm-" version ".src.tar.xz"))
+      (uri (llvm-download-uri "llvm" version))
       (sha256
        (base32
         "0k124sxkfhfi1rca6kzkdraf4axhx99x3cw2rk55056628dvwwl8"))))
@@ -137,8 +143,7 @@ of programming tools as well as libraries with equivalent functionality.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://llvm.org/releases/"
-                           version "/compiler-rt-" version ".src.tar.xz"))
+       (uri (llvm-download-uri "compiler-rt" version))
        (sha256 (base32 hash))
        (patches (map search-patch patches))))
     (build-system cmake-build-system)
@@ -169,8 +174,10 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://llvm.org/releases/"
-                           version "/cfe-" version ".src.tar.xz"))
+       (uri (llvm-download-uri (if (version>=? version "9.0.1")
+                                   "clang"
+                                   "cfe")
+                               version))
        (sha256 (base32 hash))
        (patches (map search-patch patches))))
     ;; Using cmake allows us to treat llvm as an external library.  There
@@ -354,8 +361,7 @@ output), and Binutils.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://llvm.org/releases/"
-                           version "/libcxx-" version ".src.tar.xz"))
+       (uri (llvm-download-uri "libcxx" version))
        (sha256
         (base32
          "1qlx3wlxrnc5cwc1fcfc2vhfsl7j4294hi8y5kxj8hy8wxsjd462"))))
@@ -415,9 +421,7 @@ requirements according to version 1.1 of the OpenCL specification.")
     (version (package-version llvm))
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://releases.llvm.org/"
-                                  version  "/openmp-" version
-                                  ".src.tar.xz"))
+              (uri (llvm-download-uri "openmp" version))
               (sha256
                (base32
                 "1mf9cpgvix34xlpv0inkgl3qmdvgvp96f7sksqizri0n5xfp1cgp"))
@@ -465,8 +469,7 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
     (version "9.0.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://llvm.org/releases/"
-                                  version "/llvm-" version ".src.tar.xz"))
+              (uri (llvm-download-uri "llvm" version))
               (sha256
                (base32
                 "117ymdz1by2nkfq1c2p9m4050dp848kbjbiv6nsfj8hzy9f5d86n"))))
@@ -491,8 +494,7 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
     (version "7.0.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://llvm.org/releases/"
-                                  version "/llvm-" version ".src.tar.xz"))
+              (uri (llvm-download-uri "llvm" version))
               (sha256
                (base32
                 "16s196wqzdw4pmri15hadzqgdi926zln3an2viwyq0kini6zr3d3"))))))
@@ -516,8 +518,7 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
     (version "6.0.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://llvm.org/releases/"
-                                  version "/llvm-" version ".src.tar.xz"))
+              (uri (llvm-download-uri "llvm" version))
               (sha256
                (base32
                 "1qpls3vk85lydi5b4axl0809fv932qgsqgdgrk098567z4jc7mmn"))))))
@@ -543,8 +544,7 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
     (source
      (origin
        (inherit (package-source libcxx))
-       (uri (string-append "http://llvm.org/releases/"
-                           version "/libcxx-" version ".src.tar.xz"))
+       (uri (llvm-download-uri "libcxx" version))
        (sha256
         (base32
          "0rzw4qvxp6qx4l4h9amrq02gp7hbg8lw4m0sy3k60f50234gnm3n"))))
@@ -559,8 +559,7 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://llvm.org/releases/"
-                          version "/llvm-" version ".src.tar.xz"))
+      (uri (llvm-download-uri "llvm" version))
       (sha256
        (base32
         "1vi9sf7rx1q04wj479rsvxayb6z740iaz3qniwp266fgp5a07n8z"))))))
@@ -585,8 +584,7 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://llvm.org/releases/"
-                          version "/llvm-" version ".src.tar.xz"))
+      (uri (llvm-download-uri "llvm" version))
       (sha256
        (base32
         "1ybmnid4pw2hxn12ax5qa5kl1ldfns0njg8533y3mzslvd5cx0kf"))))))
@@ -609,8 +607,7 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://llvm.org/releases/"
-                           version "/llvm-" version ".src.tar.xz"))
+       (uri (llvm-download-uri "llvm" version))
        (sha256
         (base32
          "1masakdp9g2dan1yrazg7md5am2vacbkb3nahb3dchpc1knr8xxy"))))))
@@ -633,8 +630,7 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://llvm.org/releases/"
-                           version "/llvm-" version ".src.tar.xz"))
+       (uri (llvm-download-uri "llvm" version))
        (sha256
         (base32
          "153vcvj8gvgwakzr4j0kndc0b7wn91c2g1vy2vg24s6spxcc23gn"))))))
@@ -656,8 +652,7 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://llvm.org/releases/"
-                           version "/llvm-" version ".src.tar.xz"))
+       (uri (llvm-download-uri "llvm" version))
        (patches
         (search-patches "llvm-3.5-fix-clang-build-with-gcc5.patch"))
        (sha256
