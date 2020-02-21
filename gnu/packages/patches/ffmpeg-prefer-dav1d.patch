@@ -1,0 +1,43 @@
+When decoding AV1 files, prefer dav1d over libaom for performance
+reasons.
+
+Patch copied from upstream source repository:
+
+<https://git.videolan.org/gitweb.cgi/ffmpeg.git/?p=ffmpeg.git;a=commitdiff;h=dc0806dd25882f41f6085c8356712f95fded56c7>
+
+From dc0806dd25882f41f6085c8356712f95fded56c7 Mon Sep 17 00:00:00 2001
+From: James Almer <jamrial@gmail.com>
+Date: Sun, 15 Sep 2019 11:29:56 -0300
+Subject: [PATCH] avcodec/allcodecs: make libdav1d the preferred AV1 decoder
+
+It's considerably faster than libaom in most systems.
+
+Reviewed-by: BBB
+Signed-off-by: James Almer <jamrial@gmail.com>
+---
+ libavcodec/allcodecs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libavcodec/allcodecs.c b/libavcodec/allcodecs.c
+index 5130fca026..d5dfba1877 100644
+--- a/libavcodec/allcodecs.c
++++ b/libavcodec/allcodecs.c
+@@ -680,7 +680,6 @@ extern AVCodec ff_pcm_mulaw_at_encoder;
+ extern AVCodec ff_pcm_mulaw_at_decoder;
+ extern AVCodec ff_qdmc_at_decoder;
+ extern AVCodec ff_qdm2_at_decoder;
+-extern AVCodec ff_libaom_av1_decoder;
+ extern AVCodec ff_libaom_av1_encoder;
+ extern AVCodec ff_libaribb24_decoder;
+ extern AVCodec ff_libcelt_decoder;
+@@ -738,6 +737,7 @@ extern AVCodec ff_idf_decoder;
+ /* external libraries, that shouldn't be used by default if one of the
+  * above is available */
+ extern AVCodec ff_h263_v4l2m2m_encoder;
++extern AVCodec ff_libaom_av1_decoder;
+ extern AVCodec ff_libopenh264_encoder;
+ extern AVCodec ff_libopenh264_decoder;
+ extern AVCodec ff_h264_amf_encoder;
+-- 
+2.20.1
+

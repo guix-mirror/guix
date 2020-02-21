@@ -922,6 +922,8 @@ operate properly.")
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
+             ;; See <https://issues.guix.gnu.org/issue/39719>
+             (patches (search-patches "ffmpeg-prefer-dav1d.patch"))
              (sha256
               (base32
                "176jn1lcdf0gk7sa5l2mv0faqp5dsqdhx1gqcrgymqhfmdal4xfb"))))
