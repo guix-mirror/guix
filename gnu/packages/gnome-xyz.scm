@@ -101,19 +101,17 @@ like Gnome, Unity, Budgie, Pantheon, XFCE, Mate and others.")
         (base32
          "0vw3yw9f9ygzfd2k3zrfih3r0vkzlhk1bmsk8sapvk7np24i1z9s"))
        (file-name (git-file-name name version))))
-    (build-system trivial-build-system)
+    (build-system copy-build-system)
     (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (copy-recursively (assoc-ref %build-inputs "source") "icons")
-         (substitute* "icons/Delft/index.theme"
-           (("gnome") "Adwaita"))
-         (delete-file "icons/README.md")
-         (delete-file "icons/LICENSE")
-         (delete-file "icons/logo.jpg")
-         (copy-recursively "icons" (string-append %output "/share/icons")))))
+     `(#:install-plan
+       `(("." "share/icons" #:exclude ("README.md" "LICENSE" "logo.jpg")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-index.theme
+           (lambda _
+            (substitute* "Delft/index.theme"
+              (("gnome") "Adwaita"))
+            #t)))))
     (home-page "https://www.gnome-look.org/p/1199881/")
     (synopsis "Continuation of Faenza icon theme with up to date app icons")
     (description "Delft is a fork of the popular icon theme Faenza with up to
