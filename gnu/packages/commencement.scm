@@ -111,6 +111,16 @@
                       (guile (string-append guile-dir "/bin/guile")))
                  (invoke guile "--no-auto-compile" source)
                  (chdir "bootar")
+                 ;; (commencement bzip2) breaks tar on x86, see
+                 ;; https://bugs.gnu.org/39699
+                 (delete-file "scripts/bzip2.in")
+                 (delete-file "compression/bzip2.scm")
+                 (with-output-to-file "compression/bzip2.scm"
+                   (lambda _
+                     (display "(define-module (compression bzip2))
+(define-public is-bzip2-file? (const #f))
+(define-public make-bzip2-input-port (const #f))
+")))
                  #t)))
            (replace 'configure (bootstrap-configure ,version "." "scripts"))
            (replace 'build (bootstrap-build "."))
