@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2019 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014, 2015, 2016, 2019, 2020 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2016, 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Eric Bavier <bavier@posteo.net>
@@ -521,6 +521,51 @@ compatible with cddlib.  All computations are done exactly in either
 multiple precision or fixed integer arithmetic.  Output is not stored
 in memory, so even problems with very large output sizes can sometimes
 be solved.")
+    (license license:gpl2+)))
+
+(define-public vinci
+  (package
+    (name "vinci")
+    (version "1.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.math.u-bordeaux.fr/~aenge/software/"
+                           "vinci/vinci-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1aq0qc1y27iw9grhgnyji3290wwfznsrk3sg6ynqpxwjdda53h4m"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("lrslib" ,lrslib)))
+    (arguments
+     `(#:tests? #f                      ; no check phase
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; register the lrs location in the config file
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((lrs (assoc-ref inputs "lrslib"))
+                    (lrsexec (string-append lrs "/bin/lrs")))
+               (substitute* "vinci.h"
+                 (("#define LRS_EXEC      \"lrs\"")
+                  (string-append "#define LRS_EXEC \"" lrsexec "\""))))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (install-file "vinci" bin))
+             #t)))))
+    (home-page
+     "https://www.math.u-bordeaux.fr/~aenge/?category=software&page=vinci")
+    (synopsis "Volume computation for polytopes")
+    (description
+     "Vinci implements a number of volume computation algorithms for convex
+polytopes in arbitrary dimension.  The polytopes can be given by their
+V-representation (as the convex hull of a finite number of vertices), by
+their H-representation (as the bounded intersection of a finite number of
+halfspaces) or by their double description with both representations.")
     (license license:gpl2+)))
 
 (define-public arpack-ng
