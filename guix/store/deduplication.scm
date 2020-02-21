@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Caleb Ristvedt <caleb.ristvedt@cune.org>
-;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,7 +23,7 @@
 (define-module (guix store deduplication)
   #:use-module (gcrypt hash)
   #:use-module (guix build utils)
-  #:use-module (guix base16)
+  #:use-module (guix base32)
   #:use-module (srfi srfi-11)
   #:use-module (rnrs io ports)
   #:use-module (ice-9 ftw)
@@ -140,7 +140,7 @@ PATH so that future duplicates can hardlink to it.  PATH is assumed to be
 under STORE."
   (let* ((links-directory (string-append store "/.links"))
          (link-file       (string-append links-directory "/"
-                                         (bytevector->base16-string hash))))
+                                         (bytevector->nix-base32-string hash))))
     (mkdir-p links-directory)
     (if (eq? 'directory (stat:type (lstat path)))
         ;; Can't hardlink directories, so hardlink their atoms.
