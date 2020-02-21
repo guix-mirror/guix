@@ -57,6 +57,7 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
@@ -10598,3 +10599,49 @@ and usefulness, not speed.  Track the progress at
 
 (define-public cl-numcl
   (sbcl-package->cl-source-package sbcl-numcl))
+
+(define-public sbcl-pzmq
+  (let ((commit "7c7390eedc469d033c72dc497984d1536ee75826")
+        (revision "1"))
+    (package
+      (name "sbcl-pzmq")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/orivej/pzmq.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0gmwzf7h90wa7v4wnk49g0hv2mdalljpwhyigxcb967wzv8lqci9"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("fiveam" ,sbcl-fiveam)
+         ("let-plus" ,sbcl-let-plus)))
+      (inputs
+       `(("cffi" ,sbcl-cffi)
+         ("cffi-grovel" ,sbcl-cffi-grovel)
+         ("zeromq" ,zeromq)))
+      (arguments
+       `(#:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'fix-paths
+                      (lambda* (#:key inputs #:allow-other-keys)
+                        (substitute* "c-api.lisp"
+                          (("\"libzmq")
+                           (string-append "\""
+                                          (assoc-ref inputs "zeromq")
+                                          "/lib/libzmq")))
+                        #t)))))
+      (synopsis "Common Lisp bindings for the ZeroMQ library")
+      (description "This Common Lisp library provides bindings for the ZeroMQ
+lightweight messaging kernel.")
+      (home-page "https://github.com/orivej/pzmq")
+      (license license:unlicense))))
+
+(define-public cl-pzmq
+  (sbcl-package->cl-source-package sbcl-pzmq))
+
+(define-public ecl-pzmq
+  (sbcl-package->ecl-package sbcl-pzmq))
