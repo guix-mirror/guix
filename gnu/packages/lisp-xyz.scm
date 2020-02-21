@@ -10678,3 +10678,43 @@ selectors.  It makes use of the Plump-DOM and is used by lQuery.")
 
 (define-public ecl-clss
   (sbcl-package->ecl-package sbcl-clss))
+
+(define-public sbcl-lquery
+  (let ((revision "1")
+        (commit "8048111c6b83956daa632e7a3ffbd8c9c203bd8d"))
+    (package
+      (name "sbcl-lquery")
+      (version (git-version "3.2.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/Shinmera/lquery.git")
+           (commit commit)))
+         (sha256
+          (base32 "0520mcpxc2d6fdm8z61arpgd2z38kan7cf06qs373n5r64rakz6w"))
+         (file-name (git-file-name name version))))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (inputs
+       `(("array-utils" ,sbcl-array-utils)
+         ("form-fiddle" ,sbcl-form-fiddle)
+         ("plump" ,sbcl-plump)
+         ("clss" ,sbcl-clss)))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Library to allow jQuery-like HTML/DOM manipulation")
+      (description "@code{lQuery} is a DOM manipulation library written in
+Common Lisp, inspired by and based on the jQuery syntax and
+functions.  It uses Plump and CLSS as DOM and selector engines.  The
+main idea behind lQuery is to provide a simple interface for crawling
+and modifying HTML sites, as well as to allow for an alternative
+approach to templating.")
+      (home-page "https://github.com/Shinmera/lquery")
+      (license license:zlib))))
+
+(define-public cl-lquery
+  (sbcl-package->cl-source-package sbcl-lquery))
+
+(define-public ecl-lquery
+  (sbcl-package->ecl-package sbcl-lquery))
