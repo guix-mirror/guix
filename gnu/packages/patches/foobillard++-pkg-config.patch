@@ -1,0 +1,34 @@
+From: Markus Koschany <apo@debian.org>
+Date: Thu, 8 Mar 2018 17:49:24 +0100
+Subject: pkg-config
+
+Use pkg-config instead of the deprecated freetype-config command.
+
+Bug-Debian: https://bugs.debian.org/892338
+Forwarded: no
+---
+ src/Makefile.am | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/Makefile.am b/src/Makefile.am
+index 3b7d0fe..0f5a5dd 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -158,8 +158,8 @@ endif
+ SDL_CFLAGS = `sdl-config --cflags`
+ SDL_LIBS   = `sdl-config --libs`
+ 
+-FREETYPE_CFLAGS = `freetype-config --cflags`
+-FREETYPE_LIBS   = `freetype-config --libs`
++FREETYPE_CFLAGS = `pkg-config --cflags freetype2`
++FREETYPE_LIBS   = `pkg-config --libs freetype2`
+ 
+ if USE_MATHSINGLE
+ MATH_CFLAGS = -DVMATH_SINGLE_PRECISION
+@@ -233,4 +233,4 @@ AM_CFLAGS = -Wall ${FREETYPE_CFLAGS} ${SDL_CFLAGS} ${NVIDIA_CFLAGS} ${SOUND_CFLA
+             ${OPTIMIZATION_CFLAGS} ${USESSE_CFLAGS} ${USEWIN_CFLAGS} ${FASTMATH_CFLAGS} ${DEBIAN_CFLAGS} -lm
+ 
+ AM_LDFLAGS = ${all_libraries} ${FREETYPE_LIBS} ${SDL_LIBS}
+-LDADD = ${LDADD_FLAGS}
+\ No newline at end of file
++LDADD = ${LDADD_FLAGS}
