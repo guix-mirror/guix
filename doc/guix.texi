@@ -6168,23 +6168,22 @@ all the boilerplate code often needed for the
 
 To further simplify the file installation process, an
 @code{#:install-plan} argument is exposed to let the packager specify
-which files go where.
-The install plan is a list of @code{(SOURCE TARGET [FILTERS])}.
-@code{FILTERS} are optional.
+which files go where.  The install plan is a list of @code{(@var{source}
+@var{target} [@var{filters}])}.  @var{filters} are optional.
 
 @itemize
-@item When @code{SOURCE} matches a file or directory without trailing slash, install it to @code{TARGET}.
+@item When @var{source} matches a file or directory without trailing slash, install it to @var{target}.
   @itemize
-  @item If @code{TARGET} has a trailing slash, install @code{SOURCE} basename beneath @code{TARGET}.
-  @item Otherwise install @code{SOURCE} as @code{TARGET}.
+  @item If @var{target} has a trailing slash, install @var{source} basename beneath @var{target}.
+  @item Otherwise install @var{source} as @var{target}.
   @end itemize
 
-@item When @code{SOURCE} is a directory with a trailing slash, or when @code{FILTERS} are used,
-  the trailing slash of @code{TARGET} is implied with the same meaning
+@item When @var{source} is a directory with a trailing slash, or when @var{filters} are used,
+  the trailing slash of @var{target} is implied with the same meaning
   as above.
   @itemize
-  @item Without @code{FILTERS}, install the full @code{SOURCE} @emph{content} to @code{TARGET}.
-  @item With @code{FILTERS} among @code{#:include}, @code{#:include-regexp}, @code{exclude},
+  @item Without @var{filters}, install the full @var{source} @emph{content} to @var{target}.
+  @item With @var{filters} among @code{#:include}, @code{#:include-regexp}, @code{#:exclude},
     @code{#:exclude-regexp}, only select files are installed depending on
     the filters.  Each filters is specified by a list of strings.
     @itemize
@@ -6199,21 +6198,21 @@ The install plan is a list of @code{(SOURCE TARGET [FILTERS])}.
         on top of the inclusions.
     @end itemize
   @end itemize
-  In all cases, the paths relative to @code{SOURCE} are preserved within
-  @code{TARGET}.
+  In all cases, the paths relative to @var{source} are preserved within
+  @var{target}.
 @end itemize
 
 Examples:
 
 @itemize
-@item @code{("foo/bar" "share/my-app/")}: Install @code{bar} to @code{share/my-app/bar}.
-@item @code{("foo/bar" "share/my-app/baz")}: Install @code{bar} to @code{share/my-app/baz}.
-@item @code{("foo/" "share/my-app")}: Install the content of @code{foo} inside @code{share/my-app},
-  e.g. install @code{foo/sub/file} to @code{share/my-app/sub/file}.
-@item @code{("foo/" "share/my-app" #:include ("sub/file"))}: Install only @code{foo/sub/file} to
-@code{share/my-app/sub/file}.
-@item @code{("foo/sub" "share/my-app" #:include ("file"))}: Install @code{foo/sub/file} to
-@code{share/my-app/file}.
+@item @code{("foo/bar" "share/my-app/")}: Install @file{bar} to @file{share/my-app/bar}.
+@item @code{("foo/bar" "share/my-app/baz")}: Install @file{bar} to @file{share/my-app/baz}.
+@item @code{("foo/" "share/my-app")}: Install the content of @file{foo} inside @file{share/my-app},
+  e.g., install @file{foo/sub/file} to @file{share/my-app/sub/file}.
+@item @code{("foo/" "share/my-app" #:include ("sub/file"))}: Install only @file{foo/sub/file} to
+@file{share/my-app/sub/file}.
+@item @code{("foo/sub" "share/my-app" #:include ("file"))}: Install @file{foo/sub/file} to
+@file{share/my-app/file}.
 @end itemize
 @end defvr
 
