@@ -31,11 +31,12 @@
 (define-module (gnu packages libreoffice)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses)
-                #:select (gpl2+ lgpl2.1+ lgpl3+ mpl1.1 mpl2.0
+                #:select (gpl2 gpl2+ lgpl2.1+ lgpl3+ mpl1.1 mpl2.0
                           non-copyleft x11-style bsd-3))
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -140,6 +141,63 @@ Microsoft Excel 2007 XML, Microsoft Excel 2003 XML, Open Document Spreadsheet,
 Plain Text, Gnumeric XML, Generic XML.  It also includes low-level parsers for
 CSV, CSS and XML.")
     (license mpl2.0)))
+
+(define-public unoconv
+  (package
+    (name "unoconv")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "unoconv" version))
+       (sha256
+        (base32 "0cb0bvyxib3xrj0jdgizhp6p057lr8kqnd3n921rin37ivcvz3ih"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'stop-hash-sniffing
+           ;; Fixes <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=39647#11>.
+           ;; Submitted upsteam: <https://github.com/unoconv/unoconv/pull/531>.
+           (lambda _
+             (substitute* "unoconv"
+               (("sys.argv\\[0\\]\\.split\\('2'\\)")
+                "os.path.basename(sys.argv[0]).split('2')"))
+             #t))
+         (add-after 'unpack 'patch-find_offices
+           ;; find_offices is a convoluted cross-platform treasure hunt.
+           ;; Keep things simple and return the correct paths immediately.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((libreoffice (assoc-ref inputs "libreoffice")))
+               (substitute* "unoconv"
+                 (("def find_offices\\(\\):" match)
+                  (string-append
+                   match "\n"
+                   "    return [Office("
+                   "'" libreoffice "/lib/libreoffice', "
+                   "'" libreoffice "/lib/libreoffice/program', "
+                   "'" libreoffice "/lib/libreoffice/program', "
+                   "'" libreoffice "/lib/libreoffice/program/pyuno.so', "
+                   "'" libreoffice "/bin/soffice', "
+                   "sys.executable, "
+                   "None)]\n")))
+               #t))))))
+    (inputs
+     `(("libreoffice" ,libreoffice)))
+    (home-page "http://dag.wiee.rs/home-made/unoconv/")
+    (synopsis "Convert between any document format supported by LibreOffice")
+    (description
+     "Unoconv is a command-line utility to convert documents from any format
+that LibreOffice can import, to any format it can export.  It can be used for
+batch processing and can apply custom style templates and filters.
+
+Unoconv converts between over a hundred formats, including Open Document
+Format (@file{.odt}, @file{.ods}, @file{.odp})), Portable Document Format
+(@file{.pdf}), HTML and XHTML, RTF, DocBook (@file{.xml}), @file{.doc} and
+@file{.docx}), @file{.xls} and @file{.xlsx}).
+
+All required fonts must be installed on the converting system.")
+    (license gpl2)))
 
 (define-public librevenge
   (package
