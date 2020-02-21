@@ -1432,6 +1432,7 @@ following features:
     (arguments
      '(#:parallel-tests? #f             ; TODO Seems to cause test failures on
                                         ; i686-linux
+       #:configure-flags '("--enable-static=no")
        #:phases
        (modify-phases %standard-phases
          (add-after 'configure 'patch-libtool-wrapper-ls
