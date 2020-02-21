@@ -5259,6 +5259,28 @@ perspective only its buffers are available by default.")
     ;; the Expat license.
     (license license:gpl3+)))
 
+(define-public emacs-persp-mode
+  (package
+    (name "emacs-persp-mode")
+    (version "2.9.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Bad-ptr/persp-mode.el.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0b4y7a6j70s9lvr37riyy9k5kh3yvmx0m6nd9c0c8572ji4ij65g"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/Bad-ptr/persp-mode.el")
+    (synopsis "Switch between named \"perspectives\" shared among frames")
+    (description
+     "This package extends @code{perspective.el} to enable perspectives that
+can be saved to and restored from a file.")
+    (license license:gpl2+)))
+
 (define-public emacs-test-simple
   (package
     (name "emacs-test-simple")
