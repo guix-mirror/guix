@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Mckinley Olsen <mck.olsen@gmail.com>
 ;;; Copyright © 2016, 2017, 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -85,7 +85,7 @@
 (define-public tilda
   (package
     (name "tilda")
-    (version "1.4.1")
+    (version "1.5.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -94,7 +94,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "154rsldqjv2m1bddisb930qicb0y35kx7bxq392n2hn68jr2pxkj"))))
+                "13djibj3s7ig13c57ywy38pxy3qfmqihii2c0g15fy2h9q8xp1gx"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
