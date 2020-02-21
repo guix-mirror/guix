@@ -1034,6 +1034,14 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
                          "solenv/gbuild/platform/unxgcc.mk")
                  (("/bin/sh") (which "sh")))
 
+               ;; Use store references for strictly necessary commands,
+               ;; but not for optional tools like ‘gdb’ and ‘valgrind’.
+               (for-each (lambda (command)
+                           (substitute* "desktop/scripts/soffice.sh"
+                             (((format #f"~a " command))
+                              (format #f "~a " (which command)))))
+                         (list "dirname" "grep" "uname"))
+
                ;; GPGME++ headers are installed in a gpgme++ subdirectory, but
                ;; files in "xmlsecurity/source/gpg/" and elsewhere expect to
                ;; find them on the include path without a prefix.
