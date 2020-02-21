@@ -136,19 +136,11 @@ the Obsidian icon theme.")
                (base32
                 "1fjhx23jqwv3d0smwhnjvc35gqhwk9p5f96ic22pfax653cn5vh8"))
               (file-name (git-file-name name version))))
-    (build-system trivial-build-system)
+    (build-system copy-build-system)
     (arguments
-     '(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let* ((source (assoc-ref %build-inputs "source"))
-                (install-dir (string-append (assoc-ref %outputs "out")
-                                            "/share/gnome-shell/extensions"
-                                            "/appindicatorsupport@rgcjonas.gmail.com")))
-           (mkdir-p install-dir)
-           (copy-recursively source install-dir)
-           #t))))
+     `(#:install-plan
+       '(("." ,(string-append "share/gnome-shell/extensions/"
+                              "appindicatorsupport@rgcjonas.gmail.com")))))
     (synopsis "Adds KStatusNotifierItem support to GNOME Shell")
     (description "This extension integrates Ubuntu AppIndicators
 and KStatusNotifierItems (KDE's successor of the systray) into
