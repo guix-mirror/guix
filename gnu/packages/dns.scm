@@ -114,32 +114,32 @@ and BOOTP/TFTP for network booting of diskless machines.")
 (define-public isc-bind
   (package
     (name "bind")
-    (version "9.14.10")
+    (version "9.16.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://ftp.isc.org/isc/bind9/" version
-                    "/bind-" version ".tar.gz"))
+                    "/bind-" version ".tar.xz"))
               (sha256
                (base32
-                "0nkkc2phkkzwgl922xg41gx5pc5f4safabqslaw3880hwdf8vfaa"))))
+                "0a1f1wrlbnmq79q6s15fny36ip81malg6wlr8acp7amimsyxjjxg"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs
      ;; It would be nice to add GeoIP and gssapi once there are packages.
      `(("libcap" ,libcap)
+       ("libuv" ,libuv)
        ("libxml2" ,libxml2)
        ("openssl" ,openssl)
        ("p11-kit" ,p11-kit)
        ("python" ,python)
        ("python-ply" ,python-ply)))
-    (native-inputs `(("perl" ,perl)
-                     ("net-tools" ,net-tools)))
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
     (arguments
      `(#:configure-flags
-       (list (string-append "--with-openssl="
-                            (assoc-ref %build-inputs "openssl"))
-             (string-append "--with-pkcs11="
+       (list (string-append "--with-pkcs11="
                             (assoc-ref %build-inputs "p11-kit")))
        #:phases
        (modify-phases %standard-phases
