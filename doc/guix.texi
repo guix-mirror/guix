@@ -6187,10 +6187,11 @@ as above.
 @code{#:exclude-regexp}, only select files are installed depending on
 the filters.  Each filters is specified by a list of strings.
 @itemize
-@item With @code{#:include}, install all the files which path suffix exactly matches
-one of the elements in the given list.
-@item With @code{#:include-regexp}, install all the files which subpaths match the
-regular expressions in the given list.
+@item With @code{#:include}, install all the files which the path suffix matches
+at least one of the elements in the given list.
+@item With @code{#:include-regexp}, install all the files which the
+subpaths match at least one of the regular expressions in the given
+list.
 @item The @code{#:exclude} and @code{#:exclude-regexp} filters
 are the complement of their inclusion counterpart.  Without @code{#:include} flags,
 install all files but those matching the exclusion filters.
