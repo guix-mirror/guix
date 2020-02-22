@@ -1553,12 +1553,12 @@ TARGET, a GNU triplet."
 ;;;
 
 (define (default-guile)
-  ;; Lazily resolve 'guile-2.2' (not 'guile-final' because this is for
+  ;; Lazily resolve 'guile-3.0' (not 'guile-final' because this is for
   ;; programs returned by 'program-file' and we don't want to keep references
   ;; to several Guile packages).  This module must not refer to (gnu …)
   ;; modules directly, to avoid circular dependencies, hence this hack.
   (module-ref (resolve-interface '(gnu packages guile))
-              'guile-2.2))
+              'guile-3.0))
 
 (define* (load-path-expression modules #:optional (path %load-path)
                                #:key (extensions '()) system target)

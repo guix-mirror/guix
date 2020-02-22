@@ -307,7 +307,7 @@
          ("sqlite" ,sqlite)
          ("libgcrypt" ,libgcrypt)
 
-         ("guile" ,guile-2.2)
+         ("guile" ,guile-3.0)
 
          ;; Some of the tests use "unshare" when it is available.
          ("util-linux" ,util-linux)
@@ -328,7 +328,7 @@
 
          ("glibc-utf8-locales" ,glibc-utf8-locales)))
       (propagated-inputs
-       `(("gnutls" ,gnutls)
+       `(("gnutls" ,guile3.0-gnutls)
          ("guile-gcrypt" ,guile-gcrypt)
          ("guile-json" ,guile-json-3)
          ("guile-sqlite3" ,guile-sqlite3)
@@ -360,7 +360,7 @@ the Nix package manager.")
      (fold alist-delete (package-native-inputs guix)
            '("po4a" "graphviz" "help2man")))
     (inputs
-     `(("gnutls" ,gnutls)
+     `(("gnutls" ,guile3.0-gnutls)
        ("guile-git" ,guile-git)
        ("guile-json" ,guile-json-3)
        ("guile-gcrypt" ,guile-gcrypt)
@@ -408,31 +408,34 @@ the Nix package manager.")
 (define-public guile2.0-guix
   (deprecated-package "guile2.0-guix" guix))
 
-(define-public guile3.0-guix
+(define-public guile2.2-guix
   (package
     (inherit guix)
-    (name "guile3.0-guix")
+    (name "guile2.2-guix")
     (native-inputs
-     `(("guile" ,guile-3.0)
-       ("gnutls" ,guile3.0-gnutls)
-       ("guile-gcrypt" ,guile3.0-gcrypt)
-       ("guile-json" ,guile3.0-json)
-       ("guile-sqlite3" ,guile3.0-sqlite3)
-       ("guile-ssh" ,guile3.0-ssh)
-       ("guile-git" ,guile3.0-git)
+     `(("guile" ,guile-2.2)
+       ("gnutls" ,guile2.2-gnutls)
+       ("guile-gcrypt" ,guile2.2-gcrypt)
+       ("guile-json" ,guile2.2-json)
+       ("guile-sqlite3" ,guile2.2-sqlite3)
+       ("guile-ssh" ,guile2.2-ssh)
+       ("guile-git" ,guile2.2-git)
        ,@(fold alist-delete (package-native-inputs guix)
                '("guile" "gnutls" "guile-gcrypt" "guile-json"
                  "guile-sqlite3" "guile-ssh" "guile-git"))))
     (inputs
-     `(("guile" ,guile-3.0)
+     `(("guile" ,guile-2.2)
        ,@(alist-delete "guile" (package-inputs guix))))
     (propagated-inputs
-     `(("gnutls" ,guile3.0-gnutls)
-       ("guile-gcrypt" ,guile3.0-gcrypt)
-       ("guile-json" ,guile3.0-json)
-       ("guile-sqlite3" ,guile3.0-sqlite3)
-       ("guile-ssh" ,guile3.0-ssh)
-       ("guile-git" ,guile3.0-git)))))
+     `(("gnutls" ,gnutls)
+       ("guile-gcrypt" ,guile2.2-gcrypt)
+       ("guile-json" ,guile2.2-json)
+       ("guile-sqlite3" ,guile2.2-sqlite3)
+       ("guile-ssh" ,guile2.2-ssh)
+       ("guile-git" ,guile2.2-git)))))
+
+(define-public guile3.0-guix
+  (deprecated-package "guile3.0-guix" guix))
 
 (define-public guix-minimal
   ;; A version of Guix which is built with the minimal set of dependencies, as
@@ -837,12 +840,12 @@ written entirely in Python.")))
     (inputs
      `(("guile" ,guile-3.0)))
     (propagated-inputs
-     `(("guix" ,guile3.0-guix)
-       ("guile-commonmark" ,guile3.0-commonmark)
-       ("guile-gcrypt" ,guile3.0-gcrypt)
-       ("guile-pfds" ,guile3.0-pfds)
-       ("guile-syntax-highlight" ,guile3.0-syntax-highlight)
-       ("guile-wisp" ,guile3.0-wisp)))
+     `(("guix" ,guix)
+       ("guile-commonmark" ,guile-commonmark)
+       ("guile-gcrypt" ,guile-gcrypt)
+       ("guile-pfds" ,guile-pfds)
+       ("guile-syntax-highlight" ,guile-syntax-highlight)
+       ("guile-wisp" ,guile-wisp)))
     (home-page "https://workflows.guix.info")
     (synopsis "Workflow management extension for GNU Guix")
     (description "The @dfn{Guix Workflow Language} (GWL) provides an
@@ -867,6 +870,14 @@ environments.")
               (sha256
                (base32
                 "01z7jjkc7r7lj6637rcgpz40v8xqqyfp6871h94yvcnwm7zy9h1n"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Allow builds with Guile 3.0.
+                  (substitute* "configure.ac"
+                    (("^GUILE_PKG.*")
+                     "GUILE_PKG([3.0 2.2])\n"))
+                  #t))
               (file-name (string-append "guix-jupyter-" version "-checkout"))))
     (build-system gnu-build-system)
     (arguments
@@ -925,7 +936,7 @@ environments.")
        ("python-ipykernel" ,python-ipykernel)))
     (inputs
      `(("guix" ,guix)
-       ("guile" ,guile-2.2)))
+       ("guile" ,guile-3.0)))
     (propagated-inputs
      `(("guile-json" ,guile-json-3)
        ("guile-simple-zmq" ,guile-simple-zmq)

@@ -3589,7 +3589,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
   ;; This package must be public because other modules refer to it.  However,
   ;; mark it as hidden so that 'fold-packages' ignores it.
   (with-boot4 (hidden-package
-               (package-with-bootstrap-guile guile-2.2/fixed))))
+               (package-with-bootstrap-guile guile-3.0/fixed))))
 
 (define glibc-utf8-locales-final
   ;; Now that we have GUILE-FINAL, build the UTF-8 locales.  They are needed

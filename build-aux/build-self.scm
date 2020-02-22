@@ -383,11 +383,11 @@ interface (FFI) of Guile.")
                 #:key verbose? (version (date-version-string)) system
                 (pull-version 0)
 
-                ;; For the standalone Guix, default to Guile 2.2.  For old
+                ;; For the standalone Guix, default to Guile 3.0.  For old
                 ;; versions of 'guix pull' (pre-0.15.0), we have to use the
                 ;; same Guile as the current one.
                 (guile-version (if (> pull-version 0)
-                                   "2.2"
+                                   "3.0"
                                    (effective-version)))
 
                 #:allow-other-keys

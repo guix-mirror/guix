@@ -222,7 +222,7 @@
      `(("dejagnu" ,dejagnu)
        ("m4" ,m4)
        ("texinfo" ,texinfo)
-       ("guile" ,guile-2.2)
+       ("guile" ,guile-3.0)
        ("gsasl" ,gsasl)
        ("gnutls" ,gnutls)
        ("ncurses" ,ncurses)
@@ -246,13 +246,16 @@ software.")
      ;; Libraries are under LGPLv3+, and programs under GPLv3+.
      (list gpl3+ lgpl3+))))
 
-(define-public guile3.0-mailutils
+(define-public guile2.2-mailutils
   (package
     (inherit mailutils)
-    (name "guile3.0-mailutils")
+    (name "guile2.2-mailutils")
     (inputs
-     `(("guile" ,guile-3.0)
+     `(("guile" ,guile-2.2)
        ,@(alist-delete "guile" (package-inputs mailutils))))))
+
+(define-public guile3.0-mailutils
+  (deprecated-package "guile3.0-mailutils" mailutils))
 
 (define-public nullmailer
   (package

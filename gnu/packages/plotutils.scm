@@ -112,7 +112,7 @@ scientific data.")
                   #t))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("guile" ,guile-2.2)))
+    (inputs `(("guile" ,guile-3.0)))
     (propagated-inputs `(("guile-cairo" ,guile-cairo)))
     (home-page "http://wingolog.org/software/guile-charting/")
     (synopsis "Create charts and graphs in Guile")
@@ -121,12 +121,15 @@ scientific data.")
 using the Cairo drawing library.")
     (license license:lgpl2.1+)))
 
-(define-public guile3.0-charting
+(define-public guile2.2-charting
   (package
     (inherit guile-charting)
-    (name "guile3.0-charting")
-    (inputs `(("guile" ,guile-3.0)))
-    (propagated-inputs `(("guile-cairo" ,guile3.0-cairo)))))
+    (name "guile2.2-charting")
+    (inputs `(("guile" ,guile-2.2)))
+    (propagated-inputs `(("guile-cairo" ,guile2.2-cairo)))))
+
+(define-public guile3.0-charting
+  (deprecated-package "guile3.0-charting" guile-charting))
 
 (define-public ploticus
   (package

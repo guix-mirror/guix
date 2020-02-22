@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015, 2018 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
@@ -493,7 +493,7 @@ gpgpme starting with version 1.7.")
        ("texinfo" ,texinfo)
        ("guile" ,guile-2.2)))
     (inputs
-     `(("guile" ,guile-2.2)
+     `(("guile" ,guile-3.0)
        ("libgcrypt" ,libgcrypt)))
     (synopsis "Cryptography library for Guile using Libgcrypt")
     (description
@@ -514,16 +514,16 @@ interface (FFI) of Guile.")
      `(("guile" ,guile-2.0)
        ,@(alist-delete "guile" (package-inputs guile-gcrypt))))))
 
-(define-public guile3.0-gcrypt
+(define-public guile2.2-gcrypt
   (package
     (inherit guile-gcrypt)
-    (name "guile3.0-gcrypt")
-    (native-inputs
-     `(("guile" ,guile-next)
-       ,@(alist-delete "guile" (package-native-inputs guile-gcrypt))))
+    (name "guile2.2-gcrypt")
     (inputs
-     `(("guile" ,guile-next)
+     `(("guile" ,guile-2.2)
        ,@(alist-delete "guile" (package-inputs guile-gcrypt))))))
+
+(define-public guile3.0-gcrypt
+  (deprecated-package "guile3.0-gcrypt" guile-gcrypt))
 
 (define-public python-gpg
   (package

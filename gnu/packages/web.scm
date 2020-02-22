@@ -7162,7 +7162,7 @@ compressed JSON header blocks.
       (inputs
        `(("guix" ,guix)))
       (propagated-inputs
-       `(("guile" ,guile-2.2)
+       `(("guile" ,guile-3.0)
          ("guile-commonmark" ,guile-commonmark)
          ("guile-json" ,guile-json-3)))
       (home-page "https://github.com/UMCUGenetics/hpcguix-web")

@@ -211,10 +211,10 @@ and provides a \"top-like\" mode (monitoring).")
      `(("pkg-config" ,pkg-config)
 
        ;; This is the Guile we use as a cross-compiler...
-       ("guile" ,guile-2.2)))
+       ("guile" ,guile-3.0)))
     (inputs
      ;; ... and this is the one that appears in shebangs when cross-compiling.
-     `(("guile" ,guile-2.2)
+     `(("guile" ,guile-3.0)
 
        ;; The 'shepherd' command uses Readline when used interactively.  It's
        ;; an unusual use case though, so we don't propagate it.
@@ -228,15 +228,18 @@ interface and is based on GNU Guile.")
     (license license:gpl3+)
     (home-page "https://www.gnu.org/software/shepherd/")))
 
-(define-public guile3.0-shepherd
+(define-public guile2.2-shepherd
   (package
     (inherit shepherd)
-    (name "guile3.0-shepherd")
+    (name "guile2.2-shepherd")
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("guile" ,guile-next)))
+       ("guile" ,guile-2.2)))
     (inputs
-     `(("guile" ,guile-next)))))
+     `(("guile" ,guile-2.2)))))
+
+(define-public guile3.0-shepherd
+  (deprecated-package "guile3.0-shepherd" shepherd))
 
 (define-public cloud-utils
   (package

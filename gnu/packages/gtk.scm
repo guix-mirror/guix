@@ -875,10 +875,14 @@ application suites.")
                        "#include <libguile.h>\n#include <string.h>\n"))
                     #t)))))
     (build-system gnu-build-system)
+    (arguments
+     ;; Uses of 'scm_t_uint8' & co. are deprecated; don't stop the build
+     ;; because of them.
+     '(#:configure-flags '("--disable-Werror")))
     (inputs
      `(("guile-lib" ,guile-lib)
        ("expat" ,expat)
-       ("guile" ,guile-2.2)))
+       ("guile" ,guile-3.0)))
     (propagated-inputs
      ;; The .pc file refers to 'cairo'.
      `(("cairo" ,cairo)))
@@ -895,21 +899,18 @@ graphics library with all of the benefits of Scheme: memory management,
 exceptions, macros, and a dynamic programming environment.")
     (license license:lgpl3+)))
 
-(define-public guile3.0-cairo
+(define-public guile2.2-cairo
   (package
     (inherit guile-cairo)
-    (name "guile3.0-cairo")
-    (arguments
-     (substitute-keyword-arguments (package-arguments guile-cairo)
-       ((#:configure-flags flags ''())
-        ;; Uses of 'scm_t_uint8' & co. are deprecated; don't stop the build
-        ;; because of them.
-        `(cons "--disable-Werror" ,flags))))
+    (name "guile2.2-cairo")
     (inputs
-     `(("guile" ,guile-3.0)
-       ("guile-lib" ,guile3.0-lib)
+     `(("guile" ,guile-2.2)
+       ("guile-lib" ,guile2.2-lib)
        ,@(fold alist-delete (package-inputs guile-cairo)
                '("guile" "guile-lib"))))))
+
+(define-public guile3.0-cairo
+  (deprecated-package "guile3.0-cairo" guile-cairo))
 
 (define-public guile-rsvg
   ;; Use a recent snapshot that supports Guile 2.2 and beyond.
@@ -947,7 +948,7 @@ exceptions, macros, and a dynamic programming environment.")
                        ("automake" ,automake)
                        ("libtool" ,libtool)
                        ("texinfo" ,texinfo)))
-      (inputs `(("guile" ,guile-2.2)
+      (inputs `(("guile" ,guile-3.0)
                 ("librsvg" ,librsvg)
                 ("guile-lib" ,guile-lib)))        ;for (unit-test)
       (propagated-inputs `(("guile-cairo" ,guile-cairo)))
@@ -958,16 +959,19 @@ images onto Cairo surfaces.")
       (home-page "http://wingolog.org/projects/guile-rsvg/")
       (license license:lgpl2.1+))))
 
-(define-public guile3.0-rsvg
+(define-public guile2.2-rsvg
   (package
     (inherit guile-rsvg)
-    (name "guile3.0-rsvg")
+    (name "guile2.2-rsvg")
     (inputs
-     `(("guile" ,guile-3.0)
-       ("guile-lib" ,guile3.0-lib)
+     `(("guile" ,guile-2.2)
+       ("guile-lib" ,guile2.2-lib)
        ,@(fold alist-delete (package-inputs guile-rsvg)
                '("guile" "guile-lib"))))
-    (propagated-inputs `(("guile-cairo" ,guile3.0-cairo)))))
+    (propagated-inputs `(("guile-cairo" ,guile2.2-cairo)))))
+
+(define-public guile3.0-rsvg
+  (deprecated-package "guile3.0-rsvg" guile-rsvg))
 
 (define-public guile-present
   (package
@@ -1013,7 +1017,7 @@ images onto Cairo surfaces.")
                                  out "/lib/guile/" version "/site-ccache "))))
              #t)))))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("guile" ,guile-2.2)))
+    (inputs `(("guile" ,guile-3.0)))
     (propagated-inputs
      ;; These are used by the (present …) modules.
      `(("guile-lib" ,guile-lib)
@@ -1029,15 +1033,18 @@ includes a tools to generate PDF presentations out of Org mode and Texinfo
 documents.")
     (license license:lgpl3+)))
 
-(define-public guile3.0-present
+(define-public guile2.2-present
   (package
     (inherit guile-present)
-    (name "guile3.0-present")
-    (inputs `(("guile" ,guile-3.0)))
+    (name "guile2.2-present")
+    (inputs `(("guile" ,guile-2.2)))
     (propagated-inputs
-     `(("guile-lib" ,guile3.0-lib)
-       ("guile-cairo" ,guile3.0-cairo)
-       ("guile-rsvg" ,guile3.0-rsvg)))))
+     `(("guile-lib" ,guile2.2-lib)
+       ("guile-cairo" ,guile2.2-cairo)
+       ("guile-rsvg" ,guile2.2-rsvg)))))
+
+(define-public guile3.0-present
+  (deprecated-package "guile3.0-present" guile-present))
 
 (define-public guile-gnome
    (package
@@ -1072,9 +1079,9 @@ documents.")
        ("glib" ,glib)))
     (inputs `(("guile" ,guile-2.2)))
     (propagated-inputs
-     `(("guile-cairo" ,guile-cairo)
+     `(("guile-cairo" ,guile2.2-cairo)
        ("g-wrap" ,g-wrap)
-       ("guile-lib" ,guile-lib)))
+       ("guile-lib" ,guile2.2-lib)))
     (arguments
       `(#:tests? #f                               ;FIXME
         #:phases (modify-phases %standard-phases

@@ -301,8 +301,8 @@ Additionally, various channel-specific options can be negotiated.")
                      ("texinfo" ,texinfo)
                      ("pkg-config" ,pkg-config)
                      ("which" ,which)
-                     ("guile" ,guile-2.2))) ;needed when cross-compiling.
-    (inputs `(("guile" ,guile-2.2)
+                     ("guile" ,guile-3.0))) ;needed when cross-compiling.
+    (inputs `(("guile" ,guile-3.0)
               ("libssh" ,libssh)
               ("libgcrypt" ,libgcrypt)))
     (synopsis "Guile bindings to libssh")
@@ -322,15 +322,18 @@ libssh library.")
     (inputs `(("guile" ,guile-2.0)
               ,@(alist-delete "guile" (package-inputs guile-ssh))))))
 
-(define-public guile3.0-ssh
+(define-public guile2.2-ssh
   (package
     (inherit guile-ssh)
-    (name "guile3.0-ssh")
+    (name "guile2.2-ssh")
     (native-inputs
-     `(("guile" ,guile-next) ;needed when cross-compiling.
+     `(("guile" ,guile-2.2) ;needed when cross-compiling.
        ,@(alist-delete "guile" (package-native-inputs guile-ssh))))
-    (inputs `(("guile" ,guile-next)
+    (inputs `(("guile" ,guile-2.2)
               ,@(alist-delete "guile" (package-inputs guile-ssh))))))
+
+(define-public guile3.0-ssh
+  (deprecated-package "guile3.0-ssh" guile-ssh))
 
 (define-public corkscrew
   (package

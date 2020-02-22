@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013, 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2016, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
@@ -136,7 +136,7 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
                  (base32
                   "1g41yarz2bl0f73kbjqnywr485ghanbp7nmspklfb0n07yp0z6ak"))))
       (build-system gnu-build-system)
-      (inputs `(("guile" ,guile-2.2) ; for the wrapper scripts
+      (inputs `(("guile" ,guile-3.0) ; for the wrapper scripts
                 ("coreutils" ,coreutils)
                 ("grep" ,grep)
                 ("iproute2" ,iproute)    ; for ‘ip’
