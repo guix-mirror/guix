@@ -89,7 +89,11 @@
     (version "1a")
     (source (origin
               (method url-fetch)
-              (uri "https://files.ngyro.com/bootar/bootar-1a.ses")
+              (uri (list (string-append
+                          "mirror://gnu/guix/mirror/bootar-" version ".ses")
+                         (string-append
+                          "https://files.ngyro.com/bootar/bootar-"
+                          version ".ses")))
               (sha256
                (base32
                 "0mvp6vgx0q316fvy3z2lddlc5xgq5np3bm1fypgvj6dnayibg9np"))))
