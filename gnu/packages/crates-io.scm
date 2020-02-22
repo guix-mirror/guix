@@ -2276,8 +2276,7 @@ intrinsics.")
         (base32
          "13pv09z4ryp70qyzablkibwa2mh6c2852qq1sjr9wjigvwnj3ybn"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-byteorder" ,rust-byteorder-1.3)
         ("rust-cast" ,rust-cast-0.2)
         ("rust-itertools" ,rust-itertools-0.8))
