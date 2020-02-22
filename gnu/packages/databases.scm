@@ -19,7 +19,7 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2017, 2020 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
@@ -1060,9 +1060,10 @@ Most public APIs are compatible with @command{mysqlclient} and MySQLdb.")
          "0gmpvhn02pkq280ffmn4da1g4mdr1xxz7l80b7y4n7km1mrzwrml"))))
     (build-system gnu-build-system)
     (arguments
-     `( #:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
-                                               (assoc-ref %outputs "out")
-                                               "/lib"))))
+     `(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
+                                              (assoc-ref %outputs "out")
+                                              "/lib"))
+       #:make-flags (list "CFLAGS=-fPIC")))
     (home-page "http://fallabs.com/qdbm")
     (synopsis "Key-value database")
     (description "QDBM is a library of routines for managing a
