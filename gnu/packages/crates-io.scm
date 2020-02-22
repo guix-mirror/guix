@@ -4123,7 +4123,7 @@ APIs.")
   (package
     (inherit rust-foreign-types-macros-0.2)
     (name "rust-foreign-types-macros")
-    (version "0.1.0")
+    (version "0.1.1")
     (source
      (origin
        (method url-fetch)
@@ -4132,13 +4132,7 @@ APIs.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "16yjigjcsklcwy2ad32l24k1nwm9n3bsnyhxc3z9whjbsrj60qk6"))))
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-proc-macro2" ,rust-proc-macro2-0.4)
-        ("rust-quote" ,rust-quote-1.0)
-        ("rust-syn" ,rust-syn-0.15))))))
+         "0bh6z5rwdhfm987idal8r0ha5svz1li7md5l1g2a5966gya1jns0"))))))
 
 (define-public rust-foreign-types-shared-0.2
   (package
