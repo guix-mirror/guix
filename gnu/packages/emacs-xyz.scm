@@ -20371,7 +20371,7 @@ color.  Designed for 256-color terminals.  Comes in light and dark!")
      "https://github.com/elixir-editors/emacs-elixir")
     (synopsis "Major mode for editing Elixir files")
     (description
-     "Elixir-Mode Provides font-locking, indentation and navigation support
+     "Elixir-Mode provides font-locking, indentation and navigation support
  for the Elixir programming language.")
     (license license:gpl3+)))
 
