@@ -6145,10 +6145,10 @@ X11 servers, Windows, or macOS.")
          ;; Set path of uim-el-agent and uim-el-helper-agent executables
          (add-after 'configure 'configure-uim-el
            (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "emacs/uim-var.el"
-               (("\"(uim-el-agent|uim-el-helper-agent)\"" _ executable)
-                (string-append "\"" (assoc-ref outputs "out")
-                               "/bin/" executable "\"")))
+             (let ((out (assoc-ref outputs "out")))
+               (emacs-substitute-variables "emacs/uim-var.el"
+                 ("uim-el-agent" (string-append out "/bin/uim-el-agent"))
+                 ("uim-el-helper-agent" (string-append out "/bin/uim-el-helper-agent"))))
              #t))
          ;; Fix installation path by renaming share/emacs/uim-el to
          ;; share/emacs/site-lisp
