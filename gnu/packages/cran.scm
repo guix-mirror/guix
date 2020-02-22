@@ -19803,18 +19803,20 @@ and analyze Stan models.")
 (define-public r-rpf
   (package
     (name "r-rpf")
-    (version "0.62")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rpf" version))
        (sha256
         (base32
-         "1vgqhwi676bi9jjxljnxblw65b5szjwbp87wnsabc11vfjzc9wki"))))
+         "0j1229qc1mg0vy3msk3yzrpk2r64b8zvnk4rj8q27s38pgz9mix3"))))
     (properties `((upstream-name . "rpf")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-mvtnorm" ,r-mvtnorm)
+     `(("r-lifecycle" ,r-lifecycle)
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-rcpp" ,r-rcpp)
        ("r-rcppeigen" ,r-rcppeigen)))
     (home-page "https://github.com/jpritikin/rpf")
     (synopsis "Response probability functions")
