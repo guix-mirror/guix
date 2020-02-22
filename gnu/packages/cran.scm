@@ -29,6 +29,7 @@
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Antoine Côté <antoine.cote@posteo.net>
+;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -16873,7 +16874,7 @@ effect size.")
     (build-system r-build-system)
     (inputs
      `(("gdal" ,gdal)
-       ("proj.4" ,proj.4)
+       ("proj" ,proj)
        ("zlib" ,zlib)))
     (propagated-inputs
      `(("r-sp" ,r-sp)))
