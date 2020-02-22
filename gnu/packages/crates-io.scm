@@ -1317,7 +1317,7 @@ in a byte slice, fast.")
 (define-public rust-byteorder-1.3
   (package
     (name "rust-byteorder")
-    (version "1.3.2")
+    (version "1.3.4")
     (source
      (origin
        (method url-fetch)
@@ -1326,14 +1326,13 @@ in a byte slice, fast.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1xbwjlmq2ziqjmjvkqxdx1yh136xxhilxd40bky1w4d7hn4xvhx7"))))
+         "1pkjfhgjnq898g1d38ygcfi0msg3m6756cwv0sgysj1d26p8mi08"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-development-inputs
+     `(#:cargo-development-inputs
        (("rust-doc-comment" ,rust-doc-comment-0.3)
         ("rust-quickcheck" ,rust-quickcheck-0.8)
-        ("rust-rand" ,rust-rand-0.4))))
+        ("rust-rand" ,rust-rand-0.6))))
     (home-page
      "https://github.com/BurntSushi/byteorder")
     (synopsis
