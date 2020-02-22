@@ -3357,26 +3357,21 @@ analysis of multiply imputed data sets.")
 (define-public r-mice
   (package
     (name "r-mice")
-    (version "3.7.0")
+    (version "3.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "mice" version))
        (sha256
         (base32
-         "1wx1s1gc07iz63w4m8z0i1n5mc273f89grp5d3hfla7ypicjkasf"))))
+         "1ibybvigqkkla4xwhqs2w4m6c68alfcdsljx99nn4p92rzb1ig04"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-broom" ,r-broom)
        ("r-dplyr" ,r-dplyr)
        ("r-lattice" ,r-lattice)
-       ("r-mass" ,r-mass)
-       ("r-mitml" ,r-mitml)
-       ("r-nnet" ,r-nnet)
        ("r-rcpp" ,r-rcpp)
-       ("r-rlang" ,r-rlang)
-       ("r-rpart" ,r-rpart)
-       ("r-survival" ,r-survival)))
+       ("r-tidyr" ,r-tidyr)))
     (home-page "https://cran.r-project.org/web/packages/mice/")
     (synopsis "Multivariate imputation by chained equations")
     (description
