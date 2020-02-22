@@ -19283,14 +19283,14 @@ Raftery, Appl.Statistics, 1989); it includes inference and basic methods.")
 (define-public r-forecast
   (package
     (name "r-forecast")
-    (version "8.10")
+    (version "8.11")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "forecast" version))
        (sha256
         (base32
-         "0jccr2wg7sii38lyqrs58fkxf2az7nw6v0jya27hpbz9bg8ib3kr"))))
+         "0ayidhnk9cxav2qi83jrvqlg2jh4zlf4lki4xw48gdqsmjvih9x1"))))
     (properties `((upstream-name . "forecast")))
     (build-system r-build-system)
     (propagated-inputs
