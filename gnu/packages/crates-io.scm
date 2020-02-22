@@ -2266,8 +2266,7 @@ intrinsics.")
         (base32
          "1543wlpc4p1kz7sqqa7ylr8bkdr8l4f34hy4bxj7krpkahwhaqq3"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-atty" ,rust-atty-0.2)
         ("rust-cast" ,rust-cast-0.2)
         ("rust-clap" ,rust-clap-2)
@@ -2277,9 +2276,9 @@ intrinsics.")
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-num-traits" ,rust-num-traits-0.2)
-        ("rust-rand-core" ,rust-rand-core-0.5)
-        ("rust-rand-os" ,rust-rand-os-0.2)
-        ("rust-rand-xoshiro" ,rust-rand-xoshiro-0.3)
+        ("rust-rand-core" ,rust-rand-core-0.3)
+        ("rust-rand-os" ,rust-rand-os-0.1)
+        ("rust-rand-xoshiro" ,rust-rand-xoshiro-0.1)
         ("rust-rayon" ,rust-rayon-1.1)
         ("rust-rayon-core" ,rust-rayon-core-1.5)
         ("rust-serde" ,rust-serde-1.0)
@@ -2290,7 +2289,7 @@ intrinsics.")
        #:cargo-development-inputs
        (("rust-approx" ,rust-approx-0.3)
         ("rust-quickcheck" ,rust-quickcheck-0.8)
-        ("rust-rand" ,rust-rand-0.4)
+        ("rust-rand" ,rust-rand-0.6)
         ("rust-tempdir" ,rust-tempdir-0.3))))))
 
 (define-public rust-criterion-plot-0.4
