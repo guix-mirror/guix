@@ -274,6 +274,33 @@ trigger string @code{origin...}, which can be expanded further.  The
 @code{origin} snippet in turn may insert other trigger strings ending on
 @code{...}, which also can be expanded further.
 
+@cindex insert or update copyright
+@cindex @code{M-x guix-copyright}
+@cindex @code{M-x copyright-update}
+Additionaly we provide insertion and automatic update of a copyright in
+@file{etc/copyright.el}.  You may want to set your full name, mail, and
+load a file.
+
+@lisp
+(setq user-full-name "Alice Doe")
+(setq user-mail-address "alice@@mail.org")
+;; @r{Assuming the Guix checkout is in ~/src/guix.}
+(load-file "~/src/guix/etc/copyright.el")
+@end lisp
+
+To insert a copyright at the current line invoke @code{M-x guix-copyright}.
+
+To update a copyright you need to specify a @code{copyright-names-regexp}.
+
+@lisp
+(setq copyright-names-regexp
+      (format "%s <%s>" user-full-name user-mail-address))
+@end lisp
+
+You can check if your copyright is up to date by evaluating @code{M-x
+copyright-update}.  If you want to do it automatically after each buffer
+save then add @code{(add-hook 'after-save-hook 'copyright-update)} in
+Emacs.
 
 @node Packaging Guidelines
 @section Packaging Guidelines
