@@ -19361,7 +19361,7 @@ with passwords for paths matching regexps.")
      `(("emacs-ivy" ,emacs-ivy)))
     (home-page "https://github.com/redguardtoo/eacl")
     (synopsis "Auto-complete lines by using @code{grep} on a project")
-    (description "This package provides auto-completion cammands for single
+    (description "This package provides auto-completion commands for single
 and multiple lines of code in a project.")
     (license license:gpl3+)))
 
