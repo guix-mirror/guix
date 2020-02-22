@@ -10014,7 +10014,7 @@ dependency to expose a precomputed hash.")
 (define-public rust-proc-macro2-1.0
   (package
     (name "rust-proc-macro2")
-    (version "1.0.6")
+    (version "1.0.8")
     (source
       (origin
         (method url-fetch)
@@ -10022,11 +10022,10 @@ dependency to expose a precomputed hash.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "09rgb5ab0jgw39kyad0lgqs4nb9yaf7mwcrgxqnsxbn4il54g7lw"))))
+          "0j45p176fnw0d02dzcky9sxyr4fadiggq07skmblwspqdxy33jrs"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-unicode-xid" ,rust-unicode-xid-0.2))
        #:cargo-development-inputs
        (("rust-quote" ,rust-quote-1.0))))
