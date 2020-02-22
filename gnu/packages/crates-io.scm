@@ -9943,7 +9943,7 @@ dependency to expose a precomputed hash.")
 (define-public rust-proc-macro-hack-0.5
   (package
     (name "rust-proc-macro-hack")
-    (version "0.5.7")
+    (version "0.5.11")
     (source
      (origin
        (method url-fetch)
@@ -9952,14 +9952,13 @@ dependency to expose a precomputed hash.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1www5lrvsk7pq04clgfmjlnnrshikgs1h51l17vrc7qy58bx878c"))))
+         "1idz5vmnjjhvr51yvwyjb45mza18wa53fr05m1skqvbdyw15gm7c"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-proc-macro2" ,rust-proc-macro2-0.4)
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1.0)
         ("rust-quote" ,rust-quote-1.0)
-        ("rust-syn" ,rust-syn-0.15))
+        ("rust-syn" ,rust-syn-1.0))
        #:cargo-development-inputs
        (("rust-demo-hack" ,rust-demo-hack-0.0)
         ("rust-demo-hack-impl" ,rust-demo-hack-impl-0.0))))
