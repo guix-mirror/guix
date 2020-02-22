@@ -154,18 +154,16 @@ empty list."
     ;; Ask for version 3 of the API as suggested at
     ;; <https://developer.github.com/v3/>.
     `((Accept . "application/vnd.github.v3+json")
-      (user-agent . "GNU Guile")))
+      (user-agent . "GNU Guile")
+      ,@(if (%github-token)
+            `((Authorization . ,(string-append "token " (%github-token))))
+            '())))
 
-  (define (decorate url)
-    (if (%github-token)
-        (string-append url "?access_token=" (%github-token))
-        url))
-
-  (match (json-fetch (decorate release-url) #:headers headers)
+  (match (json-fetch release-url #:headers headers)
     (#()
      ;; We got the empty list, presumably because the user didn't use GitHub's
      ;; "release" mechanism, but hopefully they did use Git tags.
-     (json-fetch (decorate tag-url) #:headers headers))
+     (json-fetch tag-url #:headers headers))
     (x x)))
 
 (define (latest-released-version url package-name)
