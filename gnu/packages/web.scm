@@ -1163,10 +1163,13 @@ high performance.")
        (sha256
         (base32 "0ak9a6hsanhys40yhv7c2gqkfghpm6jx36j1pnml8ajvgaky5q98"))))
     (build-system gnu-build-system)
+    (arguments
+     ;; Parallel builds don't reliably succeed.
+     `(#:parallel-build? #f))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("cunit" ,cunit) ; For tests.
+       ("cunit" ,cunit)                 ; for tests
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)
        ("python-sphinx" ,python-sphinx)))
