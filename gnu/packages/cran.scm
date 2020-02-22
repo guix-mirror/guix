@@ -20018,14 +20018,14 @@ network, tree, dendrogram, and Sankey graphs from R using data frames.")
 (define-public r-qgraph
   (package
     (name "r-qgraph")
-    (version "1.6.4")
+    (version "1.6.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "qgraph" version))
        (sha256
         (base32
-         "1glg814h7fwl1jfm6dw1d9i80bilmj5jcjjrfln15byrdh4mm1j3"))))
+         "0pwys9irxvp0ap158drplyypkplbmwqinv0fmlsblk7q875cr592"))))
     (properties `((upstream-name . "qgraph")))
     (build-system r-build-system)
     (propagated-inputs
@@ -20036,7 +20036,6 @@ network, tree, dendrogram, and Sankey graphs from R using data frames.")
        ("r-d3network" ,r-d3network)
        ("r-dplyr" ,r-dplyr)
        ("r-fdrtool" ,r-fdrtool)
-       ("r-ggm" ,r-ggm)
        ("r-ggplot2" ,r-ggplot2)
        ("r-ggraph" ,r-ggraph)
        ("r-glasso" ,r-glasso)
