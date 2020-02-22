@@ -2960,18 +2960,17 @@ tests being run, resulting clearer and more specific output.")
 (define-public guile-semver
   (package
     (name "guile-semver")
-    (version "0.1.0")
+    (version "0.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.ngyro.com/guile-semver/"
                                   "guile-semver-" version ".tar.gz"))
               (sha256
                (base32
-                "06b66rj7nyhr6i3dpkwvfw1xb10w2pngrsw2hxfxkznwsbh9byfz"))))
+                "109p4n39ln44cxvwdccf9kgb96qx54makvd2ir521ssz6wchjyag"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("srfi-64-driver" ,srfi-64-driver)))
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("guile" ,guile-2.2)))
     (home-page "https://ngyro.com/software/guile-semver.html")
