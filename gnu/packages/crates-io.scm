@@ -4107,8 +4107,7 @@ implementation that is more efficient for smaller hash keys.")
         (base32
          "1cgk0vyd7r45cj769jym4a6s7vwshvd0z4bqrb92q1fwibmkkwzn"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-foreign-types-macros" ,rust-foreign-types-macros-0.1)
         ("rust-foreign-types-shared" ,rust-foreign-types-shared-0.1))))))
 
