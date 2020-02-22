@@ -19770,18 +19770,20 @@ perform @dfn{exploratory mediation} (XMed).")
 (define-public r-stanheaders
   (package
     (name "r-stanheaders")
-    (version "2.19.0")
+    (version "2.19.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "StanHeaders" version))
        (sha256
         (base32
-         "0kyka130sin4nbji7p840394ynhmaynv9jyi94ddbplj83i2nhx3"))))
+         "0cmk0fzczx7dcywcw1dhm6gfq84qlsx77qrsk4z3bf3dhr4bznam"))))
     (properties `((upstream-name . "StanHeaders")))
     (build-system r-build-system)
     (inputs `(("pandoc" ,ghc-pandoc)))
-    (native-inputs `(("gfortran" ,gfortran)))
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("r-knitr" ,r-knitr))) ; for vignettes
     (home-page "https://mc-stan.org/")
     (synopsis "C++ header files for Stan")
     (description
