@@ -17038,14 +17038,14 @@ Latin Hypercube Samples.")
 (define-public r-acebayes
   (package
     (name "r-acebayes")
-    (version "1.8")
+    (version "1.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "acebayes" version))
        (sha256
         (base32
-         "1xm6bw0qm2vlcrk274x0bawzb2lnacb1wsmzba5mg3i75a55pqln"))))
+         "1imfwm1vpbb24vfmfn1nljhmaz8429mwjihw34892p387s8h7xz2"))))
     (properties `((upstream-name . "acebayes")))
     (build-system r-build-system)
     (propagated-inputs
