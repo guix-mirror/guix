@@ -6004,14 +6004,14 @@ genes in the gene-set that are ranked above the leading edge).")
 (define-public r-cicero
   (package
     (name "r-cicero")
-    (version "1.4.0")
+    (version "1.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "cicero" version))
        (sha256
         (base32
-         "0mmm7vvzq50b5fayid0bw82b5lar3xm9fwl2ya30q0p4db2y6wnz"))))
+         "07g6r335zqqy3r5v4x4glxdrcsq9bjhs9jmgvppiggv1h630a22w"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
@@ -6033,6 +6033,7 @@ genes in the gene-set that are ranked above the leading edge).")
        ("r-s4vectors" ,r-s4vectors)
        ("r-stringr" ,r-stringr)
        ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)
        ("r-vgam" ,r-vgam)))
     (home-page "https://bioconductor.org/packages/cicero/")
     (synopsis "Predict cis-co-accessibility from single-cell data")
