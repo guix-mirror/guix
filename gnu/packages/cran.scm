@@ -19965,29 +19965,6 @@ uses a trans-dimensional @dfn{Markov Chain Monte Carlo} (MCMC) approach based
 on a continuous-time birth-death process.")
     (license license:gpl2+)))
 
-(define-public r-ggm
-  (package
-    (name "r-ggm")
-    (version "2.5")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "ggm" version))
-       (sha256
-        (base32
-         "11wc6k2kj2ydy0dyks5mbvbhxm1r43id87anl1jg6dn0yv4m78di"))))
-    (properties `((upstream-name . "ggm")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-graph" ,r-graph)
-       ("r-igraph" ,r-igraph)))
-    (home-page "https://cran.r-project.org/package=ggm")
-    (synopsis "Functions for graphical Markov models")
-    (description
-     "This package provides functions and datasets for maximum likelihood
-fitting of some classes of graphical Markov models.")
-    (license license:gpl2+)))
-
 (define-public r-d3network
   (package
     (name "r-d3network")

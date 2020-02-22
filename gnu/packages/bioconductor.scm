@@ -1569,6 +1569,30 @@ expressed genes in DNA microarray experiments.")
      "This package implements some simple graph handling capabilities for R.")
     (license license:artistic2.0)))
 
+;; This is a CRAN package, but it depends on a Bioconductor package.
+(define-public r-ggm
+  (package
+    (name "r-ggm")
+    (version "2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggm" version))
+       (sha256
+        (base32
+         "11wc6k2kj2ydy0dyks5mbvbhxm1r43id87anl1jg6dn0yv4m78di"))))
+    (properties `((upstream-name . "ggm")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-graph" ,r-graph)
+       ("r-igraph" ,r-igraph)))
+    (home-page "https://cran.r-project.org/package=ggm")
+    (synopsis "Functions for graphical Markov models")
+    (description
+     "This package provides functions and datasets for maximum likelihood
+fitting of some classes of graphical Markov models.")
+    (license license:gpl2+)))
+
 (define-public r-codedepends
   (package
     (name "r-codedepends")
