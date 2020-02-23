@@ -23,6 +23,7 @@
 ;;; Copyright © 2019 swedebugia <swedebugia@riseup.net>
 ;;; Copyright © 2019, 2020 Amar Singh <nly@disroot.org>
 ;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2995,6 +2996,13 @@ tests being run, resulting clearer and more specific output.")
 comparing, and writing Semantic Versions.  It also includes ranges in
 the style of the Node Package Manager (NPM).")
     (license license:gpl3+)))
+
+(define-public guile3.0-semver
+  (package
+    (inherit guile-semver)
+    (name "guile3.0-semver")
+    (inputs
+     `(("guile" ,guile-3.0)))))
 
 (define-public guile-hashing
   (package
