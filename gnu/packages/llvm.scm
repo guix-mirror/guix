@@ -83,17 +83,17 @@ as \"x86_64-linux\"."
       (string-append "https://releases.llvm.org/" version "/" component "-"
                      version ".src.tar.xz")))
 
-(define-public llvm-8
+(define-public llvm
   (package
     (name "llvm")
-    (version "8.0.0")
+    (version "9.0.1")
     (source
      (origin
       (method url-fetch)
       (uri (llvm-download-uri "llvm" version))
       (sha256
        (base32
-        "0k124sxkfhfi1rca6kzkdraf4axhx99x3cw2rk55056628dvwwl8"))))
+        "16hwp3qa54c3a3v7h8nlw0fh5criqh0hlr1skybyk0cz70gyx880"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("python" ,python-2) ;bytes->str conversion in clang>=3.7 needs python-2
@@ -131,9 +131,7 @@ languages.  It currently supports compilation of C and C++ programs, using
 front-ends derived from GCC 4.0.1.  A new front-end for the C family of
 languages is in development.  The compiler infrastructure includes mirror sets
 of programming tools as well as libraries with equivalent functionality.")
-    (license license:ncsa)))
-
-(define-public llvm llvm-8)
+    (license license:asl2.0)))  ;with LLVM exceptions, see LICENSE.txt
 
 (define* (clang-runtime-from-llvm llvm hash
                                   #:optional (patches '()))
@@ -161,7 +159,7 @@ of programming tools as well as libraries with equivalent functionality.")
 functions for C and C++ programs.  It also provides header files that allow C
 and C++ source code to interface with the \"sanitization\" passes of the clang
 compiler.  In LLVM this library is called \"compiler-rt\".")
-    (license license:ncsa)
+    (license (package-license llvm))
 
     ;; <https://compiler-rt.llvm.org/> doesn't list MIPS as supported.
     (supported-systems (delete "mips64el-linux" %supported-systems))))
@@ -307,7 +305,9 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
 Objective-C++ programming languages.  It uses LLVM as its back end.  The Clang
 project includes the Clang front end, the Clang static analyzer, and several
 code analysis tools.")
-    (license license:ncsa)))
+    (license (if (version>=? version "9.0")
+                 license:asl2.0         ;with LLVM exceptions
+                 license:ncsa))))
 
 (define (make-clang-toolchain clang)
   (package
@@ -357,44 +357,49 @@ output), and Binutils.")
 (define-public clang-runtime
   (clang-runtime-from-llvm
    llvm
-   "1c919wsm17xnv7lr8bhpq2wkq8113lzlw6hzhfr737j59x3wfddl"))
+   "0xwh79g3zggdabxgnd0bphry75asm1qz7mv3hcqihqwqr6aspgy2"))
 
 (define-public clang
   (clang-from-llvm llvm clang-runtime
-                   "0svk1f70hvpwrjp6x5i9kqwrqwxnmcrw5s7f4cxyd100mdd12k08"
-                   #:patches '("clang-7.0-libc-search-path.patch")))
+                   "0ls2h3iv4finqyflyhry21qhc9cm9ga7g1zq21020p065qmm2y2p"
+                   #:patches '("clang-9.0-libc-search-path.patch")))
 
 (define-public clang-toolchain
   (make-clang-toolchain clang))
 
-(define-public llvm-9
+(define-public llvm-9 llvm)
+(define-public clang-runtime-9 clang-runtime)
+(define-public clang-9 clang)
+(define-public clang-toolchain-9 clang-toolchain)
+
+(define-public llvm-8
   (package
     (inherit llvm)
-    (version "9.0.1")
+    (version "8.0.0")
     (source (origin
               (method url-fetch)
               (uri (llvm-download-uri "llvm" version))
               (sha256
                (base32
-                "16hwp3qa54c3a3v7h8nlw0fh5criqh0hlr1skybyk0cz70gyx880"))))
-    (license license:asl2.0)))
+                "0k124sxkfhfi1rca6kzkdraf4axhx99x3cw2rk55056628dvwwl8"))))
+    (license license:ncsa)))
 
-(define-public clang-runtime-9
+(define-public clang-runtime-8
   (clang-runtime-from-llvm
-   llvm-9
-   "0xwh79g3zggdabxgnd0bphry75asm1qz7mv3hcqihqwqr6aspgy2"))
+   llvm-8
+   "1c919wsm17xnv7lr8bhpq2wkq8113lzlw6hzhfr737j59x3wfddl"))
 
-(define-public clang-9
-  (clang-from-llvm llvm-9 clang-runtime-9
-                   "0ls2h3iv4finqyflyhry21qhc9cm9ga7g1zq21020p065qmm2y2p"
-                   #:patches '("clang-9.0-libc-search-path.patch")))
+(define-public clang-8
+  (clang-from-llvm llvm-8 clang-runtime-8
+                   "0svk1f70hvpwrjp6x5i9kqwrqwxnmcrw5s7f4cxyd100mdd12k08"
+                   #:patches '("clang-7.0-libc-search-path.patch")))
 
-(define-public clang-toolchain-9
-  (make-clang-toolchain clang-9))
+(define-public clang-toolchain-8
+  (make-clang-toolchain clang-8))
 
 (define-public llvm-7
   (package
-    (inherit llvm)
+    (inherit llvm-8)
     (version "7.0.1")
     (source (origin
               (method url-fetch)
@@ -418,7 +423,7 @@ output), and Binutils.")
 
 (define-public llvm-6
   (package
-    (inherit llvm)
+    (inherit llvm-7)
     (version "6.0.1")
     (source (origin
               (method url-fetch)
@@ -441,7 +446,7 @@ output), and Binutils.")
   (make-clang-toolchain clang-6))
 
 (define-public llvm-3.9.1
-  (package (inherit llvm)
+  (package (inherit llvm-6)
     (name "llvm")
     (version "3.9.1")
     (source
@@ -466,7 +471,7 @@ output), and Binutils.")
                    #:patches '("clang-3.8-libc-search-path.patch")))
 
 (define-public llvm-3.8
-  (package (inherit llvm)
+  (package (inherit llvm-3.9.1)
     (name "llvm")
     (version "3.8.1")
     (source
@@ -490,7 +495,7 @@ output), and Binutils.")
                    #:patches '("clang-3.8-libc-search-path.patch")))
 
 (define-public llvm-3.7
-  (package (inherit llvm)
+  (package (inherit llvm-3.8)
     (version "3.7.1")
     (source
      (origin
@@ -513,7 +518,7 @@ output), and Binutils.")
                    #:patches '("clang-3.5-libc-search-path.patch")))
 
 (define-public llvm-3.6
-  (package (inherit llvm)
+  (package (inherit llvm-3.7)
     (version "3.6.2")
     (source
      (origin
@@ -535,7 +540,7 @@ output), and Binutils.")
                    #:patches '("clang-3.5-libc-search-path.patch")))
 
 (define-public llvm-3.5
-  (package (inherit llvm)
+  (package (inherit llvm-3.6)
     (version "3.5.2")
     (source
      (origin
@@ -572,14 +577,14 @@ output), and Binutils.")
 (define-public libcxx
   (package
     (name "libcxx")
-    (version (package-version llvm))
+    (version "9.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (llvm-download-uri "libcxx" version))
        (sha256
         (base32
-         "1qlx3wlxrnc5cwc1fcfc2vhfsl7j4294hi8y5kxj8hy8wxsjd462"))))
+         "0d2bj5i6mk4caq7skd5nsdmz8c2m5w5anximl5wz3x32p08zz089"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("clang" ,clang)
@@ -610,7 +615,7 @@ use with Clang, targeting C++11, C++14 and above.")
 (define-public libclc
   (package
     (name "libclc")
-    (version (package-version llvm))
+    (version "9.0.1")
     (source
      (origin
        (method git-fetch)
@@ -620,7 +625,7 @@ use with Clang, targeting C++11, C++14 and above.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "052h16wjcnqginzp7ki4il2xmm25v9nyk0wcz7cg03gbryhl7aqa"))))
+         "1d1qayvrvvc1di7s7jfxnjvxq2az4lwq1sw1b2gq2ic0nksvajz0"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -649,13 +654,13 @@ requirements according to version 1.1 of the OpenCL specification.")
 (define-public libomp
   (package
     (name "libomp")
-    (version (package-version llvm))
+    (version "9.0.1")
     (source (origin
               (method url-fetch)
               (uri (llvm-download-uri "openmp" version))
               (sha256
                (base32
-                "1mf9cpgvix34xlpv0inkgl3qmdvgvp96f7sksqizri0n5xfp1cgp"))
+                "1knafnpp0f7hylx8q20lkd6g1sf0flly572dayc5d5kghh7hd52w"))
               (file-name (string-append "libomp-" version ".tar.xz"))))
     (build-system cmake-build-system)
     ;; XXX: Note this gets built with GCC because building with Clang itself
