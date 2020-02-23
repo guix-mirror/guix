@@ -184,19 +184,20 @@ SILC and ICB protocols via plugins.")
        ("pkg-config" ,pkg-config)
        ;; For tests.
        ("cpputest" ,cpputest)))
-    (inputs `(("ncurses" ,ncurses)
-              ("libgcrypt" ,libgcrypt "out")
-              ("zlib" ,zlib)
-              ("aspell" ,aspell)
-              ("curl" ,curl)
-              ("gnutls" ,gnutls)
+    (inputs
+     `(("aspell" ,aspell)
+       ("curl" ,curl)
+       ("gnutls" ,gnutls)
+       ("libgcrypt" ,libgcrypt "out")
+       ("ncurses" ,ncurses)
+       ("zlib" ,zlib)
 
-              ;; Scripting language plug-ins.
-              ("guile" ,guile-2.2)
-              ("lua" ,lua-5.1)
-              ("python" ,python)
-              ("perl" ,perl)
-              ("tcl" ,tcl)))
+       ;; Scripting language plug-ins.
+       ("guile" ,guile-2.2)
+       ("lua" ,lua-5.1)
+       ("perl" ,perl)
+       ("python" ,python)
+       ("tcl" ,tcl)))
     (arguments
      `(#:configure-flags
        (list "-DENABLE_JAVASCRIPT=OFF"
