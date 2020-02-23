@@ -33,6 +33,7 @@
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Steve Sprang <scs@stevesprang.com>
 ;;; Copyright © 2019 Robert Smith <robertsmith@posteo.net>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4181,7 +4182,12 @@ as equations, scalars, vectors, and matrices.")
                 "0hprcdwhhyjigmhhk6514m71bnmvqci9r8gglrqilgx424r6ff7q"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:imported-modules ((guix build python-build-system)
+                           ,@%gnu-build-system-modules)
+       #:modules (((guix build python-build-system) #:select (site-packages))
+                  (guix build gnu-build-system)
+                  (guix build utils))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-compatability
            ;; Versions after 4.8.3 have immintrin.h IFDEFed for Windows only.
@@ -4198,7 +4204,9 @@ as equations, scalars, vectors, and matrices.")
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (invoke "./configure"
-                     (string-append "--prefix=" (assoc-ref outputs "out")))))
+                     "--python"
+                     (string-append "--prefix=" (assoc-ref outputs "out"))
+                     (string-append "--pypkgdir=" (site-packages inputs outputs)))))
          (add-after 'configure 'change-directory
            (lambda _
              (chdir "build")
