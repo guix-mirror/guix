@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,7 +58,7 @@
     (native-inputs `(("boost" ,boost)
                      ("pcre" ,pcre "bin")       ;for 'pcre-config'
                      ;; The following are for tests and examples:
-                     ("guile" ,guile-2.2)
+                     ("guile" ,guile-3.0)
                      ("perl" ,perl)))
                      ;;("python" ,python-wrapper)
     (inputs `(("pcre" ,pcre)))
