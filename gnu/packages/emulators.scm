@@ -419,7 +419,7 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
 (define-public mgba
   (package
     (name "mgba")
-    (version "0.8.0")
+    (version "0.8.1")
     (source
      (origin
        (method git-fetch)
@@ -428,7 +428,7 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0m3rgcdv32ms98j7rrmk2hphvn462bwsd6xfz2ssy05398pj4ljh"))
+        (base32 "1if82mfaak3696w5d5yshynpzywrxgvg3ifdfi2rwlpvq1gpd429"))
        (modules '((guix build utils)))
        (snippet
         ;; Make sure we don't use the bundled software.
@@ -445,7 +445,8 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
        #:configure-flags
        (list "-DUSE_LZMA=OFF"           ;do not use bundled LZMA
              "-DUSE_LIBZIP=OFF")))      ;use "zlib" instead
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("qttools" ,qttools)))
     (inputs `(("ffmpeg" ,ffmpeg)
               ("imagemagick" ,imagemagick)
               ("libedit" ,libedit)
@@ -457,7 +458,6 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
               ("ncurses" ,ncurses)
               ("qtbase" ,qtbase)
               ("qtmultimedia" ,qtmultimedia)
-              ("qttools" ,qttools)
               ("sdl2" ,sdl2)
               ("sqlite" ,sqlite)
               ("zlib" ,zlib)))
@@ -468,9 +468,9 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
 faster and more accurate than many existing Game Boy Advance emulators, as
 well as adding features that other emulators lack.  It also supports Game Boy
 and Game Boy Color games.")
-    ;; Code is mainly MPL 2.0. "blip_buf.c" is LGPL 2.1+ and "inih.c" is
-    ;; BSD-3.
-    (license (list license:mpl2.0 license:lgpl2.1+ license:bsd-3))))
+    ;; Code is mainly MPL 2.0. "blip_buf.c" is LGPL 2.1+, "inih.c" is
+    ;; BSD-3, and "discord-rpc" is Expat.
+    (license (list license:mpl2.0 license:lgpl2.1+ license:bsd-3 license:expat))))
 
 (define-public sameboy
   (package
