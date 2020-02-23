@@ -591,7 +591,8 @@ nicely."
 \"1MiB\", to a number of bytes.  Raise an error if STR could not be
 interpreted."
   (define unit-pos
-    (string-rindex str char-set:digit))
+    (string-rindex str
+                   (char-set-union (char-set #\.) char-set:digit)))
 
   (define unit
     (and unit-pos (substring str (+ 1 unit-pos))))
