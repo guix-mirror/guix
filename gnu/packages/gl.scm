@@ -268,7 +268,7 @@ also known as DXTn or DXTC) for Mesa.")
         ("libxvmc" ,libxvmc)
         ,@(match (%current-system)
             ((or "x86_64-linux" "i686-linux")
-             `(("llvm" ,llvm)))
+             `(("llvm" ,llvm-8)))
             (_
              `()))
         ("makedepend" ,makedepend)
