@@ -582,21 +582,21 @@ concrete syntax of the language (Quotations, Syntax Extensions).")
 (define-public hevea
   (package
     (name "hevea")
-    (version "2.32")
+    (version "2.33")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://hevea.inria.fr/old/"
-                                  name "-" version ".tar.gz"))
+                                  "hevea-" version ".tar.gz"))
               (sha256
                (base32
-                "1s4yqphfcr1pf5mcj5c84mvmd107k525iiym5jdwsxz0ka0ccmfy"))))
+                "0115bn6n6hhb08rmj0m508wjcsn1mggiagqly6s941pq811wxymb"))))
     (build-system gnu-build-system)
     (inputs
      `(("ocaml" ,ocaml)))
     (native-inputs
      `(("ocamlbuild" ,ocamlbuild)))
     (arguments
-     `(#:tests? #f  ; no test suite
+     `(#:tests? #f                      ; no test suite
        #:make-flags (list (string-append "PREFIX=" %output))
        #:phases (modify-phases %standard-phases
                   (delete 'configure)
