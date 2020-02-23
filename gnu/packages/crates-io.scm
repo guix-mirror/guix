@@ -14838,7 +14838,7 @@ directories.")
 
 (define-public rust-term-0.4
   (package
-    (inherit rust-term-0.5)
+    (inherit rust-term-0.6)
     (name "rust-term")
     (version "0.4.6")
     (source
@@ -14850,8 +14850,7 @@ directories.")
          (base32
           "1wbh8ngqkqr3f6wz902yplf60bd5yapnckvrkgmzp5nffi7n8qzs"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-kernel32-sys" ,rust-kernel32-sys-0.2)
         ("rust-winapi" ,rust-winapi-0.2))))))
 
