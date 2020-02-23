@@ -10221,12 +10221,12 @@ algorithms.")
          "0dzylcy14ksy60h265l433j9ra8xhg8xlq3pd5qk658m6f1mxd5x"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
+     `(#:tests? #f      ; Depends on features not in Rust's stable release channel.
        #:cargo-inputs
        (("rust-phf-generator" ,rust-phf-generator-0.7)
         ("rust-phf-shared" ,rust-phf-shared-0.7)
         ("rust-proc-macro2" ,rust-proc-macro2-0.4)
-        ("rust-quote" ,rust-quote-1.0)
+        ("rust-quote" ,rust-quote-0.6)
         ("rust-syn" ,rust-syn-0.15))
        #:cargo-development-inputs
        (("rust-compiletest-rs" ,rust-compiletest-rs-0.3))))
