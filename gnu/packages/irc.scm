@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 Kevin Lemonnier <lemonnierk@ulrar.net>
 ;;; Copyright © 2015, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -170,14 +170,14 @@ SILC and ICB protocols via plugins.")
 (define-public weechat
   (package
     (name "weechat")
-    (version "2.7")
+    (version "2.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://weechat.org/files/src/weechat-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1rwrwfsy6k5bq3aasd95ydr68pjsh5ax38lmgz17prgcmyj45z2n"))))
+                "0haw0c35mf4r47j24issc9caq0da3fy7gjfq3454fm3ap3n2yxcx"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
