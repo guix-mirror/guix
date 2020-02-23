@@ -10253,10 +10253,9 @@ algorithms.")
          "18371fla0vsj7d6d5rlfb747xbr2in11ar9vgv5qna72bnhp2kr3"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-siphasher" ,rust-siphasher-0.2)
-        ("rust-unicase" ,rust-unicase-2.4))))
+        ("rust-unicase" ,rust-unicase-1))))
     (home-page "https://github.com/sfackler/rust-phf")
     (synopsis "Support code shared by PHF libraries")
     (description
