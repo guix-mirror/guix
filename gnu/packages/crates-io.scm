@@ -14818,6 +14818,7 @@ directories.")
 
 (define-public rust-term-0.5
   (package
+    (inherit rust-term-0.6)
     (name "rust-term")
     (version "0.5.2")
     (source
@@ -14829,19 +14830,11 @@ directories.")
        (sha256
         (base32
          "0hkgjrfisj6zjwz525639pmsvzhlc48a0h65nw87qrdp6jihdlgd"))))
-    (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-byteorder" ,rust-byteorder-1.3)
         ("rust-dirs" ,rust-dirs-1.0)
-        ("rust-winapi" ,rust-winapi-0.3))))
-    (home-page "https://github.com/Stebalien/term")
-    (synopsis "Terminal formatting library")
-    (description
-     "This package provides a terminal formatting library in rust.")
-    (license (list license:asl2.0
-                   license:expat))))
+        ("rust-winapi" ,rust-winapi-0.3))))))
 
 (define-public rust-term-0.4
   (package
