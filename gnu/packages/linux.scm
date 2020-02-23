@@ -5626,14 +5626,14 @@ available in the kernel Linux.")
 (define-public cpuid
   (package
     (name "cpuid")
-    (version "20200116")
+    (version "20200211")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.etallen.com/cpuid/cpuid-"
                                   version ".src.tar.gz"))
               (sha256
                (base32
-                "1gxi4iwy6j366l6bkj1yyxhrk1rxmwfp498gikfxn8xwhij9dn0a"))))
+                "06sjbqqp80l7nhsp6khglkzdp9qy4vhbvjxbfilznhsmrqiwlw55"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags '("CC=gcc")
