@@ -13471,7 +13471,7 @@ stack.")
   (package
     (inherit rust-smallvec-1)
     (name "rust-smallvec")
-    (version "0.6.10")
+    (version "0.6.13")
     (source
      (origin
        (method url-fetch)
@@ -13480,7 +13480,13 @@ stack.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1dyl43rgzny79jjpgzi07y0ly2ggx1xwsn64csxj0j91bsf6lq5b"))))))
+         "1dl219vnfkmsfx28lm3f83lyw24zap6fdsli6rg8nnp1aa67bc7p"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-maybe-uninit" ,rust-maybe-uninit-2.0)
+        ("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-bincode" ,rust-bincode-1.1))))))
 
 (define-public rust-socket2-0.3
   (package
