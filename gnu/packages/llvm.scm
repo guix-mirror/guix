@@ -409,7 +409,7 @@ output), and Binutils.")
    "065ybd8fsc4h2hikbdyricj6pyv4r7r7kpcikhb2y5zf370xybkq"))
 
 (define-public clang-7
-  (clang-from-llvm llvm-7 clang-runtime
+  (clang-from-llvm llvm-7 clang-runtime-7
                    "067lwggnbg0w1dfrps790r5l6k8n5zwhlsw7zb6zvmfpwpfn4nx4"
                    #:patches '("clang-7.0-libc-search-path.patch")))
 
@@ -433,7 +433,7 @@ output), and Binutils.")
    "1fcr3jn24yr8lh36nc0c4ikli4744i2q9m1ik67p1jymwwaixkgl"))
 
 (define-public clang-6
-  (clang-from-llvm llvm-6 clang-runtime
+  (clang-from-llvm llvm-6 clang-runtime-6
                    "0rxn4rh7rrnsqbdgp4gzc8ishbkryhpl1kd3mpnxzpxxhla3y93w"
                    #:patches '("clang-6.0-libc-search-path.patch")))
 
