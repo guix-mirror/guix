@@ -10198,10 +10198,9 @@ algorithms.")
          "0qi62gxk3x3whrmw5c4i71406icqk11qmpgln438p6qm7k4lqdh9"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-phf-shared" ,rust-phf-shared-0.7)
-        ("rust-rand" ,rust-rand-0.4))))
+        ("rust-rand" ,rust-rand-0.6))))
     (home-page "https://github.com/sfackler/rust-phf")
     (synopsis "PHF generation logic")
     (description "PHF generation logic")
