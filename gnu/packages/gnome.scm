@@ -7906,7 +7906,29 @@ world.")
        ("yelp" ,yelp)
      ;; Others
        ("hicolor-icon-theme" ,hicolor-icon-theme)
-       ("gnome-online-accounts" ,gnome-online-accounts)))
+       ("gnome-online-accounts" ,gnome-online-accounts)
+
+       ;; Packages not part of GNOME proper but that are needed for a good
+       ;; experience.  See <https://bugs.gnu.org/39646>.
+       ;; XXX: Find out exactly which ones are needed and why.
+       ("font-cantarell"            ,font-cantarell)
+       ("font-dejavu"               ,font-dejavu)
+       ("at-spi2-core"              ,at-spi2-core)
+       ("dbus"                      ,dbus)
+       ("dconf"                     ,dconf)
+       ("desktop-file-utils"        ,desktop-file-utils)
+       ("gnome-default-applications" ,gnome-default-applications)
+       ("gnome-themes-standard"     ,gnome-themes-standard)
+       ("gst-plugins-base"          ,gst-plugins-base)
+       ("gst-plugins-good"          ,gst-plugins-good)
+       ("gucharmap"                 ,gucharmap)
+       ("pinentry-gnome3"           ,pinentry-gnome3)
+       ("pulseaudio"                ,pulseaudio)
+       ("shared-mime-info"          ,shared-mime-info)
+       ("system-config-printer"     ,system-config-printer)
+       ("xdg-user-dirs"             ,xdg-user-dirs)
+       ("yelp"                      ,yelp)
+       ("zenity"                    ,zenity)))
     (synopsis "The GNU desktop environment")
     (home-page "https://www.gnome.org/")
     (description
