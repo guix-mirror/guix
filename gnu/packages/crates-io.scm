@@ -8704,7 +8704,7 @@ including bigint, complex, rational, range iterators, generic integers, and more
 (define-public rust-num-complex-0.2
   (package
     (name "rust-num-complex")
-    (version "0.2.3")
+    (version "0.2.4")
     (source
      (origin
        (method url-fetch)
@@ -8713,16 +8713,14 @@ including bigint, complex, rational, range iterators, generic integers, and more
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1z6zjdzx1g1hj4y132ddy83d3p3zvw06igbf59npxxrzzcqwzc7w"))))
+         "15dwaksw729r3v14sgzc9723s3fnfixiir8jzwx7b7kim48r9cdn"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-num-traits" ,rust-num-traits-0.2)
-        ("rust-rand" ,rust-rand-0.4)
-        ("rust-serde" ,rust-serde-1.0))
-       #:cargo-development-inputs
-       (("rust-autocfg" ,rust-autocfg-0.1))))
+        ("rust-rand" ,rust-rand-0.5)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-autocfg" ,rust-autocfg-1.0))))
     (home-page
      "https://github.com/rust-num/num-complex")
     (synopsis
