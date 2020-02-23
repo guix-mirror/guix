@@ -973,7 +973,7 @@ for packaging and deployment of cross-compiled Windows applications.")
 (define-public libostree
   (package
     (name "libostree")
-    (version "2019.3")
+    (version "2020.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -981,7 +981,7 @@ for packaging and deployment of cross-compiled Windows applications.")
                     (version-major+minor version) "/libostree-" version ".tar.xz"))
               (sha256
                (base32
-                "1r07yqbc9iiq0lzv1pryppd35fv695ym8r040msbfc93pmiy77y0"))))
+                "0sgx81w6skiivbr2gfhljf9nvnqfwwnwfgpqqa10fjdkjrqwvpk8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
