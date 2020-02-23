@@ -16271,6 +16271,26 @@ with the Unicode character database.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-unicase-1
+  (package
+    (inherit rust-unicase-2.4)
+    (name "rust-unicase")
+    (version "1.4.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "unicase" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0cwazh4qsmm9msckjk86zc1z35xg7hjxjykrgjalzdv367w6aivz"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-heapsize" ,rust-heapsize-0.3)
+        ("rust-heapsize-plugin" ,rust-heapsize-plugin-0.1)
+        ("rust-version-check" ,rust-version-check-0.1))))))
+
 (define-public rust-unicode-bidi-0.3
   (package
     (name "rust-unicode-bidi")
