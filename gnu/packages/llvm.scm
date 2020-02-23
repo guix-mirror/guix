@@ -354,102 +354,6 @@ output), and Binutils.")
               ("libc-debug" ,glibc "debug")
               ("libc-static" ,glibc "static")))))
 
-(define-public libcxx
-  (package
-    (name "libcxx")
-    (version (package-version llvm))
-    (source
-     (origin
-       (method url-fetch)
-       (uri (llvm-download-uri "libcxx" version))
-       (sha256
-        (base32
-         "1qlx3wlxrnc5cwc1fcfc2vhfsl7j4294hi8y5kxj8hy8wxsjd462"))))
-    (build-system cmake-build-system)
-    (native-inputs
-     `(("clang" ,clang)
-       ("llvm" ,llvm)))
-    (home-page "https://libcxx.llvm.org")
-    (synopsis "C++ standard library")
-    (description
-     "This package provides an implementation of the C++ standard library for
-use with Clang, targeting C++11, C++14 and above.")
-    (license license:expat)))
-
-(define-public libclc
-  (package
-    (name "libclc")
-    (version (package-version llvm))
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/llvm/llvm-project.git")
-             (commit (string-append "llvmorg-" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "052h16wjcnqginzp7ki4il2xmm25v9nyk0wcz7cg03gbryhl7aqa"))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:configure-flags
-       (list (string-append "-DLLVM_CLANG="
-                            (assoc-ref %build-inputs "clang")
-                            "/bin/clang")
-             (string-append "-DPYTHON="
-                            (assoc-ref %build-inputs "python")
-                            "/bin/python3"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'chdir
-           (lambda _ (chdir "libclc") #t)))))
-    (native-inputs
-     `(("clang" ,clang)
-       ("llvm" ,llvm)
-       ("python" ,python)))
-    (home-page "https://libclc.llvm.org")
-    (synopsis "Libraries for the OpenCL programming language")
-    (description
-     "This package provides an implementation of the OpenCL library
-requirements according to version 1.1 of the OpenCL specification.")
-    ;; Apache license 2.0 with LLVM exception
-    (license license:asl2.0)))
-
-(define-public libomp
-  (package
-    (name "libomp")
-    (version (package-version llvm))
-    (source (origin
-              (method url-fetch)
-              (uri (llvm-download-uri "openmp" version))
-              (sha256
-               (base32
-                "1mf9cpgvix34xlpv0inkgl3qmdvgvp96f7sksqizri0n5xfp1cgp"))
-              (file-name (string-append "libomp-" version ".tar.xz"))))
-    (build-system cmake-build-system)
-    ;; XXX: Note this gets built with GCC because building with Clang itself
-    ;; fails (missing <atomic>, even when libcxx is added as an input.)
-    (arguments
-     '(#:configure-flags '("-DLIBOMP_USE_HWLOC=ON"
-                           "-DOPENMP_TEST_C_COMPILER=clang"
-                           "-DOPENMP_TEST_CXX_COMPILER=clang++")
-       #:test-target "check-libomp"))
-    (native-inputs
-     `(("clang" ,clang)
-       ("llvm" ,llvm)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)))
-    (inputs
-     `(("hwloc" ,hwloc "lib")))
-    (home-page "https://openmp.llvm.org")
-    (synopsis "OpenMP run-time support library")
-    (description
-     "This package provides the run-time support library developed by the LLVM
-project for the OpenMP multi-theaded programming extension.  This package
-notably provides @file{libgomp.so}, which is has a binary interface compatible
-with that of libgomp, the GNU Offloading and Multi Processing Library.")
-    (license license:expat)))
-
 (define-public clang-runtime
   (clang-runtime-from-llvm
    llvm
@@ -535,22 +439,6 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
 
 (define-public clang-toolchain-6
   (make-clang-toolchain clang-6))
-
-;; Libcxx files specifically used by PySide2.
-(define-public libcxx-6
-  (package
-    (inherit libcxx)
-    (version (package-version llvm-6))
-    (source
-     (origin
-       (inherit (package-source libcxx))
-       (uri (llvm-download-uri "libcxx" version))
-       (sha256
-        (base32
-         "0rzw4qvxp6qx4l4h9amrq02gp7hbg8lw4m0sy3k60f50234gnm3n"))))
-    (native-inputs
-     `(("clang" ,clang-6)
-       ("llvm" ,llvm-6)))))
 
 (define-public llvm-3.9.1
   (package (inherit llvm)
@@ -680,6 +568,118 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
        (patches (list (search-patch "llvm-for-extempore.patch")))))
     ;; Extempore refuses to build on architectures other than x86_64
     (supported-systems '("x86_64-linux"))))
+
+(define-public libcxx
+  (package
+    (name "libcxx")
+    (version (package-version llvm))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (llvm-download-uri "libcxx" version))
+       (sha256
+        (base32
+         "1qlx3wlxrnc5cwc1fcfc2vhfsl7j4294hi8y5kxj8hy8wxsjd462"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("clang" ,clang)
+       ("llvm" ,llvm)))
+    (home-page "https://libcxx.llvm.org")
+    (synopsis "C++ standard library")
+    (description
+     "This package provides an implementation of the C++ standard library for
+use with Clang, targeting C++11, C++14 and above.")
+    (license license:expat)))
+
+;; Libcxx files specifically used by PySide2.
+(define-public libcxx-6
+  (package
+    (inherit libcxx)
+    (version (package-version llvm-6))
+    (source
+     (origin
+       (inherit (package-source libcxx))
+       (uri (llvm-download-uri "libcxx" version))
+       (sha256
+        (base32
+         "0rzw4qvxp6qx4l4h9amrq02gp7hbg8lw4m0sy3k60f50234gnm3n"))))
+    (native-inputs
+     `(("clang" ,clang-6)
+       ("llvm" ,llvm-6)))))
+
+(define-public libclc
+  (package
+    (name "libclc")
+    (version (package-version llvm))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/llvm/llvm-project.git")
+             (commit (string-append "llvmorg-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "052h16wjcnqginzp7ki4il2xmm25v9nyk0wcz7cg03gbryhl7aqa"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "-DLLVM_CLANG="
+                            (assoc-ref %build-inputs "clang")
+                            "/bin/clang")
+             (string-append "-DPYTHON="
+                            (assoc-ref %build-inputs "python")
+                            "/bin/python3"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "libclc") #t)))))
+    (native-inputs
+     `(("clang" ,clang)
+       ("llvm" ,llvm)
+       ("python" ,python)))
+    (home-page "https://libclc.llvm.org")
+    (synopsis "Libraries for the OpenCL programming language")
+    (description
+     "This package provides an implementation of the OpenCL library
+requirements according to version 1.1 of the OpenCL specification.")
+    ;; Apache license 2.0 with LLVM exception
+    (license license:asl2.0)))
+
+(define-public libomp
+  (package
+    (name "libomp")
+    (version (package-version llvm))
+    (source (origin
+              (method url-fetch)
+              (uri (llvm-download-uri "openmp" version))
+              (sha256
+               (base32
+                "1mf9cpgvix34xlpv0inkgl3qmdvgvp96f7sksqizri0n5xfp1cgp"))
+              (file-name (string-append "libomp-" version ".tar.xz"))))
+    (build-system cmake-build-system)
+    ;; XXX: Note this gets built with GCC because building with Clang itself
+    ;; fails (missing <atomic>, even when libcxx is added as an input.)
+    (arguments
+     '(#:configure-flags '("-DLIBOMP_USE_HWLOC=ON"
+                           "-DOPENMP_TEST_C_COMPILER=clang"
+                           "-DOPENMP_TEST_CXX_COMPILER=clang++")
+       #:test-target "check-libomp"))
+    (native-inputs
+     `(("clang" ,clang)
+       ("llvm" ,llvm)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("hwloc" ,hwloc "lib")))
+    (home-page "https://openmp.llvm.org")
+    (synopsis "OpenMP run-time support library")
+    (description
+     "This package provides the run-time support library developed by the LLVM
+project for the OpenMP multi-theaded programming extension.  This package
+notably provides @file{libgomp.so}, which is has a binary interface compatible
+with that of libgomp, the GNU Offloading and Multi Processing Library.")
+    (license license:expat)))
 
 (define-public python-llvmlite
   (package
