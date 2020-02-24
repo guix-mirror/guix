@@ -3935,7 +3935,7 @@ Standard.")
 (define-public rust-encoding-rs-io-0.1
   (package
     (name "rust-encoding-rs-io")
-    (version "0.1.6")
+    (version "0.1.7")
     (source
      (origin
        (method url-fetch)
@@ -3944,11 +3944,10 @@ Standard.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0b7k9p7inkrcanh7h6q4m278y05gmcwi8p5r43h7grzl5dxfw6cn"))))
+         "10ra4l688cdadd8h1lsbahld1zbywnnqv68366mbhamn3xjwbhqw"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-encoding-rs" ,rust-encoding-rs-0.8))))
     (home-page "https://github.com/BurntSushi/encoding_rs_io")
     (synopsis "Streaming transcoding for encoding_rs")
