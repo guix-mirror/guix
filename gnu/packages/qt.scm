@@ -351,7 +351,8 @@ developers using C++ or QML, a CSS & JavaScript like language.")
               (base32
                "0pb68d30clksdhgy8n6rrs838bb3qcsfq4pv463yy2nr4p5kk2di"))
              ;; Use TZDIR to avoid depending on package "tzdata".
-             (patches (search-patches "qtbase-use-TZDIR.patch"))
+             (patches (search-patches "qtbase-use-TZDIR.patch"
+                                      "qtbase-QTBUG-81715.patch"))
              (modules '((guix build utils)))
              (snippet
                ;; corelib uses bundled harfbuzz, md4, md5, sha3
@@ -598,23 +599,8 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 developers using C++ or QML, a CSS & JavaScript like language.")
     (license (list license:lgpl2.1 license:lgpl3))))
 
-;; This variant fixes a problem with the CMake macros shipped by qtbase.  See
-;; discussion at <https://lists.gnu.org/archive/html/guix-devel/2020-02/msg00308.html>.
-(define-public qtbase-patched
-  (let ((src (package-source qtbase)))
-    (hidden-package
-     (package
-       (inherit qtbase)
-       (source
-        (origin
-          (inherit src)
-          (patches
-           (append (search-patches "qtbase-QTBUG-81715.patch")
-                   (origin-patches src)))))))))
-
 ;; qt used to refer to the monolithic Qt 5.x package
 (define-deprecated qt qtbase)
-
 
 (define-public qtsvg
   (package (inherit qtbase)
