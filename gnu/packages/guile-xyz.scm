@@ -2960,18 +2960,17 @@ tests being run, resulting clearer and more specific output.")
 (define-public guile-semver
   (package
     (name "guile-semver")
-    (version "0.1.0")
+    (version "0.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.ngyro.com/guile-semver/"
                                   "guile-semver-" version ".tar.gz"))
               (sha256
                (base32
-                "06b66rj7nyhr6i3dpkwvfw1xb10w2pngrsw2hxfxkznwsbh9byfz"))))
+                "109p4n39ln44cxvwdccf9kgb96qx54makvd2ir521ssz6wchjyag"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("srfi-64-driver" ,srfi-64-driver)))
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("guile" ,guile-2.2)))
     (home-page "https://ngyro.com/software/guile-semver.html")
@@ -3038,3 +3037,75 @@ SHA-512).")
     (name "guile3.0-hashing")
     (native-inputs
      `(("guile" ,guile-next)))))
+
+(define-public guile-webutils
+  (let ((commit "8541904f761066dc9c27b1153e9a838be9a55299")
+        (revision "0"))
+    (package
+      (name "guile-webutils")
+      (version (git-version "0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://notabug.org/cwebber/guile-webutils.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1s9n3hbxd7lfpdi0x8wr0cfvlsf6g62ird9gbspxdrp5p05rbi64"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)
+         ("texinfo" ,texinfo)))
+      (inputs
+       `(("guile" ,guile-2.2)))
+      (propagated-inputs
+       `(("guile-irregex" ,guile-irregex)
+         ("guile-gcrypt" ,guile-gcrypt)))
+      (home-page "https://notabug.org/cwebber/guile-webutils")
+      (synopsis "Web application authoring utilities for Guile")
+      (description
+       "This package provides tooling to write web applications in Guile, such
+as signed sessions, multipart message support, etc.")
+      (license license:gpl3+))))
+
+(define-public guile-lens
+  (let ((commit "14b15d07255f9d3f55d40a3b750d13c9ee3a154f")
+        (revision "0"))
+    (package
+      (name "guile-lens")
+      (version (git-version "0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/a-sassmannshausen/guile-lens.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0w8jzqyla56yrgj7acsgd4nspyir6zgp3vgxid4xmwhg9wmf1ida"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'run-hall
+             (lambda _
+               (setenv "HOME" "/tmp")   ; for ~/.hall
+               (invoke "hall" "dist" "-x"))))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("guile" ,guile-2.2)
+         ("guile-hall" ,guile-hall)
+         ("pkg-config" ,pkg-config)
+         ("texinfo" ,texinfo)))
+      (home-page "https://gitlab.com/a-sassmannshausen/guile-lens.git")
+      (synopsis "Composable lenses for data structures in Guile")
+      (description
+       "Guile-Lens is a library implementing lenses in Guile.  The library is
+currently a re-implementation of the lentes library for Clojure.  Lenses
+provide composable procedures, which can be used to focus, apply functions
+over, or update a value in arbitrary data structures.")
+      (license license:gpl3+))))

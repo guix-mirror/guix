@@ -157,11 +157,16 @@ server at '~a': ~a")
           (session-set! session 'timeout timeout)
           session)
          (x
-          (disconnect! session)
-          (raise (condition
-                  (&message
-                   (message (format #f (G_ "SSH authentication failed for '~a': ~a~%")
-                                    host (get-error session)))))))))
+          (match (userauth-gssapi! session)
+            ('success
+             (session-set! session 'timeout timeout)
+             session)
+            (x
+             (disconnect! session)
+             (raise (condition
+                     (&message
+                      (message (format #f (G_ "SSH authentication failed for '~a': ~a~%")
+                                       host (get-error session)))))))))))
       (x
        ;; Connection failed or timeout expired.
        (raise (condition

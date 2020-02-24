@@ -149,14 +149,14 @@ as well as the classic centralized workflow.")
    (name "git")
    ;; XXX When updating Git, check if the special 'git-source' input to cgit
    ;; needs to be updated as well.
-   (version "2.25.0")
+   (version "2.25.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1l58v42aazj0x9276gk8r9mwyl9pgp9w99aakz4xfhzv7wd2jq60"))))
+              "09lzwa183nblr6l8ib35g2xrjf9wm9yhk3szfvyzkwivdv69c9r2"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -169,7 +169,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "1gf8b1k6i4dlwskwq7dd2vz9bzc3m1qnknj9daq2vp39vmxpg5nk"))))
+            "15pfm7j4wq8ryp9n9d81h8v0arl15yq9i6cigw45walnq5r6721h"))))
       ;; For subtree documentation.
       ("asciidoc" ,asciidoc)
       ("docbook-xsl" ,docbook-xsl)
@@ -1432,6 +1432,7 @@ following features:
     (arguments
      '(#:parallel-tests? #f             ; TODO Seems to cause test failures on
                                         ; i686-linux
+       #:configure-flags '("--enable-static=no")
        #:phases
        (modify-phases %standard-phases
          (add-after 'configure 'patch-libtool-wrapper-ls
@@ -1564,34 +1565,30 @@ RCS, PRCS, and Aegis packages.")
 (define-public cvs-fast-export
   (package
     (name "cvs-fast-export")
-    (version "1.45")
+    (version "1.51")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.catb.org/~esr/cvs-fast-export/"
                                   "cvs-fast-export-" version ".tar.gz"))
               (sha256
                (base32
-                "19pxg6p0pcgyd2fbnh3wy1kazv6vcfi5lzc2whhdi1w9kj4r9c4z"))))
+                "0nn5cf8syb5nbjvkn8w561pk25clv187h4hs9pnc700g9w56chzf"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (delete 'configure)            ; no configure script
-         (add-after 'unpack 'remove-optimizations
-           (lambda _
-             ;; Don't optimize for a specific processor architecture.
-             (substitute* "Makefile"
-               (("CFLAGS \\+= -march=native") ""))
-             #t)))
-       #:parallel-build? #f ; parallel a2x commands fail spectacularly
+         (delete 'configure))       ; no configure script
+       #:parallel-build? #f         ; parallel a2x commands fail spectacularly
        #:make-flags
        (list "CC=gcc" (string-append "prefix?=" (assoc-ref %outputs "out")))))
-    (inputs `(("git" ,git)))
-    (native-inputs `(("asciidoc"    ,asciidoc)
-                     ;; These are needed for the tests.
-                     ("cvs"    ,cvs)
-                     ("python" ,python-2)
-                     ("rcs"    ,rcs)))
+    (inputs
+     `(("git" ,git)
+       ("python" ,python-wrapper)))
+    (native-inputs
+     `(("asciidoc" ,asciidoc)
+       ;; These are needed for the tests.
+       ("cvs" ,cvs)
+       ("rcs" ,rcs)))
     (home-page "http://www.catb.org/esr/cvs-fast-export/")
     (synopsis "Export an RCS or CVS history as a fast-import stream")
     (description "This program analyzes a collection of RCS files in a CVS

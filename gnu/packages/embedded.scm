@@ -175,7 +175,7 @@
      `(("xbinutils" ,(cross-binutils "arm-none-eabi"))
        ("xgcc" ,gcc-arm-none-eabi-4.9)
        ("texinfo" ,texinfo)))
-    (home-page "http://www.sourceware.org/newlib/")
+    (home-page "https://www.sourceware.org/newlib/")
     (synopsis "C library for use on embedded systems")
     (description "Newlib is a C library intended for use on embedded
 systems.  It is a conglomeration of several library parts that are easily

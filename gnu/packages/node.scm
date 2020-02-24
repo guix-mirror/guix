@@ -182,4 +182,5 @@ perfect for data-intensive real-time applications that run across distributed
 devices.")
     (home-page "https://nodejs.org/")
     (license expat)
-    (properties '((timeout . 3600))))) ; 1 h
+    (properties '((max-silent-time . 7200)     ;2h, needed on ARM
+                  (timeout . 21600)))))        ;6h

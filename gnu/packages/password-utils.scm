@@ -319,7 +319,7 @@ dependencies, it is suited for installing on desktop and server systems alike.
 The text based user interface allows you to run YAPET easily in a Secure Shell
 session.  Two companion utilities enable users to convert CSV files to YAPET
 and vice versa.")
-    (home-page "http://www.guengel.ch/myapps/yapet/")
+    (home-page "https://yapet.guengel.ch/")
     (license license:gpl3+)))
 
 (define-public cracklib

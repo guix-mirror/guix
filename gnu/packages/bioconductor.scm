@@ -722,6 +722,49 @@ the weighted combination of published signatures that, when summed, most
 closely reconstructs the mutational profile.")
     (license license:gpl2+)))
 
+;; This is a CRAN package, but it depends on Bioconductor packages.
+(define-public r-nmf
+  (package
+    (name "r-nmf")
+    (version "0.22.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "NMF" version))
+       (sha256
+        (base32
+         "0b2ls3x1nkrnam45hagpys624nzxj3v7kxnp0q216yakvx5h57cq"))))
+    (properties `((upstream-name . "NMF")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cluster" ,r-cluster)
+       ("r-biobase" ,r-biobase)
+       ("r-biocmanager" ,r-biocmanager)
+       ("r-bigmemory" ,r-bigmemory) ; suggested
+       ("r-synchronicity" ,r-synchronicity) ; suggested
+       ("r-colorspace" ,r-colorspace)
+       ("r-digest" ,r-digest)
+       ("r-doparallel" ,r-doparallel)
+       ("r-foreach" ,r-foreach)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridbase" ,r-gridbase)
+       ("r-pkgmaker" ,r-pkgmaker)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-registry" ,r-registry)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rngtools" ,r-rngtools)
+       ("r-stringr" ,r-stringr)))
+    (home-page "http://renozao.github.io/NMF")
+    (synopsis "Algorithms and framework for nonnegative matrix factorization")
+    (description
+     "This package provides a framework to perform Non-negative Matrix
+Factorization (NMF).  The package implements a set of already published
+algorithms and seeding methods, and provides a framework to test, develop and
+plug new or custom algorithms.  Most of the built-in algorithms have been
+optimized in C++, and the main interface function provides an easy way of
+performing parallel computations on multicore machines.")
+    (license license:gpl2+)))
+
 (define-public r-do-db
   (package
     (name "r-do-db")
@@ -1526,6 +1569,30 @@ expressed genes in DNA microarray experiments.")
      "This package implements some simple graph handling capabilities for R.")
     (license license:artistic2.0)))
 
+;; This is a CRAN package, but it depends on a Bioconductor package.
+(define-public r-ggm
+  (package
+    (name "r-ggm")
+    (version "2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggm" version))
+       (sha256
+        (base32
+         "11wc6k2kj2ydy0dyks5mbvbhxm1r43id87anl1jg6dn0yv4m78di"))))
+    (properties `((upstream-name . "ggm")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-graph" ,r-graph)
+       ("r-igraph" ,r-igraph)))
+    (home-page "https://cran.r-project.org/package=ggm")
+    (synopsis "Functions for graphical Markov models")
+    (description
+     "This package provides functions and datasets for maximum likelihood
+fitting of some classes of graphical Markov models.")
+    (license license:gpl2+)))
+
 (define-public r-codedepends
   (package
     (name "r-codedepends")
@@ -1867,14 +1934,14 @@ experiments.")
 (define-public r-genomicinteractions
   (package
     (name "r-genomicinteractions")
-    (version "1.20.0")
+    (version "1.20.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "GenomicInteractions" version))
        (sha256
         (base32
-         "10kwb70c9aq0bfqpq48h186lsbwgrg18m14r9z8x6n8l7cds5azc"))))
+         "140bp7c8p079xh5wwxmrq3a73pm6mdc9czq5w2gzjml7dgrca38a"))))
     (properties
      `((upstream-name . "GenomicInteractions")))
     (build-system r-build-system)
@@ -2028,14 +2095,14 @@ genes or proteins in these datasets.")
 (define-public r-inspect
   (package
     (name "r-inspect")
-    (version "1.16.2")
+    (version "1.16.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "INSPEcT" version))
        (sha256
         (base32
-         "1g8la7k4pnyr2hvk4yjd1bwvjy6nqbbb0fwxrrh2ifgqf4h21x2p"))))
+         "0y4gpvrbmcipdnyz9lz9ywn0317xnpcriiisqvxygin05vgcpilp"))))
     (properties `((upstream-name . "INSPEcT")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2156,14 +2223,14 @@ achieved for all methods using the BiocParallel framework.")
 (define-public r-biocsingular
   (package
     (name "r-biocsingular")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "BiocSingular" version))
        (sha256
         (base32
-         "0fjfmmpda7pszsck2hm7bp4509pl3xaz02q2q03d5vla62h1h81k"))))
+         "1282fdwxrpga87y8xflr0sl8ajwawgn2i9i65my8mbg5vrixs407"))))
     (properties `((upstream-name . "BiocSingular")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3284,14 +3351,14 @@ gmapR.")
 (define-public r-heatplus
   (package
     (name "r-heatplus")
-    (version "2.32.0")
+    (version "2.32.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Heatplus" version))
        (sha256
         (base32
-         "0hx5gqgh4xrkx37ccprq7azj9jziff137bdk0gvrixcx52ws6h89"))))
+         "1ldxj2hasg6ysh70sc73mz2v4h3n8gf3lii09c3sqc4wmz5h7rp1"))))
     (properties `((upstream-name . "Heatplus")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3942,14 +4009,14 @@ position-specific scores within R and Bioconductor.")
 (define-public r-atacseqqc
   (package
     (name "r-atacseqqc")
-    (version "1.10.1")
+    (version "1.10.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ATACseqQC" version))
        (sha256
         (base32
-         "12ix0bvwk50d48z85f3453k7szm1j27gk4qgw56az4fxra472rlh"))))
+         "0dzrizacy3br8fiy1vnsl5zf242lg1hqv9dyv5ayqh2n480is57f"))))
     (properties `((upstream-name . "ATACseqQC")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5305,14 +5372,14 @@ annotations.")
 (define-public r-rsubread
   (package
     (name "r-rsubread")
-    (version "2.0.0")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rsubread" version))
        (sha256
         (base32
-         "0l8q9y2a4m1di0w5nlxhq9jgliinhgr2fwjpm5ixnqx5j3iprlwd"))))
+         "0pdkx9mhvzw3a4ff725qvda9bxvs9vh2ppb29cc5jrivgjndv5cy"))))
     (properties `((upstream-name . "Rsubread")))
     (build-system r-build-system)
     (inputs `(("zlib" ,zlib)))
@@ -5817,14 +5884,14 @@ self-organizing map clustering and minimal spanning trees.")
 (define-public r-mixomics
   (package
     (name "r-mixomics")
-    (version "6.10.6")
+    (version "6.10.8")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "mixOmics" version))
        (sha256
         (base32
-         "18jwrdyc4pnx917y1kskxz3fqvlrkyy4ny0xqrfcidz0j7p0b7wr"))))
+         "0307vhx9ck24rxqbvq15815ssxcc226sl2la060n204b51wi9jaa"))))
     (properties `((upstream-name . "mixOmics")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5859,14 +5926,14 @@ delete entire rows with missing data.")
 (define-public r-depecher
   (package
     (name "r-depecher")
-    (version "1.2.0")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DepecheR" version))
        (sha256
         (base32
-         "1f6zbc0fq7xjflh3mkjx1n83mpppw663dj22rlpxzwp1kpmf6wm5"))))
+         "08ja6ayvbax9m3x9w3xzi72z97miiha2nbsild1gp77n6sgn5i35"))))
     (properties `((upstream-name . "DepecheR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5937,14 +6004,14 @@ genes in the gene-set that are ranked above the leading edge).")
 (define-public r-cicero
   (package
     (name "r-cicero")
-    (version "1.4.0")
+    (version "1.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "cicero" version))
        (sha256
         (base32
-         "0mmm7vvzq50b5fayid0bw82b5lar3xm9fwl2ya30q0p4db2y6wnz"))))
+         "07g6r335zqqy3r5v4x4glxdrcsq9bjhs9jmgvppiggv1h630a22w"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
@@ -5966,6 +6033,7 @@ genes in the gene-set that are ranked above the leading edge).")
        ("r-s4vectors" ,r-s4vectors)
        ("r-stringr" ,r-stringr)
        ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)
        ("r-vgam" ,r-vgam)))
     (home-page "https://bioconductor.org/packages/cicero/")
     (synopsis "Predict cis-co-accessibility from single-cell data")

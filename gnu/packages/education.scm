@@ -3,7 +3,7 @@
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Robert Smith <robertsmith@posteo.net>
 ;;;
@@ -132,7 +132,7 @@ of categories with some of the activities available in that category.
 (define-public gcompris-qt
   (package
     (name "gcompris-qt")
-    (version "0.97")
+    (version "0.98")
     (source
      (origin
        (method url-fetch)
@@ -140,7 +140,7 @@ of categories with some of the activities available in that category.
              "https://gcompris.net/download/qt/src/gcompris-qt-"
              version ".tar.xz"))
        (sha256
-        (base32 "0hl3a1jjnrpnbqkpx3rl3fl86yfv503lh48djb888hplvr4nf747"))))
+        (base32 "1jmjykn0lpk0v6hs2flmch8v4da5bgxl891nav7szxw9l7aqnf4y"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases

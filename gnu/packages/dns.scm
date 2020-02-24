@@ -114,32 +114,32 @@ and BOOTP/TFTP for network booting of diskless machines.")
 (define-public isc-bind
   (package
     (name "bind")
-    (version "9.14.10")
+    (version "9.16.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://ftp.isc.org/isc/bind9/" version
-                    "/bind-" version ".tar.gz"))
+                    "/bind-" version ".tar.xz"))
               (sha256
                (base32
-                "0nkkc2phkkzwgl922xg41gx5pc5f4safabqslaw3880hwdf8vfaa"))))
+                "0a1f1wrlbnmq79q6s15fny36ip81malg6wlr8acp7amimsyxjjxg"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs
      ;; It would be nice to add GeoIP and gssapi once there are packages.
      `(("libcap" ,libcap)
+       ("libuv" ,libuv)
        ("libxml2" ,libxml2)
        ("openssl" ,openssl)
        ("p11-kit" ,p11-kit)
        ("python" ,python)
        ("python-ply" ,python-ply)))
-    (native-inputs `(("perl" ,perl)
-                     ("net-tools" ,net-tools)))
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
     (arguments
      `(#:configure-flags
-       (list (string-append "--with-openssl="
-                            (assoc-ref %build-inputs "openssl"))
-             (string-append "--with-pkcs11="
+       (list (string-append "--with-pkcs11="
                             (assoc-ref %build-inputs "p11-kit")))
        #:phases
        (modify-phases %standard-phases
@@ -278,22 +278,18 @@ the two.")
 (define-public libasr
   (package
     (name "libasr")
-    (version "1.0.3")
+    (version "1.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.opensmtpd.org/archives/"
                            "libasr-" version ".tar.gz"))
        (sha256
-        (base32 "13fn4sr4vlcx1xijpl26nmnxawyls4lr5q3mi11jdm76f80qxn4w"))))
+        (base32 "1d6s8njqhvayx2gp47409sp1fn8m608ws26hr1srfp6i23nnpyqr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (replace 'bootstrap
-           ;; ‘GNU build system bootstrapping not needed’, the default lies.
-           (lambda _
-             (invoke "sh" "./bootstrap")))
          (add-after 'install 'install-documentation
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -390,14 +386,14 @@ to result in system-wide compromise.")
 (define-public unbound
   (package
     (name "unbound")
-    (version "1.9.5")
+    (version "1.9.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.unbound.net/downloads/unbound-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0myv8l886gmlh9nh4j3q5549idxnl51hf9cw20yxfqbwd47l13ca"))))
+        (base32 "1w5aylh2gfvfvqkgrq46aw427x9c0a3hwm0f985s55wim5pgr60x"))))
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (native-inputs
@@ -741,20 +737,20 @@ LuaJIT, both a resolver library and a daemon.")
 (define-public ddclient
   (package
     (name "ddclient")
-    (version "3.9.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/ddclient/ddclient/ddclient-"
-                                  version "/ddclient-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0fwyhab8yga2yi1kdfkbqxa83wxhwpagmj1w1mwkg2iffh1fjjlw"))))
+    (version "3.9.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ddclient/ddclient.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0hf377g4j9r9sac75xp17nk2h58mazswz4vkg4g2gl2yyhvzq91w"))))
     (build-system trivial-build-system) ; no Makefile.PL
     (native-inputs
      `(("bash" ,bash)
-       ("gzip" ,gzip)
-       ("perl" ,perl)
-       ("tar" ,tar)))
+       ("perl" ,perl)))
     (inputs
      `(("inetutils" ,inetutils)         ; logger
        ("net-tools" ,net-tools)
@@ -770,48 +766,46 @@ LuaJIT, both a resolver library and a daemon.")
          (use-modules (guix build utils)
                       (ice-9 match)
                       (srfi srfi-26))
-         ;; bootstrap
          (setenv "PATH" (string-append
                          (assoc-ref %build-inputs "bash") "/bin" ":"
-                         (assoc-ref %build-inputs "tar") "/bin" ":"
-                         (assoc-ref %build-inputs "gzip") "/bin" ":"
                          (assoc-ref %build-inputs "perl") "/bin"))
-         ;; extract source
-         (invoke "tar" "xvf" (assoc-ref %build-inputs "source"))
-         ;; package
-         (with-directory-excursion (string-append ,name "-" ,version)
-           (let* ((out (assoc-ref %outputs "out"))
-                  (bin (string-append out "/bin")))
-             (let ((file "ddclient"))
-               (substitute* file
-                 (("/usr/bin/perl") (which "perl"))
-                 ;; Strictly use ‘/etc/ddclient/ddclient.conf’.
-                 (("\\$\\{program\\}\\.conf") "/etc/ddclient/ddclient.conf")
-                 (("\\$etc\\$program.conf") "/etc/ddclient/ddclient.conf")
-                 ;; Strictly use ‘/var/cache/ddclient/ddclient.cache’
-                 (("\\$cachedir\\$program\\.cache")
-                  "/var/cache/ddclient/ddclient.cache"))
-               (install-file file bin)
-               (wrap-program (string-append bin "/" file)
-                 `("PATH" ":" =
-                   ("$PATH"
-                    ,@(map (lambda (input)
-                             (match input
-                               ((name . store)
-                                (string-append store "/bin"))))
-                           %build-inputs)))
-                 `("PERL5LIB" ":" =
-                   ,(delete
-                     ""
-                     (map (match-lambda
-                            (((? (cut string-prefix? "perl-" <>) name) . dir)
-                             (string-append dir "/lib/perl5/site_perl"))
-                            (_ ""))
-                          %build-inputs)))))
-             (for-each (cut install-file <> (string-append out
-                                                           "/share/ddclient"))
-                       (find-files "." "sample.*$")))))))
-    (home-page "https://sourceforge.net/projects/ddclient/")
+
+         ;; Copy the (read-only) source into the (writable) build directory.
+         (copy-recursively (assoc-ref %build-inputs "source") ".")
+
+         ;; Install.
+         (let* ((out (assoc-ref %outputs "out"))
+                (bin (string-append out "/bin")))
+           (let ((file "ddclient"))
+             (substitute* file
+               (("/usr/bin/perl") (which "perl"))
+               ;; Strictly use ‘/etc/ddclient/ddclient.conf’.
+               (("\\$\\{program\\}\\.conf") "/etc/ddclient/ddclient.conf")
+               (("\\$etc\\$program.conf") "/etc/ddclient/ddclient.conf")
+               ;; Strictly use ‘/var/cache/ddclient/ddclient.cache’
+               (("\\$cachedir\\$program\\.cache")
+                "/var/cache/ddclient/ddclient.cache"))
+             (install-file file bin)
+             (wrap-program (string-append bin "/" file)
+               `("PATH" ":" =
+                 ("$PATH"
+                  ,@(map (lambda (input)
+                           (match input
+                                  ((name . store)
+                                   (string-append store "/bin"))))
+                         %build-inputs)))
+               `("PERL5LIB" ":" =
+                 ,(delete
+                   ""
+                   (map (match-lambda
+                         (((? (cut string-prefix? "perl-" <>) name) . dir)
+                          (string-append dir "/lib/perl5/site_perl"))
+                         (_ ""))
+                        %build-inputs)))))
+           (for-each (cut install-file <> (string-append out
+                                                         "/share/ddclient"))
+                     (find-files "." "sample.*$"))))))
+    (home-page "https://ddclient.net/")
     (synopsis "Address updating utility for dynamic DNS services")
     (description "This package provides a client to update dynamic IP
 addresses with several dynamic DNS service providers, such as

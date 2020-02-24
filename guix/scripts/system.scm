@@ -571,6 +571,8 @@ any, are available.  Raise an error if they're not."
               (and (file-system-mount? fs)
                    (not (member (file-system-type fs)
                                 %pseudo-file-system-types))
+                   ;; Don't try to validate network file systems.
+                   (not (string-prefix? "nfs" (file-system-type fs)))
                    (not (memq 'bind-mount (file-system-flags fs)))))
             file-systems))
 

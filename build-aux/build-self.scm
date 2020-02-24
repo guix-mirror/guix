@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -420,6 +420,7 @@ files."
                          ;; $GUILE_LOAD_PATH & co.
                          (with-clean-environment
                           (setenv "GUILE_WARN_DEPRECATED" "no") ;be quiet and drive
+                          (setenv "COLUMNS" "120") ;show wider backtraces
                           (when home
                             ;; Inherit HOME so that 'xdg-directory' works.
                             (setenv "HOME" home))

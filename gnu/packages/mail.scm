@@ -1388,7 +1388,7 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.3.9.2")
+    (version "2.3.9.3")
     (source
      (origin
        (method url-fetch)
@@ -1396,7 +1396,7 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            "dovecot-" version ".tar.gz"))
        (sha256
-        (base32 "1yc6hi4hqg4hcc4495sf4m5f1lnargphi6dawj43if21vncgp127"))))
+        (base32 "0lcnqib63nv32xr3nr4s3x8k77mbgrhc13swjl2xqnzw4fabd7zq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -2306,14 +2306,14 @@ transfer protocols.")
 (define-public opensmtpd
   (package
     (name "opensmtpd")
-    (version "6.6.3p1")
+    (version "6.6.4p1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.opensmtpd.org/archives/"
                            "opensmtpd-" version ".tar.gz"))
        (sha256
-        (base32 "1dqysjlyl0x3qzdzc9sjrla0063vpmlyq735lzf88p7wgzmw1xwy"))))
+        (base32 "1kyph9ycq0j21dl9n1sq5fns9p4gckdi0fmnf8awrcwrdcm9dyg2"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)

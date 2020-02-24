@@ -11,6 +11,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
 ;;; Copyright © 2018 Gabriel Hondet <gabrielhondet@gmail.com>
+;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,7 +32,7 @@
   #:use-module (gnu packages)
   #:use-module ((guix licenses)
                 #:select (gpl2+ lgpl2.0+ lgpl2.1+ lgpl3+ asl2.0 bsd-3
-                          cc-by-sa4.0 non-copyleft))
+                          cc-by-sa4.0 non-copyleft expat))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -394,7 +395,7 @@ implementation techniques and as an expository tool.")
 (define-public racket
   (package
     (name "racket")
-    (version "7.3")
+    (version "7.6")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "http://mirror.racket-lang.org/installers/"
@@ -404,29 +405,22 @@ implementation techniques and as an expository tool.")
                           version "/racket-" version "-src.tgz")))
               (sha256
                (base32
-                "0h6072njhb87rkz4arijvahxgjzn8r14s4wns0ijvxm89bg136yl"))
+                "0yagy7qrnz96gwafnj3whh2vs54788k1ci3vkm100h68gsw638b8"))
               (patches (search-patches
                         "racket-store-checksum-override.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'pre-configure
+         (add-before 'configure 'pre-configure-minimal
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Patch dynamically loaded libraries with their absolute paths.
-             (let* ((library-path   (search-path-as-string->list
-                                     (getenv "LIBRARY_PATH")))
-                    (find-so        (lambda (soname)
-                                      (search-path
-                                       library-path
-                                       (format #f "~a.so" soname))))
-                    (patch-ffi-libs (lambda (file libs)
-                                      (for-each
-                                       (lambda (lib)
-                                         (substitute* file
-                                           (((format #f "\"~a\"" lib))
-                                            (format #f "\"~a\"" (find-so lib)))))
-                                       libs))))
+             (let* ((library-path (search-path-as-string->list
+                                   (getenv "LIBRARY_PATH")))
+                    (find-so (lambda (soname)
+                               (search-path
+                                library-path
+                                (format #f "~a.so" soname)))))
                (substitute* "collects/db/private/sqlite3/ffi.rkt"
                  (("ffi-lib sqlite-so")
                   (format #f "ffi-lib \"~a\"" (find-so "libsqlite3"))))
@@ -435,7 +429,25 @@ implementation techniques and as an expository tool.")
                   (format #f "ffi-lib \"~a\"" (find-so "libssl"))))
                (substitute* "collects/openssl/libcrypto.rkt"
                  (("ffi-lib libcrypto-so")
-                  (format #f "ffi-lib \"~a\"" (find-so "libcrypto"))))
+                  (format #f "ffi-lib \"~a\"" (find-so "libcrypto")))))
+             (chdir "src")
+             #t))
+         (add-before 'pre-configure-minimal 'pre-configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Patch dynamically loaded libraries with their absolute paths.
+             (let* ((library-path (search-path-as-string->list
+                                   (getenv "LIBRARY_PATH")))
+                    (find-so (lambda (soname)
+                               (search-path
+                                library-path
+                                (format #f "~a.so" soname))))
+                    (patch-ffi-libs (lambda (file libs)
+                                      (for-each
+                                       (lambda (lib)
+                                         (substitute* file
+                                           (((format #f "\"~a\"" lib))
+                                            (format #f "\"~a\"" (find-so lib)))))
+                                       libs))))
                (substitute* "share/pkgs/math-lib/math/private/bigfloat/gmp.rkt"
                  (("ffi-lib libgmp-so")
                   (format #f "ffi-lib \"~a\"" (find-so "libgmp"))))
@@ -473,15 +485,14 @@ implementation techniques and as an expository tool.")
                    ("libGL"))
                   ("share/pkgs/sgl/gl.rkt"
                    ("libGL" "libGLU")))))
-             (chdir "src")
              #t))
          (add-after 'unpack 'patch-/bin/sh
            (lambda _
              (substitute* "collects/racket/system.rkt"
                (("/bin/sh") (which "sh")))
              #t)))
-       #:tests? #f                      ; XXX: how to run them?
-       ))
+       ;; XXX: how to run them?
+       #:tests? #f))
     (inputs
      `(("libffi" ,libffi)
        ;; Hardcode dynamically loaded libraries for better functionality.
@@ -502,14 +513,53 @@ implementation techniques and as an expository tool.")
        ("sqlite" ,sqlite)
        ("unixodbc" ,unixodbc)
        ("libedit" ,libedit)))
-    (home-page "http://racket-lang.org")
+    (home-page "https://racket-lang.org")
     (synopsis "Implementation of Scheme and related languages")
     (description
      "Racket is an implementation of the Scheme programming language (R5RS and
 R6RS) and related languages, such as Typed Racket.  It features a compiler and
 a virtual machine with just-in-time native compilation, as well as a large set
 of libraries.")
-    (license lgpl2.0+)))
+    ;; https://download.racket-lang.org/license.html
+    (license (list lgpl3+ asl2.0 expat))))
+
+(define-public racket-minimal
+  (package
+    (inherit racket)
+    (name "racket-minimal")
+    (version (package-version racket))
+    (source (origin
+              (method url-fetch)
+              (uri (list (string-append "http://mirror.racket-lang.org/installers/"
+                                        version "/racket-minimal-" version "-src.tgz")
+                         (string-append
+                          "http://mirror.informatik.uni-tuebingen.de/mirror/racket/"
+                          version "/racket-minimal-" version "-src.tgz")))
+              (sha256
+               (base32
+                "0id094q9024hj2n3907l7dblp3iix1v5289xzskmh5c26xfygp9y"))
+              (patches (search-patches
+                        "racket-store-checksum-override.patch"))))
+    (synopsis "Racket without bundled packages such as Dr. Racket")
+    (arguments
+     (substitute-keyword-arguments (package-arguments racket)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           ;; Delete fix that applies to files not included in the minimal package.
+           (delete 'pre-configure)))))
+    (inputs
+     `(("libffi" ,libffi)
+       ("openssl" ,openssl)
+       ("sqlite" ,sqlite)))
+    (description
+     "Racket is an implementation of the Scheme programming language (R5RS and
+R6RS) and related languages, such as Typed Racket.  It features a compiler and
+a virtual machine with just-in-time native compilation, as well as a large set
+of libraries.
+
+In this minimal package, the essential package racket-libs is included, as
+well as libraries that live in collections.  In particular, @command{raco} and
+the @code{pkg} library are still bundled.")))
 
 (define-public gambit-c
   (package
@@ -694,7 +744,7 @@ regular-expression notation.")
                                            (assoc-ref outputs "out"))))))))
     (native-inputs `(("unzip" ,unzip)
                      ("texinfo" ,texinfo)))
-    (home-page "http://people.csail.mit.edu/jaffer/SLIB.html")
+    (home-page "https://people.csail.mit.edu/jaffer/SLIB.html")
     (synopsis "Compatibility and utility library for Scheme")
     (description "SLIB is a portable Scheme library providing compatibility and
 utility functions for all standard Scheme implementations.")

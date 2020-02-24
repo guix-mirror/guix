@@ -30,7 +30,7 @@
 (define-public cedille
   (package
     (name "cedille")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
      (origin
        (method git-fetch)
@@ -40,7 +40,7 @@
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "07kv9wncyipfjf5w4ax8h2p35g70zb1qw6zc4afd7c225xia55wp"))))
+         "1h5s6ayh3s76z184jai3jidcs4cjk8s4nvkkv2am8dg4gfsybq22"))))
     (inputs
      `(("agda" ,agda)
        ("agda-ial" ,agda-ial)

@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
@@ -31,11 +31,12 @@
 (define-module (gnu packages libreoffice)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses)
-                #:select (gpl2+ lgpl2.1+ lgpl3+ mpl1.1 mpl2.0
+                #:select (gpl2 gpl2+ lgpl2.1+ lgpl3+ mpl1.1 mpl2.0
                           non-copyleft x11-style bsd-3))
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -118,8 +119,8 @@ their dependencies automatically upon calculation.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://kohei.us/files/" name "/src/lib"
-                           name "-" version ".tar.xz"))
+       (uri (string-append "http://kohei.us/files/orcus/src/lib"
+                           "orcus-" version ".tar.xz"))
        (sha256
         (base32
          "14gbnqsv5n2fm4sxa17014f440clrzls6p2w2ixk9wipg4950v9s"))))
@@ -141,6 +142,63 @@ Plain Text, Gnumeric XML, Generic XML.  It also includes low-level parsers for
 CSV, CSS and XML.")
     (license mpl2.0)))
 
+(define-public unoconv
+  (package
+    (name "unoconv")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "unoconv" version))
+       (sha256
+        (base32 "0cb0bvyxib3xrj0jdgizhp6p057lr8kqnd3n921rin37ivcvz3ih"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'stop-hash-sniffing
+           ;; Fixes <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=39647#11>.
+           ;; Submitted upsteam: <https://github.com/unoconv/unoconv/pull/531>.
+           (lambda _
+             (substitute* "unoconv"
+               (("sys.argv\\[0\\]\\.split\\('2'\\)")
+                "os.path.basename(sys.argv[0]).split('2')"))
+             #t))
+         (add-after 'unpack 'patch-find_offices
+           ;; find_offices is a convoluted cross-platform treasure hunt.
+           ;; Keep things simple and return the correct paths immediately.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((libreoffice (assoc-ref inputs "libreoffice")))
+               (substitute* "unoconv"
+                 (("def find_offices\\(\\):" match)
+                  (string-append
+                   match "\n"
+                   "    return [Office("
+                   "'" libreoffice "/lib/libreoffice', "
+                   "'" libreoffice "/lib/libreoffice/program', "
+                   "'" libreoffice "/lib/libreoffice/program', "
+                   "'" libreoffice "/lib/libreoffice/program/pyuno.so', "
+                   "'" libreoffice "/bin/soffice', "
+                   "sys.executable, "
+                   "None)]\n")))
+               #t))))))
+    (inputs
+     `(("libreoffice" ,libreoffice)))
+    (home-page "http://dag.wiee.rs/home-made/unoconv/")
+    (synopsis "Convert between any document format supported by LibreOffice")
+    (description
+     "Unoconv is a command-line utility to convert documents from any format
+that LibreOffice can import, to any format it can export.  It can be used for
+batch processing and can apply custom style templates and filters.
+
+Unoconv converts between over a hundred formats, including Open Document
+Format (@file{.odt}, @file{.ods}, @file{.odp})), Portable Document Format
+(@file{.pdf}), HTML and XHTML, RTF, DocBook (@file{.xml}), @file{.doc} and
+@file{.docx}), @file{.xls} and @file{.xlsx}).
+
+All required fonts must be installed on the converting system.")
+    (license gpl2)))
+
 (define-public librevenge
   (package
     (name "librevenge")
@@ -148,8 +206,8 @@ CSV, CSS and XML.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://sourceforge/libwpd/" name "/" name "-"
-                          version "/" name "-" version ".tar.xz"))
+      (uri (string-append "mirror://sourceforge/libwpd/librevenge/librevenge-"
+                          version "/librevenge-" version ".tar.xz"))
       (sha256 (base32
                "1cj76cz4mqcy2mgv9l5xlc95bypyk8zbq0ls9cswqrs2y0lhfgwk"))))
     (build-system gnu-build-system)
@@ -428,22 +486,20 @@ Apple Keynote documents.  It currently supports Keynote versions 2 to 5.")
 (define-public liblangtag
   (package
     (name "liblangtag")
-    (version "0.6.2")
+    (version "0.6.3")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "https://bitbucket.org/tagoh/liblangtag/downloads/"
-                            name "-" version ".tar.bz2"))
+                            "liblangtag-" version ".tar.bz2"))
         (sha256
-         (base32
-          "0bnm4hllr8cfrybm8rw7b8n0nlhzhnv73bkg1bxk452g6a82f96n"))))
+         (base32 "1g9kwxx60q0hpwvs66ys1cb9qg54hfvbivadwli8sfpc085a44hz"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("libxml2" ,libxml2)))
-    ;; As of December 2017, tagoh.bitbucket.org redirects to a hosting advert.
     (home-page "https://bitbucket.org/tagoh/liblangtag")
     (synopsis "Library to access tags for identifying languages")
     (description "Liblangtag implements an interface to work with tags
@@ -1035,6 +1091,14 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
                          "solenv/gbuild/gbuild.mk"
                          "solenv/gbuild/platform/unxgcc.mk")
                  (("/bin/sh") (which "sh")))
+
+               ;; Use store references for strictly necessary commands,
+               ;; but not for optional tools like ‘gdb’ and ‘valgrind’.
+               (for-each (lambda (command)
+                           (substitute* "desktop/scripts/soffice.sh"
+                             (((format #f"~a " command))
+                              (format #f "~a " (which command)))))
+                         (list "dirname" "grep" "uname"))
 
                ;; GPGME++ headers are installed in a gpgme++ subdirectory, but
                ;; files in "xmlsecurity/source/gpg/" and elsewhere expect to

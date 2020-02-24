@@ -5,11 +5,11 @@ after the substitution is made.
 
 --- a/Makefile
 +++ b/Makefile
-@@ -213,6 +213,7 @@
- TEST_ERLS = $(addprefix $(TEST_EBIN)/, $(addsuffix .beam, $(basename $(notdir $(wildcard $(TEST_ERL)/*.erl)))))
+@@ -265,6 +265,7 @@ format: compile
+	$(call FORMAT)
  
  test_formatted: compile
-+	bin/elixir bin/mix format lib/mix/lib/mix/scm/git.ex
- 	bin/elixir bin/mix format --check-formatted
++	$(call FORMAT,lib/mix/lib/mix/scm/git.ex)
+	$(call FORMAT,--check-formatted)
  
  test_erlang: compile $(TEST_ERLS)

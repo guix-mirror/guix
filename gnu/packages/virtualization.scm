@@ -11,6 +11,8 @@
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +35,7 @@
   #:use-module (gnu packages assembly)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
@@ -90,6 +93,7 @@
   #:use-module (guix build-system go)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -325,14 +329,24 @@ server and embedded PowerPC, and S390 guests.")
        (list (string-append "-Dwith-usb-ids-path="
                             (assoc-ref %build-inputs "usb.ids"))
              (string-append "-Dwith-pci-ids-path="
-                            (assoc-ref %build-inputs "pci.ids")))))
+                            (assoc-ref %build-inputs "pci.ids")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-osinfo-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "osinfo/osinfo_loader.c"
+               (("path = DATA_DIR.*")
+                (string-append "path = \"" (assoc-ref inputs "osinfo-db")
+                               "/share/osinfo\";")))
+             #t)))))
     (inputs
      `(("libsoup" ,libsoup)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
-       ("gobject-introspection" ,gobject-introspection)))
+       ("osinfo-db" ,osinfo-db)))
     (native-inputs
      `(("glib" ,glib "bin")  ; glib-mkenums, etc.
+       ("gobject-introspection" ,gobject-introspection)
        ("gtk-doc" ,gtk-doc)
        ("vala" ,vala)
        ("intltool" ,intltool)
@@ -461,8 +475,8 @@ manage system or application containers.")
          (add-before 'configure 'disable-broken-tests
            (lambda _
              (let ((tests (list "commandtest"      ; hangs idly
-				"qemuxml2argvtest" ; fails
-				"qemuhotplugtest"  ; fails
+                                "qemuxml2argvtest" ; fails
+                                "qemuhotplugtest"  ; fails
                                 "virnetsockettest" ; tries to network
                                 "virshtest")))     ; fails
                (substitute* "tests/Makefile.in"
@@ -629,8 +643,8 @@ virtualization library.")
          (add-after 'unpack 'fix-qemu-img-reference
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "virtconv/formats.py"
-	       (("/usr(/bin/qemu-img)" _ suffix)
-		(string-append (assoc-ref inputs "qemu") suffix)))
+               (("/usr(/bin/qemu-img)" _ suffix)
+                (string-append (assoc-ref inputs "qemu") suffix)))
              #t))
          (add-after 'unpack 'fix-default-uri
            (lambda* (#:key inputs #:allow-other-keys)
@@ -671,7 +685,6 @@ virtualization library.")
        ("libvirt-glib" ,libvirt-glib)
        ("libosinfo" ,libosinfo)
        ("vte" ,vte)
-       ("gobject-introspection" ,gobject-introspection)
        ("python-libvirt" ,python-libvirt)
        ("python-requests" ,python-requests)
        ("python-ipaddress" ,python-ipaddress)
@@ -684,6 +697,7 @@ virtualization library.")
      `(("qemu" ,qemu)))
     (native-inputs
      `(("glib" ,glib "bin")             ; glib-compile-schemas
+       ("gobject-introspection" ,gobject-introspection)
        ("gtk+" ,gtk+ "bin")             ; gtk-update-icon-cache
        ("perl" ,perl)                   ; pod2man
        ("intltool" ,intltool)))
@@ -1382,3 +1396,73 @@ which is a hypervisor.")
     ;; TODO: Some files are licensed differently.  List those.
     (license license:gpl2)
     (supported-systems '("i686-linux" "x86_64-linux" "armhf-linux"))))
+
+(define-public osinfo-db-tools
+  (package
+    (name "osinfo-db-tools")
+    (version "1.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://releases.pagure.org/libosinfo/osinfo-db-tools-"
+                                  version ".tar.xz"))
+
+              (sha256
+               (base32
+                "08x8mrafphyll0d35xdc143rip3ahrz6bmzhc85nwhq7yk2vxpab"))))
+    (build-system meson-build-system)
+    (inputs
+     `(("libsoup" ,libsoup)
+       ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)
+       ("json-glib" ,json-glib)
+       ("libarchive" ,libarchive)))
+    (native-inputs
+     `(("perl" ,perl)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)
+       ;; Tests
+       ("python" ,python)
+       ("pytest" ,python-pytest)
+       ("requests" ,python-requests)))
+    (home-page "https://gitlab.com/libosinfo/osinfo-db-tools")
+    (synopsis "Tools for managing the osinfo database")
+    (description "This package contains a set of tools to assist
+administrators and developers in managing the database.")
+    (license license:lgpl2.0+)))
+
+(define-public osinfo-db
+  (package
+    (name "osinfo-db")
+    (version "20200203")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://releases.pagure.org/libosinfo/osinfo-db-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1zjq1dhlci00j17dij7s3l30hybzmaykpk5b6bd5xbllp745njn5"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((out (assoc-ref %outputs "out"))
+                (osinfo-dir (string-append out "/share/osinfo"))
+                (source (assoc-ref %build-inputs "source"))
+                (osinfo-db-import
+                 (string-append (assoc-ref %build-inputs "osinfo-db-tools")
+                                "/bin/osinfo-db-import")))
+           (mkdir-p osinfo-dir)
+           (invoke osinfo-db-import "--dir" osinfo-dir source)
+           #t))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("osinfo-db-tools" ,osinfo-db-tools)))
+    (home-page "https://gitlab.com/libosinfo/osinfo-db")
+    (synopsis "Database of information about operating systems")
+    (description "Osinfo-db provides the database files for use with the
+libosinfo library.  It provides information about guest operating systems for
+use with virtualization provisioning tools")
+    (license license:lgpl2.0+)))

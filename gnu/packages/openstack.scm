@@ -599,7 +599,7 @@ in transmittable and storable formats, such as JSON and MessagePack.")
         ("python-sphinx" ,python-sphinx)
         ("gnupg" ,gnupg)
         ("git" ,git-minimal)))
-    (home-page "http://docs.openstack.org/developer/reno/")
+    (home-page "https://docs.openstack.org/reno/latest/")
     (synopsis "Release notes manager")
     (description "Reno is a tool for storing release notes in a git repository
 and building documentation from them.")

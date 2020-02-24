@@ -519,6 +519,57 @@ that can be applied to a Linux kernel source tree in order to build it with
 WireGuard support.")
     (license license:gpl2)))
 
+(define-public wireguard-tools
+  (package
+    (name "wireguard-tools")
+    (version "1.0.20200206")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.zx2c4.com/wireguard-tools.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ivc08lds5w39a6f2xdfih9wlk5g724hl3kpdvxvh5yff4l84qb7"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no test suite
+       #:make-flags
+       (list "CC=gcc"
+             "WITH_BASHCOMPLETION=yes"
+             ;; Install the ‘simple and dirty’ helper script wg-quick(8).
+             "WITH_WGQUICK=yes"
+             (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             ;; Currently used only to create an empty /etc/wireguard directory.
+             (string-append "SYSCONFDIR=no-thanks"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-source-directory
+           (lambda _
+             (chdir "src")
+             #t))
+         (delete 'configure)            ; no configure script
+         (add-after 'install 'reset-cwd
+           ;; Otherwise the 'install-license-file' phase installs nothing.
+           ;; <https://bugs.gnu.org/34703>
+           (lambda _
+             (chdir "..")
+             #t)))))
+    (home-page "https://www.wireguard.com/")
+    (synopsis "Tools for configuring WireGuard tunnels")
+    (description
+     "This package provides the user-space command-line tools for using and
+configuring WireGuard tunnels.
+
+WireGuard is a simple and fast general-purpose @acronym{VPN, Virtual Private
+Network} that securely encapsulates IP packets over UDP.  It aims to be as easy
+to configure and deploy as SSH.  VPN connections are made simply by exchanging
+public keys and can roam across IP addresses.")
+    (license
+     (list license:lgpl2.1+    ; src/netlink.h & contrib/embeddable-wg-library
+           license:gpl2))))    ; everything else
+
 (define-public xl2tpd
   (package
     (name "xl2tpd")

@@ -5,6 +5,7 @@
 ;;; Copyright © 2018, 2019 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
+;;; Copyright © 2020 shtwzrd <shtwzrd@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -152,7 +153,12 @@
   xorg-configuration make-xorg-configuration
   xorg-configuration?
   (modules          xorg-configuration-modules    ;list of packages
-                    (default %default-xorg-modules))
+                    ; filter out modules not supported on current system
+                    (default (filter
+                              (lambda (p)
+                                (member (%current-system)
+                                        (package-supported-systems p)))
+                              %default-xorg-modules)))
   (fonts            xorg-configuration-fonts      ;list of packges
                     (default %default-xorg-fonts))
   (drivers          xorg-configuration-drivers    ;list of strings

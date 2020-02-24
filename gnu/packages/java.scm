@@ -3578,7 +3578,7 @@ cli/shell/BourneShell.java"
     (native-inputs
      `(("java-hamcrest-core" ,java-hamcrest-core)
        ("java-junit" ,java-junit)))
-    (home-page "http://codehaus-plexus.github.io/plexus-utils/")
+    (home-page "https://codehaus-plexus.github.io/plexus-utils/")
     (synopsis "Common utilities for the Plexus framework")
     (description "This package provides various Java utility classes for the
 Plexus framework to ease working with strings, files, command lines, XML and
@@ -4929,7 +4929,7 @@ file filters and endian classes.")
          (replace 'install (install-jars "target")))))
     (native-inputs
      `(("java-junit" ,java-junit)))
-    (home-page "http://commons.apache.org/proper/commons-exec/")
+    (home-page "https://commons.apache.org/proper/commons-exec/")
     (synopsis "Common program execution related classes")
     (description "Commons-Exec simplifies executing external processes.")
     (license license:asl2.0)))
@@ -6634,7 +6634,7 @@ This is a part of the Apache Commons Project.")
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://commons.apache.org/codec/")
+    (home-page "https://commons.apache.org/codec/")
     (synopsis "Common encoders and decoders such as Base64, Hex, Phonetic and URLs")
     (description "The codec package contains simple encoder and decoders for
 various formats such as Base64 and Hexadecimal.  In addition to these widely

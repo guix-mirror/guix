@@ -1264,7 +1264,7 @@ streaming protocols.")
 (define-public mplayer
   (package
     (name "mplayer")
-    (version "1.3.0")
+    (version "1.4")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1272,7 +1272,7 @@ streaming protocols.")
                    version ".tar.xz"))
              (sha256
               (base32
-               "0hwqn04bdknb2ic88xd75smffxx63scvz0zvwvjb56nqj9n89l1s"))))
+               "0j5mflr0wnklxsvnpmxvk704hscyn2785hvvihj2i3a7b3anwnc2"))))
     (build-system gnu-build-system)
     ;; FIXME: Add additional inputs once available.
     (native-inputs
@@ -1281,17 +1281,18 @@ streaming protocols.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("cdparanoia" ,cdparanoia)
-       ("ffmpeg" ,ffmpeg-3.4)
+       ("ffmpeg" ,ffmpeg)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
-;;        ("giflib" ,giflib) ; uses QuantizeBuffer, requires version >= 5
+       ("giflib" ,giflib)
        ("lame" ,lame)
        ("libass" ,libass)
        ("libdvdcss" ,libdvdcss)
-       ("libdvdnav" ,libdvdnav)
+       ("libdvdnav" ,libdvdnav)         ; ignored without libdvdread
+       ("libdvdread" ,libdvdread)       ; ignored without libdvdnav
        ("libjpeg" ,libjpeg)
        ("libmpeg2" ,libmpeg2)
-       ("libmpg123" ,mpg123)                      ; audio codec for MP3
+       ("libmpg123" ,mpg123)            ; audio codec for MP3
        ("libpng" ,libpng)
        ("libtheora" ,libtheora)
        ("libvdpau" ,libvdpau)
@@ -1310,7 +1311,7 @@ streaming protocols.")
        ("speex" ,speex)
        ("zlib" ,zlib)))
     (arguments
-     `(#:tests? #f ; no test target
+     `(#:tests? #f                      ; no test target
        #:phases
        (modify-phases %standard-phases
         (replace 'configure
@@ -1346,7 +1347,7 @@ streaming protocols.")
                                         (nix-system->gnu-triplet
                                          (%current-system)))))))
                       "--disable-iwmmxt")))))))
-    (home-page "https://www.mplayerhq.hu/design7/news.html")
+    (home-page "https://www.mplayerhq.hu")
     (synopsis "Audio and video player")
     (description "MPlayer is a movie player.  It plays most MPEG/VOB, AVI,
 Ogg/OGM, VIVO, ASF/WMA/WMV, QT/MOV/MP4, RealMedia, Matroska, NUT,
@@ -1690,7 +1691,7 @@ other site that youtube-dl supports.")
 (define-public you-get
   (package
     (name "you-get")
-    (version "0.4.1355")
+    (version "0.4.1403")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1699,7 +1700,7 @@ other site that youtube-dl supports.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0xq7z04hvw3b3npiahlpzhbxsjvam9n9dynplyrkn84dx6k9ajbj"))))
+                "04viy19x4g9dngml82nf9j94ys3p47bs62c2q2cn1barkybaa3as"))))
     (build-system python-build-system)
     (inputs
      `(("ffmpeg" ,ffmpeg)))             ; for multi-part and >=1080p videos
@@ -2149,7 +2150,7 @@ format changes.")
 (define-public xvid
   (package
     (name "xvid")
-    (version "1.3.6")
+    (version "1.3.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2157,21 +2158,19 @@ format changes.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "0zppakvcgq5a42mhqqsbliclpg2jrhbmbfgrzalyfzr47jqmhssy"))))
+                "1xyg3amgg27zf7188kss7y248s0xhh1vv8rrk0j9bcsd5nasxsmf"))))
     (build-system gnu-build-system)
     (native-inputs `(("yasm" ,yasm)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-before
-          'configure 'pre-configure
+         (add-before 'configure 'pre-configure
           (lambda _
             (chdir "build/generic")
             (substitute* "configure"
               (("#! /bin/sh") (string-append "#!" (which "sh"))))
             #t)))
-       ;; No 'check' target.
-       #:tests? #f))
+       #:tests? #f)) ; no test suite
     (home-page "https://www.xvid.com/")
     (synopsis "MPEG-4 Part 2 Advanced Simple Profile video codec")
     (description "Xvid is an MPEG-4 Part 2 Advanced Simple Profile (ASP) video
@@ -2883,7 +2882,7 @@ post-processing of video formats like MPEG2, H.264/AVC, and VC-1.")
        #:phases (modify-phases %standard-phases
                   ;; no configure script
                   (delete 'configure))))
-    (home-page "http://www.openh264.org/")
+    (home-page "https://www.openh264.org/")
     (synopsis "H264 decoder library")
     (description
      "Openh264 is a library which can decode H264 video streams.")

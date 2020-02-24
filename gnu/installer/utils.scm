@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,12 +24,16 @@
   #:use-module (srfi srfi-34)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 regex)
+  #:use-module (ice-9 format)
   #:use-module (ice-9 textual-ports)
   #:export (read-lines
             read-all
             nearest-exact-integer
             read-percentage
-            run-shell-command))
+            run-shell-command
+
+            syslog-port
+            syslog))
 
 (define* (read-lines #:optional (port (current-input-port)))
   "Read lines from PORT and return them as a list."
@@ -85,9 +89,48 @@ COMMAND exited successfully, #f otherwise."
                 (format (current-error-port)
                         (G_ "Command failed with exit code ~a.~%")
                         (invoke-error-exit-status c))
+                (syslog "command ~s failed with exit code ~a"
+                        command (invoke-error-exit-status c))
                 (pause)
                 #f))
+       (syslog "running command ~s~%" command)
        (invoke "bash" "--init-file" file)
+       (syslog "command ~s succeeded~%" command)
        (newline)
        (pause)
        #t))))
+
+
+;;;
+;;; Logging.
+;;;
+
+(define (open-syslog-port)
+  "Return an open port (a socket) to /dev/log or #f if that wasn't possible."
+  (let ((sock (socket AF_UNIX SOCK_DGRAM 0)))
+    (catch 'system-error
+      (lambda ()
+        (connect sock AF_UNIX "/dev/log")
+        (setvbuf sock 'line)
+        sock)
+      (lambda args
+        (close-port sock)
+        #f))))
+
+(define syslog-port
+  (let ((port #f))
+    (lambda ()
+      "Return an output port to syslog."
+      (unless port
+        (set! port (open-syslog-port)))
+      (or port (%make-void-port "w")))))
+
+(define-syntax syslog
+  (lambda (s)
+    "Like 'format', but write to syslog."
+    (syntax-case s ()
+      ((_ fmt args ...)
+       (string? (syntax->datum #'fmt))
+       (with-syntax ((fmt (string-append "installer[~d]: "
+                                         (syntax->datum #'fmt))))
+         #'(format (syslog-port) fmt (getpid) args ...))))))

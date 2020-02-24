@@ -291,7 +291,7 @@ making them easy to handle and incorporate into other protocols.")
          (add-before 'build 'set-build-env
            ;; pycrypto runs an autoconf configure script behind the scenes
            (lambda _ (setenv "CONFIG_SHELL" (which "bash")) #t)))))
-    (home-page "http://www.pycrypto.org/")
+    (home-page "https://www.dlitz.net/software/pycrypto/")
     (synopsis "Cryptographic modules for Python")
     (description
      "Pycrypto is a collection of both secure hash functions (such as SHA256

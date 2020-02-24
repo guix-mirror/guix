@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Meiyo Peng <meiyo@riseup.net>
+;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,7 +41,8 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages compression))
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages swig))
 
 (define-public a2ps
   (package
@@ -270,12 +272,29 @@ seen in a terminal.")
                 (string-append assignment "lua-" ,(version-major+minor
                                                    (package-version lua))
                                "\n")))
-             #t)))))
+             (substitute* "extras/swig/makefile"
+               (("lua") (string-append "lua-" ,(version-major+minor
+                                                (package-version lua)))))
+             #t))
+         (add-after 'install 'install-perl-bindings
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((perldir (string-append (assoc-ref outputs "out")
+                                            "/lib/perl5/site_perl/"
+                                            ,(package-version perl)))
+                    (autodir (string-append perldir "/auto/highlight")))
+               (with-directory-excursion "extras/swig"
+                 (invoke "make" "perl")
+                 (invoke "perl" "-I" "." "testmod.pl")
+                 (install-file "highlight.pm" perldir)
+                 (install-file "highlight.so" autodir))
+               #t))))))
     (inputs
      `(("lua" ,lua)
-       ("boost" ,boost)))
+       ("boost" ,boost)
+       ("perl" ,perl)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("swig" ,swig)))
     (home-page "http://www.andre-simon.de/doku/highlight/en/highlight.php")
     (synopsis "Convert code to documents with syntax highlighting")
     (description "Highlight converts source code to HTML, XHTML, RTF, LaTeX,

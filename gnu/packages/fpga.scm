@@ -51,15 +51,15 @@
        (revision "1"))
   (package
     (name "abc")
-    (version (string-append "0.0-" revision "-" (string-take commit 9)))
+    (version (git-version "0.0" revision commit))
     (source (origin
               (method url-fetch)
               (uri
                (string-append "https://bitbucket.org/alanmi/abc/get/" commit ".zip"))
               (file-name (string-append name "-" version "-checkout.zip"))
               (sha256
-                (base32
-                   "1syygi1x40rdryih3galr4q8yg1w5bvdzl75hd27v1xq0l5bz3d0"))))
+               (base32
+                "1syygi1x40rdryih3galr4q8yg1w5bvdzl75hd27v1xq0l5bz3d0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
@@ -75,7 +75,7 @@
              (let* ((out (assoc-ref outputs "out"))
                     (out-bin (string-append out "/bin")))
                (install-file "abc" out-bin)))))))
-    (home-page "http://people.eecs.berkeley.edu/~alanmi/abc/")
+    (home-page "https://people.eecs.berkeley.edu/~alanmi/abc/")
     (synopsis "Sequential logic synthesis and formal verification")
     (description "ABC is a program for sequential logic synthesis and
 formal verification.")
@@ -216,13 +216,13 @@ For synthesis, the compiler generates netlists in the desired format.")
         (revision "2"))
    (package
     (name "icestorm")
-    (version (string-append "0.0-" revision "-" (string-take commit 9)))
+    (version (git-version "0.0" revision commit))
     (source (origin
               (method git-fetch)
               (uri (git-reference
                      (url "https://github.com/cliffordwolf/icestorm.git")
                      (commit commit)))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                 (base32
                    "0bqm0rpywm64yvbq75klpyzb1g9sdsp1kvdlyqg4hvm8jw9w8lya"))))
@@ -267,7 +267,7 @@ Includes the actual FTDI connector.")
               (uri (git-reference
                      (url "https://github.com/YosysHQ/arachne-pnr.git")
                      (commit commit)))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                 (base32
                    "1dqvjvgvsridybishv4pnigw9gypxh7r7nrqp9z9qq92v7c5rxzl"))))

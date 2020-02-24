@@ -6,6 +6,7 @@
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
+;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -410,3 +411,31 @@ SObjectizer supports not only the Actor Model but also the Publish-Subscribe
 Model and CSP-like channels.  The goal of SObjectizer is to simplify
 development of concurrent and multithreaded applications in C++.")
     (license license:bsd-3)))
+
+(define-public tweeny
+  (package
+    (name "tweeny")
+    (version "3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mobius3/tweeny.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1adm4c17pi7xf3kf6sjyxibz5rdg1ka236p72xsm6js4j9gzlbp4"))))
+    (arguments
+     '(#:tests? #f))                    ;no check target
+    (build-system cmake-build-system)
+    (home-page "https://mobius3.github.io/tweeny/")
+    (synopsis "Modern C++ tweening library")
+    (description "@code{Tweeny} is an inbetweening library designed for the
+creation of complex animations for games and other beautiful interactive
+software.  It leverages features of modern @code{C++} to empower developers with
+an intuitive API for declaring tweenings of any type of value, as long as they
+support arithmetic operations.  The goal of @code{Tweeny} is to provide means to
+create fluid interpolations when animating position, scale, rotation, frames or
+other values of screen objects, by setting their values as the tween starting
+point and then, after each tween step, plugging back the result.")
+    (license license:expat)))

@@ -272,13 +272,14 @@ reading and editing of existing PDF files.")
 (define-public xpdf
   (package
    (name "xpdf")
-   (version "3.04")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "ftp://ftp.foolabs.com/pub/xpdf/xpdf-"
-                                version ".tar.gz"))
-            (sha256 (base32
-                     "1rbp54mr3z2x3a3a1qmz8byzygzi223vckfam9ib5g1sfds0qf8i"))))
+   (version "4.02")
+   (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "https://xpdfreader-dl.s3.amazonaws.com/xpdf-"
+                          version "4.02.tar.gz"))
+      (sha256
+       (base32 "1rbp54mr3z2x3a3a1qmz8byzygzi223vckfam9ib5g1sfds0qf8i"))))
    (build-system gnu-build-system)
    (inputs `(("freetype" ,freetype)
              ("gs-fonts" ,gs-fonts)
@@ -292,8 +293,8 @@ reading and editing of existing PDF files.")
              ("libpng" ,libpng)
              ("zlib" ,zlib)))
    (arguments
-    `(#:tests? #f ; there is no check target
-      #:parallel-build? #f ; build fails randomly on 8-way machines
+    `(#:tests? #f                     ; there is no check target
+      #:parallel-build? #f            ; build fails randomly on 8-way machines
       #:configure-flags
         (list (string-append "--with-freetype2-includes="
                              (assoc-ref %build-inputs "freetype")
@@ -315,8 +316,8 @@ reading and editing of existing PDF files.")
    (synopsis "Viewer for PDF files based on the Motif toolkit")
    (description
     "Xpdf is a viewer for Portable Document Format (PDF) files.")
-   (license license:gpl3) ; or gpl2, but not gpl2+
-   (home-page "http://www.foolabs.com/xpdf/")))
+   (license license:gpl3)             ; or gpl2, but not gpl2+
+   (home-page "https://www.xpdfreader.com/")))
 
 (define-public zathura-cb
   (package

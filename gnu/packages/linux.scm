@@ -191,31 +191,31 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
 
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
-   "5.4.14"
+   "5.4.19"
    (base32 "0ckxn7k5zgcqk30dq943bnamr6a6zjbw2aqjl3x30f4kvh5f6k25")
-   (base32 "121px6030s89jh975sw0whwq315al6px1s7ildz3asql97bjdgc8")))
+   (base32 "1ajzwyy6vgmihxpz3sbshzfzd0w8yzj0fihv0d5rjpr4z3gm48bk")))
 
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
-   "4.19.98"
+   "4.19.103"
    (base32 "02zs405awaxydbapka4nz8h6lmnc0dahgczqsrs5s2bmzjyyqkcy")
    (base32 "1w2wgxblpq09i33qmqgw5v3r5rm9vkkygr6m0sgv4zgczk9s29wr")))
 
 (define deblob-scripts-4.14
   (linux-libre-deblob-scripts
-   "4.14.167"
+   "4.14.170"
    (base32 "091jk9jkn9jf39bxpc7395bhcb7p96nkg3a8047380ki06lnfxh6")
    (base32 "1qij18inijj6c3ma8hv98yjagnzxdxyn134da9fd23ky8q6hbvky")))
 
 (define deblob-scripts-4.9
   (linux-libre-deblob-scripts
-   "4.9.211"
+   "4.9.213"
    (base32 "1wvldzlv7q2xdbadas87dh593nxr4a8p5n0f8zpm72lja6w18hmg")
    (base32 "0fxajshb75siq39lj5h8xvhdj8lcmddkslwlyj65rhlwk6g2r4b2")))
 
 (define deblob-scripts-4.4
   (linux-libre-deblob-scripts
-   "4.4.211"
+   "4.4.213"
    (base32 "0x2j1i88am54ih2mk7gyl79g25l9zz4r08xhl482l3fvjj2irwbw")
    (base32 "0hhin1jpfkd6nwrb6xqxjzl3hdxy4pn8a15hy2d3d83yw6pflbsf")))
 
@@ -359,42 +359,42 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-(define-public linux-libre-5.4-version "5.4.19")
+(define-public linux-libre-5.4-version "5.4.22")
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "1f3pzg8vai5qz19gy9gf3rxs2z4dsw78zjkkfnha8iiy2mqvk14m")))
+        (hash (base32 "06kx9bmrrk1brici8wvvd6dxqawgcig4i59pwllcq39rgs6wn6v6")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.103")
+(define-public linux-libre-4.19-version "4.19.106")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "0hxvqkjy63370sr9j4j0a1kzqwxxdn3i8i6wwc5c2gbzpmqlay5l")))
+        (hash (base32 "1nlwgs15mc3hlfhqw95pz7wisg8yshzrxzzq2a0y30mjm5vbvj33")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.170")
+(define-public linux-libre-4.14-version "4.14.171")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "1hqp3spi4cqgkqkzx5g2nbp6isz0kdcsj56ilsp6siqiglj662ll")))
+        (hash (base32 "181jadiwfix23xmqfvg7hpacjd0523v7vy0frzn8g8dlwj4j9q2g")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.213")
+(define-public linux-libre-4.9-version "4.9.214")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "0r7bqpvbpiiniwsm338b38mv6flfgm1r09avxqsakhkh8rvgz1dg")))
+        (hash (base32 "10z4n792g88p46csla2g9b0m7vz40ln0901ffb2cfd3hmhyhjzxl")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.213")
+(define-public linux-libre-4.4-version "4.4.214")
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "1cmwn9zvz14jqjy6qkszglhs2p5h6yh82b2269cbzvibg8y3rxq0")))
+        (hash (base32 "0v575wl85fg9c3ksdj570hxjcl9p1dxwzag3fm0qcrq75kp6bamn")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -932,6 +932,52 @@ It grants direct and undocumented access to your hardware that may cause damage
 and should be used with caution, especially on untested models.")
     (license license:gpl3+)))           ; see README.md (no licence headers)
 
+(define-public rtl8812au-aircrack-ng-linux-module
+  (let ((commit "945d6ed6505c32f0993b1dba576388e92e78101b")
+        (revision "0"))
+    (package
+      (name "rtl8812au-aircrack-ng-linux-module")
+      (version (git-version "5.6.4.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/aircrack-ng/rtl8812au.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1pjws7qb5l4z9k80vgz4zdxmqhbwxjjrmkpf0hijf821byyddvi7"))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             ;; Remove bundled tarballs, APKs, word lists, speadsheets,
+             ;; and other unnecessary unlicenced things.
+             (for-each delete-file-recursively (list "android"
+                                                     "docs"
+                                                     "tools"))
+             #t))))
+      (build-system linux-module-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (replace 'build
+             (lambda* (#:key inputs make-flags #:allow-other-keys)
+               (apply invoke "make"
+                      (string-append "KSRC="
+                                     (assoc-ref inputs "linux-module-builder")
+                                     "/lib/modules/build")
+                      (or make-flags '())))))
+         #:tests? #f))                  ; no test suite
+      (supported-systems '("x86_64-linux" "i686-linux"))
+      (home-page "https://github.com/aircrack-ng/rtl8812au")
+      (synopsis "Linux driver for Realtek USB wireless network adapters")
+      (description
+       "This is Realtek's rtl8812au Linux driver for USB 802.11n wireless
+network adapters, modified by the aircrack-ng project to support monitor mode
+and frame injection.  It provides a @code{88XXau} kernel module that supports
+RTL8812AU, RTL8821AU, and RTL8814AU chips.")
+      (license license:gpl2+))))
+
 (define-public vhba-module
   (package
     (name "vhba-module")
@@ -1228,6 +1274,62 @@ block devices, UUIDs, TTYs, and many other tools.")
 The Discordian calendar was made popular by the \"Illuminatus!\" trilogy
 by Robert Shea and Robert Anton Wilson.")
     (license license:public-domain)))
+
+(define-public fbset
+  (package
+    (name "fbset")
+    (version "2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://users.telenet.be/geertu/Linux/fbdev/fbset-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "080wnisi0jq7dp0jcwdp83rq8q8s3kw41vc712516xbv4jq4mzs0"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-26))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (add-before 'install 'pre-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "Makefile"
+                 (("mknod ") "true ")
+                 ;; The Makefile doesn't honour PREFIX or similar.
+                 (("/usr") out))
+               (mkdir out)
+               (with-directory-excursion out
+                 (for-each mkdir-p (list "sbin"
+                                         "man/man5"
+                                         "man/man8")))
+               #t)))
+         (add-after 'install 'install-fb.modes
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (etc (string-append out "/etc")))
+               (for-each (cut install-file <> etc)
+                         (find-files "etc" "^fb\\.modes"))
+               (symlink "fb.modes.ATI"
+                        (string-append etc "/fb.modes"))
+               #t))))
+       ;; Parallel building races to create modes.tab.c.
+       #:parallel-build? #f
+       #:tests? #f))                    ; no test suite
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)))
+    (home-page "http://users.telenet.be/geertu/Linux/fbdev/")
+    (synopsis "Show and modify Linux frame buffer settings")
+    (description
+     "The kernel Linux's @dfn{frame buffers} provide a simple interface to
+different kinds of graphic displays.  The @command{fbset} utility can query and
+change various device settings such as depth, virtual resolution, and timing
+parameters.")
+    (license license:gpl2)))
 
 (define-public procps
   (package
@@ -1741,51 +1843,21 @@ Both commands are targeted at system administrators.")
 (define-public ebtables
   (package
     (name "ebtables")
-    (version "2.0.10-4")
+    (version "2.0.11")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "mirror://netfilter.org/ebtables/ebtables-v"
+                   "mirror://netfilter.org/ebtables/ebtables-"
                    version ".tar.gz"))
              (sha256
               (base32
-               "0pa5ljlk970yfyhpf3iqwfpbc30j8mgn90fapw9cfz909x47nvyw"))))
+               "0apxgmkhsk3vxn9q3libxn3dgrdljrxyy4mli2gk49m7hi3na7xp"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:tests? #f                      ; no test suite
-       #:make-flags
-       (let* ((out (assoc-ref %outputs "out"))
-              (bin (string-append out "/sbin"))
-              (lib (string-append out "/lib"))
-              (man (string-append out "/share/man"))
-              (iptables   (assoc-ref %build-inputs "iptables"))
-              (ethertypes (string-append iptables "/etc/ethertypes")))
-         (list (string-append "LIBDIR=" lib)
-               (string-append "MANDIR=" man)
-               (string-append "BINDIR=" bin)
-               (string-append "ETHERTYPESFILE=" ethertypes)
-               ;; With the default CFLAGS, it falis with:
-               ;;   communication.c:259:58: error: variable ‘ret’ set but not
-               ;;   used [-Werror=unused-but-set-variable]
-               "CFLAGS=-Wall"))
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           ;; no configure script
-           (lambda _
-             (substitute* "Makefile"
-               ;; Remove user and group options from install commands,
-               ;; otherwise it fails with: invalid user 'root'.
-               (("-o root -g root") "")
-               ;; Remove 'ethertypes' from the install target.
-               (("install: .*")
-                "install: $(MANDIR)/man8/ebtables.8 exec scripts\n"))
-             #t)))))
     (inputs
      `(("perl" ,perl)
        ("iptables" ,iptables)))
     (synopsis "Ethernet bridge frame table administration")
-    (home-page "http://ebtables.netfilter.org/")
+    (home-page "https://ebtables.netfilter.org/")
     (description
      "ebtables is an application program used to set up and maintain the
 tables of rules (inside the Linux kernel) that inspect Ethernet frames.  It is
@@ -4038,7 +4110,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "5.4")
+    (version "5.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -4046,12 +4118,19 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "1ykhasv0jc3qi3xrm5841mzkmlbkjw6rm70gl4aww90jj6ak55qg"))))
+                "0scxg9p6z0wss92gmv5a8yxdmr8x449kb5v3bfnvs26n92r7zq7k"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"
     (arguments
      '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-makefile
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (substitute* "Makefile"
+                        (("\\$\\(DESTDIR\\)\\$\\(udevruledir\\)")
+                         (string-append (assoc-ref outputs "out")
+                                        "/lib/udev/rules.d")))
+                      #t))
                  (add-after 'build 'build-static
                    (lambda _ (invoke "make" "static")))
                  (add-after 'install 'install-bash-completion
@@ -4072,7 +4151,7 @@ and copy/paste text in the console and in xterm.")
        #:tests? #f            ; XXX: require the 'btrfs' kernel module.
        #:test-target "test"
        #:parallel-tests? #f)) ; tests fail when run in parallel
-    (inputs `(("e2fsprogs" ,e2fsprogs)
+    (inputs `(("e2fsprogs" ,e2fsprogs)  ; for btrfs-convert
               ("libblkid" ,util-linux)
               ("libblkid:static" ,util-linux "static")
               ("libuuid" ,util-linux)
@@ -4092,6 +4171,8 @@ and copy/paste text in the console and in xterm.")
                      ;; For tests.
                      ("acl" ,acl)
                      ("which" ,which)
+                     ("dmsetup" ,lvm2)
+                     ("udevadm" ,eudev)
                      ;; The tests need 'grep' with perl regexp support.
                      ("grep" ,grep)))
     (home-page "https://btrfs.wiki.kernel.org/index.php/Main_Page")
@@ -4669,7 +4750,7 @@ cpufreq sub-system is enabled or not.")
 (define-public haveged
   (package
     (name "haveged")
-    (version "1.9.6")
+    (version "1.9.8")
     (source
      (origin
        (method git-fetch)
@@ -4678,7 +4759,7 @@ cpufreq sub-system is enabled or not.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "11kr19n2f87izsj341lv5amhd1wc2ckfmqr9pq5fxix8pkbs94rh"))))
+        (base32 "1znr58fb3faq4nmrvc3c5whkc1f3chivm4vhicdwr9pdsyqqsd51"))))
     (build-system gnu-build-system)
     (home-page "https://www.issihosts.com/haveged")
     (synopsis "Entropy source for the Linux random number generator")
@@ -5560,14 +5641,14 @@ available in the kernel Linux.")
 (define-public cpuid
   (package
     (name "cpuid")
-    (version "20200116")
+    (version "20200211")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.etallen.com/cpuid/cpuid-"
                                   version ".src.tar.gz"))
               (sha256
                (base32
-                "1gxi4iwy6j366l6bkj1yyxhrk1rxmwfp498gikfxn8xwhij9dn0a"))))
+                "06sjbqqp80l7nhsp6khglkzdp9qy4vhbvjxbfilznhsmrqiwlw55"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags '("CC=gcc")

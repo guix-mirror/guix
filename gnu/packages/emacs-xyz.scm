@@ -58,6 +58,7 @@
 ;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2020 Robert Smith <robertsmith@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -134,6 +135,7 @@
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pdf)
+  #:use-module (gnu packages rust-apps)
   #:use-module (gnu packages scheme)
   #:use-module (gnu packages speech)
   #:use-module (gnu packages xiph)
@@ -2778,6 +2780,43 @@ column by drawing a thin line down the length of the editing window.")
      "This Emacs package allows managing multiple grep buffers.")
     (license license:gpl3+)))
 
+(define-public emacs-rg
+  (package
+    (name "emacs-rg")
+    (version "1.8.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dajva/rg.el.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0k7x5z7mh9flwih35cqy8chs54rack3nswdcpw5wcpgv6xim227y"))))
+    (build-system emacs-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'hardcode-rg-path
+           ;; Hardcode the path to ripgrep.
+           (lambda _
+             (let ((file "rg.el"))
+               (chmod file #o644)
+               (emacs-substitute-sexps file
+                 ("(defcustom rg-executable" (which "rg")))))))))
+    (propagated-inputs
+     `(("emacs-s" ,emacs-s)
+       ("emacs-wgrep" ,emacs-wgrep)))
+    (inputs
+     `(("ripgrep" ,ripgrep)))
+    (home-page "https://rgel.readthedocs.io/en/latest/")
+    (synopsis "Search tool based on @code{ripgrep}")
+    (description
+     "@code{rg} is an Emacs search package based on the @code{ripgrep} command
+line tool.  It allows one to interactively search based on the editing context
+then refine or modify the search results.")
+    (license license:gpl3+)))
+
 (define-public emacs-inf-ruby
   (package
     (name "emacs-inf-ruby")
@@ -5258,6 +5297,28 @@ perspective only its buffers are available by default.")
     ;; the Expat license.
     (license license:gpl3+)))
 
+(define-public emacs-persp-mode
+  (package
+    (name "emacs-persp-mode")
+    (version "2.9.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Bad-ptr/persp-mode.el.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0b4y7a6j70s9lvr37riyy9k5kh3yvmx0m6nd9c0c8572ji4ij65g"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/Bad-ptr/persp-mode.el")
+    (synopsis "Switch between named \"perspectives\" shared among frames")
+    (description
+     "This package extends @code{perspective.el} to enable perspectives that
+can be saved to and restored from a file.")
+    (license license:gpl2+)))
+
 (define-public emacs-test-simple
   (package
     (name "emacs-test-simple")
@@ -6308,7 +6369,7 @@ provides the following features:
                (base32
                 "1zm1j4w0f3h01bmmpsv4j4mh6i13nnl8fcqlj2hsa1ncy1lgi8q7"))))
     (build-system emacs-build-system)
-    (home-page "http://jblevins.org/projects/markdown-mode/")
+    (home-page "https://jblevins.org/projects/markdown-mode/")
     (synopsis "Emacs Major mode for Markdown files")
     (description
      "Markdown-mode is a major mode for editing Markdown-formatted text files
@@ -8078,13 +8139,13 @@ passive voice.")
     (name "emacs-org")
     ;; emacs-org-contrib inherits from this package.  Please update it as
     ;; well.
-    (version "9.3.3")
+    (version "9.3.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/org-" version ".tar"))
        (sha256
-        (base32 "0yafckcx5ka2rpmv24x7ns6f3s1h216x2lbgaxsf1dmklbjcfvwv"))))
+        (base32 "0jwpgfzjvf1hd3mx582pw86hysdryaqzp69hk6azi9kmq4bzk87d"))))
     (build-system emacs-build-system)
     (home-page "https://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
@@ -8098,14 +8159,14 @@ programming and reproducible research.")
   (package
     (inherit emacs-org)
     (name "emacs-org-contrib")
-    (version "20200206")
+    (version "20200213")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://orgmode.org/elpa/"
                            "org-plus-contrib-" version ".tar"))
        (sha256
-        (base32 "1fdxh8zgjnb500wkcl0bc0fdzbsln6p044b4s4nz85wkfw0jkfs5"))))
+        (base32 "0g6rrrwplrifz4ip0jg638m4kvpvdg03hwnyghd813w0lm935mh5"))))
     (arguments
      `(#:modules ((guix build emacs-build-system)
                   (guix build utils)
@@ -9762,8 +9823,7 @@ and supports the use of a mouse.")
     (build-system gnu-build-system)
     (native-inputs `(("emacs" ,emacs-minimal)))
     (arguments
-     (let ((elisp-dir (string-append "/share/emacs/site-lisp/guix.d"
-                                     "/gnuplot-" version)))
+     (let ((elisp-dir "/share/emacs/site-lisp"))
        `(#:modules ((guix build gnu-build-system)
                     (guix build utils)
                     (guix build emacs-utils))
@@ -10956,8 +11016,8 @@ through them using @key{C-c C-SPC}.")
     (license license:gpl3+)))
 
 (define-public emacs-slack
-  (let ((commit "10fbb81f567b44647ad125a48ecd72df106fb624")
-        (revision "6"))
+  (let ((commit "b7b9eada0bf62d40dfe764b00f55913a2d3d742e")
+        (revision "7"))
     (package
       (name "emacs-slack")
       (version (git-version "0.0.2" revision commit))
@@ -10969,7 +11029,7 @@ through them using @key{C-c C-SPC}.")
                 (file-name (git-file-name name commit))
                 (sha256
                  (base32
-                  "01ln9rbalgpxw6rbr4czhy6bd8wrrpyf0qgn2chcq3zmmrn4sy1z"))))
+                  "0cqr7jnfxzb0z2wy79pdwpv9cvmawjif1kin3zbp8q7zhwrq09v0"))))
       (build-system emacs-build-system)
       (arguments
        `(#:phases
@@ -14299,8 +14359,8 @@ perform regression test for packages that provide font-lock rules.")
       (license license:gpl3+))))
 
 (define-public emacs-racket-mode
-  (let ((commit "2a9a102a097d04fbcd2a443fec84078036c2e277")
-        (revision "4"))
+  (let ((commit "5f396fa91fc22310f5c519aa658436a1a5251846")
+        (revision "5"))
     (package
       (name "emacs-racket-mode")
       (version (git-version "0.0.2" revision commit))
@@ -14313,15 +14373,15 @@ perform regression test for packages that provide font-lock rules.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1n71dxxh62jixq20b5haapv651dxc0zyrxpl1d0yqsg8ncp726bl"))))
+           "1214y08i0c51d1vzw9jzyf79vyfqizdy6m0980qs13qbdwsj32v0"))))
       (build-system emacs-build-system)
       (arguments
        `(#:include '("\\.el$" "\\.rkt$")))
       (propagated-inputs
        `(("emacs-faceup" ,emacs-faceup)
          ("emacs-s" ,emacs-s)))
-      (home-page "https://github.com/greghendershott/racket-mode")
-      (synopsis "Major mode for Racket language")
+      (home-page "https://www.racket-mode.com/")
+      (synopsis "Major mode for the Racket language")
       (description "@code{racket-mode} provides:
 
 @itemize
@@ -14685,14 +14745,14 @@ modes of SLIME.")
 (define-public emacs-sml-mode
   (package
     (name "emacs-sml-mode")
-    (version "6.9")
+    (version "6.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/sml-mode-"
                            version ".el"))
        (sha256
-        (base32 "1bdg9ywpvj85hxqah9w1raxlcrhkyx67nw22jwd1bd5j0fhmgqij"))))
+        (base32 "01yf0s474r9xhj6nbs14ljn9ccxb5yy758i17c8nmgmqvm8fx7sb"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/sml-mode.html")
     (synopsis "Major mode for editing (Standard) ML")
@@ -16055,7 +16115,7 @@ wiki.")
         (revision "1"))
     (package
       (name "emacs-recent-addresses")
-      (home-page "http://nschum.de/src/emacs/recent-addresses/")
+      (home-page "https://nschum.de/src/emacs/recent-addresses/")
       (version (git-version "0.1" revision commit))
       (source (origin
                 (method git-fetch)
@@ -19471,7 +19531,7 @@ It is a fork of https://github.com/cofi/evil-numbers, which is unmaintained.")
                (base32
                 "1cgxv4aibkvv6lnssynn0438a615fz3zq8hg9sb0lhfgsr99pxln"))))
     (build-system emacs-build-system)
-    (home-page "http://nschum.de/src/emacs/rotate-text/")
+    (home-page "https://nschum.de/src/emacs/rotate-text/")
     (synopsis "Cycle through words, symbols and patterns in Emacs")
     (description "@code{rotate-text} allows you rotate to commonly
 interchanged text with a single keystroke.  For example, you can toggle
@@ -21455,3 +21515,24 @@ Flyspell's on-the-fly spell checking and extends these checks to also detect
 language.  Auto-dictionary then sets @code{ispell-dictionary} to use the
 detected language.")
     (license license:gpl2+)))
+
+(define-public emacs-persist
+  (package
+    (name "emacs-persist")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "persist-" version ".tar"))
+       (sha256
+        (base32 "0gpxy41qawzss2526j9a7lys60vqma1lvamn4bfabwza7gfhac0q"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/persist.html")
+    (synopsis "Persist variables between Emacs sessions")
+    (description
+     "This package provides variables which persist across sessions.
+Values are stored in a directory in @code{user-emacs-directory}, using
+one file per value.  This makes it easy to delete or remove unused
+variables.")
+    (license license:gpl3+)))

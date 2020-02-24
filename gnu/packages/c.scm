@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
@@ -132,7 +132,7 @@ compiler while still keeping it small, simple, fast and understandable.")
 (define-public libbytesize
   (package
     (name "libbytesize")
-    (version "2.1")
+    (version "2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -140,7 +140,7 @@ compiler while still keeping it small, simple, fast and understandable.")
                     "download/" version "/libbytesize-" version ".tar.gz"))
               (sha256
                (base32
-                "1bpz9cpb8s47kqplkkiz6ryfahas2ma95g9rh2axnfjp6w1d9ixc"))))
+                "1aivwypmnqcaj2230pifvf3jcgl5chja8rspkxf0j3480asm8g5r"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))

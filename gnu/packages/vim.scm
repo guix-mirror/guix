@@ -68,7 +68,7 @@
 (define-public vim
   (package
     (name "vim")
-    (version "8.2.0236")
+    (version "8.2.0303")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -77,13 +77,19 @@
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "0ixwr7kkxc1cj837v1bbgghkd68gbynfn7pc4rb87ah9sm6bgaz3"))))
+               "1559lg8wgydyfc8c2sb2m7p8mlkarm7539qfxkh1skrw4mxi605k"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
        #:parallel-tests? #f
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'disable-CoW
+           ;; Disable copy-on-write (CoW) in the build directory.  Tests fail on
+           ;; btrfs (and possibly other CoW file systems) for unclear reasons.
+           ;; This needs to be run early as it only affects newly-created files.
+           (lambda _
+             (invoke "chattr" "-R" "+C" ".")))
          (add-after 'configure 'patch-config-files
            (lambda _
              (substitute* "runtime/tools/mve.awk"
@@ -128,6 +134,7 @@
      `(("libtool" ,libtool)
 
        ;; For tests.
+       ("e2fsprogs" ,e2fsprogs)         ; for chattr in disable-CoW above
        ("tzdata" ,tzdata-for-tests)))
     (home-page "https://www.vim.org/")
     (synopsis "Text editor based on vi")

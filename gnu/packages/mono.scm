@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,9 +19,14 @@
 
 (define-module (gnu packages mono)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages photo)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages)
@@ -124,3 +130,46 @@ C#, a C-style programming language from Microsoft that is very similar to
 Java.")
     (home-page "https://www.mono-project.com/")
     (license license:x11)))
+
+(define-public libgdiplus
+  (package
+    (name "libgdiplus")
+    (version "6.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://download.mono-project.com/sources/libgdiplus/libgdiplus-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0adz5813f881z65lpyf0g0w9hcn7d7qkai6sncpkwnsxfv4khp5p"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("cairo" ,cairo)
+       ("fontconfig" ,fontconfig)
+       ("libtiff" ,libtiff)
+       ("libjpeg" ,libjpeg)
+       ("libexif" ,libexif)
+       ("libungif" ,libungif)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; TODO: See with upstream why they fail.
+         ;; https://github.com/mono/mono/issues/18934
+         (add-before 'configure 'remove-buggy-tests
+           (lambda _
+             (substitute* "tests/Makefile.in"
+               (("testicocodec\\$\\(EXEEXT\\) ") " ")
+               (("testfont\\$\\(EXEEXT\\) ") " "))
+             #t)))))
+    (home-page "https://www.mono-project.com/docs/gui/libgdiplus/")
+    (synopsis "Mono library that provides a GDI+-compatible API")
+    (description "Libgdiplus is the Mono library that provides a
+GDI+-compatible API on non-Windows operating systems.  The implementation uses
+Cairo to do most of the heavy lifting.")
+    (license license:gpl3+)))

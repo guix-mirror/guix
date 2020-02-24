@@ -774,7 +774,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ceph-disable-cpu-optimizations.patch	\
   %D%/packages/patches/ceph-volume-respect-PATH.patch		\
   %D%/packages/patches/chmlib-inttypes.patch			\
-  %D%/packages/patches/choqok-Fix-building-under-Qt-5.13.patch	\
   %D%/packages/patches/clamav-config-llvm-libs.patch		\
   %D%/packages/patches/clamav-system-tomsfastmath.patch		\
   %D%/packages/patches/clang-3.5-libc-search-path.patch		\
@@ -782,6 +781,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/clang-3.8-libc-search-path.patch		\
   %D%/packages/patches/clang-6.0-libc-search-path.patch		\
   %D%/packages/patches/clang-7.0-libc-search-path.patch		\
+  %D%/packages/patches/clang-9.0-libc-search-path.patch		\
   %D%/packages/patches/clang-runtime-asan-build-fixes.patch	\
   %D%/packages/patches/clang-runtime-esan-build-fixes.patch	\
   %D%/packages/patches/classpath-aarch64-support.patch		\
@@ -794,6 +794,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/coda-use-system-libs.patch		\
   %D%/packages/patches/combinatorial-blas-awpm.patch		\
   %D%/packages/patches/combinatorial-blas-io-fix.patch		\
+  %D%/packages/patches/containerd-test-with-go1.13.patch		\
   %D%/packages/patches/cpufrequtils-fix-aclocal.patch		\
   %D%/packages/patches/crawl-upgrade-saves.patch		\
   %D%/packages/patches/crda-optional-gcrypt.patch		\
@@ -809,6 +810,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/debops-constants-for-external-program-names.patch \
   %D%/packages/patches/debops-debops-defaults-fall-back-to-less.patch \
   %D%/packages/patches/deja-dup-use-ref-keyword-for-iter.patch	\
+  %D%/packages/patches/desmume-gcc6-fixes.patch			\
+  %D%/packages/patches/desmume-gcc7-fixes.patch			\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\
   %D%/packages/patches/diffutils-gets-undeclared.patch		\
   %D%/packages/patches/dkimproxy-add-ipv6-support.patch		\
@@ -1351,6 +1354,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/qrcodegen-cpp-make-install.patch		\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtbase-use-TZDIR.patch			\
+  %D%/packages/patches/qtbase-QTBUG-81715.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
   %D%/packages/patches/quagga-reproducible-build.patch          \
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\
@@ -1463,7 +1467,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ustr-fix-build-with-gcc-5.patch		\
   %D%/packages/patches/util-linux-tests.patch			\
   %D%/packages/patches/upower-builddir.patch			\
-  %D%/packages/patches/upx-fix-CVE-2017-15056.patch		\
   %D%/packages/patches/valgrind-enable-arm.patch		\
   %D%/packages/patches/vboot-utils-fix-format-load-address.patch	\
   %D%/packages/patches/vboot-utils-fix-tests-show-contents.patch	\

@@ -331,7 +331,7 @@ coefficients of which are modular integers.")
 (define-public brial
   (package
     (name "brial")
-    (version "1.2.6")
+    (version "1.2.7")
     (source
     (origin
       (method git-fetch)
@@ -340,7 +340,7 @@ coefficients of which are modular integers.")
              (commit version)))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "1mc1zjr3mxcx6bg0js5k9jx65japg7644b0aj1al75m4nwh2ygab"))))
+       (base32 "1s0wmbb42sq6a5kxgzsz5srphclmfa4cvxdx2h9kzp0da2zcp3cm"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)

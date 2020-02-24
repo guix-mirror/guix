@@ -56,7 +56,7 @@
                           (default (file-append shepherd "/sbin/reboot")))
 
   ;; [Theme]
-  ;; valid values are elarun or maldives
+  ;; valid values are elarun, maldives or maya
   (theme                  sddm-configuration-theme
                           (default "maldives"))
   (themes-directory       sddm-configuration-themes-directory
@@ -325,6 +325,6 @@ Wayland.")))
 
 (define-deprecated (sddm-service #:optional (config (sddm-configuration)))
   sddm-service-type
-  "Run the @uref{https://github.com/sddm/sddm,SSDM display manager}
+  "Run the @uref{https://github.com/sddm/sddm,SDDM display manager}
 with the given @var{config}, a @code{<sddm-configuration>} object."
   (service sddm-service-type config))

@@ -7,7 +7,7 @@
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Omar Radwan <toxemicsquire4@gmail.com>
 ;;; Copyright © 2015 Pierre-Antoine Rault <par@rigelk.eu>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
@@ -69,6 +69,7 @@
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2019 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 sirgazil <sirgazil@zoho.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1392,7 +1393,7 @@ bug tracker.")
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2))
-    (home-page "http://pypi.python.org/pypi/enum/")
+    (home-page "https://pypi.python.org/pypi/enum/")
     (synopsis "Robust enumerated type support in Python")
     (description
      "This provides a module for robust enumerations in Python.  It has
@@ -1558,7 +1559,7 @@ and is not compatible with JSON.")
              (invoke "python" "bootstrap.py" "build/scons" "DEVELOPER=guix")
              (chdir "build/scons")
              #t)))))
-    (home-page "http://scons.org/")
+    (home-page "https://scons.org/")
     (synopsis "Software construction tool written in Python")
     (description
      "SCons is a software construction tool.  Think of SCons as an improved,
@@ -3220,7 +3221,7 @@ feature-set for programming Python effectively.")
         (base32
          "1dpq0vb01p36jjwbhhd08ylvrnyvcc82yxx3mwjx6awrycjyw6j7"))))
     (build-system python-build-system)
-    (home-page "http://pythonhosted.org/blinker/")
+    (home-page "https://pythonhosted.org/blinker/")
     (synopsis "Fast, simple object-to-object and broadcast signaling")
     (description
      "Blinker provides a fast dispatching system that allows any number of
@@ -6219,7 +6220,7 @@ multiprecision arithmetic.")
              #t)))))
     (propagated-inputs
      `(("python-mpmath" ,python-mpmath)))
-    (home-page "http://www.sympy.org/")
+    (home-page "https://www.sympy.org/")
     (synopsis "Python library for symbolic mathematics")
     (description
      "SymPy is a Python library for symbolic mathematics.  It aims to become a
@@ -6304,7 +6305,7 @@ It is written entirely in Python.")
     (native-inputs
      `(("python-six" ,python-six))) ; required for conversion, not at run-time
     (home-page
-     "http://docs.python.org/3/library/functools.html#functools.singledispatch")
+     "https://docs.python.org/3/library/functools.html#functools.singledispatch")
     (synopsis "Backport of singledispatch feature from Python 3.4")
     (description
      "This library brings functools.singledispatch from Python 3.4 to Python
@@ -6733,14 +6734,14 @@ Python.")
 (define-public python-markdown
   (package
     (name "python-markdown")
-    (version "3.2")
+    (version "3.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Markdown" version))
        (sha256
         (base32
-         "1gwqrhrp0n9xllgmjc8n1p260968kr0dd2jncjkj4r617q61imss"))))
+         "00k91gwhxnm8jdnm2v5xjz9irj6dbi7afywz2hpakqdbxs1ydzlh"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)
@@ -7187,7 +7188,7 @@ Unicode-aware.  It is not intended as an end-user tool.")
         (base32
          "0diwsicwmiq2cpzpxri7cyl5fmsvicafw6nfqf6p6p322dji2g45"))))
     (build-system python-build-system)
-    (home-page "http://code.google.com/p/prettytable/")
+    (home-page "https://code.google.com/archive/p/prettytable/")
     (synopsis "Display tabular data in an ASCII table format")
     (description
       "A library designed to represent tabular data in visually appealing ASCII
@@ -7539,13 +7540,13 @@ a hash value.")
 (define-public python-libarchive-c
   (package
     (name "python-libarchive-c")
-    (version "2.8")
+    (version "2.9")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "libarchive-c" version))
               (sha256
                (base32
-                "0qg0v1s9c1xdk9philhnv8k6c6nicvnvfwlc0j9srg90jmdlvm06"))))
+                "0q7g6a97110bk0j5x81555kajyxh4sybaabab6v5sgr0xi6386cr"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -8340,21 +8341,27 @@ the standard library.")
 (define-public python-texttable
   (package
     (name "python-texttable")
-    (version "0.9.1")
+    (version "1.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "texttable" version))
        (sha256
         (base32
-         "0yawv64c0zbawwv6zz84whb32fnb2n9jylwjcfsrcdgh7xvl340i"))))
+         "1x5l77akfc20x52jma9573qp8l8r07q103pm4l0pbizvh4vp1wzg"))))
     (build-system python-build-system)
-    (arguments '(#:tests? #f)) ; no tests
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (invoke "pytest" "tests.py"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/foutaise/texttable/")
     (synopsis "Python module for creating simple ASCII tables")
     (description "Texttable is a Python module for creating simple ASCII
 tables.")
-    (license license:lgpl2.1+)))
+    (license license:expat)))
 
 (define-public python2-texttable
   (package-with-python2 python-texttable))
@@ -9432,7 +9439,7 @@ way.")
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; no test suite
-    (home-page "http://software.clapper.org/munkres/")
+    (home-page "https://software.clapper.org/munkres/")
     (synopsis "Implementation of the Munkres algorithm")
     (description "The Munkres module provides an implementation of the Munkres
 algorithm (also called the Hungarian algorithm or the Kuhn-Munkres algorithm),
@@ -17543,3 +17550,31 @@ extensive support of PNG features.  It can also read and write Netpbm PAM
 files, with a focus on its use as an intermediate format for implementing
 custom PNG processing.")
     (license license:expat)))
+
+(define-public python-fuzzywuzzy
+  (package
+    (name "python-fuzzywuzzy")
+    (version "0.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "fuzzywuzzy" version))
+       (sha256
+        (base32
+         "1s00zn75y2dkxgnbw8kl8dw4p1mc77cv78fwfa4yb0274s96w0a5"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-hypothesis" ,python-hypothesis)
+       ("python-pycodestyle" ,python-pycodestyle)
+       ("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-levenshtein" ,python-levenshtein)))
+    (home-page "https://github.com/seatgeek/fuzzywuzzy")
+    (synopsis "Fuzzy string matching in Python")
+    (description "Approximate string matching using
+@emph{Levenshtein Distance} to calculate the differences between
+sequences.")
+    (license license:gpl2)))
+
+(define-public python2-fuzzywuzzy
+  (package-with-python2 python-fuzzywuzzy))

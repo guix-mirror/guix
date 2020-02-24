@@ -342,21 +342,32 @@ X11 (yet).")
 (define-public libfakekey
   (package
     (name "libfakekey")
-    (version "0.1")
+    (version "0.3")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://downloads.yoctoproject.org/releases"
-                            "/matchbox/libfakekey/" version "/libfakekey-"
-                            version ".tar.bz2"))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://git.yoctoproject.org/git/libfakekey")
+              (commit version)))
+        (file-name (git-file-name name version))
         (sha256
-         (base32
-          "1501l0bflcrhqbf12n7a7cqilvr0w4xawxw0vw75p2940nkl4464"))))
+         (base32 "1jw1d4wc1ysiijirc7apnz3sryrxbl9akgb92mh06dvfkz2nblj0"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags (list "AM_LDFLAGS=-lX11")))
+     `(#:make-flags (list "AM_LDFLAGS=-lX11")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'bootstrap
+           ;; ./autogen.sh calls ./configure before shebangs have been patched.
+           (lambda _
+             (invoke "autoreconf" "-vfi"))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+
+       ;; For bootstrapping from git.
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
     (inputs
      `(("libxtst" ,libxtst)
        ("libx11" ,libx11)))

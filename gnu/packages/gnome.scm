@@ -2181,7 +2181,15 @@ from forcing GEXP-PROMISE."
                 ;; The following crate(s) are needed in addition to the ones replaced:
                 (begin
                   (invoke
-                   "tar" "xvf" #+(package-source rust-autocfg-0.1) "-C" "vendor"))
+                   "tar" "xvf" #+(package-source rust-autocfg-0.1) "-C" "vendor")
+                  (invoke
+                   "tar" "xvf" #+(package-source rust-proc-macro2-0.4) "-C" "vendor")
+                  (invoke
+                   "tar" "xvf" #+(package-source rust-quote-0.6) "-C" "vendor")
+                  (invoke
+                   "tar" "xvf" #+(package-source rust-unicode-xid-0.1) "-C" "vendor")
+                  (invoke
+                   "tar" "xvf" #+(package-source rust-maybe-uninit-2.0) "-C" "vendor"))
                 (for-each
                   (lambda (crate)
                     (delete-file-recursively (string-append "vendor/" (car crate)))
@@ -2246,7 +2254,7 @@ from forcing GEXP-PROMISE."
 ;; locale_config 0.3
                     ("log" . #+(package-source rust-log-0.4))
                     ("mac" . #+(package-source rust-mac-0.1))
-;; malloc_buf 0.0
+                    ("malloc_buf" . #+(package-source rust-malloc-buf-0.0))
 ;; markup5ever 0.9
                     ("matches" . #+(package-source rust-matches-0.1))
 ;; matrixmultiply 0.2
@@ -2257,12 +2265,12 @@ from forcing GEXP-PROMISE."
                     ("nodrop" . #+(package-source rust-nodrop-0.1))
                     ("num-complex" . #+(package-source rust-num-complex-0.2))
                     ("num-integer" . #+(package-source rust-num-integer-0.1))
-;; num-rational 0.2
+                    ("num-rational" . #+(package-source rust-num-rational-0.2))
                     ("num-traits" . #+(package-source rust-num-traits-0.2))
                     ("num_cpus" . #+(package-source rust-num-cpus-1.10))
-;; objc 0.2
-;; objc-foundation 0.1
-;; objc_id 0.1
+                    ("objc" . #+(package-source rust-objc-0.2))
+                    ("objc-foundation" . #+(package-source rust-objc-foundation-0.1))
+                    ("objc_id" . #+(package-source rust-objc-id-0.1))
 ;; pango 0.7
 ;; pango-sys 0.9
 ;; pangocairo 0.8
@@ -2308,7 +2316,7 @@ from forcing GEXP-PROMISE."
                     ("siphasher" . #+(package-source rust-siphasher-0.2))
                     ("smallvec" . #+(package-source rust-smallvec-0.6))
                     ("string_cache" . #+(package-source rust-string-cache-0.7))
-                    ;("string_cache_codegen" . #+(package-source rust-string-cache-codegen-0.4))
+                    ("string_cache_codegen" . #+(package-source rust-string-cache-codegen-0.4))
                     ("string_cache_shared" . #+(package-source rust-string-cache-shared-0.3))
                     ("syn" . #+(package-source rust-syn-1.0))
                     ("tendril" . #+(package-source rust-tendril-0.4))
@@ -2327,8 +2335,7 @@ from forcing GEXP-PROMISE."
                     ("winapi-i686-pc-windows-gnu" . #+(package-source rust-winapi-i686-pc-windows-gnu-0.4))
                     ("winapi-util" . #+(package-source rust-winapi-util-0.1))
                     ("winapi-x86_64-pc-windows-gnu" . #+(package-source rust-winapi-x86-64-pc-windows-gnu-0.4))
-;; xml-rs 0.8
-                    )))
+                    ("xml-rs" . #+(package-source rust-xml-rs-0.8)))))
               (format #t "Replacing vendored crates in the tarball and repacking ...~%")
               (force-output)
               (invoke "tar" "cfa" #$output
@@ -5330,7 +5337,7 @@ USB transfers with your high-level application or system daemon.")
 (define-public simple-scan
   (package
     (name "simple-scan")
-    (version "3.34.2")
+    (version "3.34.4")
     (source
      (origin
        (method url-fetch)
@@ -5338,7 +5345,7 @@ USB transfers with your high-level application or system daemon.")
                            (version-major+minor version) "/"
                            "simple-scan-" version ".tar.xz"))
        (sha256
-        (base32 "1fk3g4f9slckqfwm576jrjq1d1qihw0dlgzdf00ns7qbhzb0kxsp"))))
+        (base32 "0xvy672zyl6jsdlnxma8nc2aqsx9k92jhp6wfxs0msj9ppp1nd3z"))))
     (build-system meson-build-system)
     ;; TODO: Fix icons in home screen, About dialogue, and scan menu.
     (arguments
@@ -7906,7 +7913,29 @@ world.")
        ("yelp" ,yelp)
      ;; Others
        ("hicolor-icon-theme" ,hicolor-icon-theme)
-       ("gnome-online-accounts" ,gnome-online-accounts)))
+       ("gnome-online-accounts" ,gnome-online-accounts)
+
+       ;; Packages not part of GNOME proper but that are needed for a good
+       ;; experience.  See <https://bugs.gnu.org/39646>.
+       ;; XXX: Find out exactly which ones are needed and why.
+       ("font-cantarell"            ,font-cantarell)
+       ("font-dejavu"               ,font-dejavu)
+       ("at-spi2-core"              ,at-spi2-core)
+       ("dbus"                      ,dbus)
+       ("dconf"                     ,dconf)
+       ("desktop-file-utils"        ,desktop-file-utils)
+       ("gnome-default-applications" ,gnome-default-applications)
+       ("gnome-themes-standard"     ,gnome-themes-standard)
+       ("gst-plugins-base"          ,gst-plugins-base)
+       ("gst-plugins-good"          ,gst-plugins-good)
+       ("gucharmap"                 ,gucharmap)
+       ("pinentry-gnome3"           ,pinentry-gnome3)
+       ("pulseaudio"                ,pulseaudio)
+       ("shared-mime-info"          ,shared-mime-info)
+       ("system-config-printer"     ,system-config-printer)
+       ("xdg-user-dirs"             ,xdg-user-dirs)
+       ("yelp"                      ,yelp)
+       ("zenity"                    ,zenity)))
     (synopsis "The GNU desktop environment")
     (home-page "https://www.gnome.org/")
     (description

@@ -591,7 +591,8 @@ nicely."
 \"1MiB\", to a number of bytes.  Raise an error if STR could not be
 interpreted."
   (define unit-pos
-    (string-rindex str char-set:digit))
+    (string-rindex str
+                   (char-set-union (char-set #\.) char-set:digit)))
 
   (define unit
     (and unit-pos (substring str (+ 1 unit-pos))))
@@ -1472,7 +1473,8 @@ them.  If PORT is a terminal, print at most a full screen of results."
                                  #:hyperlinks? links?
                                  #:extra-fields
                                  `((relevance . ,score)))))))
-         (if (and max-rows
+         (if (and (not (getenv "INSIDE_EMACS"))
+                  max-rows
                   (> (port-line port) first-line) ;print at least one result
                   (> (+ 4 (line-count text) (port-line port))
                      max-rows))
@@ -1636,7 +1638,7 @@ DURATION-RELATION with the current time."
     (let* ((file   (generation-file-name profile number))
            (link   (if (supports-hyperlinks?)
                        (cut file-hyperlink file <>)
-                       identity))
+                       (cut format #f (G_ "~a~%file: ~a") <> file)))
            (header (format #f (link (highlight (G_ "Generation ~a\t~a")))
                            number
                            (date->string

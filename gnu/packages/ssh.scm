@@ -12,6 +12,7 @@
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2018 Manuel Graf <graf@init.at>
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
+;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -89,7 +90,8 @@
        ;; TODO: Add 'CMockery' and '-DWITH_TESTING=ON' for the test suite.
        #:tests? #f))
     (inputs `(("zlib" ,zlib)
-              ("libgcrypt" ,libgcrypt)))
+              ("libgcrypt" ,libgcrypt)
+              ("mit-krb5" ,mit-krb5)))
     (synopsis "SSH client library")
     (description
      "libssh is a C library implementing the SSHv2 and SSHv1 protocol for client
@@ -129,14 +131,14 @@ a server that supports the SSH-2 protocol.")
 (define-public openssh
   (package
    (name "openssh")
-   (version "8.0p1")
+   (version "8.2p1")
    (source (origin
              (method url-fetch)
              (uri (string-append "mirror://openbsd/OpenSSH/portable/"
-                                 name "-" version ".tar.gz"))
+                                 "openssh-" version ".tar.gz"))
              (sha256
               (base32
-               "0s7xh4s0qcipnjh9ls5blxcpvhyd116z9dxn3q1yi64lwrwki55x"))))
+               "0wg6ckzvvklbzznijxkk28fb8dnwyjd0w30ra0afwv6gwr8m34j3"))))
    (build-system gnu-build-system)
    (native-inputs `(("groff" ,groff)
                     ("pkg-config" ,pkg-config)))
@@ -145,7 +147,7 @@ a server that supports the SSH-2 protocol.")
              ("pam" ,linux-pam)
              ("mit-krb5" ,mit-krb5)
              ("zlib" ,zlib)
-             ("xauth" ,xauth)))                   ;for 'ssh -X' and 'ssh -Y'
+             ("xauth" ,xauth)))         ; for 'ssh -X' and 'ssh -Y'
    (arguments
     `(#:test-target "tests"
       ;; Otherwise, the test scripts try to use a nonexistent directory and
@@ -156,12 +158,12 @@ a server that supports the SSH-2 protocol.")
                            ;; Default value of 'PATH' used by sshd.
                           "--with-default-path=/run/current-system/profile/bin"
 
-                          ;; configure needs to find krb5-config
+                          ;; configure needs to find krb5-config.
                           ,(string-append "--with-kerberos5="
                                           (assoc-ref %build-inputs "mit-krb5")
                                           "/bin")
 
-                          ;; libedit needed for sftp completion
+                          ;; libedit is needed for sftp completion.
                           "--with-libedit"
 
                           ;; Enable PAM support in sshd.
@@ -178,14 +180,18 @@ a server that supports the SSH-2 protocol.")
              #t)))
         (add-before 'check 'patch-tests
          (lambda _
-           ;; remove 't-exec' regress target which requires user 'sshd'
-           (substitute* "regress/Makefile"
-             (("^(REGRESS_TARGETS=.*) t-exec(.*)" all pre post)
+           (substitute* "regress/test-exec.sh"
+             (("/bin/sh") (which "sh")))
+
+           ;; Remove 't-exec' regress target which requires user 'sshd'.
+           (substitute* (list "Makefile"
+                              "regress/Makefile")
+             (("^(tests:.*) t-exec(.*)" all pre post)
               (string-append pre post)))
            #t))
         (replace 'install
          (lambda* (#:key outputs (make-flags '()) #:allow-other-keys)
-           ;; install without host keys and system configuration files
+           ;; Install without host keys and system configuration files.
            (apply invoke "make" "install-nosysconf" make-flags)
            (install-file "contrib/ssh-copy-id"
                          (string-append (assoc-ref outputs "out")
@@ -223,7 +229,7 @@ Additionally, various channel-specific options can be negotiated.")
 (define-public guile-ssh
   (package
     (name "guile-ssh")
-    (version "0.11.3")
+    (version "0.12.0")
     (home-page "https://github.com/artyom-poptsov/guile-ssh")
     (source (origin
               (method git-fetch)
@@ -233,31 +239,12 @@ Additionally, various channel-specific options can be negotiated.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "03bv3hwp2s8f0bqgfjaan9jx4dyab0abv27n2zn2g0izlidv0vl6"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; libssh >= 0.8.0 no longer provides libssh_threads: see
-                  ;; <https://github.com/artyom-poptsov/guile-ssh/issues/9>.
-                  (substitute* "libguile-ssh/Makefile.am"
-                    (("-lssh_threads") ""))
-
-                  ;; This test would wrongfully pick DSS keys when running on
-                  ;; libssh >= 0.8.0, which fails:
-                  ;; <https://github.com/artyom-poptsov/guile-ssh/issues/10>.
-                  (substitute* "tests/server.scm"
-                    (("= %libssh-minor-version 7")
-                     ">= %libssh-minor-version 7"))
-
-                  ;; Allow builds with Guile 3.0.
-                  (substitute* "configure.ac"
-                    (("^GUILE_PKG.*$")
-                     "GUILE_PKG([3.0 2.2 2.0])\n"))
-                  #t))))
+                "054hd9rzfhb48gc1hw3rphhp0cnnd4bs5qmidy5ygsyvy9ravlad"))
+              (modules '((guix build utils)))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
     (arguments
-     '(;; It makes no sense to build libguile-ssh.a.
+     `(;; It makes no sense to build libguile-ssh.a.
        #:configure-flags '("--disable-static")
 
        #:phases (modify-phases %standard-phases
@@ -276,6 +263,15 @@ Additionally, various channel-specific options can be negotiated.")
                           (("\"libguile-ssh\"")
                            (string-append "\"" lib "/libguile-ssh\"")))
                         #t)))
+                  ,@(if (%current-target-system)
+                        '()
+                        '((add-before 'check 'fix-guile-path
+                             (lambda* (#:key inputs #:allow-other-keys)
+                               (let ((guile (assoc-ref inputs "guile")))
+                                 (substitute* "tests/common.scm"
+                                   (("/usr/bin/guile")
+                                    (string-append guile "/bin/guile")))
+                                 #t)))))
                   (add-after 'install 'remove-bin-directory
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
@@ -296,7 +292,8 @@ Additionally, various channel-specific options can be negotiated.")
                      ("libtool" ,libtool)
                      ("texinfo" ,texinfo)
                      ("pkg-config" ,pkg-config)
-                     ("which" ,which)))
+                     ("which" ,which)
+                     ("guile" ,guile-2.2))) ;needed when cross-compiling.
     (inputs `(("guile" ,guile-2.2)
               ("libssh" ,libssh)
               ("libgcrypt" ,libgcrypt)))
@@ -311,6 +308,9 @@ libssh library.")
   (package
     (inherit guile-ssh)
     (name "guile2.0-ssh")
+    (native-inputs
+     `(("guile" ,guile-2.0) ;needed when cross-compiling.
+       ,@(alist-delete "guile" (package-native-inputs guile-ssh))))
     (inputs `(("guile" ,guile-2.0)
               ,@(alist-delete "guile" (package-inputs guile-ssh))))))
 
@@ -318,32 +318,9 @@ libssh library.")
   (package
     (inherit guile-ssh)
     (name "guile3.0-ssh")
-    (arguments
-     (substitute-keyword-arguments (package-arguments guile-ssh)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-before 'bootstrap 'delete-old-guile-m4
-             (lambda _
-               ;; The old 'guile.m4' that's shipped would fail to recognize
-               ;; Guile 2.9 as "3.0".
-               (delete-file "m4/guile.m4")
-               #t))
-           (add-before 'build 'adjust-for-guile3
-             (lambda _
-               ;; Adjust for things that are deprecated in 2.2 and removed in
-               ;; 3.0.
-               (substitute* "tests/common.scm"
-                 (("define-module \\(tests common\\)")
-                  "define-module (tests common)
-  #:use-module (ice-9 threads)\n"))
-               (substitute* "modules/ssh/tunnel.scm"
-                 (("define-module \\(ssh tunnel\\)")
-                  "define-module (ssh tunnel)
-  #:use-module (ice-9 threads)"))
-               (substitute* "modules/srfi/srfi-64.upstream.scm"
-                 (("_IOLBF")
-                  "'line"))
-               #t))))))
+    (native-inputs
+     `(("guile" ,guile-next) ;needed when cross-compiling.
+       ,@(alist-delete "guile" (package-native-inputs guile-ssh))))
     (inputs `(("guile" ,guile-next)
               ,@(alist-delete "guile" (package-inputs guile-ssh))))))
 
@@ -769,23 +746,24 @@ of existing remote shell facilities such as SSH.")
 (define-public endlessh
   (package
     (name "endlessh")
-    (version "1.0")
+    (version "1.1")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/skeeto/endlessh/releases/"
-                            "download/" version "/endlessh-" version ".tar.xz"))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/skeeto/endlessh.git")
+              (commit version)))
+        (file-name (git-file-name name version))
         (sha256
-         (base32
-          "0hhsr65hzrcb7ylskmxyr92svzndhks8hqzn8hvg7f7j89rkvq5k"))))
+         (base32 "0ziwr8j1frsp3dajr8h5glkm1dn5cci404kazz5w1jfrp0736x68"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
                           "CC=gcc")
-       #:tests? #f ; no test target
+       #:tests? #f                      ; no test target
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)))) ; no configure script
+         (delete 'configure))))         ; no configure script
     (home-page "https://github.com/skeeto/endlessh")
     (synopsis "SSH tarpit that slowly sends an endless banner")
     (description

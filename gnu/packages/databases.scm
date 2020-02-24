@@ -19,7 +19,7 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2017, 2020 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
@@ -39,6 +39,7 @@
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1065,9 +1066,10 @@ Most public APIs are compatible with @command{mysqlclient} and MySQLdb.")
          "0gmpvhn02pkq280ffmn4da1g4mdr1xxz7l80b7y4n7km1mrzwrml"))))
     (build-system gnu-build-system)
     (arguments
-     `( #:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
-                                               (assoc-ref %outputs "out")
-                                               "/lib"))))
+     `(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
+                                              (assoc-ref %outputs "out")
+                                              "/lib"))
+       #:make-flags (list "CFLAGS=-fPIC")))
     (home-page "http://fallabs.com/qdbm")
     (synopsis "Key-value database")
     (description "QDBM is a library of routines for managing a
@@ -2109,6 +2111,35 @@ disk-based databases with high read performance that scales linearly over
 multiple cores.  The size of each database is limited only by the size of the
 virtual address space — not physical RAM.")
     (license license:openldap2.8)))
+
+(define-public lmdbxx
+  (package
+    (name "lmdbxx")
+    (version "0.9.14.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/drycpp/lmdbxx.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1jmb9wg2iqag6ps3z71bh72ymbcjrb6clwlkgrqf1sy80qwvlsn6"))))
+    (arguments
+     `(#:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (build-system gnu-build-system)
+    (inputs `(("lmdb" ,lmdb)))
+    (home-page "http://lmdbxx.sourceforge.net")
+    (synopsis "C++11 wrapper for the LMDB embedded B+ tree database library")
+    (description "@code{lmdbxx} is a comprehensive @code{C++} wrapper for the
+@code{LMDB} embedded database library, offering both an error-checked
+procedural interface and an object-oriented resource interface with RAII
+semantics.")
+    (license license:unlicense)))
 
 (define-public libpqxx
   (package

@@ -1988,7 +1988,7 @@ software.")
      (list (search-path-specification
             (variable "LV2_PATH")
             (files '("lib/lv2")))))
-    (home-page "http://elephly.net/lv2/mdapiano.html")
+    (home-page "https://elephly.net/lv2/mdapiano.html")
     (synopsis "LV2 port of the mda Piano plugin")
     (description "An LV2 port of the mda Piano VSTi.")
     (license license:gpl3+)))
@@ -2002,7 +2002,7 @@ software.")
                      (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:tests? #f ; no check target
        #:phases (modify-phases %standard-phases (delete 'configure))))
-    (home-page "http://elephly.net/lv2/mdaepiano.html")
+    (home-page "https://elephly.net/lv2/mdaepiano.html")
     (synopsis "LV2 port of the mda EPiano plugin")
     (description "An LV2 port of the mda EPiano VSTi.")))
 
@@ -3523,7 +3523,7 @@ the Snd sources), Ruby, or Forth.")
 (define-public noise-repellent
   (package
     (name "noise-repellent")
-    (version "0.1.4")
+    (version "0.1.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3532,16 +3532,12 @@ the Snd sources), Ruby, or Forth.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0rd3dlmk3vivjmcr6x2x860y0j1d49c2j95j6ny50v184mwvn11j"))))
-    (build-system gnu-build-system)
+                "0hb89x9i2knzan46q4nwscf5zmnb2nwf4w13xl2c0y1mx1ls1mwl"))))
+    (build-system meson-build-system)
     (arguments
-     `(#:make-flags
-       (list "CC=gcc"
-             (string-append "PREFIX=" (assoc-ref %outputs "out")))
-       #:tests? #f ; there are none
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure))))
+     `(#:configure-flags
+       (list (string-append "--prefix=" (assoc-ref %outputs "out")
+                            "/lib/lv2"))))
     (inputs
      `(("lv2" ,lv2)
        ("fftwf" ,fftwf)))

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Vagrant Cascadian <vagrant@reproducible-builds.org>
@@ -68,7 +68,7 @@
   #:use-module (ice-9 match))
 
 (define-public diffoscope
-  (let ((version "136"))
+  (let ((version "137"))
     (package
       (name "diffoscope")
       (version version)
@@ -80,7 +80,7 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1wp4fnmwcsgv17dmvk9xr3h63gp4nmmpysr248qvxs8s5qy5xlyk"))))
+                  "11llnh2h2mx3xygj4482ld1rnjnhszk4828pmcbi75kanxfrqzq6"))))
       (build-system python-build-system)
       (arguments
        `(#:phases (modify-phases %standard-phases

@@ -2744,7 +2744,7 @@ quantitative phenotypes.")
 (define-public edirect
   (package
     (name "edirect")
-    (version "12.1.20190819")
+    (version "12.1.20190829")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect"
@@ -2752,7 +2752,7 @@ quantitative phenotypes.")
                                   "/edirect-" version ".tar.gz"))
               (sha256
                (base32
-                "1i9s9mppcfqd60pfywpm8vdyz5vpnyslw22nd7dv0bhykrdnkz9g"))))
+                "1xb330z28dgp7slrvp8r7rgncsasv9lpcpqim571yg728dq7xdik"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -6935,14 +6935,14 @@ testing and other simple calculations.")
 (define-public r-shortread
   (package
     (name "r-shortread")
-    (version "1.44.1")
+    (version "1.44.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ShortRead" version))
        (sha256
         (base32
-         "1dh3q83hmi4l72vpif6dn51dzbi9ljrjgkq2zxg4sqy2jxv4vwza"))))
+         "0ykyrj4g6vc67d5s46sp4659qvar2iavflzhggm79w4p50hxia4s"))))
     (properties `((upstream-name . "ShortRead")))
     (build-system r-build-system)
     (inputs
@@ -7532,13 +7532,13 @@ coding changes and predict coding outcomes.")
 (define-public r-limma
   (package
     (name "r-limma")
-    (version "3.42.0")
+    (version "3.42.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "limma" version))
               (sha256
                (base32
-                "0cfynv6qbnar5rl7vjh5lvddd381g9wqx1zd6a7l130hf59mwswn"))))
+                "1nd01r7rd7jb5qz84vbgfnyrmgm9wiq7fsdji68537kjgvrzmm9z"))))
     (build-system r-build-system)
     (home-page "http://bioinf.wehi.edu.au/limma")
     (synopsis "Package for linear models for microarray and RNA-seq data")
@@ -7751,13 +7751,13 @@ biological sequences or sets of sequences.")
 (define-public r-rsamtools
   (package
     (name "r-rsamtools")
-    (version "2.2.1")
+    (version "2.2.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "Rsamtools" version))
               (sha256
                (base32
-                "0hpdc88prpq1gcja89n5s1ndcg81523qrkbkm9gbhm7rm8wmi8cl"))))
+                "1larx1a9cngmcsm2n7yyxrlnk69zi8m9dp3b90jva0ynspyi76v7"))))
     (properties
      `((upstream-name . "Rsamtools")))
     (build-system r-build-system)
@@ -7939,13 +7939,13 @@ as well as query and modify the browser state, such as the current viewport.")
 (define-public r-genomicfeatures
   (package
     (name "r-genomicfeatures")
-    (version "1.38.1")
+    (version "1.38.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomicFeatures" version))
               (sha256
                (base32
-                "1c1x29f447dv0i1wi88paji645lfsgmg4ckn19hyhlra72smhzqc"))))
+                "0dd226kgks50jdx5w35f3wmg95hy8aibi4kcn8p5kmqp5i8j580b"))))
     (properties
      `((upstream-name . "GenomicFeatures")))
     (build-system r-build-system)
@@ -8236,7 +8236,7 @@ throughput genetic sequencing data sets using regression methods.")
 (define-public r-qtl
  (package
   (name "r-qtl")
-  (version "1.44-9")
+  (version "1.45-11")
   (source
    (origin
     (method url-fetch)
@@ -8244,7 +8244,7 @@ throughput genetic sequencing data sets using regression methods.")
                         version ".tar.gz"))
     (sha256
      (base32
-      "03lmvydln8b7666b6w46qbryhf83vsd11d4y2v95rfgvqgq66l1i"))))
+      "1d6qgj602fm6zia3djl4hmca0ri4v57ffp3g93p2yc3cabx2hq90"))))
   (build-system r-build-system)
   (home-page "https://rqtl.org/")
   (synopsis "R package for analyzing QTL experiments in genetics")
@@ -8332,14 +8332,14 @@ secondary structure and comparative analysis in R.")
 (define-public r-rhtslib
   (package
     (name "r-rhtslib")
-    (version "1.18.0")
+    (version "1.18.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rhtslib" version))
        (sha256
         (base32
-         "04inkq44lxwymqv51mxgaphasqjcdc9rl5p58imnrdm0kszs8prm"))))
+         "0gkbrmrcg55c9s5166ifljlx0v25rv4ijdyp4wf4c292xd6chy2l"))))
     (properties `((upstream-name . "Rhtslib")))
     (build-system r-build-system)
     ;; Without this a temporary directory ends up in the Rhtslib.so binary,
@@ -9504,13 +9504,13 @@ and irregular enzymatic cleavages, mass measurement accuracy, etc.")
 (define-public r-seurat
   (package
     (name "r-seurat")
-    (version "3.1.2")
+    (version "3.1.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "Seurat" version))
               (sha256
                (base32
-                "0m1qi39snbmkkv1p07bzg1r7snc9x6a1y0dghvpk1nzgcfpmnsj4"))))
+                "0962mfgqk1di3wy1j0xdkvnw0q5m3q4xzd67d1l6dijlqiz8nfal"))))
     (properties `((upstream-name . "Seurat")))
     (build-system r-build-system)
     (propagated-inputs
@@ -9549,7 +9549,6 @@ and irregular enzymatic cleavages, mass measurement accuracy, etc.")
        ("r-rtsne" ,r-rtsne)
        ("r-scales" ,r-scales)
        ("r-sctransform" ,r-sctransform)
-       ("r-sdmtools" ,r-sdmtools)
        ("r-tsne" ,r-tsne)
        ("r-uwot" ,r-uwot)))
     (home-page "http://www.satijalab.org/seurat")
@@ -10326,14 +10325,14 @@ family of feature/genome hypotheses.")
 (define-public r-gviz
   (package
     (name "r-gviz")
-    (version "1.30.1")
+    (version "1.30.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Gviz" version))
        (sha256
         (base32
-         "03jj193fzmhvkjw8f5zk6wgflkvm3phny0q38scawcplfsyb8z64"))))
+         "0c9i26h5czm60n1bxzmdxxpywcj0sig6wcj913pb41mr83bbgra3"))))
     (properties `((upstream-name . "Gviz")))
     (build-system r-build-system)
     (propagated-inputs
@@ -10478,14 +10477,14 @@ provided.")
 (define-public r-hdf5array
   (package
     (name "r-hdf5array")
-    (version "1.14.1")
+    (version "1.14.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "HDF5Array" version))
        (sha256
         (base32
-         "04hd02zd5jix5p2zg10asmwjg1fynqgmclbhbmk7fb6arx5hm11f"))))
+         "0mbx9rsr2571k4k4hmx3dr49rhqb31dhwy2r2bkrd4dbhvriqgld"))))
     (properties `((upstream-name . "HDF5Array")))
     (build-system r-build-system)
     (inputs
@@ -10675,14 +10674,14 @@ quality control.")
 (define-public r-scran
   (package
     (name "r-scran")
-    (version "1.14.5")
+    (version "1.14.6")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "scran" version))
        (sha256
         (base32
-         "0ydy6gvpgpvrs4ryk1qvmmxp6cpaizs294jwg42jawxndkds1l3y"))))
+         "1y8wlgk5zbv7c7gcp0ahfpbh9lifab7y3zwf0093fzaw7vr1y6cr"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-beachmat" ,r-beachmat)

@@ -18,6 +18,7 @@
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2019 Yoshinori Arai <kumagusu08@gmail.com>
 ;;; Copyright © 2019 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
+;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1016,3 +1017,33 @@ instance one can add new syntax elements to markdown, etc.
 
 This package provides Python bindings.")
     (license license:bsd-3)))
+
+(define-public aha
+  (package
+    (name "aha")
+    (version "0.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/theZiz/aha")
+             (commit version)))
+       (sha256
+        (base32
+         "0byml4rmpiaalwx69jcixl3yvpvwmwiss1jzgsqwshilb2p4qnmz"))
+       (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure))
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))
+       ;; no check target
+       #:tests? #f))
+    (home-page "https://github.com/theZiz/aha")
+    (synopsis "Converts terminal escape sequences to HTML")
+    (description "@command{aha} (Ansi Html Adapter) converts ANSI escape sequences
+of a Unix terminal to HTML code.")
+    (license (list license:lgpl2.0+ license:mpl1.1))))

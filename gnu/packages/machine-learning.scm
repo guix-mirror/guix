@@ -144,7 +144,7 @@ sparsely connected networks.")
                                    "svm-predict"
                                    "svm-scale")))
                      #t)))))
-    (home-page "http://www.csie.ntu.edu.tw/~cjlin/libsvm/")
+    (home-page "https://www.csie.ntu.edu.tw/~cjlin/libsvm/")
     (synopsis "Library for Support Vector Machines")
     (description
      "LIBSVM is a machine learning library for support vector
