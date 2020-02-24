@@ -453,7 +453,7 @@ from software emulation to complete hardware acceleration for modern GPUs.")
      `(("libclc" ,libclc)
        ,@(package-inputs mesa)))
     (native-inputs
-     `(("clang" ,clang)
+     `(("clang" ,clang-8)
        ,@(package-native-inputs mesa)))))
 
 (define-public mesa-opencl-icd
