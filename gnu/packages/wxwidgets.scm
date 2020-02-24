@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
@@ -126,7 +126,14 @@ and many other languages.")
        (list (string-append "LDFLAGS=-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib"))
        ;; No 'check' target.
-       #:tests? #f))))
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'ignore-narrowing-errors
+           (lambda _
+             (substitute* "configure"
+               (("-Wall") "-Wall -Wno-narrowing"))
+             #t)))))))
 
 (define-public wxwidgets-gtk2
   (package (inherit wxwidgets)
