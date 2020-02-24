@@ -7,7 +7,7 @@
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Omar Radwan <toxemicsquire4@gmail.com>
 ;;; Copyright © 2015 Pierre-Antoine Rault <par@rigelk.eu>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
@@ -8339,21 +8339,27 @@ the standard library.")
 (define-public python-texttable
   (package
     (name "python-texttable")
-    (version "0.9.1")
+    (version "1.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "texttable" version))
        (sha256
         (base32
-         "0yawv64c0zbawwv6zz84whb32fnb2n9jylwjcfsrcdgh7xvl340i"))))
+         "1x5l77akfc20x52jma9573qp8l8r07q103pm4l0pbizvh4vp1wzg"))))
     (build-system python-build-system)
-    (arguments '(#:tests? #f)) ; no tests
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (invoke "pytest" "tests.py"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/foutaise/texttable/")
     (synopsis "Python module for creating simple ASCII tables")
     (description "Texttable is a Python module for creating simple ASCII
 tables.")
-    (license license:lgpl2.1+)))
+    (license license:expat)))
 
 (define-public python2-texttable
   (package-with-python2 python-texttable))
