@@ -13492,8 +13492,34 @@ proven statistical guarantees.")
      "Optimized handling of @code{&[u8]} and @code{Vec<u8>} for Serde.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-serde-cbor-0.11
+  (package
+    (name "rust-serde-cbor")
+    (version "0.11.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "serde-cbor" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "08m62mfqjnpa543kd9r9cyxlqc6y73avhsl3n8svgs4h5zxaq60y"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-half" ,rust-half-1.3)
+        ("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-serde-derive" ,rust-serde-derive-1.0))))
+    (home-page "https://github.com/pyfisch/cbor")
+    (synopsis "CBOR support for serde")
+    (description "CBOR support for serde.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-serde-cbor-0.10
   (package
+    (inherit rust-serde-cbor-0.11)
     (name "rust-serde-cbor")
     (version "0.10.2")
     (source
@@ -13505,7 +13531,6 @@ proven statistical guarantees.")
        (sha256
         (base32
          "0kyizacjabsa78p9f7qvj31zirpnsgsr4zpfv1p6lwpcb3biw27p"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -13513,11 +13538,7 @@ proven statistical guarantees.")
         ("rust-half" ,rust-half-1.3)
         ("rust-serde" ,rust-serde-1.0))
        #:cargo-development-inputs
-       (("rust-serde-derive" ,rust-serde-derive-1.0))))
-    (home-page "https://github.com/pyfisch/cbor")
-    (synopsis "CBOR support for serde")
-    (description "CBOR support for serde.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-serde-derive" ,rust-serde-derive-1.0))))))
 
 (define-public rust-serde-codegen-0.4
   (package
