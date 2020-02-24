@@ -121,8 +121,12 @@ SYSTEM."
         %guile-bootstrap-tarball
         %bootstrap-tarballs))
 
-(define %packages-to-cross-build
-  %core-packages)
+(define (packages-to-cross-build target)
+  "Return the list of packages to cross-build for TARGET."
+  ;; Don't cross-build the bootstrap tarballs for MinGW.
+  (if (string-contains target "mingw")
+      (drop-right %core-packages 6)
+      %core-packages))
 
 (define %cross-targets
   '("mips64el-linux-gnu"
@@ -455,7 +459,7 @@ Return #f if no such checkout is found."
                   (map (lambda (package)
                          (package-cross-job store (job-name package)
                                             package target system))
-                       %packages-to-cross-build))
+                       (packages-to-cross-build target)))
                 (remove (either from-32-to-64? same? pointless?)
                         %cross-targets)))
 
