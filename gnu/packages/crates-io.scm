@@ -13776,7 +13776,6 @@ words, like Python's shlex.")
         (base32
          "1b53m53l24lyhr505lwqzrpjyq5qfnic71mynrcfvm43rybf938b"))))
     (build-system cargo-build-system)
-    (arguments `(#:skip-build? #t))
     (home-page "https://docs.rs/siphasher")
     (synopsis "SipHash functions from rust-core < 1.13")
     (description
