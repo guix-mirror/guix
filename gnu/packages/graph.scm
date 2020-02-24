@@ -90,20 +90,35 @@ more.")
 (define-public python-igraph
   (package (inherit igraph)
     (name "python-igraph")
-    (version "0.7.1.post6")
+    (version "0.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-igraph" version))
        (sha256
         (base32
-         "0xp61zz710qlzhmzbfr65d5flvsi8zf2xy78s6rsszh719wl5sm5"))))
+         "13mbrlmnbgbzw6y8ws7wj0a3ly3in8j4l1ngi6yxvgvxxi4bprj7"))))
     (build-system python-build-system)
-    (arguments '())
+    (arguments
+     '(#:configure-flags
+       (list "--use-pkg-config")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda _
+             (invoke "python" "./setup.py" "build" "--use-pkg-config")))
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-v"))))))
     (inputs
      `(("igraph" ,igraph)))
+    (propagated-inputs
+     `(("python-texttable" ,python-texttable)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("python-pytest" ,python-pytest)))
     (home-page "http://pypi.python.org/pypi/python-igraph")
     (synopsis "Python bindings for the igraph network analysis library")))
 
