@@ -1388,7 +1388,7 @@ utilizing the art assets from the @code{SuperTux} project.")
 (define-public roguebox-adventures
   (package
     (name "roguebox-adventures")
-    (version "2.2.1")
+    (version "3.0.1")
     (source
      (origin
        (method url-fetch)
@@ -1398,7 +1398,7 @@ utilizing the art assets from the @code{SuperTux} project.")
        (file-name (string-append name "-" version ".zip"))
        (sha256
         (base32
-         "0kmzdgnik8fsf3bg55546l77p3mfxn2awkzfzzdn20n82rd2babw"))))
+         "05zd03s5w9kcpklfgcggbaa6rwf59nm0q9vcj6gh9v2lh402k067"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -1424,6 +1424,9 @@ utilizing the art assets from the @code{SuperTux} project.")
                   (string-append "'" data "'"))
                  (("^basic_path.*$")
                   (string-append "basic_path ='" data "'\n")))
+               (substitute* "LIB/dialog.py"
+                 (("d_path = os\\.path\\.dirname\\(.*\\)\\)")
+                  (string-append "d_path = '" data "'")))
                (substitute* "LIB/gra_files.py"
                  (("basic_path = b_path\\.replace\\('/LIB',''\\)")
                   (string-append "basic_path ='" data "'\n")))
