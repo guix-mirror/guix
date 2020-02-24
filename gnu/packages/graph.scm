@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
@@ -56,15 +56,15 @@
 (define-public igraph
   (package
     (name "igraph")
-    (version "0.7.1")
+    (version "0.8.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://igraph.org/nightly/get/c/igraph-"
-                           version ".tar.gz"))
+       (uri (string-append "https://github.com/igraph/igraph/releases/"
+                           "download/" version "/igraph-" version ".tar.gz"))
        (sha256
         (base32
-         "1pxh8sdlirgvbvsw8v65h6prn7hlm45bfsl1yfcgd6rn4w706y6r"))))
+         "0jcnfvahrlj08y46vnax5y5bb294v4b9n00qsy7pbx0cc0sp6qvj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
