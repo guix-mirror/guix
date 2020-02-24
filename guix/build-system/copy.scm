@@ -78,7 +78,7 @@
 (define* (copy-build store name inputs
                      #:key (guile #f)
                      (outputs '("out"))
-                     (install-plan ''(("." (".") "./")))
+                     (install-plan ''(("." "./")))
                      (search-paths '())
                      (out-of-source? #t)
                      (validate-runpath? #t)
