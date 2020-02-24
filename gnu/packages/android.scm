@@ -9,6 +9,7 @@
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -716,7 +717,7 @@ to be passed to the @code{udev} service.")
 (define-public git-repo
   (package
     (name "git-repo")
-    (version "1.12.37")
+    (version "2.3")
     (source
      (origin
        (method git-fetch)
@@ -725,11 +726,10 @@ to be passed to the @code{udev} service.")
              (commit (string-append "v" version))))
        (file-name (string-append "git-repo-" version "-checkout"))
        (sha256
-        (base32 "0qp7jqhblv7xblfgpcq4n18dyjdv8shz7r60c3vnjxx2fngkj2jd"))))
+        (base32 "0jrll0mjfwakyjvlhbxwsdi32jhgss9mwz8c8h24n1qbqqxysrk4"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2 ; code says: "Python 3 support is … experimental."
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'build 'set-executable-paths
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -738,8 +738,8 @@ to be passed to the @code{udev} service.")
                     (gpg (assoc-ref inputs "gnupg"))
                     (ssh (assoc-ref inputs "ssh")))
                (substitute* '("repo" "git_command.py")
-                 (("^GIT = 'git' ")
-                  (string-append "GIT = '" git "/bin/git' ")))
+                 (("^GIT = 'git'")
+                  (string-append "GIT = '" git "/bin/git'")))
                (substitute* "repo"
                  ((" cmd = \\['gpg',")
                   (string-append " cmd = ['" gpg "/bin/gpg',")))
@@ -777,9 +777,14 @@ def _FindRepo():
                  ((" rev = _Verify\\(.*\\)") " rev = None"))
                #t)))
          (delete 'build) ; nothing to build
+         (add-before 'check 'configure-git
+           (lambda _
+             (setenv "HOME" (getcwd))
+             (invoke "git" "config" "--global" "user.email" "you@example.com")
+             (invoke "git" "config" "--global" "user.name" "Your Name")))
          (replace 'check
            (lambda _
-             (invoke "python" "-m" "nose")))
+             (invoke "./run_tests")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -798,7 +803,7 @@ def _FindRepo():
        ("gnupg" ,gnupg)
        ("ssh" ,openssh)))
     (native-inputs
-     `(("nose" ,python2-nose)))
+     `(("pytest" ,python-pytest)))
     (home-page "https://code.google.com/p/git-repo/")
     (synopsis "Helps to manage many Git repositories.")
     (description "Repo is a tool built on top of Git.  Repo helps manage many
