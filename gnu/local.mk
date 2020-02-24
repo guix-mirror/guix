@@ -1515,4 +1515,5 @@ dist_patch_DATA =						\
   %D%/packages/patches/xsane-tighten-default-umask.patch
 
 MISC_DISTRO_FILES =				\
-  %D%/packages/ld-wrapper.in
+  %D%/packages/ld-wrapper.in			\
+  %D%/packages/ld-wrapper-next.in

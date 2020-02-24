@@ -1,0 +1,305 @@
+#!@BASH@
+# -*- mode: scheme; coding: utf-8; -*-
+
+# XXX: We have to go through Bash because there's no command-line switch to
+# augment %load-compiled-path, and because of the silly 127-byte limit for
+# the shebang line in Linux.
+# Use `load-compiled' because `load' (and `-l') doesn't otherwise load our
+# .go file (see <http://bugs.gnu.org/12519>).
+# Unset 'GUILE_LOAD_COMPILED_PATH' to make sure we do not stumble upon
+# incompatible .go files.  See
+# <https://lists.gnu.org/archive/html/guile-devel/2016-03/msg00000.html>.
+
+unset GUILE_LOAD_COMPILED_PATH
+main="(@ (gnu build-support ld-wrapper) ld-wrapper)"
+exec @GUILE@ -c "(load-compiled \"@SELF@.go\") (apply $main (cdr (command-line)))" "$@"
+!#
+;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;;
+;;; This file is part of GNU Guix.
+;;;
+;;; GNU Guix is free software; you can redistribute it and/or modify it
+;;; under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation; either version 3 of the License, or (at
+;;; your option) any later version.
+;;;
+;;; GNU Guix is distributed in the hope that it will be useful, but
+;;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
+
+(define-module (gnu build-support ld-wrapper)
+  #:use-module (srfi srfi-1)
+  #:use-module (ice-9 match)
+  #:autoload   (ice-9 rdelim) (read-delimited)
+  #:export (ld-wrapper))
+
+;;; Commentary:
+;;;
+;;; This is a wrapper for the linker.  Its purpose is to inspect the -L and
+;;; -l switches passed to the linker, add corresponding -rpath arguments, and
+;;; invoke the actual linker with this new set of arguments.
+;;;
+;;; The alternatives to this hack would be:
+;;;
+;;;   1. Using $LD_RUN_PATH.  However, that would tend to include more than
+;;;      needed in the RPATH; for instance, given a package with `libfoo' as
+;;;      an input, all its binaries would have libfoo in their RPATH,
+;;;      regardless of whether they actually NEED it.
+;;;
+;;;   2. Use a GCC "lib" spec string such as `%{L*:-rpath %*}', which adds a
+;;;      `-rpath LIBDIR' argument for each occurrence of `-L LIBDIR'.
+;;;      However, this doesn't work when $LIBRARY_PATH is used, because the
+;;;      additional `-L' switches are not matched by the above rule, because
+;;;      the rule only matches explicit user-provided switches.  See
+;;;      <http://gcc.gnu.org/ml/gcc-help/2012-09/msg00110.html> for details.
+;;;
+;;; As a bonus, this wrapper checks for "impurities"--i.e., references to
+;;; libraries outside the store.
+;;;
+;;; Code:
+
+(define %real-ld
+  ;; Name of the linker that we wrap.
+  "@LD@")
+
+(define %store-directory
+  ;; File name of the store.
+  (or (getenv "NIX_STORE") "/gnu/store"))
+
+(define %temporary-directory
+  ;; Temporary directory.
+  (or (getenv "TMPDIR") "/tmp"))
+
+(define %build-directory
+  ;; Top build directory when run from a builder.
+  (getenv "NIX_BUILD_TOP"))
+
+(define %allow-impurities?
+  ;; Whether to allow references to libraries outside the store.
+  ;; Allow them by default for convenience.
+  (let ((value (getenv "GUIX_LD_WRAPPER_ALLOW_IMPURITIES")))
+    (or (not value)
+        (let ((value (string-downcase value)))
+          (cond ((member value '("yes" "y" "t" "true" "1"))
+                 #t)
+                ((member value '("no" "n" "f" "false" "0"))
+                 #f)
+                (else
+                 (format (current-error-port)
+                         "ld-wrapper: ~s: invalid value for \
+'GUIX_LD_WRAPPER_ALLOW_IMPURITIES'~%"
+                         value)))))))
+
+(define %debug?
+  ;; Whether to emit debugging output.
+  (getenv "GUIX_LD_WRAPPER_DEBUG"))
+
+(define %disable-rpath?
+  ;; Whether to disable automatic '-rpath' addition.
+  (getenv "GUIX_LD_WRAPPER_DISABLE_RPATH"))
+
+(define (readlink* file)
+  ;; Call 'readlink' until the result is not a symlink.
+  (define %max-symlink-depth 50)
+
+  (let loop ((file  file)
+             (depth 0))
+    (define (absolute target)
+      (if (absolute-file-name? target)
+          target
+          (string-append (dirname file) "/" target)))
+
+    (if (>= depth %max-symlink-depth)
+        file
+        (call-with-values
+            (lambda ()
+              (catch 'system-error
+                (lambda ()
+                  (values #t (readlink file)))
+                (lambda args
+                  (let ((errno (system-error-errno args)))
+                    (if (or (= errno EINVAL) (= errno ENOENT))
+                        (values #f file)
+                        (apply throw args))))))
+          (lambda (success? target)
+            (if success?
+                (loop (absolute target) (+ depth 1))
+                file))))))
+
+(define (pure-file-name? file)
+  ;; Return #t when FILE is the name of a file either within the store
+  ;; (possibly via a symlink) or within the build directory.
+  (let ((file (readlink* file)))
+    (or (not (string-prefix? "/" file))
+        (string-prefix? %store-directory file)
+        (string-prefix? %temporary-directory file)
+        (and %build-directory
+             (string-prefix? %build-directory file)))))
+
+(define (store-file-name? file)
+  ;; Return #t when FILE is a store file, possibly indirectly.
+  (string-prefix? %store-directory (readlink* file)))
+
+(define (shared-library? file)
+  ;; Return #t when FILE denotes a shared library.
+  (or (string-suffix? ".so" file)
+      (let ((index (string-contains file ".so.")))
+        ;; Since we cannot use regexps during bootstrap, roll our own.
+        (and index
+             (string-every (char-set-union (char-set #\.) char-set:digit)
+                           (string-drop file (+ index 3)))))))
+
+(define (library-search-path args)
+  ;; Return the library search path as a list of directory names.  The GNU ld
+  ;; manual notes that "[a]ll `-L' options apply to all `-l' options,
+  ;; regardless of the order in which the options appear", so we must compute
+  ;; the search path independently of the -l options.
+  (let loop ((args args)
+             (path '()))
+    (match args
+      (()
+       (reverse path))
+      (("-L" directory . rest)
+       (loop rest (cons directory path)))
+      ((argument . rest)
+       (if (string-prefix? "-L" argument)         ;augment the search path
+           (loop rest
+                 (cons (string-drop argument 2) path))
+           (loop rest path))))))
+
+(define (library-files-linked args library-path)
+  ;; Return the absolute file names of shared libraries explicitly linked
+  ;; against via `-l' or with an absolute file name in ARGS, looking them up
+  ;; in LIBRARY-PATH.
+  (define files+args
+    (fold (lambda (argument result)
+            (match result
+              ((library-files ((and flag
+                                    (or "-dynamic-linker" "-plugin"))
+                               . rest))
+               ;; When passed '-dynamic-linker ld.so', ignore 'ld.so'; when
+               ;; passed '-plugin liblto_plugin.so', ignore
+               ;; 'liblto_plugin.so'.  See <http://bugs.gnu.org/20102>.
+               (list library-files
+                     (cons* argument flag rest)))
+              ((library-files previous-args)
+               (cond ((string-prefix? "-l" argument) ;add library
+                      (let* ((lib  (string-append "lib"
+                                                  (string-drop argument 2)
+                                                  ".so"))
+                             (full (search-path library-path lib)))
+                        (list (if full
+                                  (cons full library-files)
+                                  library-files)
+                              (cons argument previous-args))))
+                     ((and (string-prefix? %store-directory argument)
+                           (shared-library? argument)) ;add library
+                      (list (cons argument library-files)
+                            (cons argument previous-args)))
+                     (else
+                      (list library-files
+                            (cons argument previous-args)))))))
+          (list '() '())
+          args))
+
+  (match files+args
+    ((files arguments)
+     (reverse files))))
+
+(define (rpath-arguments library-files)
+  ;; Return the `-rpath' argument list for each of LIBRARY-FILES, a list of
+  ;; absolute file names.
+  (fold-right (lambda (file args)
+                ;; Add '-rpath' if and only if FILE is in the store; we don't
+                ;; want to add '-rpath' for files under %BUILD-DIRECTORY or
+                ;; %TEMPORARY-DIRECTORY because that could leak to installed
+                ;; files.
+                (cond ((and (not %disable-rpath?)
+                            (store-file-name? file))
+                       (cons* "-rpath" (dirname file) args))
+                      ((or %allow-impurities?
+                           (pure-file-name? file))
+                       args)
+                      (else
+                       (begin
+                         (format (current-error-port)
+                                 "ld-wrapper: error: attempt to use \
+library outside of ~a: ~s~%"
+                                 %store-directory file)
+                         (exit 1)))))
+              '()
+              library-files))
+
+(define (expand-arguments args)
+  ;; Expand ARGS such that "response file" arguments, such as "@args.txt", are
+  ;; expanded (info "(gcc) Overall Options").
+  (define (response-file-arguments file)
+    (define (tokenize port)
+      ;; Return a list of all strings found in PORT.  Quote characters are removed,
+      ;; but whitespaces within quoted strings are preserved.
+      (let loop ((words '()))
+        (let* ((word (read-delimited " '\"" port 'split))
+               (token (car word))
+               (delim (cdr word)))
+          (if (eof-object? delim)
+              (reverse words)
+              (case delim
+                ((#\") (loop (cons (read-delimited "\"" port) words)))
+                ((#\') (loop (cons (read-delimited "'" port) words)))
+                ((#\ ) (if (> 0 (string-length token))
+                           (loop (cons token words))
+                           (loop words)))
+                (else (loop words)))))))
+
+    (when %debug?
+      (format (current-error-port)
+              "ld-wrapper: attempting to read arguments from '~a'~%" file))
+
+    (call-with-input-file file tokenize))
+
+  (define result
+    (fold-right (lambda (arg result)
+                  (if (string-prefix? "@" arg)
+                      (let ((file (string-drop arg 1)))
+                        (append (catch 'system-error
+                                  (lambda ()
+                                    (response-file-arguments file))
+                                  (lambda args
+                                    ;; FILE doesn't exist or cannot be read so
+                                    ;; leave ARG as is.
+                                    (list arg)))
+                                result))
+                      (cons arg result)))
+                '()
+                args))
+
+  ;; If there are "@" arguments in RESULT *and* we can expand them (they don't
+  ;; refer to nonexistent files), then recurse.
+  (if (equal? result args)
+      result
+      (expand-arguments result)))
+
+(define (ld-wrapper . args)
+  ;; Invoke the real `ld' with ARGS, augmented with `-rpath' switches.
+  (let* ((args (expand-arguments args))
+         (path (library-search-path args))
+         (libs (library-files-linked args path))
+         (args (append args (rpath-arguments libs))))
+    (when %debug?
+      (format (current-error-port)
+              "ld-wrapper: library search path: ~s~%" path)
+      (format (current-error-port)
+              "ld-wrapper: libraries linked: ~s~%" libs)
+      (format (current-error-port)
+              "ld-wrapper: invoking `~a' with ~s~%"
+              %real-ld args)
+      (force-output (current-error-port)))
+    (apply execl %real-ld (basename %real-ld) args)))
+
+;;; ld-wrapper.scm ends here

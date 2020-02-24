@@ -70,7 +70,8 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
-  #:use-module (ice-9 match))
+  #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1))
 
 (define %preserved-third-party-files
   '("base/third_party/cityhash" ;Expat
@@ -422,6 +423,18 @@ from forcing GEXP-PROMISE."
         ;; sizes.  Chromium requires that this is enabled.
         `(cons "--enable-custom-modes"
                ,flags))))))
+
+;; Add a custom ld wrapper that supports quoted strings in response files.
+;; To be merged with 'ld-wrapper' in a future rebuild cycle.
+(define-public ld-wrapper-next
+  (let ((orig (car (assoc-ref (%final-inputs) "ld-wrapper"))))
+    (package
+      (inherit orig)
+      (name "ld-wrapper-next")
+      (inputs
+       `(("wrapper" ,(search-path %load-path
+                                  "gnu/packages/ld-wrapper-next.in"))
+         ,@(alist-delete "wrapper" (package-inputs orig)))))))
 
 (define-public ungoogled-chromium
   (package
