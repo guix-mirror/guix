@@ -20200,3 +20200,41 @@ methods (MM, MS, Stocking-Lord, and the complete Hebaera method), and a rich
 array of parametric and non-parametric (kernel) plots.  It estimates and plots
 Haberman's interaction model when all items are dichotomously scored.")
     (license license:gpl2+)))
+
+(define-public r-iheatmapr
+  (package
+    (name "r-iheatmapr")
+    (version "0.4.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "iheatmapr" version))
+       (sha256
+        (base32
+         "0s479j9l35xiss599vablxgvg6i2j9zq9sxphsq4vdk3bafg84bw"))))
+    (properties `((upstream-name . "iheatmapr")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-fastcluster" ,r-fastcluster)
+       ("r-ggdendro" ,r-ggdendro)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-knitr" ,r-knitr)
+       ("r-magrittr" ,r-magrittr)
+       ("r-plyr" ,r-plyr)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-scales" ,r-scales)))
+    (home-page "https://docs.ropensci.org/iheatmapr")
+    (synopsis "Interactive, Complex Heatmaps")
+    (description
+     "iheatmapr is an R package for building complex, interactive heatmaps
+using modular building blocks.  \"Complex\" heatmaps are heatmaps in which
+subplots along the rows or columns of the main heatmap add more information
+about each row or column.  For example, a one column additional heatmap may
+indicate what group a particular row or column belongs to.  Complex heatmaps
+may also include multiple side by side heatmaps which show different types of
+data for the same conditions.  Interactivity can improve complex heatmaps by
+providing tooltips with information about each cell and enabling zooming into
+interesting features. iheatmapr uses the plotly library for interactivity.")
+    (license license:expat)))
