@@ -868,6 +868,16 @@ disabled in order to protect the users privacy.")
        ,@(package-inputs ungoogled-chromium)))
     (arguments
      (substitute-keyword-arguments (package-arguments ungoogled-chromium)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'add-ozone-patch
+             (lambda _
+               ;; Add missing include statement required when using libstdc++,
+               ;; Clang and Ozone.  Fixed in M81.
+               (substitute* "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.cc"
+                 (("#include \"base/logging\\.h" all)
+                  (string-append "#include <algorithm>\n" all)))
+               #t))))
        ((#:configure-flags flags)
         `(append (list "use_ozone=true"
                        "ozone_platform_wayland=true"
