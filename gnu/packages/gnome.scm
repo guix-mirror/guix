@@ -44,7 +44,7 @@
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;; Copyright © 2019, 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
-;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2019, 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 raingloom <raingloom@riseup.net>
@@ -1607,15 +1607,17 @@ on the GNOME Desktop with a single simple application.")
     (build-system meson-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'set-adwaita-theme-file-name
+                  (add-after 'unpack 'patch-schemas
                     (lambda* (#:key inputs #:allow-other-keys)
-                      ;; Provide the correct file name of the default GNOME
-                      ;; background, 'adwaita-timed.xml'.
                       (let ((theme (assoc-ref inputs "gnome-backgrounds")))
                         (substitute* (find-files "schemas"
                                                  "\\.gschema\\.xml\\.in$")
+                          ;; Provide the correct file name of the default GNOME
+                          ;; background, 'adwaita-timed.xml'.
                           (("@datadir@/backgrounds/gnome")
-                           (string-append theme "/share/backgrounds/gnome")))
+                           (string-append theme "/share/backgrounds/gnome"))
+                          ;; Do not reference fonts, that may not exist.
+                          (("'Source Code Pro 10'") "'Monospace 11'"))
                         #t))))))
     (inputs
      `(("glib" ,glib)
