@@ -10827,3 +10827,21 @@ a PostgreSQL server over a socket.")))
 
 (define-public cl-simple-date-postgres-glue
   (sbcl-package->cl-source-package sbcl-simple-date-postgres-glue))
+
+(define-public sbcl-s-sql
+  (package
+    (inherit sbcl-simple-date)
+    (name "sbcl-s-sql")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("cl-postgres" ,sbcl-cl-postgres)))
+    (arguments
+     `(#:tests? #f)) ; TODO: Break postmodern circular dependency
+    (synopsis "Lispy DSL for SQL")
+    (description
+     "@code{s-sql} is a Common Lisp library that can be used to compile
+s-expressions to strings of SQL code, escaping any Lisp values inside, and
+doing as much as possible of the work at compile time.")))
+
+(define-public cl-s-sql
+  (sbcl-package->cl-source-package sbcl-s-sql))
