@@ -2451,11 +2451,15 @@ It is inspired by the Linux kernel's @code{crypto_memneq}.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "168j1npqrif1yqxbgbk0pdrx9shzhs5ylc5a4xw49b6hbxi11zvq"))))
+         "168j1npqrif1yqxbgbk0pdrx9shzhs5ylc5a4xw49b6hbxi11zvq"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (substitute* "Cargo.toml"
+                   (("0.2.21.*") "0.2.21\"\n"))
+                 #t))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t     ; Package needs 'unicode' crate.
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-custom-derive" ,rust-custom-derive-0.1))
        #:cargo-development-inputs
        (("rust-quickcheck" ,rust-quickcheck-0.2)
