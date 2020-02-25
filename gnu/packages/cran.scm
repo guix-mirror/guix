@@ -20259,3 +20259,32 @@ interesting features. iheatmapr uses the plotly library for interactivity.")
 you to manage the R packages your project depends on in an isolated, portable,
 and reproducible way.")
     (license license:gpl2)))
+
+(define-public r-rsconnect
+  (package
+    (name "r-rsconnect")
+    (version "0.8.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rsconnect" version))
+       (sha256
+        (base32
+         "05ii0p0p7xpf8z0c1594s5q7wpwcs7lmlddrd67s5p2ka5m8qwiz"))))
+    (properties `((upstream-name . "rsconnect")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-curl" ,r-curl)
+       ("r-digest" ,r-digest)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-openssl" ,r-openssl)
+       ("r-packrat" ,r-packrat)
+       ("r-rstudioapi" ,r-rstudioapi)
+       ("r-yaml" ,r-yaml)))
+    (home-page "https://github.com/rstudio/rsconnect")
+    (synopsis "Deployment interface for R Markdown documents and Shiny applications")
+    (description
+     "This package provides a programmatic deployment interface for RPubs,
+shinyapps.io, and RStudio Connect.  Supported content types include R Markdown
+documents, Shiny applications, Plumber APIs, plots, and static web content.")
+    (license license:gpl2)))
