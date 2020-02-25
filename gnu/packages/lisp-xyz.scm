@@ -10761,3 +10761,34 @@ approach to templating.")
 
 (define-public cl-mysql
   (sbcl-package->cl-source-package sbcl-cl-mysql))
+
+(define-public sbcl-simple-date
+  (let ((commit "74469b25bbda990ec9b77e0d0eccdba0cd7e721a")
+        (revision "1"))
+    (package
+      (name "sbcl-simple-date")
+      (version (git-version "1.19" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/marijnh/Postmodern.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0im7ymnyxjhn2w74jfg76k5gpr0gl33n31akx33hl28722ljd0hd"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (synopsis "Basic date and time objects for Common Lisp")
+      (description
+       "@code{simple-date} is a very basic implementation of date and time
+objects, used to support storing and retrieving time-related SQL types.")
+      (home-page "https://marijnhaverbeke.nl/postmodern/")
+      (license license:zlib))))
+
+(define-public cl-simple-date
+  (sbcl-package->cl-source-package sbcl-simple-date))
+
+(define-public ecl-simple-date
+  (sbcl-package->ecl-package sbcl-simple-date))
