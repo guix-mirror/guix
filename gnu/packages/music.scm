@@ -5293,3 +5293,42 @@ as JACK standalone applications.")
 automation that comes as an LV2 plugin bundle with a custom UI.")
     (home-page "https://git.zrythm.org/cgit/ZLFO/")
     (license license:agpl3+)))
+
+(define-public vl1-emulator
+  (package
+    (name "vl1-emulator")
+    (version "1.1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/linuxmao-org/VL1-emulator.git")
+             (commit (string-append "v" version))
+             ;; bundles a specific commit of the DISTRHO plugin framework
+             (recursive? #t)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1npc86vqma8gk1hawa0lii0r2xmnv846plyl1ci3bdswyrdk5chm"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no check target
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             "CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))         ;no configure target
+    (inputs
+     `(("cairo" ,cairo)
+       ("jack" ,jack-1)
+       ("mesa" ,mesa)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/linuxmao-org/VL1-emulator")
+    (synopsis "Emulator of Casio VL-Tone VL1")
+    (description "The VL1-Emulator is an emulator of Casio VL-Tone VL1, 
+based on source code by PolyValens, offered as an LV2 plugin and a 
+standalone JACK application.")
+    ;; Expat or CC0
+    (license (list license:expat license:cc0))))
