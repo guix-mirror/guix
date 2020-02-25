@@ -5327,8 +5327,33 @@ automation that comes as an LV2 plugin bundle with a custom UI.")
      `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/linuxmao-org/VL1-emulator")
     (synopsis "Emulator of Casio VL-Tone VL1")
-    (description "The VL1-Emulator is an emulator of Casio VL-Tone VL1, 
-based on source code by PolyValens, offered as an LV2 plugin and a 
+    (description "The VL1-Emulator is an emulator of Casio VL-Tone VL1,
+based on source code by PolyValens, offered as an LV2 plugin and a
 standalone JACK application.")
     ;; Expat or CC0
     (license (list license:expat license:cc0))))
+
+(define-public regrader
+  (package
+    (inherit vl1-emulator)
+    (name "regrader")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/linuxmao-org/regrader.git")
+             (commit (string-append "v" version))
+             ;; bundles a specific commit of the DISTRHO plugin framework
+             (recursive? #t)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0gl4d5lf2afqknz22jz7hh7029sc9v1xrz6nbz9dlv42bwc0cvl0"))))
+    (home-page "https://github.com/linuxmao-org/regrader")
+    (synopsis "Delay effect plugin")
+    (description
+     "Regrader is a delay effect where the repeats degrade in resolution.
+This is an unofficial port of the Regrader plugin created by Igorski.  It
+is available as an LV2 plugin and a standalone JACK application.")
+    (license license:expat)))
