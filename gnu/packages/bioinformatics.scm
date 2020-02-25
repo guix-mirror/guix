@@ -13882,7 +13882,7 @@ absolute GSEA.")
 (define-public jamm
   (package
     (name "jamm")
-    (version "1.0.7.5")
+    (version "1.0.7.6")
     (source
      (origin
        (method git-fetch)
@@ -13892,7 +13892,7 @@ absolute GSEA.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0ls889jcma1ch9h21jjhnkadgszgqj41842hhcjh6cg88f85qf3i"))))
+         "0bsa5mf9n9q5jz7mmacrra41l7r8rac5vgsn6wv1fb52ya58b970"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; there are none
