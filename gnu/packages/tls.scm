@@ -858,7 +858,7 @@ then ported to the GNU / Linux environment.")
 (define-public mbedtls-apache
   (package
     (name "mbedtls-apache")
-    (version "2.16.4")
+    (version "2.16.5")
     (source
      (origin
        (method url-fetch)
@@ -868,7 +868,7 @@ then ported to the GNU / Linux environment.")
                            version "-apache.tgz"))
        (sha256
         (base32
-         "1yxj5wahaj87xhdi89zbk78ig77b166h464yrj5gb3lwv8mz6h9l"))))
+         "0kdhwy241xsk4isbadqx6z80m8sf76da5sbmqv8qy11yr37cdd35"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
