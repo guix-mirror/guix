@@ -20238,3 +20238,24 @@ data for the same conditions.  Interactivity can improve complex heatmaps by
 providing tooltips with information about each cell and enabling zooming into
 interesting features. iheatmapr uses the plotly library for interactivity.")
     (license license:expat)))
+
+(define-public r-packrat
+  (package
+    (name "r-packrat")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "packrat" version))
+       (sha256
+        (base32
+         "1xy5dd2hrpqa07jfl4s7dsrya05mf36ms74j833scdz0zf89586n"))))
+    (properties `((upstream-name . "packrat")))
+    (build-system r-build-system)
+    (home-page "https://github.com/rstudio/packrat/")
+    (synopsis "Dependency management R projects")
+    (description
+     "This package provides a dependency manager for R projects that allows
+you to manage the R packages your project depends on in an isolated, portable,
+and reproducible way.")
+    (license license:gpl2)))
