@@ -10792,3 +10792,24 @@ objects, used to support storing and retrieving time-related SQL types.")
 
 (define-public ecl-simple-date
   (sbcl-package->ecl-package sbcl-simple-date))
+
+(define-public sbcl-cl-postgres
+  (package
+    (inherit sbcl-simple-date)
+    (name "sbcl-cl-postgres")
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)
+       ("simple-date" ,sbcl-simple-date)))
+    (inputs
+     `(("md5" ,sbcl-md5)
+       ("split-sequence" ,sbcl-split-sequence)
+       ("usocket" ,sbcl-usocket)))
+    (arguments
+     `(#:tests? #f)) ; TODO: Break simple-date/postgres-glue circular dependency
+    (synopsis "Common Lisp interface for PostgreSQL")
+    (description
+     "@code{cl-postgres} is a low-level library used for interfacing with
+a PostgreSQL server over a socket.")))
+
+(define-public cl-postgres
+  (sbcl-package->cl-source-package sbcl-cl-postgres))
