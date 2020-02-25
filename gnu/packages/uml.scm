@@ -30,14 +30,14 @@
 (define-public plantuml
   (package
     (name "plantuml")
-    (version "1.2019.3")
+    (version "1.2020.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/plantuml/"
                                   version "/plantuml-" version ".tar.gz"))
               (sha256
                (base32
-                "0p2mqav0qfc6kmkhb2n1vjysffnvpsx4yal68nl0yrh5vd3bnmza"))))
+                "1mywv4m6v1y2wpfz9vqriw6cdq1d2md5k2vf244ldbd9s6j45467"))))
     (build-system ant-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -49,7 +49,7 @@
              (substitute* "build.xml"
                (("1.6") "1.7")
                (("<attribute name=\"Class-Path\"") "<!--")
-               (("j2v8_macosx_x86_64-3.1.7.jar\" />") "-->"))
+               (("ditaa0_9.jar\" />") "-->"))
              #t))
          (add-after 'delete-extra-from-classpath 'patch-usr-bin-dot
            (lambda* (#:key inputs #:allow-other-keys)
