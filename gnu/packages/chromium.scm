@@ -135,8 +135,8 @@
     "third_party/dawn" ;ASL2.0
     "third_party/depot_tools/owners.py" ;BSD-3
     "third_party/devtools-frontend" ;BSD-3
-    "third_party/devtools-frontend/src/third_party/axe-core"
-    "third_party/devtools-frontend/src/third_party/pyjson5"
+    "third_party/devtools-frontend/src/third_party/axe-core" ;MPL2.0
+    "third_party/devtools-frontend/src/third_party/pyjson5" ;ASL2.0
     "third_party/dom_distiller_js" ;BSD-3
     "third_party/emoji-segmenter" ;ASL2.0
     "third_party/flatbuffers" ;ASL2.0
@@ -185,7 +185,7 @@
     "third_party/pdfium/third_party/bigint" ;Public domain, BSD-3
     "third_party/pdfium/third_party/skia_shared" ;BSD-3
     "third_party/pdfium/third_party/freetype/include/pstables.h" ;FreeType
-    "third_party/perfetto"
+    "third_party/perfetto" ;ASL2.0
     "third_party/pffft" ;the "FFTPACK" license, similar to BSD-3
     "third_party/ply" ;BSD-3
     "third_party/polymer" ;BSD-3
