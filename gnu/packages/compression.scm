@@ -1624,18 +1624,19 @@ recreates the stored directory structure by default.")
 (define-public libzip
   (package
     (name "libzip")
-    (version "1.5.2")
+    (version "1.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://libzip.org/download/libzip-" version ".tar.xz"))
               (sha256
                (base32
-                "1d53shcy7nvls5db573bbdlm25lfz1iw2zshng5f00cssi5lvpmk"))))
+                "0h9nsgkw0dk4srsvmz6xy6f9l4h815xn07j8h40l8gqvcxxaqpbh"))))
     (native-inputs
      `(("perl" ,perl)))
     (inputs
      `(("gnutls" ,gnutls)
+       ("liblzma" ,xz)
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (build-system cmake-build-system)
