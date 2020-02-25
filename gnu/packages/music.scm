@@ -5357,3 +5357,29 @@ standalone JACK application.")
 This is an unofficial port of the Regrader plugin created by Igorski.  It
 is available as an LV2 plugin and a standalone JACK application.")
     (license license:expat)))
+
+(define-public fogpad
+  (package
+    (inherit vl1-emulator)
+    (name "fogpad")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/linuxmao-org/fogpad")
+             (commit (string-append "v" version))
+             ;; bundles a specific commit of the DISTRHO plugin framework
+             (recursive? #t)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1j1hbya2dsqpf22zkpi4kwz3dram9g1ndxzmgfwpmf3i4jd3csgb"))))
+    (home-page "https://github.com/linuxmao-org/fogpad")
+    (synopsis "Reverb effect plugin")
+    (description
+     "Fogpad is a reverb effect in which the reflections can be frozen,
+filtered, pitch shifted and ultimately disintegrated.  This is an unofficial
+port of the Regrader plugin created by Igorski.  It is available as an LV2
+plugin and a standalone JACK application.")
+    (license license:expat)))
