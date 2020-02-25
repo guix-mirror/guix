@@ -84,12 +84,6 @@
        #:parallel-tests? #f
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'disable-CoW
-           ;; Disable copy-on-write (CoW) in the build directory.  Tests fail on
-           ;; btrfs (and possibly other CoW file systems) for unclear reasons.
-           ;; This needs to be run early as it only affects newly-created files.
-           (lambda _
-             (invoke "chattr" "-R" "+C" ".")))
          (add-after 'configure 'patch-config-files
            (lambda _
              (substitute* "runtime/tools/mve.awk"
@@ -134,7 +128,6 @@
      `(("libtool" ,libtool)
 
        ;; For tests.
-       ("e2fsprogs" ,e2fsprogs)         ; for chattr in disable-CoW above
        ("tzdata" ,tzdata-for-tests)))
     (home-page "https://www.vim.org/")
     (synopsis "Text editor based on vi")
