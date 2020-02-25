@@ -10845,3 +10845,40 @@ doing as much as possible of the work at compile time.")))
 
 (define-public cl-s-sql
   (sbcl-package->cl-source-package sbcl-s-sql))
+
+(define-public sbcl-postmodern
+  (package
+    (inherit sbcl-simple-date)
+    (name "sbcl-postmodern")
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)
+       ("simple-date" ,sbcl-simple-date)
+       ("simple-date-postgres-glue" ,sbcl-simple-date-postgres-glue)))
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("cl-postgres" ,sbcl-cl-postgres)
+       ("closer-mop" ,sbcl-closer-mop)
+       ("global-vars" ,sbcl-global-vars)
+       ("s-sql" ,sbcl-s-sql)
+       ("split-sequence" ,sbcl-split-sequence)))
+    (arguments
+     ;; TODO: Fix missing dependency errors for simple-date/postgres-glue,
+     ;; cl-postgres/tests and s-sql/tests.
+     `(#:tests? #f))
+    (synopsis "Common Lisp library for interacting with PostgreSQL")
+    (description
+     "@code{postmodern} is a Common Lisp library for interacting with
+PostgreSQL databases.  It provides the following features:
+
+@itemize
+@item Efficient communication with the database server without need for
+foreign libraries.
+@item Support for UTF-8 on Unicode-aware Lisp implementations.
+@item A syntax for mixing SQL and Lisp code.
+@item Convenient support for prepared statements and stored procedures.
+@item A metaclass for simple database-access objects.
+@end itemize\n")))
+
+(define-public cl-postmodern
+  (sbcl-package->cl-source-package sbcl-postmodern))
