@@ -1,5 +1,6 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2020 Eric Bavier <bavier@posteo.net>
 #
 # This file is part of GNU Guix.
 #
@@ -98,6 +99,7 @@ case "`uname -m`" in
 	run_without_store GUIX_EXECUTION_ENGINE="fakechroot" \
 	"$test_directory/Bin/sed" --version > "$test_directory/output"
 	grep 'GNU sed' "$test_directory/output"
+	unset GUIX_EXECUTION_ENGINE
 
 	chmod -Rf +w "$test_directory"; rm -rf "$test_directory"/*
 
@@ -133,8 +135,41 @@ esac
 tarball="`guix pack -R -S /share=share groff:doc`"
 (cd "$test_directory"; tar xf "$tarball")
 test -d "$test_directory/share/doc/groff/html"
+chmod -Rf +w "$test_directory"; rm -rf "$test_directory"/*
 
 # Ensure '-R' applies to propagated inputs.  Failing to do that, it would fail
 # with a profile collision error in this case because 'python-scipy'
 # propagates 'python-numpy'.  See <https://bugs.gnu.org/42510>.
 guix pack -RR python-numpy python-scipy --no-grafts -n
+
+# Check that packages that mix executable and support files (e.g. git) in the
+# "binary" directories still work after wrapped.
+cat >"$test_directory/manifest.scm" <<'EOF'
+(use-modules (guix) (guix profiles) (guix search-paths)
+             (gnu packages bootstrap))
+(manifest
+ (list (manifest-entry
+        (name "test") (version "0")
+        (item (file-union "test"
+                          `(("bin/hello"
+                             ,(program-file
+                               "hello"
+                               #~(begin
+                                   (add-to-load-path (getenv "HELLO_EXEC_PATH"))
+                                   (display (load-from-path "msg"))(newline))
+                               #:guile %bootstrap-guile))
+                            ("libexec/hello/msg"
+                             ,(plain-file "msg" "42")))))
+        (search-paths
+         (list (search-path-specification
+                (variable "HELLO_EXEC_PATH")
+                (files '("libexec/hello"))
+                (separator #f)))))))
+EOF
+tarball="`guix pack -RR -S /opt= -m $test_directory/manifest.scm`"
+(cd "$test_directory"; tar xvf "$tarball")
+( export GUIX_PROFILE=$test_directory/opt
+  . $GUIX_PROFILE/etc/profile
+  run_without_store "$test_directory/opt/bin/hello" > "$test_directory/output" )
+cat "$test_directory/output"
+test "`cat $test_directory/output`" = "42"

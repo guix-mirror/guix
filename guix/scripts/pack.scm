@@ -749,12 +749,13 @@ last resort for relocation."
                               (guix elf)))
       #~(begin
           (use-modules (guix build utils)
-                       ((guix build union) #:select (relative-file-name))
+                       ((guix build union) #:select (symlink-relative))
                        (guix elf)
                        (guix build gremlin)
                        (ice-9 binary-ports)
                        (ice-9 ftw)
                        (ice-9 match)
+                       (ice-9 receive)
                        (srfi srfi-1)
                        (rnrs bytevectors))
 
@@ -874,16 +875,27 @@ last resort for relocation."
           (mkdir target)
           (for-each (lambda (file)
                       (unless (member file '("." ".." "bin" "sbin" "libexec"))
-                        (let ((file* (string-append input "/" file)))
-                          (symlink (relative-file-name target file*)
-                                   (string-append target "/" file)))))
+                        (symlink-relative (string-append input  "/" file)
+                                          (string-append target "/" file))))
                     (scandir input))
 
-          (for-each build-wrapper
-                    ;; Note: Trailing slash in case these are symlinks.
-                    (append (find-files (string-append input "/bin/"))
-                            (find-files (string-append input "/sbin/"))
-                            (find-files (string-append input "/libexec/")))))))
+          (receive (executables others)
+              (partition executable-file?
+			 ;; Note: Trailing slash in case these are symlinks.
+                         (append (find-files (string-append input "/bin/"))
+                                 (find-files (string-append input "/sbin/"))
+                                 (find-files (string-append input "/libexec/"))))
+            ;; Wrap only executables, since the wrapper will eventually need
+            ;; to execve them.  E.g. git's "libexec" directory contains many
+            ;; shell scripts that are source'd from elsewhere, which fails if
+            ;; they are wrapped.
+            (for-each build-wrapper executables)
+            ;; Link any other non-executable files
+            (for-each (lambda (old)
+                        (let ((new (string-append target (strip-store-prefix old))))
+                          (mkdir-p (dirname new))
+                          (symlink-relative old new)))
+                      others)))))
 
   (computed-file (string-append
                   (cond ((package? package)
