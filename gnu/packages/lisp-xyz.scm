@@ -51,6 +51,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages c)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages imagemagick)
@@ -10718,3 +10719,45 @@ approach to templating.")
 
 (define-public ecl-lquery
   (sbcl-package->ecl-package sbcl-lquery))
+
+(define-public sbcl-cl-mysql
+  (let ((commit "ab56c279c1815aec6ca0bfe85164ff7e85cfb6f9")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-mysql")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/hackinghat/cl-mysql.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0dg5ynx2ww94d0qfwrdrm7plkn43h64hs4iiq9mj2s1s4ixnp3lr"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("stefil" ,sbcl-stefil)))
+      (inputs
+       `(("cffi" ,sbcl-cffi)
+         ("mariadb-lib" ,mariadb "lib")))
+      (arguments
+       `(#:tests? #f ; TODO: Tests require a running server
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "system.lisp"
+                 (("libmysqlclient_r" all)
+                  (string-append (assoc-ref inputs "mariadb-lib")
+                                 "/lib/"
+                                 all)))
+               #t)))))
+      (synopsis "Common Lisp wrapper for MySQL")
+      (description
+       "@code{cl-mysql} is a Common Lisp implementation of a MySQL wrapper.")
+      (home-page "http://www.hackinghat.com/index.php/cl-mysql")
+      (license license:expat))))
+
+(define-public cl-mysql
+  (sbcl-package->cl-source-package sbcl-cl-mysql))
