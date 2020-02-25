@@ -10813,3 +10813,17 @@ a PostgreSQL server over a socket.")))
 
 (define-public cl-postgres
   (sbcl-package->cl-source-package sbcl-cl-postgres))
+
+(define-public sbcl-simple-date-postgres-glue
+  (package
+    (inherit sbcl-simple-date)
+    (name "sbcl-simple-date-postgres-glue")
+    (inputs
+     `(("cl-postgres" ,sbcl-cl-postgres)
+       ("simple-date" ,sbcl-simple-date)))
+    (arguments
+     `(#:asd-file "simple-date.asd"
+       #:asd-system-name "simple-date/postgres-glue"))))
+
+(define-public cl-simple-date-postgres-glue
+  (sbcl-package->cl-source-package sbcl-simple-date-postgres-glue))
