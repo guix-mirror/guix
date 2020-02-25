@@ -58,6 +58,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
@@ -4051,3 +4052,35 @@ libsamplerate for reading and resampling audio files, based on Robin Gareus'
 @code{audio_decoder} code.")
    (home-page "https://git.zrythm.org/cgit/libaudec")
    (license license:agpl3+)))
+
+(define-public lv2lint
+  (package
+    (name "lv2lint")
+    (version "0.4.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://git.open-music-kontrollers.ch/lv2/lv2lint")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "1pspwqpzl2dw1hd9ra9yr53arqbbqjn7d7j0f7p9g3iqa76vblpi"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags
+       `("-Delf-tests=true" ; for checking symbol visibility
+         "-Donline-tests=true"))) ; for checking URI existence
+    (inputs
+      `(("curl", curl)
+        ("libelf", libelf)
+        ("lilv", lilv)))
+    (native-inputs
+      `(("pkg-config", pkg-config)))
+    (synopsis "LV2 plugin lint tool")
+    (description "lv2lint is an LV2 lint-like tool that checks whether a
+given plugin and its UI(s) match up with the provided metadata and adhere
+to well-known best practices.")
+    (home-page "https://open-music-kontrollers.ch/lv2/lv2lint/")
+    (license license:artistic2.0)))
