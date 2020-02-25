@@ -8966,19 +8966,19 @@ release (fork of debug_unreachable)")
          "0aa2l7wg9pzx24ks4p97gdy09a4hhs1sr9drxnm75v906d7hnbiv"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
+     `(#:tests? #f      ; test suite hangs
        #:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-cc" ,rust-cc-1.0)
         ("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-void" ,rust-void-1.0))
        #:cargo-development-inputs
        (("rust-bytes" ,rust-bytes-0.4)
         ("rust-caps" ,rust-caps-0.3)
-        ("rust-cc" ,rust-cc-1.0)
         ("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-rand" ,rust-rand-0.4)
-        ("rust-sysctl" ,rust-sysctl-0.4)
+        ("rust-rand" ,rust-rand-0.6)
+        ("rust-sysctl" ,rust-sysctl-0.1)
         ("rust-tempfile" ,rust-tempfile-3.0))))
     (home-page "https://github.com/nix-rust/nix")
     (synopsis "Rust friendly bindings to *nix APIs")
