@@ -10963,3 +10963,45 @@ interface for MySQL, PostgreSQL and SQLite.")
 
 (define-public cl-dbd-sqlite3
   (sbcl-package->cl-source-package sbcl-dbd-sqlite3))
+
+(define-public sbcl-uffi
+  (package
+    (name "sbcl-uffi")
+    (version "2.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "http://git.kpe.io/uffi.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1hqszvz0a3wk4s9faa83sc3vjxcb5rxmjclyr17yzwg55z733kry"))))
+    (build-system asdf-build-system/sbcl)
+    (arguments
+     `(#:tests? #f ; TODO: Fix use of deprecated ASDF functions
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-permissions
+           (lambda _
+             (make-file-writable "doc/html.tar.gz")
+             #t)))))
+    (synopsis "Universal foreign function library for Common Lisp")
+    (description
+     "UFFI provides a universal foreign function interface (FFI)
+ for Common Lisp.")
+    (home-page "http://quickdocs.org/uffi/")
+    (license license:llgpl)))
+
+(define-public cl-uffi
+  (package
+    (inherit (sbcl-package->cl-source-package sbcl-uffi))
+    (arguments
+     `(#:phases
+       ;; asdf-build-system/source has its own phases and does not inherit
+       ;; from asdf-build-system/sbcl phases.
+       (modify-phases %standard-phases/source
+         (add-after 'unpack 'fix-permissions
+           (lambda _
+             (make-file-writable "doc/html.tar.gz")
+             #t)))))))
