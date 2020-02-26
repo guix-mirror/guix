@@ -20520,3 +20520,44 @@ optimization.  In all three cases, automatic differentiation is used to
 quickly and accurately evaluate gradients without burdening the user with the
 need to derive the partial derivatives.")
     (license license:gpl3+)))
+
+(define-public r-rstanarm
+  (package
+    (name "r-rstanarm")
+    (version "2.19.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rstanarm" version))
+       (sha256
+        (base32
+         "0gxjq8bdlvdd8kn3dhp12xlymdab036r7n12lzmd3xlkl4cnxq3s"))))
+    (properties `((upstream-name . "rstanarm")))
+    (build-system r-build-system)
+    (inputs
+     `(("pandoc" ,ghc-pandoc)
+       ("pandoc-citeproc" ,ghc-pandoc-citeproc)))
+    (propagated-inputs
+     `(("r-bayesplot" ,r-bayesplot)
+       ("r-bh" ,r-bh)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-lme4" ,r-lme4)
+       ("r-loo" ,r-loo)
+       ("r-matrix" ,r-matrix)
+       ("r-nlme" ,r-nlme)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppeigen" ,r-rcppeigen)
+       ("r-rcppparallel" ,r-rcppparallel)
+       ("r-rstan" ,r-rstan)
+       ("r-rstantools" ,r-rstantools)
+       ("r-shinystan" ,r-shinystan)
+       ("r-stanheaders" ,r-stanheaders)
+       ("r-survival" ,r-survival)))
+    (home-page "https://mc-stan.org/rstanarm/")
+    (synopsis "Bayesian applied regression modeling via Stan")
+    (description
+     "This package estimates previously compiled regression models using the
+@code{rstan} package, which provides the R interface to the Stan C++ library
+for Bayesian estimation.  Users specify models via the customary R syntax with
+a formula and @code{data.frame} plus some additional arguments for priors.")
+    (license license:gpl3+)))
