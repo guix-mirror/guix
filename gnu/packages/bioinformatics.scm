@@ -5306,7 +5306,7 @@ BAM and Wiggle files in both transcript-coordinate and genomic-coordinate.")
 (define-public rseqc
   (package
     (name "rseqc")
-    (version "2.6.1")
+    (version "3.0.1")
     (source
      (origin
        (method url-fetch)
@@ -5314,28 +5314,18 @@ BAM and Wiggle files in both transcript-coordinate and genomic-coordinate.")
         (string-append "mirror://sourceforge/rseqc/"
                        "RSeQC-" version ".tar.gz"))
        (sha256
-        (base32 "15ly0254yi032qzkdplg00q144qfdsd986gh62829rl5bkxhj330"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; remove bundled copy of pysam
-           (delete-file-recursively "lib/pysam")
-           (substitute* "setup.py"
-             ;; remove dependency on outdated "distribute" module
-             (("^from distribute_setup import use_setuptools") "")
-             (("^use_setuptools\\(\\)") "")
-             ;; do not use bundled copy of pysam
-             (("^have_pysam = False") "have_pysam = True"))
-           #t))))
+        (base32
+         "0gbb9iyb7swiv5455fm5rg98r7l6qn27v564yllqjd574hncpx6m"))))
     (build-system python-build-system)
-    (arguments `(#:python ,python-2))
     (inputs
-     `(("python-cython" ,python2-cython)
-       ("python-pysam" ,python2-pysam)
-       ("python-numpy" ,python2-numpy)
+     `(("python-cython" ,python-cython)
+       ("python-bx-python" ,python-bx-python)
+       ("python-pybigwig" ,python-pybigwig)
+       ("python-pysam" ,python-pysam)
+       ("python-numpy" ,python-numpy)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("python-nose" ,python2-nose)))
+     `(("python-nose" ,python-nose)))
     (home-page "http://rseqc.sourceforge.net/")
     (synopsis "RNA-seq quality control package")
     (description
