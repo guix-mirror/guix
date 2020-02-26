@@ -11076,3 +11076,13 @@ interfaces as well as a functional and an object oriented interface.")
            (lambda _
              (make-file-writable "doc/html.tar.gz")
              #t)))))))
+
+(define-public sbcl-clsql-uffi
+  (package
+    (inherit sbcl-clsql)
+    (name "sbcl-clsql-uffi")
+    (inputs
+     `(("cffi-uffi-compat" ,sbcl-cffi-uffi-compat)
+       ("clsql" ,sbcl-clsql)
+       ("uffi" ,sbcl-uffi)))
+    (synopsis "UFFI helper functions for Common Lisp SQL interface library")))
