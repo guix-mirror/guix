@@ -12770,7 +12770,7 @@ methylation and segmentation.")
 (define-public pigx-scrnaseq
   (package
     (name "pigx-scrnaseq")
-    (version "0.0.8")
+    (version "1.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_scrnaseq/"
@@ -12778,27 +12778,21 @@ methylation and segmentation.")
                                   "/pigx_scrnaseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0zv0sc5amivxhb95vx2gfx6l9bh7n80fh7h47dalnwxxnfvnzai4"))))
+                "0ga2jr4968qzwml6aycky4603q64lny3y7lzw6dmafch5pydl1qi"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:configure-flags
-       (list (string-append "PICARDJAR=" (assoc-ref %build-inputs "java-picard")
-			    "/share/java/picard.jar")
-	     (string-append "DROPSEQJAR=" (assoc-ref %build-inputs "dropseq-tools")
-			    "/share/java/dropseq.jar"))))
     (inputs
      `(("coreutils" ,coreutils)
        ("perl" ,perl)
-       ("dropseq-tools" ,dropseq-tools)
        ("fastqc" ,fastqc)
-       ("java-picard" ,java-picard-2.10.3) ; same as for dropseq
+       ("flexbar" ,flexbar)
        ("java" ,icedtea-8)
+       ("jellyfish" ,jellyfish)
        ("python-wrapper" ,python-wrapper)
        ("python-pyyaml" ,python-pyyaml)
        ("python-pandas" ,python-pandas)
        ("python-magic" ,python-magic)
        ("python-numpy" ,python-numpy)
-       ("python-loompy" ,python-loompy-for-pigx-scrnaseq)
+       ("python-loompy" ,python-loompy)
        ("ghc-pandoc" ,ghc-pandoc)
        ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc)
        ("samtools" ,samtools)
@@ -12825,6 +12819,7 @@ methylation and segmentation.")
        ("r-rtsne" ,r-rtsne)
        ("r-scater" ,r-scater)
        ("r-scran" ,r-scran)
+       ("r-seurat" ,r-seurat)
        ("r-singlecellexperiment" ,r-singlecellexperiment)
        ("r-stringr" ,r-stringr)
        ("r-yaml" ,r-yaml)))
