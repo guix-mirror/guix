@@ -717,7 +717,7 @@ to be passed to the @code{udev} service.")
 (define-public git-repo
   (package
     (name "git-repo")
-    (version "2.3")
+    (version "2.4.1")
     (source
      (origin
        (method git-fetch)
@@ -726,7 +726,7 @@ to be passed to the @code{udev} service.")
              (commit (string-append "v" version))))
        (file-name (string-append "git-repo-" version "-checkout"))
        (sha256
-        (base32 "0jrll0mjfwakyjvlhbxwsdi32jhgss9mwz8c8h24n1qbqqxysrk4"))))
+        (base32 "0khg1731927gvin73dcbw1657kbfq4k7agla5rpzqcnwkk5agzg3"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
