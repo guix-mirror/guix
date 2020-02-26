@@ -193,7 +193,8 @@
 
     ;; https://lists.gnu.org/archive/html/guix-devel/2017-03/msg00826.html
     ("thomasd"
-     "1DD1 681F E285 E07F 11DC  0C59 2E15 A6BC D77D 54FD")
+     ;; primary: "1DD1 681F E285 E07F 11DC  0C59 2E15 A6BC D77D 54FD"
+     "3D2C DA58 819C 08C2 A649  D43D 5C3B 064C 724A 5726")
     ("thomasd (old)"
      "A5C5 92EA 606E 7106 A6A3  BC08 98B2 1575 91E1 2B08")
 
