@@ -208,6 +208,24 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
        #:build-type "Release"
 
        #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'add-missing-triplets
+                    (lambda _
+                      ;; Clang iterates through known triplets to search for
+                      ;; GCC's headers, but does not recognize some of the
+                      ;; triplets that are used in Guix.
+                      (substitute* ,@(if (version>=? version "6.0")
+                                         '("lib/Driver/ToolChains/Gnu.cpp")
+                                         '("lib/Driver/ToolChains.cpp"))
+                        (("\"aarch64-linux-gnu\"," all)
+                         (string-append "\"aarch64-unknown-linux-gnu\", "
+                                        all))
+                        (("\"arm-linux-gnueabihf\"," all)
+                         (string-append all
+                                        " \"arm-unknown-linux-gnueabihf\","))
+                        (("\"i686-pc-linux-gnu\"," all)
+                         (string-append "\"i686-unknown-linux-gnu\", "
+                                        all)))
+                      #t))
                   (add-after
                    'unpack 'set-glibc-file-names
                    (lambda* (#:key inputs #:allow-other-keys)
