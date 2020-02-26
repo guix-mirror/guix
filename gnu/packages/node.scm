@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,14 +45,14 @@
 (define-public node
   (package
     (name "node")
-    (version "10.16.0")
+    (version "10.19.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nodejs.org/dist/v" version
                                   "/node-v" version ".tar.xz"))
               (sha256
                (base32
-                "0236jlb1hxhzqjlmmlxipcycrndiq92c8434iyy7zshh3n4pzqqq"))
+                "0sginvcsf7lrlzsnpahj4bj1f673wfvby8kaxgvzlrbb7sy229v2"))
               (modules '((guix build utils)))
               (snippet
                `(begin
@@ -170,8 +170,8 @@
      `(("c-ares" ,c-ares)
        ("http-parser" ,http-parser)
        ("icu4c" ,icu4c)
-       ("libuv" ,libuv)
-       ("nghttp2" ,nghttp2 "lib")
+       ("libuv" ,libuv/latest)
+       ("nghttp2" ,nghttp2-1.40 "lib")
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (synopsis "Evented I/O for V8 JavaScript")
