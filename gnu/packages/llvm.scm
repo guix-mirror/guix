@@ -226,64 +226,59 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
                          (string-append "\"i686-unknown-linux-gnu\", "
                                         all)))
                       #t))
-                  (add-after
-                   'unpack 'set-glibc-file-names
-                   (lambda* (#:key inputs #:allow-other-keys)
-                     (let ((libc (assoc-ref inputs "libc"))
-                           (compiler-rt (assoc-ref inputs "clang-runtime"))
-                           (gcc (assoc-ref inputs "gcc"))
-                           (version
-                            (string->number
-                             ,(version-major (package-version clang-runtime)))))
-                       (cond
-                         ((> version 3)
-                          ;; Link to libclang_rt files from clang-runtime.
-                          (substitute* "lib/Driver/ToolChain.cpp"
-                            (("getDriver\\(\\)\\.ResourceDir")
-                             (string-append "\"" compiler-rt "\"")))
-
-                          ;; Make "LibDir" refer to <glibc>/lib so that it
-                          ;; uses the right dynamic linker file name.
-                          (substitute* "lib/Driver/ToolChains/Linux.cpp"
-                            (("(^[[:blank:]]+LibDir = ).*" _ declaration)
-                             (string-append declaration "\"" libc "/lib\";\n"))
-
-                            ;; Make clang look for libstdc++ in the right
-                            ;; location.
-                            (("LibStdCXXIncludePathCandidates\\[\\] = \\{")
-                             (string-append
-                              "LibStdCXXIncludePathCandidates[] = { \"" gcc "/include/c++\","))
-
-                            ;; Make sure libc's libdir is on the search path, to
-                            ;; allow crt1.o & co. to be found.
-                            (("@GLIBC_LIBDIR@")
-                             (string-append libc "/lib"))))
-                         (else
-                          (substitute* "lib/Driver/Tools.cpp"
-                            ;; Patch the 'getLinuxDynamicLinker' function so that
-                            ;; it uses the right dynamic linker file name.
-                            (("/lib64/ld-linux-x86-64.so.2")
-                             (string-append libc
-                                            ,(glibc-dynamic-linker))))
-
-                          ;; Link to libclang_rt files from clang-runtime.
-                          ;; This substitution needed slight adjustment in 3.8.
-                          (if (< 3.8 (string->number ,(version-major+minor
-                                                       (package-version
-                                                        clang-runtime))))
-                              (substitute* "lib/Driver/Tools.cpp"
-                                (("TC\\.getDriver\\(\\)\\.ResourceDir")
-                                 (string-append "\"" compiler-rt "\"")))
+                  (add-after 'unpack 'set-glibc-file-names
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((libc (assoc-ref inputs "libc"))
+                            (compiler-rt (assoc-ref inputs "clang-runtime"))
+                            (gcc (assoc-ref inputs "gcc")))
+                        ,@(cond
+                           ((version>=? version "6.0")
+                            `(;; Link to libclang_rt files from clang-runtime.
                               (substitute* "lib/Driver/ToolChain.cpp"
                                 (("getDriver\\(\\)\\.ResourceDir")
-                                 (string-append "\"" compiler-rt "\""))))
+                                 (string-append "\"" compiler-rt "\"")))
 
-                          ;; Make sure libc's libdir is on the search path, to
-                          ;; allow crt1.o & co. to be found.
-                          (substitute* "lib/Driver/ToolChains.cpp"
-                            (("@GLIBC_LIBDIR@")
-                             (string-append libc "/lib")))))
-                       #t)))
+                              ;; Make "LibDir" refer to <glibc>/lib so that it
+                              ;; uses the right dynamic linker file name.
+                              (substitute* "lib/Driver/ToolChains/Linux.cpp"
+                                (("(^[[:blank:]]+LibDir = ).*" _ declaration)
+                                 (string-append declaration "\"" libc "/lib\";\n"))
+
+                                ;; Make clang look for libstdc++ in the right
+                                ;; location.
+                                (("LibStdCXXIncludePathCandidates\\[\\] = \\{")
+                                 (string-append
+                                  "LibStdCXXIncludePathCandidates[] = { \"" gcc
+                                  "/include/c++\","))
+
+                                ;; Make sure libc's libdir is on the search path, to
+                                ;; allow crt1.o & co. to be found.
+                                (("@GLIBC_LIBDIR@")
+                                 (string-append libc "/lib")))))
+                           (else
+                            `((substitute* "lib/Driver/Tools.cpp"
+                                ;; Patch the 'getLinuxDynamicLinker' function so that
+                                ;; it uses the right dynamic linker file name.
+                                (("/lib64/ld-linux-x86-64.so.2")
+                                 (string-append libc
+                                                ,(glibc-dynamic-linker))))
+
+                              ;; Link to libclang_rt files from clang-runtime.
+                              ;; This substitution needed slight adjustment in 3.8.
+                              ,@(if (version>=? version "3.8")
+                                    '((substitute* "lib/Driver/Tools.cpp"
+                                        (("TC\\.getDriver\\(\\)\\.ResourceDir")
+                                         (string-append "\"" compiler-rt "\""))))
+                                    '((substitute* "lib/Driver/ToolChain.cpp"
+                                        (("getDriver\\(\\)\\.ResourceDir")
+                                         (string-append "\"" compiler-rt "\"")))))
+
+                              ;; Make sure libc's libdir is on the search path, to
+                              ;; allow crt1.o & co. to be found.
+                              (substitute* "lib/Driver/ToolChains.cpp"
+                                (("@GLIBC_LIBDIR@")
+                                 (string-append libc "/lib"))))))
+                        #t)))
                   (add-after 'install 'install-clean-up-/share/clang
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
