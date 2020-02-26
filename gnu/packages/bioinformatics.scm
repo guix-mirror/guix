@@ -4274,19 +4274,30 @@ experiments.")
 (define-public macs
   (package
     (name "macs")
-    (version "2.1.1.20160309")
+    (version "2.2.6")
     (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "MACS2" version))
+              ;; The PyPi tarball does not contain tests.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/taoliu/MACS.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "09ixspd1vcqmz1c81ih70xs4m7qml2iy5vyx1y74zww3iy1vl210"))))
+                "1c5gxr0mk6hkd4vclf0k00wvyvzw2vrmk52c85338p7aqjwg6n15"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2 ; only compatible with Python 2.7
-       #:tests? #f)) ; no test target
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-v"))))))
     (inputs
-     `(("python-numpy" ,python2-numpy)))
+     `(("python-numpy" ,python-numpy)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/taoliu/MACS/")
     (synopsis "Model based analysis for ChIP-Seq data")
     (description
