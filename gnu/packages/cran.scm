@@ -20288,3 +20288,82 @@ and reproducible way.")
 shinyapps.io, and RStudio Connect.  Supported content types include R Markdown
 documents, Shiny applications, Plumber APIs, plots, and static web content.")
     (license license:gpl2)))
+
+;; This package includes minified JavaScript files.  When upgrading please
+;; check that there are no new minified JavaScript files.
+(define-public r-dygraphs
+  (package
+    (name "r-dygraphs")
+    (version "1.1.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "dygraphs" version))
+       (sha256
+        (base32
+         "022j007mzfa9k2n31yg4aizcsf571vv3jip092h23rqj03rk3ly3"))))
+    (properties `((upstream-name . "dygraphs")))
+    (build-system r-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build r-build-system)
+                  (srfi srfi-1)
+                  (ice-9 popen))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'process-javascript
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "inst/htmlwidgets/lib/"
+               (call-with-values
+                   (lambda ()
+                     (unzip2
+                      `(("dygraphs/dygraph-combined-dev.js"
+                         "dygraph-combined.js")
+                        (,(assoc-ref inputs "js-jquery")
+                         "jquery/jquery.min.js")
+                        (,(assoc-ref inputs "js-fquarter")
+                         "fquarter/moment-fquarter.min.js"))))
+                 (lambda (sources targets)
+                   (for-each (lambda (source target)
+                               (format #t "Processing ~a --> ~a~%"
+                                       source target)
+                               (let ((minified (open-pipe* OPEN_READ "uglify-js" source)))
+                                 (call-with-output-file target
+                                   (lambda (port)
+                                     (dump-port minified port)))))
+                             sources targets))))
+             #t)))))
+    (native-inputs
+     `(("uglify-js" ,uglify-js)
+       ;; They actually use version 1.11.1, but this more recent version
+       ;; should be just fine.
+       ("js-jquery"
+        ,(origin
+           (method url-fetch)
+           (uri "https://code.jquery.com/jquery-1.12.4.js")
+           (sha256
+            (base32
+             "0x9mrc1668icvhpwzvgafm8xm11x9lfai9nwr66aw6pjnpwkc3s3"))))
+       ("js-fquarter"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "https://raw.githubusercontent.com/robgallen/"
+                               "moment-fquarter/1.0.1/moment-fquarter.js"))
+           (sha256
+            (base32
+             "01mdnsaibm9jy2f1qpbn692hpv309lhj5si9nagib4dawmrkffij"))))))
+    (propagated-inputs
+     `(("r-htmltools" ,r-htmltools)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-magrittr" ,r-magrittr)
+       ("r-xts" ,r-xts)
+       ("r-zoo" ,r-zoo)))
+    (home-page "https://github.com/rstudio/dygraphs")
+    (synopsis "Interface to Dygraphs interactive time series charting library")
+    (description
+     "This package provides an R interface to the dygraphs JavaScript charting
+library (a copy of which is included in the package).  It provides rich
+facilities for charting time-series data in R, including highly configurable
+series- and axis-display and interactive features like zoom/pan and
+series/point highlighting.")
+    (license license:expat)))
