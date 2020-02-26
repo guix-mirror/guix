@@ -20409,3 +20409,30 @@ application framework and works with the output of MCMC programs written in
 any programming language (and has extended functionality for Stan models fit
 using the @code{rstan} and @code{rstanarm} packages).")
     (license license:gpl3+)))
+
+(define-public r-rstantools
+  (package
+    (name "r-rstantools")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rstantools" version))
+       (sha256
+        (base32
+         "1il0pn4ksbdkska5fmhvgaicvwnnc6cs08g6ags9fj1xkjiqmrsa"))))
+    (properties `((upstream-name . "rstantools")))
+    (build-system r-build-system)
+    (inputs `(("pandoc" ,ghc-pandoc)))
+    (propagated-inputs
+     `(("r-desc" ,r-desc)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://mc-stan.org/rstantools/")
+    (synopsis "Tools for developing R packages interfacing with Stan")
+    (description
+     "This package provides various tools for developers of R packages
+interfacing with @url{https://mc-stan.org, Stan}, including functions to set
+up the required package structure, S3 generics and default methods to unify
+function naming across Stan-based R packages, and vignettes with
+recommendations for developers.")
+    (license license:gpl3+)))
