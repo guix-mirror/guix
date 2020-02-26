@@ -8,6 +8,7 @@
 ;;; Copyright © 2019 HiPhish <hiphish@posteo.de>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019, 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -84,12 +85,6 @@
        #:parallel-tests? #f
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'disable-CoW
-           ;; Disable copy-on-write (CoW) in the build directory.  Tests fail on
-           ;; btrfs (and possibly other CoW file systems) for unclear reasons.
-           ;; This needs to be run early as it only affects newly-created files.
-           (lambda _
-             (invoke "chattr" "-R" "+C" ".")))
          (add-after 'configure 'patch-config-files
            (lambda _
              (substitute* "runtime/tools/mve.awk"
@@ -134,10 +129,11 @@
      `(("libtool" ,libtool)
 
        ;; For tests.
-       ("e2fsprogs" ,e2fsprogs)         ; for chattr in disable-CoW above
        ("tzdata" ,tzdata-for-tests)))
     (home-page "https://www.vim.org/")
     (synopsis "Text editor based on vi")
+    ;; The description shares language with the vim-full package. When making
+    ;; changes, check if the other description also needs to be updated.
     (description
      "Vim is a highly configurable text editor built to enable efficient text
 editing.  It is an improved version of the vi editor distributed with most UNIX
@@ -261,7 +257,21 @@ with the editor vim.")))
        ("python-3" ,python)
        ("ruby" ,ruby)
        ("tcl" ,tcl)
-       ,@(package-inputs vim)))))
+       ,@(package-inputs vim)))
+    ;; The description shares language with the vim package. When making
+    ;; changes, check if the other description also needs to be updated.
+    (description "Vim is a highly configurable text editor built to enable efficient text
+editing.  It is an improved version of the vi editor distributed with most UNIX
+systems.
+
+Vim is often called a \"programmer's editor,\" and so useful for programming
+that many consider it an entire IDE.  It's not just for programmers, though.
+Vim is perfect for all kinds of text editing, from composing email to editing
+configuration files.
+
+This package provides a version of Vim with many optional features enabled.
+It includes a graphical interface, @command{gvim}, and support for plugins
+written in the Python 3, Perl, Ruby, Tcl, and Lua programming languages.")))
 
 (define-public vim-neocomplete
   (package

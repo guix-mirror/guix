@@ -19,7 +19,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
@@ -7026,6 +7026,20 @@ compressed JSON header blocks.
               (sha256
                (base32
                 "12yfsjghbaypp4w964d45ih9vs38g6anih80wbsflaxx192idlm2"))))))
+
+;; 'Node' requires this newer version, to be removed on the next rebuild cycle.
+(define-public nghttp2-1.40
+  (package/inherit
+   nghttp2
+   (version "1.40.0")
+   (source (origin
+             (method url-fetch)
+             (uri (string-append "https://github.com/nghttp2/nghttp2/"
+                                 "releases/download/v" version "/"
+                                 "nghttp2-" version ".tar.xz"))
+             (sha256
+              (base32
+               "0wwhwv7cvi1vxpdjwvg0kpa4jzhszclpnwrwfcw728zz53a47z09"))))))
 
 (define-public hpcguix-web
   (let ((commit "f39c90b35e99e4122b0866ec4337020d61c81508")

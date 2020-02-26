@@ -315,7 +315,7 @@ back-end for the LLVM compiler framework.")
     (inputs
      `(("clang" ,clang)
        ("hwloc" ,hwloc-2 "lib")
-       ("llvm" ,llvm-8)
+       ("llvm" ,llvm)
        ("ocl-icd" ,ocl-icd)))
     (arguments
      `(#:configure-flags

@@ -19,6 +19,7 @@
 ;;; Copyright © 2019 Jethro Cao <jethrocao@gmail.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
+;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -88,6 +89,7 @@
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages stb)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
@@ -2114,3 +2116,75 @@ computer games, 3D authoring tools and simulation tools.")
     (description "Chipmunk is a simple, lightweight, fast and portable 2D
 rigid body physics library written in C.")
     (license license:expat)))
+
+(define-public libtcod
+  (package
+    (name "libtcod")
+    (version "1.15.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/libtcod/libtcod.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0pzr8ajmbqvh43ldjajx962xirj3rf8ayh344p6mqlrmb8gxrfr5"))
+              (modules '((guix build utils)))
+              (snippet '(begin
+                          (delete-file-recursively "src/vendor/utf8proc")
+                          (delete-file-recursively "src/vendor/zlib")
+                          (delete-file "src/vendor/stb_truetype.h")
+                          (delete-file "src/vendor/stb_sprintf.h")
+                          (delete-file "src/vendor/lodepng.cpp")
+                          (delete-file "src/vendor/lodepng.h")
+
+                          (substitute* "buildsys/autotools/sources.am"
+                            (("\\.\\./\\.\\./src/vendor/lodepng\\.cpp \\\\\n") "")
+                            (("\\.\\./\\.\\./src/vendor/stb\\.c \\\\")
+                             "../../src/vendor/stb.c")
+                            (("\\.\\./\\.\\./src/vendor/utf8proc/utf8proc\\.c") ""))
+
+                          (substitute* "src/libtcod/sys_sdl_img_png.cpp"
+                            (("\\.\\./vendor/") ""))
+
+                          (substitute* '("src/libtcod/color/canvas.cpp"
+                                         "src/libtcod/sys_sdl_img_png.cpp"
+                                         "src/libtcod/tileset/truetype.cpp"
+                                         "src/libtcod/tileset/tilesheet.cpp")
+                            (("\\.\\./\\.\\./vendor/") ""))
+
+                          (substitute* "src/libtcod/console/printing.cpp"
+                            (("\\.\\./\\.\\./vendor/utf8proc/") ""))
+                          #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--with-gnu-ld"
+                           "LIBS=-lutf8proc -llodepng")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'change-to-build-dir
+           (lambda _
+             (chdir "buildsys/autotools")
+             (patch-shebang "get_version.py")
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("python" ,python)
+       ("pkg-config" ,pkg-config)
+       ("stb-sprintf" ,stb-sprintf)
+       ("stb-truetype" ,stb-truetype)))
+    (inputs
+     `(("lodepng" ,lodepng)
+       ("sdl2" ,sdl2)
+       ("utf8proc" ,utf8proc)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/libtcod/libtcod")
+    (synopsis "Library specifically designed for writing roguelikes")
+    (description
+     "libtcod is a fast, portable and uncomplicated API for roguelike
+developers providing an advanced true color console, input, and lots of other
+utilities frequently used in roguelikes.")
+    (license license:bsd-3)))

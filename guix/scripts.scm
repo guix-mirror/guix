@@ -181,32 +181,69 @@ Show what and how will/would be built."
     (newline (guix-warning-port))))
 
 (define %disk-space-warning
-  ;; The fraction (between 0 and 1) of free disk space below which a warning
-  ;; is emitted.
-  (make-parameter (match (and=> (getenv "GUIX_DISK_SPACE_WARNING")
-                                string->number)
-                    (#f        .05)               ;5%
-                    (threshold (/ threshold 100.)))))
+  ;; Return a pair of absolute threshold (number of bytes) and relative
+  ;; threshold (fraction between 0 and 1) for the free disk space below which
+  ;; a warning is emitted.
+  ;; GUIX_DISK_SPACE_WARNING can contain both thresholds.  A value in [0;100)
+  ;; is a relative threshold, otherwise it's absolute.  The following
+  ;; example values are valid:
+  ;; - 1GiB;10%      ;1 GiB absolute, and 10% relative.
+  ;; - 15G           ;15 GiB absolute, and default relative.
+  ;; - 99%           ;99% relative, and default absolute.
+  ;; - 99            ;Same.
+  ;; - 100           ;100 absolute, and default relative.
+  (let* ((default-absolute-threshold (size->number "5GiB"))
+         (default-relative-threshold 0.05)
+         (percentage->float (lambda (percentage)
+                              (or (and=> (string->number
+                                          (car (string-split percentage #\%)))
+                                         (lambda (n) (/ n 100.0)))
+                                  default-relative-threshold)))
+         (size->number* (lambda (size)
+                          (or (false-if-exception (size->number size))
+                              default-absolute-threshold)))
+         (absolute? (lambda (size)
+                      (not (or (string-suffix? "%" size)
+                               (false-if-exception (< (size->number size) 100)))))))
+    (make-parameter
+     (match (getenv "GUIX_DISK_SPACE_WARNING")
+       (#f (list default-absolute-threshold
+                 default-relative-threshold))
+       (env-string (match (string-split env-string #\;)
+                     ((threshold)
+                      (if (absolute? threshold)
+                          (list (size->number* threshold)
+                                default-relative-threshold)
+                          (list default-absolute-threshold
+                                (percentage->float threshold))))
+                     ((threshold1 threshold2)
+                      (if (absolute? threshold1)
+                          (list (size->number* threshold1)
+                                (percentage->float threshold2))
+                          (list (size->number* threshold2)
+                                (percentage->float threshold1))))))))))
 
 (define* (warn-about-disk-space #:optional profile
                                 #:key
-                                (threshold (%disk-space-warning)))
+                                (thresholds (%disk-space-warning)))
   "Display a hint about 'guix gc' if less than THRESHOLD of /gnu/store is
-available."
+available.
+THRESHOLD is a pair of (ABSOLUTE-THRESHOLD RELATIVE-THRESHOLD)."
   (let* ((stats      (statfs (%store-prefix)))
          (block-size (file-system-block-size stats))
          (available  (* block-size (file-system-blocks-available stats)))
          (total      (* block-size (file-system-block-count stats)))
-         (ratio      (/ available total 1.)))
-    (when (< ratio threshold)
-      (warning (G_ "only ~,1f% of free space available on ~a~%")
-               (* ratio 100) (%store-prefix))
+         (relative-threshold-in-bytes (* total (cadr thresholds)))
+         (absolute-threshold-in-bytes (* 1024 1024 1024 (car thresholds))))
+    (when (< available (min relative-threshold-in-bytes
+                            absolute-threshold-in-bytes))
+      (warning (G_ "only ~,1f GiB of free space available on ~a~%")
+               available (%store-prefix))
       (display-hint (format #f (G_ "Consider deleting old profile
 generations and collecting garbage, along these lines:
 
 @example
 guix gc --delete-generations=1m
-@end example\n")
-                            profile)))))
+@end example\n"))))))
 
 ;;; scripts.scm ends here

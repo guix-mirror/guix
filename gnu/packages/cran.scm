@@ -20238,3 +20238,326 @@ data for the same conditions.  Interactivity can improve complex heatmaps by
 providing tooltips with information about each cell and enabling zooming into
 interesting features. iheatmapr uses the plotly library for interactivity.")
     (license license:expat)))
+
+(define-public r-packrat
+  (package
+    (name "r-packrat")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "packrat" version))
+       (sha256
+        (base32
+         "1xy5dd2hrpqa07jfl4s7dsrya05mf36ms74j833scdz0zf89586n"))))
+    (properties `((upstream-name . "packrat")))
+    (build-system r-build-system)
+    (home-page "https://github.com/rstudio/packrat/")
+    (synopsis "Dependency management R projects")
+    (description
+     "This package provides a dependency manager for R projects that allows
+you to manage the R packages your project depends on in an isolated, portable,
+and reproducible way.")
+    (license license:gpl2)))
+
+(define-public r-rsconnect
+  (package
+    (name "r-rsconnect")
+    (version "0.8.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rsconnect" version))
+       (sha256
+        (base32
+         "05ii0p0p7xpf8z0c1594s5q7wpwcs7lmlddrd67s5p2ka5m8qwiz"))))
+    (properties `((upstream-name . "rsconnect")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-curl" ,r-curl)
+       ("r-digest" ,r-digest)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-openssl" ,r-openssl)
+       ("r-packrat" ,r-packrat)
+       ("r-rstudioapi" ,r-rstudioapi)
+       ("r-yaml" ,r-yaml)))
+    (home-page "https://github.com/rstudio/rsconnect")
+    (synopsis "Deployment interface for R Markdown documents and Shiny applications")
+    (description
+     "This package provides a programmatic deployment interface for RPubs,
+shinyapps.io, and RStudio Connect.  Supported content types include R Markdown
+documents, Shiny applications, Plumber APIs, plots, and static web content.")
+    (license license:gpl2)))
+
+;; This package includes minified JavaScript files.  When upgrading please
+;; check that there are no new minified JavaScript files.
+(define-public r-dygraphs
+  (package
+    (name "r-dygraphs")
+    (version "1.1.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "dygraphs" version))
+       (sha256
+        (base32
+         "022j007mzfa9k2n31yg4aizcsf571vv3jip092h23rqj03rk3ly3"))))
+    (properties `((upstream-name . "dygraphs")))
+    (build-system r-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build r-build-system)
+                  (srfi srfi-1)
+                  (ice-9 popen))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'process-javascript
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "inst/htmlwidgets/lib/"
+               (call-with-values
+                   (lambda ()
+                     (unzip2
+                      `(("dygraphs/dygraph-combined-dev.js"
+                         "dygraph-combined.js")
+                        (,(assoc-ref inputs "js-jquery")
+                         "jquery/jquery.min.js")
+                        (,(assoc-ref inputs "js-fquarter")
+                         "fquarter/moment-fquarter.min.js"))))
+                 (lambda (sources targets)
+                   (for-each (lambda (source target)
+                               (format #t "Processing ~a --> ~a~%"
+                                       source target)
+                               (let ((minified (open-pipe* OPEN_READ "uglify-js" source)))
+                                 (call-with-output-file target
+                                   (lambda (port)
+                                     (dump-port minified port)))))
+                             sources targets))))
+             #t)))))
+    (native-inputs
+     `(("uglify-js" ,uglify-js)
+       ;; They actually use version 1.11.1, but this more recent version
+       ;; should be just fine.
+       ("js-jquery"
+        ,(origin
+           (method url-fetch)
+           (uri "https://code.jquery.com/jquery-1.12.4.js")
+           (sha256
+            (base32
+             "0x9mrc1668icvhpwzvgafm8xm11x9lfai9nwr66aw6pjnpwkc3s3"))))
+       ("js-fquarter"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "https://raw.githubusercontent.com/robgallen/"
+                               "moment-fquarter/1.0.1/moment-fquarter.js"))
+           (sha256
+            (base32
+             "01mdnsaibm9jy2f1qpbn692hpv309lhj5si9nagib4dawmrkffij"))))))
+    (propagated-inputs
+     `(("r-htmltools" ,r-htmltools)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-magrittr" ,r-magrittr)
+       ("r-xts" ,r-xts)
+       ("r-zoo" ,r-zoo)))
+    (home-page "https://github.com/rstudio/dygraphs")
+    (synopsis "Interface to Dygraphs interactive time series charting library")
+    (description
+     "This package provides an R interface to the dygraphs JavaScript charting
+library (a copy of which is included in the package).  It provides rich
+facilities for charting time-series data in R, including highly configurable
+series- and axis-display and interactive features like zoom/pan and
+series/point highlighting.")
+    (license license:expat)))
+
+(define-public r-shinystan
+  (package
+    (name "r-shinystan")
+    (version "2.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "shinystan" version))
+       (sha256
+        (base32
+         "18alf5kiqw7y2l6m5nxxizwc2znsf9frxfsqhvgcad8hld9cbya5"))))
+    (properties `((upstream-name . "shinystan")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bayesplot" ,r-bayesplot)
+       ("r-colourpicker" ,r-colourpicker)
+       ("r-dt" ,r-dt)
+       ("r-dygraphs" ,r-dygraphs)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-gtools" ,r-gtools)
+       ("r-markdown" ,r-markdown)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rsconnect" ,r-rsconnect)
+       ("r-rstan" ,r-rstan)
+       ("r-shiny" ,r-shiny)
+       ("r-shinyjs" ,r-shinyjs)
+       ("r-shinythemes" ,r-shinythemes)
+       ("r-threejs" ,r-threejs)
+       ("r-xtable" ,r-xtable)
+       ("r-xts" ,r-xts)))
+    (home-page "https://mc-stan.org/")
+    (synopsis "Interactive visual and numerical analysis for Bayesian models")
+    (description
+     "This package provides a graphical user interface for interactive
+@dfn{Markov chain Monte Carlo} (MCMC) diagnostics and plots and tables helpful
+for analyzing a posterior sample.  The interface is powered by the Shiny web
+application framework and works with the output of MCMC programs written in
+any programming language (and has extended functionality for Stan models fit
+using the @code{rstan} and @code{rstanarm} packages).")
+    (license license:gpl3+)))
+
+(define-public r-rstantools
+  (package
+    (name "r-rstantools")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rstantools" version))
+       (sha256
+        (base32
+         "1il0pn4ksbdkska5fmhvgaicvwnnc6cs08g6ags9fj1xkjiqmrsa"))))
+    (properties `((upstream-name . "rstantools")))
+    (build-system r-build-system)
+    (inputs `(("pandoc" ,ghc-pandoc)))
+    (propagated-inputs
+     `(("r-desc" ,r-desc)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://mc-stan.org/rstantools/")
+    (synopsis "Tools for developing R packages interfacing with Stan")
+    (description
+     "This package provides various tools for developers of R packages
+interfacing with @url{https://mc-stan.org, Stan}, including functions to set
+up the required package structure, S3 generics and default methods to unify
+function naming across Stan-based R packages, and vignettes with
+recommendations for developers.")
+    (license license:gpl3+)))
+
+(define-public r-loo
+  (package
+    (name "r-loo")
+    (version "2.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "loo" version))
+       (sha256
+        (base32
+         "1hq1zcj76x55z9kic6cwf7mfq9pzqfbr341jbc9wp7x8ac4zcva6"))))
+    (properties `((upstream-name . "loo")))
+    (build-system r-build-system)
+    (inputs
+     `(("pandoc" ,ghc-pandoc)
+       ("pandoc-citeproc" ,ghc-pandoc-citeproc)))
+    (propagated-inputs
+     `(("r-checkmate" ,r-checkmate)
+       ("r-matrixstats" ,r-matrixstats)))
+    (home-page "https://mc-stan.org/loo/")
+    (synopsis "Leave-One-Out cross-validation and WAIC for Bayesian models")
+    (description
+     "This package provides an implementation of efficient approximate
+@dfn{leave-one-out} (LOO) cross-validation for Bayesian models fit using
+Markov chain Monte Carlo, as described in @url{doi:10.1007/s11222-016-9696-4}.
+The approximation uses @dfn{Pareto smoothed importance sampling} (PSIS), a new
+procedure for regularizing importance weights.  As a byproduct of the
+calculations, we also obtain approximate standard errors for estimated
+predictive errors and for the comparison of predictive errors between models.
+The package also provides methods for using stacking and other model weighting
+techniques to average Bayesian predictive distributions.")
+    (license license:gpl3+)))
+
+(define-public r-rstan
+  (package
+    (name "r-rstan")
+    (version "2.19.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rstan" version))
+       (sha256
+        (base32
+         "128ndwjrhf8b1qvvqz4bl13qlm8718z9qs5ryc6gsdr3vk65s0np"))))
+    (properties `((upstream-name . "rstan")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'set-timezone
+           ;; This package is picky about timezones.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "TZ" "UTC+1")
+             (setenv "TZDIR"
+                     (string-append (assoc-ref inputs "tzdata")
+                                    "/share/zoneinfo"))
+             #t)))))
+    (native-inputs
+     `(("tzdata" ,tzdata)
+       ("pandoc" ,ghc-pandoc)))
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-inline" ,r-inline)
+       ("r-loo" ,r-loo)
+       ("r-pkgbuild" ,r-pkgbuild)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppeigen" ,r-rcppeigen)
+       ("r-stanheaders" ,r-stanheaders)))
+    (home-page "https://discourse.mc-stan.org/")
+    (synopsis "R interface to Stan")
+    (description
+     "User-facing R functions are provided to parse, compile, test, estimate,
+and analyze Stan models by accessing the header-only Stan library provided by
+the StanHeaders package.  The Stan project develops a probabilistic
+programming language that implements full Bayesian statistical inference via
+Markov Chain Monte Carlo, rough Bayesian inference via 'variational'
+approximation, and (optionally penalized) maximum likelihood estimation via
+optimization.  In all three cases, automatic differentiation is used to
+quickly and accurately evaluate gradients without burdening the user with the
+need to derive the partial derivatives.")
+    (license license:gpl3+)))
+
+(define-public r-rstanarm
+  (package
+    (name "r-rstanarm")
+    (version "2.19.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rstanarm" version))
+       (sha256
+        (base32
+         "0gxjq8bdlvdd8kn3dhp12xlymdab036r7n12lzmd3xlkl4cnxq3s"))))
+    (properties `((upstream-name . "rstanarm")))
+    (build-system r-build-system)
+    (inputs
+     `(("pandoc" ,ghc-pandoc)
+       ("pandoc-citeproc" ,ghc-pandoc-citeproc)))
+    (propagated-inputs
+     `(("r-bayesplot" ,r-bayesplot)
+       ("r-bh" ,r-bh)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-lme4" ,r-lme4)
+       ("r-loo" ,r-loo)
+       ("r-matrix" ,r-matrix)
+       ("r-nlme" ,r-nlme)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppeigen" ,r-rcppeigen)
+       ("r-rcppparallel" ,r-rcppparallel)
+       ("r-rstan" ,r-rstan)
+       ("r-rstantools" ,r-rstantools)
+       ("r-shinystan" ,r-shinystan)
+       ("r-stanheaders" ,r-stanheaders)
+       ("r-survival" ,r-survival)))
+    (home-page "https://mc-stan.org/rstanarm/")
+    (synopsis "Bayesian applied regression modeling via Stan")
+    (description
+     "This package estimates previously compiled regression models using the
+@code{rstan} package, which provides the R interface to the Stan C++ library
+for Bayesian estimation.  Users specify models via the customary R syntax with
+a formula and @code{data.frame} plus some additional arguments for priors.")
+    (license license:gpl3+)))

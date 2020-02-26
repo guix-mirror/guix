@@ -133,10 +133,7 @@ the @file{bin} directory."
                 (symlink (string-append target "/node_modules/" modulename "/"
 					value)
                          (string-append binaries "/" key))))))
-         binary-configuration))
-      (else
-        (symlink (string-append target "/node_modules/" modulename "/bin")
-		 binaries)))
+         binary-configuration)))
     (when dependencies
       (mkdir-p
         (string-append target "/node_modules/" modulename "/node_modules"))

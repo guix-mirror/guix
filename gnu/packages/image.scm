@@ -23,6 +23,7 @@
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1844,3 +1845,58 @@ using only text tools.
 SNG is implemented by a compiler/decompiler called sng that
 losslessly translates between SNG and PNG.")
     (license license:zlib)))
+
+(define-public lodepng
+  ;; There are no tags in the repository, so we take the version as defined in
+  ;; lodepng.cpp.
+  (let ((commit "48e5364ef48ec2408f44c727657ac1b6703185f8")
+        (revision "1")
+        (version "20200215"))
+    (package
+      (name "lodepng")
+      (version (git-version version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/lvandeve/lodepng")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1a1x8ag2scanzb2066jm9hg2y9kaa3wmpgmz10l1x9bkpik612lw"))
+                (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'build
+             (lambda _
+               (setenv "CXXFLAGS" "-fPIC")
+               (invoke "make" "lodepng.o")
+               (invoke "make" "lodepng_util.o")
+               (invoke "g++" "-fPIC" "-O3"
+                       "-o" "liblodepng.so"
+                       "-shared" "lodepng.o" "lodepng_util.o")
+               #t))
+           (replace 'check
+             (lambda _
+               (invoke "make" "unittest")
+               (invoke "./unittest")
+               #t))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (doc (string-append out "/share/doc"))
+                      (lib (string-append out "/lib"))
+                      (include (string-append out "/include")))
+                 (install-file "lodepng.h" include)
+                 (install-file "lodepng_util.h" include)
+                 (install-file "liblodepng.so" lib)
+                 (install-file "README.md" doc)
+                 #t))))))
+      (home-page "https://lodev.org/lodepng/")
+      (synopsis "PNG encoder and decoder in C and C++, without dependencies")
+      (description "LodePNG is a PNG image decoder and encoder, all in one,
+no dependency or linkage required.  It's made for C (ISO C90), and has a C++
+wrapper with a more convenient interface on top.")
+      (license license:zlib))))

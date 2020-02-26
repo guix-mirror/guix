@@ -581,15 +581,27 @@ void LocalStore::removeUnusedLinks(const GCState & state)
 #ifdef HAVE_STATX
 # define st_size stx_size
 # define st_nlink stx_nlink
+	static int statx_flags = AT_SYMLINK_NOFOLLOW | AT_STATX_DONT_SYNC;
 	struct statx st;
-	if (statx(AT_FDCWD, path.c_str(),
-		  AT_SYMLINK_NOFOLLOW | AT_STATX_DONT_SYNC,
-		  STATX_SIZE | STATX_NLINK, &st) == -1)
+
+	if (statx(AT_FDCWD, path.c_str(), statx_flags,
+		  STATX_SIZE | STATX_NLINK, &st) == -1) {
+	    if (errno == EINVAL) {
+		/* Old 3.10 kernels (CentOS 7) don't support
+		   AT_STATX_DONT_SYNC, so try again without it.  */
+		statx_flags &= ~AT_STATX_DONT_SYNC;
+		if (statx(AT_FDCWD, path.c_str(), statx_flags,
+			  STATX_SIZE | STATX_NLINK, &st) == -1)
+		    throw SysError(format("statting `%1%'") % path);
+	    } else {
+		throw SysError(format("statting `%1%'") % path);
+	    }
+	}
 #else
         struct stat st;
         if (lstat(path.c_str(), &st) == -1)
-#endif
             throw SysError(format("statting `%1%'") % path);
+#endif
 
         if (st.st_nlink != 1) {
             actualSize += st.st_size;

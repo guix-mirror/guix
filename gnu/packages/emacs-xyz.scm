@@ -59,6 +59,7 @@
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2020 Robert Smith <robertsmith@posteo.net>
+;;; Copyright © 2020 Evan Straw <evan.straw99@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -165,7 +166,7 @@
 (define-public emacs-geiser
   (package
     (name "emacs-geiser")
-    (version "0.11")
+    (version "0.11.2")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -174,7 +175,7 @@
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "0fb2h984hn7bnyiziplp7kgk29zdzc9yainsv0k1li436irlp9dd"))))
+               "1khi1bghsjx6cs5acizmlbw9z19s4qycnji9krdbn42cbpv0rysv"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -19360,7 +19361,7 @@ with passwords for paths matching regexps.")
      `(("emacs-ivy" ,emacs-ivy)))
     (home-page "https://github.com/redguardtoo/eacl")
     (synopsis "Auto-complete lines by using @code{grep} on a project")
-    (description "This package provides auto-completion cammands for single
+    (description "This package provides auto-completion commands for single
 and multiple lines of code in a project.")
     (license license:gpl3+)))
 
@@ -20370,7 +20371,7 @@ color.  Designed for 256-color terminals.  Comes in light and dark!")
      "https://github.com/elixir-editors/emacs-elixir")
     (synopsis "Major mode for editing Elixir files")
     (description
-     "Elixir-Mode Provides font-locking, indentation and navigation support
+     "Elixir-Mode provides font-locking, indentation and navigation support
  for the Elixir programming language.")
     (license license:gpl3+)))
 
@@ -21535,4 +21536,27 @@ detected language.")
 Values are stored in a directory in @code{user-emacs-directory}, using
 one file per value.  This makes it easy to delete or remove unused
 variables.")
+    (license license:gpl3+)))
+
+(define-public emacs-company-emoji
+  (package
+    (name "emacs-company-emoji")
+    (version "2.5.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dunn/company-emoji/")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0r9zcbm3nb3zw5cwrkl098v5b49jbga5404bj7j55g6k4rwkjar2"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-company" ,emacs-company)))
+    (home-page "https://github.com/dunn/company-emoji/")
+    (synopsis "Company completion back-end for emoji")
+    (description
+     "This library is a Company back-end providing auto-completion for
+emoji.")
     (license license:gpl3+)))

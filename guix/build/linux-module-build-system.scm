@@ -60,15 +60,18 @@
 ;; part.
 (define* (install #:key inputs native-inputs outputs #:allow-other-keys)
   (let* ((out (assoc-ref outputs "out"))
-         (moddir (string-append out "/lib/modules"))
-         (kmod (assoc-ref (or native-inputs inputs) "kmod")))
+         (moddir (string-append out "/lib/modules")))
     ;; Install kernel modules
     (mkdir-p moddir)
     (invoke "make" "-C"
             (string-append (assoc-ref inputs "linux-module-builder")
                            "/lib/modules/build")
             (string-append "M=" (getcwd))
-            (string-append "DEPMOD=" kmod "/bin/depmod")
+            ;; Disable depmod because the Guix system's module directory
+            ;; is an union of potentially multiple packages.  It is not
+            ;; possible to use depmod to usefully calculate a dependency
+            ;; graph while building only one of those packages.
+            "DEPMOD=true"
             (string-append "MODULE_DIR=" moddir)
             (string-append "INSTALL_PATH=" out)
             (string-append "INSTALL_MOD_PATH=" out)

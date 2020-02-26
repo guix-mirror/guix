@@ -51,6 +51,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages c)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages imagemagick)
@@ -10718,3 +10719,234 @@ approach to templating.")
 
 (define-public ecl-lquery
   (sbcl-package->ecl-package sbcl-lquery))
+
+(define-public sbcl-cl-mysql
+  (let ((commit "ab56c279c1815aec6ca0bfe85164ff7e85cfb6f9")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-mysql")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/hackinghat/cl-mysql.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0dg5ynx2ww94d0qfwrdrm7plkn43h64hs4iiq9mj2s1s4ixnp3lr"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("stefil" ,sbcl-stefil)))
+      (inputs
+       `(("cffi" ,sbcl-cffi)
+         ("mariadb-lib" ,mariadb "lib")))
+      (arguments
+       `(#:tests? #f ; TODO: Tests require a running server
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "system.lisp"
+                 (("libmysqlclient_r" all)
+                  (string-append (assoc-ref inputs "mariadb-lib")
+                                 "/lib/"
+                                 all)))
+               #t)))))
+      (synopsis "Common Lisp wrapper for MySQL")
+      (description
+       "@code{cl-mysql} is a Common Lisp implementation of a MySQL wrapper.")
+      (home-page "http://www.hackinghat.com/index.php/cl-mysql")
+      (license license:expat))))
+
+(define-public cl-mysql
+  (sbcl-package->cl-source-package sbcl-cl-mysql))
+
+(define-public sbcl-simple-date
+  (let ((commit "74469b25bbda990ec9b77e0d0eccdba0cd7e721a")
+        (revision "1"))
+    (package
+      (name "sbcl-simple-date")
+      (version (git-version "1.19" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/marijnh/Postmodern.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0im7ymnyxjhn2w74jfg76k5gpr0gl33n31akx33hl28722ljd0hd"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (synopsis "Basic date and time objects for Common Lisp")
+      (description
+       "@code{simple-date} is a very basic implementation of date and time
+objects, used to support storing and retrieving time-related SQL types.")
+      (home-page "https://marijnhaverbeke.nl/postmodern/")
+      (license license:zlib))))
+
+(define-public cl-simple-date
+  (sbcl-package->cl-source-package sbcl-simple-date))
+
+(define-public ecl-simple-date
+  (sbcl-package->ecl-package sbcl-simple-date))
+
+(define-public sbcl-cl-postgres
+  (package
+    (inherit sbcl-simple-date)
+    (name "sbcl-cl-postgres")
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)
+       ("simple-date" ,sbcl-simple-date)))
+    (inputs
+     `(("md5" ,sbcl-md5)
+       ("split-sequence" ,sbcl-split-sequence)
+       ("usocket" ,sbcl-usocket)))
+    (arguments
+     `(#:tests? #f)) ; TODO: Break simple-date/postgres-glue circular dependency
+    (synopsis "Common Lisp interface for PostgreSQL")
+    (description
+     "@code{cl-postgres} is a low-level library used for interfacing with
+a PostgreSQL server over a socket.")))
+
+(define-public cl-postgres
+  (sbcl-package->cl-source-package sbcl-cl-postgres))
+
+(define-public sbcl-simple-date-postgres-glue
+  (package
+    (inherit sbcl-simple-date)
+    (name "sbcl-simple-date-postgres-glue")
+    (inputs
+     `(("cl-postgres" ,sbcl-cl-postgres)
+       ("simple-date" ,sbcl-simple-date)))
+    (arguments
+     `(#:asd-file "simple-date.asd"
+       #:asd-system-name "simple-date/postgres-glue"))))
+
+(define-public cl-simple-date-postgres-glue
+  (sbcl-package->cl-source-package sbcl-simple-date-postgres-glue))
+
+(define-public sbcl-s-sql
+  (package
+    (inherit sbcl-simple-date)
+    (name "sbcl-s-sql")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("cl-postgres" ,sbcl-cl-postgres)))
+    (arguments
+     `(#:tests? #f)) ; TODO: Break postmodern circular dependency
+    (synopsis "Lispy DSL for SQL")
+    (description
+     "@code{s-sql} is a Common Lisp library that can be used to compile
+s-expressions to strings of SQL code, escaping any Lisp values inside, and
+doing as much as possible of the work at compile time.")))
+
+(define-public cl-s-sql
+  (sbcl-package->cl-source-package sbcl-s-sql))
+
+(define-public sbcl-postmodern
+  (package
+    (inherit sbcl-simple-date)
+    (name "sbcl-postmodern")
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)
+       ("simple-date" ,sbcl-simple-date)
+       ("simple-date-postgres-glue" ,sbcl-simple-date-postgres-glue)))
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("cl-postgres" ,sbcl-cl-postgres)
+       ("closer-mop" ,sbcl-closer-mop)
+       ("global-vars" ,sbcl-global-vars)
+       ("s-sql" ,sbcl-s-sql)
+       ("split-sequence" ,sbcl-split-sequence)))
+    (arguments
+     ;; TODO: Fix missing dependency errors for simple-date/postgres-glue,
+     ;; cl-postgres/tests and s-sql/tests.
+     `(#:tests? #f))
+    (synopsis "Common Lisp library for interacting with PostgreSQL")
+    (description
+     "@code{postmodern} is a Common Lisp library for interacting with
+PostgreSQL databases.  It provides the following features:
+
+@itemize
+@item Efficient communication with the database server without need for
+foreign libraries.
+@item Support for UTF-8 on Unicode-aware Lisp implementations.
+@item A syntax for mixing SQL and Lisp code.
+@item Convenient support for prepared statements and stored procedures.
+@item A metaclass for simple database-access objects.
+@end itemize\n")))
+
+(define-public cl-postmodern
+  (sbcl-package->cl-source-package sbcl-postmodern))
+
+(define-public sbcl-dbi
+  (package
+    (name "sbcl-dbi")
+    (version "0.9.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fukamachi/cl-dbi.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0m1fsravfaizamdak84adh3jxc4j91maqnrb4m08bfbmb04cdqhs"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("closer-mop" ,sbcl-closer-mop)
+       ("split-sequence" ,sbcl-split-sequence)))
+    (arguments
+     `(#:tests? #f)) ; TODO: Break circular dependency with dbd-*
+    (synopsis "Database independent interface for Common Lisp")
+    (description
+     "@code{dbi} is a Common Lisp library providing a database independent
+interface for MySQL, PostgreSQL and SQLite.")
+    (home-page "https://github.com/fukamachi/cl-dbi")
+    (license license:llgpl)))
+
+(define-public cl-dbi
+  (sbcl-package->cl-source-package sbcl-dbi))
+
+(define-public sbcl-dbd-mysql
+  (package
+   (inherit sbcl-dbi)
+   (name "sbcl-dbd-mysql")
+   (inputs
+    `(("cl-mysql" ,sbcl-cl-mysql)
+      ("dbi" ,sbcl-dbi)))
+   (synopsis "Database driver for MySQL")))
+
+(define-public cl-dbd-mysql
+  (sbcl-package->cl-source-package sbcl-dbd-mysql))
+
+(define-public sbcl-dbd-postgres
+  (package
+   (inherit sbcl-dbi)
+   (name "sbcl-dbd-postgres")
+   (inputs
+    `(("cl-postgres" ,sbcl-cl-postgres)
+      ("dbi" ,sbcl-dbi)
+      ("trivial-garbage" ,sbcl-trivial-garbage)))
+   (synopsis "Database driver for PostgreSQL")))
+
+(define-public cl-dbd-postgres
+  (sbcl-package->cl-source-package sbcl-dbd-postgres))
+
+(define-public sbcl-dbd-sqlite3
+  (package
+   (inherit sbcl-dbi)
+   (name "sbcl-dbd-sqlite3")
+   (inputs
+    `(("cl-sqlite" ,sbcl-cl-sqlite)
+      ("dbi" ,sbcl-dbi)
+      ("trivial-garbage" ,sbcl-trivial-garbage)))
+   (synopsis "Database driver for SQLite3")))
+
+(define-public cl-dbd-sqlite3
+  (sbcl-package->cl-source-package sbcl-dbd-sqlite3))

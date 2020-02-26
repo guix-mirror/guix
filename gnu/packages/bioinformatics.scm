@@ -2272,23 +2272,23 @@ time.")
 (define-public crossmap
   (package
     (name "crossmap")
-    (version "0.2.9")
+    (version "0.3.8")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "CrossMap" version))
               (sha256
                (base32
-                "1byhclrqnqpvc1rqkfh4jwj6yhn0x9y7jk47i0qcjlhk0pjkw92p"))))
+                "1sb2f2qbxya4fzw3yjl09vbrs8vfmw22zrygrvz004sf9gb1vkan"))))
     (build-system python-build-system)
-    (arguments `(#:python ,python-2))
     (inputs
-     `(("python-bx-python" ,python2-bx-python)
-       ("python-numpy" ,python2-numpy)
-       ("python-pysam" ,python2-pysam)
+     `(("python-bx-python" ,python-bx-python)
+       ("python-numpy" ,python-numpy)
+       ("python-pybigwig" ,python-pybigwig)
+       ("python-pysam" ,python-pysam)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("python-cython" ,python2-cython)
-       ("python-nose" ,python2-nose)))
+     `(("python-cython" ,python-cython)
+       ("python-nose" ,python-nose)))
     (home-page "http://crossmap.sourceforge.net/")
     (synopsis "Convert genome coordinates between assemblies")
     (description
@@ -2578,7 +2578,7 @@ accurately delineate genomic rearrangements throughout the genome.")
 (define-public diamond
   (package
     (name "diamond")
-    (version "0.9.22")
+    (version "0.9.30")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2587,7 +2587,7 @@ accurately delineate genomic rearrangements throughout the genome.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0bky78v79g3wmdpsd706cscckgw1v09fg8vdd0z8z0d5b97aj9zl"))))
+                "0k6f3kb6cniw11xw6763kkbs1sl0yack7xsy7q5fl5v170ssphq4"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no "check" target
@@ -4274,19 +4274,30 @@ experiments.")
 (define-public macs
   (package
     (name "macs")
-    (version "2.1.1.20160309")
+    (version "2.2.6")
     (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "MACS2" version))
+              ;; The PyPi tarball does not contain tests.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/taoliu/MACS.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "09ixspd1vcqmz1c81ih70xs4m7qml2iy5vyx1y74zww3iy1vl210"))))
+                "1c5gxr0mk6hkd4vclf0k00wvyvzw2vrmk52c85338p7aqjwg6n15"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2 ; only compatible with Python 2.7
-       #:tests? #f)) ; no test target
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-v"))))))
     (inputs
-     `(("python-numpy" ,python2-numpy)))
+     `(("python-numpy" ,python-numpy)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/taoliu/MACS/")
     (synopsis "Model based analysis for ChIP-Seq data")
     (description
@@ -4910,20 +4921,26 @@ predicts the locations of structural units in the sequences.")
 (define-public proteinortho
   (package
     (name "proteinortho")
-    (version "5.16b")
-    (source
-     (origin
-      (method url-fetch)
-      (uri
-       (string-append
-        "http://www.bioinf.uni-leipzig.de/Software/proteinortho/proteinortho_v"
-        version "_src.tar.gz"))
-      (sha256
-       (base32
-        "1wl0dawpssqwfjvr651r4wlww8hhjin8nba6xh71ks7sbypx886j"))))
+    (version "6.0.14")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.com/paulklemm_PHD/proteinortho.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0pmy617zy2z2w6hjqxjhf3rzikf5n3mpia80ysq8233vfr7wrzff"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; remove pre-built scripts
+                  (delete-file-recursively "src/BUILD/")
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
+       #:make-flags '("CC=gcc")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
@@ -4941,15 +4958,23 @@ predicts the locations of structural units in the sequences.")
              #t))
          (add-after 'install 'wrap-programs
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((path (getenv "PATH"))
-                    (out (assoc-ref outputs "out"))
-                    (binary (string-append out "/bin/proteinortho5.pl")))
-               (wrap-program binary `("PATH" ":" prefix (,path))))
+             (let ((path (getenv "PATH"))
+                   (out (assoc-ref outputs "out")))
+               (for-each (lambda (script)
+                           (wrap-script script `("PATH" ":" prefix (,path))))
+                         (cons (string-append out "/bin/proteinortho")
+                               (find-files out "\\.(pl|py)$"))))
              #t)))))
     (inputs
-     `(("perl" ,perl)
-       ("python" ,python-2)
-       ("blast+" ,blast+)))
+     `(("guile" ,guile-3.0) ; for wrap-script
+       ("diamond" ,diamond)
+       ("perl" ,perl)
+       ("python" ,python-wrapper)
+       ("blast+" ,blast+)
+       ("lapack" ,lapack)
+       ("openblas" ,openblas)))
+    (native-inputs
+     `(("which" ,which)))
     (home-page "http://www.bioinf.uni-leipzig.de/Software/proteinortho")
     (synopsis "Detect orthologous genes across species")
     (description
@@ -4957,7 +4982,7 @@ predicts the locations of structural units in the sequences.")
 species.  For doing so, it compares similarities of given gene sequences and
 clusters them to find significant groups.  The algorithm was designed to handle
 large-scale data and can be applied to hundreds of species at once.")
-    (license license:gpl2+)))
+    (license license:gpl3+)))
 
 (define-public pyicoteo
   (package
@@ -12010,23 +12035,6 @@ graphs.  This library makes it easy to work with @file{.loom} files for
 single-cell RNA-seq data.")
     (license license:bsd-3)))
 
-;; pigx-scrnaseq does not work with the latest version of loompy.
-(define-public python-loompy-for-pigx-scrnaseq
-  (package (inherit python-loompy)
-    (name "python-loompy")
-    (version "2.0.3")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/linnarsson-lab/loompy.git")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0pjyl532pl8sbv71yci6h0agchn0naw2qjcwj50n6afrsahbsag3"))))
-    ;; There are none.
-    (arguments '(#:tests? #f))))
-
 ;; We cannot use the latest commit because it requires Java 9.
 (define-public java-forester
   (let ((commit "86b07efe302d5094b42deed9260f719a4c4ac2e6")
@@ -12770,7 +12778,7 @@ methylation and segmentation.")
 (define-public pigx-scrnaseq
   (package
     (name "pigx-scrnaseq")
-    (version "0.0.8")
+    (version "1.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_scrnaseq/"
@@ -12778,27 +12786,21 @@ methylation and segmentation.")
                                   "/pigx_scrnaseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0zv0sc5amivxhb95vx2gfx6l9bh7n80fh7h47dalnwxxnfvnzai4"))))
+                "0ga2jr4968qzwml6aycky4603q64lny3y7lzw6dmafch5pydl1qi"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:configure-flags
-       (list (string-append "PICARDJAR=" (assoc-ref %build-inputs "java-picard")
-			    "/share/java/picard.jar")
-	     (string-append "DROPSEQJAR=" (assoc-ref %build-inputs "dropseq-tools")
-			    "/share/java/dropseq.jar"))))
     (inputs
      `(("coreutils" ,coreutils)
        ("perl" ,perl)
-       ("dropseq-tools" ,dropseq-tools)
        ("fastqc" ,fastqc)
-       ("java-picard" ,java-picard-2.10.3) ; same as for dropseq
+       ("flexbar" ,flexbar)
        ("java" ,icedtea-8)
+       ("jellyfish" ,jellyfish)
        ("python-wrapper" ,python-wrapper)
        ("python-pyyaml" ,python-pyyaml)
        ("python-pandas" ,python-pandas)
        ("python-magic" ,python-magic)
        ("python-numpy" ,python-numpy)
-       ("python-loompy" ,python-loompy-for-pigx-scrnaseq)
+       ("python-loompy" ,python-loompy)
        ("ghc-pandoc" ,ghc-pandoc)
        ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc)
        ("samtools" ,samtools)
@@ -12825,6 +12827,7 @@ methylation and segmentation.")
        ("r-rtsne" ,r-rtsne)
        ("r-scater" ,r-scater)
        ("r-scran" ,r-scran)
+       ("r-seurat" ,r-seurat)
        ("r-singlecellexperiment" ,r-singlecellexperiment)
        ("r-stringr" ,r-stringr)
        ("r-yaml" ,r-yaml)))
@@ -13882,7 +13885,7 @@ absolute GSEA.")
 (define-public jamm
   (package
     (name "jamm")
-    (version "1.0.7.5")
+    (version "1.0.7.6")
     (source
      (origin
        (method git-fetch)
@@ -13892,7 +13895,7 @@ absolute GSEA.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0ls889jcma1ch9h21jjhnkadgszgqj41842hhcjh6cg88f85qf3i"))))
+         "0bsa5mf9n9q5jz7mmacrra41l7r8rac5vgsn6wv1fb52ya58b970"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; there are none

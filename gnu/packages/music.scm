@@ -5138,7 +5138,7 @@ and as an LV2 plugin.")
 (define-public zrythm
   (package
     (name "zrythm")
-    (version "0.7.474")
+    (version "0.7.573")
     (source
       (origin
         (method url-fetch)
@@ -5146,7 +5146,7 @@ and as an LV2 plugin.")
                             version ".tar.xz"))
         (sha256
           (base32
-            "0qq9v8y27zhamcb7nq7pl76874ws8x8cxhp5r685b8binvl9p0az"))))
+            "075gq478xbzz5ql4fsrgfzhgxi7z26k6034lhlkmm0klfcb8j9mg"))))
    (build-system meson-build-system)
    (arguments
     `(#:glib-or-gtk? #t
@@ -5164,24 +5164,25 @@ and as an LV2 plugin.")
    (inputs
     `(("alsa-lib" ,alsa-lib)
       ("jack" ,jack-1)
-      ("font-dseg", font-dseg)
-      ("ffmpeg", ffmpeg)
-      ("fftw", fftw)
-      ("fftwf", fftwf)
-      ("gettext", gettext-minimal)
-      ("glibc", glibc)
-      ("gtk+", gtk+)
+      ("font-dseg" ,font-dseg)
+      ("ffmpeg" ,ffmpeg)
+      ("fftw" ,fftw)
+      ("fftwf" ,fftwf)
+      ("gettext" ,gettext-minimal)
+      ("glibc" ,glibc)
+      ("gtk+" ,gtk+)
+      ("libcyaml" ,libcyaml)
       ("libsamplerate" ,libsamplerate)
       ("libsndfile" ,libsndfile)
       ("libyaml" ,libyaml)
-      ("lilv", lilv)
-      ("xdg-utils", xdg-utils)
-      ("rubberband", rubberband)))
+      ("lilv" ,lilv)
+      ("xdg-utils" ,xdg-utils)
+      ("rubberband" ,rubberband)))
    (native-inputs
-     `(("pkg-config", pkg-config)
-       ("help2man", help2man)
+     `(("pkg-config" ,pkg-config)
+       ("help2man" ,help2man)
        ("libaudec" ,libaudec)
-       ("lv2", lv2)
+       ("lv2" ,lv2)
        ("glib" ,glib "bin"))) ;for 'glib-compile-resources'
    (synopsis "Digital audio workstation focusing on usability")
    (description "Zrythm is a digital audio workstation designed to be

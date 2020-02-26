@@ -184,8 +184,6 @@
      "77DD AD2D 97F5 31BB C0F3  C7FD DFB5 EB09 AA62 5423")
     ("snape"
      "F494 72F4 7A59 00D5 C235  F212 89F9 6D48 08F3 59C7")
-    ("snape"
-     "F494 72F4 7A59 00D5 C235  F212 89F9 6D48 08F3 59C7")
     ("steap"
      "4E26 CCE9 578E 0828 9855  BDD4 1C79 95D2 D5A3 8336")
     ("taylanub"
@@ -193,7 +191,8 @@
 
     ;; https://lists.gnu.org/archive/html/guix-devel/2017-03/msg00826.html
     ("thomasd"
-     "1DD1 681F E285 E07F 11DC  0C59 2E15 A6BC D77D 54FD")
+     ;; primary: "1DD1 681F E285 E07F 11DC  0C59 2E15 A6BC D77D 54FD"
+     "3D2C DA58 819C 08C2 A649  D43D 5C3B 064C 724A 5726")
     ("thomasd (old)"
      "A5C5 92EA 606E 7106 A6A3  BC08 98B2 1575 91E1 2B08")
 

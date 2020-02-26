@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Dennis Mungai <dmngaie@gmail.com>
-;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -48,6 +48,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages mpi)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -207,64 +208,77 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
        #:build-type "Release"
 
        #:phases (modify-phases %standard-phases
-                  (add-after
-                   'unpack 'set-glibc-file-names
-                   (lambda* (#:key inputs #:allow-other-keys)
-                     (let ((libc (assoc-ref inputs "libc"))
-                           (compiler-rt (assoc-ref inputs "clang-runtime"))
-                           (gcc (assoc-ref inputs "gcc"))
-                           (version
-                            (string->number
-                             ,(version-major (package-version clang-runtime)))))
-                       (cond
-                         ((> version 3)
-                          ;; Link to libclang_rt files from clang-runtime.
-                          (substitute* "lib/Driver/ToolChain.cpp"
-                            (("getDriver\\(\\)\\.ResourceDir")
-                             (string-append "\"" compiler-rt "\"")))
-
-                          ;; Make "LibDir" refer to <glibc>/lib so that it
-                          ;; uses the right dynamic linker file name.
-                          (substitute* "lib/Driver/ToolChains/Linux.cpp"
-                            (("(^[[:blank:]]+LibDir = ).*" _ declaration)
-                             (string-append declaration "\"" libc "/lib\";\n"))
-
-                            ;; Make clang look for libstdc++ in the right
-                            ;; location.
-                            (("LibStdCXXIncludePathCandidates\\[\\] = \\{")
-                             (string-append
-                              "LibStdCXXIncludePathCandidates[] = { \"" gcc "/include/c++\","))
-
-                            ;; Make sure libc's libdir is on the search path, to
-                            ;; allow crt1.o & co. to be found.
-                            (("@GLIBC_LIBDIR@")
-                             (string-append libc "/lib"))))
-                         (else
-                          (substitute* "lib/Driver/Tools.cpp"
-                            ;; Patch the 'getLinuxDynamicLinker' function so that
-                            ;; it uses the right dynamic linker file name.
-                            (("/lib64/ld-linux-x86-64.so.2")
-                             (string-append libc
-                                            ,(glibc-dynamic-linker))))
-
-                          ;; Link to libclang_rt files from clang-runtime.
-                          ;; This substitution needed slight adjustment in 3.8.
-                          (if (< 3.8 (string->number ,(version-major+minor
-                                                       (package-version
-                                                        clang-runtime))))
-                              (substitute* "lib/Driver/Tools.cpp"
-                                (("TC\\.getDriver\\(\\)\\.ResourceDir")
-                                 (string-append "\"" compiler-rt "\"")))
+                  (add-after 'unpack 'add-missing-triplets
+                    (lambda _
+                      ;; Clang iterates through known triplets to search for
+                      ;; GCC's headers, but does not recognize some of the
+                      ;; triplets that are used in Guix.
+                      (substitute* ,@(if (version>=? version "6.0")
+                                         '("lib/Driver/ToolChains/Gnu.cpp")
+                                         '("lib/Driver/ToolChains.cpp"))
+                        (("\"aarch64-linux-gnu\"," all)
+                         (string-append "\"aarch64-unknown-linux-gnu\", "
+                                        all))
+                        (("\"arm-linux-gnueabihf\"," all)
+                         (string-append all
+                                        " \"arm-unknown-linux-gnueabihf\","))
+                        (("\"i686-pc-linux-gnu\"," all)
+                         (string-append "\"i686-unknown-linux-gnu\", "
+                                        all)))
+                      #t))
+                  (add-after 'unpack 'set-glibc-file-names
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((libc (assoc-ref inputs "libc"))
+                            (compiler-rt (assoc-ref inputs "clang-runtime"))
+                            (gcc (assoc-ref inputs "gcc")))
+                        ,@(cond
+                           ((version>=? version "6.0")
+                            `(;; Link to libclang_rt files from clang-runtime.
                               (substitute* "lib/Driver/ToolChain.cpp"
                                 (("getDriver\\(\\)\\.ResourceDir")
-                                 (string-append "\"" compiler-rt "\""))))
+                                 (string-append "\"" compiler-rt "\"")))
 
-                          ;; Make sure libc's libdir is on the search path, to
-                          ;; allow crt1.o & co. to be found.
-                          (substitute* "lib/Driver/ToolChains.cpp"
-                            (("@GLIBC_LIBDIR@")
-                             (string-append libc "/lib")))))
-                       #t)))
+                              ;; Make "LibDir" refer to <glibc>/lib so that it
+                              ;; uses the right dynamic linker file name.
+                              (substitute* "lib/Driver/ToolChains/Linux.cpp"
+                                (("(^[[:blank:]]+LibDir = ).*" _ declaration)
+                                 (string-append declaration "\"" libc "/lib\";\n"))
+
+                                ;; Make clang look for libstdc++ in the right
+                                ;; location.
+                                (("LibStdCXXIncludePathCandidates\\[\\] = \\{")
+                                 (string-append
+                                  "LibStdCXXIncludePathCandidates[] = { \"" gcc
+                                  "/include/c++\","))
+
+                                ;; Make sure libc's libdir is on the search path, to
+                                ;; allow crt1.o & co. to be found.
+                                (("@GLIBC_LIBDIR@")
+                                 (string-append libc "/lib")))))
+                           (else
+                            `((substitute* "lib/Driver/Tools.cpp"
+                                ;; Patch the 'getLinuxDynamicLinker' function so that
+                                ;; it uses the right dynamic linker file name.
+                                (("/lib64/ld-linux-x86-64.so.2")
+                                 (string-append libc
+                                                ,(glibc-dynamic-linker))))
+
+                              ;; Link to libclang_rt files from clang-runtime.
+                              ;; This substitution needed slight adjustment in 3.8.
+                              ,@(if (version>=? version "3.8")
+                                    '((substitute* "lib/Driver/Tools.cpp"
+                                        (("TC\\.getDriver\\(\\)\\.ResourceDir")
+                                         (string-append "\"" compiler-rt "\""))))
+                                    '((substitute* "lib/Driver/ToolChain.cpp"
+                                        (("getDriver\\(\\)\\.ResourceDir")
+                                         (string-append "\"" compiler-rt "\"")))))
+
+                              ;; Make sure libc's libdir is on the search path, to
+                              ;; allow crt1.o & co. to be found.
+                              (substitute* "lib/Driver/ToolChains.cpp"
+                                (("@GLIBC_LIBDIR@")
+                                 (string-append libc "/lib"))))))
+                        #t)))
                   (add-after 'install 'install-clean-up-/share/clang
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
@@ -553,11 +567,33 @@ output), and Binutils.")
          "0xf5q17kkxsrm2gsi93h4pwlv663kji73r2g4asb97klsmb626a4"))))))
 
 (define-public clang-runtime-3.5
-  (clang-runtime-from-llvm
-   llvm-3.5
-   "1hsdnzzdr5kglz6fnv3lcsjs222zjsy14y8ax9dy6zqysanplbal"
-   '("clang-runtime-asan-build-fixes.patch"
-     "clang-3.5-libsanitizer-ustat-fix.patch")))
+  (let ((runtime (clang-runtime-from-llvm
+                  llvm-3.5
+                  "1hsdnzzdr5kglz6fnv3lcsjs222zjsy14y8ax9dy6zqysanplbal"
+                  '("clang-runtime-asan-build-fixes.patch"
+                    "clang-3.5-libsanitizer-ustat-fix.patch"))))
+    (package
+      (inherit runtime)
+      (arguments
+       (substitute-keyword-arguments (package-arguments runtime)
+         ((#:phases phases '%standard-phases)
+          `(modify-phases ,phases
+             ;; glibc no longer includes rpc/xdr.h, so we use the headers from
+             ;; libtirpc.
+             (add-after 'unpack 'find-rpc-includes
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (setenv "CPATH"
+                         (string-append (assoc-ref inputs "libtirpc")
+                                        "/include/tirpc/:"
+                                        (or (getenv "CPATH") "")))
+                 (setenv "CPLUS_INCLUDE_PATH"
+                         (string-append (assoc-ref inputs "libtirpc")
+                                        "/include/tirpc/:"
+                                        (or (getenv "CPLUS_INCLUDE_PATH") "")))
+                 #t))))))
+      (inputs
+       `(("libtirpc" ,libtirpc)
+         ("llvm" ,llvm-3.5))))))
 
 (define-public clang-3.5
   (clang-from-llvm llvm-3.5 clang-runtime-3.5

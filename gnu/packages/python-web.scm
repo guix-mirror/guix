@@ -32,6 +32,7 @@
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Evan Straw <evan.straw99@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1600,43 +1601,43 @@ supports url redirection and retries, and also gzip and deflate decoding.")
 
 (define-public awscli
   (package
-   (name "awscli")
-   (version "1.14.41")
-   (source
-    (origin
-     (method url-fetch)
-     (uri (pypi-uri name version))
-     (sha256
-      (base32
-       "0sispclx263lybbk19zp1n9yhg8xxx4jddypzgi24vpjaqnsbwlc"))))
-   (build-system python-build-system)
-   (arguments
-    ;; FIXME: The 'pypi' release does not contain tests.
-    '(#:tests? #f
-      #:phases
-      (modify-phases %standard-phases
-        (add-after 'unpack 'fix-reference-to-groff
-          (lambda _
-            (substitute* "awscli/help.py"
-              (("if not self._exists_on_path\\('groff'\\):") "")
-              (("raise ExecutableNotFoundError\\('groff'\\)") "")
-              (("cmdline = \\['groff'")
-               (string-append "cmdline = ['" (which "groff") "'")))
-            #t)))))
-   (propagated-inputs
-    `(("python-colorama" ,python-colorama)
-      ("python-botocore" ,python-botocore)
-      ("python-s3transfer" ,python-s3transfer)
-      ("python-docutils" ,python-docutils)
-      ("python-pyyaml" ,python-pyyaml)
-      ("python-rsa" ,python-rsa)))
-   (inputs
-    `(("groff" ,groff)))
-   (home-page "https://aws.amazon.com/cli/")
-   (synopsis "Command line client for AWS")
-   (description "AWS CLI provides a unified command line interface to the
+    (name "awscli")
+    (version "1.18.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri name version))
+       (sha256
+        (base32
+         "0p479mfs9r0m82a217pap8156ijwvhv6r3kqa4k267gd05wgvygm"))))
+    (build-system python-build-system)
+    (arguments
+     ;; FIXME: The 'pypi' release does not contain tests.
+     '(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-reference-to-groff
+           (lambda _
+             (substitute* "awscli/help.py"
+               (("if not self._exists_on_path\\('groff'\\):") "")
+               (("raise ExecutableNotFoundError\\('groff'\\)") "")
+               (("cmdline = \\['groff'")
+                (string-append "cmdline = ['" (which "groff") "'")))
+             #t)))))
+    (propagated-inputs
+     `(("python-colorama" ,python-colorama)
+       ("python-botocore" ,python-botocore)
+       ("python-s3transfer" ,python-s3transfer)
+       ("python-docutils" ,python-docutils)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-rsa" ,python-rsa)))
+    (native-inputs
+     `(("groff" ,groff)))
+    (home-page "https://aws.amazon.com/cli/")
+    (synopsis "Command line client for AWS")
+    (description "AWS CLI provides a unified command line interface to the
 Amazon Web Services (AWS) API.")
-   (license license:asl2.0)))
+    (license license:asl2.0)))
 
 (define-public python-wsgiproxy2
   (package
