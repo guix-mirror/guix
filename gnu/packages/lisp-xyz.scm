@@ -2573,6 +2573,19 @@ package.")
 (define-public cl-cffi
   (sbcl-package->cl-source-package sbcl-cffi))
 
+(define-public sbcl-cffi-uffi-compat
+  (package
+    (inherit sbcl-cffi-toolchain)
+    (name "sbcl-cffi-uffi-compat")
+    (native-inputs
+     `(,@(package-inputs sbcl-cffi-bootstrap))) ; For fix-paths phase
+    (inputs
+     `(("cffi" ,sbcl-cffi)))
+    (synopsis "UFFI Compatibility Layer for CFFI")))
+
+(define-public cl-cffi-uffi-compat
+  (sbcl-package->cl-source-package sbcl-cffi-uffi-compat))
+
 (define-public sbcl-cl-sqlite
   (let ((commit "c738e66d4266ef63a1debc4ef4a1b871a068c112"))
     (package
