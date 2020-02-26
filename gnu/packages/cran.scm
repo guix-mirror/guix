@@ -20469,3 +20469,54 @@ predictive errors and for the comparison of predictive errors between models.
 The package also provides methods for using stacking and other model weighting
 techniques to average Bayesian predictive distributions.")
     (license license:gpl3+)))
+
+(define-public r-rstan
+  (package
+    (name "r-rstan")
+    (version "2.19.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rstan" version))
+       (sha256
+        (base32
+         "128ndwjrhf8b1qvvqz4bl13qlm8718z9qs5ryc6gsdr3vk65s0np"))))
+    (properties `((upstream-name . "rstan")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'set-timezone
+           ;; This package is picky about timezones.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "TZ" "UTC+1")
+             (setenv "TZDIR"
+                     (string-append (assoc-ref inputs "tzdata")
+                                    "/share/zoneinfo"))
+             #t)))))
+    (native-inputs
+     `(("tzdata" ,tzdata)
+       ("pandoc" ,ghc-pandoc)))
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-inline" ,r-inline)
+       ("r-loo" ,r-loo)
+       ("r-pkgbuild" ,r-pkgbuild)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppeigen" ,r-rcppeigen)
+       ("r-stanheaders" ,r-stanheaders)))
+    (home-page "https://discourse.mc-stan.org/")
+    (synopsis "R interface to Stan")
+    (description
+     "User-facing R functions are provided to parse, compile, test, estimate,
+and analyze Stan models by accessing the header-only Stan library provided by
+the StanHeaders package.  The Stan project develops a probabilistic
+programming language that implements full Bayesian statistical inference via
+Markov Chain Monte Carlo, rough Bayesian inference via 'variational'
+approximation, and (optionally penalized) maximum likelihood estimation via
+optimization.  In all three cases, automatic differentiation is used to
+quickly and accurately evaluate gradients without burdening the user with the
+need to derive the partial derivatives.")
+    (license license:gpl3+)))
