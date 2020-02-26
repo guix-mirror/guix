@@ -74,8 +74,7 @@
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     ;; TODO: Purge the bundled copies from the source.
-     '(#:configure-flags '("--shared-cares"
+     `(#:configure-flags '("--shared-cares"
                            "--shared-http-parser"
                            "--shared-libuv"
                            "--shared-nghttp2"
@@ -120,6 +119,20 @@
              ;; FIXME: This test fails randomly:
              ;; https://github.com/nodejs/node/issues/31213
              (delete-file "test/parallel/test-net-listen-after-destroying-stdin.js")
+
+             ;; FIXME: These tests fail on armhf-linux:
+             ;; https://github.com/nodejs/node/issues/31970
+             ,@(if (string-prefix? "arm" (%current-system))
+                   '((for-each delete-file
+                               '("test/parallel/test-zlib.js"
+                                 "test/parallel/test-zlib-brotli.js"
+                                 "test/parallel/test-zlib-brotli-flush.js"
+                                 "test/parallel/test-zlib-brotli-from-brotli.js"
+                                 "test/parallel/test-zlib-brotli-from-string.js"
+                                 "test/parallel/test-zlib-convenience-methods.js"
+                                 "test/parallel/test-zlib-random-byte-pipes.js"
+                                 "test/parallel/test-zlib-write-after-flush.js")))
+                   '())
 
              ;; These tests have an expiry date: they depend on the validity of
              ;; TLS certificates that are bundled with the source.  We want this
