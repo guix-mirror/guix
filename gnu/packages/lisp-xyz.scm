@@ -10912,3 +10912,15 @@ interface for MySQL, PostgreSQL and SQLite.")
 
 (define-public cl-dbi
   (sbcl-package->cl-source-package sbcl-dbi))
+
+(define-public sbcl-dbd-mysql
+  (package
+   (inherit sbcl-dbi)
+   (name "sbcl-dbd-mysql")
+   (inputs
+    `(("cl-mysql" ,sbcl-cl-mysql)
+      ("dbi" ,sbcl-dbi)))
+   (synopsis "Database driver for MySQL")))
+
+(define-public cl-dbd-mysql
+  (sbcl-package->cl-source-package sbcl-dbd-mysql))
