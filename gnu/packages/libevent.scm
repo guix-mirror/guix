@@ -3,7 +3,7 @@
 ;;; Copyright © 2015, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -129,6 +129,20 @@ resolution, asynchronous file system operations, and threading primitives.")
     ;; A few files fall under other non-copyleft licenses; see 'LICENSE' for
     ;; details.  Documentation is CC-BY 4.0 as of 1.12.0; see 'LICENSE-docs'.
     (license (list expat cc-by4.0))))
+
+;; This newer version of LibUV is required by 'node'.  Package it separately
+;; to avoid massive rebuilds.
+(define-public libuv/latest
+  (package/inherit
+   libuv
+   (version "1.34.2")
+   (source (origin
+             (method url-fetch)
+             (uri (string-append "https://dist.libuv.org/dist/v" version
+                                 "/libuv-v" version ".tar.gz"))
+             (sha256
+              (base32
+               "0inzk8qpw78im3fiazrc54qi1gcapbs8dhf0hk3kwpzg0i2kpnb5"))))))
 
 (define-public perl-anyevent
   (package
