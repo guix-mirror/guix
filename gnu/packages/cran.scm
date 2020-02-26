@@ -20367,3 +20367,45 @@ facilities for charting time-series data in R, including highly configurable
 series- and axis-display and interactive features like zoom/pan and
 series/point highlighting.")
     (license license:expat)))
+
+(define-public r-shinystan
+  (package
+    (name "r-shinystan")
+    (version "2.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "shinystan" version))
+       (sha256
+        (base32
+         "18alf5kiqw7y2l6m5nxxizwc2znsf9frxfsqhvgcad8hld9cbya5"))))
+    (properties `((upstream-name . "shinystan")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bayesplot" ,r-bayesplot)
+       ("r-colourpicker" ,r-colourpicker)
+       ("r-dt" ,r-dt)
+       ("r-dygraphs" ,r-dygraphs)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-gtools" ,r-gtools)
+       ("r-markdown" ,r-markdown)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rsconnect" ,r-rsconnect)
+       ("r-rstan" ,r-rstan)
+       ("r-shiny" ,r-shiny)
+       ("r-shinyjs" ,r-shinyjs)
+       ("r-shinythemes" ,r-shinythemes)
+       ("r-threejs" ,r-threejs)
+       ("r-xtable" ,r-xtable)
+       ("r-xts" ,r-xts)))
+    (home-page "https://mc-stan.org/")
+    (synopsis "Interactive visual and numerical analysis for Bayesian models")
+    (description
+     "This package provides a graphical user interface for interactive
+@dfn{Markov chain Monte Carlo} (MCMC) diagnostics and plots and tables helpful
+for analyzing a posterior sample.  The interface is powered by the Shiny web
+application framework and works with the output of MCMC programs written in
+any programming language (and has extended functionality for Stan models fit
+using the @code{rstan} and @code{rstanarm} packages).")
+    (license license:gpl3+)))
