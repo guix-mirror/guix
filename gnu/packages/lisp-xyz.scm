@@ -10924,3 +10924,16 @@ interface for MySQL, PostgreSQL and SQLite.")
 
 (define-public cl-dbd-mysql
   (sbcl-package->cl-source-package sbcl-dbd-mysql))
+
+(define-public sbcl-dbd-postgres
+  (package
+   (inherit sbcl-dbi)
+   (name "sbcl-dbd-postgres")
+   (inputs
+    `(("cl-postgres" ,sbcl-cl-postgres)
+      ("dbi" ,sbcl-dbi)
+      ("trivial-garbage" ,sbcl-trivial-garbage)))
+   (synopsis "Database driver for PostgreSQL")))
+
+(define-public cl-dbd-postgres
+  (sbcl-package->cl-source-package sbcl-dbd-postgres))
