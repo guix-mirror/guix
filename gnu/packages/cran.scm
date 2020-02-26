@@ -20436,3 +20436,36 @@ up the required package structure, S3 generics and default methods to unify
 function naming across Stan-based R packages, and vignettes with
 recommendations for developers.")
     (license license:gpl3+)))
+
+(define-public r-loo
+  (package
+    (name "r-loo")
+    (version "2.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "loo" version))
+       (sha256
+        (base32
+         "1hq1zcj76x55z9kic6cwf7mfq9pzqfbr341jbc9wp7x8ac4zcva6"))))
+    (properties `((upstream-name . "loo")))
+    (build-system r-build-system)
+    (inputs
+     `(("pandoc" ,ghc-pandoc)
+       ("pandoc-citeproc" ,ghc-pandoc-citeproc)))
+    (propagated-inputs
+     `(("r-checkmate" ,r-checkmate)
+       ("r-matrixstats" ,r-matrixstats)))
+    (home-page "https://mc-stan.org/loo/")
+    (synopsis "Leave-One-Out cross-validation and WAIC for Bayesian models")
+    (description
+     "This package provides an implementation of efficient approximate
+@dfn{leave-one-out} (LOO) cross-validation for Bayesian models fit using
+Markov chain Monte Carlo, as described in @url{doi:10.1007/s11222-016-9696-4}.
+The approximation uses @dfn{Pareto smoothed importance sampling} (PSIS), a new
+procedure for regularizing importance weights.  As a byproduct of the
+calculations, we also obtain approximate standard errors for estimated
+predictive errors and for the comparison of predictive errors between models.
+The package also provides methods for using stacking and other model weighting
+techniques to average Bayesian predictive distributions.")
+    (license license:gpl3+)))
