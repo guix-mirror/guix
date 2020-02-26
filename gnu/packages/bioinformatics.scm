@@ -2272,23 +2272,23 @@ time.")
 (define-public crossmap
   (package
     (name "crossmap")
-    (version "0.2.9")
+    (version "0.3.8")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "CrossMap" version))
               (sha256
                (base32
-                "1byhclrqnqpvc1rqkfh4jwj6yhn0x9y7jk47i0qcjlhk0pjkw92p"))))
+                "1sb2f2qbxya4fzw3yjl09vbrs8vfmw22zrygrvz004sf9gb1vkan"))))
     (build-system python-build-system)
-    (arguments `(#:python ,python-2))
     (inputs
-     `(("python-bx-python" ,python2-bx-python)
-       ("python-numpy" ,python2-numpy)
-       ("python-pysam" ,python2-pysam)
+     `(("python-bx-python" ,python-bx-python)
+       ("python-numpy" ,python-numpy)
+       ("python-pybigwig" ,python-pybigwig)
+       ("python-pysam" ,python-pysam)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("python-cython" ,python2-cython)
-       ("python-nose" ,python2-nose)))
+     `(("python-cython" ,python-cython)
+       ("python-nose" ,python-nose)))
     (home-page "http://crossmap.sourceforge.net/")
     (synopsis "Convert genome coordinates between assemblies")
     (description
