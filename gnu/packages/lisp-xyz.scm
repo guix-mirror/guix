@@ -11005,3 +11005,74 @@ interface for MySQL, PostgreSQL and SQLite.")
            (lambda _
              (make-file-writable "doc/html.tar.gz")
              #t)))))))
+
+(define-public sbcl-clsql
+  (package
+    (name "sbcl-clsql")
+    (version "6.7.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "http://git.kpe.io/clsql.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1v1k3s5bsy3lgd9gk459bzpb1r0kdjda25s29samxw4gsgf1fqvp"))
+       (snippet
+        '(begin
+           ;; Remove precompiled libraries.
+           (delete-file "db-mysql/clsql_mysql.dll")
+           (delete-file "uffi/clsql_uffi.dll")
+           (delete-file "uffi/clsql_uffi.lib")
+           #t))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("cffi-uffi-compat" ,sbcl-cffi-uffi-compat)
+       ("rt" ,sbcl-rt)
+       ("uffi" ,sbcl-uffi)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-permissions
+           (lambda _
+             (make-file-writable "doc/html.tar.gz")
+             #t))
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             (substitute* "clsql.asd"
+               (("clsql-tests :force t")
+                "clsql-tests"))
+             #t)))))
+    (synopsis "Common Lisp SQL Interface library")
+    (description
+     "@code{clsql} is a Common Lisp interface to SQL RDBMS based on the
+Xanalys CommonSQL interface for Lispworks.  It provides low-level database
+interfaces as well as a functional and an object oriented interface.")
+    (home-page "http://clsql.kpe.io/")
+    (license license:llgpl)))
+
+(define-public cl-clsql
+  (package
+    (inherit (sbcl-package->cl-source-package sbcl-clsql))
+    (native-inputs
+     `(("rt" ,cl-rt)))
+    (inputs
+     `(("mysql" ,mysql)
+       ("postgresql" ,postgresql)
+       ("sqlite" ,sqlite)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("cl-postgres" ,cl-postgres)
+       ("cffi-uffi-compat" ,cl-cffi-uffi-compat)
+       ("md5" ,cl-md5)
+       ("uffi" ,cl-uffi)))
+    (arguments
+     `(#:phases
+       ;; asdf-build-system/source has its own phases and does not inherit
+       ;; from asdf-build-system/sbcl phases.
+       (modify-phases %standard-phases/source
+         (add-after 'unpack 'fix-permissions
+           (lambda _
+             (make-file-writable "doc/html.tar.gz")
+             #t)))))))
