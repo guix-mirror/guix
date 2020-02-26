@@ -4711,6 +4711,47 @@ number.")
 @code{org-mode} to be rendered as UTF-8 characters.")
     (license license:gpl3+)))
 
+(define-public emacs-org-superstar
+  (package
+    (name "emacs-org-superstar")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/integral-dw/org-superstar-mode.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0q6180qwjpha10zsiw0ni6lanyjwlj8141a6qivfcs8nwczz7nvz"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-org" ,emacs-org)))
+    (home-page "https://github.com/integral-dw/org-superstar-mode")
+    (synopsis "Prettify headings and plain lists in Org mode")
+    (description "This package prettifies headings and plain lists in
+Org mode.  It is a direct descendant of @code{org-bullets}, with most
+of the code base completely rewritten.
+
+Currently, this package prettifies Org heading lines by:
+@itemize
+@item replacing trailing bullets by UTF-8 bullets,
+@item hiding leading stars, customizing their look or removing them from vision,
+@item applying a custom face to the header bullet,
+@item applying a custom face to the leading bullets,
+@item using double-bullets for inline tasks,
+@item (optional) using special bullets for TODO keywords.
+@end itemize
+
+It also prettifies Org plain list bullets by:
+@itemize
+@item replacing each bullet type (*, + and -) with UTF-8 bullets,
+@item applying a custom face to item bullets.
+@end itemize
+
+Features degrade gracefully when viewed from terminal.")
+    (license license:gpl3+)))
+
 (define-public emacs-org-pomodoro
   ;; Last release version was from 2016.
   (let ((commit "aa07c11318f91219336197e62c47bc7a3d090479")
