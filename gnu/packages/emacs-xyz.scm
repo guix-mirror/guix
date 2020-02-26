@@ -21639,3 +21639,25 @@ emoji.")
 ExifTool supports reading and writing metadata in various formats including
 EXIF, XMP and IPTC.")
     (license license:gpl3+)))
+
+(define-public emacs-password-generator
+  (package
+    (name "emacs-password-generator")
+    (version "1.01")
+    (home-page "https://github.com/zargener/emacs-password-genarator")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit "904cdb591a04305ba882ce19e1d117f5fa60f7d3")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1qgvn79qz1h8ykm5i1qv2fja4v2y0g2i0n5sf7byhnqhqlwn63nv"))))
+    (build-system emacs-build-system)
+    (synopsis "Generate passwords inside Emacs")
+    (description "@code{emacs-password-generator} provides simple functions to
+generate random passwords and insert them into the current buffer.  It also
+supports generation of phonetic and numeric passwords.")
+    (license license:artistic2.0)))
