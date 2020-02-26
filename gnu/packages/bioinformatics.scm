@@ -4921,20 +4921,26 @@ predicts the locations of structural units in the sequences.")
 (define-public proteinortho
   (package
     (name "proteinortho")
-    (version "5.16b")
-    (source
-     (origin
-      (method url-fetch)
-      (uri
-       (string-append
-        "http://www.bioinf.uni-leipzig.de/Software/proteinortho/proteinortho_v"
-        version "_src.tar.gz"))
-      (sha256
-       (base32
-        "1wl0dawpssqwfjvr651r4wlww8hhjin8nba6xh71ks7sbypx886j"))))
+    (version "6.0.14")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.com/paulklemm_PHD/proteinortho.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0pmy617zy2z2w6hjqxjhf3rzikf5n3mpia80ysq8233vfr7wrzff"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; remove pre-built scripts
+                  (delete-file-recursively "src/BUILD/")
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
+       #:make-flags '("CC=gcc")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
@@ -4952,15 +4958,23 @@ predicts the locations of structural units in the sequences.")
              #t))
          (add-after 'install 'wrap-programs
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((path (getenv "PATH"))
-                    (out (assoc-ref outputs "out"))
-                    (binary (string-append out "/bin/proteinortho5.pl")))
-               (wrap-program binary `("PATH" ":" prefix (,path))))
+             (let ((path (getenv "PATH"))
+                   (out (assoc-ref outputs "out")))
+               (for-each (lambda (script)
+                           (wrap-script script `("PATH" ":" prefix (,path))))
+                         (cons (string-append out "/bin/proteinortho")
+                               (find-files out "\\.(pl|py)$"))))
              #t)))))
     (inputs
-     `(("perl" ,perl)
-       ("python" ,python-2)
-       ("blast+" ,blast+)))
+     `(("guile" ,guile-3.0) ; for wrap-script
+       ("diamond" ,diamond)
+       ("perl" ,perl)
+       ("python" ,python-wrapper)
+       ("blast+" ,blast+)
+       ("lapack" ,lapack)
+       ("openblas" ,openblas)))
+    (native-inputs
+     `(("which" ,which)))
     (home-page "http://www.bioinf.uni-leipzig.de/Software/proteinortho")
     (synopsis "Detect orthologous genes across species")
     (description
@@ -4968,7 +4982,7 @@ predicts the locations of structural units in the sequences.")
 species.  For doing so, it compares similarities of given gene sequences and
 clusters them to find significant groups.  The algorithm was designed to handle
 large-scale data and can be applied to hundreds of species at once.")
-    (license license:gpl2+)))
+    (license license:gpl3+)))
 
 (define-public pyicoteo
   (package
