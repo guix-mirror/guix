@@ -2578,7 +2578,7 @@ accurately delineate genomic rearrangements throughout the genome.")
 (define-public diamond
   (package
     (name "diamond")
-    (version "0.9.22")
+    (version "0.9.30")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2587,7 +2587,7 @@ accurately delineate genomic rearrangements throughout the genome.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0bky78v79g3wmdpsd706cscckgw1v09fg8vdd0z8z0d5b97aj9zl"))))
+                "0k6f3kb6cniw11xw6763kkbs1sl0yack7xsy7q5fl5v170ssphq4"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no "check" target
