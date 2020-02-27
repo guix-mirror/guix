@@ -2590,6 +2590,31 @@ harness.")
 that logs panics to @code{console.error}.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-console-log-0.1
+  (package
+    (name "rust-console-log")
+    (version "0.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "console-log" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0j1wd2885m3245bhsb2qjvw08lzplbi1rgg2v3yv0hbljk972y0y"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-log" ,rust-log-0.4)
+        ("rust-web-sys" ,rust-web-sys-0.3))))
+    (home-page "https://github.com/iamcodemaker/console_log")
+    (synopsis "Route Rust log messages to the browser's console")
+    (description
+     "This package provides a logging facility that routes Rust log messages to
+the browser's console.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-constant-time-eq-0.1
   (package
     (name "rust-constant-time-eq")
