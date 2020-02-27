@@ -369,7 +369,11 @@ standard.")
    (inputs `(("guile" ,guile-3.0)))
    (outputs '("out" "debug"))
    (arguments
-    '(#:phases
+    `(,@(if (hurd-target?)
+            '(#:configure-flags '("CFLAGS=-D__alloca=alloca"
+                                  "ac_cv_func_posix_spawn=no"))
+            '())
+      #:phases
       (modify-phases %standard-phases
         (add-before 'build 'set-default-shell
           (lambda* (#:key inputs #:allow-other-keys)
