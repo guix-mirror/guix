@@ -188,7 +188,7 @@ by the b43-open driver of Linux-libre.")
     (name (string-replace-substring
            (string-append "opensbi-" platform "-" variant)
            "_" "-"))
-    (version "0.5")
+    (version "0.6")
     (source
      (origin
        (method git-fetch)
@@ -197,7 +197,7 @@ by the b43-open driver of Linux-libre.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0qc73xbiy79qqkwxmp4mg15q8n8k26njkyqb6n0jw5dyibd6hb85"))))
+        (base32 "129ypdga0fzn657n2f42g2a1vx3hf8x7sd78h06d35pgkry0jkl7"))))
     (build-system gnu-build-system)
     (native-inputs
      `(,@(if (and (not (string-prefix? "riscv64" (%current-system)))
