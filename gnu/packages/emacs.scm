@@ -144,10 +144,8 @@
                 "pwd"))
              #t))
          (add-after 'install 'install-site-start
-           ;; Use 'guix-emacs' in "site-start.el".  This way, Emacs packages
-           ;; provided by Guix and installed in
-           ;; ~/.guix-profile/share/emacs/site-lisp/guix.d/PACKAGE-VERSION are
-           ;; automatically found.
+           ;; Use 'guix-emacs' in "site-start.el", which is used autoload the
+           ;; Elisp packages found in EMACSLOADPATH.
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out      (assoc-ref outputs "out"))
                     (lisp-dir (string-append out "/share/emacs/site-lisp"))
