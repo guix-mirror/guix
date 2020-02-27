@@ -90,7 +90,7 @@ like Gnome, Unity, Budgie, Pantheon, XFCE, Mate and others.")
 (define-public delft-icon-theme
   (package
     (name "delft-icon-theme")
-    (version "1.10")
+    (version "1.11")
     (source
      (origin
        (method git-fetch)
@@ -99,7 +99,7 @@ like Gnome, Unity, Budgie, Pantheon, XFCE, Mate and others.")
              (commit (string-append "v" version))))
        (sha256
         (base32
-         "0vw3yw9f9ygzfd2k3zrfih3r0vkzlhk1bmsk8sapvk7np24i1z9s"))
+         "1m3r4i4m3y3xsjb5f4bik0ylmi64amkfyr0y8pjbvv6gyj492mi6"))
        (file-name (git-file-name name version))))
     (build-system copy-build-system)
     (arguments
