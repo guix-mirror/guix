@@ -410,7 +410,7 @@ computational cluster.")
 (define-public bedtools
   (package
     (name "bedtools")
-    (version "2.27.1")
+    (version "2.29.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/arq5x/bedtools2/releases/"
@@ -418,7 +418,7 @@ computational cluster.")
                                   "bedtools-" version ".tar.gz"))
               (sha256
                (base32
-                "1ndg5yknrxl4djx8ddzgk12rrbiidfpmkkg5z3f95jzryfxarhn8"))))
+                "0m3hk6548846w83a9s5drsczvy67n2azx41kj71n03klb2gbzwg3"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "test"
@@ -427,7 +427,8 @@ computational cluster.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
-    (native-inputs `(("python" ,python-2)))
+    (native-inputs
+     `(("python" ,python-wrapper)))
     (inputs
      `(("samtools" ,samtools)
        ("zlib" ,zlib)))
@@ -440,7 +441,7 @@ genome arithmetic: that is, set theory on the genome.  For example, bedtools
 allows one to intersect, merge, count, complement, and shuffle genomic
 intervals from multiple files in widely-used genomic file formats such as BAM,
 BED, GFF/GTF, VCF.")
-    (license license:gpl2)))
+    (license license:expat)))
 
 ;; Later releases of bedtools produce files with more columns than
 ;; what Ribotaper expects.
