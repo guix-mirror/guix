@@ -81,12 +81,15 @@
   "Ensure the default profile symlink and directory exist and are writable."
   (ensure-profile-directory)
 
-  ;; Create ~/.guix-profile if it doesn't exist yet.
+  ;; Try to create ~/.guix-profile if it doesn't exist yet.
   (when (and %user-profile-directory
              %current-profile
              (not (false-if-exception
                    (lstat %user-profile-directory))))
-    (symlink %current-profile %user-profile-directory)))
+    (catch 'system-error
+      (lambda ()
+        (symlink %current-profile %user-profile-directory))
+      (const #t))))
 
 (define (delete-generations store profile generations)
   "Delete GENERATIONS from PROFILE.
