@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2015, 2016, 2018 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Adriano Peluso <catonano@gmail.com>
-;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
@@ -17407,8 +17407,7 @@ asynchronous communications, the RPC response is fairly good.")
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let ((perl (assoc-ref inputs "perl"))
                      (dir (string-append  (assoc-ref outputs "out")
-                                          "/share/emacs/site-lisp/guix.d/edbi-"
-                                          ,version)))
+                                          "/share/emacs/site-lisp")))
                  (substitute* (string-append dir  "/edbi.el")
                    (("\"perl\"") (string-append "\"" perl "/bin/perl\"")))
                  (chmod (string-append dir "/edbi-bridge.pl") #o555)
