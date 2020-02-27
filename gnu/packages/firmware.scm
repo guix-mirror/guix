@@ -240,11 +240,13 @@ for platform-specific firmwares executing in M-mode.")
 (define-public opensbi-qemu-virt
   (make-opensbi-package "qemu" "virt"))
 
-(define-public opensbi-qemu-sifive-u
-  (make-opensbi-package "qemu" "sifive_u"))
-
 (define-public opensbi-sifive-fu540
   (make-opensbi-package "sifive" "fu540"))
+
+(define-public opensbi-qemu-sifive-u
+  ;; Dropped upstream, as all functionality is present in the sifive-fu540
+  ;; target for recent versions of qemu, u-boot and linux.
+  (deprecated-package "opensbi-qemu-sifive-u" opensbi-sifive-fu540))
 
 (define-public seabios
   (package
