@@ -384,8 +384,8 @@ into a single panel, similar to that found in KDE Plasma and Windows 7+.")
     (arguments
      '(#:install-plan
        '(("." "share/gnome-shell/extensions/noannoyance@daase.net"))))
-    (synopsis "Removes 'Window is ready' annotation")
-    (description "One of the many extensions, that remove this message.
+    (synopsis "Remove 'Window is ready' annotation")
+    (description "One of the many extensions that remove this message.
 It uses ES6 syntax and claims to be more actively maintained than others.")
     (home-page "https://extensions.gnome.org/extension/2182/noannoyance/")
     (license license:gpl2)))
