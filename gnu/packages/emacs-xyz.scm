@@ -7565,7 +7565,8 @@ file.")
          #:phases
          ;; The package provides autoloads.
          (modify-phases %standard-phases
-           (delete 'make-autoloads))))
+           (delete 'make-autoloads)
+           (delete 'enable-autoloads-compilation))))
       (synopsis "Expand Common Lisp macros inside source files with SLY")
       (description
        "@command{sly-macrostep} is a SLY contrib for expanding CL macros right
