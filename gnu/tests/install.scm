@@ -50,7 +50,8 @@
             %test-btrfs-root-os
             %test-jfs-root-os
 
-            %test-gui-installed-os))
+            %test-gui-installed-os
+            %test-gui-installed-os-encrypted))
 
 ;;; Commentary:
 ;;;
@@ -1045,7 +1046,9 @@ build (current-guix) and then store a couple of full system images.")
                             (supplementary-groups
                              '("wheel" "audio" "video"))))
                      %base-user-accounts))
-      (swap-devices '("/dev/vdb2"))
+      ;; The installer does not create a swap device in guided mode with
+      ;; encryption support.
+      (swap-devices (if encrypted? '() '("/dev/vdb2")))
       (services (cons (service dhcp-client-service-type)
                       (operating-system-user-services %minimal-os)))))
 
@@ -1071,9 +1074,8 @@ build (current-guix) and then store a couple of full system images.")
   (guided-installation-test "gui-installed-os"
                             #:encrypted? #f))
 
-;; (define %test-gui-installed-os
-;;   ;; FIXME: Fails due to <https://bugs.gnu.org/39712>.
-;;   (guided-installation-test "gui-installed-os-encrypted"
-;;                             #:encrypted? #t))
+(define %test-gui-installed-os-encrypted
+  (guided-installation-test "gui-installed-os-encrypted"
+                            #:encrypted? #t))
 
 ;;; install.scm ends here
