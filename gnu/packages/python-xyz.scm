@@ -16366,14 +16366,14 @@ class in a @acronym{DRY, Don't Repeat Yourself} way.")
 (define-public python-construct
   (package
     (name "python-construct")
-    (version "2.9.45")
+    (version "2.10.56")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "construct" version))
        (sha256
         (base32
-         "130iy05awzigm2xah2yvlmb08mac5bi4gzr5m3g7k1krs3ps0w92"))))
+         "0q86jjzsvy835h3c8pjj4619vbp7ihfg8njmyw86ym4qrpni7flp"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f)) ; No tests exist.
