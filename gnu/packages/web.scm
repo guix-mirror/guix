@@ -7027,8 +7027,8 @@ compressed JSON header blocks.
 
 ;; 'Node' requires this newer version, to be removed on the next rebuild cycle.
 (define-public nghttp2-1.40
-  (package/inherit
-   nghttp2
+  (package
+   (inherit nghttp2)
    (version "1.40.0")
    (source (origin
              (method url-fetch)
