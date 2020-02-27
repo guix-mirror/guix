@@ -6608,17 +6608,18 @@ data in the form of VCF files.")
 (define-public infernal
   (package
     (name "infernal")
-    (version "1.1.2")
+    (version "1.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://eddylab.org/software/infernal/"
                                   "infernal-" version ".tar.gz"))
               (sha256
                (base32
-                "0sr2hiz3qxfwqpz3whxr6n82p3x27336v3f34iqznp10hks2935c"))))
+                "0pm8bm3s6nfa0av4x6m6h27lsg12b3lz3jm0fyh1mc77l2isd61v"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("perl" ,perl))) ; for tests
+     `(("perl" ,perl)
+       ("python" ,python))) ; for tests
     (home-page "http://eddylab.org/infernal/")
     (synopsis "Inference of RNA alignments")
     (description "Infernal (\"INFERence of RNA ALignment\") is a tool for
@@ -6629,7 +6630,7 @@ profile, but it scores a combination of sequence consensus and RNA secondary
 structure consensus, so in many cases, it is more capable of identifying RNA
 homologs that conserve their secondary structure more than their primary
 sequence.")
-    ;; Infernal 1.1.2 requires VMX or SSE capability for parallel instructions.
+    ;; Infernal 1.1.3 requires VMX or SSE capability for parallel instructions.
     (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:bsd-3)))
 
