@@ -91,7 +91,13 @@ if TARGET ends with a '/', the source is installed underneath."
                                    file))))
       (format (current-output-port) "`~a' -> `~a'~%" file dest)
       (mkdir-p (dirname dest))
-      (copy-file file dest)))
+      (let ((stat (lstat file)))
+        (case (stat:type stat)
+          ((symlink)
+           (let ((target (readlink file)))
+             (symlink target dest)))
+          (else
+           (copy-file file dest))))))
 
   (define* (make-file-predicate suffixes matches-regexp #:optional (default-value #t))
     "Return a predicate that returns #t if its file argument matches the
