@@ -3435,9 +3435,7 @@ for Flow files.")
                    (out (assoc-ref outputs "out"))
                    (version ,(version-major+minor (package-version python))))
                (with-directory-excursion
-                   (string-append out
-                                  "/share/emacs/site-lisp/guix.d/"
-                                  "flycheck-grammalecte-" ,version)
+                 (string-append out "/share/emacs/site-lisp")
                  (symlink (string-append grammalecte "/lib/"
                                          "python" version "/site-packages/"
                                          "grammalecte")
