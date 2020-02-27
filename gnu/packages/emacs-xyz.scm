@@ -7532,7 +7532,10 @@ additional support for working with ASDF projects.")
       (propagated-inputs
        `(("emacs-sly" ,emacs-sly)))
       (arguments
-       '(#:include (cons* "\\.lisp$" "\\.asd$" %default-include)))
+       '(#:include (cons* "\\.lisp$" "\\.asd$" %default-include)
+         #:phases (modify-phases %standard-phases
+                    ;; Byte compilation of the autoload file fails.
+                    (delete 'enable-autoloads-compilation))))
       (synopsis "Named-readtables support for SLY")
       (description
        "@command{sly-named-readtables} is an external contrib for SLY that
