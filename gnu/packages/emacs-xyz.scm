@@ -16,7 +16,7 @@
 ;;; Copyright © 2016, 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2016, 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017, 2018, 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017, 2018, 2019 Clément Lassieur <clement@lassieur.org>
@@ -155,6 +155,7 @@
   #:use-module (gnu packages video)
   #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages wordnet)
+  #:use-module (gnu packages photo)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
@@ -21600,4 +21601,41 @@ variables.")
     (description
      "This library is a Company back-end providing auto-completion for
 emoji.")
+    (license license:gpl3+)))
+
+(define-public emacs-exiftool
+  (package
+    (name "emacs-exiftool")
+    (version "0.3.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.systemreboot.net/exiftool.el/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0bv58is66cz21yhc0qqkp1z4nk13zfi2l7i6pjbhyi0g1n88qqyv"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-command '("make" "-C" "tests")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (make-file-writable "exiftool.el")
+             (emacs-substitute-variables "exiftool.el"
+               ("exiftool-executable"
+                (string-append (assoc-ref inputs "perl-image-exiftool")
+                               "/bin/exiftool")))
+             #t)))))
+    (inputs
+     `(("perl-image-exiftool" ,perl-image-exiftool)))
+    (home-page "https://git.systemreboot.net/exiftool.el/about/")
+    (synopsis "Elisp wrapper around ExifTool")
+    (description "@code{emacs-exiftool} is an Elisp wrapper around ExifTool.
+ExifTool supports reading and writing metadata in various formats including
+EXIF, XMP and IPTC.")
     (license license:gpl3+)))
