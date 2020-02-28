@@ -41,6 +41,7 @@
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1841,6 +1842,27 @@ IPv6 packet filter.
 
 Both commands are targeted at system administrators.")
     (license license:gpl2+)))
+
+(define-public lsscsi
+  (package
+    (name "lsscsi")
+    (version "0.31")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://sg.danny.cz/scsi/lsscsi-" version ".tar.xz"))
+             (sha256
+              (base32
+               "1ry2y34xmpgxdbfbyvs8cjmbx0fn222yjdab87wj21q60nab5p75"))))
+    (build-system gnu-build-system)
+    (synopsis "Lists information about SCSI or NVMe devices in Linux")
+    (home-page "http://sg.danny.cz/scsi/lsscsi.html")
+    (description
+     "@command{lsscsi} lists SCSI logical units or SCSI targets.  It can
+also list NVMe namespaces or controllers and show the relationship between a
+device's primary node name, its SCSI generic (sg) node name and its kernel
+name.")
+    (license license:gpl2)))
 
 (define-public ebtables
   (package
