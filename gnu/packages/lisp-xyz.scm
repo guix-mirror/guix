@@ -11151,3 +11151,49 @@ interfaces as well as a functional and an object oriented interface.")
                     "")))
                #t))))))
     (synopsis "PostgreSQL driver for Common Lisp SQL interface library")))
+
+(define-public sbcl-clsql-mysql
+  (package
+    (inherit sbcl-clsql)
+    (name "sbcl-clsql-mysql")
+    (inputs
+     `(("mysql" ,mysql)
+       ("sbcl-clsql" ,sbcl-clsql)
+       ("sbcl-clsql-uffi" ,sbcl-clsql-uffi)
+       ("zlib" ,zlib)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-clsql)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((lib (string-append "#p\""
+                                         (assoc-ref outputs "out")
+                                         "/lib/\"")))
+                 (substitute* "clsql-mysql.asd"
+                   (("#p\"/usr/lib/clsql/clsql_mysql\\.so\"")
+                    lib))
+                 (substitute* "db-mysql/mysql-loader.lisp"
+                   (("libmysqlclient" all)
+                    (string-append (assoc-ref inputs "mysql") "/lib/" all))
+                   (("clsql-mysql-system::\\*library-file-dir\\*")
+                    lib)))
+               #t))
+           (add-before 'build 'build-helper-library
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((mysql (assoc-ref inputs "mysql"))
+                      (inc-dir (string-append mysql "/include/mysql"))
+                      (lib-dir (string-append mysql "/lib"))
+                      (shared-lib-dir (string-append (assoc-ref outputs "out")
+                                                     "/lib"))
+                      (shared-lib (string-append shared-lib-dir
+                                                 "/clsql_mysql.so")))
+                 (mkdir-p shared-lib-dir)
+                 (invoke "gcc" "-fPIC" "-shared"
+                         "-I" inc-dir
+                         "db-mysql/clsql_mysql.c"
+                         "-Wl,-soname=clsql_mysql"
+                         "-L" lib-dir "-lmysqlclient" "-lz"
+                         "-o" shared-lib)
+                 #t)))))))
+    (synopsis "MySQL driver for Common Lisp SQL interface library")))
