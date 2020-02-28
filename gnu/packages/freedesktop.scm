@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017, 2018 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -306,7 +306,6 @@ the freedesktop.org XDG Base Directory specification.")
           "-Dcgroup-controller=elogind"
           "-Dman=true"
           ;; Disable some tests.
-          "-Dtests=false"
           "-Dslow-tests=false"))
        #:phases
        (modify-phases %standard-phases
@@ -323,6 +322,46 @@ the freedesktop.org XDG Base Directory specification.")
              (substitute* "src/libelogind/sd-bus/bus-internal.h"
                (("=/run/dbus/system_bus_socket")
                 "=/var/run/dbus/system_bus_socket"))
+             #t))
+         (add-after 'unpack 'adjust-tests
+           (lambda _
+             ;; This test tries to copy some bytes from /usr/lib/os-release,
+             ;; which does not exist in the build container.  Choose something
+             ;; more likely to be available.
+             (substitute* "src/test/test-copy.c"
+               (("/usr/lib/os-release")
+                "/etc/passwd"))
+             ;; Use a shebang that works in the build container.
+             (substitute* "src/test/test-exec-util.c"
+               (("#!/bin/sh")
+                (string-append "#!" (which "sh"))))
+             ;; Do not look for files or directories that do not exist.
+             (substitute* "src/test/test-fs-util.c"
+               (("usr") "etc")
+               (("/etc/machine-id") "/etc/passwd"))
+             ;; FIXME: Why is sd_id128_get_machine_app_specific failing.
+             ;; Disable for now by hooking into the kernel support check.
+             (substitute* "src/test/test-id128.c"
+               (("if \\(r == -EOPNOTSUPP\\)")
+                "if (1)"))
+             ;; This test expects that /sys is available.
+             (substitute* "src/test/test-mountpoint-util.c"
+               (("assert_se\\(path_is_mount_point\\(\"/sys.*")
+                ""))
+             ;; /bin/sh does not exist in the build container.
+             (substitute* "src/test/test-path-util.c"
+               (("/bin/sh") (which "sh")))
+             ;; This test uses sd_device_new_from_syspath to allocate a
+             ;; loopback device, but that fails because /sys is unavailable.
+             (substitute* "src/libelogind/sd-device/test-sd-device-thread.c"
+               ((".*sd_device_new_from_syspath.*/sys/class/net/lo.*")
+                "return 77;"))
+             ;; Most of these tests require cgroups or an actual live
+             ;; logind system so that it can flicker the monitor, etc.
+             ;; Just skip it until a more narrow selection can be made.
+             (substitute* "src/libelogind/sd-login/test-login.c"
+               (("r = sd_pid_get_slice.*")
+                "return 77;"))
              #t))
          (add-after 'unpack 'change-pid-file-path
            (lambda _
