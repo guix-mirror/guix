@@ -3034,7 +3034,7 @@ assetsjs_DATA  = $(wildcard assets/js/*)\n"))
                      (,go ,(getenv "GUILE_LOAD_COMPILED_PATH"))))
                  #t))))))
       (inputs
-       `(("guile-debbugs" ,guile-debbugs-next)
+       `(("guile-debbugs" ,guile-debbugs)
          ("guile-email" ,guile-email)
          ("guile-fibers" ,guile-fibers)
          ("guile-json" ,guile-json-1)
