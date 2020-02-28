@@ -970,20 +970,17 @@ using S-expressions.")
 (define-public guile-debbugs
   (package
     (name "guile-debbugs")
-    (version "0.0.2")
+    (version "0.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/guile-debbugs/guile-debbugs-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "16l8910p57im6s3j93xhdaqvgfy6ms5n97177mrch3y961z5hy0i"))
-              (modules '((guix build utils)))
-              (snippet
-               '(substitute* "Makefile.in"
-                  (("^godir = (.*)/ccache" _ prefix)
-                   (string-append "godir = " prefix "/site-ccache"))))))
+                "1cc63nw3xdfjrfk8c58r6d5lidmfq5cpqcy32yd5xp81yccprvn9"))))
     (build-system gnu-build-system)
+    (propagated-inputs
+     `(("guile-email" ,guile-email)))
     (native-inputs
      `(("guile" ,guile-2.2)
        ("pkg-config" ,pkg-config)))
