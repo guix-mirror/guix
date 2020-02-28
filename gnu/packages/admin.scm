@@ -2531,7 +2531,7 @@ a new command using the matched rule, and runs it.")
              (setenv "prefix" (assoc-ref outputs "out"))
              #t)))
        #:make-flags (list "--environment-overrides")))
-    (home-page "https://www.gentoo.com/di/")
+    (home-page "https://gentoo.com/di/")
     (synopsis "Advanced df like disk information utility")
     (description
      "@code{di} is a disk information utility, displaying everything that your
