@@ -35,8 +35,9 @@
   "Return a list of Emacs 'autoloads' files in DIRECTORY.
 The files in the list do not have extensions (.el, .elc)."
   ;; `directory-files' doesn't honor group in regexp.
-  (mapcar #'file-name-sans-extension
-          (directory-files directory 'full-name guix-emacs-autoloads-regexp)))
+  (delete-dups (mapcar #'file-name-sans-extension
+                       (directory-files directory 'full-name
+                                        guix-emacs-autoloads-regexp))))
 
 ;;;###autoload
 (defun guix-emacs-autoload-packages ()

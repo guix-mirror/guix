@@ -403,8 +403,8 @@ required structures.")
    (home-page "https://www.openssl.org/")))
 
 (define openssl-1.1.1d
-  (package/inherit
-   openssl
+  (package
+   (inherit openssl)
    (version "1.1.1d")
    (source (origin
              (method url-fetch)

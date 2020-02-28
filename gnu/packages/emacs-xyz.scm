@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2015, 2016, 2018 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Adriano Peluso <catonano@gmail.com>
-;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
@@ -16,7 +16,7 @@
 ;;; Copyright © 2016, 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2016, 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017, 2018, 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017, 2018, 2019 Clément Lassieur <clement@lassieur.org>
@@ -155,6 +155,7 @@
   #:use-module (gnu packages video)
   #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages wordnet)
+  #:use-module (gnu packages photo)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
@@ -3434,9 +3435,7 @@ for Flow files.")
                    (out (assoc-ref outputs "out"))
                    (version ,(version-major+minor (package-version python))))
                (with-directory-excursion
-                   (string-append out
-                                  "/share/emacs/site-lisp/guix.d/"
-                                  "flycheck-grammalecte-" ,version)
+                 (string-append out "/share/emacs/site-lisp")
                  (symlink (string-append grammalecte "/lib/"
                                          "python" version "/site-packages/"
                                          "grammalecte")
@@ -4709,6 +4708,47 @@ number.")
     (description
      "This package provides an Emacs minor mode causing bullets in
 @code{org-mode} to be rendered as UTF-8 characters.")
+    (license license:gpl3+)))
+
+(define-public emacs-org-superstar
+  (package
+    (name "emacs-org-superstar")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/integral-dw/org-superstar-mode.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0q6180qwjpha10zsiw0ni6lanyjwlj8141a6qivfcs8nwczz7nvz"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-org" ,emacs-org)))
+    (home-page "https://github.com/integral-dw/org-superstar-mode")
+    (synopsis "Prettify headings and plain lists in Org mode")
+    (description "This package prettifies headings and plain lists in
+Org mode.  It is a direct descendant of @code{org-bullets}, with most
+of the code base completely rewritten.
+
+Currently, this package prettifies Org heading lines by:
+@itemize
+@item replacing trailing bullets by UTF-8 bullets,
+@item hiding leading stars, customizing their look or removing them from vision,
+@item applying a custom face to the header bullet,
+@item applying a custom face to the leading bullets,
+@item using double-bullets for inline tasks,
+@item (optional) using special bullets for TODO keywords.
+@end itemize
+
+It also prettifies Org plain list bullets by:
+@itemize
+@item replacing each bullet type (*, + and -) with UTF-8 bullets,
+@item applying a custom face to item bullets.
+@end itemize
+
+Features degrade gracefully when viewed from terminal.")
     (license license:gpl3+)))
 
 (define-public emacs-org-pomodoro
@@ -7434,7 +7474,8 @@ xref, etc...) are still available, but with better integration.")
          #:phases
          ;; The package provides autoloads.
          (modify-phases %standard-phases
-           (delete 'make-autoloads))))
+           (delete 'make-autoloads)
+           (delete 'enable-autoloads-compilation))))
       (synopsis "Quicklisp support for SLY")
       (description
        "@command{sly-quicklisp} is an external contrib for SLY that provides a
@@ -7491,7 +7532,10 @@ additional support for working with ASDF projects.")
       (propagated-inputs
        `(("emacs-sly" ,emacs-sly)))
       (arguments
-       '(#:include (cons* "\\.lisp$" "\\.asd$" %default-include)))
+       '(#:include (cons* "\\.lisp$" "\\.asd$" %default-include)
+         #:phases (modify-phases %standard-phases
+                    ;; Byte compilation of the autoload file fails.
+                    (delete 'enable-autoloads-compilation))))
       (synopsis "Named-readtables support for SLY")
       (description
        "@command{sly-named-readtables} is an external contrib for SLY that
@@ -7525,7 +7569,8 @@ file.")
          #:phases
          ;; The package provides autoloads.
          (modify-phases %standard-phases
-           (delete 'make-autoloads))))
+           (delete 'make-autoloads)
+           (delete 'enable-autoloads-compilation))))
       (synopsis "Expand Common Lisp macros inside source files with SLY")
       (description
        "@command{sly-macrostep} is a SLY contrib for expanding CL macros right
@@ -7641,7 +7686,7 @@ extensions.")
     (license license:gpl3+)))
 
 (define-public emacs-evil-collection
-  (let ((commit "eb36c82a84d313e961777dc78fd4ff1d718efdf6")
+  (let ((commit "a478a95a8a3665e40bdae3bab2a0519db6c1f29c")
         (revision "13"))
     (package
       (name "emacs-evil-collection")
@@ -7654,7 +7699,7 @@ extensions.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0wi84x9176y4xjl7zpn882achfamx3a2ixlj4nvflxfh6q1qg7bz"))))
+                  "15ii5lw6hs4yyl22yyzfwzagdma2sman4rm5gq4m9773g4ava515"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)
@@ -12024,6 +12069,10 @@ match and total match information in the mode-line in various search modes.")
         (base32
          "0vb338bhjpsnrf60qgxny4z5rjrnifahnrv9axd4shay89d894zq"))))
     (build-system emacs-build-system)
+    ;; Byte compilation of the autoload file fails.
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'enable-autoloads-compilation))))
     (home-page "https://elpa.gnu.org/packages/seq.html")
     (synopsis
      "Forward @code{cl-generic} compatibility for Emacs before version 25")
@@ -17365,8 +17414,7 @@ asynchronous communications, the RPC response is fairly good.")
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let ((perl (assoc-ref inputs "perl"))
                      (dir (string-append  (assoc-ref outputs "out")
-                                          "/share/emacs/site-lisp/guix.d/edbi-"
-                                          ,version)))
+                                          "/share/emacs/site-lisp")))
                  (substitute* (string-append dir  "/edbi.el")
                    (("\"perl\"") (string-append "\"" perl "/bin/perl\"")))
                  (chmod (string-append dir "/edbi-bridge.pl") #o555)
@@ -21560,3 +21608,62 @@ variables.")
      "This library is a Company back-end providing auto-completion for
 emoji.")
     (license license:gpl3+)))
+
+(define-public emacs-exiftool
+  (package
+    (name "emacs-exiftool")
+    (version "0.3.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.systemreboot.net/exiftool.el/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0bv58is66cz21yhc0qqkp1z4nk13zfi2l7i6pjbhyi0g1n88qqyv"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-command '("make" "-C" "tests")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (make-file-writable "exiftool.el")
+             (emacs-substitute-variables "exiftool.el"
+               ("exiftool-executable"
+                (string-append (assoc-ref inputs "perl-image-exiftool")
+                               "/bin/exiftool")))
+             #t)))))
+    (inputs
+     `(("perl-image-exiftool" ,perl-image-exiftool)))
+    (home-page "https://git.systemreboot.net/exiftool.el/about/")
+    (synopsis "Elisp wrapper around ExifTool")
+    (description "@code{emacs-exiftool} is an Elisp wrapper around ExifTool.
+ExifTool supports reading and writing metadata in various formats including
+EXIF, XMP and IPTC.")
+    (license license:gpl3+)))
+
+(define-public emacs-password-generator
+  (package
+    (name "emacs-password-generator")
+    (version "1.01")
+    (home-page "https://github.com/zargener/emacs-password-genarator")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit "904cdb591a04305ba882ce19e1d117f5fa60f7d3")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1qgvn79qz1h8ykm5i1qv2fja4v2y0g2i0n5sf7byhnqhqlwn63nv"))))
+    (build-system emacs-build-system)
+    (synopsis "Generate passwords inside Emacs")
+    (description "@code{emacs-password-generator} provides simple functions to
+generate random passwords and insert them into the current buffer.  It also
+supports generation of phonetic and numeric passwords.")
+    (license license:artistic2.0)))

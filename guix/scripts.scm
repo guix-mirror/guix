@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Deck Pickard <deck.r.pickard@gmail.com>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;;
@@ -228,17 +228,19 @@ Show what and how will/would be built."
                                 (thresholds (%disk-space-warning)))
   "Display a hint about 'guix gc' if less than THRESHOLD of /gnu/store is
 available.
-THRESHOLD is a pair of (ABSOLUTE-THRESHOLD RELATIVE-THRESHOLD)."
+THRESHOLDS is a pair (ABSOLUTE-THRESHOLD . RELATIVE-THRESHOLD)."
+  (define GiB (expt 2 30))
+
   (let* ((stats      (statfs (%store-prefix)))
          (block-size (file-system-block-size stats))
          (available  (* block-size (file-system-blocks-available stats)))
          (total      (* block-size (file-system-block-count stats)))
          (relative-threshold-in-bytes (* total (cadr thresholds)))
-         (absolute-threshold-in-bytes (* 1024 1024 1024 (car thresholds))))
-    (when (< available (min relative-threshold-in-bytes
+         (absolute-threshold-in-bytes (car thresholds)))
+    (when (< available (max relative-threshold-in-bytes
                             absolute-threshold-in-bytes))
       (warning (G_ "only ~,1f GiB of free space available on ~a~%")
-               available (%store-prefix))
+               (/ available 1. GiB) (%store-prefix))
       (display-hint (format #f (G_ "Consider deleting old profile
 generations and collecting garbage, along these lines:
 

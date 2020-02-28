@@ -670,7 +670,20 @@ it fits within common partitioning schemes.")
   (make-u-boot-sunxi64-package "pine64-lts" "aarch64-linux-gnu"))
 
 (define-public u-boot-pinebook
-  (make-u-boot-sunxi64-package "pinebook" "aarch64-linux-gnu"))
+  (let ((base (make-u-boot-sunxi64-package "pinebook" "aarch64-linux-gnu")))
+    (package
+      (inherit base)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'patch-pinebook-config
+               ;; Fix regression with LCD video output introduced in 2020.01
+               ;; https://patchwork.ozlabs.org/patch/1225130/
+               (lambda _
+                 (substitute* "configs/pinebook_defconfig"
+                   (("CONFIG_VIDEO_BRIDGE_ANALOGIX_ANX6345=y") "CONFIG_VIDEO_BRIDGE_ANALOGIX_ANX6345=y\nCONFIG_VIDEO_BPP32=y"))
+                 #t)))))))))
 
 (define-public u-boot-bananapi-m2-ultra
   (make-u-boot-package "Bananapi_M2_Ultra" "arm-linux-gnueabihf"))

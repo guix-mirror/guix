@@ -39,6 +39,7 @@
 ;;; Copyright © 2019, 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2739,7 +2740,7 @@ from the module-init-tools project.")
 (define-public earlyoom
   (package
     (name "earlyoom")
-    (version "1.3")
+    (version "1.3.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2748,7 +2749,7 @@ from the module-init-tools project.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0fwbx0y80nqgkxrc9kf9j3iwa0wbps2jmqir3pgqbc2cj0wjh0lr"))))
+                "06sd3jpkdrwqbphsf8jrgs5rxfi7j3xjmygjjvj4xjk4gncz7r2i"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -6396,4 +6397,29 @@ functionality for system daemons.  It typically has no dependencies other than
 the Linux kernel, C standard library, and libdl (for dynamic linking).  While
 ELL is designed to be efficient and compact enough for use on embedded Linux
 platforms, it is not limited to resource-constrained systems.")
+    (license license:lgpl2.1+)))
+
+(define-public lttng-ust
+  (package
+    (name "lttng-ust")
+    (version "2.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://lttng.org/files/lttng-ust/"
+                                  "lttng-ust-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1n646yz7882svf5a4ay3vqiiz3qjn3pgkkij9kk22871wp7q0ck8"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("liburcu" ,liburcu)
+       ("numactl" ,numactl)))
+    (native-inputs
+     `(("python" ,python-3)))
+    (home-page "https://lttng.org/")
+    (synopsis "LTTng userspace tracer libraries")
+    (description "The user space tracing library, liblttng-ust, is the LTTng
+user space tracer.  It receives commands from a session daemon, for example to
+enable and disable specific instrumentation points, and writes event records
+to ring buffers shared with a consumer daemon.")
     (license license:lgpl2.1+)))

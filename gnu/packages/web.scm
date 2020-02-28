@@ -3,7 +3,7 @@
 ;;; Copyright © 2013 Aljosha Papsch <misc@rpapsch.de>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Eric Bavier <bavier@posteo.net>
@@ -114,12 +114,14 @@
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages libunistring)
+  #:use-module (gnu packages libunwind)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages markup)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages nss)
+  #:use-module (gnu packages openldap)
   #:use-module (gnu packages openstack)
   #:use-module (gnu packages base)
   #:use-module (gnu packages package-management)
@@ -547,6 +549,67 @@ supported at your website.")
                       ;; therefore nginx’ other licenses may also apply to its
                       ;; binary:
                       (package-license nginx)))))))
+
+(define-public lighttpd
+  (package
+    (name "lighttpd")
+    (version "1.4.55")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://download.lighttpd.net/lighttpd/"
+                                  "releases-" (version-major+minor version) ".x/"
+                                  "lighttpd-" version ".tar.xz"))
+              (sha256
+               (base32
+                "09z947730yjh438wrqb3z1c5hr1dbb11a8sr92g3vk6mr7lm02va"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--with-krb5"
+             "--with-ldap"
+             "--with-libev"
+             "--with-libunwind"
+             "--with-openssl"
+             "--with-pam"
+             "--with-sasl")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'embed-/bin/sh-reference
+           (lambda _
+             (substitute* "src/mod_ssi.c"
+               (("/bin/sh") (which "sh")))
+             #t))
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             (setenv "SHELL" (which "sh"))
+             ;; gethostbyaddr fails
+             (substitute* "tests/LightyTest.pm"
+               (("\\{HOSTNAME\\} = \\$name;")
+                "{HOSTNAME} = \"127.0.0.1\";"))
+             #t)))))
+    (inputs
+     `(("cyrus-sasl" ,cyrus-sasl)
+       ("libev" ,libev)
+       ("libunwind" ,libunwind)
+       ("linux-pam" ,linux-pam)
+       ("mit-krb5" ,mit-krb5)
+       ("openldap" ,openldap)
+       ("openssl" ,openssl)
+       ("pcre" ,pcre)
+       ("pcre:bin" ,pcre "bin")
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("perl" ,perl) ; for tests
+       ("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (home-page "https://www.lighttpd.net/")
+    (synopsis "Lightweight HTTP and reverse proxy server")
+    (description
+     "Lighttpd is a secure, fast, compliant, and very flexible web-server that
+has been optimized for high-performance environments.  It has a very low
+memory footprint compared to other webservers.  Its features include FastCGI,
+CGI, authentication, output compression, URL rewriting and many more.")
+    (license license:bsd-3)))
 
 (define-public fcgi
   (package
@@ -7029,8 +7092,8 @@ compressed JSON header blocks.
 
 ;; 'Node' requires this newer version, to be removed on the next rebuild cycle.
 (define-public nghttp2-1.40
-  (package/inherit
-   nghttp2
+  (package
+   (inherit nghttp2)
    (version "1.40.0")
    (source (origin
              (method url-fetch)

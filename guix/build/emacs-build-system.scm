@@ -225,6 +225,21 @@ parallel. PARALLEL-TESTS? is ignored when using a non-make TEST-COMMAND."
     (parameterize ((%emacs emacs))
       (emacs-generate-autoloads elpa-name site-lisp))))
 
+(define* (enable-autoloads-compilation #:key outputs #:allow-other-keys)
+  "Remove the NO-BYTE-COMPILATION local variable embedded in the generated
+autoload files."
+  (let* ((out (assoc-ref outputs "out"))
+         (autoloads (find-files out "-autoloads.el$")))
+    (substitute* autoloads
+      ((";; no-byte-compile.*") ""))
+    #t))
+
+(define* (validate-compiled-autoloads #:key outputs #:allow-other-keys)
+  "Verify whether the byte compiled autoloads load fine."
+  (let* ((out (assoc-ref outputs "out"))
+         (autoloads (find-files out "-autoloads.elc$")))
+    (emacs-batch-eval (format #f "(mapc #'load '~s)" autoloads))))
+
 (define (emacs-package? name)
   "Check if NAME correspond to the name of an Emacs package."
   (string-prefix? "emacs-" name))
@@ -253,10 +268,13 @@ second hyphen.  This corresponds to 'name-version' as used in ELPA packages."
     (replace 'check check)
     (replace 'install install)
     (add-after 'install 'make-autoloads make-autoloads)
-    (add-after 'make-autoloads 'patch-el-files patch-el-files)
+    (add-after 'make-autoloads 'enable-autoloads-compilation
+      enable-autoloads-compilation)
+    (add-after 'enable-autoloads-compilation 'patch-el-files patch-el-files)
     ;; The .el files are byte compiled directly in the store.
     (add-after 'patch-el-files 'build build)
-    (add-after 'build 'move-doc move-doc)))
+    (add-after 'build 'validate-compiled-autoloads validate-compiled-autoloads)
+    (add-after 'validate-compiled-autoloads 'move-doc move-doc)))
 
 (define* (emacs-build #:key inputs (phases %standard-phases)
                       #:allow-other-keys #:rest args)

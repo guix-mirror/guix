@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,8 +25,7 @@
 ;; Test the JSON mapping machinery used in (guix swh).
 
 (define %origin
-  "{ \"id\": 42,
-     \"visits_url\": \"/visits/42\",
+  "{ \"visits_url\": \"/visits/42\",
      \"type\": \"git\",
      \"url\": \"http://example.org/guix.git\" }")
 
@@ -48,11 +47,10 @@
 (test-begin "swh")
 
 (test-equal "lookup-origin"
-  (list 42 "git" "http://example.org/guix.git")
+  (list "git" "http://example.org/guix.git")
   (with-json-result %origin
     (let ((origin (lookup-origin "http://example.org/guix.git")))
-      (list (origin-id origin)
-            (origin-type origin)
+      (list (origin-type origin)
             (origin-url origin)))))
 
 (test-equal "lookup-origin, not found"

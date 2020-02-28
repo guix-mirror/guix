@@ -24,15 +24,20 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system copy)
+  #:use-module (guix build-system meson)
   #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages ssh)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages xml))
 
@@ -85,7 +90,7 @@ like Gnome, Unity, Budgie, Pantheon, XFCE, Mate and others.")
 (define-public delft-icon-theme
   (package
     (name "delft-icon-theme")
-    (version "1.10")
+    (version "1.11")
     (source
      (origin
        (method git-fetch)
@@ -94,21 +99,19 @@ like Gnome, Unity, Budgie, Pantheon, XFCE, Mate and others.")
              (commit (string-append "v" version))))
        (sha256
         (base32
-         "0vw3yw9f9ygzfd2k3zrfih3r0vkzlhk1bmsk8sapvk7np24i1z9s"))
+         "1m3r4i4m3y3xsjb5f4bik0ylmi64amkfyr0y8pjbvv6gyj492mi6"))
        (file-name (git-file-name name version))))
-    (build-system trivial-build-system)
+    (build-system copy-build-system)
     (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (copy-recursively (assoc-ref %build-inputs "source") "icons")
-         (substitute* "icons/Delft/index.theme"
-           (("gnome") "Adwaita"))
-         (delete-file "icons/README.md")
-         (delete-file "icons/LICENSE")
-         (delete-file "icons/logo.jpg")
-         (copy-recursively "icons" (string-append %output "/share/icons")))))
+     `(#:install-plan
+       `(("." "share/icons" #:exclude ("README.md" "LICENSE" "logo.jpg")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-index.theme
+           (lambda _
+            (substitute* "Delft/index.theme"
+              (("gnome") "Adwaita"))
+            #t)))))
     (home-page "https://www.gnome-look.org/p/1199881/")
     (synopsis "Continuation of Faenza icon theme with up to date app icons")
     (description "Delft is a fork of the popular icon theme Faenza with up to
@@ -131,19 +134,11 @@ the Obsidian icon theme.")
                (base32
                 "1fjhx23jqwv3d0smwhnjvc35gqhwk9p5f96ic22pfax653cn5vh8"))
               (file-name (git-file-name name version))))
-    (build-system trivial-build-system)
+    (build-system copy-build-system)
     (arguments
-     '(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let* ((source (assoc-ref %build-inputs "source"))
-                (install-dir (string-append (assoc-ref %outputs "out")
-                                            "/share/gnome-shell/extensions"
-                                            "/appindicatorsupport@rgcjonas.gmail.com")))
-           (mkdir-p install-dir)
-           (copy-recursively source install-dir)
-           #t))))
+     `(#:install-plan
+       '(("." ,(string-append "share/gnome-shell/extensions/"
+                              "appindicatorsupport@rgcjonas.gmail.com")))))
     (synopsis "Adds KStatusNotifierItem support to GNOME Shell")
     (description "This extension integrates Ubuntu AppIndicators
 and KStatusNotifierItems (KDE's successor of the systray) into
@@ -187,6 +182,100 @@ overview, transforming it into a dock for easier application launching and
 faster window switching.")
     (home-page "https://micheleg.github.io/dash-to-dock/")
     (license license:gpl2+)))
+
+(define-public gnome-shell-extension-gsconnect
+  (package
+    (name "gnome-shell-extension-gsconnect")
+    ;; v28 is the last version to support GNOME 3.32
+    (version "28")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append "https://github.com/andyholmes"
+                                        "/gnome-shell-extension-gsconnect.git"))
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0grqkzqm7mlkbzin4nx9w7bh5cgygph8pn0cvim4a4gg99nfcp5z"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags
+       (let* ((out (assoc-ref %outputs "out"))
+              (name+version (strip-store-file-name out))
+              (gschema-dir (string-append out
+                                          "/share/gsettings-schemas/"
+                                          name+version
+                                          "/glib-2.0/schemas"))
+              (gnome-shell (assoc-ref %build-inputs "gnome-shell"))
+              (openssh (assoc-ref %build-inputs "openssh"))
+              (openssl (assoc-ref %build-inputs "openssl")))
+         (list
+          (string-append "-Dgnome_shell_libdir=" gnome-shell "/lib")
+          (string-append "-Dgsettings_schemadir=" gschema-dir)
+          (string-append "-Dopenssl_path=" openssl "/bin/openssl")
+          (string-append "-Dsshadd_path=" openssh "/bin/ssh-add")
+          (string-append "-Dsshkeygen_path=" openssh "/bin/ssh-keygen")
+          (string-append "-Dsession_bus_services_dir=" out "/share/dbus-1/services")
+          "-Dpost_install=true"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((glib (assoc-ref inputs "glib:bin"))
+                    (gapplication (string-append glib "/bin/gapplication"))
+                    (gi-typelib-path (getenv "GI_TYPELIB_PATH")))
+               (substitute* "data/org.gnome.Shell.Extensions.GSConnect.desktop"
+                 (("gapplication") gapplication))
+               (for-each
+                (lambda (file)
+                  (substitute* file
+                    (("'use strict';")
+                     (string-append "'use strict';\n\n"
+                                    "'" gi-typelib-path "'.split(':').forEach("
+                                    "path => imports.gi.GIRepository.Repository."
+                                    "prepend_search_path(path));"))))
+                '("src/extension.js" "src/prefs.js"))
+               #t)))
+         (add-after 'install 'wrap-daemons
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (service-dir
+                     (string-append out "/share/gnome-shell/extensions"
+                                    "/gsconnect@andyholmes.github.io/service"))
+                    (gi-typelib-path (getenv "GI_TYPELIB_PATH")))
+               (wrap-program (string-append service-dir "/daemon.js")
+                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path)))
+               #t))))))
+    (inputs
+     `(("at-spi2-core" ,at-spi2-core)
+       ("caribou" ,caribou)
+       ("evolution-data-server" ,evolution-data-server)
+       ("folks" ,folks)
+       ("gjs" ,gjs)
+       ("glib" ,glib)
+       ("glib:bin" ,glib "bin")
+       ("gsound" ,gsound)
+       ("gnome-shell" ,gnome-shell)
+       ("gtk+" ,gtk+)
+       ("nautilus" ,nautilus)
+       ("openssh" ,openssh)
+       ("openssl" ,openssl)
+       ("python-nautilus" ,python-nautilus)
+       ("python-pygobject" ,python-pygobject)
+       ("upower" ,upower)))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("gobject-introspection" ,gobject-introspection)
+       ("libxml2" ,libxml2)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/andyholmes/gnome-shell-extension-gsconnect/wiki")
+    (synopsis "Connect GNOME Shell with your Android phone")
+    (description "GSConnect is a complete implementation of KDE Connect
+especially for GNOME Shell, allowing devices to securely share content, like
+notifications or files, and other features like SMS messaging and remote
+control.")
+    (license license:gpl2)))
 
 (define-public gnome-shell-extension-hide-app-icon
   (let ((commit "4188aa5f4ba24901a053a0c3eb0d83baa8625eab")
@@ -289,20 +378,12 @@ into a single panel, similar to that found in KDE Plasma and Windows 7+.")
                (base32
                 "0fa8l3xlh8kbq07y4385wpb908zm6x53z81q16xlmin97dln32hh"))
               (file-name (git-file-name name version))))
-    (build-system trivial-build-system)
+    (build-system copy-build-system)
     (arguments
-     '(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((dst (string-append
-                     (assoc-ref %outputs "out")
-                     "/share/gnome-shell/extensions/"
-                     "noannoyance@daase.net")))
-           (mkdir-p dst)
-           (copy-recursively (assoc-ref %build-inputs "source") dst)))))
-    (synopsis "Removes 'Window is ready' annotation")
-    (description "One of the many extensions, that remove this message.
+     '(#:install-plan
+       '(("." "share/gnome-shell/extensions/noannoyance@daase.net"))))
+    (synopsis "Remove 'Window is ready' annotation")
+    (description "One of the many extensions that remove this message.
 It uses ES6 syntax and claims to be more actively maintained than others.")
     (home-page "https://extensions.gnome.org/extension/2182/noannoyance/")
     (license license:gpl2)))

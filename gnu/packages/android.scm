@@ -717,7 +717,7 @@ to be passed to the @code{udev} service.")
 (define-public git-repo
   (package
     (name "git-repo")
-    (version "2.3")
+    (version "2.4.1")
     (source
      (origin
        (method git-fetch)
@@ -726,7 +726,7 @@ to be passed to the @code{udev} service.")
              (commit (string-append "v" version))))
        (file-name (string-append "git-repo-" version "-checkout"))
        (sha256
-        (base32 "0jrll0mjfwakyjvlhbxwsdi32jhgss9mwz8c8h24n1qbqqxysrk4"))))
+        (base32 "0khg1731927gvin73dcbw1657kbfq4k7agla5rpzqcnwkk5agzg3"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -735,47 +735,48 @@ to be passed to the @code{udev} service.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (git (assoc-ref inputs "git"))
-                    (gpg (assoc-ref inputs "gnupg"))
                     (ssh (assoc-ref inputs "ssh")))
                (substitute* '("repo" "git_command.py")
                  (("^GIT = 'git'")
                   (string-append "GIT = '" git "/bin/git'")))
-               (substitute* "repo"
-                 ((" cmd = \\['gpg',")
-                  (string-append " cmd = ['" gpg "/bin/gpg',")))
                (substitute* "git_config.py"
                  ((" command_base = \\['ssh',")
                   (string-append " command_base = ['" ssh "/bin/ssh',")))
                #t)))
-         (add-before 'build 'do-not-clone-this-source
+         (add-before 'build 'do-not-self-update
            (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (repo-dir (string-append out "/share/" ,name)))
-               (substitute* "repo"
-                 (("^def _FindRepo\\(\\):.*")
-                  (format #f "
-def _FindRepo():
-  '''Look for a repo installation, starting at the current directory.'''
-  # Use the installed version of git-repo.
-  repo_main = '~a/main.py'
-  curdir = os.getcwd()
-  olddir = None
-  while curdir != '/' and curdir != olddir:
-    dot_repo = os.path.join(curdir, repodir)
-    if os.path.isdir(dot_repo):
-      return (repo_main, dot_repo)
-    else:
-      olddir = curdir
-      curdir = os.path.dirname(curdir)
-  return None, ''
+             ;; Setting the REPO_MAIN variable to an absolute file name is
+             ;; enough to have _FindRepo return the store main.py file.  The
+             ;; self update mechanism is activated with the call to _Init() in
+             ;; main(), so we bypass it.
 
-  # The remaining of this function is dead code.  It was used to
-  # find a git-checked-out version in the local project.\n" repo-dir))
-                 ;; Neither clone, check out, nor verify the git repository
-                 (("(^\\s+)_Clone\\(.*\\)") "")
-                 (("(^\\s+)_Checkout\\(.*\\)") "")
-                 ((" rev = _Verify\\(.*\\)") " rev = None"))
-               #t)))
+             ;; Ticket requesting upstream to provide a mean to disable the
+             ;; self update mechanism:
+             ;; https://bugs.chromium.org/p/gerrit/issues/detail?id=12407.
+             (let* ((out (assoc-ref outputs "out"))
+                    (repo-main (string-append out "/share/git-repo/main.py")))
+               (substitute* "repo"
+                 (("^REPO_MAIN = .*")
+                  (format #f "REPO_MAIN = ~s~%" repo-main))
+                 ((" _Init\\(args, gitc_init=\\(cmd ==.*" all)
+                  (string-append "True #" all)))
+               ;; Prevent repo from trying to git describe its version from
+               ;; the (disabled) self updated copy.
+               (substitute* "git_command.py"
+                 (("ver = getattr\\(RepoSourceVersion.*")
+                  (format #f "ver = ~s~%" ,version)))
+               (substitute* "subcmds/version.py"
+                 (("rp_ver = .*")
+                  (format #f "rp_ver = ~s~%" ,version)))
+               ;; Prevent repo from adding its (disabled) self update copy to
+               ;; the list of projects to fetch when using 'repo sync'.
+               (substitute* "subcmds/sync.py"
+                 (("to_fetch\\.extend\\(all_projects\\).*" all)
+                  (string-append "#" all))
+                 (("self\\._Fetch\\(to_fetch")
+                  "self._Fetch(all_projects")
+                 (("_PostRepoFetch\\(rp, opt\\.repo_verify).*" all)
+                  (string-append "#" all))))))
          (delete 'build) ; nothing to build
          (add-before 'check 'configure-git
            (lambda _
@@ -800,7 +801,6 @@ def _FindRepo():
     (inputs
      ;; TODO: Add git-remote-persistent-https once it is available in guix
      `(("git" ,git)
-       ("gnupg" ,gnupg)
        ("ssh" ,openssh)))
     (native-inputs
      `(("pytest" ,python-pytest)))

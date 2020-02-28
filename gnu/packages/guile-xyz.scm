@@ -970,20 +970,17 @@ using S-expressions.")
 (define-public guile-debbugs
   (package
     (name "guile-debbugs")
-    (version "0.0.2")
+    (version "0.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/guile-debbugs/guile-debbugs-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "16l8910p57im6s3j93xhdaqvgfy6ms5n97177mrch3y961z5hy0i"))
-              (modules '((guix build utils)))
-              (snippet
-               '(substitute* "Makefile.in"
-                  (("^godir = (.*)/ccache" _ prefix)
-                   (string-append "godir = " prefix "/site-ccache"))))))
+                "1cc63nw3xdfjrfk8c58r6d5lidmfq5cpqcy32yd5xp81yccprvn9"))))
     (build-system gnu-build-system)
+    (propagated-inputs
+     `(("guile-email" ,guile-email)))
     (native-inputs
      `(("guile" ,guile-2.2)
        ("pkg-config" ,pkg-config)))
@@ -1022,31 +1019,6 @@ in pure guile.  It supports parsing MIME (Multipurpose Internet Mail
 Extensions) compliant email messages and reading emails from the mbox
 format.")
     (license license:agpl3+)))
-
-(define-public guile-debbugs-next
-  (let ((commit "fb0ae064037a38a0d526e08b4ad24c52e205edb9")
-        (revision "2"))
-    (package (inherit guile-debbugs)
-      (name "guile-debbugs")
-      (version (git-version "0.0.3" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://git.savannah.gnu.org/git/guile-debbugs.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "195sacx2xc1mzzfljj62nfpi8mxn0rc6dabxckizjksnhb5irfwy"))))
-      (build-system gnu-build-system)
-      (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("texinfo" ,texinfo)))
-      (inputs
-       `(("guile" ,guile-2.2)
-         ("guile-email" ,guile-email))))))
 
 (define-public guile-newt
   (package

@@ -410,7 +410,7 @@ computational cluster.")
 (define-public bedtools
   (package
     (name "bedtools")
-    (version "2.27.1")
+    (version "2.29.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/arq5x/bedtools2/releases/"
@@ -418,7 +418,7 @@ computational cluster.")
                                   "bedtools-" version ".tar.gz"))
               (sha256
                (base32
-                "1ndg5yknrxl4djx8ddzgk12rrbiidfpmkkg5z3f95jzryfxarhn8"))))
+                "0m3hk6548846w83a9s5drsczvy67n2azx41kj71n03klb2gbzwg3"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "test"
@@ -427,7 +427,8 @@ computational cluster.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
-    (native-inputs `(("python" ,python-2)))
+    (native-inputs
+     `(("python" ,python-wrapper)))
     (inputs
      `(("samtools" ,samtools)
        ("zlib" ,zlib)))
@@ -440,7 +441,7 @@ genome arithmetic: that is, set theory on the genome.  For example, bedtools
 allows one to intersect, merge, count, complement, and shuffle genomic
 intervals from multiple files in widely-used genomic file formats such as BAM,
 BED, GFF/GTF, VCF.")
-    (license license:gpl2)))
+    (license license:expat)))
 
 ;; Later releases of bedtools produce files with more columns than
 ;; what Ribotaper expects.
@@ -5306,7 +5307,7 @@ BAM and Wiggle files in both transcript-coordinate and genomic-coordinate.")
 (define-public rseqc
   (package
     (name "rseqc")
-    (version "2.6.1")
+    (version "3.0.1")
     (source
      (origin
        (method url-fetch)
@@ -5314,28 +5315,18 @@ BAM and Wiggle files in both transcript-coordinate and genomic-coordinate.")
         (string-append "mirror://sourceforge/rseqc/"
                        "RSeQC-" version ".tar.gz"))
        (sha256
-        (base32 "15ly0254yi032qzkdplg00q144qfdsd986gh62829rl5bkxhj330"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; remove bundled copy of pysam
-           (delete-file-recursively "lib/pysam")
-           (substitute* "setup.py"
-             ;; remove dependency on outdated "distribute" module
-             (("^from distribute_setup import use_setuptools") "")
-             (("^use_setuptools\\(\\)") "")
-             ;; do not use bundled copy of pysam
-             (("^have_pysam = False") "have_pysam = True"))
-           #t))))
+        (base32
+         "0gbb9iyb7swiv5455fm5rg98r7l6qn27v564yllqjd574hncpx6m"))))
     (build-system python-build-system)
-    (arguments `(#:python ,python-2))
     (inputs
-     `(("python-cython" ,python2-cython)
-       ("python-pysam" ,python2-pysam)
-       ("python-numpy" ,python2-numpy)
+     `(("python-cython" ,python-cython)
+       ("python-bx-python" ,python-bx-python)
+       ("python-pybigwig" ,python-pybigwig)
+       ("python-pysam" ,python-pysam)
+       ("python-numpy" ,python-numpy)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("python-nose" ,python2-nose)))
+     `(("python-nose" ,python-nose)))
     (home-page "http://rseqc.sourceforge.net/")
     (synopsis "RNA-seq quality control package")
     (description
@@ -6581,7 +6572,7 @@ profiles, and associated taxonomic information.")
 (define-public vcftools
   (package
     (name "vcftools")
-    (version "0.1.15")
+    (version "0.1.16")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -6589,7 +6580,7 @@ profiles, and associated taxonomic information.")
                     version "/vcftools-" version ".tar.gz"))
               (sha256
                (base32
-                "1qw30c45wihgy632rbz4rh3njnwj4msj46l1rsgdhyg6bgypmr1i"))))
+                "1qqlx7flfv7axrjwkaz6njkscsl1d0jw98ns8d8bh1n1hd1pgz6v"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
@@ -6617,17 +6608,18 @@ data in the form of VCF files.")
 (define-public infernal
   (package
     (name "infernal")
-    (version "1.1.2")
+    (version "1.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://eddylab.org/software/infernal/"
                                   "infernal-" version ".tar.gz"))
               (sha256
                (base32
-                "0sr2hiz3qxfwqpz3whxr6n82p3x27336v3f34iqznp10hks2935c"))))
+                "0pm8bm3s6nfa0av4x6m6h27lsg12b3lz3jm0fyh1mc77l2isd61v"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("perl" ,perl))) ; for tests
+     `(("perl" ,perl)
+       ("python" ,python))) ; for tests
     (home-page "http://eddylab.org/infernal/")
     (synopsis "Inference of RNA alignments")
     (description "Infernal (\"INFERence of RNA ALignment\") is a tool for
@@ -6638,7 +6630,7 @@ profile, but it scores a combination of sequence consensus and RNA secondary
 structure consensus, so in many cases, it is more capable of identifying RNA
 homologs that conserve their secondary structure more than their primary
 sequence.")
-    ;; Infernal 1.1.2 requires VMX or SSE capability for parallel instructions.
+    ;; Infernal 1.1.3 requires VMX or SSE capability for parallel instructions.
     (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:bsd-3)))
 
