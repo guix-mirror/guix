@@ -11107,3 +11107,24 @@ interfaces as well as a functional and an object oriented interface.")
                                  "/lib/libsqlite3")))
                #t))))))
     (synopsis "SQLite3 driver for Common Lisp SQL interface library")))
+
+(define-public sbcl-clsql-postgresql
+  (package
+    (inherit sbcl-clsql)
+    (name "sbcl-clsql-postgresql")
+    (inputs
+     `(("clsql" ,sbcl-clsql)
+       ("clsql-uffi" ,sbcl-clsql-uffi)
+       ("postgresql" ,postgresql)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-clsql)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "db-postgresql/postgresql-loader.lisp"
+                 (("libpq")
+                  (string-append (assoc-ref inputs "postgresql")
+                                 "/lib/libpq")))
+               #t))))))
+    (synopsis "PostgreSQL driver for Common Lisp SQL interface library")))
