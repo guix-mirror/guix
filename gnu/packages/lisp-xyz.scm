@@ -11086,3 +11086,24 @@ interfaces as well as a functional and an object oriented interface.")
        ("clsql" ,sbcl-clsql)
        ("uffi" ,sbcl-uffi)))
     (synopsis "UFFI helper functions for Common Lisp SQL interface library")))
+
+(define-public sbcl-clsql-sqlite3
+  (package
+    (inherit sbcl-clsql)
+    (name "sbcl-clsql-sqlite3")
+    (inputs
+     `(("clsql" ,sbcl-clsql)
+       ("clsql-uffi" ,sbcl-clsql-uffi)
+       ("sqlite" ,sqlite)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-clsql)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "db-sqlite3/sqlite3-loader.lisp"
+                 (("libsqlite3")
+                  (string-append (assoc-ref inputs "sqlite")
+                                 "/lib/libsqlite3")))
+               #t))))))
+    (synopsis "SQLite3 driver for Common Lisp SQL interface library")))
