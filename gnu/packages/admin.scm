@@ -1780,7 +1780,7 @@ environment variable is set and output is to tty.")
                   (string-append "SHELL=" bash "/bin/sh")))
 
                #t))))))
-    (home-page "https://www.gnu.org/software/direvent/")
+    (home-page "https://www.gnu.org.ua/software/direvent/")
     (synopsis "Daemon to monitor directories for events such as file removal")
     (description
      "A daemon that monitors directories for events, such as creating,
