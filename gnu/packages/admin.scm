@@ -2878,14 +2878,14 @@ Intel DRM Driver.")
 (define-public fabric
   (package
     (name "fabric")
-    (version "1.14.0")
+    (version "1.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Fabric" version))
        (sha256
         (base32
-         "13r0b0hllgf8j9rh6x1knmbgvingbdmx046aazv6vck2ll120mw1"))))
+         "1a3ndlpdw6bhn8fcw1jgznl117a8pnr84az9rb5fwnrypf1ph2b6"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2               ; Python 2 only
