@@ -11128,3 +11128,26 @@ interfaces as well as a functional and an object oriented interface.")
                                  "/lib/libpq")))
                #t))))))
     (synopsis "PostgreSQL driver for Common Lisp SQL interface library")))
+
+(define-public sbcl-clsql-postgresql-socket3
+  (package
+    (inherit sbcl-clsql)
+    (name "sbcl-clsql-postgresql-socket3")
+    (inputs
+     `(("cl-postgres" ,sbcl-cl-postgres)
+       ("clsql" ,sbcl-clsql)
+       ("md5" ,sbcl-md5)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-clsql)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-after 'create-asd-file 'fix-asd-file
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (lib (string-append out "/lib/" (%lisp-type)))
+                      (asd (string-append lib "/clsql-postgresql-socket3.asd")))
+                 (substitute* asd
+                   (("CLSQL-POSTGRESQL-SOCKET-SYSTEM::")
+                    "")))
+               #t))))))
+    (synopsis "PostgreSQL driver for Common Lisp SQL interface library")))
