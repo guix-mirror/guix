@@ -415,7 +415,7 @@ application (for console or X terminals) and requires ncurses.")
                           (("\"/bin/sh\"")
                            (string-append "\"" bash "/bin/sh\"")))
                         #t))))))
-    (home-page "https://www.gnu.org/software/pies/")
+    (home-page "https://www.gnu.org.ua/software/pies/")
     (synopsis "Program invocation and execution supervisor")
     (description
      "GNU pies is a program that supervises the invocation and execution of
