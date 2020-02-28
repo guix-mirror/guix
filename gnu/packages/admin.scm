@@ -2909,7 +2909,7 @@ Intel DRM Driver.")
        ("python2-bcrypt" ,python2-bcrypt)))
     (propagated-inputs
      `(("python2-paramiko" ,python2-paramiko)))
-    (home-page "http://fabfile.org")
+    (home-page "https://www.fabfile.org/")
     (synopsis "Simple Pythonic remote execution and deployment tool")
     (description
      "Fabric is designed to upload files and run shell commands on a number of
