@@ -2737,54 +2737,49 @@ kmod.  The aim is to be compatible with tools, configurations and indices
 from the module-init-tools project.")
     (license license:gpl2+))) ; library under lgpl2.1+
 
-;;; Use a recent commit, because the latest 1.3 tag suffers from test failures
-;;; (see:
-;;; https://github.com/rfjakob/earlyoom/issues/156#issuecomment-591997405).
 (define-public earlyoom
-  (let ((commit "7bd4b2c9a285d2b9a4ef6e7a080e83ab95fcdeea")
-        (revision "1"))
-    (package
-      (name "earlyoom")
-      (version (git-version "1.3" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/rfjakob/earlyoom.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0sxk8gh734q4rbh9r1q8ab840bn4kffdm8j93x55jspnmmy1wd2c"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:phases (modify-phases %standard-phases
-                    (delete 'configure)
-                    (add-before 'check 'set-home
-                      (lambda _
-                        (setenv "HOME" (getcwd))
-                        #t))
-                    (add-after 'build 'install-contribs
-                      ;; Install what seems useful from the contrib directory.
-                      (lambda* (#:key outputs #:allow-other-keys)
-                        (let* ((out (assoc-ref outputs "out"))
-                               (contrib (string-append
-                                         out "/share/earlyoom/contrib")))
-                          (install-file "contrib/notify_all_users.py" contrib)
-                          #t))))
-         #:make-flags (let* ((prefix (assoc-ref %outputs "out")))
-                        (list "CC=gcc"
-                              (string-append "VERSION=v" ,version)
-                              (string-append "PREFIX=" prefix)
-                              (string-append "SYSCONFDIR=" prefix "/etc")))
-         #:test-target "test"))
-      (native-inputs `(("go" ,go)               ;for the test suite
-                       ("pandoc" ,ghc-pandoc))) ;to generate the manpage
-      (home-page "https://github.com/rfjakob/earlyoom")
-      (synopsis "Simple out of memory (OOM) daemon for the Linux kernel")
-      (description "Early OOM is a minimalist out of memory (OOM) daemon that
+  (package
+    (name "earlyoom")
+    (version "1.3.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/rfjakob/earlyoom.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "06sd3jpkdrwqbphsf8jrgs5rxfi7j3xjmygjjvj4xjk4gncz7r2i"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-before 'check 'set-home
+                    (lambda _
+                      (setenv "HOME" (getcwd))
+                      #t))
+                  (add-after 'build 'install-contribs
+                    ;; Install what seems useful from the contrib directory.
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (contrib (string-append
+                                       out "/share/earlyoom/contrib")))
+                        (install-file "contrib/notify_all_users.py" contrib)
+                        #t))))
+       #:make-flags (let* ((prefix (assoc-ref %outputs "out")))
+                      (list "CC=gcc"
+                            (string-append "VERSION=v" ,version)
+                            (string-append "PREFIX=" prefix)
+                            (string-append "SYSCONFDIR=" prefix "/etc")))
+       #:test-target "test"))
+    (native-inputs `(("go" ,go)               ;for the test suite
+                     ("pandoc" ,ghc-pandoc))) ;to generate the manpage
+    (home-page "https://github.com/rfjakob/earlyoom")
+    (synopsis "Simple out of memory (OOM) daemon for the Linux kernel")
+    (description "Early OOM is a minimalist out of memory (OOM) daemon that
 runs in user space and provides a more responsive and configurable alternative
 to the in-kernel OOM killer.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public eudev
   ;; The post-systemd fork, maintained by Gentoo.
