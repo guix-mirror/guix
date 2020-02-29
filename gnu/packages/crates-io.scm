@@ -13168,8 +13168,7 @@ generator that uses the HC-128 algorithm.")
          (base32
           "1i0vl8q5ddvvy0x8hf1zxny393miyzxkwqnw31ifg6p0gdy6fh3v"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs (("rust-rand-core" ,rust-rand-core-0.3))))))
+     `(#:cargo-inputs (("rust-rand-core" ,rust-rand-core-0.3))))))
 
 (define-public rust-rand-isaac-0.2
   (package
