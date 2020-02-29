@@ -19071,3 +19071,44 @@ happened, and what caused it.")
        "This package provides an easy-to-use SNI endpoint for use
 with the Twisted web framework.")
       (license license:expat))))
+
+(define-public python-txacme
+  (package
+    (name "python-txacme")
+    (version "0.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "txacme" version))
+       (sha256
+        (base32 "1cplx4llq7i508w6fgwjdv9di7rsz9k9irfmzdfbiz6q6a0ykf1d"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-acme" ,python-acme)
+       ("python-attrs" ,python-attrs)
+       ("python-eliot" ,python-eliot)
+       ("python-josepy" ,python-josepy)
+       ("python-pem" ,python-pem)
+       ("python-treq" ,python-treq)
+       ("python-twisted" ,python-twisted)
+       ("python-txsni" ,python-txsni)))
+    (native-inputs
+     `(("python-fixtures" ,python-fixtures)
+       ("python-hypothesis" ,python-hypothesis)
+       ("python-mock" ,python-mock)
+       ("python-service-identity"
+        ,python-service-identity)
+       ("python-testrepository" ,python-testrepository)
+       ("python-testscenarios" ,python-testscenarios)
+       ("python-testtools" ,python-testtools)))
+    (home-page "https://github.com/twisted/txacme")
+    (synopsis "Twisted implexmentation of the ACME protocol")
+    (description
+     "ACME is Automatic Certificate Management Environment, a protocol that
+allows clients and certificate authorities to automate verification and
+certificate issuance.  The ACME protocol is used by the free Let's Encrypt
+Certificate Authority.
+
+txacme is an implementation of the protocol for Twisted, the event-driven
+networking engine for Python.")
+    (license license:expat)))
