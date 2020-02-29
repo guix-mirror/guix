@@ -18851,3 +18851,30 @@ key.
     (synopsis "Library for writing system daemons in Python")
     (description "Daemonize is a library for writing system daemons in Python.")
     (license license:expat)))
+
+(define-public python-pymacaroons
+  (package
+    (name "python-pymacaroons")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pymacaroons" version))
+       (sha256
+        (base32 "1f0357a6g1h96sk6wy030xmc1p4rd80a999qvxd28v7nlm1blsqy"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-pynacl" ,python-pynacl)))
+    (home-page "https://github.com/ecordell/pymacaroons")
+    (synopsis "Python Macaroon Library")
+    (description
+     "Macaroons, like cookies, are a form of bearer credential.  Unlike opaque
+tokens, macaroons embed caveats that define specific authorization
+requirements for the target service, the service that issued the root macaroon
+and which is capable of verifying the integrity of macaroons it receives.
+
+Macaroons allow for delegation and attenuation of authorization.  They are
+simple and fast to verify, and decouple authorization policy from the
+enforcement of that policy.")
+    (license license:expat)))
