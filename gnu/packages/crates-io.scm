@@ -948,7 +948,7 @@ Bresenham's line algorithm.")
 (define-public rust-generator-0.6
   (package
     (name "rust-generator")
-    (version "0.6.18")
+    (version "0.6.20")
     (source
      (origin
        (method url-fetch)
@@ -957,16 +957,14 @@ Bresenham's line algorithm.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0p4iq1n53dy72dhma02wfjrazf2hq2745f9si9yi7jxviks7c8l7"))))
+         "0f07mwkarwrqrykhkzqpvfnd5crz20dd8l24psn01kiqzc71dana"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
         ("rust-log" ,rust-log-0.4)
-        ("rust-winapi" ,rust-winapi-0.3))
-       #:cargo-development-inputs
-       (("rust-cc" ,rust-cc-1.0)
+        ("rust-winapi" ,rust-winapi-0.3)
+        ("rust-cc" ,rust-cc-1.0)
         ("rust-rustc-version" ,rust-rustc-version-0.2))))
     (home-page "https://github.com/Xudong-Huang/generator-rs")
     (synopsis "Stackfull Generator Library in Rust")
