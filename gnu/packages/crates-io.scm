@@ -8991,14 +8991,12 @@ platform-independently.")
          "08ayl9aqjnmf7ly1ipy6dk3wjvyfn4w51l40jzh1fh984ykldbzi"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-log" ,rust-log-0.4)
         ("rust-phf" ,rust-phf-0.7)
         ("rust-string-cache" ,rust-string-cache-0.7)
-        ("rust-tendril" ,rust-tendril-0.4))
-       #:cargo-development-inputs
-       (("rust-phf-codegen" ,rust-phf-codegen-0.7)
+        ("rust-tendril" ,rust-tendril-0.4)
+        ("rust-phf-codegen" ,rust-phf-codegen-0.7)
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0)
         ("rust-serde-json" ,rust-serde-json-1.0)
