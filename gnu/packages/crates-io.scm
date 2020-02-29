@@ -13284,8 +13284,7 @@ generator based on timing jitter.")
          (base32
           "0wahppm0s64gkr2vmhcgwc0lij37in1lgfxg5rbgqlz0l5vgcxbv"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-cloudabi" ,rust-cloudabi-0.0)
         ("rust-fuchsia-cprng" ,rust-fuchsia-cprng-0.1)
         ("rust-libc" ,rust-libc-0.2)
