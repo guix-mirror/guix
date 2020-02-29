@@ -18900,3 +18900,36 @@ enforcement of that policy.")
     (description
      "This is the official Python client for the Prometheus monitoring server.")
     (license license:asl2.0)))
+
+(define-public python-ldap3
+  (package
+    (name "python-ldap3")
+    (version "2.7")
+    (home-page "https://github.com/cannatag/ldap3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference (url home-page)
+                           (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0xw9fkqld21xsvdpaqir8ccc2l805xnn9gxahsnl70xzp3mwl0xv"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f ;TODO: Tests need a real LDAP server to run
+       #:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (invoke "nosetests" "-s" "test"))
+                      #t)))))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-gssapi" ,python-gssapi)
+       ("python-pyasn1" ,python-pyasn1)))
+    (synopsis "Python LDAP client")
+    (description
+     "LDAP3 is a strictly RFC 4510 conforming LDAP V3 pure Python client
+library.")
+    (license license:lgpl3+)))
