@@ -13337,8 +13337,7 @@ generator based on timing jitter.")
          (base32
           "0i0bdla18a8x4jn1w0fxsbs3jg7ajllz6azmch1zw33r06dv1ydb"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-autocfg" ,rust-autocfg-0.1)
         ("rust-rand-core" ,rust-rand-core-0.4)
         ("rust-serde" ,rust-serde-1.0)
