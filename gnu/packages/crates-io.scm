@@ -3443,8 +3443,7 @@ Code} (MAC) algorithms.")
          "0k5zs0x0qmmn27pa5kcg86lg84s29491fw5sh3zswxswnavasp4v"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-memchr" ,rust-memchr-2.2))
        #:cargo-development-inputs
        (("rust-arrayvec" ,rust-arrayvec-0.4))))
