@@ -18746,3 +18746,26 @@ dumping of JSON5 data structures.")
 implements the complete mapping interface.  It can be used as a drop-in
 replacement for dictionaries where immutability is desired.")
     (license license:expat)))
+
+(define-public python-unpaddedbase64
+  (package
+    (name "python-unpaddedbase64")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/matrix-org/python-unpaddedbase64.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0if3fjfxga0bwdq47v77fs9hrcqpmwdxry2i2a7pdqsp95258nxd"))))
+    (build-system python-build-system)
+    (home-page "https://pypi.org/project/unpaddedbase64/")
+    (synopsis "Encode and decode Base64 without “=” padding")
+    (description
+     "RFC 4648 specifies that Base64 should be padded to a multiple of 4 bytes
+using “=” characters.  However this conveys no benefit so many protocols
+choose to use Base64 without the “=” padding.")
+    (license license:asl2.0)))
