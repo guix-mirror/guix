@@ -18303,7 +18303,7 @@ a suffix) we prefer to call it just a \"transient\".")
   (let ((commit "63cbf81f166fc71861d8e3d246df8e5ccedcb9bb"))
     (package
       (name "emacs-forge")
-      (version (git-version "0.1.0" "2" commit))
+      (version (git-version "0.1.0" "3" commit))
       (source
        (origin
          (method git-fetch)
@@ -18314,7 +18314,7 @@ a suffix) we prefer to call it just a \"transient\".")
          (sha256
           (base32
            "1yf2xjx3459py6rji740jm8bmh2pv66ghnbjxsvjd4jf9kcdav83"))))
-      (build-system gnu-build-system)
+      (build-system emacs-build-system)
       (native-inputs
        `(("texinfo" ,texinfo)
          ("emacs" ,emacs-minimal)))
@@ -18329,51 +18329,22 @@ a suffix) we prefer to call it just a \"transient\".")
          ("emacs-transient" ,emacs-transient)))
       (arguments
        `(#:tests? #f ;no tests
-         #:modules ((srfi srfi-26)
-                    (guix build gnu-build-system)
-                    ((guix build emacs-build-system) #:prefix emacs:)
-                    (guix build utils)
-                    (guix build emacs-utils))
-         #:imported-modules (,@%gnu-build-system-modules
-                             (guix build emacs-build-system)
-                             (guix build emacs-utils))
          #:phases
          (modify-phases %standard-phases
-           (delete 'configure)
-           (delete 'install)
-           (add-after 'unpack 'delete-doc-targets
+           (add-after 'unpack 'build-info-manual
              (lambda _
-               (substitute* "./Makefile"
-                 (("lisp docs") "lisp"))))
-           (add-after 'delete-doc-targets 'chdir-lisp
+               (invoke "make" "info")
+               ;; Move the info file to lisp so that it gets installed by the
+               ;; emacs-build-system.
+               (rename-file "docs/forge.info" "lisp/forge.info")))
+           (add-after 'build-info-manual 'chdir-lisp
              (lambda _
-               (chdir "lisp")))
-           (add-after 'chdir-lisp 'emacs-install
-             (assoc-ref emacs:%standard-phases 'install))
-           (add-after 'emacs-install 'emacs-make-autoloads
-             (assoc-ref emacs:%standard-phases 'make-autoloads))
-           (add-after 'build 'install-elc
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (el-dir (string-append
-                               out "/share/emacs/site-lisp/guix.d/forge-"
-                               ,version)))
-                 (for-each (cut install-file <> el-dir)
-                           (find-files "." "\\.elc"))
-                 #t)))
-           (add-after 'install-elc 'install-doc
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (info (string-append out "/share/info")))
-                 (with-directory-excursion "../docs"
-                   (invoke "makeinfo" "forge.texi")
-                   (install-file "forge.info" info)
-                   #t)))))))
+               (chdir "lisp")
+               #t)))))
       (home-page "https://github.com/magit/forge/")
       (synopsis "Access Git forges from Magit")
-      (description
-       "Work with Git forges, such as Github and Gitlab, from the comfort of
-Magit and the rest of Emacs.")
+      (description "Work with Git forges, such as Github and Gitlab, from the
+comfort of Magit and the rest of Emacs.")
       (license license:gpl3+))))
 
 (define-public emacs-matcha
