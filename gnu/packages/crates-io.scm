@@ -13063,8 +13063,7 @@ useful types and distributions, and some randomness-related algorithms.")
          "06bdvx08v3rkz451cm7z59xwwqn1rkfh6v9ay77b14f8dwlybgch"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-getrandom" ,rust-getrandom-0.1)
         ("rust-serde" ,rust-serde-1.0))))
     (home-page "https://crates.io/crates/rand-core")
