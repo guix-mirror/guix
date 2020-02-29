@@ -20748,8 +20748,7 @@ color in a Windows console.")
                "03q4bvdq86kii53d0vsywv08g8vqirf9h1lz2cl6rcc7gjfynpds")))))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-android-glue" ,rust-android-glue-0.2)
         ("rust-bitflags" ,rust-bitflags-1)
         ("rust-calloop" ,rust-calloop-0.4)
