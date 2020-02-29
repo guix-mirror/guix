@@ -3950,6 +3950,27 @@ for intentionally leaking memory")
 Central Dispatch.")
     (license license:expat)))
 
+(define-public rust-dissimilar-1.0
+  (package
+    (name "rust-dissimilar")
+    (version "1.0.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "dissimilar" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "154ba92ifmh3js1k0hbmxz7pv95n8wmahlyvhdbnxggbs8f1dpir"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/dtolnay/dissimilar")
+    (synopsis "Diff library with semantic cleanup")
+    (description
+     "This package provides a diff library with semantic cleanup, based on
+Google's diff-match-patch.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-doc-comment-0.3
   (package
     (name "rust-doc-comment")
