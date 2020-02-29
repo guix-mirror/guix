@@ -74,6 +74,7 @@
 ;;; Copyright © 2020 Josh Marshall <joshua.r.marshall.1991@gmail.com>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
+;;; Copyright © 2020 Alex ter Weele <alex.ter.weele@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18726,3 +18727,22 @@ HTML-containing files.")
 usable as a configuration language.  This Python package implements parsing and
 dumping of JSON5 data structures.")
     (license license:asl2.0)))
+
+(define-public python-frozendict
+  (package
+    (name "python-frozendict")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "frozendict" version))
+       (sha256
+        (base32 "0ibf1wipidz57giy53dh7mh68f2hz38x8f4wdq88mvxj5pr7jhbp"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/slezica/python-frozendict")
+    (synopsis "Simple immutable mapping for Python")
+    (description
+     "@dfn{frozendict} is an immutable wrapper around dictionaries that
+implements the complete mapping interface.  It can be used as a drop-in
+replacement for dictionaries where immutability is desired.")
+    (license license:expat)))
