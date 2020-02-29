@@ -295,7 +295,7 @@ on stdout instead of using a socket as the Emacsclient does.")
   (let ((commit "c761d28d49e5238037512b898db0ec9b40d85770"))
     (package
       (name "emacs-magit")
-      (version (git-version "2.90.1" "2" commit))
+      (version (git-version "2.90.1" "3" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -335,24 +335,10 @@ on stdout instead of using a socket as the Emacsclient does.")
                              (guix build emacs-utils))
          #:test-target "test"
          #:tests? #f                   ; tests are not included in the release
-
          #:make-flags
          (list (string-append "PREFIX=" %output)
                ;; Don't put .el files in a sub-directory.
-               (string-append "lispdir=" %output "/share/emacs/site-lisp")
-               (string-append "DASH_DIR="
-                              (assoc-ref %build-inputs "dash")
-                              "/share/emacs/site-lisp/guix.d/dash-"
-                              ,(package-version emacs-dash))
-               (string-append "WITH_EDITOR_DIR="
-                              (assoc-ref %build-inputs "with-editor")
-                              "/share/emacs/site-lisp/guix.d/with-editor-"
-                              ,(package-version emacs-with-editor))
-               (string-append "TRANSIENT_DIR="
-                              (assoc-ref %build-inputs "transient")
-                              "/share/emacs/site-lisp/guix.d/transient-"
-                              ,(package-version emacs-transient)))
-
+               (string-append "lispdir=" %output "/share/emacs/site-lisp"))
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'patch
