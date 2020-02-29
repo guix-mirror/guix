@@ -414,7 +414,7 @@ operations.")
   (let ((commit "9e33ceee32f665db59909e1c00a667ccdd04178f"))
     (package
       (name "emacs-magit-svn")
-      (version (git-version "2.2.1" "1" commit))
+      (version (git-version "2.2.1" "2" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -424,48 +424,11 @@ operations.")
                 (sha256
                  (base32
                   "1mlqz8dh6jy5rv72lgkxv253dgh73fmbaidskicypapvbl3lr6xy"))))
-      (build-system trivial-build-system)
-      (native-inputs `(("emacs" ,emacs-minimal)))
+      (build-system emacs-build-system)
       (propagated-inputs `(("dash" ,emacs-dash)
                            ("with-editor" ,emacs-with-editor)
                            ("magit" ,emacs-magit)
                            ("transient" ,emacs-transient)))
-      (arguments
-       `(#:modules ((guix build utils)
-                    (guix build emacs-utils))
-
-         #:builder
-         (begin
-           (use-modules (guix build utils)
-                        (guix build emacs-utils))
-
-           (let ((emacs    (string-append (assoc-ref %build-inputs "emacs")
-                                          "/bin/emacs"))
-                 (magit    (string-append (assoc-ref %build-inputs "magit")
-                                          "/share/emacs/site-lisp"))
-                 (transient (string-append (assoc-ref %build-inputs "transient")
-                                           "/share/emacs/site-lisp/guix.d/transient-"
-                                           ,(package-version emacs-transient)))
-                 (dash     (string-append (assoc-ref %build-inputs "dash")
-                                          "/share/emacs/site-lisp/guix.d/dash-"
-                                          ,(package-version emacs-dash)))
-                 (with-editor (string-append (assoc-ref %build-inputs "with-editor")
-                                             "/share/emacs/site-lisp/guix.d/with-editor-"
-                                             ,(package-version emacs-with-editor)))
-                 (source   (assoc-ref %build-inputs "source"))
-                 (lisp-dir (string-append %output "/share/emacs/site-lisp")))
-
-             (install-file (string-append source "/magit-svn.el")
-                           lisp-dir)
-
-             (with-directory-excursion lisp-dir
-               (parameterize ((%emacs emacs))
-                 (emacs-generate-autoloads ,name lisp-dir)
-                 (setenv "EMACSLOADPATH"
-                         (string-append ":" magit ":" transient
-                                        ":" dash ":" with-editor))
-                 (emacs-batch-eval '(byte-compile-file "magit-svn.el"))))
-             #t))))
       (home-page "https://github.com/magit/magit-svn")
       (synopsis "Git-SVN extension to Magit")
       (description
