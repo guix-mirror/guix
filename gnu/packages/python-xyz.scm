@@ -18769,3 +18769,35 @@ replacement for dictionaries where immutability is desired.")
 using “=” characters.  However this conveys no benefit so many protocols
 choose to use Base64 without the “=” padding.")
     (license license:asl2.0)))
+
+(define-public python-canonicaljson
+  (package
+    (name "python-canonicaljson")
+    (version "1.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "canonicaljson" version))
+       (sha256
+        (base32 "09cpacc8yvcc74i63pdmlfaahh77dnvbyw9zf29wml2zzwqfbg25"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-frozendict" ,python-frozendict)
+       ("python-simplejson" ,python-simplejson)))
+    (home-page "https://github.com/matrix-org/python-canonicaljson")
+    (synopsis "Canonical JSON")
+    (description
+     "Deterministically encode JSON.
+
+@itemize
+@item Encodes objects and arrays as RFC 7159 JSON.
+@item Sorts object keys so that you get the same result each time.
+@item Has no insignificant whitespace to make the output as small as possible.
+@item Escapes only the characters that must be escaped, U+0000 to
+ U+0019 / U+0022 / U+0056, to keep the output as small as possible.
+@item Uses the shortest escape sequence for each escaped character.
+@item Encodes the JSON as UTF-8.
+@item Can encode frozendict immutable dictionaries.
+@end itemize")
+    (license license:asl2.0)))
