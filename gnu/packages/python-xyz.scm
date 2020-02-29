@@ -18801,3 +18801,37 @@ choose to use Base64 without the “=” padding.")
 @item Can encode frozendict immutable dictionaries.
 @end itemize")
     (license license:asl2.0)))
+
+(define-public python-signedjson
+  (package
+    (name "python-signedjson")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "signedjson" version))
+       (sha256
+        (base32 "0280f8zyycsmd7iy65bs438flm7m8ffs1kcxfbvhi8hbazkqc19m"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-canonicaljson" ,python-canonicaljson)
+       ("python-importlib-metadata" ,python-importlib-metadata)
+       ("python-pynacl" ,python-pynacl)
+       ("python-typing-extensions" ,python-typing-extensions)
+       ("python-unpaddedbase64" ,python-unpaddedbase64)))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://github.com/matrix-org/python-signedjson")
+    (synopsis "Sign JSON objects with ED25519 signatures")
+    (description
+     "Sign JSON objects with ED25519 signatures.
+
+@itemize
+@item More than one entity can sign the same object.
+@item Each entity can sign the object with more than one key making it easier to
+rotate keys
+@item ED25519 can be replaced with a different algorithm.
+@item Unprotected data can be added to the object under the @dfn{\"unsigned\"}
+key.
+@end itemize")
+    (license license:asl2.0)))
