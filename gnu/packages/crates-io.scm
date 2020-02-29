@@ -20456,8 +20456,7 @@ the wayland protocol, server side.")
          "0fzmxcyahy3ghl8lkjkchj9krmnr56shvbqgr7db3hm8dappryda"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-js-sys" ,rust-js-sys-0.3)
         ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
         ("rust-anyhow" ,rust-anyhow-1.0)
