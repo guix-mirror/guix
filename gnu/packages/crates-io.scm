@@ -11484,7 +11484,7 @@ deserialization, and interpreter in Rust.")
 (define-public rust-paste-0.1
   (package
     (name "rust-paste")
-    (version "0.1.5")
+    (version "0.1.7")
     (source
      (origin
        (method url-fetch)
@@ -11493,11 +11493,10 @@ deserialization, and interpreter in Rust.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0ygs077hlq8qlx5y46sfgrmhlqqgkmvvhn4x3y10arawalf4ljhz"))))
+         "0in0dqar8s16w6gbwyzwvckm80ala02pq87innx1w6yp73kszqb3"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-paste-impl" ,rust-paste-impl-0.1)
         ("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5))))
     (home-page "https://github.com/dtolnay/paste")
@@ -11509,7 +11508,7 @@ deserialization, and interpreter in Rust.")
 (define-public rust-paste-impl-0.1
   (package
     (name "rust-paste-impl")
-    (version "0.1.5")
+    (version "0.1.7")
     (source
      (origin
        (method url-fetch)
@@ -11518,15 +11517,14 @@ deserialization, and interpreter in Rust.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1rkh8nixmb7r1y0mjnsz62p6r1bqah5ciri7bwhmgcmq4gk9drr6"))))
+         "1fwj11j5lhya5fjr4gfljxfm74ahlr09c8xbb8f22hzpyskw8kbd"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5)
-        ("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-proc-macro2" ,rust-proc-macro2-1.0)
         ("rust-quote" ,rust-quote-1.0)
-        ("rust-syn" ,rust-syn-0.15))))
+        ("rust-syn" ,rust-syn-1.0))))
     (home-page "https://github.com/dtolnay/paste")
     (synopsis "Implementation detail of the paste crate")
     (description
