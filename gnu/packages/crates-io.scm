@@ -3719,8 +3719,7 @@ system libraries.")
          "0m0114p1g0zzrdph5bg03i8m8p70vrwn3whs191jrbjcrmh5lmnp"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-demo-hack-impl" ,rust-demo-hack-impl-0.0)
         ("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5))))
     (home-page "https://github.com/dtolnay/proc-macro-hack")
