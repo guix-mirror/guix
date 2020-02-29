@@ -793,14 +793,12 @@ attachments, create new maildirs, and so on.")
 (define mumimu
   ;; This is a fork of mu for use in Mumi that stores message bug IDs in its
   ;; database.  It also renames the library to "mumimu" to avoid confusion.
-  (let ((commit "ad30b5e9c85f0465aeeeac461d8c32d95775d450")
-        (revision "1"))
+  (let ((commit "6b42431052c7cc9a2e147938e1b67f14a93e4ee5")
+        (revision "2"))
     (package
       (inherit mu)
       (name "mumimu")
-      ;; TODO The version here used to be (package-version guile-email), but
-      ;; that code caused problems
-      (version (git-version "0.2.2" revision commit))
+      (version (git-version (package-version mu) revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -809,7 +807,7 @@ attachments, create new maildirs, and so on.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1y8r8csvkyxncgpi469dir4n4sga4z9xdzc18qh5s8bk29qj689n"))))
+                  "044scxmjrckidqx935yza3aqnjyzrmhyvgx2gs2jyf68hl2qzb89"))))
       (arguments
        (substitute-keyword-arguments (package-arguments mu)
          ((#:tests? anything '())
@@ -817,15 +815,7 @@ attachments, create new maildirs, and so on.")
          ((#:phases phases)
           `(modify-phases ,phases
              (replace 'patch-configure
-               (lambda _
-                 (delete-file "autogen.sh")
-                 (substitute* "configure.ac"
-                   ;; Use latest Guile
-                   (("guile-2.0") "guile-2.2"))
-                 (substitute* '("guile/Makefile.am"
-                                "guile/mu/Makefile.am")
-                   (("share/guile/site/2.0/") "share/guile/site/2.2/"))
-                 #t))
+               (lambda _ (delete-file "autogen.sh") #t))
              (replace 'fix-ffi
                (lambda* (#:key outputs #:allow-other-keys)
                  (substitute* "guile/mumimu.scm"
