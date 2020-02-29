@@ -18674,7 +18674,7 @@ serializing Rust structures.")
 (define-public rust-trybuild-1.0
   (package
     (name "rust-trybuild")
-    (version "1.0.9")
+    (version "1.0.23")
     (source
      (origin
        (method url-fetch)
@@ -18683,12 +18683,12 @@ serializing Rust structures.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0df6ipayif05xn61iavdb0dcshm9y6wmcd140pp7dl91mirygs7j"))))
+         "080j808nv6nyr1mmw23vwdp4rkk7r38nmms850rih8lsclc1pzr6"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-glob" ,rust-glob-0.3)
+     `(#:cargo-inputs
+       (("rust-dissimilar" ,rust-dissimilar-1.0)
+        ("rust-glob" ,rust-glob-0.3)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-json" ,rust-serde-json-1.0)
