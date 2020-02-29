@@ -14794,11 +14794,11 @@ with one of the implemented strategies.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-scroll-derive" ,rust-scroll-derive-0.9))
+       (("rust-scroll-derive" ,rust-scroll-derive-0.9)
+        ("rust-rustc-version" ,rust-rustc-version-0.2))
        #:cargo-development-inputs
        (("rust-byteorder" ,rust-byteorder-1.3)
-        ("rust-rayon" ,rust-rayon-1.1)
-        ("rust-rustc-version" ,rust-rustc-version-0.2))))
+        ("rust-rayon" ,rust-rayon-1.1))))
     (home-page "https://github.com/m4b/scroll")
     (synopsis "Read/Write traits for byte buffers")
     (description
