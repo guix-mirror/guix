@@ -13144,8 +13144,7 @@ useful types and distributions, and some randomness-related algorithms.")
           "0g31sqwpmsirdlwr0svnacr4dbqyz339im4ssl9738cjgfpjjcfa"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-rand-hc" ,rust-rand-core-0.5))))
     (home-page "https://crates.io/crates/rand_hc")
     (synopsis "HC128 random number generator")
