@@ -13771,7 +13771,7 @@ functionality.")
 (define-public rust-ref-cast-0.2
   (package
     (name "rust-ref-cast")
-    (version "0.2.6")
+    (version "0.2.7")
     (source
      (origin
        (method url-fetch)
@@ -13780,12 +13780,14 @@ functionality.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0jgj1zxaikqm030flpifbp517fy4z21lly6ysbwyciii39bkzcf1"))))
+         "1fcbpfb7xhr992qvyfg9hr5p63xqykjp48pm3f7a1q21vmhzksvv"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-ref-cast-impl" ,rust-ref-cast-impl-0.2))))
+     `(#:cargo-inputs
+       (("rust-ref-cast-impl" ,rust-ref-cast-impl-0.2))
+       #:cargo-development-inputs
+       (("rust-rustversion" ,rust-rustversion-0.1)
+        ("rust-trybuild" ,rust-trybuild-1.0))))
     (home-page "https://github.com/dtolnay/ref-cast")
     (synopsis "Safely cast &T to &U")
     (description
@@ -13821,7 +13823,7 @@ functionality.")
   (package
     (inherit rust-ref-cast-impl-1.0)
     (name "rust-ref-cast-impl")
-    (version "0.2.6")
+    (version "0.2.7")
     (source
      (origin
        (method url-fetch)
@@ -13830,12 +13832,7 @@ functionality.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0hw0frpzna5rf5szix56zyzd0vackcb3svj94ndj629xi75dkb32"))))
-    (arguments
-     `(#:cargo-inputs
-       (("rust-proc-macro2" ,rust-proc-macro2-0.4)
-        ("rust-quote" ,rust-quote-0.6)
-        ("rust-syn" ,rust-syn-0.15))))))
+         "0av43xxjlinfqklb67rpj217cmaxfjsf8151gs0hbs4hnr5664ck"))))))
 
 (define-public rust-regex-1.3
   (package
