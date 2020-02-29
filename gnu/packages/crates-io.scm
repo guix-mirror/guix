@@ -8712,8 +8712,7 @@ functions and static variables these libraries contain.")
          "0yzlz7f5xl5sm129dq8jqsrcrkyv7jjnqwd4zr4ijsdlxjaxxckr"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-owning-ref" ,rust-owning-ref-0.4)
         ("rust-scopeguard" ,rust-scopeguard-1.0)
         ("rust-serde" ,rust-serde-1.0))))
