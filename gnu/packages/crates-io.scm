@@ -13310,8 +13310,7 @@ generator based on timing jitter.")
           "0ab4h6s6x3py833jk61lwadq83qd1c8bih2hgi6yps9rnv0x1aqn"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-rand-core" ,rust-rand-core-0.5)
         ("rust-serde" ,rust-serde-1.0))
        #:cargo-development-inputs
