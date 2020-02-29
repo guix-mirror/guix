@@ -4975,9 +4975,8 @@ cross platform API.")
          "0c5bmhyimzxch3pmh0w3z9n57saasgix4bmbbksr9vp1c5j71hhz"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-lazy-static" ,rust-lazy-static-1)
+     `(#:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-0.2)
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0)
         ("rust-serde-json" ,rust-serde-json-1.0)
