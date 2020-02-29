@@ -3989,8 +3989,7 @@ from macros.")
          "0s9rcpmnnivs502q69lc1h1wrwapkq09ikgbfbgqf31idmc5llkz"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-regex" ,rust-regex-1.1)
         ("rust-serde" ,rust-serde-1.0)
