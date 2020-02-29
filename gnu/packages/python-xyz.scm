@@ -7686,14 +7686,14 @@ Jupyter Notebook format and Python APIs for working with notebooks.")
 (define-public python-bleach
   (package
     (name "python-bleach")
-    (version "3.1.0")
+    (version "3.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "bleach" version))
        (sha256
         (base32
-         "1yhrgrhkln8bd6gn3imj69g1h4xqah9gaz9q26crqr6gmmvpzprz"))))
+         "0j4xlnw99m1xy0s7wxz9fk5f3c1n8r296fh75jn5p5j61w6qg2xa"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-webencodings" ,python-webencodings)
