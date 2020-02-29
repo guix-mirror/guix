@@ -20585,8 +20585,7 @@ UTF-32 types are provided, including support for malformed encoding.")
     (build-system cargo-build-system)
     ;; This package depends unconditionally on these two crates.
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("winapi-i686-pc-windows-gnu" ,rust-winapi-i686-pc-windows-gnu-0.4)
         ("winapi-x86-64-pc-windows-gnu" ,rust-winapi-x86-64-pc-windows-gnu-0.4))))
     (home-page "https://github.com/retep998/winapi-rs")
