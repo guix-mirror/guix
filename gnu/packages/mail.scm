@@ -2960,8 +2960,8 @@ replacement for the @code{urlview} program.")
     (license gpl2+)))
 
 (define-public mumi
-  (let ((commit "8a57c87797ffb07baa88697130204184db643521")
-        (revision "5"))
+  (let ((commit "a933a62a4b8528b416319759b9985db80f3fce14")
+        (revision "6"))
     (package
       (name "mumi")
       (version (git-version "0.0.0" revision commit))
@@ -2973,29 +2973,7 @@ replacement for the @code{urlview} program.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1575gn5p086sjxz5hvg6iyskq6cxf6vf50s9nsc4xgrbcqa3pv2c"))
-                (modules '((guix build utils)))
-                (snippet
-                 '(begin
-                    (substitute* "Makefile.am"
-                      ;; Install .go files to $prefix/lib instead of
-                      ;; $prefix/share.
-                      (("^godir[[:space:]]*=.*")
-                       "godir = \
-$(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n")
-
-                      ;; Install assets.
-                      (("^assetsdir.*" _)
-                       "\
-assetsdir    = $(pkgdatadir)/assets
-assetscssdir = $(assetsdir)/css
-assetsimgdir = $(assetsdir)/img
-assetsjsdir  = $(assetsdir)/js
-
-assetscss_DATA = $(wildcard assets/css/*)
-assetsimg_DATA = $(wildcard assets/img/*)
-assetsjs_DATA  = $(wildcard assets/js/*)\n"))
-                    #t))))
+                  "0vlda7vjzpd942iz5vb471hj7ypml5gwl9s1am92klv6nk2vnvcx"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build gnu-build-system)
@@ -3026,8 +3004,7 @@ assetsjs_DATA  = $(wildcard assets/js/*)\n"))
       (inputs
        `(("guile-debbugs" ,guile-debbugs)
          ("guile-email" ,guile-email)
-         ("guile-fibers" ,guile-fibers)
-         ("guile-json" ,guile-json-1)
+         ("guile-json" ,guile-json-3)
          ("guile-syntax-highlight" ,guile-syntax-highlight)
          ("gnutls" ,gnutls)         ;needed to talk to https://debbugs.gnu.org
          ("guile" ,guile-2.2)
