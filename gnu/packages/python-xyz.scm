@@ -18835,3 +18835,19 @@ rotate keys
 key.
 @end itemize")
     (license license:asl2.0)))
+
+(define-public python-daemonize
+  (package
+    (name "python-daemonize")
+    (version "2.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "daemonize" version))
+       (sha256
+        (base32 "1hwbl3gf9fdds9sc14zgjyjisjvxidrvqc11xlbb0b6jz17nw0nx"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/thesharp/daemonize")
+    (synopsis "Library for writing system daemons in Python")
+    (description "Daemonize is a library for writing system daemons in Python.")
+    (license license:expat)))
