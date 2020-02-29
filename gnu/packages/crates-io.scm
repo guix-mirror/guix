@@ -13019,8 +13019,7 @@ useful types and distributions, and some randomness-related algorithms.")
          "0lv8imzzl4h2glm6sjj8mkvasgi8jym23ya48dakyln7m06sk8h3"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-c2-chacha" ,rust-c2-chacha-0.2)
         ("rust-rand-core" ,rust-rand-core-0.5))))
     (home-page "https://crates.io/crates/rand-chacha")
