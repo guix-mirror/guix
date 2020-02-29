@@ -839,8 +839,7 @@ trace (backtrace) at runtime in a Rust program.")
         (base32
          "13k6bvd3n6dm7jqn9x918w65dd9xhx454bqphbnv0bkd6n9dj98b"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-byteorder" ,rust-byteorder-1.3))
        #:cargo-development-inputs
        (("rust-criterion" ,rust-criterion-0.2)
