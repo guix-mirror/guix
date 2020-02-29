@@ -21067,7 +21067,6 @@ extended attributes.")
          (base32
           "0mws8a0fr3cqk5nh7aq9lmkmhzghvasqy4mhw6nnza06l4d6i2fh"))))
     (build-system cargo-build-system)
-    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/whitequark/rust-xdg")
     (synopsis "Store and retrieve files according to XDG specification")
     (description
