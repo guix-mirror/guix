@@ -5001,10 +5001,10 @@ cross platform API.")
          "1b2d7jx80f3p7hqpgdi7wksaiq18k9w23p0cs2sxf7jbx2jx3bgj"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
+     `(#:tests? #f      ; Uses features not available in stable Rust release
        #:cargo-inputs
        (("rust-flame" ,rust-flame-0.2)
-        ("rust-quote" ,rust-quote-1.0)
+        ("rust-quote" ,rust-quote-0.6)
         ("rust-syn" ,rust-syn-0.15))))
     (home-page "https://github.com/llogiq/flamer")
     (synopsis "Macro to insert @code{flame::start_guard(_)}")
