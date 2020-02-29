@@ -13260,13 +13260,12 @@ generator based on timing jitter.")
          "06is69f8rfzs620g5b54k6cgy5yaycrsyqg55flyfrsf8g88733f"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-getrandom" ,rust-getrandom-0.1)
         ("rust-rand-core" ,rust-rand-core-0.5))))
     (home-page "https://crates.io/crates/rand-os")
     (synopsis "OS backed Random Number Generator")
-    (description "OS backed Random Number Generator")
+    (description "OS backed Random Number Generator.")
     (license (list license:asl2.0
                    license:expat))))
 
