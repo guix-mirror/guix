@@ -7161,7 +7161,7 @@ hexadecimal representation.")
 (define-public rust-hex-literal-0.2
   (package
     (name "rust-hex-literal")
-    (version "0.2.0")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
@@ -7170,11 +7170,10 @@ hexadecimal representation.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0ni2nv3di0jpih2xnmlnr6s96zypkdr8xrw2cvk4f8fx5wb6inn3"))))
+         "1q36f0qq31ggh4ipcwb7a5g6jmci2010vn2v3qpaz4csxhhf47cn"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-hex-literal-impl" ,rust-hex-literal-impl-0.2)
         ("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5))))
     (home-page "https://github.com/RustCrypto/utils")
@@ -7207,7 +7206,7 @@ compile time.")
 (define-public rust-hex-literal-impl-0.2
   (package
     (name "rust-hex-literal-impl")
-    (version "0.2.0")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
@@ -7216,11 +7215,10 @@ compile time.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "04m6d1k57a9h3hhdgn0vq1hkfwjv9hfkw6q73bqn0my0qw45s286"))))
+         "0bgldhp5gdwwnikfdxigmz9b64qpgwbjqk6mfgv0pvig9s25qk4x"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5))))
     (home-page "https://github.com/RustCrypto/utils")
     (synopsis "Internal implementation of the hex-literal crate")
