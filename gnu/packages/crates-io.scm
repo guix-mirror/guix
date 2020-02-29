@@ -10850,7 +10850,6 @@ Things in odds may move to more appropriate crates if we find them.")
         (base32
          "02942l2gc7w5r4js7i9063x99szic5mzzk1055j83v4diqpbpxck"))))
     (build-system cargo-build-system)
-    (arguments `(#:skip-build? #t))
     (home-page "https://github.com/RustCrypto/utils")
     (synopsis "Macro for opaque Debug trait implementation")
     (description
