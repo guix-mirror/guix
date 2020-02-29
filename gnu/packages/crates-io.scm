@@ -14837,7 +14837,7 @@ Pwrite traits from the scroll crate.")
 (define-public rust-seahash-3.0
   (package
     (name "rust-seahash")
-    (version "3.0.6")
+    (version "3.0.7")
     (source
      (origin
        (method url-fetch)
@@ -14846,9 +14846,8 @@ Pwrite traits from the scroll crate.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1pr8ijnxnp68ki4m4740yc5mr01zijf86yx07wbsqzwiyhghdmhq"))))
+         "0iqg12lxkn0ivsfa1gkylcwj5wmi6zl87mbizlrkg918s6hprxaq"))))
     (build-system cargo-build-system)
-    (arguments `(#:skip-build? #t))
     (home-page
      "https://gitlab.redox-os.org/redox-os/seahash")
     (synopsis
