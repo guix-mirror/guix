@@ -7276,18 +7276,17 @@ compile time.")
          "1dx8k7synrmf3fl6gcfm5q1cybfglvhc9xnvly3s5xcc0b45mrjw"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-log" ,rust-log-0.4)
         ("rust-mac" ,rust-mac-0.1)
-        ("rust-markup5ever" ,rust-markup5ever-0.8))
+        ("rust-markup5ever" ,rust-markup5ever-0.8)
+        ("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-0.6)
+        ("rust-syn" ,rust-syn-0.15))
        #:cargo-development-inputs
        (("rust-criterion" ,rust-criterion-0.2)
-        ("rust-proc-macro2" ,rust-proc-macro2-0.4)
-        ("rust-quote" ,rust-quote-1.0)
         ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
         ("rust-rustc-test" ,rust-rustc-test-0.3)
-        ("rust-syn" ,rust-syn-0.15)
         ("rust-typed-arena" ,rust-typed-arena-1.4))))
     (home-page "https://github.com/servo/html5ever")
     (synopsis "High-performance browser-grade HTML5 parser")
