@@ -20666,8 +20666,7 @@ i686-pc-windows-gnu target.  Please don't use this crate directly, depend on
           "1j839dc6y8vszvrsb7yk0qvs0w6asnahxzbyans37vnsw6vbls3i"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs (("rust-winapi" ,rust-winapi-0.3))))
+     `(#:cargo-inputs (("rust-winapi" ,rust-winapi-0.3))))
     (home-page "https://github.com/BurntSushi/winapi-util")
     (synopsis "Dumping ground for high level safe wrappers over winapi")
     (description
