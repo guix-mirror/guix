@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2014, 2017 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016, 2017, 2018 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017, 2018, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
@@ -71,6 +71,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sphinx)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -1934,3 +1935,46 @@ library files with @command{wrestool}.
 
 This package can be used to create @code{favicon.ico} files for web sites.")
      (license license:gpl3+)))
+
+(define-public libavif
+  (package
+    (name "libavif")
+    (version "0.5.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/AOMediaCodec/libavif")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "15g76j9vb88q1v3azscph8im8714zdl70bni0al4ww9v80vhqpkd"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DAVIF_CODEC_AOM=ON" "-DAVIF_CODEC_DAV1D=ON"
+                           "-DAVIF_CODEC_RAV1E=OFF" ; not packaged yet
+                           "-DAVIF_BUILD_TESTS=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-readme
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/libavif-"
+                                        ,version)))
+               (install-file "../source/README.md" doc)))))
+;; The test suite runs tests for all supported codecs and fails because we don't
+;; have rav1e yet.
+;;         (replace 'check
+;;           (lambda _
+;;             (invoke "./aviftest" "../source/tests/data"))))
+       #:tests? #f))
+    (inputs
+     `(("libaom" ,libaom)
+       ("dav1d" ,dav1d)))
+    (synopsis "Encode and decode AVIF files")
+    (description "Libavif is a C implementation of the AV1 Image File Format
+(AVIF).  It can encode and decode all YUV formats and bit depths supported by
+AOM, including with alpha.")
+    (home-page "https://github.com/AOMediaCodec/libavif")
+    (license (list license:bsd-2    ; libavif itself
+                   license:expat)))) ; cJSON in the test suite
