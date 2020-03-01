@@ -671,8 +671,9 @@ using Guile's foreign function interface.")
   (package
     (inherit guile-squee)
     (name "guile3.0-squee")
-    (inputs `(("guile" ,guile-next)
-              ,@(alist-delete "guile" (package-inputs guile-squee))))))
+    (native-inputs `(("guile" ,guile-next)
+                     ,@(alist-delete "guile"
+                                     (package-native-inputs guile-squee))))))
 
 (define-public guile-colorized
   (package
