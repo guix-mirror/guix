@@ -881,7 +881,6 @@ trace (backtrace) at runtime in a Rust program.")
          (base32
           "1x8p2xblgqssay8cdykp5pkfc0np0jk5bs5cx4f5av097aav9zbx"))))
     (build-system cargo-build-system)
-    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/bluss/bencher/")
     (synopsis "Port of the libtest benchmark runner to Rust stable")
     (description "This package provides a port of the libtest (unstable Rust)
