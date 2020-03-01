@@ -3028,7 +3028,20 @@ exec " gcc "/bin/" program
                                 %bootstrap-guile))
 
 (define gnumach-headers-boot0
-  (with-boot0 (package-with-bootstrap-guile gnumach-headers)))
+  (with-boot0
+   (package-with-bootstrap-guile
+    (package
+      (inherit gnumach-headers)
+      (version "1.8")
+      (source (bootstrap-origin
+               (origin
+                 (method url-fetch)
+                 (uri (string-append "mirror://gnu/gnumach/gnumach-"
+                                     version ".tar.gz"))
+                 (sha256
+                  (base32
+                   "02hygsfpd2dljl5lg1vjjg9pizi9jyxd4aiiqzjshz6jax62jm9f")))))
+      (native-inputs '())))))
 
 (define mig-boot0
   (let* ((mig (package
