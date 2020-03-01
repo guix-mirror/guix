@@ -135,6 +135,49 @@ SYSTEM."
     "i686-w64-mingw32"
     "x86_64-w64-mingw32"))
 
+(define (cross-jobs store system)
+  "Return a list of cross-compilation jobs for SYSTEM."
+  (define (from-32-to-64? target)
+    ;; Return true if SYSTEM is 32-bit and TARGET is 64-bit.  This hack
+    ;; prevents known-to-fail cross-builds from i686-linux or armhf-linux to
+    ;; mips64el-linux-gnuabi64.
+    (and (or (string-prefix? "i686-" system)
+             (string-prefix? "i586-" system)
+             (string-prefix? "armhf-" system))
+         (string-contains target "64")))    ;x86_64, mips64el, aarch64, etc.
+
+  (define (same? target)
+    ;; Return true if SYSTEM and TARGET are the same thing.  This is so we
+    ;; don't try to cross-compile to 'mips64el-linux-gnu' from
+    ;; 'mips64el-linux'.
+    (or (string-contains target system)
+        (and (string-prefix? "armhf" system)    ;armhf-linux
+             (string-prefix? "arm" target))))   ;arm-linux-gnueabihf
+
+  (define (pointless? target)
+    ;; Return #t if it makes no sense to cross-build to TARGET from SYSTEM.
+    (match system
+      ((or "x86_64-linux" "i686-linux")
+       (if (string-contains target "mingw")
+           (not (string=? "x86_64-linux" system))
+           #f))
+      (_
+       ;; Don't try to cross-compile from non-Intel platforms: this isn't
+       ;; very useful and these are often brittle configurations.
+       #t)))
+
+  (define (either proc1 proc2 proc3)
+    (lambda (x)
+      (or (proc1 x) (proc2 x) (proc3 x))))
+
+  (append-map (lambda (target)
+                (map (lambda (package)
+                       (package-cross-job store (job-name package)
+                                          package target system))
+                     %packages-to-cross-build))
+              (remove (either from-32-to-64? same? pointless?)
+                      %cross-targets)))
+
 (define %guixsd-supported-systems
   '("x86_64-linux" "i686-linux" "armhf-linux"))
 
@@ -417,48 +460,6 @@ Return #f if no such checkout is found."
   (define source
     (assq-ref checkout 'file-name))
 
-  (define (cross-jobs system)
-    (define (from-32-to-64? target)
-      ;; Return true if SYSTEM is 32-bit and TARGET is 64-bit.  This hack
-      ;; prevents known-to-fail cross-builds from i686-linux or armhf-linux to
-      ;; mips64el-linux-gnuabi64.
-      (and (or (string-prefix? "i686-" system)
-               (string-prefix? "i586-" system)
-               (string-prefix? "armhf-" system))
-           (string-contains target "64")))    ;x86_64, mips64el, aarch64, etc.
-
-    (define (same? target)
-      ;; Return true if SYSTEM and TARGET are the same thing.  This is so we
-      ;; don't try to cross-compile to 'mips64el-linux-gnu' from
-      ;; 'mips64el-linux'.
-      (or (string-contains target system)
-          (and (string-prefix? "armhf" system)    ;armhf-linux
-               (string-prefix? "arm" target))))   ;arm-linux-gnueabihf
-
-    (define (pointless? target)
-      ;; Return #t if it makes no sense to cross-build to TARGET from SYSTEM.
-      (match system
-        ((or "x86_64-linux" "i686-linux")
-         (if (string-contains target "mingw")
-             (not (string=? "x86_64-linux" system))
-             #f))
-        (_
-         ;; Don't try to cross-compile from non-Intel platforms: this isn't
-         ;; very useful and these are often brittle configurations.
-         #t)))
-
-    (define (either proc1 proc2 proc3)
-      (lambda (x)
-        (or (proc1 x) (proc2 x) (proc3 x))))
-
-    (append-map (lambda (target)
-                  (map (lambda (package)
-                         (package-cross-job store (job-name package)
-                                            package target system))
-                       %packages-to-cross-build))
-                (remove (either from-32-to-64? same? pointless?)
-                        %cross-targets)))
-
   ;; Turn off grafts.  Grafting is meant to happen on the user's machines.
   (parameterize ((%graft? #f))
     ;; Return one job for each package, except bootstrap packages.
@@ -483,14 +484,14 @@ Return #f if no such checkout is found."
                                                  #:source source
                                                  #:commit commit)
                                (tarball-jobs store system)
-                               (cross-jobs system))))
+                               (cross-jobs store system))))
                     ((core)
                      ;; Build core packages only.
                      (append (map (lambda (package)
                                     (package-job store (job-name package)
                                                  package system))
                                   %core-packages)
-                             (cross-jobs system)))
+                             (cross-jobs store system)))
                     ((hello)
                      ;; Build hello package only.
                      (if (string=? system (%current-system))
