@@ -116,6 +116,7 @@
      `(;; XXX: parallel build fails, lacking:
        ;;   mkdir -p "system_wrapper_js/"
        #:parallel-build? #f
+       #:make-flags '("CXXFLAGS=-fpermissive")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'delete-timedout-test
