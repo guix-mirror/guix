@@ -3055,10 +3055,24 @@ exec " gcc "/bin/" program
                                       (assoc-ref %build-inputs "flex") "/lib/")))))))
     (with-boot0 mig)))
 
+(define hurd-version-boot0 "0.9")
+(define hurd-source-boot0
+  (let ((version hurd-version-boot0))
+    (bootstrap-origin
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnu/hurd/hurd-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1nw9gly0n7pyv3cpfm4mmxy4yccrx4g0lyrvd3vk2vil26jpbggw"))))))
+
 (define hurd-headers-boot0
   (let ((hurd-headers (package (inherit hurd-headers)
-                        (native-inputs `(("mig" ,mig-boot0)))
-                        (inputs '()))))
+                               (version hurd-version-boot0)
+                               (source hurd-source-boot0)
+                               (native-inputs `(("mig" ,mig-boot0)))
+                               (inputs '()))))
     (with-boot0 (package-with-bootstrap-guile hurd-headers))))
 
 (define hurd-minimal-boot0
