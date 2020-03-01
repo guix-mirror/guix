@@ -329,8 +329,8 @@ wrapping notes into KMime::Message objects.")
      `(#:tests? #f)) ;; TODO: needs dbus
     (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/akonadi/html/")
     (synopsis "Akonadi search library")
-    (description "Xapian-based indexing and query infrastructure for
-Akonadi.")
+    (description "This package provides a library used to search in the
+Akonadi PIM data server.  It uses Xapian for indexing and querying.")
     (license ;; GPL for programs, LGPL for libraries
      (list license:gpl2+ license:lgpl2.0+))))
 
@@ -371,7 +371,8 @@ Akonadi.")
      `(#:tests? #f)) ;; TODO: TZ setup
     (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/")
     (synopsis "Library for handling kalarm calendar data")
-    (description "This library provides an API for KAlarm alarms.")
+    (description "This library provides access to and handling of kalarm
+calendar data.")
     (license  license:lgpl2.0+)))
 
 (define-public kcalutils
@@ -454,7 +455,8 @@ functions for accessing calendar data using the kcalcore API.")
        ("qtbase" ,qtbase)))
     (home-page "https://cgit.kde.org/kdepim-apps-libs.git")
     (synopsis "KDE PIM mail related libraries and data files")
-    (description "KDE PIM mail related libraries and data files.")
+    (description "This packages provides mail related libraries and data files
+for KDE PIM.")
     (license ;; GPL for programs, LGPL for libraries
      (list license:gpl2+ license:lgpl2.0+))))
 
@@ -541,7 +543,7 @@ cryptography to the contents of the clipboard.")
              #t)))))
     (home-page "https://kontact.kde.org/")
     (synopsis "Library for shared identities between mail applications")
-    (description "Library for shared identities between mail applications.")
+    (description "This library provides an API for managing user identities.")
     (license ;; GPL for programs, LGPL for libraries, FDL for documentation
      (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
 
@@ -601,7 +603,9 @@ easier to do so.")
        ("openldap" ,openldap)))
     (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/")
     (synopsis "Library for accessing LDAP")
-    (description "This library provides an API for LDAP.")
+    (description " This is a library for accessing LDAP with a convenient Qt
+style C++ API.  LDAP (Lightweight Directory Access Protocol) is an application
+protocol for querying and modifying directory services running over TCP/IP. ")
     (license license:lgpl2.0+)))
 
 (define-public kleopatra
@@ -694,7 +698,8 @@ and retrieving certificates from LDAP servers.")
        ("qtbase" ,qtbase)))
     (home-page "https://cgit.kde.org/mailimporter.git")
     (synopsis "KDE mail importer library")
-    (description "KDE mail importer library.")
+    (description "This package provides libraries for importing mails other
+e-mail client programs into KMail and KDE PIM.")
     (license ;; GPL for programs, LGPL for libraries
      (list license:gpl2+ license:lgpl2.0+))))
 
@@ -736,7 +741,7 @@ and retrieving certificates from LDAP servers.")
      `(#:tests? #f)) ;; TODO - 3/3 tests fail, require drkonqi
     (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/")
     (synopsis "Mail transport service library")
-    (description " This library provides an API and support code for managing
+    (description "This library provides an API and support code for managing
 mail transport.")
     (license license:lgpl2.0+)))
 
@@ -760,7 +765,8 @@ mail transport.")
        ("qtbase" ,qtbase)))
     (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/")
     (synopsis "Library for handling mbox mailboxes")
-    (description "A library for accessing mail storages in MBox format.")
+    (description "This is a library for handling mailboxes in mbox format,
+using a Qt/KMime C++ API.")
     (license license:lgpl2.0+ )))
 
 (define-public kmime
@@ -794,7 +800,11 @@ mail transport.")
              #t)))))
     (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/")
     (synopsis "Library for handling MIME data")
-    (description "A library for MIME handling.")
+    (description "This library provides an API for handling MIME
+data.  MIME (Multipurpose Internet Mail Extensions) is an Internet Standard
+that extends the format of e-mail to support text in character sets other than
+US-ASCII, non-text attachments, multi-part message bodies, and header
+information in non-ASCII character sets.")
     (license license:lgpl2.0+)))
 
 (define-public kontactinterface
@@ -821,7 +831,8 @@ mail transport.")
        ("qtbase" ,qtbase)))
     (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/")
     (synopsis "Kontact interface library")
-    (description "Kontact Interface library.")
+    (description " This library provides the glue necessary for
+application \"Parts\" to be embedded as a Kontact component (or plugin).")
     (license license:lgpl2.0+)))
 
 (define-public kpimcommon
@@ -881,8 +892,8 @@ mail transport.")
     (arguments
      `(#:tests? #f)) ;; TODO tests hang
     (home-page "https://cgit.kde.org/pimcommon.git")
-    (synopsis "Common library for KDE PIM")
-    (description "Common library for KDE PIM.")
+    (synopsis "Common libraries for KDE PIM")
+    (description "This package provides common libraries for KDE PIM.")
     (license ;; GPL for programs, LGPL for libraries
      (list license:gpl2+ license:lgpl2.0+))))
 
@@ -922,7 +933,9 @@ mail transport.")
      `(#:tests? #f)) ;; TODO - test suite hangs
     (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/")
     (synopsis "Library providing a textedit with PIM-specific features")
-    (description "A library for PIM-specific text editing utilities.")
+    (description "This package provides a textedit with PIM-specific features.
+It also provides so-called rich text builders which can convert the formatted
+text in the text edit to all kinds of markup, like HTML or BBCODE.")
     (license ;; GPL for programs, LGPL for libraries, FDL for documentation
      (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
 
@@ -990,8 +1003,12 @@ standard protocols for e-mail transmission.")
        ("ki18n" ,ki18n)
        ("qtbase" ,qtbase)))
     (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/ktnef/html/")
-    (synopsis "Viewer for mail attachments using TNEF format")
-    (description "Viewer for mail attachments using TNEF format")
+    (synopsis "Library for handling mail attachments using TNEF format")
+    (description "Ktnef is a library for handling data in the TNEF
+format (Transport Neutral Encapsulation Format, a proprietary format of e-mail
+attachment used by Microsoft Outlook and Microsoft Exchange Server).  The API
+permits access to the actual attachments, the message properties (TNEF/MAPI),
+and allows one to view/extract message formatted text in Rich Text Format.")
     (license license:lgpl2.0+)))
 
 (define-public libkdepim
@@ -1037,8 +1054,8 @@ standard protocols for e-mail transmission.")
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("qtbase" ,qtbase)))
     (home-page "https://cgit.kde.org/libkdepim.git")
-    (synopsis "Libraries for common kdepim apps")
-    (description "Libraries for common kdepim apps.")
+    (synopsis "Libraries for common KDE PIM apps")
+    (description "This package provided libraries for common KDE PIM apps.")
     (license ;; GPL for programs, LGPL for libraries
      (list license:gpl2+ license:lgpl2.0+))))
 
