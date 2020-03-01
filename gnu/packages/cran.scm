@@ -195,14 +195,14 @@ functions are simplified but can be faster or have other advantages.")
 (define-public r-matrix-utils
   (package
     (name "r-matrix-utils")
-    (version "0.9.7")
+    (version "0.9.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Matrix.utils" version))
        (sha256
         (base32
-         "1x64r4aj3gy1dzjjysyrk1j9jq3qsnyrqws8i6bs7q8pf6gvr7va"))))
+         "0a5fq1scykqk0kc9j051j6fix6j2dqwz5wbgb0amaxsiywz9vigb"))))
     (properties `((upstream-name . "Matrix.utils")))
     (build-system r-build-system)
     (propagated-inputs
