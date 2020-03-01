@@ -16946,10 +16946,9 @@ cryptographic implementations.")
          "0grirdkgh2wl4hf9a3nbiazpgccxgq54kn52ms0xrr6njvgkwd82"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-proc-macro2" ,rust-proc-macro2-0.4)
-        ("rust-quote" ,rust-quote-1.0)
+        ("rust-quote" ,rust-quote-0.6)
         ("rust-syn" ,rust-syn-0.15)
         ("rust-unicode-xid" ,rust-unicode-xid-0.1))
        #:cargo-development-inputs
