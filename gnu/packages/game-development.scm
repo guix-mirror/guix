@@ -2046,14 +2046,14 @@ a.k.a. XenoCollide) as described in Game Programming Gems 7.")
 (define-public ode
   (package
     (name "ode")
-    (version "0.16")
+    (version "0.16.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://bitbucket.org/odedevs/ode/downloads/"
                            "ode-" version ".tar.gz"))
        (sha256
-        (base32 "09xzrarxwxcf6rdv5jsjfjh454jnn29dpcw3wh6ic50kkipvg8sb"))
+        (base32 "1flfdqgdbcn1bx8nrrd4qnp6cvsxrhvk8cdg7vaq2dzkh6nsqa5j"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -2061,7 +2061,8 @@ a.k.a. XenoCollide) as described in Game Programming Gems 7.")
            #t))))
     (build-system cmake-build-system)
     (arguments
-     ;; Tests fail on all systems but x86_64.
+     ;; Tests fail on all systems but x86_64.  This is fixed upstream and can
+     ;; be removed in 0.16.2+.
      `(#:tests? ,(string-prefix? "x86_64-"
                                  (or (%current-target-system)
                                      (%current-system)))
