@@ -6960,13 +6960,13 @@ based on index arrays and simple triplet representations, respectively.")
 (define-public r-manipulatewidget
   (package
     (name "r-manipulatewidget")
-    (version "0.10.0")
+    (version "0.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "manipulateWidget" version))
        (sha256
-        (base32 "1zagrbwkn2d50zzw8i2vyb1hsq4cydmfsqiy1a2qlp6zrv8a6q9x"))))
+        (base32 "1vi71sjh7z1a880wffk8qqw7iysvk42q78giqxmm2sqz2a912qlx"))))
     (properties
      `((upstream-name . "manipulateWidget")))
     (build-system r-build-system)
