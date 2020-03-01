@@ -1,0 +1,90 @@
+This is needed to run Python on the Hurd, especially during the build of
+python-boot0.
+
+Adapted from https://salsa.debian.org/glibc-team/glibc/-/blob/glibc-2.31/debian/patches/hurd-i386/unsubmitted-clock_t_centiseconds.diff
+
+    commit d57f2f9b4bd007846af2fb4217486ea572579010
+    Author: Richard Braun <rbraun@sceen.net>
+    Date:   Tue Aug 27 11:35:31 2013 +0200
+
+        Express CPU time (clock_t of times(2)) in centiseconds
+
+From 170c292b643fdc1eb56881e6592b07c0c019993e Mon Sep 17 00:00:00 2001
+From: Jan Nieuwenhuizen <janneke@gnu.org>
+Date: Mon, 2 Mar 2020 18:28:54 +0100
+Subject: [PATCH 1/2] Express CPU time (clock_t) in centiseconds
+
+---
+ sysdeps/mach/hurd/clock.c     | 8 ++++----
+ sysdeps/mach/hurd/getclktck.c | 5 ++---
+ sysdeps/mach/hurd/setitimer.c | 2 +-
+ sysdeps/mach/hurd/times.c     | 2 +-
+ 4 files changed, 8 insertions(+), 9 deletions(-)
+
+diff --git a/sysdeps/mach/hurd/clock.c b/sysdeps/mach/hurd/clock.c
+index 7cb42df786..4db49b579d 100644
+--- a/sysdeps/mach/hurd/clock.c
++++ b/sysdeps/mach/hurd/clock.c
+@@ -44,10 +44,10 @@ clock (void)
+   if (err)
+     return __hurd_fail (err);
+ 
+-  total = bi.user_time.seconds * 1000000 + bi.user_time.microseconds;
+-  total += tti.user_time.seconds * 1000000 + tti.user_time.microseconds;
+-  total += bi.system_time.seconds * 1000000 + bi.system_time.microseconds;
+-  total += tti.system_time.seconds * 1000000 + tti.system_time.microseconds;
++  total = bi.user_time.seconds * 100 + bi.user_time.microseconds / 10000;
++  total += tti.user_time.seconds * 100 + tti.user_time.microseconds / 10000;
++  total += bi.system_time.seconds * 100 + bi.system_time.microseconds / 10000;
++  total += tti.system_time.seconds * 100 + tti.system_time.microseconds / 10000;
+ 
+   return total;
+ }
+diff --git a/sysdeps/mach/hurd/getclktck.c b/sysdeps/mach/hurd/getclktck.c
+index 943e36e805..5a3cf0930b 100644
+--- a/sysdeps/mach/hurd/getclktck.c
++++ b/sysdeps/mach/hurd/getclktck.c
+@@ -18,12 +18,11 @@
+ 
+ #include <time.h>
+ 
+-/* Return frequency of `times'.
+-   Since Mach reports CPU times in microseconds, we always use 1 million.  */
++/* Return frequency of `times'.  */
+ int
+ __getclktck (void)
+ {
+-  return 1000000;
++  return 100;
+ }
+ 
+ /* Before glibc 2.2, the Hurd actually did this differently, so we
+diff --git a/sysdeps/mach/hurd/setitimer.c b/sysdeps/mach/hurd/setitimer.c
+index b16f4ddd5d..8bf1464830 100644
+--- a/sysdeps/mach/hurd/setitimer.c
++++ b/sysdeps/mach/hurd/setitimer.c
+@@ -43,7 +43,7 @@ quantize_timeval (struct timeval *tv)
+   static time_t quantum = -1;
+ 
+   if (quantum == -1)
+-    quantum = 1000000 / __getclktck ();
++    quantum = 100 / __getclktck ();
+ 
+   tv->tv_usec = ((tv->tv_usec + (quantum - 1)) / quantum) * quantum;
+   if (tv->tv_usec >= 1000000)
+diff --git a/sysdeps/mach/hurd/times.c b/sysdeps/mach/hurd/times.c
+index 23ed992783..cbf6039b19 100644
+--- a/sysdeps/mach/hurd/times.c
++++ b/sysdeps/mach/hurd/times.c
+@@ -29,7 +29,7 @@
+ static inline clock_t
+ clock_from_time_value (const time_value_t *t)
+ {
+-  return t->seconds * 1000000 + t->microseconds;
++  return t->seconds * 100 + t->microseconds / 10000;
+ }
+ 
+ /* Store the CPU time used by this process and all its
+-- 
+2.24.0
+

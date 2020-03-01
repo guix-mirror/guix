@@ -612,7 +612,9 @@ the store.")
                                      "glibc-versioned-locpath.patch"
                                      "glibc-allow-kernel-2.6.32.patch"
                                      "glibc-reinstate-prlimit64-fallback.patch"
-                                     "glibc-supported-locales.patch"))))
+                                     "glibc-supported-locales.patch"
+                                     "glibc-hurd-clock_t_centiseconds.patch"
+                                     "glibc-hurd-clock_gettime_monotonic.patch"))))
    (build-system gnu-build-system)
 
    ;; Glibc's <limits.h> refers to <linux/limit.h>, for instance, so glibc
