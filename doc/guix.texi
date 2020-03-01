@@ -4236,7 +4236,7 @@ guix time-machine -- build hello
 @end example
 
 will thus build the package @code{hello} as defined in the master branch,
-which is in general a newer revison of Guix than you have installed.
+which is in general a newer revision of Guix than you have installed.
 Time travel works in both directions!
 
 Note that @command{guix time-machine} can trigger builds of channels and
@@ -14098,7 +14098,7 @@ Each string gets on its own line.  See the @code{AcceptEnv} option in
 
 This example allows ssh-clients to export the @code{COLORTERM} variable.
 It is set by terminal emulators, which support colors.  You can use it in
-your shell's ressource file to enable colors for the prompt and commands
+your shell's resource file to enable colors for the prompt and commands
 if this variable is set.
 
 @lisp
@@ -15621,7 +15621,7 @@ adding a service of type @code{mate-desktop-service-type} adds the MATE
 metapackage to the system profile.  ``Adding Enlightenment'' means that
 @code{dbus} is extended appropriately, and several of Enlightenment's binaries
 are set as setuid, allowing Enlightenment's screen locker and other
-functionality to work as expetected.
+functionality to work as expected.
 
 The desktop environments in Guix use the Xorg display server by
 default.  If you'd like to use the newer display server protocol
@@ -20048,7 +20048,7 @@ The @code{ServerName} in the configuration file, used to specify the
 request scheme, hostname and port that the server uses to identify
 itself.
 
-This doesn't need to be set in the server config, and can be specifyed
+This doesn't need to be set in the server config, and can be specified
 in virtual hosts. The default is @code{#f} to not specify a
 @code{ServerName}.
 
@@ -21204,7 +21204,7 @@ false, listed actions are allowed.
 @end deftp
 
 @deftp {Data Type} zone-entry
-Data type represnting a record entry in a zone file.
+Data type representing a record entry in a zone file.
 This type has the following parameters:
 
 @table @asis
@@ -21327,7 +21327,7 @@ The backend to store the keys in.  Can be @code{'pem} or @code{'pkcs11}.
 @item @code{config} (default: @code{"/var/lib/knot/keys/keys"})
 The configuration string of the backend.  An example for the PKCS#11 is:
 @code{"pkcs11:token=knot;pin-value=1234 /gnu/store/.../lib/pkcs11/libsofthsm2.so"}.
-For the pem backend, the string reprensents a path in the file system.
+For the pem backend, the string represents a path in the file system.
 
 @end table
 @end deftp
@@ -24582,7 +24582,7 @@ Defaults to @samp{"a fast webinterface for the git dscm"}.
 
 @deftypevr {@code{cgit-configuration} parameter} string root-readme
 The content of the file specified with this option will be included
-verbatim below thef "about" link on the repository index page.
+verbatim below the "about" link on the repository index page.
 
 Defaults to @samp{""}.
 
@@ -25465,7 +25465,7 @@ of DICT server (@pxref{Dicod,,, dico, GNU Dico Manual}).
 
 The optional @var{config} argument specifies the configuration for
 @command{dicod}, which should be a @code{<dicod-configuration>} object, by
-default it serves the GNU Collaborative International Dictonary of English.
+default it serves the GNU Collaborative International Dictionary of English.
 
 You can add @command{open localhost} to your @file{~/.dico} file to make
 @code{localhost} the default server for @command{dico} client
@@ -26447,7 +26447,7 @@ Switch to an existing system generation.  This action atomically
 switches the system profile to the specified system generation.  It
 also rearranges the system's existing bootloader menu entries.  It
 makes the menu entry for the specified system generation the default,
-and it moves the entries for the other generatiors to a submenu, if
+and it moves the entries for the other generations to a submenu, if
 supported by the bootloader being used.  The next time the system
 boots, it will use the specified system generation.
 
