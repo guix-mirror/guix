@@ -16674,7 +16674,6 @@ developed as part of the Servo project.")
         (base32
          "1z7dpdix1m42x6ddshdcpjf91ml9mhvnskmiv5kd8hcpq0dlv25i"))))
     (build-system cargo-build-system)
-    (arguments `(#:skip-build? #t))
     (home-page "https://github.com/servo/string-cache")
     (synopsis "Code share between string_cache and string_cache_codegen")
     (description
