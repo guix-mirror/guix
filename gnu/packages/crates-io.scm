@@ -16600,7 +16600,7 @@ crate.")
 (define-public rust-string-cache-0.7
   (package
     (name "rust-string-cache")
-    (version "0.7.3")
+    (version "0.7.5")
     (source
      (origin
        (method url-fetch)
@@ -16609,11 +16609,10 @@ crate.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "08sly9s92l0g0ai1iyj9pawl05xbwm4m8kl3zqkv2wkijw4h3mr5"))))
+         "0rrdb822gc1fs3qq4camgj3kh4182bs79hpqxhdrpmlz5yl5ih49"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-new-debug-unreachable"
          ,rust-new-debug-unreachable-1.0)
