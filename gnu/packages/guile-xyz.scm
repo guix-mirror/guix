@@ -1027,6 +1027,13 @@ Extensions) compliant email messages and reading emails from the mbox
 format.")
     (license license:agpl3+)))
 
+(define-public guile3.0-email
+  (package
+    (inherit guile-email)
+    (name "guile3.0-email")
+    (inputs `(("guile" ,guile-next)
+              ,@(alist-delete "guile" (package-inputs guile-email))))))
+
 (define-public guile-newt
   (package
     (name "guile-newt")
