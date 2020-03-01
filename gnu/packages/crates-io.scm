@@ -20603,7 +20603,6 @@ UTF-32 types are provided, including support for malformed encoding.")
          (base32
           "1g4rqsgjky0a7530qajn2bbfcrl2v0zb39idgdws9b1l7gp5wc9d"))))
     (build-system cargo-build-system)
-    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/retep998/winapi-rs")
     (synopsis "Common code for build.rs in WinAPI -sys crates")
     (description
