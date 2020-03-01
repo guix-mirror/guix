@@ -911,7 +911,7 @@ coding footprint.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://github.com/lukas2511/dehydrated/releases/download/"
+                    "https://github.com/dehydrated-io/dehydrated/releases/download/"
                     "v" version "/dehydrated-" version ".tar.gz"))
               (sha256
                (base32
