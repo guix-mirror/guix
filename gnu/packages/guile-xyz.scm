@@ -667,6 +667,13 @@ It has a nice, simple s-expression based syntax.")
 using Guile's foreign function interface.")
       (license license:lgpl3+))))
 
+(define-public guile3.0-squee
+  (package
+    (inherit guile-squee)
+    (name "guile3.0-squee")
+    (inputs `(("guile" ,guile-next)
+              ,@(alist-delete "guile" (package-inputs guile-squee))))))
+
 (define-public guile-colorized
   (package
     (name "guile-colorized")
