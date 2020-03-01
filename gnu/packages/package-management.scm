@@ -788,14 +788,24 @@ written entirely in Python.")))
 (define-public gwl
   (package
     (name "gwl")
-    (version "0.2.0")
+    (version "0.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gwl/gwl-" version ".tar.gz"))
               (sha256
                (base32
-                "0db1nvy6qzhj9kv834vrlxw7gqv3lih1n4hv5zac1zjmb61ll915"))))
+                "1ji5jvzni8aml9fmimlr11g3k8isrnlvnbzhmwgdjh72hils0alc"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-tests
+           (lambda _
+             ;; Avoid cross-device link.
+             (substitute* "tests/cache.scm"
+               (("/tmp/gwl-test-input-XXXXXX")
+                (string-append (getcwd) "/gwl-test-input-XXXXXX")))
+             #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
