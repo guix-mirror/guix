@@ -9188,14 +9188,14 @@ address a bug.")
 (define-public r-rcppannoy
   (package
     (name "r-rcppannoy")
-    (version "0.0.14")
+    (version "0.0.15")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RcppAnnoy" version))
        (sha256
         (base32
-         "1wiigx5g5788j6lyc3f6bs1rsvc4alyc3052g35hxl1giinxmhn4"))))
+         "1rlw6npwwcp066midvkhnzf0xmmfkkdf6f581j3j1s2naqss3fvl"))))
     (properties `((upstream-name . "RcppAnnoy")))
     (build-system r-build-system)
     (propagated-inputs
