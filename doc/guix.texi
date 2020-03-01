@@ -25250,6 +25250,12 @@ If set, this is the @code{getmail-retriever-configuration} object with
 which to configure getmail to fetch mail from the guix-commits mailing
 list.
 
+@item @code{extra-options} (default: @var{'()})
+Extra command line options for @code{guix-data-service}.
+
+@item @code{extra-process-jobs-options} (default: @var{'()})
+Extra command line options for @code{guix-data-service-process-jobs}.
+
 @end table
 @end deftp
 
