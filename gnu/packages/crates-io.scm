@@ -16634,7 +16634,7 @@ developed as part of the Servo project.")
 (define-public rust-string-cache-codegen-0.4
   (package
     (name "rust-string-cache-codegen")
-    (version "0.4.2")
+    (version "0.4.4")
     (source
      (origin
        (method url-fetch)
@@ -16643,14 +16643,13 @@ developed as part of the Servo project.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1npl9zq9cd16d7irksblgk7l7g6qknnzsmr12hrhky2fcpp1xshy"))))
+         "1ik78h9gs874i24rkyh0myg6x4ni2a9cazbv5yzs9yavnv8mxx7h"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-phf-generator" ,rust-phf-generator-0.7)
         ("rust-phf-shared" ,rust-phf-shared-0.7)
-        ("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-proc-macro2" ,rust-proc-macro2-1.0)
         ("rust-quote" ,rust-quote-1.0)
         ("rust-string-cache-shared"
          ,rust-string-cache-shared-0.3))))
