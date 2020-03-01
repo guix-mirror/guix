@@ -3077,8 +3077,10 @@ exec " gcc "/bin/" program
 
 (define hurd-minimal-boot0
   (let ((hurd-minimal (package (inherit hurd-minimal)
-                        (native-inputs `(("mig" ,mig-boot0)))
-                        (inputs '()))))
+                               (version hurd-version-boot0)
+                               (source hurd-source-boot0)
+                               (native-inputs `(("mig" ,mig-boot0)))
+                               (inputs '()))))
     (with-boot0 (package-with-bootstrap-guile hurd-minimal))))
 
 (define hurd-core-headers-boot0
