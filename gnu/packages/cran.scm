@@ -19454,14 +19454,14 @@ Norwegian, Portuguese, Romanian, Russian, Spanish, Swedish and Turkish.")
 (define-public r-quanteda
   (package
     (name "r-quanteda")
-    (version "1.5.2")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "quanteda" version))
        (sha256
         (base32
-         "0iv25rpx5cl9ansazjs0qb97pniajrxf4mqsnb5q98y2hil9ipd3"))))
+         "0snr610vahbdqkmma0zy5mg5qbb6n1b8sgsclqb2sccn1gg38vyy"))))
     (properties `((upstream-name . "quanteda")))
     (build-system r-build-system)
     (propagated-inputs
@@ -19470,7 +19470,7 @@ Norwegian, Portuguese, Romanian, Russian, Spanish, Swedish and Turkish.")
        ("r-fastmatch" ,r-fastmatch)
        ("r-ggplot2" ,r-ggplot2)
        ("r-ggrepel" ,r-ggrepel)
-       ("r-lubridate" ,r-lubridate)
+       ("r-jsonlite" ,r-jsonlite)
        ("r-magrittr" ,r-magrittr)
        ("r-matrix" ,r-matrix)
        ("r-network" ,r-network)
@@ -19478,10 +19478,8 @@ Norwegian, Portuguese, Romanian, Russian, Spanish, Swedish and Turkish.")
        ("r-rcpp" ,r-rcpp)
        ("r-rcpparmadillo" ,r-rcpparmadillo)
        ("r-rcppparallel" ,r-rcppparallel)
-       ("r-rspectra" ,r-rspectra)
        ("r-sna" ,r-sna)
        ("r-snowballc" ,r-snowballc)
-       ("r-spacyr" ,r-spacyr)
        ("r-stopwords" ,r-stopwords)
        ("r-stringi" ,r-stringi)
        ("r-xml2" ,r-xml2)
