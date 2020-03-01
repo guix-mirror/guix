@@ -4128,14 +4128,14 @@ terminals.")
 (define-public r-uuid
   (package
     (name "r-uuid")
-    (version "0.1-2")
+    (version "0.1-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "uuid" version))
        (sha256
         (base32
-         "1gmisd630fc8ybg845hbg13wmm3pk3npaamrh5wqbc1nqd6p0wfx"))))
+         "0gm9ii7ncvllxbvyk6srsiinjmqyj7lmh84w43x4nhqpvafj9q4q"))))
     (build-system r-build-system)
     (home-page "http://www.rforge.net/uuid")
     (synopsis "Tools for generating and handling of UUIDs")
