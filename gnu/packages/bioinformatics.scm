@@ -9521,13 +9521,13 @@ and irregular enzymatic cleavages, mass measurement accuracy, etc.")
 (define-public r-seurat
   (package
     (name "r-seurat")
-    (version "3.1.3")
+    (version "3.1.4")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "Seurat" version))
               (sha256
                (base32
-                "0962mfgqk1di3wy1j0xdkvnw0q5m3q4xzd67d1l6dijlqiz8nfal"))))
+                "0lhjbjhv1hnx5i3gkx41k68i8ykay3f24708h30wx9xywww9lsvi"))))
     (properties `((upstream-name . "Seurat")))
     (build-system r-build-system)
     (propagated-inputs
@@ -9550,6 +9550,7 @@ and irregular enzymatic cleavages, mass measurement accuracy, etc.")
        ("r-mass" ,r-mass)
        ("r-matrix" ,r-matrix)
        ("r-metap" ,r-metap)
+       ("r-patchwork" ,r-patchwork)
        ("r-pbapply" ,r-pbapply)
        ("r-plotly" ,r-plotly)
        ("r-png" ,r-png)
