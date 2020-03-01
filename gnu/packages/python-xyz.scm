@@ -11191,40 +11191,39 @@ binary or text.")
          ,@(package-propagated-inputs base))))))
 
 (define-public python-binwalk
-  (let ((commit "64201acfb5b0a9cdd9faa58c40a36dcff8612e29")
-        (revision "0"))
-    (package
-      (name "python-binwalk")
-      (version (git-version "2.1.1" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/ReFirmLabs/binwalk")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1z7ca6rfp887hw5jc3sb45mm4fa0xid4lsp2z8g4r590dr7k7w15"))))
-      (build-system python-build-system)
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-before 'check 'set-pythonpath
-             (lambda _
-               (setenv "PYTHONPATH"
-                       (string-append
-                        (getcwd) "/src/"
-                        ":" (getenv "PYTHONPATH")))
-               (setenv "HOME" "")
-               #t)))))
-      (native-inputs
-       `(("python-coverage" ,python-coverage)
-         ("python-nose" ,python-nose)))
-      (home-page "https://github.com/ReFirmLabs/binwalk")
-      (synopsis "Firmware analysis tool")
-      (description "Binwalk is a tool for analyzing, reverse engineering, and extracting firmware images")
-      (license license:expat))))
+  (package
+    (name "python-binwalk")
+    (version "2.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ReFirmLabs/binwalk")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1bxgj569fzwv6jhcbl864nmlsi9x1k1r20aywjxc8b9b1zgqrlvc"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-pythonpath
+           (lambda _
+             (setenv "PYTHONPATH"
+                     (string-append
+                      (getcwd) "/src/"
+                      ":" (getenv "PYTHONPATH")))
+             (setenv "HOME" "")
+             #t)))))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-nose" ,python-nose)))
+    (home-page "https://github.com/ReFirmLabs/binwalk")
+    (synopsis "Firmware analysis tool")
+    (description "Binwalk is a tool for analyzing, reverse engineering, and
+extracting firmware images")
+    (license license:expat)))
 
 (define-public python-nltk
   (package
