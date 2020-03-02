@@ -2131,32 +2131,30 @@ increase approaching hashing speeds of 1GB/sec on a single core.")
       (license license:asl2.0))))
 
 (define-public go-github-com-spaolacci-murmur3
-  (let ((commit "f09979ecbc725b9e6d41a297405f65e7e8804acc")
-        (revision "0"))
-    (package
-      (name "go-github-com-spaolacci-murmur3")
-      (version (git-version "1.1" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/spaolacci/murmur3.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1lv3zyz3jy2d76bhvvs8svygx66606iygdvwy5cwc0p5z8yghq25"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/spaolacci/murmur3"))
-      (home-page "https://github.com/spaolacci/murmur3")
-      (synopsis "Native MurmurHash3 Go implementation")
-      (description "Native Go implementation of Austin Appleby's third
-MurmurHash revision (aka MurmurHash3).
+  (package
+    (name "go-github-com-spaolacci-murmur3")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/spaolacci/murmur3.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1lv3zyz3jy2d76bhvvs8svygx66606iygdvwy5cwc0p5z8yghq25"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/spaolacci/murmur3"))
+    (home-page "https://github.com/spaolacci/murmur3")
+    (synopsis "Native MurmurHash3 Go implementation")
+    (description "Native Go implementation of Austin Appleby's third MurmurHash
+revision (aka MurmurHash3).
 
 Reference algorithm has been slightly hacked as to support the streaming mode
 required by Go's standard Hash interface.")
-      (license license:bsd-3))))
+    (license license:bsd-3)))
 
 (define-public go-github-com-multiformats-go-multihash
   (let ((commit "97cdb562a04c6ef66d8ed40cd62f8fbcddd396d6")
