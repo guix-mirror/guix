@@ -20603,3 +20603,37 @@ method (Sen, 1968) plus implementation of Xuebin Zhang's (Zhang, 1999) and
 Yue-Pilon's (Yue, 2002) pre-whitening approaches to determining trends in
 climate data.")
     (license license:lgpl2.1)))
+
+(define-public r-zvcv
+  (package
+    (name "r-zvcv")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ZVCV" version))
+       (sha256
+        (base32
+         "1npw836q2skx54843lgxvb0rfwafckjc8k8dljykm60ad3z7zak8"))))
+    (properties `((upstream-name . "ZVCV")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-abind" ,r-abind)
+       ("r-glmnet" ,r-glmnet)
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-partitions" ,r-partitions)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)))
+    (home-page "https://cran.r-project.org/web/packages/ZVCV/")
+    (synopsis "Zero-Variance Control Variates")
+    (description
+     "@dfn{Zero-variance control variates} (ZV-CV) is a post-processing method
+to reduce the variance of Monte Carlo estimators of expectations using the
+derivatives of the log target.  Once the derivatives are available, the only
+additional computational effort is in solving a linear regression problem.
+This method has been extended to higher dimensions using regularisation.  This
+package can be used to easily perform ZV-CV or regularised ZV-CV when a set of
+samples, derivatives and function evaluations are available.  Additional
+functions for applying ZV-CV to two estimators for the normalising constant of
+the posterior distribution in Bayesian statistics are also supplied.")
+    (license license:gpl2+)))
