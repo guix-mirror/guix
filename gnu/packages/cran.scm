@@ -20555,3 +20555,27 @@ need to derive the partial derivatives.")
 for Bayesian estimation.  Users specify models via the customary R syntax with
 a formula and @code{data.frame} plus some additional arguments for priors.")
     (license license:gpl3+)))
+
+(define-public r-kendall
+  (package
+    (name "r-kendall")
+    (version "2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Kendall" version))
+       (sha256
+        (base32
+         "0z2yr3x2nvdm81w2imb61hxwcbmg14kfb2bxgh3wmkmv3wfjwkwn"))))
+    (properties `((upstream-name . "Kendall")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-boot" ,r-boot)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/Kendall/")
+    (synopsis "Kendall rank correlation and Mann-Kendall trend test")
+    (description
+     "This package computes the Kendall rank correlation and Mann-Kendall
+trend test.")
+    (license license:gpl2+)))
