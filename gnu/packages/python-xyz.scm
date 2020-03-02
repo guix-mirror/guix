@@ -13743,27 +13743,33 @@ many of the popular cloud service providers using a unified API.")
 (define-public python2-apache-libcloud
   (package-with-python2 python-apache-libcloud))
 
-(define-public python-smmap2
+(define-public python-smmap
   (package
-    (name "python-smmap2")
-    (version "2.0.5")
+    (name "python-smmap")
+    (version "3.0.1")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "smmap2" version))
+       (uri (pypi-uri "smmap" version))
        (sha256
-        (base32 "16k03pcnxd3lgzwgbd7nl4jwzm1wmahirvd09kljnzvy96hgza99"))))
+        (base32 "0ijlnv60y8f41py1wnn5n1a1i81cxd9dfpdhr0k3cgkrcbz8850p"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nosexcover" ,python-nosexcover)))
     (home-page "https://github.com/Byron/smmap")
     (synopsis "Python sliding window memory map manager")
-    (description "@code{smmap2} is a pure Python implementation of a sliding
+    (description "@code{smmap} is a pure Python implementation of a sliding
 window memory map manager.")
     (license license:bsd-3)))
 
+(define-public python-smmap2
+  (deprecated-package "python-smmap2" python-smmap))
+
+(define-public python2-smmap
+  (package-with-python2 python-smmap))
+
 (define-public python2-smmap2
-  (package-with-python2 python-smmap2))
+  (deprecated-package "python2-smmap2" python2-smmap))
 
 (define-public python-regex
   (package

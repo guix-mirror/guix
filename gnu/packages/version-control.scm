@@ -918,7 +918,7 @@ default) of the repository.")
                       (setenv "TRAVIS" "1")
                       (invoke "nosetests" "-v"))))))
     (propagated-inputs
-     `(("python-smmap2" ,python-smmap2)))
+     `(("python-smmap" ,python-smmap)))
     (native-inputs
      `(("git" ,git)
        ("python-nose" ,python-nose)))
