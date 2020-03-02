@@ -494,7 +494,8 @@ MAX-LENGTH first elements."
            (loop (+ 1 len) tail (cons head result)))))))
 
 (define* (http-multiple-get base-uri proc seed requests
-                            #:key port (verify-certificate? #t))
+                            #:key port (verify-certificate? #t)
+                            (batch-size 1000))
   "Send all of REQUESTS to the server at BASE-URI.  Call PROC for each
 response, passing it the request object, the response, a port from which to
 read the response body, and the previous result, starting with SEED, à la
@@ -504,7 +505,7 @@ initial connection on which HTTP requests are sent."
                 (requests requests)
                 (result   seed))
     (define batch
-      (at-most 1000 requests))
+      (at-most batch-size requests))
 
     ;; (format (current-error-port) "connecting (~a requests left)..."
     ;;         (length requests))
