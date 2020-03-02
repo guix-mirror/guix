@@ -880,13 +880,13 @@ default) of the repository.")
 (define-public python-gitdb
   (package
     (name "python-gitdb")
-    (version "2.0.4")
+    (version "4.0.2")
     (source (origin
               (method url-fetch)
-              (uri (pypi-uri "gitdb2" version))
+              (uri (pypi-uri "gitdb" version))
               (sha256
                (base32
-                "0i608q9c47rdsmyac1cn6s0hzwwj7cb957y8fc9wacc5lnw8ak5v"))))
+                "0l113fphn6msjl3cl3kyf332b6lal7daxdd0nfma0x9ipfb013jr"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
