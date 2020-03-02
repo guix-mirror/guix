@@ -538,7 +538,7 @@ initial connection on which HTTP requests are sent."
              (()
               (reverse result))
              (remainder
-              (connect port remainder result))))
+              (connect p remainder result))))
           ((head tail ...)
            (let* ((resp   (read-response p))
                   (body   (response-body-port resp))
