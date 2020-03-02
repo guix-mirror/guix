@@ -136,7 +136,7 @@
                    (utils (assoc-ref outputs "utils")))
                (with-directory-excursion "src/github.com/syncthing/syncthing"
                  (install-file "syncthing" (string-append out "/bin"))
-                 (for-each (cut install-file <> utils)
+                 (for-each (cut install-file <> (string-append utils "/bin/"))
                            '("stcli" "stcompdirs" "stcrashreceiver"
                              "stdisco" "stdiscosrv" "stevents" "stfileinfo"
                              "stfinddevice" "stfindignored" "stgenfiles"

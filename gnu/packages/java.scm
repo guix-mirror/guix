@@ -3604,7 +3604,7 @@ more.")
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://codehaus-plexus.github.io/plexus-interpolation/")
+    (home-page "https://codehaus-plexus.github.io/plexus-interpolation/")
     (synopsis "Java components for interpolating ${} strings and the like")
     (description "Plexus interpolator is a modular, flexible interpolation
 framework for the expression language style commonly seen in Maven, Plexus,
@@ -4757,7 +4757,7 @@ targeting the JVM.")
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)
        ("java-easymock" ,java-easymock)))
-    (home-page "http://commons.apache.org/collections/")
+    (home-page "https://commons.apache.org/collections/")
     (synopsis "Collections framework")
     (description "The Java Collections Framework is the recognised standard
 for collection handling in Java.  Commons-Collections seek to build upon the
@@ -6584,7 +6584,7 @@ logging framework for Java.")))
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://commons.apache.org/cli/")
+    (home-page "https://commons.apache.org/cli/")
     (synopsis "Command line arguments and options parsing library")
     (description "The Apache Commons CLI library provides an API for parsing
 command line options passed to programs.  It is also able to print help
@@ -6903,7 +6903,7 @@ tree walking, and translation.")
     (native-inputs
      `(("antlr" ,antlr2)
        ("java-junit" ,java-junit)))
-    (home-page "http://www.stringtemplate.org")
+    (home-page "https://www.stringtemplate.org")
     (synopsis "Template engine to generate formatted text output")
     (description "StringTemplate is a java template engine (with ports for C#,
 Objective-C, JavaScript, Scala) for generating source code, web pages, emails,

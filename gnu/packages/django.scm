@@ -930,7 +930,7 @@ static files.")
        ("python2-pytest-catchlog" ,python2-pytest-catchlog)
        ("python2-pytest-cov" ,python2-pytest-cov)
        ("python2-factory-boy" ,python2-factory-boy)))
-    (home-page "http://pootle.translatehouse.org/")
+    (home-page "https://pootle.translatehouse.org/")
     (synopsis "Community localization server")
     (description
       "Pootle is an online translation and localization tool.  It works to

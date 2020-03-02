@@ -880,13 +880,13 @@ default) of the repository.")
 (define-public python-gitdb
   (package
     (name "python-gitdb")
-    (version "2.0.4")
+    (version "4.0.2")
     (source (origin
               (method url-fetch)
-              (uri (pypi-uri "gitdb2" version))
+              (uri (pypi-uri "gitdb" version))
               (sha256
                (base32
-                "0i608q9c47rdsmyac1cn6s0hzwwj7cb957y8fc9wacc5lnw8ak5v"))))
+                "0l113fphn6msjl3cl3kyf332b6lal7daxdd0nfma0x9ipfb013jr"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -918,7 +918,7 @@ default) of the repository.")
                       (setenv "TRAVIS" "1")
                       (invoke "nosetests" "-v"))))))
     (propagated-inputs
-     `(("python-smmap2" ,python-smmap2)))
+     `(("python-smmap" ,python-smmap)))
     (native-inputs
      `(("git" ,git)
        ("python-nose" ,python-nose)))
@@ -937,13 +937,13 @@ allowing to handle large objects with a small memory footprint.")
 (define-public python-gitpython
   (package
     (name "python-gitpython")
-    (version "2.1.11")
+    (version "3.1.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "GitPython" version))
               (sha256
                (base32
-                "1a357c28dnhgvq3saia7v29r71ynp48l2qp5xsmnc4vgzmdxqdw2"))))
+                "1jzllsy9lwc9yibccgv7h9naxisazx2n3zmpy21c8n5xhysw69p4"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ;XXX: Tests can only be run within the GitPython repository.

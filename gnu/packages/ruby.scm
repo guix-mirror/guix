@@ -2482,7 +2482,7 @@ It allows writing tests, checking results and automated testing in Ruby.")
      "Markaby allows writing HTML packages in pure Ruby.  This is similar to
 the functionality provided by @acronym{ERB, Embedded Ruby}, but without the
 mixture of HTML and additional ERB syntax.")
-    (home-page "http://markaby.github.io/")
+    (home-page "https://markaby.github.io/")
     (license license:expat)))
 
 (define-public ruby-maruku

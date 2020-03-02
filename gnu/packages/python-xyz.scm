@@ -54,7 +54,7 @@
 ;;; Copyright © 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2018, 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018, 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Luther Thompson <lutheroto@gmail.com>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
@@ -508,7 +508,7 @@ NetCDF files can also be read and modified.  Python-HDF4 is a fork of
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-pkgconfig" ,python-pkgconfig)))
-    (home-page "http://www.h5py.org/")
+    (home-page "https://www.h5py.org/")
     (synopsis "Read and write HDF5 files from Python")
     (description
      "The h5py package provides both a high- and low-level interface to the
@@ -2326,14 +2326,14 @@ environments and back.")
 (define-public python-pyyaml
   (package
     (name "python-pyyaml")
-    (version "3.13")
+    (version "5.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "PyYAML" version))
        (sha256
         (base32
-         "1gx603g484z46cb74j9rzr6sjlh2vndxayicvlyhxdz98lhhkwry"))))
+         "058nd4p8f25wwzy2aiwh18wcrdm6663cqbfdkgjp8y9cp7ampx79"))))
     (build-system python-build-system)
     (inputs
      `(("libyaml" ,libyaml)))
@@ -3466,7 +3466,7 @@ include_dirs = ~a/include
              (with-directory-excursion "/tmp"
                (invoke "python" "-c"
                        "import numpy; numpy.test(verbose=2)")))))))
-    (home-page "http://www.numpy.org/")
+    (home-page "https://numpy.org")
     (synopsis "Fundamental package for scientific computing with Python")
     (description "NumPy is the fundamental package for scientific computing
 with Python.  It contains among other things: a powerful N-dimensional array
@@ -7688,14 +7688,14 @@ Jupyter Notebook format and Python APIs for working with notebooks.")
 (define-public python-bleach
   (package
     (name "python-bleach")
-    (version "3.1.0")
+    (version "3.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "bleach" version))
        (sha256
         (base32
-         "1yhrgrhkln8bd6gn3imj69g1h4xqah9gaz9q26crqr6gmmvpzprz"))))
+         "0j4xlnw99m1xy0s7wxz9fk5f3c1n8r296fh75jn5p5j61w6qg2xa"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-webencodings" ,python-webencodings)
@@ -8770,14 +8770,14 @@ for the module to work under Python 3.3.")
 (define-public python-colorama
   (package
    (name "python-colorama")
-   (version "0.3.9")
+   (version "0.4.3")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "colorama" version))
      (sha256
       (base32
-       "1wd1szk0z3073ghx26ynw43gnc140ibln1safgsis6s6z3s25ss8"))))
+       "189n8hpijy14jfan4ha9f5n06mnl33cxz7ay92wjqgkr639s0vg9"))))
    (build-system python-build-system)
    (synopsis "Colored terminal text rendering for Python")
    (description "Colorama is a Python library for rendering colored terminal
@@ -11193,40 +11193,39 @@ binary or text.")
          ,@(package-propagated-inputs base))))))
 
 (define-public python-binwalk
-  (let ((commit "64201acfb5b0a9cdd9faa58c40a36dcff8612e29")
-        (revision "0"))
-    (package
-      (name "python-binwalk")
-      (version (git-version "2.1.1" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/ReFirmLabs/binwalk")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1z7ca6rfp887hw5jc3sb45mm4fa0xid4lsp2z8g4r590dr7k7w15"))))
-      (build-system python-build-system)
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-before 'check 'set-pythonpath
-             (lambda _
-               (setenv "PYTHONPATH"
-                       (string-append
-                        (getcwd) "/src/"
-                        ":" (getenv "PYTHONPATH")))
-               (setenv "HOME" "")
-               #t)))))
-      (native-inputs
-       `(("python-coverage" ,python-coverage)
-         ("python-nose" ,python-nose)))
-      (home-page "https://github.com/ReFirmLabs/binwalk")
-      (synopsis "Firmware analysis tool")
-      (description "Binwalk is a tool for analyzing, reverse engineering, and extracting firmware images")
-      (license license:expat))))
+  (package
+    (name "python-binwalk")
+    (version "2.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ReFirmLabs/binwalk")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1bxgj569fzwv6jhcbl864nmlsi9x1k1r20aywjxc8b9b1zgqrlvc"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-pythonpath
+           (lambda _
+             (setenv "PYTHONPATH"
+                     (string-append
+                      (getcwd) "/src/"
+                      ":" (getenv "PYTHONPATH")))
+             (setenv "HOME" "")
+             #t)))))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-nose" ,python-nose)))
+    (home-page "https://github.com/ReFirmLabs/binwalk")
+    (synopsis "Firmware analysis tool")
+    (description "Binwalk is a tool for analyzing, reverse engineering, and
+extracting firmware images")
+    (license license:expat)))
 
 (define-public python-nltk
   (package
@@ -11554,7 +11553,7 @@ from Facebook.")
        ("python-six" ,python-six)))
     (arguments
      `(#:tests? #f))                    ; no tests/ in the PyPI tarball
-    (home-page "http://graphene-python.org/")
+    (home-page "https://graphene-python.org/")
     (synopsis "GraphQL Framework for Python")
     (description
      "Graphene is a Python library for building GraphQL schemas/types.
@@ -13207,14 +13206,14 @@ for more filetypes can be easily added by creating plugins for them.")
 (define-public python-radon
   (package
     (name "python-radon")
-    (version "2.2.0")
+    (version "4.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "radon" version))
        (sha256
         (base32
-         "07gq5hq4nrffxnlnksws9hrx7fd001gam63j62i82gyfr23gvdym"))))
+         "0vfxxzbnz5lxfvp0yxp35g6c8qqnnbhi4dm7shkm1d3d4192q22n"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -13746,27 +13745,33 @@ many of the popular cloud service providers using a unified API.")
 (define-public python2-apache-libcloud
   (package-with-python2 python-apache-libcloud))
 
-(define-public python-smmap2
+(define-public python-smmap
   (package
-    (name "python-smmap2")
-    (version "2.0.5")
+    (name "python-smmap")
+    (version "3.0.1")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "smmap2" version))
+       (uri (pypi-uri "smmap" version))
        (sha256
-        (base32 "16k03pcnxd3lgzwgbd7nl4jwzm1wmahirvd09kljnzvy96hgza99"))))
+        (base32 "0ijlnv60y8f41py1wnn5n1a1i81cxd9dfpdhr0k3cgkrcbz8850p"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nosexcover" ,python-nosexcover)))
     (home-page "https://github.com/Byron/smmap")
     (synopsis "Python sliding window memory map manager")
-    (description "@code{smmap2} is a pure Python implementation of a sliding
+    (description "@code{smmap} is a pure Python implementation of a sliding
 window memory map manager.")
     (license license:bsd-3)))
 
+(define-public python-smmap2
+  (deprecated-package "python-smmap2" python-smmap))
+
+(define-public python2-smmap
+  (package-with-python2 python-smmap))
+
 (define-public python2-smmap2
-  (package-with-python2 python-smmap2))
+  (deprecated-package "python2-smmap2" python2-smmap))
 
 (define-public python-regex
   (package
@@ -13869,14 +13874,14 @@ pure Python module.")
 (define-public python-xenon
   (package
     (name "python-xenon")
-    (version "0.5.4")
+    (version "0.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "xenon" version))
        (sha256
         (base32
-         "029cbhysg2vr5n4jz8gpg2793f8wkwnqpr1qgv6c1dn685vy31mc"))))
+         "0nv207ql2wmh9q62503np056c4vf1c1hlsi5cvv5p5kx574k6r2y"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pyyaml" ,python-pyyaml)
@@ -13885,7 +13890,8 @@ pure Python module.")
        ("python-flake8" ,python-flake8)
        ("python-tox" ,python-tox)))
     (arguments
-     `(#:phases
+     `(#:tests? #f                      ;test suite not shipped with the PyPI archive
+       #:phases
        (modify-phases %standard-phases
          (add-before 'build 'patch-test-requirements
            (lambda _
@@ -16384,7 +16390,7 @@ class in a @acronym{DRY, Don't Repeat Yourself} way.")
        ("python-arrow" ,python-arrow)
        ("python-numpy" ,python-numpy)
        ("python-ruamel.yaml" ,python-ruamel.yaml)))
-    (home-page "http://construct.readthedocs.io")
+    (home-page "https://construct.readthedocs.io")
     (synopsis "Declarative and symmetrical parser and builder for binary data")
     (description
      "This package provides both simple, atomic constructs (such as
@@ -17477,6 +17483,25 @@ files.  These files are used to translate strings in android apps.")
 such as a file modification and trigger an action.  This is similar to inotify,
 but portable.")
     (license license:asl2.0)))
+
+(define-public python-wget
+  (package
+    (name "python-wget")
+    (version "3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "wget" version ".zip"))
+       (sha256
+        (base32
+         "0qb0y7ipby42m4m7h0ipazpdyc3bn9xi46lvifcwwl5albn31rim"))))
+    (build-system python-build-system)
+    (native-inputs `(("unzip" ,unzip)))
+    (home-page "https://bitbucket.org/techtonik/python-wget/")
+    (synopsis "Pure Python download utility")
+    (description "The python-wget library provides an API to download files
+with features similar to the @command{wget} utility.")
+    (license license:unlicense)))
 
 (define-public offlate
   (package

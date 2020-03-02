@@ -7,14 +7,14 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2014, 2017 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016, 2017, 2018 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017, 2018, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
-;;; Copyright © 2017,2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2017,2019,2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
@@ -69,10 +69,12 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages sphinx)
+  #:use-module (gnu packages video)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages qt)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -1900,3 +1902,79 @@ losslessly translates between SNG and PNG.")
 no dependency or linkage required.  It's made for C (ISO C90), and has a C++
 wrapper with a more convenient interface on top.")
       (license license:zlib))))
+
+(define-public icoutils
+  (package
+    (name "icoutils")
+    (version "0.32.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://savannah/icoutils/icoutils-" version ".tar.bz2"))
+       (sha256
+        (base32 "1q66cksms4l62y0wizb8vfavhmf7kyfgcfkynil3n99s0hny1aqp"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libpng" ,libpng)
+       ("perl" ,perl)))
+    (propagated-inputs
+     `(("perl-libwww" ,perl-libwww)))
+    (home-page "https://www.nongnu.org/icoutils/")
+    (synopsis "Extract and convert bitmaps from Windows icon and cursor files")
+    (description "Icoutils are a set of program for extracting and converting
+bitmaps from Microsoft Windows icon and cursor files.  These files usually
+have the extension @code{.ico} or @code{.cur}, but they can also be embedded
+in executables and libraries (@code{.dll}-files).  (Such embedded files are
+referred to as resources.)
+
+Conversion of these files to and from PNG images is done @command{icotool}.
+@command{extresso} automates these tasks with the help of special resource
+scripts.  Resources such can be extracted from MS Windows executable and
+library files with @command{wrestool}.
+
+This package can be used to create @code{favicon.ico} files for web sites.")
+     (license license:gpl3+)))
+
+(define-public libavif
+  (package
+    (name "libavif")
+    (version "0.5.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/AOMediaCodec/libavif")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "15g76j9vb88q1v3azscph8im8714zdl70bni0al4ww9v80vhqpkd"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DAVIF_CODEC_AOM=ON" "-DAVIF_CODEC_DAV1D=ON"
+                           "-DAVIF_CODEC_RAV1E=OFF" ; not packaged yet
+                           "-DAVIF_BUILD_TESTS=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-readme
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/libavif-"
+                                        ,version)))
+               (install-file "../source/README.md" doc)))))
+;; The test suite runs tests for all supported codecs and fails because we don't
+;; have rav1e yet.
+;;         (replace 'check
+;;           (lambda _
+;;             (invoke "./aviftest" "../source/tests/data"))))
+       #:tests? #f))
+    (inputs
+     `(("libaom" ,libaom)
+       ("dav1d" ,dav1d)))
+    (synopsis "Encode and decode AVIF files")
+    (description "Libavif is a C implementation of the AV1 Image File Format
+(AVIF).  It can encode and decode all YUV formats and bit depths supported by
+AOM, including with alpha.")
+    (home-page "https://github.com/AOMediaCodec/libavif")
+    (license (list license:bsd-2    ; libavif itself
+                   license:expat)))) ; cJSON in the test suite

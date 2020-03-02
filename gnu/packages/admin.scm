@@ -24,7 +24,7 @@
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
-;;; Copyright © 2019 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2019,2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.org>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
@@ -415,7 +415,7 @@ application (for console or X terminals) and requires ncurses.")
                           (("\"/bin/sh\"")
                            (string-append "\"" bash "/bin/sh\"")))
                         #t))))))
-    (home-page "https://www.gnu.org/software/pies/")
+    (home-page "https://www.gnu.org.ua/software/pies/")
     (synopsis "Program invocation and execution supervisor")
     (description
      "GNU pies is a program that supervises the invocation and execution of
@@ -1577,7 +1577,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20200110")
+    (version "20200214")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1585,7 +1585,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1hb4g6r7w8s4bhlkk36fmb4qxghnrwvad7f18cpn6zz0b4sjs7za"))))
+                "0jdasziq184l3iqyp5vhrsbi6g89n10wr0ssliiz0xi3dqwsxcqk"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
@@ -1780,7 +1780,7 @@ environment variable is set and output is to tty.")
                   (string-append "SHELL=" bash "/bin/sh")))
 
                #t))))))
-    (home-page "https://www.gnu.org/software/direvent/")
+    (home-page "https://www.gnu.org.ua/software/direvent/")
     (synopsis "Daemon to monitor directories for events such as file removal")
     (description
      "A daemon that monitors directories for events, such as creating,
@@ -1911,13 +1911,13 @@ of supported upstream metrics systems simultaneously.")
 (define-public ansible
   (package
     (name "ansible")
-    (version "2.8.5")
+    (version "2.9.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ansible" version))
        (sha256
-        (base32 "11k94ifp42psivzx147xwbmq1ak7qnjdgkb6c1xz53nfapkh754f"))))
+        (base32 "19fav6rs58zdc3gfhh1lxhki36jn4252183rrd769sv46b9m1bji"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-bcrypt" ,python-bcrypt)
@@ -2531,7 +2531,7 @@ a new command using the matched rule, and runs it.")
              (setenv "prefix" (assoc-ref outputs "out"))
              #t)))
        #:make-flags (list "--environment-overrides")))
-    (home-page "https://www.gentoo.com/di/")
+    (home-page "https://gentoo.com/di/")
     (synopsis "Advanced df like disk information utility")
     (description
      "@code{di} is a disk information utility, displaying everything that your
@@ -2878,14 +2878,14 @@ Intel DRM Driver.")
 (define-public fabric
   (package
     (name "fabric")
-    (version "1.14.0")
+    (version "1.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Fabric" version))
        (sha256
         (base32
-         "13r0b0hllgf8j9rh6x1knmbgvingbdmx046aazv6vck2ll120mw1"))))
+         "1a3ndlpdw6bhn8fcw1jgznl117a8pnr84az9rb5fwnrypf1ph2b6"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2               ; Python 2 only
@@ -2909,7 +2909,7 @@ Intel DRM Driver.")
        ("python2-bcrypt" ,python2-bcrypt)))
     (propagated-inputs
      `(("python2-paramiko" ,python2-paramiko)))
-    (home-page "http://fabfile.org")
+    (home-page "https://www.fabfile.org/")
     (synopsis "Simple Pythonic remote execution and deployment tool")
     (description
      "Fabric is designed to upload files and run shell commands on a number of
@@ -3391,7 +3391,7 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
        ("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)
        ("python-sphinx" ,python-sphinx)))
-    (home-page "http://pyudev.readthedocs.org/")
+    (home-page "https://pyudev.readthedocs.io/")
     (synopsis "Python udev binding")
     (description "This package provides @code{udev} bindings for Python.")
     (license license:lgpl2.1)))

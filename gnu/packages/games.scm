@@ -3606,7 +3606,7 @@ fullscreen, use F5 or Alt+Enter.")
               ("qtscript" ,qtscript)
               ("openssl" ,openssl)
               ("sdl2" ,sdl2)))
-    (home-page "http://wz2100.net")
+    (home-page "https://wz2100.net")
     (synopsis "3D Real-time strategy and real-time tactics game")
     (description
      "Warzone 2100 offers campaign, multi-player, and single-player skirmish

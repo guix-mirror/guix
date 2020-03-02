@@ -2573,6 +2573,19 @@ package.")
 (define-public cl-cffi
   (sbcl-package->cl-source-package sbcl-cffi))
 
+(define-public sbcl-cffi-uffi-compat
+  (package
+    (inherit sbcl-cffi-toolchain)
+    (name "sbcl-cffi-uffi-compat")
+    (native-inputs
+     `(,@(package-inputs sbcl-cffi-bootstrap))) ; For fix-paths phase
+    (inputs
+     `(("cffi" ,sbcl-cffi)))
+    (synopsis "UFFI Compatibility Layer for CFFI")))
+
+(define-public cl-cffi-uffi-compat
+  (sbcl-package->cl-source-package sbcl-cffi-uffi-compat))
+
 (define-public sbcl-cl-sqlite
   (let ((commit "c738e66d4266ef63a1debc4ef4a1b871a068c112"))
     (package
@@ -4884,7 +4897,7 @@ port within a range.")
 to be easy to use so that you can quickly start testing.  CLUnit
 provides a rich set of features aimed at improving your unit testing
 experience.")
-      (home-page "http://tgutu.github.io/clunit/")
+      (home-page "https://tgutu.github.io/clunit/")
       ;; MIT License
       (license license:expat))))
 
@@ -10950,3 +10963,237 @@ interface for MySQL, PostgreSQL and SQLite.")
 
 (define-public cl-dbd-sqlite3
   (sbcl-package->cl-source-package sbcl-dbd-sqlite3))
+
+(define-public sbcl-uffi
+  (package
+    (name "sbcl-uffi")
+    (version "2.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "http://git.kpe.io/uffi.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1hqszvz0a3wk4s9faa83sc3vjxcb5rxmjclyr17yzwg55z733kry"))))
+    (build-system asdf-build-system/sbcl)
+    (arguments
+     `(#:tests? #f ; TODO: Fix use of deprecated ASDF functions
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-permissions
+           (lambda _
+             (make-file-writable "doc/html.tar.gz")
+             #t)))))
+    (synopsis "Universal foreign function library for Common Lisp")
+    (description
+     "UFFI provides a universal foreign function interface (FFI)
+ for Common Lisp.")
+    (home-page "http://quickdocs.org/uffi/")
+    (license license:llgpl)))
+
+(define-public cl-uffi
+  (package
+    (inherit (sbcl-package->cl-source-package sbcl-uffi))
+    (arguments
+     `(#:phases
+       ;; asdf-build-system/source has its own phases and does not inherit
+       ;; from asdf-build-system/sbcl phases.
+       (modify-phases %standard-phases/source
+         (add-after 'unpack 'fix-permissions
+           (lambda _
+             (make-file-writable "doc/html.tar.gz")
+             #t)))))))
+
+(define-public sbcl-clsql
+  (package
+    (name "sbcl-clsql")
+    (version "6.7.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "http://git.kpe.io/clsql.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1v1k3s5bsy3lgd9gk459bzpb1r0kdjda25s29samxw4gsgf1fqvp"))
+       (snippet
+        '(begin
+           ;; Remove precompiled libraries.
+           (delete-file "db-mysql/clsql_mysql.dll")
+           (delete-file "uffi/clsql_uffi.dll")
+           (delete-file "uffi/clsql_uffi.lib")
+           #t))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("cffi-uffi-compat" ,sbcl-cffi-uffi-compat)
+       ("rt" ,sbcl-rt)
+       ("uffi" ,sbcl-uffi)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-permissions
+           (lambda _
+             (make-file-writable "doc/html.tar.gz")
+             #t))
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             (substitute* "clsql.asd"
+               (("clsql-tests :force t")
+                "clsql-tests"))
+             #t)))))
+    (synopsis "Common Lisp SQL Interface library")
+    (description
+     "@code{clsql} is a Common Lisp interface to SQL RDBMS based on the
+Xanalys CommonSQL interface for Lispworks.  It provides low-level database
+interfaces as well as a functional and an object oriented interface.")
+    (home-page "http://clsql.kpe.io/")
+    (license license:llgpl)))
+
+(define-public cl-clsql
+  (package
+    (inherit (sbcl-package->cl-source-package sbcl-clsql))
+    (native-inputs
+     `(("rt" ,cl-rt)))
+    (inputs
+     `(("mysql" ,mysql)
+       ("postgresql" ,postgresql)
+       ("sqlite" ,sqlite)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("cl-postgres" ,cl-postgres)
+       ("cffi-uffi-compat" ,cl-cffi-uffi-compat)
+       ("md5" ,cl-md5)
+       ("uffi" ,cl-uffi)))
+    (arguments
+     `(#:phases
+       ;; asdf-build-system/source has its own phases and does not inherit
+       ;; from asdf-build-system/sbcl phases.
+       (modify-phases %standard-phases/source
+         (add-after 'unpack 'fix-permissions
+           (lambda _
+             (make-file-writable "doc/html.tar.gz")
+             #t)))))))
+
+(define-public sbcl-clsql-uffi
+  (package
+    (inherit sbcl-clsql)
+    (name "sbcl-clsql-uffi")
+    (inputs
+     `(("cffi-uffi-compat" ,sbcl-cffi-uffi-compat)
+       ("clsql" ,sbcl-clsql)
+       ("uffi" ,sbcl-uffi)))
+    (synopsis "UFFI helper functions for Common Lisp SQL interface library")))
+
+(define-public sbcl-clsql-sqlite3
+  (package
+    (inherit sbcl-clsql)
+    (name "sbcl-clsql-sqlite3")
+    (inputs
+     `(("clsql" ,sbcl-clsql)
+       ("clsql-uffi" ,sbcl-clsql-uffi)
+       ("sqlite" ,sqlite)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-clsql)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "db-sqlite3/sqlite3-loader.lisp"
+                 (("libsqlite3")
+                  (string-append (assoc-ref inputs "sqlite")
+                                 "/lib/libsqlite3")))
+               #t))))))
+    (synopsis "SQLite3 driver for Common Lisp SQL interface library")))
+
+(define-public sbcl-clsql-postgresql
+  (package
+    (inherit sbcl-clsql)
+    (name "sbcl-clsql-postgresql")
+    (inputs
+     `(("clsql" ,sbcl-clsql)
+       ("clsql-uffi" ,sbcl-clsql-uffi)
+       ("postgresql" ,postgresql)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-clsql)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "db-postgresql/postgresql-loader.lisp"
+                 (("libpq")
+                  (string-append (assoc-ref inputs "postgresql")
+                                 "/lib/libpq")))
+               #t))))))
+    (synopsis "PostgreSQL driver for Common Lisp SQL interface library")))
+
+(define-public sbcl-clsql-postgresql-socket3
+  (package
+    (inherit sbcl-clsql)
+    (name "sbcl-clsql-postgresql-socket3")
+    (inputs
+     `(("cl-postgres" ,sbcl-cl-postgres)
+       ("clsql" ,sbcl-clsql)
+       ("md5" ,sbcl-md5)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-clsql)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-after 'create-asd-file 'fix-asd-file
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (lib (string-append out "/lib/" (%lisp-type)))
+                      (asd (string-append lib "/clsql-postgresql-socket3.asd")))
+                 (substitute* asd
+                   (("CLSQL-POSTGRESQL-SOCKET-SYSTEM::")
+                    "")))
+               #t))))))
+    (synopsis "PostgreSQL driver for Common Lisp SQL interface library")))
+
+(define-public sbcl-clsql-mysql
+  (package
+    (inherit sbcl-clsql)
+    (name "sbcl-clsql-mysql")
+    (inputs
+     `(("mysql" ,mysql)
+       ("sbcl-clsql" ,sbcl-clsql)
+       ("sbcl-clsql-uffi" ,sbcl-clsql-uffi)
+       ("zlib" ,zlib)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-clsql)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((lib (string-append "#p\""
+                                         (assoc-ref outputs "out")
+                                         "/lib/\"")))
+                 (substitute* "clsql-mysql.asd"
+                   (("#p\"/usr/lib/clsql/clsql_mysql\\.so\"")
+                    lib))
+                 (substitute* "db-mysql/mysql-loader.lisp"
+                   (("libmysqlclient" all)
+                    (string-append (assoc-ref inputs "mysql") "/lib/" all))
+                   (("clsql-mysql-system::\\*library-file-dir\\*")
+                    lib)))
+               #t))
+           (add-before 'build 'build-helper-library
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((mysql (assoc-ref inputs "mysql"))
+                      (inc-dir (string-append mysql "/include/mysql"))
+                      (lib-dir (string-append mysql "/lib"))
+                      (shared-lib-dir (string-append (assoc-ref outputs "out")
+                                                     "/lib"))
+                      (shared-lib (string-append shared-lib-dir
+                                                 "/clsql_mysql.so")))
+                 (mkdir-p shared-lib-dir)
+                 (invoke "gcc" "-fPIC" "-shared"
+                         "-I" inc-dir
+                         "db-mysql/clsql_mysql.c"
+                         "-Wl,-soname=clsql_mysql"
+                         "-L" lib-dir "-lmysqlclient" "-lz"
+                         "-o" shared-lib)
+                 #t)))))))
+    (synopsis "MySQL driver for Common Lisp SQL interface library")))

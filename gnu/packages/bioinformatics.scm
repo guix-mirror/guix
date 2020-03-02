@@ -7482,13 +7482,13 @@ names in their natural, rather than lexicographic, order.")
 (define-public r-edger
   (package
     (name "r-edger")
-    (version "3.28.0")
+    (version "3.28.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "edgeR" version))
               (sha256
                (base32
-                "1m7l6fbyik1b79v0h9qkmpa39svij1yiw24gxahbdqjg7fzsavh3"))))
+                "07dv99kl7jfa62nzcq705r56gcpb1hq7p4px48j71y2ddi1rqmr6"))))
     (properties `((upstream-name . "edgeR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -7768,13 +7768,13 @@ biological sequences or sets of sequences.")
 (define-public r-rsamtools
   (package
     (name "r-rsamtools")
-    (version "2.2.2")
+    (version "2.2.3")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "Rsamtools" version))
               (sha256
                (base32
-                "1larx1a9cngmcsm2n7yyxrlnk69zi8m9dp3b90jva0ynspyi76v7"))))
+                "1vj43acawqqkf9yval9fzxarpsf04fmn78m2hq4f083w1k0myhyr"))))
     (properties
      `((upstream-name . "Rsamtools")))
     (build-system r-build-system)
@@ -9139,14 +9139,14 @@ unmodeled, or latent sources of noise.")
 (define-public r-seqminer
   (package
     (name "r-seqminer")
-    (version "7.1")
+    (version "8.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "seqminer" version))
        (sha256
         (base32
-         "1jydcpkw4rwfp983j83kipvsvr10as9pb49zzn3c2v09k1gh3ymy"))))
+         "00jzj8mwb0zaiwlifd41b26mrq9mzigj18nc29dydi0r42hxg16i"))))
     (build-system r-build-system)
     (inputs
      `(("zlib" ,zlib)))
@@ -9521,13 +9521,13 @@ and irregular enzymatic cleavages, mass measurement accuracy, etc.")
 (define-public r-seurat
   (package
     (name "r-seurat")
-    (version "3.1.3")
+    (version "3.1.4")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "Seurat" version))
               (sha256
                (base32
-                "0962mfgqk1di3wy1j0xdkvnw0q5m3q4xzd67d1l6dijlqiz8nfal"))))
+                "0lhjbjhv1hnx5i3gkx41k68i8ykay3f24708h30wx9xywww9lsvi"))))
     (properties `((upstream-name . "Seurat")))
     (build-system r-build-system)
     (propagated-inputs
@@ -9550,6 +9550,7 @@ and irregular enzymatic cleavages, mass measurement accuracy, etc.")
        ("r-mass" ,r-mass)
        ("r-matrix" ,r-matrix)
        ("r-metap" ,r-metap)
+       ("r-patchwork" ,r-patchwork)
        ("r-pbapply" ,r-pbapply)
        ("r-plotly" ,r-plotly)
        ("r-png" ,r-png)
@@ -10494,14 +10495,14 @@ provided.")
 (define-public r-hdf5array
   (package
     (name "r-hdf5array")
-    (version "1.14.2")
+    (version "1.14.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "HDF5Array" version))
        (sha256
         (base32
-         "0mbx9rsr2571k4k4hmx3dr49rhqb31dhwy2r2bkrd4dbhvriqgld"))))
+         "1z153a7nxmlml72pl1saasj2il9g5ahpynkpv3mkhhsvl5kbwbh6"))))
     (properties `((upstream-name . "HDF5Array")))
     (build-system r-build-system)
     (inputs

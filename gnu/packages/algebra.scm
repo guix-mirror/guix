@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -345,19 +345,19 @@ precision.")
 (define-public giac
   (package
     (name "giac")
-    (version "1.5.0-85")
-    (source (origin
-              (method url-fetch)
-              ;; "~parisse/giac" is not used because the maintainer regularly
-              ;; overwrites the release tarball there, introducing a checksum
-              ;; mismatch every time.  See
-              ;; <https://www-fourier.ujf-grenoble.fr/~parisse/debian/dists/stable/main/source/README>
-              (uri (string-append "https://www-fourier.ujf-grenoble.fr/"
-                                  "~parisse/debian/dists/stable/main/"
-                                  "source/giac_" version ".tar.gz"))
-              (sha256
-               (base32
-                "03icgrfhb1xiy95cqmfgmcb1lw3775mr2ybnzandmyn44iycs6rh"))))
+    (version "1.5.0-87")
+    (source
+     (origin
+       (method url-fetch)
+       ;; "~parisse/giac" is not used because the maintainer regularly
+       ;; overwrites the release tarball there, introducing a checksum
+       ;; mismatch every time.  See
+       ;; <https://www-fourier.ujf-grenoble.fr/~parisse/debian/dists/stable/main/source/README>
+       (uri (string-append "https://www-fourier.ujf-grenoble.fr/"
+                           "~parisse/debian/dists/stable/main/source/"
+                           "giac_" version ".tar.gz"))
+       (sha256
+        (base32 "1d0h1yb7qvh9x7wwv9yrzmcp712f49w1iljkxp4y6g9pzsmg1mmv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
@@ -1498,7 +1498,7 @@ cohomology ring of a Grassmann variety.  The software package also includes
 a program that performs fast computation of the more general multiplicative
 structure constants of Schubert polynomials.")
     (license license:gpl2+)
-    (home-page "http://sites.math.rutgers.edu/~asbuch/lrcalc/")))
+    (home-page "https://sites.math.rutgers.edu/~asbuch/lrcalc/")))
 
 (define-public iml
   (package

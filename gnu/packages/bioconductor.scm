@@ -618,14 +618,14 @@ database is exposed as a @code{TxDb} object.")
 (define-public r-txdb-mmusculus-ucsc-mm10-knowngene
   (package
     (name "r-txdb-mmusculus-ucsc-mm10-knowngene")
-    (version "3.4.7")
+    (version "3.10.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "TxDb.Mmusculus.UCSC.mm10.knownGene"
                                      version 'annotation))
               (sha256
                (base32
-                "04impkl8zh1gpwwrpbf19jqznsjrq2306yyhm6cmx6hr1401bd6b"))))
+                "0xs9npnhbwll7p62hibs02y4ac23jchdcr25i6a7qwq1kms82qk9"))))
     (properties
      `((upstream-name . "TxDb.Mmusculus.UCSC.mm10.knownGene")))
     (build-system r-build-system)
@@ -1648,14 +1648,14 @@ determining dependencies between variables, code improvement suggestions.")
 (define-public r-chippeakanno
   (package
     (name "r-chippeakanno")
-    (version "3.20.0")
+    (version "3.20.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ChIPpeakAnno" version))
        (sha256
         (base32
-         "0hp3s3shnrb55cxvx9wrdl67wqw9f55gdgx7262s4mahpxjswfsa"))))
+         "0kmfha4vprbi0z6n7v9w28xfrqcx5qad7yfr0b316j5aj8v9f4hc"))))
     (properties `((upstream-name . "ChIPpeakAnno")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2216,14 +2216,14 @@ samples.")
 (define-public r-biocneighbors
   (package
     (name "r-biocneighbors")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "BiocNeighbors" version))
        (sha256
         (base32
-         "05vi1cij37s8wgj92k3l6a3f3dwldj8jvijdp4695zczka6kypdf"))))
+         "1bx7i5pifj8w89fnhfgcfgcar2ik2ad8wqs2rix7yks90vz185i6"))))
     (properties `((upstream-name . "BiocNeighbors")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3221,27 +3221,20 @@ surface of a flowcell.")
 (define-public r-gkmsvm
   (package
     (name "r-gkmsvm")
-    (version "0.79.0")
+    (version "0.80.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gkmSVM" version))
        (sha256
         (base32
-         "04dakbgfvfalz4rm4fvvybp506dn5fbj5g86ybfhrc6wywjllsz3"))))
+         "0ljcga246ad0ql8x3drvrdsyp0f20mgp3p6lnl79xb76qgfdnm0p"))))
     (properties `((upstream-name . "gkmSVM")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)
-       ("r-biostrings" ,r-biostrings)
-       ("r-genomeinfodb" ,r-genomeinfodb)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-iranges" ,r-iranges)
-       ("r-kernlab" ,r-kernlab)
+     `(("r-kernlab" ,r-kernlab)
        ("r-rcpp" ,r-rcpp)
        ("r-rocr" ,r-rocr)
-       ("r-rtracklayer" ,r-rtracklayer)
-       ("r-s4vectors" ,r-s4vectors)
        ("r-seqinr" ,r-seqinr)))
     (home-page "https://cran.r-project.org/web/packages/gkmSVM")
     (synopsis "Gapped-kmer support vector machine")
@@ -3612,14 +3605,14 @@ profiles (GO and KEGG) of gene and gene clusters.")
 (define-public r-mlinterfaces
   (package
     (name "r-mlinterfaces")
-    (version "1.66.2")
+    (version "1.66.4")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MLInterfaces" version))
        (sha256
         (base32
-         "1wc280iw9vllg6f58vsdj895yaqs8w42kl7jk8sgii009gwlaj8d"))))
+         "19hlicdndy2p45y7w91gnwi3wgq5s465a646z3qqk8gmn5sn614q"))))
     (properties `((upstream-name . "MLInterfaces")))
     (build-system r-build-system)
     (propagated-inputs
@@ -6028,14 +6021,14 @@ genes in the gene-set that are ranked above the leading edge).")
 (define-public r-cicero
   (package
     (name "r-cicero")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "cicero" version))
        (sha256
         (base32
-         "07g6r335zqqy3r5v4x4glxdrcsq9bjhs9jmgvppiggv1h630a22w"))))
+         "154djqd32w87814ycfmfz27ikp17bnampvmvw5hzi5p2x9l3h82r"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
@@ -7297,14 +7290,14 @@ access.")
 (define-public r-multiassayexperiment
   (package
     (name "r-multiassayexperiment")
-    (version "1.12.2")
+    (version "1.12.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MultiAssayExperiment" version))
        (sha256
         (base32
-         "0722f3jl1xq8k8w7vrv986jd16bgysqp3n07pgmdn0hh1zh2mcqc"))))
+         "1vf6l88j3n6109j6sd08wfqxqpj2k20dvr8ll9zl1szsn18b4gny"))))
     (properties
      `((upstream-name . "MultiAssayExperiment")))
     (build-system r-build-system)

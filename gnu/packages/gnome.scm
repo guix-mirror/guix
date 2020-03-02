@@ -2180,6 +2180,8 @@ from forcing GEXP-PROMISE."
               (with-directory-excursion (string-append "librsvg-" #$version)
                 ;; The following crate(s) are needed in addition to the ones replaced:
                 (begin
+                  (substitute* "rsvg_internals/Cargo.toml"
+                    (("\"=") "\""))
                   (invoke
                    "tar" "xvf" #+(package-source rust-autocfg-0.1) "-C" "vendor")
                   (invoke

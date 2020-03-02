@@ -303,10 +303,10 @@ server and embedded PowerPC, and S390 guests.")
               (search-patches "qemu-glibc-2.27.patch"))))
     ;; qemu-minimal-2.10 needs Python 2. Remove below once no longer necessary.
     (native-inputs `(("python-2" ,python-2)
-                     ,@(fold alist-delete (package-native-inputs qemu)
+                     ,@(fold alist-delete (package-native-inputs qemu-minimal)
                              '("python-wrapper" "python-sphinx"))))
     (inputs
-     (fold alist-delete (package-inputs qemu)
+     (fold alist-delete (package-inputs qemu-minimal)
            ;; Disable seccomp support, because it's not required for the GRUB
            ;; test suite, and because it fails with libseccomp 2.4.2 and later.
            '("libseccomp"))))))

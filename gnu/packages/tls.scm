@@ -511,14 +511,14 @@ required structures.")
 (define-public libressl
   (package
     (name "libressl")
-    (version "2.7.4")
+    (version "3.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://openbsd/LibreSSL/"
                                   "libressl-" version ".tar.gz"))
               (sha256
                (base32
-                "19kxa5i97q7p6rrps9qm0nd8zqhdjvzx02j72400c73cl2nryfhy"))))
+                "13ir2lpxz8y1m151k7lrx306498nzfhwlvgkgv97v5cvywmifyyz"))))
     (build-system gnu-build-system)
     (arguments
      ;; Do as if 'getentropy' was missing since older Linux kernels lack it
@@ -911,35 +911,46 @@ coding footprint.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://github.com/lukas2511/dehydrated/releases/download/"
+                    "https://github.com/dehydrated-io/dehydrated/releases/download/"
                     "v" version "/dehydrated-" version ".tar.gz"))
               (sha256
                (base32
                 "0dgskgbdd95p13jx6s13p77y15wngb5cm6p4305cf2s54w0bvahh"))))
     (build-system trivial-build-system)
     (arguments
-     `(#:modules ((guix build utils))
+     `(#:modules ((guix build utils)
+                  (srfi srfi-26))
        #:builder
        (begin
-         (use-modules (guix build utils))
+         (use-modules (guix build utils)
+                      (srfi srfi-26))
          (let* ((source (assoc-ref %build-inputs "source"))
                 (tar (assoc-ref %build-inputs "tar"))
                 (gz  (assoc-ref %build-inputs "gzip"))
                 (out (assoc-ref %outputs "out"))
                 (bin (string-append out "/bin"))
-                (doc (string-append out "/share/doc/"))
+                (doc (string-append out "/share/doc/" ,name "-" ,version))
+                (man (string-append out "/share/man"))
                 (bash (in-vicinity (assoc-ref %build-inputs "bash") "bin")))
 
            (setenv "PATH" (string-append gz "/bin"))
            (invoke (string-append tar "/bin/tar") "xvf" source)
            (chdir (string-append ,name "-" ,version))
 
+           (copy-recursively "docs" doc)
+           (install-file "LICENSE" doc)
+
+           (mkdir-p man)
+           (rename-file (string-append doc "/man")
+                        (string-append man "/man1"))
+           (for-each (cut invoke "gzip" "-9" <>)
+                     (find-files man ".*"))
+
            (install-file "dehydrated" bin)
-           (install-file "LICENSE" (string-append doc ,name "-" ,version))
            (with-directory-excursion bin
              (patch-shebang "dehydrated" (list bash))
 
-             ;; Do not try to write in the store.
+             ;; Do not try to write to the store.
              (substitute* "dehydrated"
                (("SCRIPTDIR=\"\\$.*\"") "SCRIPTDIR=~/.dehydrated"))
 

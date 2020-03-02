@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,7 +36,7 @@
        (base32
         "0gv6m8giazshvgpvwbng98chpas09myyfw1zr2y7hqxib0mvy5ac"))))
     (build-system gnu-build-system)
-    (home-page "https://gnu.org/software/acct/")
+    (home-page "https://www.gnu.org/software/acct/")
     (synopsis "Standard login and process accounting utilities")
     (description
      "GNU acct provides a means for system administrators to determine

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,7 +30,7 @@
    (source (origin
             (method url-fetch)
             (uri (string-append
-                  "http://www.brain-dump.org/projects/abduco/abduco-"
+                  "https://www.brain-dump.org/projects/abduco/abduco-"
                   version ".tar.gz"))
             (sha256
              (base32
@@ -45,5 +46,5 @@
    (description "abduco provides session management i.e. it allows programs to
 be run independently from their controlling terminal.  That is, programs can
 be detached---run in the background---and then later reattached.")
-   (home-page "http://www.brain-dump.org/projects/abduco/")
+   (home-page "https://www.brain-dump.org/projects/abduco/")
    (license isc)))

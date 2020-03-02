@@ -667,6 +667,14 @@ It has a nice, simple s-expression based syntax.")
 using Guile's foreign function interface.")
       (license license:lgpl3+))))
 
+(define-public guile3.0-squee
+  (package
+    (inherit guile-squee)
+    (name "guile3.0-squee")
+    (native-inputs `(("guile" ,guile-next)
+                     ,@(alist-delete "guile"
+                                     (package-native-inputs guile-squee))))))
+
 (define-public guile-colorized
   (package
     (name "guile-colorized")
@@ -1019,6 +1027,13 @@ in pure guile.  It supports parsing MIME (Multipurpose Internet Mail
 Extensions) compliant email messages and reading emails from the mbox
 format.")
     (license license:agpl3+)))
+
+(define-public guile3.0-email
+  (package
+    (inherit guile-email)
+    (name "guile3.0-email")
+    (inputs `(("guile" ,guile-next)
+              ,@(alist-delete "guile" (package-inputs guile-email))))))
 
 (define-public guile-newt
   (package

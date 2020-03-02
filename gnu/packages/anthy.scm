@@ -49,7 +49,7 @@
            (lambda _
              (with-directory-excursion "test"
                (invoke "./anthy" "--all")))))))
-    (home-page "http://anthy.osdn.jp/")
+    (home-page "https://anthy.osdn.jp/")
     (synopsis "Japanese input method")
     (description "Anthy is a Japanese input method for converting
 hiragana text to mixed kana and kanji.  It is written in the C
