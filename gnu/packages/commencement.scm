@@ -152,7 +152,7 @@ pure Scheme to Tar and decompression in one easy step.")
          (use-modules (guix build gnu-bootstrap))
          (modify-phases %standard-phases
            (replace 'configure
-             (bootstrap-configure ,(version) "gash" "scripts"))
+             (bootstrap-configure ,(package-version gash) "gash" "scripts"))
            (replace 'build (bootstrap-build "gash"))
            (replace 'install (bootstrap-install "gash" "scripts"))
            (add-after 'install 'install-symlinks
@@ -214,7 +214,8 @@ pure Scheme to Tar and decompression in one easy step.")
                (delete-file "scripts/template.in")
                #t))
            (replace 'configure
-             (bootstrap-configure ,(version) "gash" "scripts"))
+             (bootstrap-configure ,(package-version gash-utils)
+                                  "gash" "scripts"))
            (replace 'build (bootstrap-build "gash"))
            (replace 'install (bootstrap-install "gash" "scripts"))
            ;; XXX: The scripts should add Gash to their load paths and
