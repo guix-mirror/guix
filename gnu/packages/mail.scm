@@ -673,7 +673,7 @@ repository and Maildir/IMAP as LOCAL repository.")
        ("ruby" ,ruby))) ; to set GEM_PATH so ruby-sqlite3 is found at runtime
     (build-system gnu-build-system)
     (arguments
-     (let ((elisp-dir "/share/emacs/site-lisp/guix.d/mew")
+     (let ((elisp-dir "/share/emacs/site-lisp")
            (icon-dir  "/share/mew"))
        `(#:modules ((guix build gnu-build-system)
                     (guix build utils)
