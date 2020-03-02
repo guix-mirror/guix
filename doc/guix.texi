@@ -22450,6 +22450,9 @@ Only evaluate specifications and build derivations once.
 When substituting a pre-built binary fails, fall back to building
 packages locally.
 
+@item @code{extra-options} (default: @code{'()})
+Extra options to pass when running the Cuirass processes.
+
 @item @code{cuirass} (default: @code{cuirass})
 The Cuirass package to use.
 @end table

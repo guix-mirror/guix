@@ -77,7 +77,9 @@
   (one-shot?        cuirass-configuration-one-shot? ;boolean
                     (default #f))
   (fallback?        cuirass-configuration-fallback? ;boolean
-                    (default #f)))
+                    (default #f))
+  (extra-options    cuirass-configuration-extra-options
+                    (default '())))
 
 (define (cuirass-shepherd-service config)
   "Return a <shepherd-service> for the Cuirass service with CONFIG."
@@ -95,7 +97,8 @@
         (specs            (cuirass-configuration-specifications config))
         (use-substitutes? (cuirass-configuration-use-substitutes? config))
         (one-shot?        (cuirass-configuration-one-shot? config))
-        (fallback?        (cuirass-configuration-fallback? config)))
+        (fallback?        (cuirass-configuration-fallback? config))
+        (extra-options    (cuirass-configuration-extra-options config)))
     (list (shepherd-service
            (documentation "Run Cuirass.")
            (provision '(cuirass))
@@ -110,7 +113,8 @@
                            "--interval" #$(number->string interval)
                            #$@(if use-substitutes? '("--use-substitutes") '())
                            #$@(if one-shot? '("--one-shot") '())
-                           #$@(if fallback? '("--fallback") '()))
+                           #$@(if fallback? '("--fallback") '())
+                           #$@extra-options)
 
                      #:environment-variables
                      (list "GIT_SSL_CAINFO=/etc/ssl/certs/ca-certificates.crt"
@@ -137,7 +141,8 @@
                            "--listen" #$host
                            "--interval" #$(number->string interval)
                            #$@(if use-substitutes? '("--use-substitutes") '())
-                           #$@(if fallback? '("--fallback") '()))
+                           #$@(if fallback? '("--fallback") '())
+                           #$@extra-options)
 
                      #:user #$user
                      #:group #$group
