@@ -20579,3 +20579,27 @@ a formula and @code{data.frame} plus some additional arguments for priors.")
      "This package computes the Kendall rank correlation and Mann-Kendall
 trend test.")
     (license license:gpl2+)))
+
+(define-public r-zyp
+  (package
+    (name "r-zyp")
+    (version "0.10-1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "zyp" version))
+       (sha256
+        (base32
+         "03cxpkfbhrx1fy8l0dl9a13ghz93cqq6877wa8rig09ksdiivaw9"))))
+    (properties `((upstream-name . "zyp")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-kendall" ,r-kendall)))
+    (home-page "https://cran.r-project.org/web/packages/zyp/")
+    (synopsis "Zhang + Yue-Pilon Trends Package")
+    (description
+     "This package contains an efficient implementation of Sen's slope
+method (Sen, 1968) plus implementation of Xuebin Zhang's (Zhang, 1999) and
+Yue-Pilon's (Yue, 2002) pre-whitening approaches to determining trends in
+climate data.")
+    (license license:lgpl2.1)))
