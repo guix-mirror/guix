@@ -20352,7 +20352,7 @@ Emacs that integrate with major modes like Org-mode.")
 (define-public emacs-modus-themes
   (package
     (name "emacs-modus-themes")
-    (version "0.4.0")
+    (version "0.6.0")
     (source
      (origin
        (method git-fetch)
@@ -20361,7 +20361,7 @@ Emacs that integrate with major modes like Org-mode.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0c4y3y9mjf6x2b9087fk6nkxvgvm9f5l1p2vdwqny80vp4krsb8r"))))
+        (base32 "15z6qq0b0npp7hscmh04i3mi10bynzdy52fv2b160nji264zvcwa"))))
     (build-system emacs-build-system)
     (home-page "https://gitlab.com/protesilaos/modus-themes")
     (synopsis "Emacs themes designed for colour-contrast accessibility")
