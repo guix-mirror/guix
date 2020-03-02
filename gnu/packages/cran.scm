@@ -6192,23 +6192,19 @@ references and Rd files.")
 (define-public r-officer
   (package
     (name "r-officer")
-    (version "0.3.6")
+    (version "0.3.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "officer" version))
        (sha256
         (base32
-         "1i6jmnbkx7gd0qyf6akhizmxp7y1dh3h7a886mcbmrzka9d60zh4"))))
+         "1zyrcf0xxm67bskynjac8dhil2as7rb0mmqaq30zp9lrgfwiycpz"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-base64enc" ,r-base64enc)
-       ("r-digest" ,r-digest)
-       ("r-htmltools" ,r-htmltools)
+     `(("r-digest" ,r-digest)
        ("r-magrittr" ,r-magrittr)
        ("r-r6" ,r-r6)
-       ("r-rcpp" ,r-rcpp)
-       ("r-rlang" ,r-rlang)
        ("r-uuid" ,r-uuid)
        ("r-xml2" ,r-xml2)
        ("r-zip" ,r-zip)))
