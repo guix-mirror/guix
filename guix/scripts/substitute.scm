@@ -537,6 +537,7 @@ initial connection on which HTTP requests are sent."
           (()
            (match (drop requests processed)
              (()
+              (close-port p)
               (reverse result))
              (remainder
               (connect p remainder result))))
