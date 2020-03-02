@@ -13866,14 +13866,14 @@ pure Python module.")
 (define-public python-xenon
   (package
     (name "python-xenon")
-    (version "0.5.4")
+    (version "0.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "xenon" version))
        (sha256
         (base32
-         "029cbhysg2vr5n4jz8gpg2793f8wkwnqpr1qgv6c1dn685vy31mc"))))
+         "0nv207ql2wmh9q62503np056c4vf1c1hlsi5cvv5p5kx574k6r2y"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pyyaml" ,python-pyyaml)
@@ -13882,7 +13882,8 @@ pure Python module.")
        ("python-flake8" ,python-flake8)
        ("python-tox" ,python-tox)))
     (arguments
-     `(#:phases
+     `(#:tests? #f                      ;test suite not shipped with the PyPI archive
+       #:phases
        (modify-phases %standard-phases
          (add-before 'build 'patch-test-requirements
            (lambda _
