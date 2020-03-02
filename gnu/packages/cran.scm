@@ -20637,3 +20637,32 @@ samples, derivatives and function evaluations are available.  Additional
 functions for applying ZV-CV to two estimators for the normalising constant of
 the posterior distribution in Bayesian statistics are also supplied.")
     (license license:gpl2+)))
+
+(define-public r-ztype
+  (package
+    (name "r-ztype")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ztype" version))
+       (sha256
+        (base32
+         "0brbq2rgkl4mhjbb70kkfv47lzs66k9ppfs2klavcbripirxn5fx"))))
+    (properties `((upstream-name . "ztype")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-lubridate" ,r-lubridate)
+       ("r-magrittr" ,r-magrittr)
+       ("r-rvest" ,r-rvest)
+       ("r-stringr" ,r-stringr)))
+    (home-page "https://cran.r-project.org/web/packages/ztype/")
+    (synopsis "Run a Ztype game loaded with R functions")
+    (description
+     "How fast can you type R functions on your keyboard?  Find out by running
+a @code{zty.pe} game: export R functions as instructions to type to destroy
+opponents' vessels.")
+    (license license:gpl3)))
