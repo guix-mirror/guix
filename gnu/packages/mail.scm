@@ -2309,9 +2309,7 @@ transfer protocols.")
      `(("bdb" ,bdb)
        ("libasr" ,libasr)
        ("libevent" ,libevent)
-       ;; XXX Upstream recommends LibreSSL, which doesn't support TLS 1.3 yet,
-       ;; and requires a development release (3.0.2).  Use OpenSSL instead.
-       ("openssl" ,openssl)
+       ("libressl" ,libressl)           ; recommended, and supports e.g. ECDSA
        ("linux-pam" ,linux-pam)
        ("zlib" ,zlib)))
     (native-inputs
