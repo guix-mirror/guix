@@ -20559,12 +20559,12 @@ commands that bear resemblance to the input command.")
 such as:
 
 @itemize
-- switch to last buffer,
-- toggle single window display,
-- toggle between horizontal and vertical splits,
-- move borders more naturally,
-- swap windows à-la @code{windmove}.
-@end itemize\n")
+@item switch to last buffer,
+@item toggle single window display,
+@item toggle between horizontal and vertical splits,
+@item move borders more naturally,
+@item swap windows à-la @code{windmove}.
+@end itemize")
     (license license:gpl3+)))
 
 (define-public emacs-flycheck-cpplint
