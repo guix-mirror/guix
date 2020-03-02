@@ -31,6 +31,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages pcre)
@@ -6353,6 +6354,35 @@ reading and writing git repositories.")
     (description
      "Generated OpenGL bindings and wrapper for Servo.")
     (license (list license:asl2.0 license:expat))))
+
+(define-public rust-glib-sys-0.9
+  (package
+    (name "rust-glib-sys")
+    (version "0.9.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "glib-sys" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1qhnwfqqcp63mx4q9744rfkq78g6ky2j8ppsxxgw0ipl08w6z1cm"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; Some test libraries not included in release.
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))
+       #:cargo-development-inputs
+       (("rust-shell-words" ,rust-shell-words-0.1)
+        ("rust-tempfile" ,rust-tempfile-3.1))))
+    (inputs
+     `(("glib" ,glib)))
+    (home-page "http://gtk-rs.org/")
+    (synopsis "FFI bindings to libglib-2.0")
+    (description "This package provides FFI bindings to libglib-2.0.")
+    (license license:expat)))
 
 (define-public rust-glium-0.25
   (package
