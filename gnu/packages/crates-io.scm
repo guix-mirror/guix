@@ -3698,7 +3698,7 @@ and arithmetic.")
 (define-public rust-diff-0.1
   (package
     (name "rust-diff")
-    (version "0.1.11")
+    (version "0.1.12")
     (source
      (origin
        (method url-fetch)
@@ -3707,12 +3707,12 @@ and arithmetic.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0fhavni46a2rib93ig5fgbqmm48ysms5sxzb3h9bp7vp2bwnjarw"))))
+         "16b40bhsa2qgvgvxs983l625pkxyp6m0mzmpwg2605cvj53yl98f"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-development-inputs
-       (("rust-quickcheck" ,rust-quickcheck-0.8)
+       (("rust-quickcheck" ,rust-quickcheck-0.9)
         ("rust-speculate" ,rust-speculate-0.1))))
     (home-page "https://github.com/utkarshkukreti/diff.rs")
     (synopsis
