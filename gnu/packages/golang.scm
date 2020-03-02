@@ -3067,7 +3067,7 @@ network protocol.")
 (define-public go-github-com-pkg-errors
   (package
     (name "go-github-com-pkg-errors")
-    (version "0.9.0")
+    (version "0.9.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3076,7 +3076,7 @@ network protocol.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1hlivqlcnm9wrj0v7h43gamw7mvg6svz9sm31fx28zn4ll25ablh"))))
+                "1761pybhc2kqr6v5fm8faj08x9bql8427yqg6vnfv6nhrasx1mwq"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/pkg/errors"))
