@@ -54,7 +54,7 @@
 ;;; Copyright © 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2018, 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018, 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Luther Thompson <lutheroto@gmail.com>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
@@ -8768,14 +8768,14 @@ for the module to work under Python 3.3.")
 (define-public python-colorama
   (package
    (name "python-colorama")
-   (version "0.3.9")
+   (version "0.4.3")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "colorama" version))
      (sha256
       (base32
-       "1wd1szk0z3073ghx26ynw43gnc140ibln1safgsis6s6z3s25ss8"))))
+       "189n8hpijy14jfan4ha9f5n06mnl33cxz7ay92wjqgkr639s0vg9"))))
    (build-system python-build-system)
    (synopsis "Colored terminal text rendering for Python")
    (description "Colorama is a Python library for rendering colored terminal
