@@ -3628,7 +3628,6 @@ and arithmetic.")
          (base32
           "14cqfvc0f1pkd6gdhjxa2wv3iibqprc0n203ims8lvg96752ynfm"))))
     (build-system cargo-build-system)
-    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/bluss/defmac")
     (synopsis "Macro to define lambda-like macros inline")
     (description "A macro to define lambda-like macros inline.")
