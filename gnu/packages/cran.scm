@@ -20666,3 +20666,27 @@ the posterior distribution in Bayesian statistics are also supplied.")
 a @code{zty.pe} game: export R functions as instructions to type to destroy
 opponents' vessels.")
     (license license:gpl3)))
+
+(define-public r-zseq
+  (package
+    (name "r-zseq")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Zseq" version))
+       (sha256
+        (base32
+         "06dndi2b1q79bmxax11bv0l5ifcz1mhpvbn90y6a6xymrgcq0ivi"))))
+    (properties `((upstream-name . "Zseq")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-gmp" ,r-gmp)))
+    (home-page "https://cran.r-project.org/web/packages/Zseq/")
+    (synopsis "Integer sequence generator")
+    (description
+     "This package generates well-known integer sequences.  The @code{gmp}
+package is adopted for computing with arbitrarily large numbers.  Every
+function has a hyperlink to its corresponding item in the @dfn{On-Line
+Encyclopedia of Integer Sequences} (OEIS) in the function help page.")
+    (license license:gpl3+)))
