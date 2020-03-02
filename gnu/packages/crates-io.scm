@@ -3571,8 +3571,7 @@ hexadecimal, base32, and base64.")
           "1fd74bq48xg8ki5yw1mr1pa5hd3j5lbk4iqc5r0kh3l62b0vci2w"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
         (("rust-iso8601" ,rust-iso8601-0.1)
          ("rust-kernel32-sys" ,rust-kernel32-sys-0.2)
          ("rust-libc" ,rust-libc-0.2)
@@ -3582,7 +3581,7 @@ hexadecimal, base32, and base64.")
          ("rust-redox-syscall" ,rust-redox-syscall-0.1)
          ("rust-winapi" ,rust-winapi-0.2))
         #:cargo-development-inputs
-        (;("rust-regex" ,rust-regex-0.1)
+        (("rust-regex" ,rust-regex-0.1)
          ("rust-rustc-serialize" ,rust-rustc-serialize-0.3))))
     (home-page "https://github.com/rust-datetime/datetime")
     (synopsis "Library for date and time formatting and arithmetic")
