@@ -1738,22 +1738,18 @@ information.
 @subsection Emacs Packages
 
 @cindex @code{emacs}
-When you install Emacs packages with Guix, the elisp files may be placed
-either in @file{$HOME/.guix-profile/share/emacs/site-lisp/} or in
-sub-directories of
-@file{$HOME/.guix-profile/share/emacs/site-lisp/guix.d/}.  The latter
-directory exists because potentially there may exist thousands of Emacs
-packages and storing all their files in a single directory may not be
-reliable (because of name conflicts).  So we think using a separate
-directory for each package is a good idea.  It is very similar to how
-the Emacs package system organizes the file structure (@pxref{Package
-Files,,, emacs, The GNU Emacs Manual}).
+When you install Emacs packages with Guix, the Elisp files are placed
+under the @file{share/emacs/site-lisp/} directory of the profile in
+which they are installed.  The Elisp libraries are made available to
+Emacs through the @code{EMACSLOADPATH} environment variable, which is
+set when installing Emacs itself.
 
-By default, Emacs (installed with Guix) ``knows'' where these packages
-are placed, so you do not need to perform any configuration.  If, for
-some reason, you want to avoid auto-loading Emacs packages installed
-with Guix, you can do so by running Emacs with @code{--no-site-file}
-option (@pxref{Init File,,, emacs, The GNU Emacs Manual}).
+Additionally, autoload definitions are automatically evaluated at the
+initialization of Emacs, by the Guix-specific
+@code{guix-emacs-autoload-packages} procedure.  If, for some reason, you
+want to avoid auto-loading the Emacs packages installed with Guix, you
+can do so by running Emacs with the @code{--no-site-file} option
+(@pxref{Init File,,, emacs, The GNU Emacs Manual}).
 
 @subsection The GCC toolchain
 
@@ -6681,9 +6677,8 @@ of Emacs itself (@pxref{Packages,,, emacs, The GNU Emacs Manual}).
 It first creates the @code{@code{package}-autoloads.el} file, then it
 byte compiles all Emacs Lisp files.  Differently from the Emacs
 packaging system, the Info documentation files are moved to the standard
-documentation directory and the @file{dir} file is deleted.  Each
-package is installed in its own directory under
-@file{share/emacs/site-lisp/guix.d}.
+documentation directory and the @file{dir} file is deleted.  The Elisp
+package files are installed directly under @file{share/emacs/site-lisp}.
 @end defvr
 
 @defvr {Scheme Variable} font-build-system
