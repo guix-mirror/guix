@@ -15747,6 +15747,27 @@ for the serde framework.")
      "This package allows easy binding to, and loading of, shared libraries.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-shell-words-0.1
+  (package
+    (name "rust-shell-words")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "shell-words" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0jnrw3f174974fsi2hg48l0klpy24767ib28w0xcvi2ll5axxb1r"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/tmiasko/shell-words")
+    (synopsis
+     "Process command line according to parsing rules of UNIX shell")
+    (description
+     "Process command line according to parsing rules of UNIX shell.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-shlex-0.1
   (package
     (name "rust-shlex")
