@@ -8954,6 +8954,34 @@ pairs in insertion order.")
      "This package provides a library for basic localisation.")
     (license license:expat)))
 
+(define-public rust-locale-config-0.3
+  (package
+    (name "rust-locale-config")
+    (version "0.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "locale_config" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0d399alr1i7h7yji4vydbdbzd8hp0xaykr7h4rn3yj7l2rdw7lh8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-objc" ,rust-objc-0.2)
+        ("rust-objc-foundation" ,rust-objc-foundation-0.1)
+        ("rust-regex" ,rust-regex-1.3)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/rust-locale/locale_config/")
+    (synopsis "Maintains locale preferences for processes and threads")
+    (description
+     "Maintains locale preferences for process and thread and initialises them
+by inspecting the system for user preference.")
+    (license license:expat)))
+
 (define-public rust-lock-api-0.3
   (package
     (name "rust-lock-api")
