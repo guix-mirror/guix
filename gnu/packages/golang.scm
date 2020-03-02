@@ -3417,3 +3417,28 @@ are a mapping between non-negative integers and boolean values focused on
 efficient space usage.")
     (home-page "https://github.com/willf/bitset")
     (license license:bsd-3)))
+
+(define-public go-github-com-willf-bloom
+  (package
+    (name "go-github-com-willf-bloom")
+    (version "2.0.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/willf/bloom")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0ygan8pgcay7wx3cs3ja8rdqj7nly7v3and97ddcc66020jxchzg"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/willf/bloom"))
+    (propagated-inputs
+     `(("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
+       ("go-github-com-willf-bitset" ,go-github-com-willf-bitset)))
+    (synopsis "Bloom filters in Go")
+    (description "This package provides a Go implementation of bloom filters,
+based on murmurhash.")
+    (home-page "https://github.com/willf/bloom")
+    (license license:bsd-2)))
