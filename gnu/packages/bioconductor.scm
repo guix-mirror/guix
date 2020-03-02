@@ -618,14 +618,14 @@ database is exposed as a @code{TxDb} object.")
 (define-public r-txdb-mmusculus-ucsc-mm10-knowngene
   (package
     (name "r-txdb-mmusculus-ucsc-mm10-knowngene")
-    (version "3.4.7")
+    (version "3.10.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "TxDb.Mmusculus.UCSC.mm10.knownGene"
                                      version 'annotation))
               (sha256
                (base32
-                "04impkl8zh1gpwwrpbf19jqznsjrq2306yyhm6cmx6hr1401bd6b"))))
+                "0xs9npnhbwll7p62hibs02y4ac23jchdcr25i6a7qwq1kms82qk9"))))
     (properties
      `((upstream-name . "TxDb.Mmusculus.UCSC.mm10.knownGene")))
     (build-system r-build-system)
