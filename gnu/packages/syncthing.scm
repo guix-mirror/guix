@@ -30,7 +30,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "1.3.4")
+    (version "1.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -38,7 +38,7 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "025fhfqzcl5qd38zak8485pd67iqkzsf6frm02cl25s3ggv2f0p4"))
+                "1p9y943kd09pxmsaahbdml2mn2qlwbx23hvbsm1sqbbm8ma9ai8c"))
               (modules '((guix build utils)))
               ;; Delete bundled ("vendored") free software source code.
               (snippet '(begin
@@ -95,6 +95,7 @@
        ("go-github-com-ccding-go-stun" ,go-github-com-ccding-go-stun)
        ("go-github-com-audriusbutkevicius-pfilter" ,go-github-com-audriusbutkevicius-pfilter)
        ("go-github-com-lucas-clemente-quic-go" ,go-github-com-lucas-clemente-quic-go)
+       ("go-github-com-willf-bloom" ,go-github-com-willf-bloom)
 
        ;; For tests
        ("go-github-com-d4l3k-messagediff" ,go-github-com-d4l3k-messagediff)))
