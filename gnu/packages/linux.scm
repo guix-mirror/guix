@@ -40,6 +40,7 @@
 ;;; Copyright © 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2020 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6408,3 +6409,26 @@ user space tracer.  It receives commands from a session daemon, for example to
 enable and disable specific instrumentation points, and writes event records
 to ring buffers shared with a consumer daemon.")
     (license license:lgpl2.1+)))
+
+(define-public kexec-tools
+  (package
+    (name "kexec-tools")
+    (version "2.0.20")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kernel.org/linux/utils/kernel"
+                                  "/kexec/kexec-tools-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1j7qlhxk1rbv9jbj8wd6hb7zl8p2mp29ymrmccgmsi0m0dzhgn6s"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; There are no automated tests.
+     '(#:tests? #f))
+    (home-page "https://projects.horms.net/projects/kexec/")
+    (synopsis "Tools for booting directly into different kernels")
+    (description "This package provides the @code{kexec} program and ancillary
+utilities.  Using @code{kexec}, it is possible to boot directly into a new
+kernel from the context of an already-running kernel, bypassing the normal
+system boot process.")
+    (license license:gpl2)))
