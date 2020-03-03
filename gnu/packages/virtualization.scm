@@ -13,6 +13,7 @@
 ;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -128,7 +129,7 @@
                "1w38hzlw7xp05gcq1nhga7hxvndxy6dfcnzi7q2il8ff110isj6k"))))
     (build-system gnu-build-system)
     (arguments
-     '(;; Running tests in parallel can occasionally lead to failures, like:
+     `(;; Running tests in parallel can occasionally lead to failures, like:
        ;; boot_sector_test: assertion failed (signature == SIGNATURE): (0x00000000 == 0x0000dead)
        #:parallel-tests? #f
        #:configure-flags (list "--enable-usb-redir" "--enable-opengl"
@@ -139,8 +140,28 @@
                                "--audio-drv-list=alsa,pa,sdl")
        ;; Make build and test output verbose to facilitate investigation upon failure.
        #:make-flags '("V=1")
+       #:modules ((srfi srfi-1)
+                  (ice-9 match)
+                  ,@%gnu-build-system-modules)
        #:phases
        (modify-phases %standard-phases
+         (add-after 'set-paths 'hide-glibc
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Work around https://issues.guix.info/issue/36882.  We need to
+             ;; remove glibc from C_INCLUDE_PATH so that the one hardcoded in GCC,
+             ;; at the bottom of GCC include search-path is used.
+             (let* ((filters '("libc"))
+                    (input-directories
+                     (filter-map (lambda (input)
+                                   (match input
+                                     ((name . dir)
+                                      (and (not (member name filters))
+                                           dir))))
+                                 inputs)))
+               (set-path-environment-variable "C_INCLUDE_PATH"
+                                              '("include")
+                                              input-directories)
+               #t)))
          (replace 'configure
            (lambda* (#:key inputs outputs (configure-flags '())
                            #:allow-other-keys)
