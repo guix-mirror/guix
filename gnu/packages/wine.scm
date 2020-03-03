@@ -76,21 +76,26 @@
 (define-public wine
   (package
     (name "wine")
-    (version "5.0")
+    (version "5.3")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://dl.winehq.org/wine/source/"
-                           (version-major+minor version)
-                           "/wine-" version ".tar.xz"))
+       (uri (let ((dir (string-append
+                        (version-major version)
+                        (if (string-suffix? ".0" (version-major+minor version))
+                            ".0/"
+                            ".x/")))))
+            (string-append "https://dl.winehq.org/wine/source/" dir
+                           "wine-" version ".tar.xz"))
        (sha256
-        (base32 "1d0kcy338radq07hrnzcpc9lc9j2fvzjh37q673002x8d6x5058q"))))
+        (base32 "1pkzj3656ad0vmc7ciwfzn45lb2kxwbyymfwnqaa105dicicf6wv"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("gettext" ,gettext-minimal)
-                     ("flex" ,flex)
-                     ("bison" ,bison)
-                     ("perl" ,perl)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ("gettext" ,gettext-minimal)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("dbus" ,dbus)
