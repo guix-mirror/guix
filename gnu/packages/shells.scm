@@ -101,7 +101,7 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
        (method url-fetch)
        (uri (string-append "https://github.com/fish-shell/fish-shell/"
                            "releases/download/" version "/"
-                           name "-" version ".tar.gz"))
+                           "fish-" version ".tar.gz"))
        (sha256
         (base32 "03j3jl9jzlnhq4p86zj8wqsh5sx45j1d1fvfa80ks1cfdg68qwhl"))))
     (build-system gnu-build-system)
