@@ -21692,3 +21692,25 @@ EXIF, XMP and IPTC.")
 generate random passwords and insert them into the current buffer.  It also
 supports generation of phonetic and numeric passwords.")
     (license license:artistic2.0)))
+
+(define-public emacs-csv
+  (package
+    (name "emacs-csv")
+    (version "2.1")
+    (home-page "https://gitlab.com/u11/csv.el")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "V" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1vmazjrfcsa9aa9aw8bq5sazdhqvhxyj837dyw5lmh8gk7z0xdaa"))))
+    (build-system emacs-build-system)
+    (synopsis "Elisp functions for reading and parsing CSV files")
+    (description "@code{csv.el} provides functions for reading and parsing CSV (Comma
+Separated Value) files.  It follows the format as defined in RFC 4180 \"Common
+Format and MIME Type for CSV Files\" (@url{http://tools.ietf.org/html/rfc4180}).")
+    (license license:gpl3+)))
