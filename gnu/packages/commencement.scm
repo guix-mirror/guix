@@ -3426,10 +3426,14 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
    ;; if 'allowed-references' were per-output.
    (arguments
     `(#:allowed-references
-      ,(cons* `(,gcc-boot0 "lib") (kernel-headers-boot0)
-              static-bash-for-glibc
-              (package-outputs glibc-final-with-bootstrap-bash))
-
+      ((,gcc-boot0 "lib")
+       ,(kernel-headers-boot0)
+       ,static-bash-for-glibc
+       ,@(if (hurd-system?)
+             `(,gnumach-headers-boot0
+               ,hurd-headers-boot0)
+             '())
+       ,@(package-outputs glibc-final-with-bootstrap-bash))
       ,@(package-arguments glibc-final-with-bootstrap-bash)))))
 
 (define gcc-boot0-wrapped
