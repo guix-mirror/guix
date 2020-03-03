@@ -84,9 +84,9 @@
                         (version-major version)
                         (if (string-suffix? ".0" (version-major+minor version))
                             ".0/"
-                            ".x/")))))
-            (string-append "https://dl.winehq.org/wine/source/" dir
-                           "wine-" version ".tar.xz"))
+                            ".x/"))))
+              (string-append "https://dl.winehq.org/wine/source/" dir
+                             "wine-" version ".tar.xz")))
        (sha256
         (base32 "1pkzj3656ad0vmc7ciwfzn45lb2kxwbyymfwnqaa105dicicf6wv"))))
     (build-system gnu-build-system)
