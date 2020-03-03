@@ -3230,7 +3230,9 @@ the bootstrap environment."
            ((#:configure-flags flags)
             `(append (list ,(string-append "--host=" (boot-triplet))
                            ,(string-append "--build="
-                                           (nix-system->gnu-triplet)))
+                                           (nix-system->gnu-triplet))
+                           ,(if (hurd-system?) "--disable-werror"
+                                ""))
                      ,flags))
            ((#:phases phases)
             `(modify-phases ,phases
@@ -3241,13 +3243,14 @@ the bootstrap environment."
                    (unsetenv "CPATH")
 
                    ;; Tell 'libpthread' where to find 'libihash' on Hurd systems.
-                   ,@(if (hurd-triplet? (%current-system))
-                         `((substitute* "libpthread/Makefile"
-                             (("LDLIBS-pthread.so =.*")
-                              (string-append "LDLIBS-pthread.so = "
-                                             (assoc-ref %build-inputs "kernel-headers")
-                                             "/lib/libihash.a\n"))))
-                         '())
+                   ,@(if (hurd-system?)
+                       '((substitute* '("sysdeps/mach/Makefile"
+                                        "sysdeps/mach/hurd/Makefile")
+                           (("LDLIBS-pthread.so =.*")
+                            (string-append "LDLIBS-pthread.so = "
+                                           (assoc-ref %build-inputs "kernel-headers")
+                                           "/lib/libihash.a\n"))))
+                       '())
 
                    ;; 'rpcgen' needs native libc headers to be built.
                    (substitute* "sunrpc/Makefile"
@@ -3268,7 +3271,7 @@ the bootstrap environment."
        ,@(%boot1-inputs)
 
        ;; A native MiG is needed to build Glibc on Hurd.
-       ,@(if (hurd-triplet? (%current-system))
+       ,@(if (hurd-system?)
              `(("mig" ,mig-boot0))
              '())
 
