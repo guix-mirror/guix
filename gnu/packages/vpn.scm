@@ -525,8 +525,7 @@ WireGuard support.")
         (base32 "0ivc08lds5w39a6f2xdfih9wlk5g724hl3kpdvxvh5yff4l84qb7"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ; no test suite
-       #:make-flags
+     `(#:make-flags
        (list "CC=gcc"
              "--directory=src"
              "WITH_BASHCOMPLETION=yes"
@@ -535,6 +534,10 @@ WireGuard support.")
              (string-append "PREFIX=" (assoc-ref %outputs "out"))
              ;; Currently used only to create an empty /etc/wireguard directory.
              (string-append "SYSCONFDIR=no-thanks"))
+       ;; The test suite is meant to be run interactively.  It runs Clang's
+       ;; scan-build static analyzer and then starts a web server to display the
+       ;; results.
+       #:tests? #f
        #:phases
        (modify-phases %standard-phases
          ;; No configure script
