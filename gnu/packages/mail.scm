@@ -941,7 +941,9 @@ invoking @command{notifymuch} from the post-new hook.")
        #:imported-modules (,@%gnu-build-system-modules
                            (guix build emacs-build-system)
                            (guix build emacs-utils))
-       #:make-flags (list "V=1")        ; verbose test output
+       #:make-flags
+       (list "V=1"                      ; verbose test output
+             "NOTMUCH_TEST_TIMEOUT=1h") ; don't fail on slow machines
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'patch-notmuch-lib.el
                     (lambda _
