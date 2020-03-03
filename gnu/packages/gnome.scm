@@ -4412,7 +4412,7 @@ which are easy to play with the aid of a mouse.")
 (define-public amtk
   (package
     (name "amtk")
-    (version "5.0.1")
+    (version "5.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/amtk/"
@@ -4420,7 +4420,7 @@ which are easy to play with the aid of a mouse.")
                                   "amtk-" version ".tar.xz"))
               (sha256
                (base32
-                "09yy95w1s83c43mh9vha1jbb780yighf5pd2j0ygjmc68sjg871d"))))
+                "11jgz2i9wjzv4alrxl1qyxiapb52w7vs5ygfgsw0qgdap8gqkk3i"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-gtk-doc")))
