@@ -4997,16 +4997,16 @@ variants.")
 (define-public emacs-solarized-theme
   (package
     (name "emacs-solarized-theme")
-    (version "1.2.2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/bbatsov/solarized-emacs/")
-                     (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0zcj9jf8nlsj9vms888z2vs76q54n8g8r9sh381xad3x8d6lrlb3"))))
+    (version "1.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bbatsov/solarized-emacs/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "15ql8xcixgm7mbs7rsbybwszanqibq057j5b5ds89a31dw7zxf1g"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
