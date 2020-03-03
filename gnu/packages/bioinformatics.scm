@@ -11090,7 +11090,7 @@ matplotlib.use('Agg')
 " line)))
                ;; Make sure GESS has all modules in its path
                (wrap-program (string-append target "GESS.py")
-                 `("PYTHONPATH" ":" prefix (,target ,(getenv "PYTHONPATH"))))
+                 `("PYTHONPATH" ":" = (,target ,(getenv "PYTHONPATH"))))
                (mkdir-p bin)
                (symlink (string-append target "GESS.py")
                         (string-append bin "GESS.py"))
