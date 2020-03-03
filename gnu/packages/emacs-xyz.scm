@@ -1663,9 +1663,24 @@ as a library for other Emacs packages.")
     (arguments
      `(#:emacs ,emacs
        #:include '("\\.el$" "^images/" "^latex/" "\\.info$")
-       #:exclude '("^tests/" "^latex/README")))
+       #:exclude '("^tests/" "^latex/README")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (etc-dir (string-append out "/share/" ,name "/"
+                                            ,version "/etc")))
+               (with-directory-excursion "doc"
+                 (setenv "HOME" (getenv  "TMPDIR")) ; for mktextfm
+                 (invoke "pdftex" "tex-ref")
+                 (install-file "tex-ref.pdf" (string-append etc-dir
+                                                            "/refcards")))
+               #t))))))
     (native-inputs
      `(("perl" ,perl)))
+    (inputs
+     `(("texlive" ,(texlive-union (list texlive-amsfonts)))))
     (home-page "https://www.gnu.org/software/auctex/")
     (synopsis "Integrated environment for TeX")
     (description
