@@ -171,7 +171,7 @@ as well as the classic centralized workflow.")
            (base32
             "15pfm7j4wq8ryp9n9d81h8v0arl15yq9i6cigw45walnq5r6721h"))))
       ;; For subtree documentation.
-      ("asciidoc" ,asciidoc)
+      ("asciidoc" ,asciidoc-py3)
       ("docbook-xsl" ,docbook-xsl)
       ("xmlto" ,xmlto)))
    (inputs
