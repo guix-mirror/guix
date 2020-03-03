@@ -3032,15 +3032,15 @@ exec " gcc "/bin/" program
    (package-with-bootstrap-guile
     (package
       (inherit gnumach-headers)
-      (version "1.8")
+      (version "1.8-116-g28b53508")
       (source (bootstrap-origin
                (origin
                  (method url-fetch)
-                 (uri (string-append "mirror://gnu/gnumach/gnumach-"
-                                     version ".tar.gz"))
+                 (uri (string-append "https://lilypond.org/janneke/hurd/"
+                                     "gnumach-" version ".tar.gz"))
                  (sha256
                   (base32
-                   "02hygsfpd2dljl5lg1vjjg9pizi9jyxd4aiiqzjshz6jax62jm9f")))))
+                   "006i0zgwy81vxarpfm12vip4q6i5mgmi5mmy5ldvxp5hx9h3l0zg")))))
       (native-inputs '())))))
 
 (define mig-boot0
