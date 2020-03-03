@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,7 +19,8 @@
 (define-module (run-system-tests)
   #:use-module (gnu tests)
   #:use-module (gnu packages package-management)
-  #:use-module ((gnu ci) #:select (channel-instance->package))
+  #:use-module ((gnu ci) #:select (channel-source->package))
+  #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module ((guix status) #:select (with-status-verbosity))
   #:use-module (guix monads)
@@ -51,15 +52,15 @@
                 lst)
          (lift1 reverse %store-monad))))
 
-(define (tests-for-channel-instance instance)
-  "Return a list of tests for perform, using Guix from INSTANCE, a channel
+(define (tests-for-current-guix source)
+  "Return a list of tests for perform, using Guix built from SOURCE, a channel
 instance."
   ;; Honor the 'TESTS' environment variable so that one can select a subset
   ;; of tests to run in the usual way:
   ;;
   ;;   make check-system TESTS=installed-os
   (parameterize ((current-guix-package
-                  (channel-instance->package instance)))
+                  (channel-source->package source)))
     (match (getenv "TESTS")
       (#f
        (all-system-tests))
@@ -80,14 +81,12 @@ instance."
         ;; Intern SOURCE so that 'build-from-source' in (guix channels) sees
         ;; "fresh" file names and thus doesn't find itself loading .go files
         ;; from ~/.cache/guile when it loads 'build-aux/build-self.scm'.
-        ;; XXX: It would be best to not do it upfront because we may need it.
-        (mlet* %store-monad ((source (interned-file source "guix-source"
+        (mlet* %store-monad ((source -> (local-file source "guix-source"
                                                     #:recursive? #t
                                                     #:select?
                                                     (or (git-predicate source)
                                                         (const #t))))
-                             (instance -> (checkout->channel-instance source))
-                             (tests -> (tests-for-channel-instance instance))
+                             (tests ->  (tests-for-current-guix source))
                              (drv (mapm %store-monad system-test-value tests))
                              (out -> (map derivation->output-path drv)))
           (format (current-error-port) "Running ~a system tests...~%"

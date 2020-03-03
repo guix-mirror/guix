@@ -28,6 +28,7 @@
   #:use-module (guix derivations)
   #:use-module (guix build-system)
   #:use-module (guix monads)
+  #:use-module (guix gexp)
   #:use-module (guix ui)
   #:use-module ((guix licenses)
                 #:select (gpl3+ license? license-name))
@@ -54,7 +55,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
-  #:export (channel-instance->package
+  #:export (channel-source->package
             hydra-jobs))
 
 ;;; Commentary:
@@ -239,29 +240,35 @@ system.")
 (define channel-build-system
   ;; Build system used to "convert" a channel instance to a package.
   (let* ((build (lambda* (store name inputs
-                                #:key instance system
+                                #:key source commit system
                                 #:allow-other-keys)
                   (run-with-store store
-                    (channel-instances->derivation (list instance))
+                    (mlet* %store-monad ((source (lower-object source))
+                                         (instance
+                                          -> (checkout->channel-instance
+                                              source #:commit commit)))
+                      (channel-instances->derivation (list instance)))
                     #:system system)))
-         (lower (lambda* (name #:key system instance #:allow-other-keys)
+         (lower (lambda* (name #:key system source commit
+                               #:allow-other-keys)
                   (bag
                     (name name)
                     (system system)
                     (build build)
-                    (arguments `(#:instance ,instance))))))
+                    (arguments `(#:source ,source
+                                 #:commit ,commit))))))
     (build-system (name 'channel)
                   (description "Turn a channel instance into a package.")
                   (lower lower))))
 
-(define (channel-instance->package instance)
-  "Return a package for the given channel INSTANCE."
+(define* (channel-source->package source #:key commit)
+  "Return a package for the given channel SOURCE, a lowerable object."
   (package
     (inherit guix)
-    (version (or (string-take (channel-instance-commit instance) 7)
-                 (string-append (package-version guix) "+")))
+    (version (string-append (package-version guix) "+"))
     (build-system channel-build-system)
-    (arguments `(#:instance ,instance))
+    (arguments `(#:source ,source
+                 #:commit ,commit))
     (inputs '())
     (native-inputs '())
     (propagated-inputs '())))
@@ -269,9 +276,6 @@ system.")
 (define* (system-test-jobs store system
                            #:key source commit)
   "Return a list of jobs for the system tests."
-  (define instance
-    (checkout->channel-instance source #:commit commit))
-
   (define (test->thunk test)
     (lambda ()
       (define drv
@@ -308,7 +312,7 @@ system.")
       ;; expensive.  It also makes sure we get a valid Guix package when this
       ;; code is not running from a checkout.
       (parameterize ((current-guix-package
-                      (channel-instance->package instance)))
+                      (channel-source->package source #:commit commit)))
         (map ->job (all-system-tests)))
       '()))
 
