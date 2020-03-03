@@ -812,14 +812,6 @@ build---packages, gexps, derivations, and so on."
       (for-each validate-type lst)
       lst))
 
-  ;; Note: Taken from (guix scripts refresh).
-  (define (manifest->packages manifest)
-    "Return the list of packages in MANIFEST."
-    (filter-map (lambda (entry)
-                  (let ((item (manifest-entry-item entry)))
-                    (if (package? item) item #f)))
-                (manifest-entries manifest)))
-
   (append-map (match-lambda
                 (('argument . (? string? spec))
                  (cond ((derivation-path? spec)
@@ -844,8 +836,10 @@ build---packages, gexps, derivations, and so on."
                 (('file . file)
                  (ensure-list (load* file (make-user-module '()))))
                 (('manifest . manifest)
-                 (manifest->packages
-                  (load* manifest (make-user-module '((guix profiles) (gnu))))))
+                 (map manifest-entry-item
+                      (manifest-entries
+                       (load* manifest
+                              (make-user-module '((guix profiles) (gnu)))))))
                 (('expression . str)
                  (ensure-list (read/eval str)))
                 (('argument . (? derivation? drv))
