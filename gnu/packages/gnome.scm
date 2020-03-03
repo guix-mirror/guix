@@ -2074,7 +2074,7 @@ dealing with different structured file formats.")
 
 (define-public librsvg
   (package
-    (replacement "librsvg/fixed")
+    (replacement librsvg/fixed)
     (name "librsvg")
     (version "2.40.20")
     (source (origin
