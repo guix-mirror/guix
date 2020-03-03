@@ -11089,7 +11089,7 @@ import matplotlib
 matplotlib.use('Agg')
 " line)))
                ;; Make sure GESS has all modules in its path
-               (wrap-program (string-append target "GESS.py")
+               (wrap-script (string-append target "GESS.py")
                  `("PYTHONPATH" ":" = (,target ,(getenv "PYTHONPATH"))))
                (mkdir-p bin)
                (symlink (string-append target "GESS.py")
@@ -11101,7 +11101,8 @@ matplotlib.use('Agg')
        ("python2-scipy" ,python2-scipy)
        ("python2-numpy" ,python2-numpy)
        ("python2-networkx" ,python2-networkx)
-       ("python2-biopython" ,python2-biopython)))
+       ("python2-biopython" ,python2-biopython)
+       ("guile" ,guile-3.0))) ; for the script wrapper
     (home-page "https://compbio.uthscsa.edu/GESS_Web/")
     (synopsis "Detect exon-skipping events from raw RNA-seq data")
     (description
