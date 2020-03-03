@@ -8,7 +8,7 @@
 ;;; Copyright © 2014, 2016, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2018 Kyle Meyer <kyle@kyleam.com>
-;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -179,7 +179,7 @@ as well as the classic centralized workflow.")
       ("expat" ,expat)
       ("openssl" ,openssl)
       ("perl" ,perl)
-      ("python" ,python-2) ; CAVEAT: incompatible with python-3 according to INSTALL
+      ("python" ,python) ; for git-p4
       ("zlib" ,zlib)
 
       ;; Note: we keep this in inputs rather than native-inputs to work around
@@ -262,7 +262,7 @@ as well as the classic centralized workflow.")
           (lambda _
             (substitute* "Makefile"
               (("/usr/bin/perl") (which "perl"))
-              (("/usr/bin/python") (which "python")))
+              (("/usr/bin/python") (which "python3")))
             #t))
         (add-after 'configure 'add-PM.stamp
           (lambda _
