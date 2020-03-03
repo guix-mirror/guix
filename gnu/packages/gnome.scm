@@ -2354,7 +2354,7 @@ from forcing GEXP-PROMISE."
 (define-public librsvg-next
   (package
     (name "librsvg")
-    (version "2.46.3")
+    (version "2.46.4")
     (source librsvg-next-source)
     (build-system gnu-build-system)
     (arguments
