@@ -20399,6 +20399,31 @@ displayed against a dark background (Modus Vivendi).")
 color.  Designed for 256-color terminals.  Comes in light and dark!")
       (license license:gpl3+))))
 
+(define-public emacs-spacemacs-theme
+  (let ((commit "e088bff4f190495615c29de93079aaa823e2300c")
+        (revision "0"))
+    (package
+      (name "emacs-spacemacs-theme")
+      (version (git-version "0" revision commit)) ;no release yet
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/nashamri/spacemacs-theme.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "09p5pzy3ibrl8dxmg10v8j16wxdn1fkdqpbi8l9pgfib2azmnvnc"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/nashamri/spacemacs-theme")
+      (synopsis
+       "Light and dark theme for spacemacs that supports GUI and terminal")
+      (description
+       "Spacemacs theme is an Emacs color theme that started as
+a theme for Spacemacs.  The theme comes with dark and light variants
+and it should work well with 256 color terminals.")
+      (license license:gpl3+))))
+
 (define-public emacs-elixir-mode
   (package
     (name "emacs-elixir-mode")
