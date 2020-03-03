@@ -3055,17 +3055,17 @@ exec " gcc "/bin/" program
                                       (assoc-ref %build-inputs "flex") "/lib/")))))))
     (with-boot0 mig)))
 
-(define hurd-version-boot0 "0.9")
+(define hurd-version-boot0 "0.9-229-ga1efcee8")
 (define hurd-source-boot0
   (let ((version hurd-version-boot0))
     (bootstrap-origin
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://gnu/hurd/hurd-"
-                           version ".tar.gz"))
+       (uri (string-append "https://lilypond.org/janneke/hurd/"
+                           "hurd-v" version ".tar.gz"))
        (sha256
         (base32
-         "1nw9gly0n7pyv3cpfm4mmxy4yccrx4g0lyrvd3vk2vil26jpbggw"))))))
+         "0bq2q2jisxcy0kgcm6rz0z2fddwxxm7azsama7li28a2m08kdpzy"))))))
 
 (define hurd-headers-boot0
   (let ((hurd-headers (package (inherit hurd-headers)
