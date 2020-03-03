@@ -554,7 +554,7 @@ version)")
   ;; This package provides 32-bit dxvk libraries on 64-bit systems.
   (package
     (name "dxvk32")
-    (version "1.5.4")
+    (version "1.5.5")
     (home-page "https://github.com/doitsujin/dxvk/")
     (source (origin
               (method git-fetch)
@@ -564,7 +564,7 @@ version)")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0yhxd5rnn5mcvcb2n062z9wqqwxjq5c0rzfbjz1z9ppznj8gn37i"))))
+                "1inl0qswgvbp0fs76md86ilqf9mbshkpjm8ga81khn9zd6v3fvan"))))
     (build-system meson-build-system)
     (arguments
      `(#:system "i686-linux"
