@@ -2152,7 +2152,7 @@ from forcing GEXP-PROMISE."
                       #:guile-for-build guile)))
 
 (define librsvg-next-source
-  (let* ((version         "2.46.3")
+  (let* ((version         "2.46.4")
          (upstream-source (origin
                            (method url-fetch)
                            (uri (string-append "mirror://gnome/sources/librsvg/"
@@ -2160,7 +2160,7 @@ from forcing GEXP-PROMISE."
                                                "librsvg-" version ".tar.xz"))
                            (sha256
                             (base32
-                             "1s3a96i7f4pynjwxxvhysp4b6r7kyi8nasdxfyi62hc7gm34d3kn")))))
+                             "0afc82nsxc6kw136xid4vcq9kmq4rmgzzk8bh2pvln2cnvirwnxl")))))
     (origin
       (method computed-origin-method)
       (file-name (string-append "librsvg-" version ".tar.xz"))
@@ -2180,8 +2180,6 @@ from forcing GEXP-PROMISE."
               (with-directory-excursion (string-append "librsvg-" #$version)
                 ;; The following crate(s) are needed in addition to the ones replaced:
                 (begin
-                  (substitute* "rsvg_internals/Cargo.toml"
-                    (("\"=") "\""))
                   (invoke
                    "tar" "xvf" #+(package-source rust-autocfg-0.1) "-C" "vendor")
                   (invoke
@@ -2242,10 +2240,10 @@ from forcing GEXP-PROMISE."
 ;; gdk-pixbuf-sys 0.9
                     ("generic-array" . #+(package-source rust-generic-array-0.12))
 ;; gio 0.7
-;; gio-sys 0.9
+                    ("gio-sys" . #+(package-source rust-gio-sys-0.9))
 ;; glib 0.8
-;; glib-sys 0.9
-;; gobject-sys 0.9
+                    ("glib-sys" . #+(package-source rust-glib-sys-0.9))
+                    ("gobject-sys" . #+(package-source rust-gobject-sys-0.9))
                     ("idna" . #+(package-source rust-idna-0.2))
                     ("itertools" . #+(package-source rust-itertools-0.8))
                     ("itoa" . #+(package-source rust-itoa-0.4))
@@ -2253,7 +2251,7 @@ from forcing GEXP-PROMISE."
                     ("lazy_static" . #+(package-source rust-lazy-static-1))
                     ("libc" . #+(package-source rust-libc-0.2))
                     ("libm" . #+(package-source rust-libm-0.1))
-;; locale_config 0.3
+                    ("locale_config" . #+(package-source rust-locale-config-0.3))
                     ("log" . #+(package-source rust-log-0.4))
                     ("mac" . #+(package-source rust-mac-0.1))
                     ("malloc_buf" . #+(package-source rust-malloc-buf-0.0))
@@ -2372,6 +2370,8 @@ from forcing GEXP-PROMISE."
              (use-modules (guix build cargo-utils))
              (substitute* "librsvg/Cargo.toml"
                (("bitflags .*") "bitflags = \"1\"\n")) ; 1.2 is vendored
+             (substitute* "rsvg_internals/Cargo.toml"
+               (("\"=") "\""))
              (generate-all-checksums "vendor")
              (delete-file "Cargo.lock")
              (invoke "cargo" "generate-lockfile")))
