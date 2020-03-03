@@ -392,7 +392,7 @@ using libspectre.")
 (define-public zathura-djvu
   (package
     (name "zathura-djvu")
-    (version "0.2.8")
+    (version "0.2.9")
     (source (origin
               (method url-fetch)
               (uri
@@ -400,7 +400,7 @@ using libspectre.")
                               version ".tar.xz"))
               (sha256
                (base32
-                "0axkv1crdxn0z44whaqp2ibkdqcykhjnxk7qzms0dp1b67an9rnh"))))
+                "0062n236414db7q7pnn3ccg5111ghxj3407pn9ri08skxskgirln"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("djvulibre" ,djvulibre)
