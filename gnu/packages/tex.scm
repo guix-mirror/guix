@@ -255,7 +255,8 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
                       "03vc88dz37mjjyaspzv0fik2fp5gp8qv82114869akd1dhszbaax")
           (search-patch "texlive-bin-poppler-0.83.patch")
           (arch-patch "texlive-poppler-0.84.patch" arch-revision
-                      "1ia6cr99krk4ipx4hdi2qdb98bh2h26mckjlpxdzrjnfhlnghksa"))))
+                      "1ia6cr99krk4ipx4hdi2qdb98bh2h26mckjlpxdzrjnfhlnghksa")
+          (search-patch "texlive-bin-poppler-0.86.patch"))))
       (modules '((guix build utils)
                  (ice-9 ftw)))
       (snippet

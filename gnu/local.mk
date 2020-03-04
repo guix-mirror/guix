@@ -1438,6 +1438,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/teensy-loader-cli-help.patch		\
   %D%/packages/patches/texinfo-5-perl-compat.patch		\
   %D%/packages/patches/texlive-bin-poppler-0.83.patch		\
+  %D%/packages/patches/texlive-bin-poppler-0.86.patch		\
   %D%/packages/patches/telegram-purple-adjust-test.patch	\
   %D%/packages/patches/telepathy-glib-channel-memory-leak.patch	\
   %D%/packages/patches/texi2html-document-encoding.patch	\
