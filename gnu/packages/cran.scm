@@ -7180,13 +7180,13 @@ and coverage methods to tune the choice of threshold.")
 (define-public r-ggformula
   (package
     (name "r-ggformula")
-    (version "0.9.3")
+    (version "0.9.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggformula" version))
        (sha256
-        (base32 "1bpsfp9hx001r91pxfiwgxcn5vw5bl1gclb865wz6g9l0jqjfk2p"))))
+        (base32 "04vdhg1bbc1psrx9ggaphz7cx4fw5xsmhkqpqfcg2w4ba2bjy46f"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggforce" ,r-ggforce)
@@ -7196,8 +7196,7 @@ and coverage methods to tune the choice of threshold.")
        ("r-mosaiccore" ,r-mosaiccore)
        ("r-rlang" ,r-rlang)
        ("r-stringr" ,r-stringr)
-       ("r-tibble" ,r-tibble)
-       ("r-tidyr" ,r-tidyr)))
+       ("r-tibble" ,r-tibble)))
     (home-page "https://github.com/ProjectMOSAIC/ggformula/")
     (synopsis "Formula interface for the @code{r-ggplot2}")
     (description
