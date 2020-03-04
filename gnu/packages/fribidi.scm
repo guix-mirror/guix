@@ -28,16 +28,16 @@
 (define-public fribidi
   (package
     (name "fribidi")
-    (version "1.0.8")
+    (version "1.0.9")
     (source
       (origin
         (method url-fetch)
         (uri
          (string-append "https://github.com/fribidi/fribidi/releases"
                         "/download/v" version "/fribidi-" version
-                         ".tar.bz2"))
+                         ".tar.xz"))
         (sha256
-         (base32 "0v0ybhck9vz4yayihydknmikslh3xfxygzywnh9rcamdhs6vdiwl"))))
+         (base32 "1iz06r6ha2nrgbzbn4141r58a60a9s5qiaadjjhhvdkg0alpxr65"))))
     (build-system gnu-build-system)
     (synopsis "Implementation of the Unicode bidirectional algorithm")
     (description
