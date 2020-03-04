@@ -1282,13 +1282,13 @@ manipulating PDF documents from the command line.  It supports
 (define-public weasyprint
   (package
     (name "weasyprint")
-    (version "50")
+    (version "51")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "WeasyPrint" version))
        (sha256
-        (base32 "0invs96zvmcr6wh5klj52jrcnr9qg150v9wpmbhcsf3vv1d1hbcw"))
+        (base32 "0skdzwq7cd715dnnds6abx0k0xmmnmsqp0vb1r1w20sg7abp3sdk"))
        (patches (search-patches "weasyprint-library-paths.patch"))))
     (build-system python-build-system)
     (arguments
@@ -1316,11 +1316,11 @@ manipulating PDF documents from the command line.  It supports
            (lambda _
              (substitute* "setup.cfg"
                ;; flake8 and isort syntax checks fail, which is not our
-               ;; business
+               ;; business.
                (("addopts = --flake8 --isort") ""))))
          (replace 'check
            (lambda _
-             ;; run pytest, excluding one failing test
+             ;; Run pytest, excluding one failing test.
              (invoke "pytest" "-k" "not test_flex_column_wrap_reverse"))))))
     (inputs
      `(("fontconfig" ,fontconfig)
