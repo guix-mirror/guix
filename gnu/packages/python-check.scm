@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
@@ -30,6 +30,7 @@
   #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix git-download)
   #:use-module (guix download)
   #:use-module (guix build-system python))
 
@@ -107,6 +108,37 @@ If the server you are testing against ever changes its API, all you need to do
 is delete your existing cassette files, and run your tests again.  VCR.py will
 detect the absence of a cassette file and once again record all HTTP
 interactions, which will update them to correspond to the new API.")
+    (license license:expat)))
+
+(define-public python-pytest-vcr
+  (package
+    (name "python-pytest-vcr")
+    (version "1.0.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/ktosiek/pytest-vcr")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1i6fin91mklvbi8jzfiswvwf1m91f43smpj36a17xrzk4gisfs6i"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "tests/"))))))
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-vcrpy" ,python-vcrpy)))
+    (home-page "https://github.com/ktosiek/pytest-vcr")
+    (synopsis "Plugin for managing VCR.py cassettes")
+    (description
+     "Plugin for managing VCR.py cassettes.")
     (license license:expat)))
 
 (define-public python-pytest-checkdocs
