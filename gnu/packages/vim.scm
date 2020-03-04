@@ -469,28 +469,14 @@ trouble using them, because you do not have to remember each snippet name.")
         (sha256
          (base32
           "1jbn5jxadccmcz01j94d0i1bp74cixr0fpxxf1h0aqdf1ljk3d7n"))))
-    (build-system gnu-build-system)
+    (build-system copy-build-system)
     (arguments
-     '(#:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (delete 'build)
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (vimfiles (string-append out "/share/vim/vimfiles"))
-                    (autoload (string-append vimfiles "/autoload"))
-                    (doc      (string-append vimfiles "/doc"))
-                    (ftdetect (string-append vimfiles "/ftdetect"))
-                    (plugin   (string-append vimfiles "/plugin"))
-                    (syntax   (string-append vimfiles "/syntax")))
-               (copy-recursively "autoload" autoload)
-               (copy-recursively "doc" doc)
-               (copy-recursively "ftdetect" ftdetect)
-               (copy-recursively "plugin" plugin)
-               (copy-recursively "syntax" syntax)
-               #t))))))
+     '(#:install-plan
+       '(("autoload" "share/vim/vimfiles/")
+         ("doc" "share/vim/vimfiles/")
+         ("ftdetect" "share/vim/vimfiles/")
+         ("plugin" "share/vim/vimfiles/")
+         ("syntax" "share/vim/vimfiles/"))))
     (home-page "https://github.com/tpope/vim-fugitive")
     (synopsis "Vim plugin to work with Git")
     (description "Vim-fugitive is a wrapper for Vim that complements the
