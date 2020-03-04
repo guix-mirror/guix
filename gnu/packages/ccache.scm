@@ -44,11 +44,11 @@
     (inputs `(("zlib" ,zlib)))
     (arguments
      '(#:phases (modify-phases %standard-phases
-                 (add-before 'check 'setup-tests
-                   (lambda _
-                     (substitute* '("unittest/test_hashutil.c" "test/suites/base.bash")
-                       (("#!/bin/sh") (string-append "#!" (which "sh"))))
-                     #t)))))
+                  (add-before 'check 'setup-tests
+                    (lambda _
+                      (substitute* '("unittest/test_hashutil.c" "test/suites/base.bash")
+                        (("#!/bin/sh") (string-append "#!" (which "sh"))))
+                      #t)))))
     (home-page "https://ccache.dev/")
     (synopsis "Compiler cache")
     (description
