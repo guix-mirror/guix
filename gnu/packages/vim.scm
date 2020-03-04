@@ -321,20 +321,10 @@ features than Vim's built-in completion.")
          (sha256
           (base32
            "151wpvbj6jb9jdkbhj3b77f5sq7y328spvwfbqyj1y32rg4ifmc6"))))
-      (build-system gnu-build-system)
+      (build-system copy-build-system)
       (arguments
-       `(#:tests? #f
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (delete 'build)
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (vimfiles (string-append out "/share/vim/vimfiles")))
-                 (copy-recursively "neosnippets"
-                                   (string-append vimfiles "/neosnippets"))
-               #t))))))
+       '(#:install-plan
+         '(("neosnippets" "share/vim/vimfiles/"))))
     (synopsis "Snippets for neosnippet")
     (description
      "@code{neosnippet-snippets} provides standard snippets for the Vim plugin
