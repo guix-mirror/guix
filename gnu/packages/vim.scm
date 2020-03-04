@@ -530,24 +530,12 @@ and powerline symbols, etc.")
          (sha256
           (base32
            "1sb7nb7j7bz0pv1c9bgdy0smhr0jk2b1vbdv9yzghg5lrknpsbr6"))))
-      (build-system gnu-build-system)
+      (build-system copy-build-system)
       (arguments
-       `(#:tests? #f
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (delete 'build)
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (vimfiles (string-append out "/share/vim/vimfiles"))
-                      (doc (string-append vimfiles "/doc"))
-                      (plugin (string-append vimfiles "/plugin"))
-                      (autoload (string-append vimfiles "/autoload")))
-                 (copy-recursively "doc" doc)
-                 (copy-recursively "autoload" autoload)
-                 (copy-recursively "plugin" plugin)
-                 #t))))))
+       '(#:install-plan
+         '(("autoload" "share/vim/vimfiles/")
+           ("doc" "share/vim/vimfiles/")
+           ("plugin" "share/vim/vimfiles/"))))
       (synopsis "Collection of themes for Vim-airline")
       (description
        "@code{vim-airline-themes} is a collection of themes for @code{vim-airline}.")
