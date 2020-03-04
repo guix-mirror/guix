@@ -589,30 +589,20 @@ are detected, the user is notified.")
         (snippet
          '(begin
             (delete-file-recursively "plugin/editorconfig-core-py") #t))))
-    (build-system gnu-build-system)
+    (build-system copy-build-system)
     (arguments
-     '(#:tests? #f ; tests require ruby and plugin-test repository
-       #:phases
+     '(#:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (delete 'build)
          (add-after 'unpack 'patch-editorconfig-path
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((editorconfig (assoc-ref inputs "editorconfig-core")))
                (substitute* "plugin/editorconfig.vim"
                  (("/opt") editorconfig))
-               #t)))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (vimfiles (string-append out "/share/vim/vimfiles"))
-                    (doc (string-append vimfiles "/doc"))
-                    (plugin (string-append vimfiles "/plugin"))
-                    (autoload (string-append vimfiles "/autoload")))
-               (copy-recursively "doc" doc)
-               (copy-recursively "autoload" autoload)
-               (copy-recursively "plugin" plugin)
-               #t))))))
+               #t))))
+       #:install-plan
+       '(("autoload" "share/vim/vimfiles/")
+         ("doc" "share/vim/vimfiles/")
+         ("plugin" "share/vim/vimfiles/"))))
     (inputs
      `(("editorconfig-core" ,editorconfig-core-c)))
     (home-page "https://editorconfig.org/")
