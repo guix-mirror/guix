@@ -120,17 +120,10 @@ Unicode Technological Standard #51.")
        (sha256
         (base32
          "0hxsc3j5zb32hmiaj0r3ajchmklx6zng6zlh1ca6s9plq5b9w9q7"))))
-    (build-system trivial-build-system)
+    (build-system copy-build-system)
     (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (let ((out (string-append %output "/share/unicode/cldr/common")))
-         (use-modules (guix build utils))
-         (mkdir-p out)
-         (copy-recursively (string-append (assoc-ref %build-inputs "source")
-                                          "/common")
-                           out)
-         #t)))
+     '(#:install-plan
+       '(("common" "share/unicode/cldr/"))))
     (home-page "https://www.unicode.org")
     (synopsis "Locale data repository")
     (description
