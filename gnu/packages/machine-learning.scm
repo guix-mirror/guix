@@ -798,7 +798,7 @@ computing environments.")
 (define-public python-scikit-learn
   (package
     (name "python-scikit-learn")
-    (version "0.20.4")
+    (version "0.22.1")
     (source
      (origin
        (method git-fetch)
@@ -808,7 +808,7 @@ computing environments.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "08zbzi8yx5wdlxfx9jap61vg1malc9ajf576w7a0liv6jvvrxlpj"))))
+         "1xqxv210gsmjw094vc5ghq2y9lmm74qkk22pq6flcjzj51b86jxf"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -835,7 +835,8 @@ computing environments.")
     (inputs
      `(("openblas" ,openblas)))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
+     `(("python-joblib" ,python-joblib)
+       ("python-pytest" ,python-pytest)
        ("python-pandas" ,python-pandas) ;for tests
        ("python-cython" ,python-cython)))
     (propagated-inputs
