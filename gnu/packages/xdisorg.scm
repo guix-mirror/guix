@@ -33,6 +33,7 @@
 ;;; Copyright © 2020 David Wilson <david@daviwil.com>
 ;;; Copyright © 2020 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Damien Cassou <damien@cassou.me>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2116,3 +2117,50 @@ font and theme settings when a complete desktop environment (GNOME, KDE) is
 not running.  With a simple @file{.xsettingsd} configuration file one can avoid
 configuring visual settings in different UI toolkits separately.")
     (license license:bsd-3)))
+
+(define-public clipnotify
+  (package
+    (name "clipnotify")
+    (version "1.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cdown/clipnotify.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1v3ydm5ljy8z1savmdxrjyx7a5bm5013rzw80frp3qbbjaci0wbg"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (bin  (string-append out "/bin"))
+                    (doc  (string-append %output "/share/doc/" ,name "-" ,version)))
+               (install-file "clipnotify" bin)
+               (install-file "README.md" doc)
+               #t))))
+       #:make-flags (list "CC=gcc")
+       #:tests? #f))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libXfixes" ,libxfixes)))
+    (home-page "https://github.com/cdown/clipnotify")
+    (synopsis "Notify on new X clipboard events")
+    (description "@command{clipnotify} is a simple program that, using the
+XFIXES extension to X11, waits until a new selection is available and then
+exits.
+
+It was primarily designed for clipmenu, to avoid polling for new selections.
+
+@command{clipnotify} doesn't try to print anything about the contents of the
+selection, it just exits when it changes.  This is intentional -- X11's
+selection API is verging on the insane, and there are plenty of others who
+have already lost their sanity to bring us xclip/xsel/etc.  Use one of those
+tools to complement clipnotify.")
+    (license license:public-domain)))
