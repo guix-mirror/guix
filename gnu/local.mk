@@ -759,6 +759,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/beignet-correct-file-names.patch		\
   %D%/packages/patches/benchmark-unbundle-googletest.patch	\
   %D%/packages/patches/biber-fix-encoding-write.patch		\
+  %D%/packages/patches/bidiv-update-fribidi.patch		\
   %D%/packages/patches/binutils-boot-2.20.1a.patch		\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
   %D%/packages/patches/blender-2.79-newer-ffmpeg.patch		\
