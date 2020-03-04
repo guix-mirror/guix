@@ -11985,14 +11985,14 @@ users of rARPACK are advised to switch to the RSpectra package.")
 (define-public r-compositions
   (package
     (name "r-compositions")
-    (version "1.40-3")
+    (version "1.40-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "compositions" version))
        (sha256
         (base32
-         "103hbmibrf1n333pn4xpll1gqqsv4szms0n5gdq7zak31aar0bg4"))))
+         "0z40llyij3cc80ac1vzzrpykk6ysp89bn6dyyh40fbnc4anwx69a"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bayesm" ,r-bayesm)
