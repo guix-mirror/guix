@@ -1092,7 +1092,7 @@ persisted.
 (define-public java-jmapviewer
   (package
     (name "java-jmapviewer")
-    (version "2.12")
+    (version "2.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://svn.openstreetmap.org/applications/"
@@ -1100,7 +1100,7 @@ persisted.
                                   "/JMapViewer-" version "-Source.zip"))
               (sha256
                (base32
-                "08hbqsbs859v4m5d90560fdifavd1apnpz9v9iry1v31dsvy5707"))))
+                "0sy6r5fkbb9bclw0is6gwnbzz627m7pjfnsqydxz58pbndakkhrv"))))
     (build-system ant-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
