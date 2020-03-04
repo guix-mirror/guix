@@ -555,26 +555,13 @@ and powerline symbols, etc.")
        (file-name (git-file-name name version))
        (sha256
         (base32 "0j91f72jaz1s6aw1hpjiz30vk2ds2aqd9gisk91grsldy6nz6hhz"))))
-    (build-system gnu-build-system)
+    (build-system copy-build-system)
     (arguments
-     `(#:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (delete 'build)
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (vimfiles (string-append out "/share/vim/vimfiles"))
-                    (doc (string-append vimfiles "/doc"))
-                    (plugin (string-append vimfiles "/plugin"))
-                    (autoload (string-append vimfiles "/autoload"))
-                    (syntax-checkers (string-append vimfiles "/syntax_checkers")))
-               (copy-recursively "doc" doc)
-               (copy-recursively "autoload" autoload)
-               (copy-recursively "plugin" plugin)
-               (copy-recursively "syntax_checkers" syntax-checkers)
-               #t))))))
+     '(#:install-plan
+       '(("autoload" "share/vim/vimfiles/")
+         ("doc" "share/vim/vimfiles/")
+         ("plugin" "share/vim/vimfiles/")
+         ("syntax_checkers" "share/vim/vimfiles/"))))
     (synopsis "Syntax checking plugin for Vim")
     (description
      "Vim-syntastic is a syntax checking plugin for Vim.  It runs files through
@@ -642,24 +629,11 @@ editors.")
     (inherit vim-syntastic)
     (name "neovim-syntastic")
     (arguments
-     `(#:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (delete 'build)
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (vimfiles (string-append out "/share/nvim/site"))
-                    (doc (string-append vimfiles "/doc"))
-                    (plugin (string-append vimfiles "/plugin"))
-                    (autoload (string-append vimfiles "/autoload"))
-                    (syntax-checkers (string-append vimfiles "/syntax_checkers")))
-               (copy-recursively "doc" doc)
-               (copy-recursively "autoload" autoload)
-               (copy-recursively "plugin" plugin)
-               (copy-recursively "syntax_checkers" syntax-checkers)
-               #t))))))
+     '(#:install-plan
+       '(("autoload" "share/nvim/site/")
+         ("doc" "share/nvim/site/")
+         ("plugin" "share/nvim/site/")
+         ("syntax_checkers" "share/nvim/site/"))))
     (synopsis "Syntax checking plugin for Neovim")
     (description
      "Vim-syntastic is a syntax checking plugin for Neovim.  It runs files through
