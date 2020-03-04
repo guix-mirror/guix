@@ -1450,6 +1450,28 @@ libraries to load configuration data from multiple different file formats.  It
 supports XML, YAML, JSON, Apache-style configuration, and Perl code.")
     (license (package-license perl))))
 
+(define-public perl-config-inifiles
+  (package
+    (name "perl-config-inifiles")
+    (version "3.000002")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://cpan.metacpan.org/authors/id/S/SH/SHLOMIF/"
+                           "Config-IniFiles-" version ".tar.gz"))
+       (sha256
+        (base32 "02dsz3inh5jwgaxmbcz8qxwgin8mkhm6vj9jyzfmm3dr5pnxcbnr"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-io-stringy",perl-io-stringy)))
+    (home-page "https://metacpan.org/pod/Config::IniFiles")
+    (synopsis "Package for configuration files outside your Perl script")
+    (description "This package provides a way to have readable configuration
+files outside your Perl script.  Configurations can be imported, sections
+can be grouped, and settings can be accessed from a tied hash.")
+    (license (package-license perl))))
+
 (define-public perl-config-autoconf
   (package
     (name "perl-config-autoconf")
