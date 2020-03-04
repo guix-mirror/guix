@@ -34,6 +34,7 @@
 ;;; Copyright © 2019 Steve Sprang <scs@stevesprang.com>
 ;;; Copyright © 2019 Robert Smith <robertsmith@posteo.net>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Felix Gruber <felgru@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3405,16 +3406,18 @@ Fresnel integrals, and similar related functions as well.")
 (define-public suitesparse
   (package
     (name "suitesparse")
-    (version "4.5.5")
+    (version "5.7.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "http://faculty.cse.tamu.edu/davis/SuiteSparse/SuiteSparse-"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/DrTimothyAldenDavis/SuiteSparse.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1dnr6pmjzc2qmbkmb4shigx1l74ilf6abn7svyd6brxgvph8vadr"))
+         "174p3l78kv9gaa0i5hflyai2ydwnjzh34k9938sl4aa3li0543s8"))
+       (patches (search-patches "suitesparse-mongoose-cmake.patch"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled metis source
@@ -3429,6 +3432,14 @@ Fresnel integrals, and similar related functions as well.")
              "BLAS=-lblas"
              "TBB=-ltbb"
              "MY_METIS_LIB=-lmetis"
+             ;; Flags for cmake (required to build GraphBLAS and Mongoose)
+             (string-append "CMAKE_OPTIONS=-DCMAKE_INSTALL_PREFIX="
+                            (assoc-ref %outputs "out")
+                            " -DCMAKE_VERBOSE_MAKEFILE=ON"
+                            " -DCMAKE_C_FLAGS_RELEASE=\"$(CFLAGS) $(CPPFLAGS)\""
+                            " -DCMAKE_CXX_FLAGS_RELEASE=\"$(CXXFLAGS) $(CPPFLAGS)\""
+                            " -DCMAKE_SKIP_RPATH=TRUE"
+                            " -DCMAKE_BUILD_TYPE=Release")
              (string-append "INSTALL_LIB="
                             (assoc-ref %outputs "out") "/lib")
              (string-append "INSTALL_INCLUDE="
@@ -3441,6 +3452,9 @@ Fresnel integrals, and similar related functions as well.")
      `(("tbb" ,tbb)
        ("lapack" ,lapack)
        ("metis" ,metis)))
+    (native-inputs
+     `(("cmake" ,cmake)
+       ("m4" ,m4)))
     (home-page "http://faculty.cse.tamu.edu/davis/suitesparse.html")
     (synopsis "Suite of sparse matrix software")
     (description

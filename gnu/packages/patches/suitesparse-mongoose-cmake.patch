@@ -1,0 +1,27 @@
+Fix required by suitesparse to build Mongoose
+
+The CMakeLists.txt of Mongoose assumes that SuiteSparse_config has been
+installed into the suitesparse source directory, which is not the case
+for us, as we are building suitesparse out-of-tree.
+
+SuiteSparse_config can instead be found in the ${CMAKE_INSTALL_PREFIX}
+directory.
+
+diff --git a/Mongoose/CMakeLists.txt b/Mongoose/CMakeLists.txt
+index 7e134ab..76fa9e2 100644
+--- a/Mongoose/CMakeLists.txt
++++ b/Mongoose/CMakeLists.txt
+@@ -148,10 +148,10 @@ set(CMAKE_CXX_STANDARD 11)
+ #set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+ # determine which SuiteSparse_config to use
+-if (EXISTS ${PROJECT_SOURCE_DIR}/../SuiteSparse_config)
+-    message(STATUS "External ../SuiteSparse_config" ${BoldBlue} " found" ${ColourReset} ".")
++if (EXISTS ${CMAKE_INSTALL_PREFIX})
++    message(STATUS "External SuiteSparse_config" ${BoldBlue} " found" ${ColourReset} ".")
+     set ( SUITESPARSE_CONFIG_DIR ${PROJECT_SOURCE_DIR}/../SuiteSparse_config )
+-    link_directories ( ${PROJECT_SOURCE_DIR}/../lib )
++    link_directories ( ${CMAKE_INSTALL_PREFIX}/lib )
+     message ( STATUS "Note: ../SuiteSparse_config must be compiled before compiling Mongoose" )
+     set ( SUITESPARSE_CONFIG_LIBRARY suitesparseconfig )
+ else ()
