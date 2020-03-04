@@ -20135,20 +20135,22 @@ Latent regression models and plausible value imputation are also supported.")
 (define-public r-erm
   (package
     (name "r-erm")
-    (version "1.0-0")
+    (version "1.0-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "eRm" version))
        (sha256
         (base32
-         "11p8j61arq1ih2qi33wf0442vcdbp3zvknzm5aknsifwl4mbzzly"))))
+         "0njqzznnhnkvalmhiq5yq1w7gwp2myki5cv61w42ydvd27hdyyg9"))))
     (properties `((upstream-name . "eRm")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-lattice" ,r-lattice)
+     `(("r-colorspace" ,r-colorspace)
+       ("r-lattice" ,r-lattice)
        ("r-mass" ,r-mass)
-       ("r-matrix" ,r-matrix)))
+       ("r-matrix" ,r-matrix)
+       ("r-psych" ,r-psych)))
     (native-inputs `(("gfortran" ,gfortran)))
     (home-page "https://cran.r-project.org/package=eRm")
     (synopsis "Extended Rasch modeling")
