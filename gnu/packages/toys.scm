@@ -2,6 +2,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Jesse Gibbons <jgibbons2357+guix@gmail.com>
 ;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -200,3 +201,38 @@ The GNU project hosts a similar collection of filters, the GNU talkfilters.")
 the desktop background.  Additional customizable effects include wind, stars
 and various scenery elements.")
     (license license:gpl3+)))
+
+(define-public nyancat
+  (package
+    (name "nyancat")
+    (version "1.5.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/klange/nyancat")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1mg8nm5xzcq1xr8cvx24ym2vmafkw53rijllwcdm9miiz0p5ky9k"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags '("CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; no configure script
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man (string-append out "/share/man/man1")))
+               (install-file "src/nyancat" bin)
+               (install-file "nyancat.1" man))
+             #t)))))
+    (home-page "https://nyancat.dakko.us/")
+    (synopsis "Nyan cat telnet server")
+    (description
+     "This is an animated, color, ANSI-text telnet server that renders a loop
+of the Nyan Cat / Poptart Cat animation.")
+    (license license:ncsa)))
