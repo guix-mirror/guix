@@ -827,7 +827,7 @@ implementation of SSL.")
      `(("ghc-hunit" ,ghc-hunit)
        ("ghc-test-framework" ,ghc-test-framework)
        ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
-    (home-page "http://hackage.haskell.org/package/openssl-streams")
+    (home-page "https://hackage.haskell.org/package/openssl-streams")
     (synopsis "OpenSSL network support for io-streams")
     (description "This library contains io-streams routines for secure
 networking using OpenSSL (by way of HsOpenSSL).")

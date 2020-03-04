@@ -15,7 +15,7 @@
 ;;; Copyright © 2016 Patrick Hetu <patrick.hetu@auf.org>
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -1019,7 +1019,7 @@ images onto Cairo surfaces.")
      `(("guile-lib" ,guile-lib)
        ("guile-cairo" ,guile-cairo)
        ("guile-rsvg" ,guile-rsvg)))
-    (home-page "http://wingolog.org/software/guile-present/")
+    (home-page "https://wingolog.org/software/guile-present/")
     (synopsis "Create SVG or PDF presentations in Guile")
     (description
      "Guile-Present defines a declarative vocabulary for presentations,
@@ -1491,7 +1491,7 @@ and routines to assist in editing internationalized text.")
 (define-public girara
   (package
     (name "girara")
-    (version "0.3.3")
+    (version "0.3.4")
     (source
      (origin
        (method git-fetch)
@@ -1500,7 +1500,7 @@ and routines to assist in editing internationalized text.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0q0yfv2777s72p473lw0ll435n7vz4v204cmp9naq8am7a6i6avn"))))
+        (base32 "08rpw9hkaprm4r853xy1d35i2af1pji8c3mzzl01mmwmyr9p0x8k"))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("check" ,check)
                      ("gettext" ,gettext-minimal)

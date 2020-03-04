@@ -274,6 +274,33 @@ trigger string @code{origin...}, which can be expanded further.  The
 @code{origin} snippet in turn may insert other trigger strings ending on
 @code{...}, which also can be expanded further.
 
+@cindex insert or update copyright
+@cindex @code{M-x guix-copyright}
+@cindex @code{M-x copyright-update}
+Additionaly we provide insertion and automatic update of a copyright in
+@file{etc/copyright.el}.  You may want to set your full name, mail, and
+load a file.
+
+@lisp
+(setq user-full-name "Alice Doe")
+(setq user-mail-address "alice@@mail.org")
+;; @r{Assuming the Guix checkout is in ~/src/guix.}
+(load-file "~/src/guix/etc/copyright.el")
+@end lisp
+
+To insert a copyright at the current line invoke @code{M-x guix-copyright}.
+
+To update a copyright you need to specify a @code{copyright-names-regexp}.
+
+@lisp
+(setq copyright-names-regexp
+      (format "%s <%s>" user-full-name user-mail-address))
+@end lisp
+
+You can check if your copyright is up to date by evaluating @code{M-x
+copyright-update}.  If you want to do it automatically after each buffer
+save then add @code{(add-hook 'after-save-hook 'copyright-update)} in
+Emacs.
 
 @node Packaging Guidelines
 @section Packaging Guidelines
@@ -347,6 +374,7 @@ needed is to review and apply the patch.
 * Python Modules::              A touch of British comedy.
 * Perl Modules::                Little pearls.
 * Java Packages::               Coffee break.
+* Rust Crates::                 Beware of oxidation.
 * Fonts::                       Fond of fonts.
 @end menu
 
@@ -683,6 +711,40 @@ we use the lowercase class name, replace all occurrences of @code{.} by
 dashes and prepend the prefix @code{java-}.  So the class
 @code{apache.commons.cli} becomes package
 @code{java-apache-commons-cli}.
+
+
+@node Rust Crates
+@subsection Rust Crates
+
+@cindex rust
+Rust programs standing for themselves are named as any other package, using the
+lowercase upstream name.
+
+To prevent namespace collisions we prefix all other Rust packages with the
+@code{rust-} prefix.  The name should be changed to lowercase as appropriate and
+dashes should remain in place.
+
+In the rust ecosystem it is common for multiple incompatible versions of a
+package to be used at any given time, so all packages should have a versioned
+suffix.  If a package has passed version 1.0.0 then just the major version
+number is sufficient (e.g.@: @code{rust-clap-2}), otherwise the version suffix
+should contain both the major and minor version (e.g.@: @code{rust-rand-0.6}).
+
+Because of the difficulty in reusing rust packages as pre-compiled inputs for
+other packages the Cargo build system (@pxref{Build Systems,
+@code{cargo-build-system}}) presents the @code{#:cargo-inputs} and
+@code{cargo-development-inputs} keywords as build system arguments.  It would be
+helpful to think of these as similar to @code{propagated-inputs} and
+@code{native-inputs}.  Rust @code{dependencies} and @code{build-dependencies}
+should go in @code{#:cargo-inputs}, and @code{dev-dependencies} should go in
+@code{#:cargo-development-inputs}.  If a Rust package links to other libraries
+then the standard placement in @code{inputs} and the like should be used.
+
+Care should be taken to ensure the correct version of dependencies are used; to
+this end we try to refrain from skipping the tests or using @code{#:skip-build?}
+when possible.  Of course this is not always possible, as the package may be
+developed for a different Operating System, depend on features from the Nightly
+Rust compiler, or the test suite may have atrophied since it was released.
 
 
 @node Fonts

@@ -517,12 +517,7 @@ list of services."
               (cond ((uuid? root-device) 0)
                     ((file-system-label? root-device) 1)
                     (else 2))
-              (cond ((uuid? root-device)
-                     (uuid->string root-device))
-                    ((file-system-label? root-device)
-                     (file-system-label->string root-device))
-                    (else
-                     root-device)))
+              (file-system-device->string root-device))
 
       (format #t (G_ "  kernel: ~a~%") kernel)
 
@@ -571,6 +566,8 @@ any, are available.  Raise an error if they're not."
               (and (file-system-mount? fs)
                    (not (member (file-system-type fs)
                                 %pseudo-file-system-types))
+                   ;; Don't try to validate network file systems.
+                   (not (string-prefix? "nfs" (file-system-type fs)))
                    (not (memq 'bind-mount (file-system-flags fs)))))
             file-systems))
 

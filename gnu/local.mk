@@ -622,6 +622,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests.scm					\
   %D%/tests/audio.scm				\
   %D%/tests/base.scm				\
+  %D%/tests/cups.scm				\
   %D%/tests/databases.scm			\
   %D%/tests/desktop.scm				\
   %D%/tests/dict.scm				\
@@ -719,7 +720,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/antiword-CVE-2014-8123.patch			\
   %D%/packages/patches/antlr3-3_1-fix-java8-compilation.patch	\
   %D%/packages/patches/antlr3-3_3-fix-java8-compilation.patch	\
-  %D%/packages/patches/appstream-glib-2020.patch		\
   %D%/packages/patches/apr-skip-getservbyname-test.patch	\
   %D%/packages/patches/arm-trusted-firmware-disable-hdcp.patch	\
   %D%/packages/patches/aspell-default-dict-dir.patch		\
@@ -771,11 +771,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/catdoc-CVE-2017-11110.patch		\
   %D%/packages/patches/cdparanoia-fpic.patch			\
   %D%/packages/patches/cdrtools-3.01-mkisofs-isoinfo.patch 	\
-  %D%/packages/patches/ceph-boost-compat.patch			\
   %D%/packages/patches/ceph-disable-cpu-optimizations.patch	\
-  %D%/packages/patches/ceph-volume-respect-PATH.patch		\
   %D%/packages/patches/chmlib-inttypes.patch			\
-  %D%/packages/patches/choqok-Fix-building-under-Qt-5.13.patch	\
   %D%/packages/patches/clamav-config-llvm-libs.patch		\
   %D%/packages/patches/clamav-system-tomsfastmath.patch		\
   %D%/packages/patches/clang-3.5-libc-search-path.patch		\
@@ -783,6 +780,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/clang-3.8-libc-search-path.patch		\
   %D%/packages/patches/clang-6.0-libc-search-path.patch		\
   %D%/packages/patches/clang-7.0-libc-search-path.patch		\
+  %D%/packages/patches/clang-9.0-libc-search-path.patch		\
   %D%/packages/patches/clang-runtime-asan-build-fixes.patch	\
   %D%/packages/patches/clang-runtime-esan-build-fixes.patch	\
   %D%/packages/patches/classpath-aarch64-support.patch		\
@@ -795,6 +793,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/coda-use-system-libs.patch		\
   %D%/packages/patches/combinatorial-blas-awpm.patch		\
   %D%/packages/patches/combinatorial-blas-io-fix.patch		\
+  %D%/packages/patches/containerd-test-with-go1.13.patch		\
   %D%/packages/patches/cpufrequtils-fix-aclocal.patch		\
   %D%/packages/patches/crawl-upgrade-saves.patch		\
   %D%/packages/patches/crda-optional-gcrypt.patch		\
@@ -814,6 +813,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/debops-constants-for-external-program-names.patch \
   %D%/packages/patches/debops-debops-defaults-fall-back-to-less.patch \
   %D%/packages/patches/deja-dup-use-ref-keyword-for-iter.patch	\
+  %D%/packages/patches/desmume-gcc6-fixes.patch			\
+  %D%/packages/patches/desmume-gcc7-fixes.patch			\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\
   %D%/packages/patches/diffutils-gets-undeclared.patch		\
   %D%/packages/patches/dkimproxy-add-ipv6-support.patch		\
@@ -1102,7 +1103,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libexif-CVE-2018-20030.patch		\
   %D%/packages/patches/libextractor-exiv2.patch			\
   %D%/packages/patches/libgeotiff-adapt-test-script-for-proj-6.2.patch		\
-  %D%/packages/patches/libgit2-avoid-python.patch		\
   %D%/packages/patches/libgit2-mtime-0.patch			\
   %D%/packages/patches/libgnome-encoding.patch			\
   %D%/packages/patches/libgnomeui-utf8.patch			\
@@ -1357,6 +1357,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/qrcodegen-cpp-make-install.patch		\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtbase-use-TZDIR.patch			\
+  %D%/packages/patches/qtbase-QTBUG-81715.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
   %D%/packages/patches/quagga-reproducible-build.patch          \
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\
@@ -1468,7 +1469,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ustr-fix-build-with-gcc-5.patch		\
   %D%/packages/patches/util-linux-tests.patch			\
   %D%/packages/patches/upower-builddir.patch			\
-  %D%/packages/patches/upx-fix-CVE-2017-15056.patch		\
   %D%/packages/patches/valgrind-enable-arm.patch		\
   %D%/packages/patches/vboot-utils-fix-format-load-address.patch	\
   %D%/packages/patches/vboot-utils-fix-tests-show-contents.patch	\
@@ -1514,7 +1514,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/xsane-fix-pdf-floats.patch		\
   %D%/packages/patches/xsane-fix-snprintf-buffer-length.patch	\
   %D%/packages/patches/xsane-support-ipv6.patch			\
-  %D%/packages/patches/xsane-tighten-default-umask.patch
+  %D%/packages/patches/xsane-tighten-default-umask.patch	\
+  %D%/packages/patches/zziplib-CVE-2018-16548.patch
 
 MISC_DISTRO_FILES =				\
-  %D%/packages/ld-wrapper.in
+  %D%/packages/ld-wrapper.in			\
+  %D%/packages/ld-wrapper-next.in

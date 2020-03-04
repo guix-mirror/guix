@@ -60,7 +60,7 @@
 (define-public php
   (package
     (name "php")
-    (version "7.4.2")
+    (version "7.4.3")
     (home-page "https://www.php.net/")
     (source (origin
               (method url-fetch)
@@ -68,7 +68,7 @@
                                   "php-" version ".tar.xz"))
               (sha256
                (base32
-                "04yz9f7klh642syfh49rmribzwd1k5ssxv0pc510vnhpq3m4sa4q"))
+                "0alqqs5hn4jmz1adrbysbw92n55nkw6f9vfivqj829kwhxnqa7yg"))
               (modules '((guix build utils)))
               (snippet
                '(with-directory-excursion "ext"
@@ -252,7 +252,6 @@
                          ;; The following test fails with "The image size
                          ;; differs: expected 114x115, got 117x117".
                          "ext/gd/tests/bug79068.phpt"
-
 
                          ;; XXX: These iconv tests have the expected outcome,
                          ;; but with different error messages.

@@ -7,7 +7,7 @@
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Omar Radwan <toxemicsquire4@gmail.com>
 ;;; Copyright © 2015 Pierre-Antoine Rault <par@rigelk.eu>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
@@ -54,7 +54,7 @@
 ;;; Copyright © 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2018, 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018, 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Luther Thompson <lutheroto@gmail.com>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
@@ -70,6 +70,7 @@
 ;;; Copyright © 2019 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2020 Riku Viitanen <riku.viitanen@protonmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 sirgazil <sirgazil@zoho.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -508,7 +509,7 @@ NetCDF files can also be read and modified.  Python-HDF4 is a fork of
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-pkgconfig" ,python-pkgconfig)))
-    (home-page "http://www.h5py.org/")
+    (home-page "https://www.h5py.org/")
     (synopsis "Read and write HDF5 files from Python")
     (description
      "The h5py package provides both a high- and low-level interface to the
@@ -748,7 +749,7 @@ other machines, such as over the network.")
     ;; One could bootstrap with an internal untested setuptools.
     (arguments
      `(#:tests? #f))
-    (home-page "https://pypi.python.org/pypi/setuptools")
+    (home-page "https://pypi.org/project/setuptools/")
     (synopsis
      "Library designed to facilitate packaging Python projects")
     (description
@@ -1110,7 +1111,7 @@ from the Python interpreter, or as a small part of a larger application.")
              (invoke "py.test" "-v"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest-bootstrap)))
-    (home-page "https://pypi.python.org/pypi/six/")
+    (home-page "https://pypi.org/project/six/")
     (synopsis "Python 2 and 3 compatibility utilities")
     (description
      "Six is a Python 2 and 3 compatibility library.  It provides utility
@@ -1281,7 +1282,7 @@ Python 3.3+.")
     (arguments `(#:python ,python-2
                  #:tests? #f))                    ; invalid command "test"
     ;; Currently no offical homepage.
-    (home-page "https://pypi.python.org/pypi/dogtail/")
+    (home-page "https://pypi.org/project/dogtail/")
     (synopsis "GUI test tool and automation framework written in Python")
     (description
      "Dogtail is a GUI test tool and automation framework written in Python.
@@ -1392,7 +1393,7 @@ bug tracker.")
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2))
-    (home-page "http://pypi.python.org/pypi/enum/")
+    (home-page "https://pypi.org/project/enum/")
     (synopsis "Robust enumerated type support in Python")
     (description
      "This provides a module for robust enumerations in Python.  It has
@@ -1413,7 +1414,7 @@ compatibility.")
        (base32
         "1cgm5ng2gcfrkrm3hc22brl6chdmv67b9zvva9sfs7gn7dwc9n4a"))))
     (build-system python-build-system)
-    (home-page "https://pypi.python.org/pypi/enum34")
+    (home-page "https://pypi.org/project/enum34/")
     (synopsis "Backported Python 3.4 Enum")
     (description
      "Enum34 is the new Python stdlib enum module available in Python 3.4
@@ -1558,7 +1559,7 @@ and is not compatible with JSON.")
              (invoke "python" "bootstrap.py" "build/scons" "DEVELOPER=guix")
              (chdir "build/scons")
              #t)))))
-    (home-page "http://scons.org/")
+    (home-page "https://scons.org/")
     (synopsis "Software construction tool written in Python")
     (description
      "SCons is a software construction tool.  Think of SCons as an improved,
@@ -1756,7 +1757,7 @@ code introspection, and logging.")
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))
-    (home-page "http://docs.openstack.org/developer/pbr/")
+    (home-page "https://docs.openstack.org/pbr/latest/")
     (synopsis "Minimal build of python-pbr used for bootstrapping")
     (description
      "Used only for bootstrapping python2-pbr, you should not need this.")
@@ -2157,7 +2158,7 @@ cutting and pasting that code over and over.")
               (base32
                "1s6cp2lv4m0f00hjckjz8p6m7d3n3v16jvg353llf5ia1iqsnsib"))))
     (build-system python-build-system)
-    (home-page "https://pypi.python.org/pypi/Unidecode")
+    (home-page "https://pypi.org/project/Unidecode/")
     (synopsis "ASCII transliterations of Unicode text")
     (description
      "Unidecode provides ASCII transliterations of Unicode text.  Unidecode is
@@ -2325,18 +2326,18 @@ environments and back.")
 (define-public python-pyyaml
   (package
     (name "python-pyyaml")
-    (version "3.13")
+    (version "5.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "PyYAML" version))
        (sha256
         (base32
-         "1gx603g484z46cb74j9rzr6sjlh2vndxayicvlyhxdz98lhhkwry"))))
+         "058nd4p8f25wwzy2aiwh18wcrdm6663cqbfdkgjp8y9cp7ampx79"))))
     (build-system python-build-system)
     (inputs
      `(("libyaml" ,libyaml)))
-    (home-page "http://pyyaml.org/wiki/PyYAML")
+    (home-page "https://pyyaml.org")
     (synopsis "YAML parser and emitter for Python")
     (description
      "PyYAML is a YAML parser and emitter for Python.  PyYAML features a
@@ -3200,7 +3201,7 @@ feature-set for programming Python effectively.")
         (base32
          "1dpq0vb01p36jjwbhhd08ylvrnyvcc82yxx3mwjx6awrycjyw6j7"))))
     (build-system python-build-system)
-    (home-page "http://pythonhosted.org/blinker/")
+    (home-page "https://pythonhosted.org/blinker/")
     (synopsis "Fast, simple object-to-object and broadcast signaling")
     (description
      "Blinker provides a fast dispatching system that allows any number of
@@ -3463,7 +3464,7 @@ include_dirs = ~a/include
              (with-directory-excursion "/tmp"
                (invoke "python" "-c"
                        "import numpy; numpy.test(verbose=2)")))))))
-    (home-page "http://www.numpy.org/")
+    (home-page "https://numpy.org")
     (synopsis "Fundamental package for scientific computing with Python")
     (description "NumPy is the fundamental package for scientific computing
 with Python.  It contains among other things: a powerful N-dimensional array
@@ -3826,7 +3827,7 @@ that client code uses to construct the grammar directly in Python code.")
      `(("python-sphinx" ,python-sphinx)))
     (native-inputs
      `(("python-nose" ,python-nose)))
-    (home-page "https://pypi.python.org/pypi/numpydoc")
+    (home-page "https://pypi.org/project/numpydoc/")
     (synopsis
      "Numpy's Sphinx extensions")
     (description
@@ -4776,7 +4777,7 @@ PNG, PostScript, PDF, and SVG file output.")
        (sha256
         (base32 "0308djallnh00v112y5b7nadl657ysmkp6vc8xn51d6yzc9zm7n3"))))
     (build-system python-build-system)
-    (home-page "https://pypi.python.org/pypi/decorator/")
+    (home-page "https://pypi.org/project/decorator/")
     (synopsis "Python module to simplify usage of decorators")
     (description
       "The aim of the decorator module is to simplify the usage of decorators
@@ -4805,7 +4806,7 @@ etc.  The core of this module is a decorator factory.")
     (arguments '(#:tests? #f))
     (native-inputs
      `(("python-nose" ,python-nose)))
-    (home-page "https://pypi.python.org/pypi/drmaa")
+    (home-page "https://pypi.org/project/drmaa/")
     (synopsis "Python bindings for the DRMAA library")
     (description
       "A Python package for Distributed Resource Management (DRM) job
@@ -5008,7 +5009,7 @@ them as the version argument or in a SCM managed file.")
     (propagated-inputs
      `(("python-scandir" ,python-scandir)
        ("python-six" ,python-six)))
-    (home-page "https://pypi.python.org/pypi/pathlib2/")
+    (home-page "https://pypi.org/project/pathlib2/")
     (synopsis "Object-oriented file system paths")
     (description "The goal of pathlib2 is to provide a backport of the
 standard @code{pathlib} module which tracks the standard library module, so
@@ -6155,7 +6156,7 @@ SVG, EPS, PNG and terminal output.")
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("xorg-server" ,xorg-server-for-tests)))
-    (home-page "http://stanford.edu/~mwaskom/software/seaborn/")
+    (home-page "https://seaborn.pydata.org/")
     (synopsis "Statistical data visualization")
     (description
      "Seaborn is a library for making attractive and informative statistical
@@ -6245,7 +6246,7 @@ multiprecision arithmetic.")
              #t)))))
     (propagated-inputs
      `(("python-mpmath" ,python-mpmath)))
-    (home-page "http://www.sympy.org/")
+    (home-page "https://www.sympy.org/")
     (synopsis "Python library for symbolic mathematics")
     (description
      "SymPy is a Python library for symbolic mathematics.  It aims to become a
@@ -6330,7 +6331,7 @@ It is written entirely in Python.")
     (native-inputs
      `(("python-six" ,python-six))) ; required for conversion, not at run-time
     (home-page
-     "http://docs.python.org/3/library/functools.html#functools.singledispatch")
+     "https://docs.python.org/3/library/functools.html#functools.singledispatch")
     (synopsis "Backport of singledispatch feature from Python 3.4")
     (description
      "This library brings functools.singledispatch from Python 3.4 to Python
@@ -6759,14 +6760,14 @@ Python.")
 (define-public python-markdown
   (package
     (name "python-markdown")
-    (version "3.2")
+    (version "3.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Markdown" version))
        (sha256
         (base32
-         "1gwqrhrp0n9xllgmjc8n1p260968kr0dd2jncjkj4r617q61imss"))))
+         "00k91gwhxnm8jdnm2v5xjz9irj6dbi7afywz2hpakqdbxs1ydzlh"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)
@@ -6965,7 +6966,7 @@ from an XML-based format.")
     (description "This package provides a Python library to parse, manipulate
 or create documents in LilyPond format.  A command line program ly is also
 provided that can be used to do various manipulations with LilyPond files.")
-    (home-page "https://pypi.python.org/pypi/python-ly")
+    (home-page "https://pypi.org/project/python-ly/")
     (license license:gpl2+)))
 
 (define-public python-appdirs
@@ -7070,7 +7071,7 @@ should be stored on various operating systems.")
     (description "MessagePack is a fast, compact binary serialization format,
 suitable for similar data to JSON.  This package provides CPython bindings for
 reading and writing MessagePack data.")
-    (home-page "https://pypi.python.org/pypi/msgpack/")
+    (home-page "https://pypi.org/project/msgpack/")
     (license license:asl2.0)))
 
 ;; This msgpack library's name changed from "python-msgpack" to "msgpack" with
@@ -7223,7 +7224,7 @@ Unicode-aware.  It is not intended as an end-user tool.")
         (base32
          "0diwsicwmiq2cpzpxri7cyl5fmsvicafw6nfqf6p6p322dji2g45"))))
     (build-system python-build-system)
-    (home-page "http://code.google.com/p/prettytable/")
+    (home-page "https://code.google.com/archive/p/prettytable/")
     (synopsis "Display tabular data in an ASCII table format")
     (description
       "A library designed to represent tabular data in visually appealing ASCII
@@ -7563,7 +7564,7 @@ a hash value.")
     (arguments
      ;; There are no tests.
      `(#:tests? #f))
-    (home-page "https://pypi.python.org/pypi/termcolor")
+    (home-page "https://pypi.org/project/termcolor/")
     (synopsis "ANSII Color formatting for terminal output")
     (description
      "This package provides ANSII Color formatting for output in terminals.")
@@ -7575,13 +7576,13 @@ a hash value.")
 (define-public python-libarchive-c
   (package
     (name "python-libarchive-c")
-    (version "2.8")
+    (version "2.9")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "libarchive-c" version))
               (sha256
                (base32
-                "0qg0v1s9c1xdk9philhnv8k6c6nicvnvfwlc0j9srg90jmdlvm06"))))
+                "0q7g6a97110bk0j5x81555kajyxh4sybaabab6v5sgr0xi6386cr"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -7723,14 +7724,14 @@ Jupyter Notebook format and Python APIs for working with notebooks.")
 (define-public python-bleach
   (package
     (name "python-bleach")
-    (version "3.1.0")
+    (version "3.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "bleach" version))
        (sha256
         (base32
-         "1yhrgrhkln8bd6gn3imj69g1h4xqah9gaz9q26crqr6gmmvpzprz"))))
+         "0j4xlnw99m1xy0s7wxz9fk5f3c1n8r296fh75jn5p5j61w6qg2xa"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-webencodings" ,python-webencodings)
@@ -8349,7 +8350,7 @@ be set via config files and/or environment variables.")
         (base32
          "0j6ad6lwwyc9kv71skj098v5l7x5biyj2hs4lc5x1kcixqcr97sh"))))
     (build-system python-build-system)
-    (home-page "http://contextlib2.readthedocs.org/")
+    (home-page "https://contextlib2.readthedocs.org/")
     (synopsis "Tools for decorators and context managers")
     (description "This module is primarily a backport of the Python
 3.2 contextlib to earlier Python versions.  Like contextlib, it
@@ -8388,21 +8389,27 @@ the standard library.")
 (define-public python-texttable
   (package
     (name "python-texttable")
-    (version "0.9.1")
+    (version "1.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "texttable" version))
        (sha256
         (base32
-         "0yawv64c0zbawwv6zz84whb32fnb2n9jylwjcfsrcdgh7xvl340i"))))
+         "1x5l77akfc20x52jma9573qp8l8r07q103pm4l0pbizvh4vp1wzg"))))
     (build-system python-build-system)
-    (arguments '(#:tests? #f)) ; no tests
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (invoke "pytest" "tests.py"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/foutaise/texttable/")
     (synopsis "Python module for creating simple ASCII tables")
     (description "Texttable is a Python module for creating simple ASCII
 tables.")
-    (license license:lgpl2.1+)))
+    (license license:expat)))
 
 (define-public python2-texttable
   (package-with-python2 python-texttable))
@@ -8811,19 +8818,19 @@ for the module to work under Python 3.3.")
 (define-public python-colorama
   (package
    (name "python-colorama")
-   (version "0.3.9")
+   (version "0.4.3")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "colorama" version))
      (sha256
       (base32
-       "1wd1szk0z3073ghx26ynw43gnc140ibln1safgsis6s6z3s25ss8"))))
+       "189n8hpijy14jfan4ha9f5n06mnl33cxz7ay92wjqgkr639s0vg9"))))
    (build-system python-build-system)
    (synopsis "Colored terminal text rendering for Python")
    (description "Colorama is a Python library for rendering colored terminal
 text.")
-   (home-page "https://pypi.python.org/pypi/colorama")
+   (home-page "https://pypi.org/project/colorama/")
    (license license:bsd-3)))
 
 (define-public python2-colorama
@@ -8871,7 +8878,7 @@ library as well as on the command line.")
    (synopsis "Plugin and hook calling mechanism for Python")
    (description "Pluggy is an extraction of the plugin manager as used by
 Pytest but stripped of Pytest specific details.")
-   (home-page "https://pypi.python.org/pypi/pluggy")
+   (home-page "https://pypi.org/project/pluggy/")
    (properties `((python2-variant . ,(delay python2-pluggy))))
    (license license:expat)))
 
@@ -9484,7 +9491,7 @@ parsing and generating vCard and vCalendar files.  Currently, iCalendar files
 are supported and well tested. vCard 3.0 files are supported, and all data
 should be imported, but only a few components are understood in a sophisticated
 way.")
-    (home-page "http://eventable.github.io/vobject/")
+    (home-page "https://eventable.github.io/vobject/")
     (license license:asl2.0)))
 
 (define-public python2-vobject
@@ -9503,7 +9510,7 @@ way.")
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; no test suite
-    (home-page "http://software.clapper.org/munkres/")
+    (home-page "https://software.clapper.org/munkres/")
     (synopsis "Implementation of the Munkres algorithm")
     (description "The Munkres module provides an implementation of the Munkres
 algorithm (also called the Hungarian algorithm or the Kuhn-Munkres algorithm),
@@ -9599,7 +9606,7 @@ anymore.")
     (propagated-inputs
      `(("python2-scandir" ,python2-scandir)
        ("python2-six" ,python2-six)))
-    (home-page "https://pypi.python.org/pypi/pathlib2/")
+    (home-page "https://pypi.org/project/pathlib2/")
     (synopsis "Object-oriented file system paths - backport of standard
 pathlib module")
     (description "The goal of pathlib2 is to provide a backport of standard
@@ -11257,40 +11264,39 @@ binary or text.")
          ,@(package-propagated-inputs base))))))
 
 (define-public python-binwalk
-  (let ((commit "64201acfb5b0a9cdd9faa58c40a36dcff8612e29")
-        (revision "0"))
-    (package
-      (name "python-binwalk")
-      (version (git-version "2.1.1" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/ReFirmLabs/binwalk")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1z7ca6rfp887hw5jc3sb45mm4fa0xid4lsp2z8g4r590dr7k7w15"))))
-      (build-system python-build-system)
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-before 'check 'set-pythonpath
-             (lambda _
-               (setenv "PYTHONPATH"
-                       (string-append
-                        (getcwd) "/src/"
-                        ":" (getenv "PYTHONPATH")))
-               (setenv "HOME" "")
-               #t)))))
-      (native-inputs
-       `(("python-coverage" ,python-coverage)
-         ("python-nose" ,python-nose)))
-      (home-page "https://github.com/ReFirmLabs/binwalk")
-      (synopsis "Firmware analysis tool")
-      (description "Binwalk is a tool for analyzing, reverse engineering, and extracting firmware images")
-      (license license:expat))))
+  (package
+    (name "python-binwalk")
+    (version "2.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ReFirmLabs/binwalk")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1bxgj569fzwv6jhcbl864nmlsi9x1k1r20aywjxc8b9b1zgqrlvc"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-pythonpath
+           (lambda _
+             (setenv "PYTHONPATH"
+                     (string-append
+                      (getcwd) "/src/"
+                      ":" (getenv "PYTHONPATH")))
+             (setenv "HOME" "")
+             #t)))))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-nose" ,python-nose)))
+    (home-page "https://github.com/ReFirmLabs/binwalk")
+    (synopsis "Firmware analysis tool")
+    (description "Binwalk is a tool for analyzing, reverse engineering, and
+extracting firmware images")
+    (license license:expat)))
 
 (define-public python-nltk
   (package
@@ -11618,7 +11624,7 @@ from Facebook.")
        ("python-six" ,python-six)))
     (arguments
      `(#:tests? #f))                    ; no tests/ in the PyPI tarball
-    (home-page "http://graphene-python.org/")
+    (home-page "https://graphene-python.org/")
     (synopsis "GraphQL Framework for Python")
     (description
      "Graphene is a Python library for building GraphQL schemas/types.
@@ -12393,7 +12399,7 @@ projects.")
 (define-public python-invoke
   (package
     (name "python-invoke")
-    (home-page "http://www.pyinvoke.org/")
+    (home-page "https://www.pyinvoke.org/")
     (version "1.3.0")
     (source (origin
               (method url-fetch)
@@ -13300,14 +13306,14 @@ for more filetypes can be easily added by creating plugins for them.")
 (define-public python-radon
   (package
     (name "python-radon")
-    (version "2.2.0")
+    (version "4.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "radon" version))
        (sha256
         (base32
-         "07gq5hq4nrffxnlnksws9hrx7fd001gam63j62i82gyfr23gvdym"))))
+         "0vfxxzbnz5lxfvp0yxp35g6c8qqnnbhi4dm7shkm1d3d4192q22n"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -13580,7 +13586,7 @@ which adds support for zone identifiers to IPv6 addresses.")
        (base32
         "192pclzs2y0yaywqkrlvd0x73740q310kvqvm6jldhi619mq59wi"))))
     (build-system python-build-system)
-    (home-page "https://pypi.python.org/pypi/rfc3987")
+    (home-page "https://pypi.org/project/rfc3987/")
     (synopsis "Parsing and validation of URIs (RFC 3986) and IRIs (RFC 3987)")
     (description "@code{rfc3987} provides routines for parsing and
 validation of URIs (see RFC 3986) and IRIs (see RFC 3987).")
@@ -13839,27 +13845,33 @@ many of the popular cloud service providers using a unified API.")
 (define-public python2-apache-libcloud
   (package-with-python2 python-apache-libcloud))
 
-(define-public python-smmap2
+(define-public python-smmap
   (package
-    (name "python-smmap2")
-    (version "2.0.5")
+    (name "python-smmap")
+    (version "3.0.1")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "smmap2" version))
+       (uri (pypi-uri "smmap" version))
        (sha256
-        (base32 "16k03pcnxd3lgzwgbd7nl4jwzm1wmahirvd09kljnzvy96hgza99"))))
+        (base32 "0ijlnv60y8f41py1wnn5n1a1i81cxd9dfpdhr0k3cgkrcbz8850p"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nosexcover" ,python-nosexcover)))
     (home-page "https://github.com/Byron/smmap")
     (synopsis "Python sliding window memory map manager")
-    (description "@code{smmap2} is a pure Python implementation of a sliding
+    (description "@code{smmap} is a pure Python implementation of a sliding
 window memory map manager.")
     (license license:bsd-3)))
 
+(define-public python-smmap2
+  (deprecated-package "python-smmap2" python-smmap))
+
+(define-public python2-smmap
+  (package-with-python2 python-smmap))
+
 (define-public python2-smmap2
-  (package-with-python2 python-smmap2))
+  (deprecated-package "python2-smmap2" python2-smmap))
 
 (define-public python-regex
   (package
@@ -13962,14 +13974,14 @@ pure Python module.")
 (define-public python-xenon
   (package
     (name "python-xenon")
-    (version "0.5.4")
+    (version "0.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "xenon" version))
        (sha256
         (base32
-         "029cbhysg2vr5n4jz8gpg2793f8wkwnqpr1qgv6c1dn685vy31mc"))))
+         "0nv207ql2wmh9q62503np056c4vf1c1hlsi5cvv5p5kx574k6r2y"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pyyaml" ,python-pyyaml)
@@ -13978,7 +13990,8 @@ pure Python module.")
        ("python-flake8" ,python-flake8)
        ("python-tox" ,python-tox)))
     (arguments
-     `(#:phases
+     `(#:tests? #f                      ;test suite not shipped with the PyPI archive
+       #:phases
        (modify-phases %standard-phases
          (add-before 'build 'patch-test-requirements
            (lambda _
@@ -14467,7 +14480,7 @@ particularly convenient for use in tests.")
        ("python-nose" ,python-nose)))
     (propagated-inputs
      `(("python-h5py" ,python-h5py)))
-    (home-page "http://www.activepapers.org/")
+    (home-page "https://www.activepapers.org/")
     (synopsis "Executable papers for scientific computing")
     (description
      "ActivePapers is a tool for working with executable papers, which
@@ -15420,7 +15433,7 @@ Glob2 currently based on the glob code from Python 3.3.1.")
      `(("unzip" ,unzip)))
     (propagated-inputs
      `(("python-gevent" ,python-gevent)))
-    (home-page "http://gehrcke.de/gipc")
+    (home-page "https://gehrcke.de/gipc/")
     (synopsis "Child process management in the context of gevent")
     (description "Usage of Python's multiprocessing package in a
 gevent-powered application may raise problems.  With @code{gipc},
@@ -16466,14 +16479,14 @@ class in a @acronym{DRY, Don't Repeat Yourself} way.")
 (define-public python-construct
   (package
     (name "python-construct")
-    (version "2.9.45")
+    (version "2.10.56")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "construct" version))
        (sha256
         (base32
-         "130iy05awzigm2xah2yvlmb08mac5bi4gzr5m3g7k1krs3ps0w92"))))
+         "0q86jjzsvy835h3c8pjj4619vbp7ihfg8njmyw86ym4qrpni7flp"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f)) ; No tests exist.
@@ -16482,7 +16495,7 @@ class in a @acronym{DRY, Don't Repeat Yourself} way.")
        ("python-arrow" ,python-arrow)
        ("python-numpy" ,python-numpy)
        ("python-ruamel.yaml" ,python-ruamel.yaml)))
-    (home-page "http://construct.readthedocs.io")
+    (home-page "https://construct.readthedocs.io")
     (synopsis "Declarative and symmetrical parser and builder for binary data")
     (description
      "This package provides both simple, atomic constructs (such as
@@ -17576,6 +17589,25 @@ such as a file modification and trigger an action.  This is similar to inotify,
 but portable.")
     (license license:asl2.0)))
 
+(define-public python-wget
+  (package
+    (name "python-wget")
+    (version "3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "wget" version ".zip"))
+       (sha256
+        (base32
+         "0qb0y7ipby42m4m7h0ipazpdyc3bn9xi46lvifcwwl5albn31rim"))))
+    (build-system python-build-system)
+    (native-inputs `(("unzip" ,unzip)))
+    (home-page "https://bitbucket.org/techtonik/python-wget/")
+    (synopsis "Pure Python download utility")
+    (description "The python-wget library provides an API to download files
+with features similar to the @command{wget} utility.")
+    (license license:unlicense)))
+
 (define-public offlate
   (package
     (name "offlate")
@@ -17648,3 +17680,31 @@ extensive support of PNG features.  It can also read and write Netpbm PAM
 files, with a focus on its use as an intermediate format for implementing
 custom PNG processing.")
     (license license:expat)))
+
+(define-public python-fuzzywuzzy
+  (package
+    (name "python-fuzzywuzzy")
+    (version "0.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "fuzzywuzzy" version))
+       (sha256
+        (base32
+         "1s00zn75y2dkxgnbw8kl8dw4p1mc77cv78fwfa4yb0274s96w0a5"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-hypothesis" ,python-hypothesis)
+       ("python-pycodestyle" ,python-pycodestyle)
+       ("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-levenshtein" ,python-levenshtein)))
+    (home-page "https://github.com/seatgeek/fuzzywuzzy")
+    (synopsis "Fuzzy string matching in Python")
+    (description "Approximate string matching using
+@emph{Levenshtein Distance} to calculate the differences between
+sequences.")
+    (license license:gpl2)))
+
+(define-public python2-fuzzywuzzy
+  (package-with-python2 python-fuzzywuzzy))

@@ -102,7 +102,9 @@
              version "/desmume-" version ".tar.gz"))
        (sha256
         (base32
-         "15l8wdw3q61fniy3h93d84dnm6s4pyadvh95a0j6d580rjk4pcrs"))))
+         "15l8wdw3q61fniy3h93d84dnm6s4pyadvh95a0j6d580rjk4pcrs"))
+       (patches (search-patches "desmume-gcc6-fixes.patch"
+                                "desmume-gcc7-fixes.patch"))))
     (build-system gnu-build-system)
     (arguments
      ;; Enable support for WiFi and microphone.
@@ -274,19 +276,21 @@ older games.")
     (license license:gpl2+)))
 
 (define-public emulation-station
-  (let ((commit "646bede3d9ec0acf0ae378415edac136774a66c5"))
+  ;; No release for a long time, new commits fix build issues
+  (let ((commit "9cc42adff67946175d2b7e25c6ae69cc374e98a0")
+        (revision "1"))
     (package
       (name "emulation-station")
-      (version "2.0.1")
+      (version (git-version "2.0.1" revision commit))
       (source (origin
                 (method git-fetch) ; no tarball available
                 (uri (git-reference
                       (url "https://github.com/Aloshi/EmulationStation.git")
                       (commit commit))) ; no version tag
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0cm0sq2wri2l9cvab1l0g02za59q7klj0h3p028vr96n6njj4w9v"))))
+                  "1cva0ns650v17lfn8in095zci6lc43d23f1x3mlzc41qfqa6mbd1"))))
       (build-system cmake-build-system)
       (arguments
        '(#:tests? #f)) ; no tests
@@ -307,19 +311,27 @@ and a game metadata scraper.")
       (home-page "http://www.emulationstation.org")
       (license license:expat))))
 
+;; Note: higan v107 has been released, but as explained by the dialog that
+;; appears after starting the new version, it's an experimental release. The
+;; author recommends v106 for general use.
+;;
+;; When updating to v107 (or probably beyond), sdl will have to be replaced
+;; with sdl2, and libxrandr will need to be added to inputs. The patch
+;; `higan-remove-march-native-flag.patch' will not be necessary, since the flag
+;; is now being added only for `platform=local', which is not the default.
 (define-public higan
   (package
     (name "higan")
     (version "106")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://gitlab.com/higan/higan/repository/archive.tar.gz?ref=v"
-             version))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/byuu/higan/")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0y42pra0dxzlbkyzcp3r8a39pji2bj3p9fl40425f60af2igr4rw"))
+        (base32 "1mxivf8124vz4hl0b0xa1yqv0z9m3i12v9psmbpqkprrbq0wbgn1"))
        (patches (search-patches "higan-remove-march-native-flag.patch"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -344,15 +356,18 @@ and a game metadata scraper.")
            (delete 'configure)
            (add-before 'build 'chdir-to-higan
              (lambda _
-               (chdir "higan")))
+               (chdir "higan")
+               #t))
            (add-before 'install 'create-/share/applications
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out")))
                  ;; It seems the author forgot to do this in the Makefile.
-                 (mkdir-p (string-append out "/share/applications")))))
+                 (mkdir-p (string-append out "/share/applications"))
+                 #t)))
            (add-after 'install 'chdir-to-icarus
              (lambda _
-               (chdir "../icarus")))
+               (chdir "../icarus")
+               #t))
            (add-after 'chdir-to-icarus 'build-icarus build-phase)
            (add-after 'build-icarus 'install-icarus install-phase)
            (add-after 'install-icarus 'wrap-higan-executable
@@ -383,13 +398,14 @@ and a game metadata scraper.")
                  (chmod higan #o555)
                  ;; Second, make sure higan will find icarus in PATH.
                  (wrap-program higan
-                   `("PATH" ":" prefix (,bin))))))))
+                   `("PATH" ":" prefix (,bin)))
+                 #t)))))
        #:make-flags
        (list "compiler=g++"
              (string-append "prefix=" (assoc-ref %outputs "out")))
        ;; There is no test suite.
        #:tests? #f))
-    (home-page "http://byuu.org/emulation/higan/")
+    (home-page "https://byuu.org/higan")
     (synopsis "Nintendo multi-system emulator")
     (description
      "higan (formerly bsnes) is an emulator for multiple Nintendo video game
@@ -405,7 +421,7 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
 (define-public mgba
   (package
     (name "mgba")
-    (version "0.8.0")
+    (version "0.8.1")
     (source
      (origin
        (method git-fetch)
@@ -414,7 +430,7 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0m3rgcdv32ms98j7rrmk2hphvn462bwsd6xfz2ssy05398pj4ljh"))
+        (base32 "1if82mfaak3696w5d5yshynpzywrxgvg3ifdfi2rwlpvq1gpd429"))
        (modules '((guix build utils)))
        (snippet
         ;; Make sure we don't use the bundled software.
@@ -431,7 +447,8 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
        #:configure-flags
        (list "-DUSE_LZMA=OFF"           ;do not use bundled LZMA
              "-DUSE_LIBZIP=OFF")))      ;use "zlib" instead
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("qttools" ,qttools)))
     (inputs `(("ffmpeg" ,ffmpeg)
               ("imagemagick" ,imagemagick)
               ("libedit" ,libedit)
@@ -443,7 +460,6 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
               ("ncurses" ,ncurses)
               ("qtbase" ,qtbase)
               ("qtmultimedia" ,qtmultimedia)
-              ("qttools" ,qttools)
               ("sdl2" ,sdl2)
               ("sqlite" ,sqlite)
               ("zlib" ,zlib)))
@@ -454,9 +470,9 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
 faster and more accurate than many existing Game Boy Advance emulators, as
 well as adding features that other emulators lack.  It also supports Game Boy
 and Game Boy Color games.")
-    ;; Code is mainly MPL 2.0. "blip_buf.c" is LGPL 2.1+ and "inih.c" is
-    ;; BSD-3.
-    (license (list license:mpl2.0 license:lgpl2.1+ license:bsd-3))))
+    ;; Code is mainly MPL 2.0. "blip_buf.c" is LGPL 2.1+, "inih.c" is
+    ;; BSD-3, and "discord-rpc" is Expat.
+    (license (list license:mpl2.0 license:lgpl2.1+ license:bsd-3 license:expat))))
 
 (define-public sameboy
   (package
@@ -1264,7 +1280,7 @@ play them on systems for which they were never designed!")
 (define-public mame
   (package
     (name "mame")
-    (version "0.218")
+    (version "0.219")
     (source
      (origin
        (method git-fetch)
@@ -1273,7 +1289,7 @@ play them on systems for which they were never designed!")
              (commit (apply string-append "mame" (string-split version #\.)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1c43hqfabc7spkyk5ma4bjdb0yqm93sdg5g13ka8mvi462snrfd7"))
+        (base32 "0s3nhkfa5c17ar1lzgvm20ndqain9llgqkab0ji5ycv2c85f06fl"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.
@@ -1448,6 +1464,69 @@ functions.  The source code to MAME serves as this documentation.")
     ;; However, over 90% of the files are under Expat license.  Also, artwork,
     ;; keymaps, languages and samples are under CC0.
     (license (list license:gpl2+ license:expat license:cc0))))
+
+(define-public gnome-arcade
+  (package
+    (name "gnome-arcade")
+    (version "0.218.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/strippato/gnome-arcade")
+             (commit (string-append "v." version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1qc01a62p65qb6mwjfmxqsd6n3rglsfwrjhsp25nr7q54107n55l"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ; No tests.
+       #:configure-flags (list
+                          (string-append "-DMAME_BIN=\""
+                                         (assoc-ref %build-inputs "mame")
+                                         "/bin/mame\"")
+                          (string-append "-DAPP_RES=\""
+                                         (assoc-ref %outputs "out")
+                                         "/share/gnome-arcade/\""))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (pk 'cwd (getcwd))
+               (substitute* "../source/src/config.c"
+                 (("/usr/share") (string-append out "/share"))))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (rom (string-append out "/share/gnome-arcade/data/rom"))
+                    (tile (string-append out "/share/gnome-arcade/data/tile")))
+               (mkdir-p bin)
+               (install-file "../gnome-arcade" bin)
+               (copy-recursively "../source/res"
+                                 (string-append out "/share/gnome-arcade/res"))
+               (mkdir-p rom)
+               (install-file "../source/data/rom/ROM.TXT" rom)
+               (mkdir-p tile)
+               (install-file "../source/data/tile/TILE.TXT" tile))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("mame" ,mame)
+       ("gtk" ,gtk+)
+       ("libevdev" ,libevdev)
+       ("libvlc" ,vlc)
+       ("libarchive" ,libarchive)))
+    (home-page "https://github.com/strippato/gnome-arcade")
+    (synopsis "Minimal MAME frontend")
+    (description
+     "A minimal GTK+ frontend for MAME, the multi-purpose arcade and console
+emulator.")
+    (license license:gpl3+)))
 
 (define-public pcsxr
   ;; No release since 2017.

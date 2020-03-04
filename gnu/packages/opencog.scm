@@ -114,8 +114,8 @@ features not otherwise available.")
 
 (define-public cogserver
   ;; There are no releases.
-  (let ((commit "c8ad85fef446819e6bd711f0791887a5aa6a41f9")
-        (revision "1"))
+  (let ((commit "ec5f3b9590db0f6a085b5d0320f5d3710e0f1635")
+        (revision "2"))
     (package
       (name "cogserver")
       (version (git-version "0" revision commit))
@@ -127,11 +127,10 @@ features not otherwise available.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0flwl2cbmnj7kjcx8vwk7rbhsp2si0a51ci0hx88a3xx1f76cp3f"))))
+                  "1h0vcxb6n5dc654xqinqcxc7dxwcs6bsywgir8rhrqiykk760mzl"))))
       (build-system cmake-build-system)
       (arguments
-       `(#:tests? #f ; See https://github.com/opencog/cogserver/issues/24
-         #:test-target "tests"
+       `(#:test-target "tests"
          #:configure-flags
          (list (string-append "-DGUILE_INCLUDE_DIR="
                               (assoc-ref %build-inputs "guile")

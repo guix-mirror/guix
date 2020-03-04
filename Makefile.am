@@ -122,6 +122,7 @@ MODULES =					\
   guix/build-system/meson.scm			\
   guix/build-system/minify.scm			\
   guix/build-system/asdf.scm			\
+  guix/build-system/copy.scm			\
   guix/build-system/glib-or-gtk.scm		\
   guix/build-system/gnu.scm			\
   guix/build-system/guile.scm			\
@@ -169,6 +170,7 @@ MODULES =					\
   guix/build/go-build-system.scm		\
   guix/build/asdf-build-system.scm		\
   guix/build/bzr.scm				\
+  guix/build/copy-build-system.scm		\
   guix/build/git.scm				\
   guix/build/hg.scm				\
   guix/build/glib-or-gtk-build-system.scm	\

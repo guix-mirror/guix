@@ -55,7 +55,7 @@
               (sha256
                (base32
                 "16jbj8avg5jkgvq5lxm0hdxxn4c3zn7fx8b4nxllvr024apk9w23"))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (patches (search-patches "ath9k-htc-firmware-objcopy.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -112,7 +112,7 @@ Linux-libre.")
          (uri (git-reference
                (url "http://git.bues.ch/git/b43-tools.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "1wgmj4d65izbhprwb5bcwimc2ryv19b9066lqzy4sa5m6wncm9cn"))))
@@ -194,7 +194,7 @@ by the b43-open driver of Linux-libre.")
     (name (string-replace-substring
            (string-append "opensbi-" platform "-" variant)
            "_" "-"))
-    (version "0.5")
+    (version "0.6")
     (source
      (origin
        (method git-fetch)
@@ -203,7 +203,7 @@ by the b43-open driver of Linux-libre.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0qc73xbiy79qqkwxmp4mg15q8n8k26njkyqb6n0jw5dyibd6hb85"))))
+        (base32 "129ypdga0fzn657n2f42g2a1vx3hf8x7sd78h06d35pgkry0jkl7"))))
     (build-system gnu-build-system)
     (native-inputs
      `(,@(if (and (not (string-prefix? "riscv64" (%current-system)))
@@ -246,11 +246,13 @@ for platform-specific firmwares executing in M-mode.")
 (define-public opensbi-qemu-virt
   (make-opensbi-package "qemu" "virt"))
 
-(define-public opensbi-qemu-sifive-u
-  (make-opensbi-package "qemu" "sifive_u"))
-
 (define-public opensbi-sifive-fu540
   (make-opensbi-package "sifive" "fu540"))
+
+(define-public opensbi-qemu-sifive-u
+  ;; Dropped upstream, as all functionality is present in the sifive-fu540
+  ;; target for recent versions of qemu, u-boot and linux.
+  (deprecated-package "opensbi-qemu-sifive-u" opensbi-sifive-fu540))
 
 (define-public seabios
   (package

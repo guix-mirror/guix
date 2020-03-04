@@ -7,7 +7,7 @@
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
@@ -215,7 +215,7 @@ It is the default image viewer on LXDE desktop environment.")
 (define-public sxiv
   (package
     (name "sxiv")
-    (version "25")
+    (version "26")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -224,15 +224,15 @@ It is the default image viewer on LXDE desktop environment.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "13s1lfar142hq1j7xld0ri616p4bqs57b17yr4d0b9a9w7liz4hp"))))
+                "0xaawlfdy7b277m38mgg4423kd7p1ffn0dq4hciqs6ivbb3q9c4f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
        #:make-flags
        (list (string-append "PREFIX=" %output)
              "CC=gcc"
-             ;; Xft.h #includes <ft2build.h> (without ‘freetype2/’).  The sxiv
-             ;; Makefile works around this by hard-coding /usr/include instead.
+             ;; Xft.h #includes <ft2build.h> without ‘freetype2/’.  The Makefile
+             ;; works around this by hard-coding /usr/include & $PREFIX.
              (string-append "CPPFLAGS=-I"
                             (assoc-ref %build-inputs "freetype")
                             "/include/freetype2")

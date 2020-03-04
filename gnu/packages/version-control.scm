@@ -8,7 +8,7 @@
 ;;; Copyright © 2014, 2016, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2018 Kyle Meyer <kyle@kyleam.com>
-;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -153,14 +153,14 @@ as well as the classic centralized workflow.")
    (name "git")
    ;; XXX When updating Git, check if the special 'git-source' input to cgit
    ;; needs to be updated as well.
-   (version "2.25.0")
+   (version "2.25.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1l58v42aazj0x9276gk8r9mwyl9pgp9w99aakz4xfhzv7wd2jq60"))))
+              "09lzwa183nblr6l8ib35g2xrjf9wm9yhk3szfvyzkwivdv69c9r2"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -177,9 +177,9 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "1gf8b1k6i4dlwskwq7dd2vz9bzc3m1qnknj9daq2vp39vmxpg5nk"))))
+            "15pfm7j4wq8ryp9n9d81h8v0arl15yq9i6cigw45walnq5r6721h"))))
       ;; For subtree documentation.
-      ("asciidoc" ,asciidoc)
+      ("asciidoc" ,asciidoc-py3)
       ("docbook-xsl" ,docbook-xsl)
       ("xmlto" ,xmlto)))
    (inputs
@@ -187,7 +187,7 @@ as well as the classic centralized workflow.")
       ("expat" ,expat)
       ("openssl" ,openssl)
       ("perl" ,perl)
-      ("python" ,python-2) ; CAVEAT: incompatible with python-3 according to INSTALL
+      ("python" ,python) ; for git-p4
       ("zlib" ,zlib)
 
       ;; For PCRE support in git grep (USE_LIBPCRE2).
@@ -278,7 +278,7 @@ as well as the classic centralized workflow.")
           (lambda _
             (substitute* "Makefile"
               (("/usr/bin/perl") (which "perl"))
-              (("/usr/bin/python") (which "python")))
+              (("/usr/bin/python") (which "python3")))
             #t))
         (add-after 'configure 'add-PM.stamp
           (lambda _
@@ -554,7 +554,7 @@ everything from small to very large projects with speed and efficiency.")
 (define-public libgit2
   (package
     (name "libgit2")
-    (version "0.28.4")
+    (version "0.99.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -563,20 +563,28 @@ everything from small to very large projects with speed and efficiency.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "171b25aym4q88bidc4c76y4l6jmdwifm3q9zjqsll0wjhlkycfy1"))
-              (patches (search-patches "libgit2-avoid-python.patch"
-                                       "libgit2-mtime-0.patch"))
+                "0qxzv49ip378g1n7hrbifb9c6pys2kj1hnxcafmbb94gj3pgd9kg"))
+              (patches (search-patches "libgit2-mtime-0.patch"))
 
-              ;; Remove bundled software.
+              ;; Remove bundled software.  Keep "http-parser" because it
+              ;; contains patches that are not available in the system version.
               (snippet '(begin
-                          (delete-file-recursively "deps")
+                          (with-directory-excursion "deps"
+                            (for-each (lambda (dir)
+                                        (delete-file-recursively dir))
+                                      (lset-difference equal?
+                                                       (scandir ".")
+                                                       '("." ".." "http-parser"))))
                           #t))
-              (modules '((guix build utils)))))
+              (modules '((guix build utils)
+                         (srfi srfi-1)
+                         (ice-9 ftw)))))
     (build-system cmake-build-system)
     (outputs '("out" "debug"))
     (arguments
      `(#:configure-flags
-       (list "-DUSE_SHA1DC=ON"  ; SHA-1 collision detection
+       (list "-DUSE_NTLMCLIENT=OFF" ;TODO: package this
+             "-DREGEX_BACKEND=pcre2"
              ,@(if (%current-target-system)
                    `((string-append
                       "-DPKG_CONFIG_EXECUTABLE="
@@ -585,6 +593,14 @@ everything from small to very large projects with speed and efficiency.")
                    '()))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-pcre2-reference
+           (lambda _
+             ;; Use PCRE2 with 8-bit character support, as there is no "libpcre2.pc".
+             ;; See <https://github.com/libgit2/libgit2/issues/5438>.
+             (substitute* "src/CMakeLists.txt"
+               (("\"libpcre2\"")
+                "\"libpcre2-8\""))
+             #t))
          (add-after 'unpack 'fix-hardcoded-paths
            (lambda _
              (substitute* "tests/repo/init.c"
@@ -605,14 +621,14 @@ everything from small to very large projects with speed and efficiency.")
                  ;; Tests may be disabled if cross-compiling.
                  (format #t "Test suite not run.~%")))))))
     (inputs
-     `(("libssh2" ,libssh2)
-       ("http-parser" ,http-parser)))
+     `(("libssh2" ,libssh2)))
     (native-inputs
-     `(("guile" ,guile-2.2)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python)))
     (propagated-inputs
-     ;; These two libraries are in 'Requires.private' in libgit2.pc.
+     ;; These libraries are in 'Requires.private' in libgit2.pc.
      `(("openssl" ,openssl)
+       ("pcre2" ,pcre2)
        ("zlib" ,zlib)))
     (home-page "https://libgit2.github.com/")
     (synopsis "Library providing Git core methods")
@@ -911,13 +927,13 @@ default) of the repository.")
 (define-public python-gitdb
   (package
     (name "python-gitdb")
-    (version "2.0.4")
+    (version "4.0.2")
     (source (origin
               (method url-fetch)
-              (uri (pypi-uri "gitdb2" version))
+              (uri (pypi-uri "gitdb" version))
               (sha256
                (base32
-                "0i608q9c47rdsmyac1cn6s0hzwwj7cb957y8fc9wacc5lnw8ak5v"))))
+                "0l113fphn6msjl3cl3kyf332b6lal7daxdd0nfma0x9ipfb013jr"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -949,7 +965,7 @@ default) of the repository.")
                       (setenv "TRAVIS" "1")
                       (invoke "nosetests" "-v"))))))
     (propagated-inputs
-     `(("python-smmap2" ,python-smmap2)))
+     `(("python-smmap" ,python-smmap)))
     (native-inputs
      `(("git" ,git)
        ("python-nose" ,python-nose)))
@@ -968,13 +984,13 @@ allowing to handle large objects with a small memory footprint.")
 (define-public python-gitpython
   (package
     (name "python-gitpython")
-    (version "2.1.11")
+    (version "3.1.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "GitPython" version))
               (sha256
                (base32
-                "1a357c28dnhgvq3saia7v29r71ynp48l2qp5xsmnc4vgzmdxqdw2"))))
+                "1jzllsy9lwc9yibccgv7h9naxisazx2n3zmpy21c8n5xhysw69p4"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ;XXX: Tests can only be run within the GitPython repository.
@@ -1463,6 +1479,7 @@ following features:
     (arguments
      '(#:parallel-tests? #f             ; TODO Seems to cause test failures on
                                         ; i686-linux
+       #:configure-flags '("--enable-static=no")
        #:phases
        (modify-phases %standard-phases
          (add-after 'configure 'patch-libtool-wrapper-ls
@@ -1595,34 +1612,30 @@ RCS, PRCS, and Aegis packages.")
 (define-public cvs-fast-export
   (package
     (name "cvs-fast-export")
-    (version "1.45")
+    (version "1.51")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.catb.org/~esr/cvs-fast-export/"
                                   "cvs-fast-export-" version ".tar.gz"))
               (sha256
                (base32
-                "19pxg6p0pcgyd2fbnh3wy1kazv6vcfi5lzc2whhdi1w9kj4r9c4z"))))
+                "0nn5cf8syb5nbjvkn8w561pk25clv187h4hs9pnc700g9w56chzf"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (delete 'configure)            ; no configure script
-         (add-after 'unpack 'remove-optimizations
-           (lambda _
-             ;; Don't optimize for a specific processor architecture.
-             (substitute* "Makefile"
-               (("CFLAGS \\+= -march=native") ""))
-             #t)))
-       #:parallel-build? #f ; parallel a2x commands fail spectacularly
+         (delete 'configure))       ; no configure script
+       #:parallel-build? #f         ; parallel a2x commands fail spectacularly
        #:make-flags
        (list "CC=gcc" (string-append "prefix?=" (assoc-ref %outputs "out")))))
-    (inputs `(("git" ,git)))
-    (native-inputs `(("asciidoc"    ,asciidoc)
-                     ;; These are needed for the tests.
-                     ("cvs"    ,cvs)
-                     ("python" ,python-2)
-                     ("rcs"    ,rcs)))
+    (inputs
+     `(("git" ,git)
+       ("python" ,python-wrapper)))
+    (native-inputs
+     `(("asciidoc" ,asciidoc)
+       ;; These are needed for the tests.
+       ("cvs" ,cvs)
+       ("rcs" ,rcs)))
     (home-page "http://www.catb.org/esr/cvs-fast-export/")
     (synopsis "Export an RCS or CVS history as a fast-import stream")
     (description "This program analyzes a collection of RCS files in a CVS

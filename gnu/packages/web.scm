@@ -3,7 +3,7 @@
 ;;; Copyright © 2013 Aljosha Papsch <misc@rpapsch.de>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Eric Bavier <bavier@posteo.net>
@@ -19,7 +19,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
@@ -116,12 +116,14 @@
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages libunistring)
+  #:use-module (gnu packages libunwind)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages markup)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages nss)
+  #:use-module (gnu packages openldap)
   #:use-module (gnu packages openstack)
   #:use-module (gnu packages base)
   #:use-module (gnu packages package-management)
@@ -221,14 +223,14 @@ Interface} specification.")
     ;; ’stable’ and recommends that “in general you deploy the NGINX mainline
     ;; branch at all times” (https://www.nginx.com/blog/nginx-1-6-1-7-released/)
     ;; Consider updating the nginx-documentation package together with this one.
-    (version "1.17.7")
+    (version "1.17.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1zwiqljhzf0ym6r3hrg6k2qfb2mxi7i0lpafg4xnkr875225c9xn"))))
+                "0nwn4md8sxhks2j77qq1nvk5pfz3yykfhh2b507b6l2idp7kxllp"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
@@ -549,6 +551,67 @@ supported at your website.")
                       ;; therefore nginx’ other licenses may also apply to its
                       ;; binary:
                       (package-license nginx)))))))
+
+(define-public lighttpd
+  (package
+    (name "lighttpd")
+    (version "1.4.55")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://download.lighttpd.net/lighttpd/"
+                                  "releases-" (version-major+minor version) ".x/"
+                                  "lighttpd-" version ".tar.xz"))
+              (sha256
+               (base32
+                "09z947730yjh438wrqb3z1c5hr1dbb11a8sr92g3vk6mr7lm02va"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--with-krb5"
+             "--with-ldap"
+             "--with-libev"
+             "--with-libunwind"
+             "--with-openssl"
+             "--with-pam"
+             "--with-sasl")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'embed-/bin/sh-reference
+           (lambda _
+             (substitute* "src/mod_ssi.c"
+               (("/bin/sh") (which "sh")))
+             #t))
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             (setenv "SHELL" (which "sh"))
+             ;; gethostbyaddr fails
+             (substitute* "tests/LightyTest.pm"
+               (("\\{HOSTNAME\\} = \\$name;")
+                "{HOSTNAME} = \"127.0.0.1\";"))
+             #t)))))
+    (inputs
+     `(("cyrus-sasl" ,cyrus-sasl)
+       ("libev" ,libev)
+       ("libunwind" ,libunwind)
+       ("linux-pam" ,linux-pam)
+       ("mit-krb5" ,mit-krb5)
+       ("openldap" ,openldap)
+       ("openssl" ,openssl)
+       ("pcre" ,pcre)
+       ("pcre:bin" ,pcre "bin")
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("perl" ,perl) ; for tests
+       ("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (home-page "https://www.lighttpd.net/")
+    (synopsis "Lightweight HTTP and reverse proxy server")
+    (description
+     "Lighttpd is a secure, fast, compliant, and very flexible web-server that
+has been optimized for high-performance environments.  It has a very low
+memory footprint compared to other webservers.  Its features include FastCGI,
+CGI, authentication, output compression, URL rewriting and many more.")
+    (license license:bsd-3)))
 
 (define-public fcgi
   (package
@@ -1097,16 +1160,21 @@ for efficient socket-like bidirectional reliable communication channels.")
     (description "WABT (pronounced: wabbit) is a suite of tools for
 WebAssembly, including:
 
-* wat2wasm: translate from WebAssembly text format to the WebAssembly binary
-  format
-* wasm2wat: the inverse of wat2wasm, translate from the binary format back
-  to the text format (also known as a .wat)
-* wasm-objdump: print information about a wasm binary.  Similar to objdump.
-* wasm-interp: decode and run a WebAssembly binary file using a stack-based
-  interpreter
-* wat-desugar: parse .wat text form as supported by the spec interpreter
-  (s-expressions, flat syntax, or mixed) and print canonical flat format
-* wasm2c: convert a WebAssembly binary file to a C source and header
+@enumerate
+@item @command{wat2wasm} translates from WebAssembly text format to the
+WebAssembly binary format
+@item @command{wasm2wat} is the inverse; it translates from the binary format
+back to the text format (also known as a .wat)
+@item @command{wasm-objdump} prints information about a wasm binary, similarly
+to @command{objdump}.
+@item @command{wasm-interp} decodes ands run a WebAssembly binary file using a
+stack-based interpreter
+@item @command{wat-desugar} parses .wat text form as supported by the spec
+interpreter (s-expressions, flat syntax, or mixed) and prints the canonical
+flat format
+@item @command{wasm2c} converts a WebAssembly binary file to a C source and
+header file.
+@end enumerate
 
 These tools are intended for use in (or for development of) toolchains or
 other systems that want to manipulate WebAssembly files.")
@@ -1160,10 +1228,13 @@ high performance.")
        (sha256
         (base32 "0ak9a6hsanhys40yhv7c2gqkfghpm6jx36j1pnml8ajvgaky5q98"))))
     (build-system gnu-build-system)
+    (arguments
+     ;; Parallel builds don't reliably succeed.
+     `(#:parallel-build? #f))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("cunit" ,cunit) ; For tests.
+       ("cunit" ,cunit)                 ; for tests
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)
        ("python-sphinx" ,python-sphinx)))

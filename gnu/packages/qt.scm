@@ -598,6 +598,19 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 developers using C++ or QML, a CSS & JavaScript like language.")
     (license (list license:lgpl2.1 license:lgpl3))))
 
+;; This variant fixes a problem with the CMake macros shipped by qtbase.  See
+;; discussion at <https://lists.gnu.org/archive/html/guix-devel/2020-02/msg00308.html>.
+(define-public qtbase-patched
+  (let ((src (package-source qtbase)))
+    (hidden-package
+     (package
+       (inherit qtbase)
+       (source
+        (origin
+          (inherit src)
+          (patches
+           (append (search-patches "qtbase-QTBUG-81715.patch")
+                   (origin-patches src)))))))))
 
 ;; qt used to refer to the monolithic Qt 5.x package
 (define-deprecated qt qtbase)

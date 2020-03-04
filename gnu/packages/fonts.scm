@@ -29,6 +29,7 @@
 ;;; Copyright © 2019 Alva <alva@skogen.is>
 ;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Damien Cassou <damien@cassou.me>
+;;; Copyright © 2020 Amin Bandali <mab@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -780,7 +781,7 @@ It contains the following fonts and styles:
 (define-public font-fantasque-sans
   (package
     (name "font-fantasque-sans")
-    (version "1.7.2")
+    (version "1.8.0")
     (source
      (origin
        (method git-fetch)
@@ -789,26 +790,27 @@ It contains the following fonts and styles:
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1gjranq7qf20rfxnpxsckv1hl35nzsal0rjs475nhfbpqy5wmly6"))))
+        (base32 "17l18488qyl9gdj80r8pcym3gp3jkgsdikwalnrp5rgvwidqx507"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ttfautohint" ,ttfautohint)
        ("woff-tools" ,woff-tools)
        ("fontforge" ,fontforge)
        ("woff2" ,woff2)
-       ("ttf2eot" ,ttf2eot)
        ("zip" ,zip)))
     (arguments
      `(#:tests? #f                 ;test target intended for visual inspection
        #:phases (modify-phases %standard-phases
                   (delete 'configure)   ;no configuration
-                  (add-before 'build 'xrange->range
-                    ;; Rather than use a python2 fontforge, just replace the
-                    ;; offending function.
+                  (add-before 'build 'support-python@3
+                    ;; Rather than use a Python 2 fontforge, replace Python-2-
+                    ;; specific code with a passable Python 3 equivalent.
                     (lambda _
                       (substitute* "Scripts/fontbuilder.py"
                         (("xrange") "range"))
+                      (substitute* "Scripts/features.py"
+                        (("f\\.write\\(fea_code\\)")
+                         "f.write(str.encode(fea_code))"))
                       #t))
                   (replace 'install
                     ;; 'make install' wants to install to ~/.fonts, install to
@@ -1221,7 +1223,7 @@ monospace, slab-serif fonts.")
                (base32
                 "17q5brcqyyc8gbjdgpv38p89s60cwxjlwy2ljnrvas5cj0s62np0"))))
     (build-system font-build-system)
-    (home-page "http://google.github.io/material-design-icons")
+    (home-page "https://google.github.io/material-design-icons")
     (synopsis "Icon font of Google Material Design icons")
     (description
      "Material design system icons are simple, modern, friendly, and sometimes
@@ -1585,3 +1587,42 @@ This package provides the TrueType fonts.")
 Mono’s typeface forms are simple and free from unnecessary details.  Rendered
 in small sizes, the text looks crisper.")
     (license license:asl2.0)))
+
+(define-public font-vazir
+  (package
+    (name "font-vazir")
+    (version "22.1.0")
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri
+        (string-append "https://github.com/rastikerdar/vazir-font/"
+                       "releases/download/v" version
+                       "/vazir-font-v" version ".zip"))
+       (sha256
+        (base32
+         "0w3gwb5q33x5llw7cfs8qhaxr4ssg6rsx4b9day3993zn24xq031"))))
+    (build-system font-build-system)
+    (home-page "https://rastikerdar.github.io/vazir-font/")
+    (synopsis "Vazir Persian typeface")
+    (description
+     "Vazir is a beautiful and elegant Persian typeface originally based on
+DejaVu, and comes in six variants: Thin, Light, Normal, Medium, Bold, and
+Black.  This package provides four versions of Vazir:
+
+@itemize
+@item @code{Vazir}: The main version; includes Latin glyphs from Roboto.
+@item @code{Vazir-FD}: Like @code{Vazir}, but (always) uses Farsi digit glyphs
+instead of Latin ones.
+@item @code{Vazir-WOL}: Like @code{Vazir}, but without Roboto's Latin glyphs.
+@item @code{Vazir-FD-WOL}: Combination of @code{Vazir-FD} and @code{Vazir-WOL}:
+always uses Farsi digits, and does not include Latin glyphs from Roboto.
+@end itemize\n")
+    (license
+     ;; See https://github.com/rastikerdar/vazir-font/blob/master/LICENSE for
+     ;; details.
+     (list license:public-domain        ; the Vazir modifications to DejaVu
+                                        ; and the DejaVu modifications to...
+           (license:x11-style           ; ...the Bitstream Vera typeface
+            "file://LICENSE" "Bitstream Vera License")
+           license:asl2.0))))           ; Latin glyphs from Roboto

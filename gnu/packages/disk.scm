@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
@@ -163,15 +163,14 @@ tables, and it understands a variety of different formats.")
 (define-public gptfdisk
   (package
     (name "gptfdisk")
-    (version "1.0.4")
+    (version "1.0.5")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/gptfdisk/gptfdisk/"
-                          version "/" name "-" version ".tar.gz"))
+                          version "/gptfdisk-" version ".tar.gz"))
       (sha256
-       (base32
-        "13d7gff4prl1nsdknjigmb7bbqhn79165n01v4y9mwbnd0d3jqxn"))))
+       (base32 "0bybgp30pqxb6x5krxazkq4drca0gz4inxj89fpyr204rn3kjz8f"))))
     (build-system gnu-build-system)
     (inputs
      `(("gettext" ,gettext-minimal)
@@ -182,10 +181,14 @@ tables, and it understands a variety of different formats.")
      `(#:test-target "test"
        #:phases
        (modify-phases %standard-phases
-         ;; no configure script
-         (delete 'configure)
-         ;; no install target
+         (add-after 'unpack 'fix-include-directory
+           (lambda _
+             (substitute* "gptcurses.cc"
+               (("ncursesw/ncurses.h") "ncurses.h"))
+             #t))
+         (delete 'configure)            ; no configure script
          (replace 'install
+           ;; There's no ‘make install’ target.
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin"))
@@ -209,14 +212,14 @@ scheme.")
 (define-public ddrescue
   (package
     (name "ddrescue")
-    (version "1.24")
+    (version "1.25")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/ddrescue/ddrescue-"
                           version ".tar.lz"))
       (sha256
-       (base32 "11qh0bbzf00mfb4yq35gnv5m260k4d7q9ixklry6bqvhvvp3ypab"))))
+       (base32 "0qqh38izl5ppap9a5izf3hijh94k65s3zbfkczd4b7x04syqwlyf"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/ddrescue/ddrescue.html")
     (synopsis "Data recovery utility")

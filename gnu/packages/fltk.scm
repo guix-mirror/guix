@@ -109,7 +109,7 @@ UI builder called FLUID that can be used to create applications in minutes.")
               (sha256
                (base32
                 "0j38mhnfqy6swcrnc5zxcwlqi8b1pgklyghxk6qs1lf4japv2zc0"))
-              (file-name (string-append name "-" version "-checkout"))))
+              (file-name (git-file-name name version))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ;no "check" target

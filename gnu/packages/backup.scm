@@ -462,7 +462,7 @@ rdiff-backup is easy to use and settings have sensible defaults.")
     (inputs
      `(("perl" ,perl)
        ("rsync" ,rsync)))
-    (home-page "http://rsnapshot.org")
+    (home-page "https://rsnapshot.org")
     (synopsis "Deduplicating snapshot backup utility based on rsync")
     (description "rsnapshot is a file system snapshot utility based on rsync.
 rsnapshot makes it easy to make periodic snapshots of local machines, and

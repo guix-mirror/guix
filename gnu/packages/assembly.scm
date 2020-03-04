@@ -148,14 +148,14 @@ to the clients.")
 (define-public fasm
   (package
     (name "fasm")
-    (version "1.73.21")
+    (version "1.73.22")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://flatassembler.net/fasm-"
                            version ".tgz"))
        (sha256
-        (base32 "143zh7x3q0r2kclshh8n5w4i5pw4lh60si7rspvc725xxjpjkvcv"))))
+        (base32 "1pb0rcfdsb0h89khjjrbikz5wjdllavj3ajim0rcyh7x12xr1hw5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests exist
@@ -232,7 +232,7 @@ assembler, a C compiler and a linker.  The assembler uses Intel syntax
                 (uri (git-reference
                       (url "https://git.savannah.gnu.org/r/libjit.git")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "0p6wklslkkp3s4aisj3w5a53bagqn5fy4m6088ppd4fcfxgqkrcd"))))

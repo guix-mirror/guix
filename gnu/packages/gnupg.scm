@@ -470,7 +470,7 @@ gpgpme starting with version 1.7.")
               (sha256
                (base32
                 "0n232iyayc46f7hywmjw0jr7pbmmz5h4b04jskhkzz9gxz0ci99c"))
-              (file-name (string-append name "-" version "-checkout"))))
+              (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
      ;; When cross-compiling, the bash script libgcrypt-config provided by
@@ -1115,15 +1115,17 @@ over.")
 (define-public jetring
   (package
     (name "jetring")
-    (version "0.27")
+    (version "0.29")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "mirror://debian/pool/main/j/" name "/"
-                            name "_" version ".tar.xz"))
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://salsa.debian.org/debian/jetring")
+               (commit (string-append "debian/" version))))
+        (file-name (git-file-name name version))
         (sha256
          (base32
-          "0jy0x5zj7v87xgyldlsx1knzp0mv10wzamblrw1b61i2m1ii4pxz"))))
+          "1acbx2vnbkms1c0wgcnh05d4g359sg5z0aiw541vx2qq9sgdhlv6"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

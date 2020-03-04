@@ -667,6 +667,14 @@ It has a nice, simple s-expression based syntax.")
 using Guile's foreign function interface.")
       (license license:lgpl3+))))
 
+(define-public guile3.0-squee
+  (package
+    (inherit guile-squee)
+    (name "guile3.0-squee")
+    (native-inputs `(("guile" ,guile-next)
+                     ,@(alist-delete "guile"
+                                     (package-native-inputs guile-squee))))))
+
 (define-public guile-colorized
   (package
     (name "guile-colorized")
@@ -970,20 +978,17 @@ using S-expressions.")
 (define-public guile-debbugs
   (package
     (name "guile-debbugs")
-    (version "0.0.2")
+    (version "0.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/guile-debbugs/guile-debbugs-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "16l8910p57im6s3j93xhdaqvgfy6ms5n97177mrch3y961z5hy0i"))
-              (modules '((guix build utils)))
-              (snippet
-               '(substitute* "Makefile.in"
-                  (("^godir = (.*)/ccache" _ prefix)
-                   (string-append "godir = " prefix "/site-ccache"))))))
+                "1cc63nw3xdfjrfk8c58r6d5lidmfq5cpqcy32yd5xp81yccprvn9"))))
     (build-system gnu-build-system)
+    (propagated-inputs
+     `(("guile-email" ,guile-email)))
     (native-inputs
      `(("guile" ,guile-2.2)
        ("pkg-config" ,pkg-config)))
@@ -1023,30 +1028,12 @@ Extensions) compliant email messages and reading emails from the mbox
 format.")
     (license license:agpl3+)))
 
-(define-public guile-debbugs-next
-  (let ((commit "fb0ae064037a38a0d526e08b4ad24c52e205edb9")
-        (revision "2"))
-    (package (inherit guile-debbugs)
-      (name "guile-debbugs")
-      (version (git-version "0.0.3" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://git.savannah.gnu.org/git/guile-debbugs.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "195sacx2xc1mzzfljj62nfpi8mxn0rc6dabxckizjksnhb5irfwy"))))
-      (build-system gnu-build-system)
-      (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("texinfo" ,texinfo)))
-      (inputs
-       `(("guile" ,guile-2.2)
-         ("guile-email" ,guile-email))))))
+(define-public guile3.0-email
+  (package
+    (inherit guile-email)
+    (name "guile3.0-email")
+    (inputs `(("guile" ,guile-next)
+              ,@(alist-delete "guile" (package-inputs guile-email))))))
 
 (define-public guile-newt
   (package
@@ -2960,18 +2947,17 @@ tests being run, resulting clearer and more specific output.")
 (define-public guile-semver
   (package
     (name "guile-semver")
-    (version "0.1.0")
+    (version "0.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.ngyro.com/guile-semver/"
                                   "guile-semver-" version ".tar.gz"))
               (sha256
                (base32
-                "06b66rj7nyhr6i3dpkwvfw1xb10w2pngrsw2hxfxkznwsbh9byfz"))))
+                "109p4n39ln44cxvwdccf9kgb96qx54makvd2ir521ssz6wchjyag"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("srfi-64-driver" ,srfi-64-driver)))
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("guile" ,guile-2.2)))
     (home-page "https://ngyro.com/software/guile-semver.html")
@@ -3038,3 +3024,75 @@ SHA-512).")
     (name "guile3.0-hashing")
     (native-inputs
      `(("guile" ,guile-next)))))
+
+(define-public guile-webutils
+  (let ((commit "8541904f761066dc9c27b1153e9a838be9a55299")
+        (revision "0"))
+    (package
+      (name "guile-webutils")
+      (version (git-version "0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://notabug.org/cwebber/guile-webutils.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1s9n3hbxd7lfpdi0x8wr0cfvlsf6g62ird9gbspxdrp5p05rbi64"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)
+         ("texinfo" ,texinfo)))
+      (inputs
+       `(("guile" ,guile-2.2)))
+      (propagated-inputs
+       `(("guile-irregex" ,guile-irregex)
+         ("guile-gcrypt" ,guile-gcrypt)))
+      (home-page "https://notabug.org/cwebber/guile-webutils")
+      (synopsis "Web application authoring utilities for Guile")
+      (description
+       "This package provides tooling to write web applications in Guile, such
+as signed sessions, multipart message support, etc.")
+      (license license:gpl3+))))
+
+(define-public guile-lens
+  (let ((commit "14b15d07255f9d3f55d40a3b750d13c9ee3a154f")
+        (revision "0"))
+    (package
+      (name "guile-lens")
+      (version (git-version "0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/a-sassmannshausen/guile-lens.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0w8jzqyla56yrgj7acsgd4nspyir6zgp3vgxid4xmwhg9wmf1ida"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'run-hall
+             (lambda _
+               (setenv "HOME" "/tmp")   ; for ~/.hall
+               (invoke "hall" "dist" "-x"))))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("guile" ,guile-2.2)
+         ("guile-hall" ,guile-hall)
+         ("pkg-config" ,pkg-config)
+         ("texinfo" ,texinfo)))
+      (home-page "https://gitlab.com/a-sassmannshausen/guile-lens.git")
+      (synopsis "Composable lenses for data structures in Guile")
+      (description
+       "Guile-Lens is a library implementing lenses in Guile.  The library is
+currently a re-implementation of the lentes library for Clojure.  Lenses
+provide composable procedures, which can be used to focus, apply functions
+over, or update a value in arbitrary data structures.")
+      (license license:gpl3+))))

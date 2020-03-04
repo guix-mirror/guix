@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;;
@@ -281,16 +281,18 @@ and return the resulting '.go' file."
           (use-modules (srfi srfi-34)
                        (system repl error-handling))
 
+          ;; Specify the default environment visible to all the services.
+          ;; Without this statement, all the environment variables of PID 1
+          ;; are inherited by child services.
+          (default-environment-variables
+            '("PATH=/run/current-system/profile/bin"))
+
           ;; Arrange to spawn a REPL if something goes wrong.  This is better
           ;; than a kernel panic.
           (call-with-error-handling
             (lambda ()
               (apply register-services
                      (map load-compiled '#$(map scm->go files)))))
-
-          ;; guix-daemon 0.6 aborts if 'PATH' is undefined, so work around
-          ;; it.
-          (setenv "PATH" "/run/current-system/profile/bin")
 
           (format #t "starting services...~%")
           (for-each (lambda (service)

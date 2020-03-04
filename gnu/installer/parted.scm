@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -1070,6 +1070,8 @@ USER-PARTITION if it is encrypted, or the plain file-name otherwise."
     (call-with-luks-key-file
      password
      (lambda (key-file)
+       (syslog "formatting and opening LUKS entry ~s at ~s~%"
+               label file-name)
        (system* "cryptsetup" "-q" "luksFormat" file-name key-file)
        (system* "cryptsetup" "open" "--type" "luks"
                 "--key-file" key-file file-name label)))))
@@ -1077,6 +1079,7 @@ USER-PARTITION if it is encrypted, or the plain file-name otherwise."
 (define (luks-close user-partition)
   "Close the encrypted partition pointed by USER-PARTITION."
   (let ((label (user-partition-crypt-label user-partition)))
+    (syslog "closing LUKS entry ~s~%" label)
     (system* "cryptsetup" "close" label)))
 
 (define (format-user-partitions user-partitions)
@@ -1150,6 +1153,7 @@ respective mount-points."
                        (file-name
                         (user-partition-upper-file-name user-partition)))
                   (mkdir-p target)
+                  (syslog "mounting ~s on ~s~%" file-name target)
                   (mount file-name target mount-type)))
               sorted-partitions)))
 
@@ -1165,6 +1169,7 @@ respective mount-points."
                        (target
                         (string-append (%installer-target-dir)
                                        mount-point)))
+                  (syslog "unmounting ~s~%" target)
                   (umount target)
                   (when crypt-label
                     (luks-close user-partition))))

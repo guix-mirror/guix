@@ -32,6 +32,7 @@
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Evan Straw <evan.straw99@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -971,7 +972,7 @@ object to help create WSGI responses.")
         (base32
          "1ksbc726av9xacml6jhcfyn828hlhb9xlddpx6fcvnlvmpmpvhk9"))))
     (build-system python-build-system)
-    (home-page "https://pypi.python.org/pypi/zope.event")
+    (home-page "https://pypi.org/project/zope.event/")
     (synopsis "Event publishing system for Python")
     (description "Zope.event provides an event publishing API, intended for
 use by applications which are unaware of any subscribers to their events.  It
@@ -1020,10 +1021,10 @@ conforming to a given API or contract.")
          "0zwxaaa66sqxg5k7zcrvs0fbg9ym1njnxnr28dfmchzhwjvwnfzl"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f)) ; circular dependency with zope.testrunner
+     '(#:tests? #f))                ; circular dependency with zope.testrunner
     (propagated-inputs
      `(("python-zope-interface" ,python-zope-interface)))
-    (home-page "http://cheeseshop.python.org/pypi/zope.exceptions")
+    (home-page "https://pypi.org/project/zope.exceptions/")
     (synopsis "Zope exceptions")
     (description "Zope.exceptions provides general-purpose exception types
 that have uses outside of the Zope framework.")
@@ -1050,7 +1051,7 @@ that have uses outside of the Zope framework.")
            (for-each delete-file (find-files "." "(\\.pyc|~)$"))
            #t))))
     (build-system python-build-system)
-    (home-page "https://pypi.python.org/pypi/zope.testing")
+    (home-page "https://pypi.org/project/zope.testing/")
     (synopsis "Zope testing helpers")
     (description "Zope.testing provides a number of testing utilities for HTML
 forms, HTTP servers, regular expressions, and more.")
@@ -1081,7 +1082,7 @@ forms, HTTP servers, regular expressions, and more.")
        ("unzip" ,unzip)))
     (propagated-inputs
      `(("python-zope-interface" ,python-zope-interface)))
-    (home-page "https://pypi.python.org/pypi/zope.testrunner")
+    (home-page "https://pypi.org/project/zope.testrunner/")
     (synopsis "Zope testrunner script")
     (description "Zope.testrunner provides a script for running Python
 tests.")
@@ -1108,7 +1109,7 @@ tests.")
         (base32
          "1rslyph0klk58dmjjy4j0jxy21k03azksixc3x2xhqbkv97cmzml"))))
     (build-system python-build-system)
-    (home-page "https://pypi.python.org/pypi/zope.i18nmessageid")
+    (home-page "https://pypi.org/project/zope.i18nmessageid/")
     (synopsis "Message identifiers for internationalization")
     (description "Zope.i18nmessageid provides facilities for declaring
 internationalized messages within program source text.")
@@ -1139,7 +1140,7 @@ internationalized messages within program source text.")
      `(("python-zope-testing" ,python-zope-testing)
        ("python-coverage" ,python-coverage)
        ("python-nose" ,python-nose)))
-    (home-page "https://pypi.python.org/pypi/zope.schema")
+    (home-page "https://pypi.org/project/zope.schema/")
     (synopsis "Zope data schemas")
     (description "Zope.scheme provides extensions to zope.interface for
 defining data schemas.")
@@ -1164,7 +1165,7 @@ defining data schemas.")
     (propagated-inputs
      `(("python-zope-i18nmessageid" ,python-zope-i18nmessageid)
        ("python-zope-schema" ,python-zope-schema)))
-    (home-page "https://pypi.python.org/pypi/zope.configuration")
+    (home-page "https://pypi.org/project/zope.configuration/")
     (synopsis "Zope Configuration Markup Language")
     (description "Zope.configuration implements ZCML, the Zope Configuration
 Markup Language.")
@@ -1189,7 +1190,7 @@ Markup Language.")
      '(#:tests? #f)) ; FIXME: Tests can't find zope.interface.
     (propagated-inputs
      `(("python-zope-interface" ,python-zope-interface)))
-    (home-page "https://pypi.python.org/pypi/zope.proxy")
+    (home-page "https://pypi.org/project/zope.proxy/")
     (synopsis "Generic, transparent proxies")
     (description "Zope.proxy provides generic, transparent proxies for Python.
 Proxies are special objects which serve as mostly-transparent wrappers around
@@ -1218,7 +1219,7 @@ brokering, etc.) for which the proxy is responsible.")
     (propagated-inputs
      `(("python-zope-proxy" ,python-zope-proxy)
        ("python-zope-schema" ,python-zope-schema)))
-    (home-page "https://pypi.python.org/pypi/zope.location/")
+    (home-page "https://pypi.org/project/zope.location/")
     (synopsis "Zope location library")
     (description "Zope.location implements the concept of \"locations\" in
 Zope3, which are are special objects that have a structural location.")
@@ -1252,7 +1253,7 @@ Zope3, which are are special objects that have a structural location.")
        ("python-zope-location" ,python-zope-location)
        ("python-zope-testrunner" ,python-zope-testrunner)
        ("python-zope-testing" ,python-zope-testing)))
-    (home-page "https://pypi.python.org/pypi/zope.security")
+    (home-page "https://pypi.org/project/zope.security/")
     (synopsis "Zope security framework")
     (description "Zope.security provides a generic mechanism to implement
 security policies on Python objects.")
@@ -1600,43 +1601,43 @@ supports url redirection and retries, and also gzip and deflate decoding.")
 
 (define-public awscli
   (package
-   (name "awscli")
-   (version "1.14.41")
-   (source
-    (origin
-     (method url-fetch)
-     (uri (pypi-uri name version))
-     (sha256
-      (base32
-       "0sispclx263lybbk19zp1n9yhg8xxx4jddypzgi24vpjaqnsbwlc"))))
-   (build-system python-build-system)
-   (arguments
-    ;; FIXME: The 'pypi' release does not contain tests.
-    '(#:tests? #f
-      #:phases
-      (modify-phases %standard-phases
-        (add-after 'unpack 'fix-reference-to-groff
-          (lambda _
-            (substitute* "awscli/help.py"
-              (("if not self._exists_on_path\\('groff'\\):") "")
-              (("raise ExecutableNotFoundError\\('groff'\\)") "")
-              (("cmdline = \\['groff'")
-               (string-append "cmdline = ['" (which "groff") "'")))
-            #t)))))
-   (propagated-inputs
-    `(("python-colorama" ,python-colorama)
-      ("python-botocore" ,python-botocore)
-      ("python-s3transfer" ,python-s3transfer)
-      ("python-docutils" ,python-docutils)
-      ("python-pyyaml" ,python-pyyaml)
-      ("python-rsa" ,python-rsa)))
-   (inputs
-    `(("groff" ,groff)))
-   (home-page "https://aws.amazon.com/cli/")
-   (synopsis "Command line client for AWS")
-   (description "AWS CLI provides a unified command line interface to the
+    (name "awscli")
+    (version "1.18.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri name version))
+       (sha256
+        (base32
+         "0p479mfs9r0m82a217pap8156ijwvhv6r3kqa4k267gd05wgvygm"))))
+    (build-system python-build-system)
+    (arguments
+     ;; FIXME: The 'pypi' release does not contain tests.
+     '(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-reference-to-groff
+           (lambda _
+             (substitute* "awscli/help.py"
+               (("if not self._exists_on_path\\('groff'\\):") "")
+               (("raise ExecutableNotFoundError\\('groff'\\)") "")
+               (("cmdline = \\['groff'")
+                (string-append "cmdline = ['" (which "groff") "'")))
+             #t)))))
+    (propagated-inputs
+     `(("python-colorama" ,python-colorama)
+       ("python-botocore" ,python-botocore)
+       ("python-s3transfer" ,python-s3transfer)
+       ("python-docutils" ,python-docutils)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-rsa" ,python-rsa)))
+    (native-inputs
+     `(("groff" ,groff)))
+    (home-page "https://aws.amazon.com/cli/")
+    (synopsis "Command line client for AWS")
+    (description "AWS CLI provides a unified command line interface to the
 Amazon Web Services (AWS) API.")
-   (license license:asl2.0)))
+    (license license:asl2.0)))
 
 (define-public python-wsgiproxy2
   (package
@@ -2671,7 +2672,7 @@ textual content for output generation on the web.")
     (native-inputs
      `(("python-flask" ,python-flask)
        ("python-nose" ,python-nose)))
-    (home-page "http://packages.python.org/Flask-Principal/")
+    (home-page "https://pythonhosted.org/Flask-Principal/")
     (synopsis "Identity management for Flask")
     (description "@code{flask_principal} is a identity management library for
 Flask.  It supports managing both authentication and authorization data in a

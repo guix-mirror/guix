@@ -322,7 +322,7 @@ namespace ARDOUR { const char* revision = \"" version "\" ; }"))
        ("itstool" ,itstool)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://ardour.org")
+    (home-page "https://ardour.org")
     (synopsis "Digital audio workstation")
     (description
      "Ardour is a multi-channel digital audio workstation, allowing users to
@@ -1193,7 +1193,7 @@ follower.")
 (define-public fluidsynth
   (package
     (name "fluidsynth")
-    (version "2.1.0")
+    (version "2.1.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1202,7 +1202,7 @@ follower.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0jhla1641rx77va4b6n4shn8srj87rpwvp170byj1bg8z8g89ji1"))))
+                "09jq04hrasidf6b5gkk4aba13fq55z3bmn7bq35rdaikz26xiij4"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
@@ -1812,14 +1812,14 @@ essential distortions.")
 (define-public liblo
   (package
     (name "liblo")
-    (version "0.30")
+    (version "0.31")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/liblo/liblo/" version
                                  "/liblo-" version ".tar.gz"))
              (sha256
               (base32
-               "06wdjzxjdshr6hyl4c94yvg3jixiylap8yjs8brdfpm297gck9rh"))))
+               "0l67rkdhfa8cffa0nynql3lh2xlbn1454h6qxhjddp1029p48krb"))))
     (build-system gnu-build-system)
     (arguments
      `(;; liblo test FAILED
@@ -1988,7 +1988,7 @@ software.")
      (list (search-path-specification
             (variable "LV2_PATH")
             (files '("lib/lv2")))))
-    (home-page "http://elephly.net/lv2/mdapiano.html")
+    (home-page "https://elephly.net/lv2/mdapiano.html")
     (synopsis "LV2 port of the mda Piano plugin")
     (description "An LV2 port of the mda Piano VSTi.")
     (license license:gpl3+)))
@@ -2002,7 +2002,7 @@ software.")
                      (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:tests? #f ; no check target
        #:phases (modify-phases %standard-phases (delete 'configure))))
-    (home-page "http://elephly.net/lv2/mdaepiano.html")
+    (home-page "https://elephly.net/lv2/mdaepiano.html")
     (synopsis "LV2 port of the mda EPiano plugin")
     (description "An LV2 port of the mda EPiano VSTi.")))
 
@@ -3391,7 +3391,7 @@ code, used in @code{libtoxcore}.")
      `(#:tests? #f))                   ; tests require access to ALSA devices.
     (inputs
      `(("alsa-lib" ,alsa-lib)))
-    (home-page "http://larsimmisch.github.io/pyalsaaudio/")
+    (home-page "https://larsimmisch.github.io/pyalsaaudio/")
     (synopsis "ALSA wrappers for Python")
     (description
      "This package contains wrappers for accessing the ALSA API from Python.
@@ -3516,7 +3516,7 @@ the Snd sources), Ruby, or Forth.")
 (define-public noise-repellent
   (package
     (name "noise-repellent")
-    (version "0.1.4")
+    (version "0.1.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3525,16 +3525,12 @@ the Snd sources), Ruby, or Forth.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0rd3dlmk3vivjmcr6x2x860y0j1d49c2j95j6ny50v184mwvn11j"))))
-    (build-system gnu-build-system)
+                "0hb89x9i2knzan46q4nwscf5zmnb2nwf4w13xl2c0y1mx1ls1mwl"))))
+    (build-system meson-build-system)
     (arguments
-     `(#:make-flags
-       (list "CC=gcc"
-             (string-append "PREFIX=" (assoc-ref %outputs "out")))
-       #:tests? #f ; there are none
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure))))
+     `(#:configure-flags
+       (list (string-append "--prefix=" (assoc-ref %outputs "out")
+                            "/lib/lv2"))))
     (inputs
      `(("lv2" ,lv2)
        ("fftwf" ,fftwf)))

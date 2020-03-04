@@ -7,14 +7,14 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2014, 2017 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016, 2017, 2018 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017, 2018, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
-;;; Copyright © 2017,2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2017,2019,2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
@@ -23,6 +23,7 @@
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -69,10 +70,12 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages sphinx)
+  #:use-module (gnu packages video)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages qt)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -1014,6 +1017,9 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
       (sha256 (base32
                 "1bqs8vx5i1bzamvv563i24gx2xxdidqyxh9iaj46mbznhc84wmm5"))))
    (build-system cmake-build-system)
+   ;; Otherwise it fails on <ci.guix.gnu.org> in the check phase after 3600
+   ;; seconds of silence.
+   (properties '((max-silent-time . 7200)))
    (inputs
     `(("boost" ,boost)
       ("fftw" ,fftw)
@@ -1855,3 +1861,134 @@ using only text tools.
 SNG is implemented by a compiler/decompiler called sng that
 losslessly translates between SNG and PNG.")
     (license license:zlib)))
+
+(define-public lodepng
+  ;; There are no tags in the repository, so we take the version as defined in
+  ;; lodepng.cpp.
+  (let ((commit "48e5364ef48ec2408f44c727657ac1b6703185f8")
+        (revision "1")
+        (version "20200215"))
+    (package
+      (name "lodepng")
+      (version (git-version version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/lvandeve/lodepng")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1a1x8ag2scanzb2066jm9hg2y9kaa3wmpgmz10l1x9bkpik612lw"))
+                (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'build
+             (lambda _
+               (setenv "CXXFLAGS" "-fPIC")
+               (invoke "make" "lodepng.o")
+               (invoke "make" "lodepng_util.o")
+               (invoke "g++" "-fPIC" "-O3"
+                       "-o" "liblodepng.so"
+                       "-shared" "lodepng.o" "lodepng_util.o")
+               #t))
+           (replace 'check
+             (lambda _
+               (invoke "make" "unittest")
+               (invoke "./unittest")
+               #t))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (doc (string-append out "/share/doc"))
+                      (lib (string-append out "/lib"))
+                      (include (string-append out "/include")))
+                 (install-file "lodepng.h" include)
+                 (install-file "lodepng_util.h" include)
+                 (install-file "liblodepng.so" lib)
+                 (install-file "README.md" doc)
+                 #t))))))
+      (home-page "https://lodev.org/lodepng/")
+      (synopsis "PNG encoder and decoder in C and C++, without dependencies")
+      (description "LodePNG is a PNG image decoder and encoder, all in one,
+no dependency or linkage required.  It's made for C (ISO C90), and has a C++
+wrapper with a more convenient interface on top.")
+      (license license:zlib))))
+
+(define-public icoutils
+  (package
+    (name "icoutils")
+    (version "0.32.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://savannah/icoutils/icoutils-" version ".tar.bz2"))
+       (sha256
+        (base32 "1q66cksms4l62y0wizb8vfavhmf7kyfgcfkynil3n99s0hny1aqp"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libpng" ,libpng)
+       ("perl" ,perl)))
+    (propagated-inputs
+     `(("perl-libwww" ,perl-libwww)))
+    (home-page "https://www.nongnu.org/icoutils/")
+    (synopsis "Extract and convert bitmaps from Windows icon and cursor files")
+    (description "Icoutils are a set of program for extracting and converting
+bitmaps from Microsoft Windows icon and cursor files.  These files usually
+have the extension @code{.ico} or @code{.cur}, but they can also be embedded
+in executables and libraries (@code{.dll}-files).  (Such embedded files are
+referred to as resources.)
+
+Conversion of these files to and from PNG images is done @command{icotool}.
+@command{extresso} automates these tasks with the help of special resource
+scripts.  Resources such can be extracted from MS Windows executable and
+library files with @command{wrestool}.
+
+This package can be used to create @code{favicon.ico} files for web sites.")
+     (license license:gpl3+)))
+
+(define-public libavif
+  (package
+    (name "libavif")
+    (version "0.5.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/AOMediaCodec/libavif")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "15g76j9vb88q1v3azscph8im8714zdl70bni0al4ww9v80vhqpkd"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DAVIF_CODEC_AOM=ON" "-DAVIF_CODEC_DAV1D=ON"
+                           "-DAVIF_CODEC_RAV1E=OFF" ; not packaged yet
+                           "-DAVIF_BUILD_TESTS=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-readme
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/libavif-"
+                                        ,version)))
+               (install-file "../source/README.md" doc)))))
+;; The test suite runs tests for all supported codecs and fails because we don't
+;; have rav1e yet.
+;;         (replace 'check
+;;           (lambda _
+;;             (invoke "./aviftest" "../source/tests/data"))))
+       #:tests? #f))
+    (inputs
+     `(("libaom" ,libaom)
+       ("dav1d" ,dav1d)))
+    (synopsis "Encode and decode AVIF files")
+    (description "Libavif is a C implementation of the AV1 Image File Format
+(AVIF).  It can encode and decode all YUV formats and bit depths supported by
+AOM, including with alpha.")
+    (home-page "https://github.com/AOMediaCodec/libavif")
+    (license (list license:bsd-2    ; libavif itself
+                   license:expat)))) ; cJSON in the test suite

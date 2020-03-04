@@ -267,7 +267,7 @@ merging features essential for loading menus modified with menu editors.")
 (define-public tumbler
   (package
     (name "tumbler")
-    (version "0.2.7")
+    (version "0.2.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -275,7 +275,7 @@ merging features essential for loading menus modified with menu editors.")
                                   "tumbler-" version ".tar.bz2"))
               (sha256
                (base32
-                "1r0l0ghcrj71ax7yil1m4p7yjrfqm3icx0s8r7ivwv3i2rgw617p"))))
+                "15iyx4xk6v3vk8272c848y8rj4sq43khlqxndnai0w5mvsivk689"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -645,7 +645,7 @@ like appearance, display, keyboard and mouse settings.")
 (define-public thunar
   (package
     (name "thunar")
-    (version "1.8.11")
+    (version "1.8.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/xfce/"
@@ -653,7 +653,7 @@ like appearance, display, keyboard and mouse settings.")
                                   "thunar-" version ".tar.bz2"))
               (sha256
                (base32
-                "0f5jw61z1dbvyyf1nks5dagnbs6sxxw7spybgwvpb3hfljrlvphq"))))
+                "1y1548jrx93c9v8ks60mkd9sx5xl69fmwh1pbr9gsnqz1gp5na99"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

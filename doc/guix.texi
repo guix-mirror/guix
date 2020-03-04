@@ -73,6 +73,7 @@ Copyright @copyright{} 2020 Leo Prikler@*
 Copyright @copyright{} 2019, 2020 Simon Tournier@*
 Copyright @copyright{} 2020 Wiktor Żelazny@*
 Copyright @copyright{} 2020 Damien Cassou@*
+Copyright @copyright{} 2020 Jakub Kądziołka@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -771,11 +772,11 @@ The following dependencies are optional:
 
 @itemize
 @item
-@c Note: We need at least 0.10.2 for 'channel-send-eof'.
+@c Note: We need at least 0.12.0 for 'userauth-gssapi!'.
 Support for build offloading (@pxref{Daemon Offload Setup}) and
 @command{guix copy} (@pxref{Invoking guix copy}) depends on
 @uref{https://github.com/artyom-poptsov/guile-ssh, Guile-SSH},
-version 0.10.2 or later.
+version 0.12.0 or later.
 
 @item
 When @url{https://www.nongnu.org/lzip/lzlib.html, lzlib} is available, lzlib
@@ -2440,6 +2441,11 @@ your system includes the latest security updates (@pxref{Security Updates}).
 Note that @command{sudo guix} runs your user's @command{guix} command and
 @emph{not} root's, because @command{sudo} leaves @code{PATH} unchanged.  To
 explicitly run root's @command{guix}, type @command{sudo -i guix @dots{}}.
+
+The difference matters here, because @command{guix pull} updates
+the @command{guix} command and package definitions only for the user it is ran
+as.  This means that if you choose to use @command{guix system reconfigure} in
+root's login shell, you'll need to @command{guix pull} separately.
 @end quotation
 
 Join us on @code{#guix} on the Freenode IRC network or on
@@ -4230,7 +4236,7 @@ guix time-machine -- build hello
 @end example
 
 will thus build the package @code{hello} as defined in the master branch,
-which is in general a newer revison of Guix than you have installed.
+which is in general a newer revision of Guix than you have installed.
 Time travel works in both directions!
 
 Note that @command{guix time-machine} can trigger builds of channels and
@@ -4958,8 +4964,10 @@ shared and will change to the user's home directory within the container
 instead.  See also @code{--user}.
 
 @item --expose=@var{source}[=@var{target}]
-For containers, expose the file system @var{source} from the host system
-as the read-only file system @var{target} within the container.  If
+@itemx --share=@var{source}[=@var{target}]
+For containers, @code{--expose} (resp. @code{--share}) exposes the file
+system @var{source} from the host system as the read-only
+(resp. writable) file system @var{target} within the container.  If
 @var{target} is not specified, @var{source} is used as the target mount
 point in the container.
 
@@ -4971,19 +4979,6 @@ directory:
 guix environment --container --expose=$HOME=/exchange --ad-hoc guile -- guile
 @end example
 
-@item --share=@var{source}[=@var{target}]
-For containers, share the file system @var{source} from the host system
-as the writable file system @var{target} within the container.  If
-@var{target} is not specified, @var{source} is used as the target mount
-point in the container.
-
-The example below spawns a Guile REPL in a container in which the user's
-home directory is accessible for both reading and writing via the
-@file{/exchange} directory:
-
-@example
-guix environment --container --share=$HOME=/exchange --ad-hoc guile -- guile
-@end example
 @end table
 
 @command{guix environment}
@@ -6159,6 +6154,70 @@ parameters available to cargo.  It will also remove an included
 if they are defined by the crate.
 @end defvr
 
+
+@defvr {Scheme Variable} copy-build-system
+@cindex (copy build system)
+This variable is exported by @code{(guix build-system copy)}.  It
+supports builds of simple packages that don't require much compiling,
+mostly just moving files around.
+
+It adds much of the @code{gnu-build-system} packages to the set of
+inputs.  Because of this, the @code{copy-build-system} does not require
+all the boilerplate code often needed for the
+@code{trivial-build-system}.
+
+To further simplify the file installation process, an
+@code{#:install-plan} argument is exposed to let the packager specify
+which files go where.  The install plan is a list of @code{(@var{source}
+@var{target} [@var{filters}])}.  @var{filters} are optional.
+
+@itemize
+@item When @var{source} matches a file or directory without trailing slash, install it to @var{target}.
+@itemize
+@item If @var{target} has a trailing slash, install @var{source} basename beneath @var{target}.
+@item Otherwise install @var{source} as @var{target}.
+@end itemize
+
+@item When @var{source} is a directory with a trailing slash, or when @var{filters} are used,
+the trailing slash of @var{target} is implied with the same meaning
+as above.
+@itemize
+@item Without @var{filters}, install the full @var{source} @emph{content} to @var{target}.
+@item With @var{filters} among @code{#:include}, @code{#:include-regexp}, @code{#:exclude},
+@code{#:exclude-regexp}, only select files are installed depending on
+the filters.  Each filters is specified by a list of strings.
+@itemize
+@item With @code{#:include}, install all the files which the path suffix matches
+at least one of the elements in the given list.
+@item With @code{#:include-regexp}, install all the files which the
+subpaths match at least one of the regular expressions in the given
+list.
+@item The @code{#:exclude} and @code{#:exclude-regexp} filters
+are the complement of their inclusion counterpart.  Without @code{#:include} flags,
+install all files but those matching the exclusion filters.
+If both inclusions and exclusions are specified, the exclusions are done
+on top of the inclusions.
+@end itemize
+@end itemize
+In all cases, the paths relative to @var{source} are preserved within
+@var{target}.
+@end itemize
+
+Examples:
+
+@itemize
+@item @code{("foo/bar" "share/my-app/")}: Install @file{bar} to @file{share/my-app/bar}.
+@item @code{("foo/bar" "share/my-app/baz")}: Install @file{bar} to @file{share/my-app/baz}.
+@item @code{("foo/" "share/my-app")}: Install the content of @file{foo} inside @file{share/my-app},
+e.g., install @file{foo/sub/file} to @file{share/my-app/sub/file}.
+@item @code{("foo/" "share/my-app" #:include ("sub/file"))}: Install only @file{foo/sub/file} to
+@file{share/my-app/sub/file}.
+@item @code{("foo/sub" "share/my-app" #:include ("file"))}: Install @file{foo/sub/file} to
+@file{share/my-app/file}.
+@end itemize
+@end defvr
+
+
 @cindex Clojure (programming language)
 @cindex simple Clojure build system
 @defvr {Scheme Variable} clojure-build-system
@@ -6815,9 +6874,11 @@ instruct it to listen for TCP connections (@pxref{Invoking guix-daemon,
 
 @item ssh
 @cindex SSH access to build daemons
-These URIs allow you to connect to a remote daemon over
-SSH@footnote{This feature requires Guile-SSH (@pxref{Requirements}).}.
-A typical URL might look like this:
+These URIs allow you to connect to a remote daemon over SSH.  This
+feature requires Guile-SSH (@pxref{Requirements}) and a working
+@code{guile} binary in @code{PATH} on the destination machine.  It
+supports public key and GSSAPI authentication.  A typical URL might look
+like this:
 
 @example
 ssh://charlie@@guix.example.org:22
@@ -14037,7 +14098,7 @@ Each string gets on its own line.  See the @code{AcceptEnv} option in
 
 This example allows ssh-clients to export the @code{COLORTERM} variable.
 It is set by terminal emulators, which support colors.  You can use it in
-your shell's ressource file to enable colors for the prompt and commands
+your shell's resource file to enable colors for the prompt and commands
 if this variable is set.
 
 @lisp
@@ -14463,7 +14524,7 @@ Command to run when halting.
 Command to run when rebooting.
 
 @item @code{theme} (default "maldives")
-Theme to use. Default themes provided by SDDM are "elarun" or "maldives".
+Theme to use. Default themes provided by SDDM are "elarun", "maldives" or "maya".
 
 @item @code{themes-directory} (default "/run/current-system/profile/share/sddm/themes")
 Directory to look for themes.
@@ -14538,7 +14599,7 @@ Relogin after logout.
 @cindex X11 login
 @defvr {Scheme Variable} sddm-service-type
 This is the type of the service to run the
-@uref{https://github.com/sddm/sddm,SSDM display manager}.  Its value
+@uref{https://github.com/sddm/sddm,SDDM display manager}.  Its value
 must be a @code{sddm-configuration} record (see below).
 
 Here's an example use:
@@ -15560,7 +15621,7 @@ adding a service of type @code{mate-desktop-service-type} adds the MATE
 metapackage to the system profile.  ``Adding Enlightenment'' means that
 @code{dbus} is extended appropriately, and several of Enlightenment's binaries
 are set as setuid, allowing Enlightenment's screen locker and other
-functionality to work as expetected.
+functionality to work as expected.
 
 The desktop environments in Guix use the Xorg display server by
 default.  If you'd like to use the newer display server protocol
@@ -19987,7 +20048,7 @@ The @code{ServerName} in the configuration file, used to specify the
 request scheme, hostname and port that the server uses to identify
 itself.
 
-This doesn't need to be set in the server config, and can be specifyed
+This doesn't need to be set in the server config, and can be specified
 in virtual hosts. The default is @code{#f} to not specify a
 @code{ServerName}.
 
@@ -21143,7 +21204,7 @@ false, listed actions are allowed.
 @end deftp
 
 @deftp {Data Type} zone-entry
-Data type represnting a record entry in a zone file.
+Data type representing a record entry in a zone file.
 This type has the following parameters:
 
 @table @asis
@@ -21266,7 +21327,7 @@ The backend to store the keys in.  Can be @code{'pem} or @code{'pkcs11}.
 @item @code{config} (default: @code{"/var/lib/knot/keys/keys"})
 The configuration string of the backend.  An example for the PKCS#11 is:
 @code{"pkcs11:token=knot;pin-value=1234 /gnu/store/.../lib/pkcs11/libsofthsm2.so"}.
-For the pem backend, the string reprensents a path in the file system.
+For the pem backend, the string represents a path in the file system.
 
 @end table
 @end deftp
@@ -21799,6 +21860,13 @@ Defaults to @samp{#t}.
 
 @end deftypevr
 
+@deftypevr {@code{openvpn-client-configuration} parameter} boolean fast-io?
+(Experimental) Optimize TUN/TAP/UDP I/O writes by avoiding a call to
+poll/epoll/select prior to the write operation.
+
+Defaults to @samp{#f}.
+@end deftypevr
+
 @deftypevr {@code{openvpn-client-configuration} parameter} number verbosity
 Verbosity level.
 
@@ -21812,6 +21880,14 @@ channel to protect against DoS attacks.
 
 Defaults to @samp{#f}.
 
+@end deftypevr
+
+@deftypevr {@code{openvpn-client-configuration} parameter} maybe-string auth-user-pass
+Authenticate with server using username/password.  The option is a file
+containing username/password on 2 lines.  Do not use a file-like object as it
+would be added to the store and readable by any user.
+
+Defaults to @samp{'disabled}.
 @end deftypevr
 
 @deftypevr {@code{openvpn-client-configuration} parameter} key-usage verify-key-usage?
@@ -21933,6 +22009,13 @@ SIGUSR1 or --ping-restart restarts.
 
 Defaults to @samp{#t}.
 
+@end deftypevr
+
+@deftypevr {@code{openvpn-server-configuration} parameter} boolean fast-io?
+(Experimental) Optimize TUN/TAP/UDP I/O writes by avoiding a call to
+poll/epoll/select prior to the write operation.
+
+Defaults to @samp{#f}.
 @end deftypevr
 
 @deftypevr {@code{openvpn-server-configuration} parameter} number verbosity
@@ -24499,7 +24582,7 @@ Defaults to @samp{"a fast webinterface for the git dscm"}.
 
 @deftypevr {@code{cgit-configuration} parameter} string root-readme
 The content of the file specified with this option will be included
-verbatim below thef "about" link on the repository index page.
+verbatim below the "about" link on the repository index page.
 
 Defaults to @samp{""}.
 
@@ -25382,7 +25465,7 @@ of DICT server (@pxref{Dicod,,, dico, GNU Dico Manual}).
 
 The optional @var{config} argument specifies the configuration for
 @command{dicod}, which should be a @code{<dicod-configuration>} object, by
-default it serves the GNU Collaborative International Dictonary of English.
+default it serves the GNU Collaborative International Dictionary of English.
 
 You can add @command{open localhost} to your @file{~/.dico} file to make
 @code{localhost} the default server for @command{dico} client
@@ -26364,7 +26447,7 @@ Switch to an existing system generation.  This action atomically
 switches the system profile to the specified system generation.  It
 also rearranges the system's existing bootloader menu entries.  It
 makes the menu entry for the specified system generation the default,
-and it moves the entries for the other generatiors to a submenu, if
+and it moves the entries for the other generations to a submenu, if
 supported by the bootloader being used.  The next time the system
 boots, it will use the specified system generation.
 

@@ -41,16 +41,22 @@
   ;; The `emacs' command.
   (make-parameter "emacs"))
 
+(define (expr->string expr)
+  "Converts EXPR, an expression, into a string."
+  (if (string? expr)
+      expr
+      (format #f "~s" expr)))
+
 (define (emacs-batch-eval expr)
   "Run Emacs in batch mode, and execute the elisp code EXPR."
   (invoke (%emacs) "--quick" "--batch"
-          (format #f "--eval=~S" expr)))
+          (string-append "--eval=" (expr->string expr))))
 
 (define (emacs-batch-edit-file file expr)
   "Load FILE in Emacs using batch mode, and execute the elisp code EXPR."
   (invoke (%emacs) "--quick" "--batch"
           (string-append "--visit=" file)
-          (format #f "--eval=~S" expr)))
+          (string-append "--eval=" (expr->string expr))))
 
 (define (emacs-batch-disable-compilation file)
   (emacs-batch-edit-file file

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,7 +55,8 @@
             load-services
             load-services/safe
             start-service
-            stop-service))
+            stop-service
+            restart-service))
 
 ;;; Commentary:
 ;;;
@@ -270,6 +271,10 @@ when passed a service with an already-registered name."
 
 (define (stop-service name)
   (with-shepherd-action name ('stop) result
+    result))
+
+(define (restart-service name)
+  (with-shepherd-action name ('restart) result
     result))
 
 ;; Local Variables:

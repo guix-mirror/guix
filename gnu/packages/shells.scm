@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014 Kevin Lemonnier <lemonnierk@ulrar.net>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
-;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018 ng0 <ng0@n0.is>
@@ -102,7 +102,7 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
        (method url-fetch)
        (uri (string-append "https://github.com/fish-shell/fish-shell/"
                            "releases/download/" version "/"
-                           name "-" version ".tar.gz"))
+                           "fish-" version ".tar.gz"))
        (sha256
         (base32 "03j3jl9jzlnhq4p86zj8wqsh5sx45j1d1fvfa80ks1cfdg68qwhl"))))
     (build-system gnu-build-system)
@@ -404,7 +404,7 @@ history mechanism, job control and a C-like syntax.")
 (define-public zsh
   (package
     (name "zsh")
-    (version "5.7.1")
+    (version "5.8")
     (source (origin
               (method url-fetch)
               (uri (list (string-append
@@ -415,7 +415,7 @@ history mechanism, job control and a C-like syntax.")
                            ".tar.xz")))
               (sha256
                (base32
-                "1s3yww0mzgvpc48kp0x868mm3gbna42sbgzya0nknj0x5hn2jq3j"))))
+                "09yyaadq738zlrnlh1hd3ycj1mv3q5hh4xl1ank70mjnqm6bbi6w"))))
     (build-system gnu-build-system)
     (arguments `(#:configure-flags '("--with-tcsetpgrp" "--enable-pcre"
                                      "--enable-maildir-support")
@@ -759,14 +759,14 @@ Shell (pdksh).")
 (define-public oil-shell
   (package
     (name "oil-shell")
-    (version "0.6.0")
+    (version "0.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.oilshell.org/download/oil-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1dw4mgnlmaxlfygasfihgvbj32d3m9w6k5j7azb9d9lp35f3l7hl"))))
+                "12c9s462879adb6mwd3fqafk0dnqsm16s18rhym6cmzfzy8v8zm3"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; the tests are not distributed in the tarballs

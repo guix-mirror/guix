@@ -178,7 +178,7 @@ residing in IPv4-only networks, even when they are behind a NAT device.")
 (define-public socat
   (package
     (name "socat")
-    (version "1.7.3.3")
+    (version "1.7.3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -186,9 +186,9 @@ residing in IPv4-only networks, even when they are behind a NAT device.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "0jnhjijyq74g3wa4ph0am83z6vq7qna7ac0xqjma8s4197z3zmhd"))))
+                "1z7xgnwiqpcv1j6aghhj9nqbx7cg3gpc4n9j7vi9hm7nhv5788wp"))))
     (build-system gnu-build-system)
-    (arguments '(#:tests? #f))                    ;no 'check' phase
+    (arguments '(#:tests? #f))          ; no test suite
     (inputs `(("openssl" ,openssl)))
     (home-page "http://www.dest-unreach.org/socat/")
     (synopsis
@@ -562,14 +562,14 @@ and up to 1 Mbit/s downstream.")
 (define-public whois
   (package
     (name "whois")
-    (version "5.5.5")
+    (version "5.5.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://debian/pool/main/w/whois/"
                            "whois_" version ".tar.xz"))
        (sha256
-        (base32 "03akwma24gzfnsmwpjxmkzmcaxzg6fc68hmyaz0xmsl28i28l3n3"))))
+        (base32 "0kpi981zjczvdcxfcq455c529vlaxa73x8kbm530z5b01h0fk8fb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite
@@ -604,14 +604,14 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "3.2.1")
+    (version "3.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.wireshark.org/download/src/wireshark-"
                            version ".tar.xz"))
        (sha256
-        (base32 "0nz84zyhs4177ljxmv34vgc9kgg7ssxhxa4mssxqwh6nb00697sq"))))
+        (base32 "0ygdxpz0i4jxp55fg9x4xcan093wycjb66yas073gviz9kpj6naz"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases

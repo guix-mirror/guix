@@ -2057,6 +2057,7 @@ dealing with different structured file formats.")
 
 (define-public librsvg
   (package
+    (replacement librsvg/fixed)
     (name "librsvg")
     (version "2.40.20")
     (source (origin
@@ -2123,6 +2124,20 @@ dealing with different structured file formats.")
 library.")
     (license license:lgpl2.0+)))
 
+(define librsvg/fixed
+  (package
+    (inherit librsvg)
+    (name "librsvg")
+    (version "2.40.21")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1fljkag2gr7c4k5mn798lgf9903xslz8h51bgvl89nnay42qjqpp"))))))
+
 (define* (computed-origin-method gexp-promise hash-algo hash
                                  #:optional (name "source")
                                  #:key (system (%current-system))
@@ -2137,7 +2152,7 @@ from forcing GEXP-PROMISE."
                       #:guile-for-build guile)))
 
 (define librsvg-next-source
-  (let* ((version         "2.46.3")
+  (let* ((version         "2.46.4")
          (upstream-source (origin
                            (method url-fetch)
                            (uri (string-append "mirror://gnome/sources/librsvg/"
@@ -2145,7 +2160,7 @@ from forcing GEXP-PROMISE."
                                                "librsvg-" version ".tar.xz"))
                            (sha256
                             (base32
-                             "1s3a96i7f4pynjwxxvhysp4b6r7kyi8nasdxfyi62hc7gm34d3kn")))))
+                             "0afc82nsxc6kw136xid4vcq9kmq4rmgzzk8bh2pvln2cnvirwnxl")))))
     (origin
       (method computed-origin-method)
       (file-name (string-append "librsvg-" version ".tar.xz"))
@@ -2166,7 +2181,15 @@ from forcing GEXP-PROMISE."
                 ;; The following crate(s) are needed in addition to the ones replaced:
                 (begin
                   (invoke
-                   "tar" "xvf" #+(package-source rust-autocfg-0.1) "-C" "vendor"))
+                   "tar" "xvf" #+(package-source rust-autocfg-0.1) "-C" "vendor")
+                  (invoke
+                   "tar" "xvf" #+(package-source rust-proc-macro2-0.4) "-C" "vendor")
+                  (invoke
+                   "tar" "xvf" #+(package-source rust-quote-0.6) "-C" "vendor")
+                  (invoke
+                   "tar" "xvf" #+(package-source rust-unicode-xid-0.1) "-C" "vendor")
+                  (invoke
+                   "tar" "xvf" #+(package-source rust-maybe-uninit-2.0) "-C" "vendor"))
                 (for-each
                   (lambda (crate)
                     (delete-file-recursively (string-append "vendor/" (car crate)))
@@ -2217,10 +2240,10 @@ from forcing GEXP-PROMISE."
 ;; gdk-pixbuf-sys 0.9
                     ("generic-array" . #+(package-source rust-generic-array-0.12))
 ;; gio 0.7
-;; gio-sys 0.9
+                    ("gio-sys" . #+(package-source rust-gio-sys-0.9))
 ;; glib 0.8
-;; glib-sys 0.9
-;; gobject-sys 0.9
+                    ("glib-sys" . #+(package-source rust-glib-sys-0.9))
+                    ("gobject-sys" . #+(package-source rust-gobject-sys-0.9))
                     ("idna" . #+(package-source rust-idna-0.2))
                     ("itertools" . #+(package-source rust-itertools-0.8))
                     ("itoa" . #+(package-source rust-itoa-0.4))
@@ -2228,10 +2251,10 @@ from forcing GEXP-PROMISE."
                     ("lazy_static" . #+(package-source rust-lazy-static-1))
                     ("libc" . #+(package-source rust-libc-0.2))
                     ("libm" . #+(package-source rust-libm-0.1))
-;; locale_config 0.3
+                    ("locale_config" . #+(package-source rust-locale-config-0.3))
                     ("log" . #+(package-source rust-log-0.4))
                     ("mac" . #+(package-source rust-mac-0.1))
-;; malloc_buf 0.0
+                    ("malloc_buf" . #+(package-source rust-malloc-buf-0.0))
 ;; markup5ever 0.9
                     ("matches" . #+(package-source rust-matches-0.1))
 ;; matrixmultiply 0.2
@@ -2242,12 +2265,12 @@ from forcing GEXP-PROMISE."
                     ("nodrop" . #+(package-source rust-nodrop-0.1))
                     ("num-complex" . #+(package-source rust-num-complex-0.2))
                     ("num-integer" . #+(package-source rust-num-integer-0.1))
-;; num-rational 0.2
+                    ("num-rational" . #+(package-source rust-num-rational-0.2))
                     ("num-traits" . #+(package-source rust-num-traits-0.2))
                     ("num_cpus" . #+(package-source rust-num-cpus-1.10))
-;; objc 0.2
-;; objc-foundation 0.1
-;; objc_id 0.1
+                    ("objc" . #+(package-source rust-objc-0.2))
+                    ("objc-foundation" . #+(package-source rust-objc-foundation-0.1))
+                    ("objc_id" . #+(package-source rust-objc-id-0.1))
 ;; pango 0.7
 ;; pango-sys 0.9
 ;; pangocairo 0.8
@@ -2293,7 +2316,7 @@ from forcing GEXP-PROMISE."
                     ("siphasher" . #+(package-source rust-siphasher-0.2))
                     ("smallvec" . #+(package-source rust-smallvec-0.6))
                     ("string_cache" . #+(package-source rust-string-cache-0.7))
-                    ;("string_cache_codegen" . #+(package-source rust-string-cache-codegen-0.4))
+                    ("string_cache_codegen" . #+(package-source rust-string-cache-codegen-0.4))
                     ("string_cache_shared" . #+(package-source rust-string-cache-shared-0.3))
                     ("syn" . #+(package-source rust-syn-1.0))
                     ("tendril" . #+(package-source rust-tendril-0.4))
@@ -2312,8 +2335,7 @@ from forcing GEXP-PROMISE."
                     ("winapi-i686-pc-windows-gnu" . #+(package-source rust-winapi-i686-pc-windows-gnu-0.4))
                     ("winapi-util" . #+(package-source rust-winapi-util-0.1))
                     ("winapi-x86_64-pc-windows-gnu" . #+(package-source rust-winapi-x86-64-pc-windows-gnu-0.4))
-;; xml-rs 0.8
-                    )))
+                    ("xml-rs" . #+(package-source rust-xml-rs-0.8)))))
               (format #t "Replacing vendored crates in the tarball and repacking ...~%")
               (force-output)
               (invoke "tar" "cfa" #$output
@@ -2332,7 +2354,7 @@ from forcing GEXP-PROMISE."
 (define-public librsvg-next
   (package
     (name "librsvg")
-    (version "2.46.3")
+    (version "2.46.4")
     (source librsvg-next-source)
     (build-system gnu-build-system)
     (arguments
@@ -2348,6 +2370,8 @@ from forcing GEXP-PROMISE."
              (use-modules (guix build cargo-utils))
              (substitute* "librsvg/Cargo.toml"
                (("bitflags .*") "bitflags = \"1\"\n")) ; 1.2 is vendored
+             (substitute* "rsvg_internals/Cargo.toml"
+               (("\"=") "\""))
              (generate-all-checksums "vendor")
              (delete-file "Cargo.lock")
              (invoke "cargo" "generate-lockfile")))
@@ -3629,7 +3653,7 @@ libxml to ease remote use of the RESTful API.")
 (define-public libsoup
   (package
     (name "libsoup")
-    (version "2.68.3")
+    (version "2.68.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libsoup/"
@@ -3637,7 +3661,7 @@ libxml to ease remote use of the RESTful API.")
                                   "libsoup-" version ".tar.xz"))
               (sha256
                (base32
-                "1yxs0ax4rq3g0lgkbv7mz497rqj16iyyizddyc13gzxh6n7b0jsk"))))
+                "151j5dc84gbl6a917pxvd0b372lw5za48n63lyv6llfc48lv2l1d"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -4385,7 +4409,7 @@ which are easy to play with the aid of a mouse.")
 (define-public amtk
   (package
     (name "amtk")
-    (version "5.0.1")
+    (version "5.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/amtk/"
@@ -4393,7 +4417,7 @@ which are easy to play with the aid of a mouse.")
                                   "amtk-" version ".tar.xz"))
               (sha256
                (base32
-                "09yy95w1s83c43mh9vha1jbb780yighf5pd2j0ygjmc68sjg871d"))))
+                "11jgz2i9wjzv4alrxl1qyxiapb52w7vs5ygfgsw0qgdap8gqkk3i"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-gtk-doc")))
@@ -5312,7 +5336,7 @@ USB transfers with your high-level application or system daemon.")
 (define-public simple-scan
   (package
     (name "simple-scan")
-    (version "3.34.2")
+    (version "3.34.4")
     (source
      (origin
        (method url-fetch)
@@ -5320,7 +5344,7 @@ USB transfers with your high-level application or system daemon.")
                            (version-major+minor version) "/"
                            "simple-scan-" version ".tar.xz"))
        (sha256
-        (base32 "1fk3g4f9slckqfwm576jrjq1d1qihw0dlgzdf00ns7qbhzb0kxsp"))))
+        (base32 "0xvy672zyl6jsdlnxma8nc2aqsx9k92jhp6wfxs0msj9ppp1nd3z"))))
     (build-system meson-build-system)
     ;; TODO: Fix icons in home screen, About dialogue, and scan menu.
     (arguments
@@ -5635,7 +5659,7 @@ wraps things up in a developer-friendly way.")
 (define-public libgee
   (package
     (name "libgee")
-    (version "0.20.2")
+    (version "0.20.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libgee/"
@@ -5643,7 +5667,7 @@ wraps things up in a developer-friendly way.")
                                   "libgee-" version ".tar.xz"))
               (sha256
                (base32
-                "0g1mhl7nidg82v4cikkk8dakzc18hg7wv0dsf2pbyijzfm5mq0wy"))))
+                "1pm525wm11dhwz24m8bpcln9547lmrigl6cxf3qsbg4cr3pyvdfh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -5704,7 +5728,7 @@ metadata in photo and video files of various formats.")
 (define-public shotwell
   (package
     (name "shotwell")
-    (version "0.30.7")
+    (version "0.30.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/shotwell/"
@@ -5712,7 +5736,7 @@ metadata in photo and video files of various formats.")
                                   "shotwell-" version ".tar.xz"))
               (sha256
                (base32
-                "1m9i8r4gyd2hzlxjjwfyck4kz7gdg2vz2k6l6d0ga9hdfq2l4p9l"))))
+                "1f7m007g6w1sz8s60w6x81ghp2rrjmik8phd958b2hy8zz92wbbj"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -7881,7 +7905,29 @@ world.")
        ("yelp" ,yelp)
      ;; Others
        ("hicolor-icon-theme" ,hicolor-icon-theme)
-       ("gnome-online-accounts" ,gnome-online-accounts)))
+       ("gnome-online-accounts" ,gnome-online-accounts)
+
+       ;; Packages not part of GNOME proper but that are needed for a good
+       ;; experience.  See <https://bugs.gnu.org/39646>.
+       ;; XXX: Find out exactly which ones are needed and why.
+       ("font-cantarell"            ,font-cantarell)
+       ("font-dejavu"               ,font-dejavu)
+       ("at-spi2-core"              ,at-spi2-core)
+       ("dbus"                      ,dbus)
+       ("dconf"                     ,dconf)
+       ("desktop-file-utils"        ,desktop-file-utils)
+       ("gnome-default-applications" ,gnome-default-applications)
+       ("gnome-themes-standard"     ,gnome-themes-standard)
+       ("gst-plugins-base"          ,gst-plugins-base)
+       ("gst-plugins-good"          ,gst-plugins-good)
+       ("gucharmap"                 ,gucharmap)
+       ("pinentry-gnome3"           ,pinentry-gnome3)
+       ("pulseaudio"                ,pulseaudio)
+       ("shared-mime-info"          ,shared-mime-info)
+       ("system-config-printer"     ,system-config-printer)
+       ("xdg-user-dirs"             ,xdg-user-dirs)
+       ("yelp"                      ,yelp)
+       ("zenity"                    ,zenity)))
     (synopsis "The GNU desktop environment")
     (home-page "https://www.gnome.org/")
     (description

@@ -51,7 +51,7 @@
 (define-public choqok
   (package
     (name "choqok")
-    (version "1.6.0")
+    (version "1.7.0")
     (source
      (origin
        (method url-fetch)
@@ -59,8 +59,7 @@
                            (version-major+minor version)
                            "/src/choqok-" version ".tar.xz"))
        (sha256
-        (base32 "03ri4y1wzyqlixnhczsls5gmy7jzzm67bb5gz8bav51ngc32fxca"))
-       (patches (search-patches "choqok-Fix-building-under-Qt-5.13.patch"))))
+        (base32 "0zm4nkpmvd181xlkis7ydzx54p3vn0zgpdzgh54f1hsjy6ahsq16"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -86,9 +85,11 @@
        ("kxmlgui" ,kxmlgui)
        ;; TODO: telepathy
        ("oxygen-icons" ,oxygen-icons) ; default icon set
+       ("purpose" ,purpose)
        ("qca" ,qca)
        ("qoauth" ,qoauth)
        ("qtbase" ,qtbase)
+       ("qtnetworkauth" ,qtnetworkauth)
        ("qtwebkit" ,qtwebkit)
        ("sonnet" ,sonnet)))
     (home-page "https://kde.org/applications/internet/org.kde.choqok")

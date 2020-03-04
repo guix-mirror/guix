@@ -226,7 +226,7 @@ When present, Poppler is able to correctly render CJK and Cyrillic text.")
        ("python-pyqt" ,python-pyqt)
        ("poppler-qt5" ,poppler-qt5)
        ("qtbase" ,qtbase)))
-    (home-page "https://pypi.python.org/pypi/python-poppler-qt5")
+    (home-page "https://pypi.org/project/python-poppler-qt5/")
     (synopsis "Python bindings for Poppler-Qt5")
     (description
      "This package provides Python bindings for the Qt5 interface of the
@@ -272,13 +272,14 @@ reading and editing of existing PDF files.")
 (define-public xpdf
   (package
    (name "xpdf")
-   (version "3.04")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "ftp://ftp.foolabs.com/pub/xpdf/xpdf-"
-                                version ".tar.gz"))
-            (sha256 (base32
-                     "1rbp54mr3z2x3a3a1qmz8byzygzi223vckfam9ib5g1sfds0qf8i"))))
+   (version "4.02")
+   (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "https://xpdfreader-dl.s3.amazonaws.com/xpdf-"
+                          version "4.02.tar.gz"))
+      (sha256
+       (base32 "1rbp54mr3z2x3a3a1qmz8byzygzi223vckfam9ib5g1sfds0qf8i"))))
    (build-system gnu-build-system)
    (inputs `(("freetype" ,freetype)
              ("gs-fonts" ,gs-fonts)
@@ -292,8 +293,8 @@ reading and editing of existing PDF files.")
              ("libpng" ,libpng)
              ("zlib" ,zlib)))
    (arguments
-    `(#:tests? #f ; there is no check target
-      #:parallel-build? #f ; build fails randomly on 8-way machines
+    `(#:tests? #f                     ; there is no check target
+      #:parallel-build? #f            ; build fails randomly on 8-way machines
       #:configure-flags
         (list (string-append "--with-freetype2-includes="
                              (assoc-ref %build-inputs "freetype")
@@ -315,8 +316,8 @@ reading and editing of existing PDF files.")
    (synopsis "Viewer for PDF files based on the Motif toolkit")
    (description
     "Xpdf is a viewer for Portable Document Format (PDF) files.")
-   (license license:gpl3) ; or gpl2, but not gpl2+
-   (home-page "http://www.foolabs.com/xpdf/")))
+   (license license:gpl3)             ; or gpl2, but not gpl2+
+   (home-page "https://www.xpdfreader.com/")))
 
 (define-public zathura-cb
   (package
@@ -391,7 +392,7 @@ using libspectre.")
 (define-public zathura-djvu
   (package
     (name "zathura-djvu")
-    (version "0.2.8")
+    (version "0.2.9")
     (source (origin
               (method url-fetch)
               (uri
@@ -399,7 +400,7 @@ using libspectre.")
                               version ".tar.xz"))
               (sha256
                (base32
-                "0axkv1crdxn0z44whaqp2ibkdqcykhjnxk7qzms0dp1b67an9rnh"))))
+                "0062n236414db7q7pnn3ccg5111ghxj3407pn9ri08skxskgirln"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("djvulibre" ,djvulibre)
@@ -471,7 +472,7 @@ by using the @code{mupdf} rendering library.")
 (define-public zathura-pdf-poppler
   (package
     (name "zathura-pdf-poppler")
-    (version "0.2.9")
+    (version "0.3.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -479,7 +480,7 @@ by using the @code{mupdf} rendering library.")
                               version ".tar.xz"))
               (sha256
                (base32
-                "1p4jcny0jniygns78mcf0nlm298dszh49qpmjmackrm6dq8hc25y"))))
+                "1vfl4vkyy3rf39r1sqaa7y8113bgkh2bkfq3nn2inis9mrykmk6m"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("poppler" ,poppler)
@@ -507,7 +508,7 @@ by using the poppler rendering engine.")
 (define-public zathura
   (package
     (name "zathura")
-    (version "0.4.3")
+    (version "0.4.5")
     (source (origin
               (method url-fetch)
               (uri
@@ -515,7 +516,7 @@ by using the poppler rendering engine.")
                               version ".tar.xz"))
               (sha256
                (base32
-                "0hgx5x09i6d0z45llzdmh4l348fxh1y102sb1w76f2fp4r21j4ky"))))
+                "0b3nrcvykkpv2vm99kijnic2gpfzva520bsjlihaxandzfm9ff8c"))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gettext-minimal)
                      ("glib:bin" ,glib "bin")
@@ -1281,13 +1282,13 @@ manipulating PDF documents from the command line.  It supports
 (define-public weasyprint
   (package
     (name "weasyprint")
-    (version "50")
+    (version "51")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "WeasyPrint" version))
        (sha256
-        (base32 "0invs96zvmcr6wh5klj52jrcnr9qg150v9wpmbhcsf3vv1d1hbcw"))
+        (base32 "0skdzwq7cd715dnnds6abx0k0xmmnmsqp0vb1r1w20sg7abp3sdk"))
        (patches (search-patches "weasyprint-library-paths.patch"))))
     (build-system python-build-system)
     (arguments
@@ -1315,11 +1316,11 @@ manipulating PDF documents from the command line.  It supports
            (lambda _
              (substitute* "setup.cfg"
                ;; flake8 and isort syntax checks fail, which is not our
-               ;; business
+               ;; business.
                (("addopts = --flake8 --isort") ""))))
          (replace 'check
            (lambda _
-             ;; run pytest, excluding one failing test
+             ;; Run pytest, excluding one failing test.
              (invoke "pytest" "-k" "not test_flex_column_wrap_reverse"))))))
     (inputs
      `(("fontconfig" ,fontconfig)

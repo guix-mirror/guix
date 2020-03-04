@@ -3578,7 +3578,7 @@ cli/shell/BourneShell.java"
     (native-inputs
      `(("java-hamcrest-core" ,java-hamcrest-core)
        ("java-junit" ,java-junit)))
-    (home-page "http://codehaus-plexus.github.io/plexus-utils/")
+    (home-page "https://codehaus-plexus.github.io/plexus-utils/")
     (synopsis "Common utilities for the Plexus framework")
     (description "This package provides various Java utility classes for the
 Plexus framework to ease working with strings, files, command lines, XML and
@@ -3604,7 +3604,7 @@ more.")
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://codehaus-plexus.github.io/plexus-interpolation/")
+    (home-page "https://codehaus-plexus.github.io/plexus-interpolation/")
     (synopsis "Java components for interpolating ${} strings and the like")
     (description "Plexus interpolator is a modular, flexible interpolation
 framework for the expression language style commonly seen in Maven, Plexus,
@@ -4757,7 +4757,7 @@ targeting the JVM.")
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)
        ("java-easymock" ,java-easymock)))
-    (home-page "http://commons.apache.org/collections/")
+    (home-page "https://commons.apache.org/collections/")
     (synopsis "Collections framework")
     (description "The Java Collections Framework is the recognised standard
 for collection handling in Java.  Commons-Collections seek to build upon the
@@ -4929,7 +4929,7 @@ file filters and endian classes.")
          (replace 'install (install-jars "target")))))
     (native-inputs
      `(("java-junit" ,java-junit)))
-    (home-page "http://commons.apache.org/proper/commons-exec/")
+    (home-page "https://commons.apache.org/proper/commons-exec/")
     (synopsis "Common program execution related classes")
     (description "Commons-Exec simplifies executing external processes.")
     (license license:asl2.0)))
@@ -6584,7 +6584,7 @@ logging framework for Java.")))
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://commons.apache.org/cli/")
+    (home-page "https://commons.apache.org/cli/")
     (synopsis "Command line arguments and options parsing library")
     (description "The Apache Commons CLI library provides an API for parsing
 command line options passed to programs.  It is also able to print help
@@ -6634,7 +6634,7 @@ This is a part of the Apache Commons Project.")
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://commons.apache.org/codec/")
+    (home-page "https://commons.apache.org/codec/")
     (synopsis "Common encoders and decoders such as Base64, Hex, Phonetic and URLs")
     (description "The codec package contains simple encoder and decoders for
 various formats such as Base64 and Hexadecimal.  In addition to these widely
@@ -6903,7 +6903,7 @@ tree walking, and translation.")
     (native-inputs
      `(("antlr" ,antlr2)
        ("java-junit" ,java-junit)))
-    (home-page "http://www.stringtemplate.org")
+    (home-page "https://www.stringtemplate.org")
     (synopsis "Template engine to generate formatted text output")
     (description "StringTemplate is a java template engine (with ports for C#,
 Objective-C, JavaScript, Scala) for generating source code, web pages, emails,
@@ -11549,16 +11549,16 @@ the application using Java to Lisp integration APIs.")
 (define-public java-jsonp-api
   (package
     (name "java-jsonp-api")
-    (version "1.1.5")
+    (version "1.1.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                      (url "https://github.com/eclipse-ee4j/jsonp")
-                     (commit (string-append version "-RELEASE"))))
+                     (commit (string-append "1.1-" version "-RELEASE"))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0nxq16lrx7i87hgyj5rzcwilvr67h0i299gygfn8f5vs4n7n59vy"))))
+                "0zrj03hkr3jdmqlb4ipjr37cqpp2q2814qpmxi7srlwpdqs0ibgc"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "jsonp-api.jar"
@@ -11584,7 +11584,15 @@ and allows to build a Java object model for JSON text using API classes
      `(#:jar-name "jsonp-impl.jar"
        #:tests? #f
        #:source-dir "impl/src/main/java"
-       #:test-dir "impl/src/test"))
+       #:test-dir "impl/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively
+               "impl/src/main/resources/"
+               "build/classes")
+             #t)))))
     (propagated-inputs
      `(("java-jsonp-api" ,java-jsonp-api)))
     (description "JSON Processing (JSON-P) is a Java API to process (e.g.

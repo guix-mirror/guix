@@ -76,21 +76,26 @@
 (define-public wine
   (package
     (name "wine")
-    (version "5.0")
+    (version "5.3")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://dl.winehq.org/wine/source/"
-                           (version-major+minor version)
-                           "/wine-" version ".tar.xz"))
+       (uri (let ((dir (string-append
+                        (version-major version)
+                        (if (string-suffix? ".0" (version-major+minor version))
+                            ".0/"
+                            ".x/"))))
+              (string-append "https://dl.winehq.org/wine/source/" dir
+                             "wine-" version ".tar.xz")))
        (sha256
-        (base32 "1d0kcy338radq07hrnzcpc9lc9j2fvzjh37q673002x8d6x5058q"))))
+        (base32 "1pkzj3656ad0vmc7ciwfzn45lb2kxwbyymfwnqaa105dicicf6wv"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("gettext" ,gettext-minimal)
-                     ("flex" ,flex)
-                     ("bison" ,bison)
-                     ("perl" ,perl)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ("gettext" ,gettext-minimal)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("dbus" ,dbus)
@@ -323,7 +328,7 @@ integrate Windows applications into your desktop.")
 (define-public wine-staging-patchset-data
   (package
     (name "wine-staging-patchset-data")
-    (version "5.0")
+    (version "5.3")
     (source
      (origin
        (method git-fetch)
@@ -332,7 +337,7 @@ integrate Windows applications into your desktop.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "054m2glvav29qnlgr3p36kahyv3kbxzba82djzqpc7cmsrin0d3f"))))
+        (base32 "1mvhrvshyrj7lgjgka735z6j8idwd6j58bpg5nz1slgmlh1llrs6"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("bash" ,bash)
@@ -382,7 +387,7 @@ integrate Windows applications into your desktop.")
                "/wine-" version ".tar.xz")))
        (file-name (string-append name "-" version ".tar.xz"))
        (sha256
-        (base32 "1d0kcy338radq07hrnzcpc9lc9j2fvzjh37q673002x8d6x5058q"))))
+        (base32 "1pkzj3656ad0vmc7ciwfzn45lb2kxwbyymfwnqaa105dicicf6wv"))))
     (inputs `(("autoconf" ,autoconf)    ; for autoreconf
               ("ffmpeg" ,ffmpeg)
               ("gtk+" ,gtk+)
@@ -554,7 +559,7 @@ version)")
   ;; This package provides 32-bit dxvk libraries on 64-bit systems.
   (package
     (name "dxvk32")
-    (version "1.5.4")
+    (version "1.5.5")
     (home-page "https://github.com/doitsujin/dxvk/")
     (source (origin
               (method git-fetch)
@@ -564,7 +569,7 @@ version)")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0yhxd5rnn5mcvcb2n062z9wqqwxjq5c0rzfbjz1z9ppznj8gn37i"))))
+                "1inl0qswgvbp0fs76md86ilqf9mbshkpjm8ga81khn9zd6v3fvan"))))
     (build-system meson-build-system)
     (arguments
      `(#:system "i686-linux"
@@ -607,7 +612,8 @@ Use @command{setup_dxvk} to install the required libraries to a Wine prefix.")
                           (dxvk32 (assoc-ref inputs "dxvk32")))
                      (mkdir-p (string-append out "/lib32"))
                      (copy-recursively (string-append dxvk32 "/lib")
-                                       (string-append out "/lib32"))))))
+                                       (string-append out "/lib32"))
+                     #t))))
              '())
          (add-after 'install 'install-setup
            (lambda* (#:key inputs outputs #:allow-other-keys)

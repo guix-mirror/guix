@@ -88,14 +88,14 @@
 (define-public blender
   (package
     (name "blender")
-    (version "2.81a")
+    (version "2.82")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.blender.org/source/"
                                   "blender-" version ".tar.xz"))
               (sha256
                (base32
-                "1zl0ar95qkxsrbqw9miz2hrjijlqjl06vg3clfk9rm7krr2l3b2j"))))
+                "0rgw8nilvn6k6r7p28y2l1rwpami1cc8xz473jaahn7wa4ndyah0"))))
     (build-system cmake-build-system)
     (arguments
       (let ((python-version (version-major+minor (package-version python))))
@@ -127,11 +127,11 @@
          (modify-phases %standard-phases
            ;; XXX This file doesn't exist in the Git sources but will probably
            ;; exist in the eventual 2.80 source tarball.
-;           (add-after 'unpack 'fix-broken-import
-;             (lambda _
-;               (substitute* "release/scripts/addons/io_scene_fbx/json2fbx.py"
-;                 (("import encode_bin") "from . import encode_bin"))
-;               #t))
+           (add-after 'unpack 'fix-broken-import
+             (lambda _
+               (substitute* "release/scripts/addons/io_scene_fbx/json2fbx.py"
+                 (("import encode_bin") "from . import encode_bin"))
+               #t))
            (add-after 'set-paths 'add-ilmbase-include-path
              (lambda* (#:key inputs #:allow-other-keys)
                ;; OpenEXR propagates ilmbase, but its include files do not appear
@@ -174,95 +174,6 @@
 the 3D pipeline—modeling, rigging, animation, simulation, rendering,
 compositing and motion tracking, even video editing and game creation.  The
 application can be customized via its API for Python scripting.")
-    (license license:gpl2+)))
-
-(define-public blender-2.79
-  (package
-    (name "blender")
-    (version "2.79b")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://download.blender.org/source/"
-                                  "blender-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1g4kcdqmf67srzhi3hkdnr4z1ph4h9sza1pahz38mrj998q4r52c"))
-              (patches (search-patches "blender-2.79-newer-ffmpeg.patch"
-                                       "blender-2.79-python-3.7-fix.patch"))))
-    (build-system cmake-build-system)
-    (arguments
-      (let ((python-version (version-major+minor (package-version python))))
-       `(;; Test files are very large and not included in the release tarball.
-         #:tests? #f
-         #:configure-flags
-         (list "-DWITH_CODEC_FFMPEG=ON"
-               "-DWITH_CODEC_SNDFILE=ON"
-               "-DWITH_CYCLES=ON"
-               "-DWITH_DOC_MANPAGE=ON"
-               "-DWITH_FFTW3=ON"
-               "-DWITH_GAMEENGINE=ON"
-               "-DWITH_IMAGE_OPENJPEG=ON"
-               "-DWITH_INPUT_NDOF=ON"
-               "-DWITH_INSTALL_PORTABLE=OFF"
-               "-DWITH_JACK=ON"
-               "-DWITH_MOD_OCEANSIM=ON"
-               "-DWITH_PLAYER=ON"
-               "-DWITH_PYTHON_INSTALL=OFF"
-               "-DWITH_PYTHON_INSTALL=OFF"
-               "-DWITH_SYSTEM_OPENJPEG=ON"
-               (string-append "-DPYTHON_LIBRARY=python" ,python-version "m")
-               (string-append "-DPYTHON_LIBPATH=" (assoc-ref %build-inputs "python")
-                              "/lib")
-               (string-append "-DPYTHON_INCLUDE_DIR=" (assoc-ref %build-inputs "python")
-                              "/include/python" ,python-version "m")
-               (string-append "-DPYTHON_VERSION=" ,python-version))
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'fix-broken-import
-             (lambda _
-               (substitute* "release/scripts/addons/io_scene_fbx/json2fbx.py"
-                 (("import encode_bin") "from . import encode_bin"))
-               #t))
-           (add-after 'set-paths 'add-ilmbase-include-path
-             (lambda* (#:key inputs #:allow-other-keys)
-               ;; OpenEXR propagates ilmbase, but its include files do not appear
-               ;; in the CPATH, so we need to add "$ilmbase/include/OpenEXR/" to
-               ;; the CPATH to satisfy the dependency on "half.h".
-               (setenv "CPATH"
-                       (string-append (assoc-ref inputs "ilmbase")
-                                      "/include/OpenEXR"
-                                      ":" (or (getenv "CPATH") "")))
-               #t))))))
-    (inputs
-     `(("boost" ,boost)
-       ("jemalloc" ,jemalloc)
-       ("libx11" ,libx11)
-       ("openimageio" ,openimageio-1.7)
-       ("openexr" ,openexr)
-       ("ilmbase" ,ilmbase)
-       ("openjpeg" ,openjpeg-1)
-       ("libjpeg" ,libjpeg-turbo)
-       ("libpng" ,libpng)
-       ("libtiff" ,libtiff)
-       ("ffmpeg" ,ffmpeg)
-       ("fftw" ,fftw)
-       ("jack" ,jack-1)
-       ("libsndfile" ,libsndfile)
-       ("freetype" ,freetype)
-       ("glew" ,glew)
-       ("openal" ,openal)
-       ("python" ,python)
-       ("zlib" ,zlib)))
-    (home-page "https://blender.org/")
-    (synopsis "3D graphics creation suite")
-    (description
-     "Blender is a 3D graphics creation suite.  It supports the entirety of
-the 3D pipeline—modeling, rigging, animation, simulation, rendering,
-compositing and motion tracking, even video editing and game creation.  The
-application can be customized via its API for Python scripting.
-
-NOTE: This older version of Blender is the last release that does not require
-OpenGL 3.  It is retained for use with older computers.")
     (license license:gpl2+)))
 
 (define-public assimp
@@ -530,7 +441,7 @@ visual effects work for film.")
 (define-public openscenegraph
   (package
     (name "openscenegraph")
-    (version "3.6.4")
+    (version "3.6.5")
     (source
      (origin
        (method git-fetch)
@@ -538,14 +449,13 @@ visual effects work for film.")
              (url "https://github.com/openscenegraph/OpenSceneGraph")
              (commit (string-append "OpenSceneGraph-" version))))
        (sha256
-        (base32
-         "0x8hdbzw0b71j91fzp9cwmy9a7ava8v8wwyj8nxijq942vdx1785"))
+        (base32 "00i14h82qg3xzcyd8p02wrarnmby3aiwmz0z43l50byc9f8i05n1"))
        (file-name (git-file-name name version))))
     (properties
      `((upstream-name . "OpenSceneGraph")))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ; no test target available
+     `(#:tests? #f                      ; no test target available
        ;; Without this flag, 'rd' will be added to the name of the
        ;; library binaries and break linking with other programs.
        #:build-type "Release"
@@ -558,15 +468,15 @@ visual effects work for film.")
        ("unzip" ,unzip)))
     (inputs
      `(("giflib" ,giflib)
-       ("libjpeg" ,libjpeg-turbo)       ; Required for the JPEG texture plugin.
+       ("libjpeg" ,libjpeg-turbo)       ; required for the JPEG texture plugin.
        ("jasper" ,jasper)
        ("librsvg" ,librsvg)
        ("libxrandr" ,libxrandr)
        ("ffmpeg" ,ffmpeg)
        ("mesa" ,mesa)))
-    (synopsis "High performance real-time graphics toolkit")
+    (synopsis "High-performance real-time graphics toolkit")
     (description
-     "The OpenSceneGraph is a high performance 3D graphics toolkit
+     "The OpenSceneGraph is a high-performance 3D graphics toolkit
 used by application developers in fields such as visual simulation, games,
 virtual reality, scientific visualization and modeling.")
     (home-page "http://www.openscenegraph.org")

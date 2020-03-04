@@ -174,11 +174,10 @@ dictionaries, including personal ones.")
 
 (define-public aspell-dict-da
   (aspell-dictionary "da" "Danish"
-                     #:version "1.4.42-1"
-                     #:prefix "aspell5-"
+                     #:version "1.6.36-11-0"
                      #:sha256
                      (base32
-                      "1hfkmiyhgrx5lgrb2mffjbdn1hivrm73wcg7x0iid74p2yb0fjpp")))
+                      "1xz2haayvwlxgss9jf1x2311a1ixbk75q2vgfprjhibsmb7cpinv")))
 
 (define-public aspell-dict-el
   (aspell-dictionary "el" "Greek"

@@ -118,7 +118,7 @@
        ("libtirpc" ,libtirpc)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.kernel.org/pub/linux/utils/nfs-utils/")
+    (home-page "https://www.kernel.org/pub/linux/utils/nfs-utils/")
     (synopsis "Tools for loading and managing Linux NFS mounts")
     (description "The Network File System (NFS) was developed to allow
 machines to mount a disk partition on a remote machine as if it were a local

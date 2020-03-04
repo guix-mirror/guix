@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
@@ -121,6 +123,29 @@ AsciiDoc is highly configurable: both the AsciiDoc source file syntax and
 the backend output markups (which can be almost any type of SGML/XML
 markup) can be customized and extended by the user.")
     (license gpl2+)))
+
+(define-public asciidoc-py3
+  (package (inherit asciidoc)
+    (name "asciidoc-py3")
+    (version "9.0.0rc1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/asciidoc/asciidoc-py3/")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1v815dgab62970m9cr2crwbh4kvlzk6pv3hk4bzv6gfa4lbwfkfl"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)))
+    (inputs
+     `(("python" ,python)
+       ("docbook-xml" ,docbook-xml)
+       ("docbook-xsl" ,docbook-xsl)
+       ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)))))
 
 (define-public doxygen
   (package

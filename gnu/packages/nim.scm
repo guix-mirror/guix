@@ -2,6 +2,7 @@
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,7 +28,7 @@
 (define-public nim
   (package
     (name "nim")
-    (version "0.17.2")
+    (version "1.0.6")
     (source
      (origin
       (method url-fetch)
@@ -35,7 +36,7 @@
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "1gc2xk3ygmz9y4pm75pligssgw995a7gvnfpy445fjpw4d81pzxa"))))
+        "1cv6bxc7w21455c0pv0r2h64ljyzw266jsk1fsgiiyk2rx8mfkhk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; No tests.

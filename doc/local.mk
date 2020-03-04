@@ -27,7 +27,8 @@ info_TEXINFOS = %D%/guix.texi			\
   %D%/guix.fr.texi				\
   %D%/guix.ru.texi				\
   %D%/guix.zh_CN.texi				\
-  %D%/guix-cookbook.texi
+  %D%/guix-cookbook.texi			\
+  %D%/guix-cookbook.de.texi
 
 %C%_guix_TEXINFOS = \
   %D%/contributing.texi \
@@ -69,7 +70,8 @@ TRANSLATED_INFO =				\
   %D%/contributing.es.texi			\
   %D%/contributing.fr.texi			\
   %D%/contributing.ru.texi			\
-  %D%/contributing.zh_CN.texi
+  %D%/contributing.zh_CN.texi			\
+  %D%/guix-cookbook.de.texi
 
 # Bundle this file so that makeinfo finds it in out-of-source-tree builds.
 BUILT_SOURCES        += $(OS_CONFIG_EXAMPLES_TEXI) $(TRANSLATED_INFO)

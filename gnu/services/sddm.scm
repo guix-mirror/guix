@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Jesse Gildersleve <jessejohngildersleve@protonmail.com>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -56,7 +57,7 @@
                           (default (file-append shepherd "/sbin/reboot")))
 
   ;; [Theme]
-  ;; valid values are elarun or maldives
+  ;; valid values are elarun, maldives or maya
   (theme                  sddm-configuration-theme
                           (default "maldives"))
   (themes-directory       sddm-configuration-themes-directory
@@ -306,25 +307,26 @@ Relogin="              (if (sddm-configuration-relogin? config)
   (compose list sddm-configuration-sddm))
 
 (define sddm-service-type
-  (service-type (name 'sddm)
-                (extensions
-                  (list (service-extension shepherd-root-service-type
-                                           sddm-shepherd-service)
-                        (service-extension etc-service-type
-                                           sddm-etc-service)
-                        (service-extension pam-root-service-type
-                                           sddm-pam-services)
-                        (service-extension account-service-type
-                                           (const %sddm-accounts))
-                        (service-extension profile-service-type
-                                           sddm-profile-service)))
-                (default-value (sddm-configuration))
-                (description
-                 "Run SDDM, a display and log-in manager for X11 and
-Wayland.")))
+  (handle-xorg-configuration sddm-configuration
+    (service-type (name 'sddm)
+                  (extensions
+                    (list (service-extension shepherd-root-service-type
+                                             sddm-shepherd-service)
+                          (service-extension etc-service-type
+                                             sddm-etc-service)
+                          (service-extension pam-root-service-type
+                                             sddm-pam-services)
+                          (service-extension account-service-type
+                                             (const %sddm-accounts))
+                          (service-extension profile-service-type
+                                             sddm-profile-service)))
+                  (default-value (sddm-configuration))
+                  (description
+                   "Run SDDM, a display and log-in manager for X11 and
+Wayland."))))
 
 (define-deprecated (sddm-service #:optional (config (sddm-configuration)))
   sddm-service-type
-  "Run the @uref{https://github.com/sddm/sddm,SSDM display manager}
+  "Run the @uref{https://github.com/sddm/sddm,SDDM display manager}
 with the given @var{config}, a @code{<sddm-configuration>} object."
   (service sddm-service-type config))

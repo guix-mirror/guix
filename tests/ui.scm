@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -226,6 +226,10 @@ Second line" 24))
 (test-equal "size->number, 1T"
   (expt 2 40)
   (size->number "1T"))
+
+(test-equal "size->number, 1.M"
+  (expt 2 20)
+  (size->number "1.M"))
 
 (test-assert "size->number, invalid unit"
   (catch 'quit

@@ -189,7 +189,7 @@ routines such as routines for numerical integration and optimization.")
        ("python-six" ,python-six)))
     (native-inputs
      `(("python-cython" ,python-cython)))
-    (home-page "http://scikit-image.org/")
+    (home-page "https://scikit-image.org/")
     (synopsis "Image processing in Python")
     (description
      "Scikit-image is a collection of algorithms for image processing.")

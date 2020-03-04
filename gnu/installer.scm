@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -26,6 +26,7 @@
   #:use-module (guix utils)
   #:use-module (guix ui)
   #:use-module ((guix self) #:select (make-config.scm))
+  #:use-module (gnu installer utils)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
@@ -395,6 +396,8 @@ selected keymap."
                      #f)))
                 (const #f)
                 (lambda (key . args)
+                  (syslog "crashing due to uncaught exception: ~s ~s~%"
+                          key args)
                   (let ((error-file "/tmp/last-installer-error"))
                     (call-with-output-file error-file
                       (lambda (port)

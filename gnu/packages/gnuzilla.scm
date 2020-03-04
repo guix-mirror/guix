@@ -7,10 +7,11 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -115,6 +116,7 @@
      `(;; XXX: parallel build fails, lacking:
        ;;   mkdir -p "system_wrapper_js/"
        #:parallel-build? #f
+       #:make-flags '("CXXFLAGS=-fpermissive")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'delete-timedout-test
@@ -882,6 +884,7 @@ from forcing GEXP-PROMISE."
 
        #:modules ((ice-9 ftw)
                   (ice-9 rdelim)
+                  (ice-9 regex)
                   (ice-9 match)
                   (srfi srfi-34)
                   (srfi srfi-35)
@@ -1067,6 +1070,20 @@ from forcing GEXP-PROMISE."
                                 (force-output)
                                 (retry (- remaining-attempts 1))))
                        (apply build args)))))))
+         (add-after 'build 'neutralise-store-references
+           (lambda _
+             ;; Mangle the store references to compilers & other build tools in
+             ;; about:buildconfig, reducing IceCat's closure by 1 GiB on x86-64.
+             (substitute*
+                 "dist/bin/chrome/toolkit/content/global/buildconfig.html"
+               (((format #f "(~a/)([0-9a-df-np-sv-z]{32})"
+                         (regexp-quote (%store-directory)))
+                 _ store hash)
+                (string-append store
+                               (string-take hash 8)
+                               "<!-- Guix: not a runtime dependency -->"
+                               (string-drop hash 8))))
+             #t))
          (add-before 'configure 'install-desktop-entry
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Install the '.desktop' file.

@@ -393,7 +393,7 @@ functionality of proj in their own software.")
              #t)))))
     (inputs
      `(("glib" ,glib)))
-    (home-page "http://proj4.org/")
+    (home-page "https://proj.org/")
     (synopsis "Cartographic Projections Library")
     (description
      "Proj.4 is a library for converting coordinates between cartographic
@@ -443,7 +443,7 @@ projections.")
        (list "CC=gcc"
              (string-append "PREFIX=" %output)
              (string-append "CUSTOM_LDFLAGS=-Wl,-rpath=" %output "/lib"))))
-    (home-page "http://mapnik.org/")
+    (home-page "https://mapnik.org/")
     (synopsis "Toolkit for developing mapping applications")
     (description "Mapnik is a toolkit for developing mapping applications.  It
 is basically a collection of geographic objects like maps, layers,
@@ -1092,7 +1092,7 @@ persisted.
 (define-public java-jmapviewer
   (package
     (name "java-jmapviewer")
-    (version "2.12")
+    (version "2.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://svn.openstreetmap.org/applications/"
@@ -1100,7 +1100,7 @@ persisted.
                                   "/JMapViewer-" version "-Source.zip"))
               (sha256
                (base32
-                "08hbqsbs859v4m5d90560fdifavd1apnpz9v9iry1v31dsvy5707"))))
+                "0sy6r5fkbb9bclw0is6gwnbzz627m7pjfnsqydxz58pbndakkhrv"))))
     (build-system ant-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
@@ -1127,7 +1127,7 @@ an independent project by the JOSM team.")
 (define-public josm
   (package
     (name "josm")
-    (version "15553")
+    (version "15937")
     (source (origin
               (method svn-fetch)
               (uri (svn-reference
@@ -1136,7 +1136,7 @@ an independent project by the JOSM team.")
                      (recursive? #f)))
               (sha256
                (base32
-                "091pbcn4fnmk42fmxplhis3nw5dbljf6ws8acyhx5dflyn49xzmx"))
+                "00b8sw0wgkcf7xknmdpn5s521ax8x2660figidcrry37sgq3x946"))
               (file-name (string-append name "-" version "-checkout"))
               (modules '((guix build utils)))
             (snippet

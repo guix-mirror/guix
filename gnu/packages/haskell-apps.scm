@@ -113,8 +113,7 @@ installation of Haskell libraries and programs.")
          (uri (git-reference
                (url "https://github.com/jameysharp/corrode.git")
                (commit "b6699fb2fa552a07c6091276285a44133e5c9789")))
-         (file-name
-          (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32 "02v0yyj6sk4gpg2222wzsdqjxn8w66scbnf6b20x0kbmc69qcz4r"))))
       (build-system haskell-build-system)
@@ -270,14 +269,14 @@ unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
 (define-public git-annex
   (package
     (name "git-annex")
-    (version "7.20200202.7")
+    (version "8.20200226")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/"
                            "git-annex/git-annex-" version ".tar.gz"))
        (sha256
-        (base32 "1dj1ss7kp82wa0ybilhl88q6w49rj70qh61k2q8qfyx4ghliiigh"))))
+        (base32 "09v80ni1w9z1im79lzrnpz7xlivwna44zqpwq4axwyd17cffqi9m"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags
@@ -442,7 +441,7 @@ used to keep a folder in sync between computers.")
        ("ghc-aeson" ,ghc-aeson)
        ("ghc-lib-parser" ,ghc-lib-parser)
        ("hscolour" ,hscolour)))
-    (home-page "http://community.haskell.org/~ndm/hlint/")
+    (home-page "https://github.com/ndmitchell/hlint")
     (synopsis "Suggest improvements for Haskell source code")
     (description "HLint reads Haskell programs and suggests changes that
 hopefully make them easier to read.  HLint also makes it easy to disable

@@ -521,7 +521,7 @@ It adds a large amount of new and improved features to mutt.")
 (define-public gmime
   (package
     (name "gmime")
-    (version "3.2.5")
+    (version "3.2.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gmime/"
@@ -529,7 +529,7 @@ It adds a large amount of new and improved features to mutt.")
                                   "/gmime-" version ".tar.xz"))
               (sha256
                (base32
-                "0ndsg1z1kq4w4caascydvialpyn4rfbjdn7xclzbzhw53x85cxgv"))))
+                "05s7qjrxbj010q016pmdqdq73gz8vl4hv29kwaign0j8gi61kzxb"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -781,7 +781,7 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
               (string-append (assoc-ref outputs "out")
                              "/share/emacs/site-lisp"))
              #t)))))
-    (home-page "http://www.djcbsoftware.nl/code/mu/")
+    (home-page "https://www.djcbsoftware.nl/code/mu/")
     (synopsis "Quickly find emails")
     (description
      "Mu is a tool for dealing with e-mail messages stored in the
@@ -793,14 +793,12 @@ attachments, create new maildirs, and so on.")
 (define mumimu
   ;; This is a fork of mu for use in Mumi that stores message bug IDs in its
   ;; database.  It also renames the library to "mumimu" to avoid confusion.
-  (let ((commit "ad30b5e9c85f0465aeeeac461d8c32d95775d450")
-        (revision "1"))
+  (let ((commit "6b42431052c7cc9a2e147938e1b67f14a93e4ee5")
+        (revision "2"))
     (package
       (inherit mu)
       (name "mumimu")
-      ;; TODO The version here used to be (package-version guile-email), but
-      ;; that code caused problems
-      (version (git-version "0.2.2" revision commit))
+      (version (git-version (package-version mu) revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -809,7 +807,7 @@ attachments, create new maildirs, and so on.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1y8r8csvkyxncgpi469dir4n4sga4z9xdzc18qh5s8bk29qj689n"))))
+                  "044scxmjrckidqx935yza3aqnjyzrmhyvgx2gs2jyf68hl2qzb89"))))
       (arguments
        (substitute-keyword-arguments (package-arguments mu)
          ((#:tests? anything '())
@@ -817,15 +815,7 @@ attachments, create new maildirs, and so on.")
          ((#:phases phases)
           `(modify-phases ,phases
              (replace 'patch-configure
-               (lambda _
-                 (delete-file "autogen.sh")
-                 (substitute* "configure.ac"
-                   ;; Use latest Guile
-                   (("guile-2.0") "guile-2.2"))
-                 (substitute* '("guile/Makefile.am"
-                                "guile/mu/Makefile.am")
-                   (("share/guile/site/2.0/") "share/guile/site/2.2/"))
-                 #t))
+               (lambda _ (delete-file "autogen.sh") #t))
              (replace 'fix-ffi
                (lambda* (#:key outputs #:allow-other-keys)
                  (substitute* "guile/mumimu.scm"
@@ -951,7 +941,9 @@ invoking @command{notifymuch} from the post-new hook.")
        #:imported-modules (,@%gnu-build-system-modules
                            (guix build emacs-build-system)
                            (guix build emacs-utils))
-       #:make-flags (list "V=1")        ; verbose test output
+       #:make-flags
+       (list "V=1"                      ; verbose test output
+             "NOTMUCH_TEST_TIMEOUT=1h") ; don't fail on slow machines
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'patch-notmuch-lib.el
                     (lambda _
@@ -1382,7 +1374,7 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.3.9.2")
+    (version "2.3.9.3")
     (source
      (origin
        (method url-fetch)
@@ -1390,7 +1382,7 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            "dovecot-" version ".tar.gz"))
        (sha256
-        (base32 "1yc6hi4hqg4hcc4495sf4m5f1lnargphi6dawj43if21vncgp127"))))
+        (base32 "0lcnqib63nv32xr3nr4s3x8k77mbgrhc13swjl2xqnzw4fabd7zq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -2300,22 +2292,20 @@ transfer protocols.")
 (define-public opensmtpd
   (package
     (name "opensmtpd")
-    (version "6.6.3p1")
+    (version "6.6.4p1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.opensmtpd.org/archives/"
                            "opensmtpd-" version ".tar.gz"))
        (sha256
-        (base32 "1dqysjlyl0x3qzdzc9sjrla0063vpmlyq735lzf88p7wgzmw1xwy"))))
+        (base32 "1kyph9ycq0j21dl9n1sq5fns9p4gckdi0fmnf8awrcwrdcm9dyg2"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)
        ("libasr" ,libasr)
        ("libevent" ,libevent)
-       ;; XXX Upstream recommends LibreSSL, which doesn't support TLS 1.3 yet,
-       ;; and requires a development release (3.0.2).  Use OpenSSL instead.
-       ("openssl" ,openssl)
+       ("libressl" ,libressl)           ; recommended, and supports e.g. ECDSA
        ("linux-pam" ,linux-pam)
        ("zlib" ,zlib)))
     (native-inputs
@@ -2964,8 +2954,8 @@ replacement for the @code{urlview} program.")
     (license gpl2+)))
 
 (define-public mumi
-  (let ((commit "8a57c87797ffb07baa88697130204184db643521")
-        (revision "5"))
+  (let ((commit "a933a62a4b8528b416319759b9985db80f3fce14")
+        (revision "6"))
     (package
       (name "mumi")
       (version (git-version "0.0.0" revision commit))
@@ -2977,29 +2967,7 @@ replacement for the @code{urlview} program.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1575gn5p086sjxz5hvg6iyskq6cxf6vf50s9nsc4xgrbcqa3pv2c"))
-                (modules '((guix build utils)))
-                (snippet
-                 '(begin
-                    (substitute* "Makefile.am"
-                      ;; Install .go files to $prefix/lib instead of
-                      ;; $prefix/share.
-                      (("^godir[[:space:]]*=.*")
-                       "godir = \
-$(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n")
-
-                      ;; Install assets.
-                      (("^assetsdir.*" _)
-                       "\
-assetsdir    = $(pkgdatadir)/assets
-assetscssdir = $(assetsdir)/css
-assetsimgdir = $(assetsdir)/img
-assetsjsdir  = $(assetsdir)/js
-
-assetscss_DATA = $(wildcard assets/css/*)
-assetsimg_DATA = $(wildcard assets/img/*)
-assetsjs_DATA  = $(wildcard assets/js/*)\n"))
-                    #t))))
+                  "0vlda7vjzpd942iz5vb471hj7ypml5gwl9s1am92klv6nk2vnvcx"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build gnu-build-system)
@@ -3028,10 +2996,9 @@ assetsjs_DATA  = $(wildcard assets/js/*)\n"))
                      (,go ,(getenv "GUILE_LOAD_COMPILED_PATH"))))
                  #t))))))
       (inputs
-       `(("guile-debbugs" ,guile-debbugs-next)
+       `(("guile-debbugs" ,guile-debbugs)
          ("guile-email" ,guile-email)
-         ("guile-fibers" ,guile-fibers)
-         ("guile-json" ,guile-json-1)
+         ("guile-json" ,guile-json-3)
          ("guile-syntax-highlight" ,guile-syntax-highlight)
          ("gnutls" ,gnutls)         ;needed to talk to https://debbugs.gnu.org
          ("guile" ,guile-2.2)

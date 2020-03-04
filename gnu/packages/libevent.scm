@@ -3,7 +3,7 @@
 ;;; Copyright © 2015, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -51,6 +51,7 @@
                (base32
                 "0g988zqm45sj1hlhhz4il5z4dpi5dl74hzjwzl4md37a09iaqnx6"))))
     (build-system gnu-build-system)
+    (outputs '("out" "bin"))
     (arguments
      ;; This skips some of the tests which fail on armhf and aarch64.
      '(#:configure-flags '("--disable-libevent-regress")))

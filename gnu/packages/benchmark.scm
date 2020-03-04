@@ -6,6 +6,7 @@
 ;;; Copyright © 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-xyz)
@@ -44,14 +46,14 @@
 (define-public fio
   (package
     (name "fio")
-    (version "3.17")
+    (version "3.18")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://brick.kernel.dk/snaps/"
                                   "fio-" version ".tar.bz2"))
               (sha256
                (base32
-                "1hvh8syjz6l0q9bm5p7rf0yrmpkfcx5zj5d47mf6335w1i0h5gqf"))))
+                "12wzi40hn0ylkdiqwjjljdjmiq78nhwsv3qqa0fad7h3x08w6w6b"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "test"
@@ -231,3 +233,28 @@ This can give a much better understanding of the command's performance.")
      "Benchmark is a library to benchmark code snippets,
 similar to unit tests.")
     (license license:asl2.0)))
+
+(define-public bonnie++
+  (package
+    (name "bonnie++")
+    (version "1.98")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.coker.com.au/bonnie++/bonnie++-"
+                                  version ".tgz"))
+              (sha256
+               (base32
+                "010bmlmi0nrlp3aq7p624sfaj5a65lswnyyxk3cnz1bqig0cn2vf"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("perl" ,perl)))
+    (arguments '(#:tests? #f)) ; there are no tests
+    (home-page "https://doc.coker.com.au/projects/bonnie/")
+    (synopsis "Hard drive and file system benchmark suite")
+    (description
+     "Bonnie++ is a benchmark suite that is aimed at performing a number of
+simple tests of hard drive and file system performance.  Bonnie++ allows you to
+benchmark how your file systems perform with respect to data read and write
+speed, the number of seeks that can be performed per second, and the number of
+file metadata operations that can be performed per second.")
+    (license license:gpl2)))   ;GPL 2 only, see copyright.txt

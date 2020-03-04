@@ -13,7 +13,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017, 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 nee <nee.git@hidamari.blue>
 ;;; Copyright © 2018 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -876,11 +876,6 @@ interface.  It is implemented as a frontend to @code{klick}.")
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f)) ; no check target
-    (native-inputs
-     `(;; Use gcc-4.9 to work around an internal compiler error that happens
-       ;; when using gcc-5.5.0.  FIXME: Try removing this when the default
-       ;; compiler is no longer gcc-5.5.0.
-       ("gcc" ,gcc-4.9)))
     (home-page "https://bitbucket.org/mpyne/game-music-emu")
     (synopsis "Video game music file playback library")
     (description
@@ -1568,7 +1563,7 @@ special variant of additive synthesis.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
-    (home-page "http://amsynth.github.io")
+    (home-page "https://amsynth.github.io")
     (synopsis "Analog modeling synthesizer")
     (description
      "amsynth is an easy-to-use software synthesizer with a classic
@@ -2284,7 +2279,7 @@ improves on support for JACK features, such as JACK MIDI.")
        ("libsndfile" ,libsndfile)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://linuxsampler.org/libgig/")
+    (home-page "https://linuxsampler.org/libgig/")
     (synopsis "C++ library for working with Gigasampler (.gig) files")
     (description
      "Libgig is a C++ library for loading, modifying existing and creating new
@@ -2621,7 +2616,7 @@ tune-in sender list from @url{http://opml.radiotime.com}.")
 (define-public pianobar
   (package
     (name "pianobar")
-    (version "2016.06.02")
+    (version "2019.02.14")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2630,10 +2625,10 @@ tune-in sender list from @url{http://opml.radiotime.com}.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "058fbdxp7n35hxwy3b8slfy4pb4n63cb173vfmywqa06wh1dv6f6"))))
+                "1bfabkj3m9kmhxl64w4azmi0xf7w52fmqfbw2ag28hbb5yy01k1m"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no tests
+     `(#:tests? #f                      ; no tests
        #:make-flags (list "CC=gcc" "CFLAGS=-std=c99"
                           (string-append "PREFIX=" %output))
        #:phases (modify-phases %standard-phases
@@ -2643,10 +2638,10 @@ tune-in sender list from @url{http://opml.radiotime.com}.")
        ("curl" ,curl)
        ("libgcrypt" ,libgcrypt)
        ("json-c" ,json-c)
-       ("ffmpeg" ,ffmpeg-3.4)))
+       ("ffmpeg" ,ffmpeg)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://6xq.net/projects/pianobar/")
+    (home-page "https://6xq.net/pianobar/")
     (synopsis "Console-based pandora.com player")
     (description "pianobar is a console-based music player for the
 personalized online radio pandora.com.  It has configurable keys for playing
@@ -3996,7 +3991,7 @@ sample library.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
-    (home-page "http://muse-sequencer.org")
+    (home-page "https://muse-sequencer.github.io/")
     (synopsis "MIDI/Audio sequencer")
     (description "MusE is a MIDI/Audio sequencer with recording and editing
 capabilities.  Its audio sequencer supports the LADSPA, DSSI, and LV2 audio
@@ -5143,7 +5138,7 @@ and as an LV2 plugin.")
 (define-public zrythm
   (package
     (name "zrythm")
-    (version "0.7.474")
+    (version "0.7.573")
     (source
       (origin
         (method url-fetch)
@@ -5151,7 +5146,7 @@ and as an LV2 plugin.")
                             version ".tar.xz"))
         (sha256
           (base32
-            "0qq9v8y27zhamcb7nq7pl76874ws8x8cxhp5r685b8binvl9p0az"))))
+            "075gq478xbzz5ql4fsrgfzhgxi7z26k6034lhlkmm0klfcb8j9mg"))))
    (build-system meson-build-system)
    (arguments
     `(#:glib-or-gtk? #t
@@ -5169,24 +5164,25 @@ and as an LV2 plugin.")
    (inputs
     `(("alsa-lib" ,alsa-lib)
       ("jack" ,jack-1)
-      ("font-dseg", font-dseg)
-      ("ffmpeg", ffmpeg)
-      ("fftw", fftw)
-      ("fftwf", fftwf)
-      ("gettext", gettext-minimal)
-      ("glibc", glibc)
-      ("gtk+", gtk+)
+      ("font-dseg" ,font-dseg)
+      ("ffmpeg" ,ffmpeg)
+      ("fftw" ,fftw)
+      ("fftwf" ,fftwf)
+      ("gettext" ,gettext-minimal)
+      ("glibc" ,glibc)
+      ("gtk+" ,gtk+)
+      ("libcyaml" ,libcyaml)
       ("libsamplerate" ,libsamplerate)
       ("libsndfile" ,libsndfile)
       ("libyaml" ,libyaml)
-      ("lilv", lilv)
-      ("xdg-utils", xdg-utils)
-      ("rubberband", rubberband)))
+      ("lilv" ,lilv)
+      ("xdg-utils" ,xdg-utils)
+      ("rubberband" ,rubberband)))
    (native-inputs
-     `(("pkg-config", pkg-config)
-       ("help2man", help2man)
+     `(("pkg-config" ,pkg-config)
+       ("help2man" ,help2man)
        ("libaudec" ,libaudec)
-       ("lv2", lv2)
+       ("lv2" ,lv2)
        ("glib" ,glib "bin"))) ;for 'glib-compile-resources'
    (synopsis "Digital audio workstation focusing on usability")
    (description "Zrythm is a digital audio workstation designed to be

@@ -63,7 +63,16 @@
           `(delete "--disable-multilib" ,flags))))
       (native-search-paths
        (list (search-path-specification
-              (variable "CROSS_CPATH")
+              (variable "CROSS_C_INCLUDE_PATH")
+              (files '("avr/include")))
+             (search-path-specification
+              (variable "CROSS_CPLUS_INCLUDE_PATH")
+              (files '("avr/include")))
+             (search-path-specification
+              (variable "CROSS_OBJC_INCLUDE_PATH")
+              (files '("avr/include")))
+             (search-path-specification
+              (variable "CROSS_OBJCPLUS_INCLUDE_PATH")
               (files '("avr/include")))
              (search-path-specification
               (variable "CROSS_LIBRARY_PATH")
@@ -76,7 +85,10 @@
   (package
     (inherit avr-gcc-4.9)
     (version (package-version gcc-5))
-    (source (package-source gcc-5))))
+    (source (origin
+              (inherit (package-source gcc-5))
+              (patches (append (origin-patches (package-source gcc-5))
+                               (search-patches "gcc-cross-environment-variables.patch")))))))
 
 (define (avr-libc avr-gcc)
   (package

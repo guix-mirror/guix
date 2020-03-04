@@ -798,7 +798,7 @@ automata.  The following features are available:
 (define-public julius
   (package
     (name "julius")
-    (version "1.2.0")
+    (version "1.3.0")
     (source
      (origin
        (method git-fetch)
@@ -807,7 +807,7 @@ automata.  The following features are available:
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0kgyzfjii4dhpy2h05977alwdmxyxb4jxznnrhlgb21m0ybncmvp"))))
+        (base32 "1ws5lmwdhla73676fj0w26v859n47s0wyxa0mgd0dmkx0x91qriy"))))
     (build-system cmake-build-system)
     (inputs
      `(("sdl2" ,sdl2)
@@ -855,6 +855,74 @@ to reach the exit by solving puzzles.  Spikes, moving blocks, fragile blocks
 and much more stand between you and the exit.  Record your moves and let your
 shadow mimic them to reach blocks you couldn't reach alone.")
     (license license:gpl3+)))
+
+(define-public opensurge
+  (package
+    (name "opensurge")
+    (version "0.5.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/alemart/opensurge.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ih7hlqjnp9rv0m4lqf7c0s1ai532way5i4pk45jq1gqm8325dbv"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ;there are no tests
+       #:configure-flags
+       (let* ((out (assoc-ref %outputs "out"))
+              (share (string-append out "/share")))
+         (list (string-append "-DCMAKE_INSTALL_PREFIX=" out "/bin")
+               (string-append "-DGAME_DATADIR=" share "/" ,name)
+               (string-append "-DDESKTOP_ENTRY_PATH=" share "/applications")
+               (string-append "-DDESKTOP_ICON_PATH=" share "/pixmaps")
+               (string-append "-DDESKTOP_METAINFO_PATH=" share "/metainfo")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-xdg-open-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Look for xdg-open in the store.
+             (substitute* "src/core/web.c"
+               (("/usr(/bin/xdg-open)" _ bin)
+                (string-append (assoc-ref inputs "xdg-utils") bin)))
+             #t))
+         (add-after 'unpack 'unbundle-fonts
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Replace bundled Roboto fonts with links to the store.
+             (with-directory-excursion "fonts"
+               (let ((roboto-dir (string-append
+                                  (assoc-ref inputs "font-google-roboto")
+                                  "/share/fonts/truetype/")))
+                 (for-each
+                  (lambda (font)
+                    (delete-file font)
+                    (symlink (string-append roboto-dir font) font))
+                  '("Roboto-Black.ttf" "Roboto-Bold.ttf" "Roboto-Medium.ttf")))
+               #t))))))
+    (inputs
+     `(("allegro" ,allegro)
+       ("font-google-roboto" ,font-google-roboto)
+       ("surgescript" ,surgescript)
+       ("xdg-utils" ,xdg-utils)))
+    (home-page "https://opensurge2d.org")
+    (synopsis "2D retro side-scrolling game")
+    (description "@code{Open Surge} is a 2D retro side-scrolling platformer
+inspired by the Sonic games.  The player runs at high speeds through each
+level while collecting items and avoiding obstacles.  The game includes a
+built-in level editor.")
+    (license
+     ;; Code is under GPL 3+, assets are under various licenses.
+     ;; See src/misc/credits.c for details.
+     (list license:gpl3+
+           license:cc0
+           license:cc-by3.0
+           license:cc-by-sa3.0
+           license:expat
+           license:public-domain
+           license:silofl1.1))))
 
 (define-public knights
   (package
@@ -1050,7 +1118,7 @@ watch your CPU playing while enjoying a cup of tea!")
 (define-public nethack
   (package
     (name "nethack")
-    (version "3.6.4")
+    (version "3.6.5")
     (source
       (origin
         (method url-fetch)
@@ -1058,7 +1126,7 @@ watch your CPU playing while enjoying a cup of tea!")
          (string-append "https://www.nethack.org/download/" version "/nethack-"
                         (string-join (string-split version #\.) "") "-src.tgz"))
         (sha256
-          (base32 "0ndxgnsprwgjnk0qb24iljkpijnfncgvfb3h3zb129h3cs2anc85"))))
+          (base32 "0xifs8pqfffnmkbpmrcd1xf14yakcj06nl2bbhy4dyacg8myysmv"))))
     (inputs
       `(("ncurses" ,ncurses)
         ("bison" ,bison)
@@ -1320,7 +1388,7 @@ utilizing the art assets from the @code{SuperTux} project.")
 (define-public roguebox-adventures
   (package
     (name "roguebox-adventures")
-    (version "2.2.1")
+    (version "3.0.1")
     (source
      (origin
        (method url-fetch)
@@ -1330,7 +1398,7 @@ utilizing the art assets from the @code{SuperTux} project.")
        (file-name (string-append name "-" version ".zip"))
        (sha256
         (base32
-         "0kmzdgnik8fsf3bg55546l77p3mfxn2awkzfzzdn20n82rd2babw"))))
+         "05zd03s5w9kcpklfgcggbaa6rwf59nm0q9vcj6gh9v2lh402k067"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -1356,6 +1424,9 @@ utilizing the art assets from the @code{SuperTux} project.")
                   (string-append "'" data "'"))
                  (("^basic_path.*$")
                   (string-append "basic_path ='" data "'\n")))
+               (substitute* "LIB/dialog.py"
+                 (("d_path = os\\.path\\.dirname\\(.*\\)\\)")
+                  (string-append "d_path = '" data "'")))
                (substitute* "LIB/gra_files.py"
                  (("basic_path = b_path\\.replace\\('/LIB',''\\)")
                   (string-append "basic_path ='" data "'\n")))
@@ -2582,7 +2653,7 @@ falling, themeable graphics and sounds, and replays.")
 (define-public wesnoth
   (package
     (name "wesnoth")
-    (version "1.14.9")
+    (version "1.14.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/wesnoth/wesnoth-"
@@ -2591,7 +2662,7 @@ falling, themeable graphics and sounds, and replays.")
                                   "wesnoth-" version ".tar.bz2"))
               (sha256
                (base32
-                "1mhdrlflxxyknf54lwdbvs7fazlc1scf7z6vxxa3j746fks533ga"))))
+                "1i8mz6gw3qar09bscczhki0g4scj8pl58v85rp0g55r4bcq41l5v"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no check target
@@ -3535,7 +3606,7 @@ fullscreen, use F5 or Alt+Enter.")
               ("qtscript" ,qtscript)
               ("openssl" ,openssl)
               ("sdl2" ,sdl2)))
-    (home-page "http://wz2100.net")
+    (home-page "https://wz2100.net")
     (synopsis "3D Real-time strategy and real-time tactics game")
     (description
      "Warzone 2100 offers campaign, multi-player, and single-player skirmish
@@ -4020,7 +4091,7 @@ colors, pictures, and sounds.")
     (inputs
      `(("bash" ,bash)
        ("love" ,love)))
-    (home-page "http://tangramgames.dk/games/mrrescue")
+    (home-page "https://tangramgames.dk/games/mrrescue")
     (synopsis "Arcade-style fire fighting game")
     (description
      "Mr. Rescue is an arcade styled 2d action game centered around evacuating
@@ -4190,7 +4261,7 @@ for Un*x systems with X11.")
 (define-public freeciv
   (package
    (name "freeciv")
-   (version "2.6.1")
+   (version "2.6.2")
    (source
     (origin
      (method url-fetch)
@@ -4202,7 +4273,7 @@ for Un*x systems with X11.")
                   (version-major+minor version) "/" version
                   "/freeciv-" version ".tar.bz2")))
      (sha256
-      (base32 "1qmrhrwm0ryvsh1zsxcxj128lhyvaxap7k39sam3hh8rl0fq9rnc"))))
+      (base32 "13vc2xg1cf19rhbnr7k38b56b2hdapqymq5vma1l69kn7hyyz0b1"))))
    (build-system gnu-build-system)
    (inputs
     `(("curl" ,curl)
@@ -4723,10 +4794,10 @@ with the mouse isn’t always trivial.")
     (synopsis "Abstract puzzle game")
     (description "Chroma is an abstract puzzle game. A variety of colourful
 shapes are arranged in a series of increasingly complex patterns, forming
- fiendish traps that must be disarmed and mysterious puzzles that must be
- manipulated in order to give up their subtle secrets. Initially so
- straightforward that anyone can pick it up and begin to play, yet gradually
- becoming difficult enough to tax even the brightest of minds.")
+fiendish traps that must be disarmed and mysterious puzzles that must be
+manipulated in order to give up their subtle secrets.  Initially so
+straightforward that anyone can pick it up and begin to play, yet gradually
+becoming difficult enough to tax even the brightest of minds.")
     (license license:gpl2+)))
 
 (define-public fillets-ng
@@ -5207,7 +5278,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
 (define-public tome4
   (package
     (name "tome4")
-    (version "1.6.6")
+    (version "1.6.7")
     (synopsis "Single-player, RPG roguelike game set in the world of Eyal")
     (source
      (origin
@@ -5215,8 +5286,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
        (uri (string-append "https://te4.org/dl/t-engine/t-engine4-src-"
                            version ".tar.bz2"))
        (sha256
-        (base32
-         "1amx0y49scy9hq71wjvkdzvgclwa2g54vkv4bf40mxyp4pl0bq7m"))
+        (base32 "0283hvms5hr29zr0grd6gq059k0hg8hcz3fsmwjmysiih8790i68"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -5865,7 +5935,7 @@ affect gameplay).")
   (package
     (inherit chocolate-doom)
     (name "crispy-doom")
-    (version "5.6.4")
+    (version "5.7.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5873,7 +5943,7 @@ affect gameplay).")
                     (commit (string-append "crispy-doom-" version))))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "1ls4v2kpb7vi7xji5yqbmyc5lfkz497h1vvj9w86wkrw8k59hlg2"))))
+               (base32 "1gqivy4pxasy7phyznixsagylf9f70bk33b0knpfzzlks6cc6zzj"))))
     (native-inputs
      (append
       (package-native-inputs chocolate-doom)
@@ -8136,23 +8206,15 @@ win.")
 (define-public freeorion
   (package
     (name "freeorion")
-    (version "0.4.8")
+    (version "0.4.9")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/freeorion/freeorion.git")
-             ;; Most recent stable release uses boost_signals (v1) which was
-             ;; later replaced with boost-signals2 and no longer exists.  This
-             ;; commit builds and runs.
-             ;;
-             ;; TODO: Update this when the next stable release when it is
-             ;; available.
-             (commit "470d0711537804df3c2ca25532f674ab4bec58af")))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (string-append "https://github.com/freeorion/freeorion/releases/"
+                           "download/v" version "/FreeOrion_v" version
+                           "_2020-02-02.db53471_Source.tar.gz"))
        (sha256
-        (base32
-         "1wsw632l1cj17px6i88nqjzs0dngp5rsr67n6qkkjlfjfxi69j0f"))
+        (base32 "1qfnqkysagh8dw26plk229qh17mv4prjxs6qhfyczrmrrakb72an"))
        (modules '((guix build utils)))
        (snippet
         '(begin

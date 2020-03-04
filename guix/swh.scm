@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -126,9 +127,16 @@
   (make-parameter "https://archive.softwareheritage.org"))
 
 (define (swh-url path . rest)
+  ;; URLs returned by the API may be relative or absolute. This has changed
+  ;; without notice before. Handle both cases by detecting whether the path
+  ;; starts with a domain.
+  (define root
+    (if (string-prefix? "/" path)
+      (string-append (%swh-base-url) path)
+      path))
+
   (define url
-    (string-append (%swh-base-url) path
-                   (string-join rest "/" 'prefix)))
+    (string-append root (string-join rest "/" 'prefix)))
 
   ;; Ensure there's a trailing slash or we get a redirect.
   (if (string-suffix? "/" url)

@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,7 +48,7 @@
 (define-public flashrom
   (package
     (name "flashrom")
-    (version "1.1")
+    (version "1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -56,7 +56,7 @@
                     version ".tar.bz2"))
               (sha256
                (base32
-                "06afq680n9p34hi3vrkn12vd1pfyq2062db9qqbi4hi21k3skbdf"))))
+                "0ax4kqnh7kd3z120ypgp73qy1knz47l6qxsqzrfkd97mh5cdky71"))))
     (build-system gnu-build-system)
     (inputs `(("dmidecode" ,dmidecode)
               ("pciutils" ,pciutils)
@@ -447,7 +447,7 @@ ME as far as possible (it only edits ME firmware image files).")
 (define-public uefitool
   (package
     (name "uefitool")
-    (version "0.26.0")
+    (version "0.27.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -455,7 +455,7 @@ ME as far as possible (it only edits ME firmware image files).")
                      (commit version)))
               (sha256
                (base32
-                "1ka7i12swm9r5bmyz5vjr82abd2f3lj8p35f4208byalfbx51yq7"))
+                "1i1p823qld927p4f1wcphqcnivb9mq7fi5xmzibxc3g9zzgnyc2h"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments

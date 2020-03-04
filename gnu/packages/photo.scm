@@ -133,14 +133,14 @@ data as produced by digital cameras.")
 (define-public libgphoto2
   (package
     (name "libgphoto2")
-    (version "2.5.23")
+    (version "2.5.24")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gphoto/libgphoto/"
                                   version "/libgphoto2-" version ".tar.bz2"))
               (sha256
                (base32
-                "0bc5x2bkqbfi4hbkz8ab5xc0bkks9vvks1vygxhdh3x498v27byq"))))
+                "0cgvsk06c4kcfj16plc27nm7g16r9ci0y4k83sf3iyphd63mfg7x"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
@@ -211,7 +211,7 @@ MTP, and much more.")
 (define-public perl-image-exiftool
   (package
     (name "perl-image-exiftool")
-    (version "11.30")
+    (version "11.85")
     (source
      (origin
        (method url-fetch)
@@ -222,7 +222,8 @@ MTP, and much more.")
              (string-append "https://www.sno.phy.queensu.ca/~phil/exiftool/"
                             "Image-ExifTool-" version ".tar.gz")))
        (sha256
-        (base32 "0vkjb2c1a3jdlq8rx1jywx4p3f1bmgjn7rzfwx6dxgij2lx76lrs"))))
+        (base32
+         "15zqm0ly2b3paqg0ym44ib2mvh6k18a9q5rvdirwipqa127al2lb"))))
     (build-system perl-build-system)
     (arguments
      '(#:phases
@@ -498,14 +499,14 @@ a complete panorama and stitch any series of overlapping pictures.")
 (define-public rawtherapee
   (package
     (name "rawtherapee")
-    (version "5.6")
+    (version "5.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://rawtherapee.com/shared/source/"
                                   "rawtherapee-" version ".tar.xz"))
               (sha256
                (base32
-                "0x0dcfp6f3j08gr11wq5ah4prp790xy4iadbgsm9kgc0jlalpspr"))))
+                "0lq8qi7g0a28h3rab7bk5bbbd4gvfma42bvlz1dfn8p9mah2h19n"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ; no test suite

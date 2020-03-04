@@ -71,6 +71,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
+  #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
 
@@ -601,7 +602,7 @@ data on your platform, so the seed itself will be as random as possible.
 (define-public crypto++
   (package
     (name "crypto++")
-    (version "8.0.0")
+    (version "8.2.0")
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append "https://cryptopp.com/cryptopp"
@@ -609,7 +610,7 @@ data on your platform, so the seed itself will be as random as possible.
                                   ".zip"))
               (sha256
                (base32
-                "0b5qrsm4jhy4nzxgrm13nixhvbswr242plx1jw6r4sw492rqkzdv"))))
+                "0n40hlz5jkvlcp9vxrj0fsrcfp7dm0zmmv6h52dx3f8i5qjf5w03"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -627,19 +628,25 @@ data on your platform, so the seed itself will be as random as possible.
                ((" -march=native") ""))
              #t))
          (delete 'configure)
-         (add-after 'build 'build-shared
-           (lambda _
-             ;; By default, only the static library is built.
-             (invoke "make" "shared")))
+         (replace 'build
+           ;; By default, only the static library is built.
+           (lambda* (#:key (make-flags '()) #:allow-other-keys)
+             (apply invoke "make" "shared"
+                    "-j" (number->string (parallel-job-count))
+                    make-flags)))
          (add-after 'install 'install-shared-library-links
            ;; By default, only .so and .so.x.y.z are installed.
            ;; Create all the ‘intermediates’ expected by dependent packages.
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (lib (string-append out "/lib")))
+                    (lib (string-append out "/lib"))
+                    (prefix "libcryptopp.so.")
+                    (target (string-append prefix ,version)))
                (with-directory-excursion lib
-                 (symlink "libcryptopp.so.8.0.0" "libcryptopp.so.8.0")
-                 (symlink "libcryptopp.so.8.0.0" "libcryptopp.so.8")
+                 (symlink target
+                          (string-append prefix ,(version-major+minor version)))
+                 (symlink target
+                          (string-append prefix ,(version-major version)))
                  #t))))
          (add-after 'install 'install-pkg-config
            (lambda* (#:key outputs #:allow-other-keys)
@@ -657,7 +664,8 @@ data on your platform, so the seed itself will be as random as possible.
                      "Description: Class library of cryptographic schemes"
                      "Version: " ,version "\n"
                      "Libs: -L${libdir} -lcryptopp\n"
-                     "Cflags: -I${includedir}\n"))))))))))
+                     "Cflags: -I${includedir}\n"))
+                   #t))))))))
     (native-inputs
      `(("unzip" ,unzip)))
     (home-page "https://cryptopp.com/")

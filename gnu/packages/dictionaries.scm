@@ -3,7 +3,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
@@ -31,6 +31,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
+  #:use-module (guix build-system copy)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
@@ -109,25 +110,10 @@ acronyms distributed as an info document.")
               (sha256
                (base32
                 "1n3bp91sik66z3ca7mjqbr9nck3hg5ck0c8g84xc0qnfpx5vznh2"))))
-    (build-system trivial-build-system)
+    (build-system copy-build-system)
     (arguments
-     '(#:builder (begin
-                   (use-modules (guix build utils))
-                   (let* ((src     (assoc-ref %build-inputs "source"))
-                          (tar     (assoc-ref %build-inputs "tar"))
-                          (xz      (assoc-ref %build-inputs "xz"))
-                          (out     (assoc-ref %outputs "out"))
-                          (datadir (string-append out "/share/gcide")))
-                     (set-path-environment-variable "PATH" '("bin")
-                                                    (list tar xz))
-                     (mkdir-p datadir)
-                     (invoke "tar" "-C" datadir
-                             "--strip-components=1"
-                             "-xvf" src)))
-       #:modules ((guix build utils))))
-    (native-inputs
-     `(("tar" ,tar)
-       ("xz" ,xz)))
+     '(#:install-plan
+       '(("." "share/gcide/" #:exclude ("COPYING")))))
     (synopsis "GNU Collaborative International Dictionary of English")
     (description
      "GCIDE is a free dictionary based on a combination of sources.  It can
@@ -140,14 +126,14 @@ http://gcide.gnu.org.ua/")
   ;; Not quite a dictionary, not quite a spell checker either…
   (package
     (name "diction")
-    (version "1.11")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/diction/diction-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1xi4l1x1vvzmzmbhpx0ghmfnwwrhabjwizrpyylmy3fzinzz3him"))))
+    (version "1.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.moria.de/~michael/diction/diction-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1z6p5x3l1a00h4v4s33qa82fznzc1jdqdnlc4dnmd9nblnrjy0fs"))))
     (build-system gnu-build-system)
     (synopsis "Identifies wordy and commonly misused phrases")
     (description
@@ -312,7 +298,7 @@ translation engines from your terminal.")
 (define-public lttoolbox
   (package
     (name "lttoolbox")
-    (version "3.5.0")
+    (version "3.5.1")
     (source
      (origin
        (method url-fetch)
@@ -320,14 +306,23 @@ translation engines from your terminal.")
              "https://github.com/apertium/lttoolbox/releases/download/v"
              version "/lttoolbox-" version ".tar.gz"))
        (sha256
-        (base32
-         "08y6pf1hl7prwygy1g8h6ndqww18pmb9f3r5988q0pcrp8w6xz6b"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "14yyrkzyqlsrii3v3ggg4dyvwlrcqcqc0aprphz5781a44jsrcwz"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'bootstrap
+           ;; The included ./autogen.sh unconditionally runs ./configure before
+           ;; its shebangs have been patched.
+           (lambda _
+             (invoke "autoreconf" "-vfi"))))))
     (inputs
      `(("libxml2" ,libxml2)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
     (home-page "http://wiki.apertium.org/wiki/Lttoolbox")
     (synopsis "Lexical processing toolbox")
     (description "Lttoolbox is a toolbox for lexical processing, morphological

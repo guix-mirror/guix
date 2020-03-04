@@ -2557,7 +2557,7 @@ It allows writing tests, checking results and automated testing in Ruby.")
      "Markaby allows writing HTML packages in pure Ruby.  This is similar to
 the functionality provided by @acronym{ERB, Embedded Ruby}, but without the
 mixture of HTML and additional ERB syntax.")
-    (home-page "http://markaby.github.io/")
+    (home-page "https://markaby.github.io/")
     (license license:expat)))
 
 (define-public ruby-maruku
@@ -8781,7 +8781,7 @@ minimal effort.")
 and stability,
 @item Rack, a minimal interface between webservers and Ruby frameworks.
 @end itemize\n")
-    (home-page "http://code.macournoyer.com/thin/")
+    (home-page "https://github.com/macournoyer/thin")
     (license license:ruby)))
 
 (define-public ruby-skinny

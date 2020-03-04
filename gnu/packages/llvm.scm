@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Dennis Mungai <dmngaie@gmail.com>
-;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -48,6 +48,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages mpi)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -76,18 +77,24 @@ as \"x86_64-linux\"."
              ("x86_64"      => "X86")
              ("i686"        => "X86"))))
 
-(define-public llvm-8
+(define (llvm-download-uri component version)
+  (if (version>=? version "9.0.1")
+      (string-append "https://github.com/llvm/llvm-project/releases/download"
+                     "/llvmorg-" version "/" component "-" version ".src.tar.xz")
+      (string-append "https://releases.llvm.org/" version "/" component "-"
+                     version ".src.tar.xz")))
+
+(define-public llvm
   (package
     (name "llvm")
-    (version "8.0.0")
+    (version "9.0.1")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://llvm.org/releases/"
-                          version "/llvm-" version ".src.tar.xz"))
+      (uri (llvm-download-uri "llvm" version))
       (sha256
        (base32
-        "0k124sxkfhfi1rca6kzkdraf4axhx99x3cw2rk55056628dvwwl8"))))
+        "16hwp3qa54c3a3v7h8nlw0fh5criqh0hlr1skybyk0cz70gyx880"))))
     (build-system cmake-build-system)
     (outputs '("out" "opt-viewer"))
     (native-inputs
@@ -137,9 +144,7 @@ languages.  It currently supports compilation of C and C++ programs, using
 front-ends derived from GCC 4.0.1.  A new front-end for the C family of
 languages is in development.  The compiler infrastructure includes mirror sets
 of programming tools as well as libraries with equivalent functionality.")
-    (license license:ncsa)))
-
-(define-public llvm llvm-8)
+    (license license:asl2.0)))  ;with LLVM exceptions, see LICENSE.txt
 
 (define* (clang-runtime-from-llvm llvm hash
                                   #:optional (patches '()))
@@ -149,8 +154,7 @@ of programming tools as well as libraries with equivalent functionality.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://llvm.org/releases/"
-                           version "/compiler-rt-" version ".src.tar.xz"))
+       (uri (llvm-download-uri "compiler-rt" version))
        (sha256 (base32 hash))
        (patches (map search-patch patches))))
     (build-system cmake-build-system)
@@ -168,7 +172,7 @@ of programming tools as well as libraries with equivalent functionality.")
 functions for C and C++ programs.  It also provides header files that allow C
 and C++ source code to interface with the \"sanitization\" passes of the clang
 compiler.  In LLVM this library is called \"compiler-rt\".")
-    (license license:ncsa)
+    (license (package-license llvm))
 
     ;; <https://compiler-rt.llvm.org/> doesn't list MIPS as supported.
     (supported-systems (delete "mips64el-linux" %supported-systems))))
@@ -181,8 +185,10 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://llvm.org/releases/"
-                           version "/cfe-" version ".src.tar.xz"))
+       (uri (llvm-download-uri (if (version>=? version "9.0.1")
+                                   "clang"
+                                   "cfe")
+                               version))
        (sha256 (base32 hash))
        (patches (map search-patch patches))))
     ;; Using cmake allows us to treat llvm as an external library.  There
@@ -214,64 +220,77 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
        #:build-type "Release"
 
        #:phases (modify-phases %standard-phases
-                  (add-after
-                   'unpack 'set-glibc-file-names
-                   (lambda* (#:key inputs #:allow-other-keys)
-                     (let ((libc (assoc-ref inputs "libc"))
-                           (compiler-rt (assoc-ref inputs "clang-runtime"))
-                           (gcc (assoc-ref inputs "gcc"))
-                           (version
-                            (string->number
-                             ,(version-major (package-version clang-runtime)))))
-                       (cond
-                         ((> version 3)
-                          ;; Link to libclang_rt files from clang-runtime.
-                          (substitute* "lib/Driver/ToolChain.cpp"
-                            (("getDriver\\(\\)\\.ResourceDir")
-                             (string-append "\"" compiler-rt "\"")))
-
-                          ;; Make "LibDir" refer to <glibc>/lib so that it
-                          ;; uses the right dynamic linker file name.
-                          (substitute* "lib/Driver/ToolChains/Linux.cpp"
-                            (("(^[[:blank:]]+LibDir = ).*" _ declaration)
-                             (string-append declaration "\"" libc "/lib\";\n"))
-
-                            ;; Make clang look for libstdc++ in the right
-                            ;; location.
-                            (("LibStdCXXIncludePathCandidates\\[\\] = \\{")
-                             (string-append
-                              "LibStdCXXIncludePathCandidates[] = { \"" gcc "/include/c++\","))
-
-                            ;; Make sure libc's libdir is on the search path, to
-                            ;; allow crt1.o & co. to be found.
-                            (("@GLIBC_LIBDIR@")
-                             (string-append libc "/lib"))))
-                         (else
-                          (substitute* "lib/Driver/Tools.cpp"
-                            ;; Patch the 'getLinuxDynamicLinker' function so that
-                            ;; it uses the right dynamic linker file name.
-                            (("/lib64/ld-linux-x86-64.so.2")
-                             (string-append libc
-                                            ,(glibc-dynamic-linker))))
-
-                          ;; Link to libclang_rt files from clang-runtime.
-                          ;; This substitution needed slight adjustment in 3.8.
-                          (if (< 3.8 (string->number ,(version-major+minor
-                                                       (package-version
-                                                        clang-runtime))))
-                              (substitute* "lib/Driver/Tools.cpp"
-                                (("TC\\.getDriver\\(\\)\\.ResourceDir")
-                                 (string-append "\"" compiler-rt "\"")))
+                  (add-after 'unpack 'add-missing-triplets
+                    (lambda _
+                      ;; Clang iterates through known triplets to search for
+                      ;; GCC's headers, but does not recognize some of the
+                      ;; triplets that are used in Guix.
+                      (substitute* ,@(if (version>=? version "6.0")
+                                         '("lib/Driver/ToolChains/Gnu.cpp")
+                                         '("lib/Driver/ToolChains.cpp"))
+                        (("\"aarch64-linux-gnu\"," all)
+                         (string-append "\"aarch64-unknown-linux-gnu\", "
+                                        all))
+                        (("\"arm-linux-gnueabihf\"," all)
+                         (string-append all
+                                        " \"arm-unknown-linux-gnueabihf\","))
+                        (("\"i686-pc-linux-gnu\"," all)
+                         (string-append "\"i686-unknown-linux-gnu\", "
+                                        all)))
+                      #t))
+                  (add-after 'unpack 'set-glibc-file-names
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((libc (assoc-ref inputs "libc"))
+                            (compiler-rt (assoc-ref inputs "clang-runtime"))
+                            (gcc (assoc-ref inputs "gcc")))
+                        ,@(cond
+                           ((version>=? version "6.0")
+                            `(;; Link to libclang_rt files from clang-runtime.
                               (substitute* "lib/Driver/ToolChain.cpp"
                                 (("getDriver\\(\\)\\.ResourceDir")
-                                 (string-append "\"" compiler-rt "\""))))
+                                 (string-append "\"" compiler-rt "\"")))
 
-                          ;; Make sure libc's libdir is on the search path, to
-                          ;; allow crt1.o & co. to be found.
-                          (substitute* "lib/Driver/ToolChains.cpp"
-                            (("@GLIBC_LIBDIR@")
-                             (string-append libc "/lib")))))
-                       #t)))
+                              ;; Make "LibDir" refer to <glibc>/lib so that it
+                              ;; uses the right dynamic linker file name.
+                              (substitute* "lib/Driver/ToolChains/Linux.cpp"
+                                (("(^[[:blank:]]+LibDir = ).*" _ declaration)
+                                 (string-append declaration "\"" libc "/lib\";\n"))
+
+                                ;; Make clang look for libstdc++ in the right
+                                ;; location.
+                                (("LibStdCXXIncludePathCandidates\\[\\] = \\{")
+                                 (string-append
+                                  "LibStdCXXIncludePathCandidates[] = { \"" gcc
+                                  "/include/c++\","))
+
+                                ;; Make sure libc's libdir is on the search path, to
+                                ;; allow crt1.o & co. to be found.
+                                (("@GLIBC_LIBDIR@")
+                                 (string-append libc "/lib")))))
+                           (else
+                            `((substitute* "lib/Driver/Tools.cpp"
+                                ;; Patch the 'getLinuxDynamicLinker' function so that
+                                ;; it uses the right dynamic linker file name.
+                                (("/lib64/ld-linux-x86-64.so.2")
+                                 (string-append libc
+                                                ,(glibc-dynamic-linker))))
+
+                              ;; Link to libclang_rt files from clang-runtime.
+                              ;; This substitution needed slight adjustment in 3.8.
+                              ,@(if (version>=? version "3.8")
+                                    '((substitute* "lib/Driver/Tools.cpp"
+                                        (("TC\\.getDriver\\(\\)\\.ResourceDir")
+                                         (string-append "\"" compiler-rt "\""))))
+                                    '((substitute* "lib/Driver/ToolChain.cpp"
+                                        (("getDriver\\(\\)\\.ResourceDir")
+                                         (string-append "\"" compiler-rt "\"")))))
+
+                              ;; Make sure libc's libdir is on the search path, to
+                              ;; allow crt1.o & co. to be found.
+                              (substitute* "lib/Driver/ToolChains.cpp"
+                                (("@GLIBC_LIBDIR@")
+                                 (string-append libc "/lib"))))))
+                        #t)))
                   (add-after 'install 'install-clean-up-/share/clang
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
@@ -312,7 +331,9 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
 Objective-C++ programming languages.  It uses LLVM as its back end.  The Clang
 project includes the Clang front end, the Clang static analyzer, and several
 code analysis tools.")
-    (license license:ncsa)))
+    (license (if (version>=? version "9.0")
+                 license:asl2.0         ;with LLVM exceptions
+                 license:ncsa))))
 
 (define (make-clang-toolchain clang)
   (package
@@ -359,151 +380,56 @@ output), and Binutils.")
               ("libc-debug" ,glibc "debug")
               ("libc-static" ,glibc "static")))))
 
-(define-public libcxx
-  (package
-    (name "libcxx")
-    (version (package-version llvm))
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://llvm.org/releases/"
-                           version "/libcxx-" version ".src.tar.xz"))
-       (sha256
-        (base32
-         "1qlx3wlxrnc5cwc1fcfc2vhfsl7j4294hi8y5kxj8hy8wxsjd462"))))
-    (build-system cmake-build-system)
-    (native-inputs
-     `(("clang" ,clang)
-       ("llvm" ,llvm)))
-    (home-page "https://libcxx.llvm.org")
-    (synopsis "C++ standard library")
-    (description
-     "This package provides an implementation of the C++ standard library for
-use with Clang, targeting C++11, C++14 and above.")
-    (license license:expat)))
-
-(define-public libclc
-  (package
-    (name "libclc")
-    (version (package-version llvm))
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/llvm/llvm-project.git")
-             (commit (string-append "llvmorg-" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "052h16wjcnqginzp7ki4il2xmm25v9nyk0wcz7cg03gbryhl7aqa"))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:configure-flags
-       (list (string-append "-DLLVM_CLANG="
-                            (assoc-ref %build-inputs "clang")
-                            "/bin/clang")
-             (string-append "-DPYTHON="
-                            (assoc-ref %build-inputs "python")
-                            "/bin/python3"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'chdir
-           (lambda _ (chdir "libclc") #t)))))
-    (native-inputs
-     `(("clang" ,clang)
-       ("llvm" ,llvm)
-       ("python" ,python)))
-    (home-page "https://libclc.llvm.org")
-    (synopsis "Libraries for the OpenCL programming language")
-    (description
-     "This package provides an implementation of the OpenCL library
-requirements according to version 1.1 of the OpenCL specification.")
-    ;; Apache license 2.0 with LLVM exception
-    (license license:asl2.0)))
-
-(define-public libomp
-  (package
-    (name "libomp")
-    (version (package-version llvm))
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://releases.llvm.org/"
-                                  version  "/openmp-" version
-                                  ".src.tar.xz"))
-              (sha256
-               (base32
-                "1mf9cpgvix34xlpv0inkgl3qmdvgvp96f7sksqizri0n5xfp1cgp"))
-              (file-name (string-append "libomp-" version ".tar.xz"))))
-    (build-system cmake-build-system)
-    ;; XXX: Note this gets built with GCC because building with Clang itself
-    ;; fails (missing <atomic>, even when libcxx is added as an input.)
-    (arguments
-     '(#:configure-flags '("-DLIBOMP_USE_HWLOC=ON"
-                           "-DOPENMP_TEST_C_COMPILER=clang"
-                           "-DOPENMP_TEST_CXX_COMPILER=clang++")
-       #:test-target "check-libomp"))
-    (native-inputs
-     `(("clang" ,clang)
-       ("llvm" ,llvm)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)))
-    (inputs
-     `(("hwloc" ,hwloc "lib")))
-    (home-page "https://openmp.llvm.org")
-    (synopsis "OpenMP run-time support library")
-    (description
-     "This package provides the run-time support library developed by the LLVM
-project for the OpenMP multi-theaded programming extension.  This package
-notably provides @file{libgomp.so}, which is has a binary interface compatible
-with that of libgomp, the GNU Offloading and Multi Processing Library.")
-    (license license:expat)))
-
 (define-public clang-runtime
   (clang-runtime-from-llvm
    llvm
-   "1c919wsm17xnv7lr8bhpq2wkq8113lzlw6hzhfr737j59x3wfddl"))
+   "0xwh79g3zggdabxgnd0bphry75asm1qz7mv3hcqihqwqr6aspgy2"))
 
 (define-public clang
   (clang-from-llvm llvm clang-runtime
-                   "0svk1f70hvpwrjp6x5i9kqwrqwxnmcrw5s7f4cxyd100mdd12k08"
-                   #:patches '("clang-7.0-libc-search-path.patch")))
+                   "0ls2h3iv4finqyflyhry21qhc9cm9ga7g1zq21020p065qmm2y2p"
+                   #:patches '("clang-9.0-libc-search-path.patch")))
 
 (define-public clang-toolchain
   (make-clang-toolchain clang))
 
-(define-public llvm-9
+(define-public llvm-9 llvm)
+(define-public clang-runtime-9 clang-runtime)
+(define-public clang-9 clang)
+(define-public clang-toolchain-9 clang-toolchain)
+
+(define-public llvm-8
   (package
     (inherit llvm)
-    (version "9.0.0")
+    (version "8.0.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://llvm.org/releases/"
-                                  version "/llvm-" version ".src.tar.xz"))
+              (uri (llvm-download-uri "llvm" version))
               (sha256
                (base32
-                "117ymdz1by2nkfq1c2p9m4050dp848kbjbiv6nsfj8hzy9f5d86n"))))
-    (license license:asl2.0)))
+                "0k124sxkfhfi1rca6kzkdraf4axhx99x3cw2rk55056628dvwwl8"))))
+    (license license:ncsa)))
 
-(define-public clang-runtime-9
+(define-public clang-runtime-8
   (clang-runtime-from-llvm
-   llvm-9
-   "03ni43lbkp63lr3p6sc94dphqmvnz5av5mml0xmk930xvnbcvr2n"))
+   llvm-8
+   "1c919wsm17xnv7lr8bhpq2wkq8113lzlw6hzhfr737j59x3wfddl"))
 
-(define-public clang-9
-  (clang-from-llvm llvm-9 clang-runtime-9
-                   "0426ma80i41qsgzm1qdz81mjskck426diygxi2k5vji2gkpixa3v"))
+(define-public clang-8
+  (clang-from-llvm llvm-8 clang-runtime-8
+                   "0svk1f70hvpwrjp6x5i9kqwrqwxnmcrw5s7f4cxyd100mdd12k08"
+                   #:patches '("clang-7.0-libc-search-path.patch")))
 
-(define-public clang-toolchain-9
-  (make-clang-toolchain clang-9))
+(define-public clang-toolchain-8
+  (make-clang-toolchain clang-8))
 
 (define-public llvm-7
   (package
-    (inherit llvm)
+    (inherit llvm-8)
     (version "7.0.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://llvm.org/releases/"
-                                  version "/llvm-" version ".src.tar.xz"))
+              (uri (llvm-download-uri "llvm" version))
               (sha256
                (base32
                 "16s196wqzdw4pmri15hadzqgdi926zln3an2viwyq0kini6zr3d3"))))))
@@ -514,7 +440,7 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
    "065ybd8fsc4h2hikbdyricj6pyv4r7r7kpcikhb2y5zf370xybkq"))
 
 (define-public clang-7
-  (clang-from-llvm llvm-7 clang-runtime
+  (clang-from-llvm llvm-7 clang-runtime-7
                    "067lwggnbg0w1dfrps790r5l6k8n5zwhlsw7zb6zvmfpwpfn4nx4"
                    #:patches '("clang-7.0-libc-search-path.patch")))
 
@@ -523,12 +449,11 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
 
 (define-public llvm-6
   (package
-    (inherit llvm)
+    (inherit llvm-7)
     (version "6.0.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://llvm.org/releases/"
-                                  version "/llvm-" version ".src.tar.xz"))
+              (uri (llvm-download-uri "llvm" version))
               (sha256
                (base32
                 "1qpls3vk85lydi5b4axl0809fv932qgsqgdgrk098567z4jc7mmn"))))))
@@ -539,39 +464,21 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
    "1fcr3jn24yr8lh36nc0c4ikli4744i2q9m1ik67p1jymwwaixkgl"))
 
 (define-public clang-6
-  (clang-from-llvm llvm-6 clang-runtime
+  (clang-from-llvm llvm-6 clang-runtime-6
                    "0rxn4rh7rrnsqbdgp4gzc8ishbkryhpl1kd3mpnxzpxxhla3y93w"
                    #:patches '("clang-6.0-libc-search-path.patch")))
 
 (define-public clang-toolchain-6
   (make-clang-toolchain clang-6))
 
-;; Libcxx files specifically used by PySide2.
-(define-public libcxx-6
-  (package
-    (inherit libcxx)
-    (version (package-version llvm-6))
-    (source
-     (origin
-       (inherit (package-source libcxx))
-       (uri (string-append "http://llvm.org/releases/"
-                           version "/libcxx-" version ".src.tar.xz"))
-       (sha256
-        (base32
-         "0rzw4qvxp6qx4l4h9amrq02gp7hbg8lw4m0sy3k60f50234gnm3n"))))
-    (native-inputs
-     `(("clang" ,clang-6)
-       ("llvm" ,llvm-6)))))
-
 (define-public llvm-3.9.1
-  (package (inherit llvm)
+  (package (inherit llvm-6)
     (name "llvm")
     (version "3.9.1")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://llvm.org/releases/"
-                          version "/llvm-" version ".src.tar.xz"))
+      (uri (llvm-download-uri "llvm" version))
       (sha256
        (base32
         "1vi9sf7rx1q04wj479rsvxayb6z740iaz3qniwp266fgp5a07n8z"))))
@@ -602,8 +509,7 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://llvm.org/releases/"
-                          version "/llvm-" version ".src.tar.xz"))
+      (uri (llvm-download-uri "llvm" version))
       (sha256
        (base32
         "1ybmnid4pw2hxn12ax5qa5kl1ldfns0njg8533y3mzslvd5cx0kf"))))))
@@ -621,13 +527,12 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
                    #:patches '("clang-3.8-libc-search-path.patch")))
 
 (define-public llvm-3.7
-  (package (inherit llvm-3.9.1)
+  (package (inherit llvm-3.8)
     (version "3.7.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://llvm.org/releases/"
-                           version "/llvm-" version ".src.tar.xz"))
+       (uri (llvm-download-uri "llvm" version))
        (sha256
         (base32
          "1masakdp9g2dan1yrazg7md5am2vacbkb3nahb3dchpc1knr8xxy"))))))
@@ -645,13 +550,12 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
                    #:patches '("clang-3.5-libc-search-path.patch")))
 
 (define-public llvm-3.6
-  (package (inherit llvm-3.9.1)
+  (package (inherit llvm-3.7)
     (version "3.6.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://llvm.org/releases/"
-                           version "/llvm-" version ".src.tar.xz"))
+       (uri (llvm-download-uri "llvm" version))
        (sha256
         (base32
          "153vcvj8gvgwakzr4j0kndc0b7wn91c2g1vy2vg24s6spxcc23gn"))))))
@@ -668,13 +572,12 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
                    #:patches '("clang-3.5-libc-search-path.patch")))
 
 (define-public llvm-3.5
-  (package (inherit llvm-3.9.1)
+  (package (inherit llvm-3.6)
     (version "3.5.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://llvm.org/releases/"
-                           version "/llvm-" version ".src.tar.xz"))
+       (uri (llvm-download-uri "llvm" version))
        (patches
         (search-patches "llvm-3.5-fix-clang-build-with-gcc5.patch"))
        (sha256
@@ -682,11 +585,33 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
          "0xf5q17kkxsrm2gsi93h4pwlv663kji73r2g4asb97klsmb626a4"))))))
 
 (define-public clang-runtime-3.5
-  (clang-runtime-from-llvm
-   llvm-3.5
-   "1hsdnzzdr5kglz6fnv3lcsjs222zjsy14y8ax9dy6zqysanplbal"
-   '("clang-runtime-asan-build-fixes.patch"
-     "clang-3.5-libsanitizer-ustat-fix.patch")))
+  (let ((runtime (clang-runtime-from-llvm
+                  llvm-3.5
+                  "1hsdnzzdr5kglz6fnv3lcsjs222zjsy14y8ax9dy6zqysanplbal"
+                  '("clang-runtime-asan-build-fixes.patch"
+                    "clang-3.5-libsanitizer-ustat-fix.patch"))))
+    (package
+      (inherit runtime)
+      (arguments
+       (substitute-keyword-arguments (package-arguments runtime)
+         ((#:phases phases '%standard-phases)
+          `(modify-phases ,phases
+             ;; glibc no longer includes rpc/xdr.h, so we use the headers from
+             ;; libtirpc.
+             (add-after 'unpack 'find-rpc-includes
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (setenv "CPATH"
+                         (string-append (assoc-ref inputs "libtirpc")
+                                        "/include/tirpc/:"
+                                        (or (getenv "CPATH") "")))
+                 (setenv "CPLUS_INCLUDE_PATH"
+                         (string-append (assoc-ref inputs "libtirpc")
+                                        "/include/tirpc/:"
+                                        (or (getenv "CPLUS_INCLUDE_PATH") "")))
+                 #t))))))
+      (inputs
+       `(("libtirpc" ,libtirpc)
+         ("llvm" ,llvm-3.5))))))
 
 (define-public clang-3.5
   (clang-from-llvm llvm-3.5 clang-runtime-3.5
@@ -702,6 +627,118 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
        (patches (list (search-patch "llvm-for-extempore.patch")))))
     ;; Extempore refuses to build on architectures other than x86_64
     (supported-systems '("x86_64-linux"))))
+
+(define-public libcxx
+  (package
+    (name "libcxx")
+    (version "9.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (llvm-download-uri "libcxx" version))
+       (sha256
+        (base32
+         "0d2bj5i6mk4caq7skd5nsdmz8c2m5w5anximl5wz3x32p08zz089"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("clang" ,clang)
+       ("llvm" ,llvm)))
+    (home-page "https://libcxx.llvm.org")
+    (synopsis "C++ standard library")
+    (description
+     "This package provides an implementation of the C++ standard library for
+use with Clang, targeting C++11, C++14 and above.")
+    (license license:expat)))
+
+;; Libcxx files specifically used by PySide2.
+(define-public libcxx-6
+  (package
+    (inherit libcxx)
+    (version (package-version llvm-6))
+    (source
+     (origin
+       (inherit (package-source libcxx))
+       (uri (llvm-download-uri "libcxx" version))
+       (sha256
+        (base32
+         "0rzw4qvxp6qx4l4h9amrq02gp7hbg8lw4m0sy3k60f50234gnm3n"))))
+    (native-inputs
+     `(("clang" ,clang-6)
+       ("llvm" ,llvm-6)))))
+
+(define-public libclc
+  (package
+    (name "libclc")
+    (version "9.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/llvm/llvm-project.git")
+             (commit (string-append "llvmorg-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1d1qayvrvvc1di7s7jfxnjvxq2az4lwq1sw1b2gq2ic0nksvajz0"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "-DLLVM_CLANG="
+                            (assoc-ref %build-inputs "clang")
+                            "/bin/clang")
+             (string-append "-DPYTHON="
+                            (assoc-ref %build-inputs "python")
+                            "/bin/python3"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "libclc") #t)))))
+    (native-inputs
+     `(("clang" ,clang)
+       ("llvm" ,llvm)
+       ("python" ,python)))
+    (home-page "https://libclc.llvm.org")
+    (synopsis "Libraries for the OpenCL programming language")
+    (description
+     "This package provides an implementation of the OpenCL library
+requirements according to version 1.1 of the OpenCL specification.")
+    ;; Apache license 2.0 with LLVM exception
+    (license license:asl2.0)))
+
+(define-public libomp
+  (package
+    (name "libomp")
+    (version "9.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (llvm-download-uri "openmp" version))
+              (sha256
+               (base32
+                "1knafnpp0f7hylx8q20lkd6g1sf0flly572dayc5d5kghh7hd52w"))
+              (file-name (string-append "libomp-" version ".tar.xz"))))
+    (build-system cmake-build-system)
+    ;; XXX: Note this gets built with GCC because building with Clang itself
+    ;; fails (missing <atomic>, even when libcxx is added as an input.)
+    (arguments
+     '(#:configure-flags '("-DLIBOMP_USE_HWLOC=ON"
+                           "-DOPENMP_TEST_C_COMPILER=clang"
+                           "-DOPENMP_TEST_CXX_COMPILER=clang++")
+       #:test-target "check-libomp"))
+    (native-inputs
+     `(("clang" ,clang)
+       ("llvm" ,llvm)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("hwloc" ,hwloc "lib")))
+    (home-page "https://openmp.llvm.org")
+    (synopsis "OpenMP run-time support library")
+    (description
+     "This package provides the run-time support library developed by the LLVM
+project for the OpenMP multi-theaded programming extension.  This package
+notably provides @file{libgomp.so}, which is has a binary interface compatible
+with that of libgomp, the GNU Offloading and Multi Processing Library.")
+    (license license:expat)))
 
 (define-public python-llvmlite
   (package

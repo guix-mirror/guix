@@ -333,7 +333,7 @@ Worker, but it can be used in other JavaScript environments.")
                 "15gichl8wi6yxag2ps723nxrgyan15976dzsnvw9h9py8sbyyzjn"))))
     (build-system minify-build-system)
     (arguments `(#:javascript-files '("src/selectize.js")))
-    (home-page "http://selectize.github.io/selectize.js/")
+    (home-page "https://selectize.github.io/selectize.js/")
     (synopsis "Hybrid widget between a textbox and <select> box")
     (description "Selectize is the hybrid of a textbox and @code{<select>}
 box.  It's jQuery based and it has autocomplete and native-feeling keyboard

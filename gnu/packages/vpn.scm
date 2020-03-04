@@ -8,7 +8,7 @@
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
-;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2019, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -471,6 +471,7 @@ The peer-to-peer VPN implements a Layer 2 (Ethernet) network between the peers
      `(#:tests? #f ; No tests available.
        #:make-flags
        (list "CC=gcc"
+             "--directory=src/tools"
              "WITH_BASHCOMPLETION=yes"
              ;; Build and install the helper script wg-quick(8).
              "WITH_WGQUICK=yes"
@@ -498,17 +499,7 @@ The peer-to-peer VPN implements a Layer 2 (Ethernet) network between the peers
                (call-with-output-file output
                  (lambda (port)
                    (format port "~a" str))))
-               #t))
-         (add-after 'make-patch 'chdir
-           (lambda _
-             (chdir "src/tools")
-             #t))
-         ;; Otherwise the 'install-license-file' phase installs nothing.
-         ;; <https://bugs.gnu.org/34703>
-         (add-after 'install 'reset-cwd
-           (lambda _
-             (chdir "../..")
-             #t)))))
+               #t)))))
     (inputs
      `(("libmnl" ,libmnl)))
     (home-page "https://www.wireguard.com/")
@@ -518,6 +509,52 @@ retrieving configuration of WireGuard network tunnel interfaces, and a patch
 that can be applied to a Linux kernel source tree in order to build it with
 WireGuard support.")
     (license license:gpl2)))
+
+(define-public wireguard-tools
+  (package
+    (name "wireguard-tools")
+    (version "1.0.20200206")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.zx2c4.com/wireguard-tools.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ivc08lds5w39a6f2xdfih9wlk5g724hl3kpdvxvh5yff4l84qb7"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list "CC=gcc"
+             "--directory=src"
+             "WITH_BASHCOMPLETION=yes"
+             ;; Install the ‘simple and dirty’ helper script wg-quick(8).
+             "WITH_WGQUICK=yes"
+             (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             ;; Currently used only to create an empty /etc/wireguard directory.
+             (string-append "SYSCONFDIR=no-thanks"))
+       ;; The test suite is meant to be run interactively.  It runs Clang's
+       ;; scan-build static analyzer and then starts a web server to display the
+       ;; results.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         ;; No configure script
+         (delete 'configure))))
+    (home-page "https://www.wireguard.com/")
+    (synopsis "Tools for configuring WireGuard tunnels")
+    (description
+     "This package provides the user-space command-line tools for using and
+configuring WireGuard tunnels.
+
+WireGuard is a simple and fast general-purpose @acronym{VPN, Virtual Private
+Network} that securely encapsulates IP packets over UDP.  It aims to be as easy
+to configure and deploy as SSH.  VPN connections are made simply by exchanging
+public keys and can roam across IP addresses.")
+    (license
+     (list license:lgpl2.1+    ; src/netlink.h & contrib/embeddable-wg-library
+           license:gpl2))))    ; everything else
 
 (define-public xl2tpd
   (package

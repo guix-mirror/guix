@@ -17,6 +17,7 @@
 ;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
+;;; Copyright © 2020 Dimakis Dimakakos <me@bendersteed.tech>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,6 +51,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages c)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages imagemagick)
@@ -57,6 +59,7 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
@@ -218,7 +221,7 @@ support.")
 ANSI CL by David N. Gray.  The proposal did not make it into ANSI CL, but most
 popular CL implementations implement it.  This package provides an extremely
 thin compatibility layer for gray streams.")
-      (home-page "http://www.cliki.net/trivial-gray-streams")
+      (home-page "https://www.cliki.net/trivial-gray-streams")
       (license license:x11))))
 
 (define-public cl-trivial-gray-streams
@@ -602,7 +605,7 @@ files.")
     (build-system asdf-build-system/sbcl)
     (native-inputs
      `(("fiasco" ,sbcl-fiasco)))
-    (home-page "http://www.cliki.net/portable-clx")
+    (home-page "https://www.cliki.net/portable-clx")
     (synopsis "X11 client library for Common Lisp")
     (description "CLX is an X11 client library for Common Lisp.  The code was
 originally taken from a CMUCL distribution, was modified somewhat in order to
@@ -962,18 +965,15 @@ else @code{parse-number} signals an error of type @code{invalid-number}.")
 (define-public sbcl-iterate
   (package
     (name "sbcl-iterate")
-    ;; The latest official release (1.4.3) fails to build so we have to take
-    ;; the current darcs tarball from quicklisp.
-    (version "20160825")
+    (version "1.5")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://beta.quicklisp.org/archive/iterate/"
-                           "2016-08-25/iterate-"
-                           version "-darcs.tgz"))
+       (uri (string-append "https://common-lisp.net/project/iterate/releases/"
+                           "iterate-" version ".tar.gz"))
        (sha256
         (base32
-         "0kvz16gnxnkdz0fy1x8y5yr28nfm7i2qpvix7mgwccdpjmsb4pgm"))))
+         "1lqsbhrkfl0yif46aymvb7l3nb9wdcmj4jyw485blj32jb4famzn"))))
     (build-system asdf-build-system/sbcl)
     (native-inputs
      `(("rt" ,sbcl-rt)))
@@ -1133,7 +1133,7 @@ utilities that make it even easier to manipulate text in Common Lisp.  It has
         (base32 "0ccv7dqyrk55xga78i5vzlic7mdwp28in3g1a8fqhlk6626scsq9"))))
     (build-system asdf-build-system/sbcl)
     (arguments '(#:tests? #f))
-    (home-page "http://cliki.net/trivial-features")
+    (home-page "https://cliki.net/trivial-features")
     (synopsis "Ensures consistency of @code{*FEATURES*} in Common Lisp")
     (description "Trivial-features ensures that @code{*FEATURES*} is
 consistent across multiple Common Lisp implementations.")
@@ -1599,23 +1599,26 @@ Common Lisp.")
   (sbcl-package->ecl-package sbcl-cl-fad))
 
 (define-public sbcl-rt
-  (package
-    (name "sbcl-rt")
-    (version "1990.12.19")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://beta.quicklisp.org/archive/rt/2010-10-06/rt-"
-                           "20101006-git" ".tgz"))
-       (sha256
-        (base32
-         "1jncar0xwkqk8yrc2dln389ivvgzs7ijdhhs3zpfyi5d21f0qa1v"))))
-    (build-system asdf-build-system/sbcl)
-    (synopsis "MIT Regression Tester")
-    (description
-     "RT provides a framework for writing regression test suites.")
-    (home-page "https://github.com/sharplispers/nibbles")
-    (license license:unlicense)))
+  (let ((commit "a6a7503a0b47953bc7579c90f02a6dba1f6e4c5a")
+        (revision "1"))
+    (package
+      (name "sbcl-rt")
+      (version (git-version "1990.12.19" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "http://git.kpe.io/rt.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "13si2rrxaagbr0bkvg6sqicxxpyshabx6ad6byc9n2ik5ysna69b"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "MIT Regression Tester")
+      (description
+       "RT provides a framework for writing regression test suites.")
+      (home-page "https://www.cliki.net/rt")
+      (license license:expat))))
 
 (define-public cl-rt
   (sbcl-package->cl-source-package sbcl-rt))
@@ -2298,27 +2301,27 @@ utilities that make it even easier to manipulate text in Common Lisp.  It has
   (sbcl-package->ecl-package sbcl-cl-string-match))
 
 (define-public sbcl-ptester
-  (package
-    (name "sbcl-ptester")
-    (version "20160929")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://beta.quicklisp.org/archive/ptester/"
-                           (date->string (string->date version "~Y~m~d") "~Y-~m-~d")
-                           "/ptester-"
-                           version
-                           "-git.tgz"))
-       (sha256
-        (base32
-         "04rlq1zljhxc65pm31bah3sq3as24l0sdivz440s79qlnnyh13hz"))))
-    (build-system asdf-build-system/sbcl)
-    (home-page "http://quickdocs.org/ptester/")
-    (synopsis "Portable test harness package")
-    (description
-     "@command{ptester} is a portable testing framework based on Franz's
+  (let ((commit "fe69fde54f4bce00ce577feb918796c293fc7253")
+        (revision "1"))
+    (package
+      (name "sbcl-ptester")
+      (version (git-version "2.1.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "http://git.kpe.io/ptester.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1l0lfl7cdnr2qf4zh38hi4llxg22c49zkm639bdkmvlkzwj3ndwf"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "http://quickdocs.org/ptester/")
+      (synopsis "Portable test harness package")
+      (description
+       "@command{ptester} is a portable testing framework based on Franz's
 tester module.")
-    (license license:lgpl3+)))
+      (license license:llgpl))))
 
 (define-public cl-ptester
   (sbcl-package->cl-source-package sbcl-ptester))
@@ -2327,30 +2330,29 @@ tester module.")
   (sbcl-package->ecl-package sbcl-ptester))
 
 (define-public sbcl-puri
-  (package
-    (name "sbcl-puri")
-    (version "20180228")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://beta.quicklisp.org/archive/puri/"
-                           (date->string (string->date version "~Y~m~d") "~Y-~m-~d")
-                           "/puri-"
-                           version
-                           "-git.tgz"))
-       (sha256
-        (base32
-         "1s4r5adrjy5asry45xbcbklxhdjydvf6n55z897nvyw33bigrnbz"))))
-    (build-system asdf-build-system/sbcl)
-    ;; REVIEW: Webiste down?
-    (native-inputs
-     `(("ptester" ,sbcl-ptester)))
-    (home-page "http://files.kpe.io/puri/")
-    (synopsis "Portable URI Library")
-    (description
-     "This is portable Universal Resource Identifier library for Common Lisp
-programs.  It parses URI according to the RFC 2396 specification")
-    (license license:lgpl3+)))
+  (let ((commit "ef5afb9e5286c8e952d4344f019c1a636a717b97")
+        (revision "1"))
+    (package
+      (name "sbcl-puri")
+      (version (git-version "1.5.7" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "http://git.kpe.io/puri.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1vm25pdl92laj72p5vyd538kf3cjy2655z6bdc99h20ana2p231s"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("ptester" ,sbcl-ptester)))
+      (home-page "http://quickdocs.org/puri/")
+      (synopsis "Portable URI Library")
+      (description
+       "This is a portable Universal Resource Identifier library for Common
+Lisp programs.  It parses URI according to the RFC 2396 specification.")
+      (license license:llgpl))))
 
 (define-public cl-puri
   (sbcl-package->cl-source-package sbcl-puri))
@@ -2570,6 +2572,19 @@ package.")
 
 (define-public cl-cffi
   (sbcl-package->cl-source-package sbcl-cffi))
+
+(define-public sbcl-cffi-uffi-compat
+  (package
+    (inherit sbcl-cffi-toolchain)
+    (name "sbcl-cffi-uffi-compat")
+    (native-inputs
+     `(,@(package-inputs sbcl-cffi-bootstrap))) ; For fix-paths phase
+    (inputs
+     `(("cffi" ,sbcl-cffi)))
+    (synopsis "UFFI Compatibility Layer for CFFI")))
+
+(define-public cl-cffi-uffi-compat
+  (sbcl-package->cl-source-package sbcl-cffi-uffi-compat))
 
 (define-public sbcl-cl-sqlite
   (let ((commit "c738e66d4266ef63a1debc4ef4a1b871a068c112"))
@@ -4610,7 +4625,7 @@ performance and simplicity in mind.")
        `(("stefil" ,sbcl-hu.dwim.stefil)))
       (inputs
        `(("sbcl-cl-fad" ,sbcl-cl-fad)))
-      (home-page "http://shinmera.github.io/trivial-mimes/")
+      (home-page "https://shinmera.github.io/trivial-mimes/")
       (synopsis "Tiny Common Lisp library to detect mime types in files")
       (description
        "This is a teensy library that provides some functions to determine the
@@ -4754,7 +4769,7 @@ performance and simplicity in mind.")
          ("sbcl-lack-component" ,sbcl-lack-component)
          ("sbcl-alexandria" ,sbcl-alexandria)
          ("sbcl-babel" ,sbcl-babel)))
-      (home-page "http://8arrow.org/ningle/")
+      (home-page "https://8arrow.org/ningle/")
       (synopsis "Super micro framework for Common Lisp")
       (description
        "Ningle is a lightweight web application framework for Common Lisp.")
@@ -4882,7 +4897,7 @@ port within a range.")
 to be easy to use so that you can quickly start testing.  CLUnit
 provides a rich set of features aimed at improving your unit testing
 experience.")
-      (home-page "http://tgutu.github.io/clunit/")
+      (home-page "https://tgutu.github.io/clunit/")
       ;; MIT License
       (license license:expat))))
 
@@ -4953,33 +4968,37 @@ the CFFI approach used by burgled-batteries, but has the same goal.")
   (sbcl-package->ecl-package sbcl-py4cl))
 
 (define-public sbcl-parse-declarations
-  (package
-    (name "sbcl-parse-declarations")
-    (version "1.0.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "http://beta.quicklisp.org/archive/parse-declarations/"
-             "2010-10-06/parse-declarations-20101006-darcs.tgz"))
-       (sha256
-        (base32
-         "0r85b0jfacd28kr65kw9c13dx4i6id1dpmby68zjy63mqbnyawrd"))))
-    (build-system asdf-build-system/sbcl)
-    (arguments
-     `(#:asd-file "parse-declarations-1.0.asd"
-       #:asd-system-name "parse-declarations-1.0"))
-    (home-page "https://common-lisp.net/project/parse-declarations/")
-    (synopsis "Parse, filter, and build declarations")
-    (description
-     "Parse-Declarations is a Common Lisp library to help writing
+  (let ((commit "549aebbfb9403a7fe948654126b9c814f443f4f2")
+        (revision "1"))
+    (package
+      (name "sbcl-parse-declarations")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url (string-append
+                     "https://gitlab.common-lisp.net/parse-declarations/"
+                     "parse-declarations.git"))
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "03g5qks4c59nmxa48pbslxkfh77h8hn8566jddp6m9pl15dzzpxd"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:asd-file "parse-declarations-1.0.asd"
+         #:asd-system-name "parse-declarations-1.0"))
+      (home-page "https://common-lisp.net/project/parse-declarations/")
+      (synopsis "Parse, filter, and build declarations")
+      (description
+       "Parse-Declarations is a Common Lisp library to help writing
 macros which establish bindings.  To be semantically correct, such
 macros must take user declarations into account, as these may affect
 the bindings they establish.  Yet the ANSI standard of Common Lisp does
 not provide any operators to work with declarations in a convenient,
 high-level way.  This library provides such operators.")
-    ;; MIT License
-    (license license:expat)))
+      ;; MIT License
+      (license license:expat))))
 
 (define-public cl-parse-declarations
   (sbcl-package->cl-source-package sbcl-parse-declarations))
@@ -5889,41 +5908,44 @@ optimizing techniques widely used in the functional programming world.")
   (sbcl-package->cl-source-package sbcl-optima))
 
 (define-public sbcl-fare-quasiquote
-  (package
-    (name "sbcl-fare-quasiquote")
-    (build-system asdf-build-system/sbcl)
-    (version "20171130")
-    (home-page "http://common-lisp.net/project/fare-quasiquote")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://beta.quicklisp.org/archive/fare-quasiquote/"
-                           (date->string (string->date version "~Y~m~d") "~Y-~m-~d")
-                           "/fare-quasiquote-"
-                           version
-                           "-git.tgz"))
-       (sha256
-        (base32
-         "00brmh7ndsi0c97nibi8cy10j3l4gmkyrfrr5jr5lzkfb7ngyfqa"))))
-    (inputs
-     `(("fare-utils" ,sbcl-fare-utils)))
-    (arguments
-     ;; XXX: Circular dependencies: Tests depend on subsystems, which depend on the main systems.
-     `(#:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         ;; XXX: Require 1.0.0 version of fare-utils, and we package some
-         ;; commits after 1.0.0.5, but ASDF fails to read the
-         ;; "-REVISION-COMMIT" part generated by Guix.
-         (add-after 'unpack 'patch-requirement
-           (lambda _
-             (substitute* "fare-quasiquote.asd"
-               (("\\(:version \"fare-utils\" \"1.0.0\"\\)") "\"fare-utils\"")))))))
-    (synopsis "Pattern-matching friendly implementation of quasiquote for Common Lisp")
-    (description "The main purpose of this n+2nd reimplementation of
+  (let ((commit "640d39a0451094071b3e093c97667b3947f43639")
+        (revision "1"))
+    (package
+      (name "sbcl-fare-quasiquote")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "1.0.1" revision commit))
+      (home-page "https://gitlab.common-lisp.net/frideau/fare-quasiquote")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url (string-append "https://gitlab.common-lisp.net/frideau/"
+                                   "fare-quasiquote.git"))
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1g6q11l50kgija9f55lzqpcwvaq0ljiw8v1j265hnyg6nahjwjvg"))))
+      (inputs
+       `(("fare-utils" ,sbcl-fare-utils)))
+      (arguments
+       ;; XXX: Circular dependencies: Tests depend on subsystems,
+       ;; which depend on the main systems.
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           ;; XXX: Require 1.0.0 version of fare-utils, and we package some
+           ;; commits after 1.0.0.5, but ASDF fails to read the
+           ;; "-REVISION-COMMIT" part generated by Guix.
+           (add-after 'unpack 'patch-requirement
+             (lambda _
+               (substitute* "fare-quasiquote.asd"
+                 (("\\(:version \"fare-utils\" \"1.0.0\"\\)")
+                  "\"fare-utils\"")))))))
+      (synopsis "Pattern-matching friendly implementation of quasiquote")
+      (description "The main purpose of this n+2nd reimplementation of
 quasiquote is enable matching of quasiquoted patterns, using Optima or
 Trivia.")
-    (license license:expat)))
+      (license license:expat))))
 
 (define-public cl-fare-quasiquote
   (sbcl-package->cl-source-package sbcl-fare-quasiquote))
@@ -5982,6 +6004,8 @@ This package uses fare-quasiquote with named-readtable.")))
                     (lib (string-append out "/lib/" (%lisp-type))))
                (mkdir-p lib)
                (install-file "fare-quasiquote-extras.asd" lib)
+               (make-file-writable
+                (string-append lib "/fare-quasiquote-extras.asd"))
                #t)))
          (add-after 'create-asd-file 'fix-asd-file
            (lambda* (#:key outputs #:allow-other-keys)
@@ -9638,7 +9662,7 @@ Common Lisp.  It uses the libuv library as backend.")
       (description
        "This is a standalone promise implementation for Common Lisp.  It is
 the successor to the now-deprecated cl-async-future project.")
-      (home-page "http://orthecreedence.github.io/blackbird/")
+      (home-page "https://orthecreedence.github.io/blackbird/")
       (license license:expat))))
 
 (define-public cl-blackbird
@@ -9673,7 +9697,7 @@ the successor to the now-deprecated cl-async-future project.")
       (description
        "This is futures implementation for Common Lisp.  It plugs in nicely
 to cl-async.")
-      (home-page "http://orthecreedence.github.io/cl-async/future")
+      (home-page "https://orthecreedence.github.io/cl-async/future")
       (license license:expat))))
 
 (define-public cl-async-future
@@ -10590,3 +10614,586 @@ and usefulness, not speed.  Track the progress at
 
 (define-public cl-numcl
   (sbcl-package->cl-source-package sbcl-numcl))
+
+(define-public sbcl-pzmq
+  (let ((commit "7c7390eedc469d033c72dc497984d1536ee75826")
+        (revision "1"))
+    (package
+      (name "sbcl-pzmq")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/orivej/pzmq.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0gmwzf7h90wa7v4wnk49g0hv2mdalljpwhyigxcb967wzv8lqci9"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("fiveam" ,sbcl-fiveam)
+         ("let-plus" ,sbcl-let-plus)))
+      (inputs
+       `(("cffi" ,sbcl-cffi)
+         ("cffi-grovel" ,sbcl-cffi-grovel)
+         ("zeromq" ,zeromq)))
+      (arguments
+       `(#:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'fix-paths
+                      (lambda* (#:key inputs #:allow-other-keys)
+                        (substitute* "c-api.lisp"
+                          (("\"libzmq")
+                           (string-append "\""
+                                          (assoc-ref inputs "zeromq")
+                                          "/lib/libzmq")))
+                        #t)))))
+      (synopsis "Common Lisp bindings for the ZeroMQ library")
+      (description "This Common Lisp library provides bindings for the ZeroMQ
+lightweight messaging kernel.")
+      (home-page "https://github.com/orivej/pzmq")
+      (license license:unlicense))))
+
+(define-public cl-pzmq
+  (sbcl-package->cl-source-package sbcl-pzmq))
+
+(define-public ecl-pzmq
+  (sbcl-package->ecl-package sbcl-pzmq))
+
+(define-public sbcl-clss
+  (let ((revision "1")
+        (commit "2a8e8615ab55870d4ca01928f3ed3bbeb4e75c8d"))
+    (package
+      (name "sbcl-clss")
+      (version (git-version "0.3.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/Shinmera/clss.git")
+           (commit commit)))
+         (sha256
+          (base32 "0la4dbcda78x29szanylccrsljqrn9d1mhh569sqkyp44ni5fv91"))
+         (file-name (git-file-name name version))))
+      (inputs
+       `(("array-utils" ,sbcl-array-utils)
+         ("plump" ,sbcl-plump)))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "DOM tree searching engine based on CSS selectors")
+      (description "CLSS is a DOM traversal engine based on CSS
+selectors.  It makes use of the Plump-DOM and is used by lQuery.")
+      (home-page "https://github.com/Shinmera/clss")
+      (license license:zlib))))
+
+(define-public cl-clss
+  (sbcl-package->cl-source-package sbcl-clss))
+
+(define-public ecl-clss
+  (sbcl-package->ecl-package sbcl-clss))
+
+(define-public sbcl-lquery
+  (let ((revision "1")
+        (commit "8048111c6b83956daa632e7a3ffbd8c9c203bd8d"))
+    (package
+      (name "sbcl-lquery")
+      (version (git-version "3.2.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/Shinmera/lquery.git")
+           (commit commit)))
+         (sha256
+          (base32 "0520mcpxc2d6fdm8z61arpgd2z38kan7cf06qs373n5r64rakz6w"))
+         (file-name (git-file-name name version))))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (inputs
+       `(("array-utils" ,sbcl-array-utils)
+         ("form-fiddle" ,sbcl-form-fiddle)
+         ("plump" ,sbcl-plump)
+         ("clss" ,sbcl-clss)))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Library to allow jQuery-like HTML/DOM manipulation")
+      (description "@code{lQuery} is a DOM manipulation library written in
+Common Lisp, inspired by and based on the jQuery syntax and
+functions.  It uses Plump and CLSS as DOM and selector engines.  The
+main idea behind lQuery is to provide a simple interface for crawling
+and modifying HTML sites, as well as to allow for an alternative
+approach to templating.")
+      (home-page "https://github.com/Shinmera/lquery")
+      (license license:zlib))))
+
+(define-public cl-lquery
+  (sbcl-package->cl-source-package sbcl-lquery))
+
+(define-public ecl-lquery
+  (sbcl-package->ecl-package sbcl-lquery))
+
+(define-public sbcl-cl-mysql
+  (let ((commit "ab56c279c1815aec6ca0bfe85164ff7e85cfb6f9")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-mysql")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/hackinghat/cl-mysql.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0dg5ynx2ww94d0qfwrdrm7plkn43h64hs4iiq9mj2s1s4ixnp3lr"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("stefil" ,sbcl-stefil)))
+      (inputs
+       `(("cffi" ,sbcl-cffi)
+         ("mariadb-lib" ,mariadb "lib")))
+      (arguments
+       `(#:tests? #f ; TODO: Tests require a running server
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "system.lisp"
+                 (("libmysqlclient_r" all)
+                  (string-append (assoc-ref inputs "mariadb-lib")
+                                 "/lib/"
+                                 all)))
+               #t)))))
+      (synopsis "Common Lisp wrapper for MySQL")
+      (description
+       "@code{cl-mysql} is a Common Lisp implementation of a MySQL wrapper.")
+      (home-page "http://www.hackinghat.com/index.php/cl-mysql")
+      (license license:expat))))
+
+(define-public cl-mysql
+  (sbcl-package->cl-source-package sbcl-cl-mysql))
+
+(define-public sbcl-simple-date
+  (let ((commit "74469b25bbda990ec9b77e0d0eccdba0cd7e721a")
+        (revision "1"))
+    (package
+      (name "sbcl-simple-date")
+      (version (git-version "1.19" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/marijnh/Postmodern.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0im7ymnyxjhn2w74jfg76k5gpr0gl33n31akx33hl28722ljd0hd"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (synopsis "Basic date and time objects for Common Lisp")
+      (description
+       "@code{simple-date} is a very basic implementation of date and time
+objects, used to support storing and retrieving time-related SQL types.")
+      (home-page "https://marijnhaverbeke.nl/postmodern/")
+      (license license:zlib))))
+
+(define-public cl-simple-date
+  (sbcl-package->cl-source-package sbcl-simple-date))
+
+(define-public ecl-simple-date
+  (sbcl-package->ecl-package sbcl-simple-date))
+
+(define-public sbcl-cl-postgres
+  (package
+    (inherit sbcl-simple-date)
+    (name "sbcl-cl-postgres")
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)
+       ("simple-date" ,sbcl-simple-date)))
+    (inputs
+     `(("md5" ,sbcl-md5)
+       ("split-sequence" ,sbcl-split-sequence)
+       ("usocket" ,sbcl-usocket)))
+    (arguments
+     `(#:tests? #f)) ; TODO: Break simple-date/postgres-glue circular dependency
+    (synopsis "Common Lisp interface for PostgreSQL")
+    (description
+     "@code{cl-postgres} is a low-level library used for interfacing with
+a PostgreSQL server over a socket.")))
+
+(define-public cl-postgres
+  (sbcl-package->cl-source-package sbcl-cl-postgres))
+
+(define-public sbcl-simple-date-postgres-glue
+  (package
+    (inherit sbcl-simple-date)
+    (name "sbcl-simple-date-postgres-glue")
+    (inputs
+     `(("cl-postgres" ,sbcl-cl-postgres)
+       ("simple-date" ,sbcl-simple-date)))
+    (arguments
+     `(#:asd-file "simple-date.asd"
+       #:asd-system-name "simple-date/postgres-glue"))))
+
+(define-public cl-simple-date-postgres-glue
+  (sbcl-package->cl-source-package sbcl-simple-date-postgres-glue))
+
+(define-public sbcl-s-sql
+  (package
+    (inherit sbcl-simple-date)
+    (name "sbcl-s-sql")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("cl-postgres" ,sbcl-cl-postgres)))
+    (arguments
+     `(#:tests? #f)) ; TODO: Break postmodern circular dependency
+    (synopsis "Lispy DSL for SQL")
+    (description
+     "@code{s-sql} is a Common Lisp library that can be used to compile
+s-expressions to strings of SQL code, escaping any Lisp values inside, and
+doing as much as possible of the work at compile time.")))
+
+(define-public cl-s-sql
+  (sbcl-package->cl-source-package sbcl-s-sql))
+
+(define-public sbcl-postmodern
+  (package
+    (inherit sbcl-simple-date)
+    (name "sbcl-postmodern")
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)
+       ("simple-date" ,sbcl-simple-date)
+       ("simple-date-postgres-glue" ,sbcl-simple-date-postgres-glue)))
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("cl-postgres" ,sbcl-cl-postgres)
+       ("closer-mop" ,sbcl-closer-mop)
+       ("global-vars" ,sbcl-global-vars)
+       ("s-sql" ,sbcl-s-sql)
+       ("split-sequence" ,sbcl-split-sequence)))
+    (arguments
+     ;; TODO: Fix missing dependency errors for simple-date/postgres-glue,
+     ;; cl-postgres/tests and s-sql/tests.
+     `(#:tests? #f))
+    (synopsis "Common Lisp library for interacting with PostgreSQL")
+    (description
+     "@code{postmodern} is a Common Lisp library for interacting with
+PostgreSQL databases.  It provides the following features:
+
+@itemize
+@item Efficient communication with the database server without need for
+foreign libraries.
+@item Support for UTF-8 on Unicode-aware Lisp implementations.
+@item A syntax for mixing SQL and Lisp code.
+@item Convenient support for prepared statements and stored procedures.
+@item A metaclass for simple database-access objects.
+@end itemize\n")))
+
+(define-public cl-postmodern
+  (sbcl-package->cl-source-package sbcl-postmodern))
+
+(define-public sbcl-dbi
+  (package
+    (name "sbcl-dbi")
+    (version "0.9.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fukamachi/cl-dbi.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0m1fsravfaizamdak84adh3jxc4j91maqnrb4m08bfbmb04cdqhs"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("closer-mop" ,sbcl-closer-mop)
+       ("split-sequence" ,sbcl-split-sequence)))
+    (arguments
+     `(#:tests? #f)) ; TODO: Break circular dependency with dbd-*
+    (synopsis "Database independent interface for Common Lisp")
+    (description
+     "@code{dbi} is a Common Lisp library providing a database independent
+interface for MySQL, PostgreSQL and SQLite.")
+    (home-page "https://github.com/fukamachi/cl-dbi")
+    (license license:llgpl)))
+
+(define-public cl-dbi
+  (sbcl-package->cl-source-package sbcl-dbi))
+
+(define-public sbcl-dbd-mysql
+  (package
+   (inherit sbcl-dbi)
+   (name "sbcl-dbd-mysql")
+   (inputs
+    `(("cl-mysql" ,sbcl-cl-mysql)
+      ("dbi" ,sbcl-dbi)))
+   (synopsis "Database driver for MySQL")))
+
+(define-public cl-dbd-mysql
+  (sbcl-package->cl-source-package sbcl-dbd-mysql))
+
+(define-public sbcl-dbd-postgres
+  (package
+   (inherit sbcl-dbi)
+   (name "sbcl-dbd-postgres")
+   (inputs
+    `(("cl-postgres" ,sbcl-cl-postgres)
+      ("dbi" ,sbcl-dbi)
+      ("trivial-garbage" ,sbcl-trivial-garbage)))
+   (synopsis "Database driver for PostgreSQL")))
+
+(define-public cl-dbd-postgres
+  (sbcl-package->cl-source-package sbcl-dbd-postgres))
+
+(define-public sbcl-dbd-sqlite3
+  (package
+   (inherit sbcl-dbi)
+   (name "sbcl-dbd-sqlite3")
+   (inputs
+    `(("cl-sqlite" ,sbcl-cl-sqlite)
+      ("dbi" ,sbcl-dbi)
+      ("trivial-garbage" ,sbcl-trivial-garbage)))
+   (synopsis "Database driver for SQLite3")))
+
+(define-public cl-dbd-sqlite3
+  (sbcl-package->cl-source-package sbcl-dbd-sqlite3))
+
+(define-public sbcl-uffi
+  (package
+    (name "sbcl-uffi")
+    (version "2.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "http://git.kpe.io/uffi.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1hqszvz0a3wk4s9faa83sc3vjxcb5rxmjclyr17yzwg55z733kry"))))
+    (build-system asdf-build-system/sbcl)
+    (arguments
+     `(#:tests? #f ; TODO: Fix use of deprecated ASDF functions
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-permissions
+           (lambda _
+             (make-file-writable "doc/html.tar.gz")
+             #t)))))
+    (synopsis "Universal foreign function library for Common Lisp")
+    (description
+     "UFFI provides a universal foreign function interface (FFI)
+ for Common Lisp.")
+    (home-page "http://quickdocs.org/uffi/")
+    (license license:llgpl)))
+
+(define-public cl-uffi
+  (package
+    (inherit (sbcl-package->cl-source-package sbcl-uffi))
+    (arguments
+     `(#:phases
+       ;; asdf-build-system/source has its own phases and does not inherit
+       ;; from asdf-build-system/sbcl phases.
+       (modify-phases %standard-phases/source
+         (add-after 'unpack 'fix-permissions
+           (lambda _
+             (make-file-writable "doc/html.tar.gz")
+             #t)))))))
+
+(define-public sbcl-clsql
+  (package
+    (name "sbcl-clsql")
+    (version "6.7.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "http://git.kpe.io/clsql.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1v1k3s5bsy3lgd9gk459bzpb1r0kdjda25s29samxw4gsgf1fqvp"))
+       (snippet
+        '(begin
+           ;; Remove precompiled libraries.
+           (delete-file "db-mysql/clsql_mysql.dll")
+           (delete-file "uffi/clsql_uffi.dll")
+           (delete-file "uffi/clsql_uffi.lib")
+           #t))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("cffi-uffi-compat" ,sbcl-cffi-uffi-compat)
+       ("rt" ,sbcl-rt)
+       ("uffi" ,sbcl-uffi)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-permissions
+           (lambda _
+             (make-file-writable "doc/html.tar.gz")
+             #t))
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             (substitute* "clsql.asd"
+               (("clsql-tests :force t")
+                "clsql-tests"))
+             #t)))))
+    (synopsis "Common Lisp SQL Interface library")
+    (description
+     "@code{clsql} is a Common Lisp interface to SQL RDBMS based on the
+Xanalys CommonSQL interface for Lispworks.  It provides low-level database
+interfaces as well as a functional and an object oriented interface.")
+    (home-page "http://clsql.kpe.io/")
+    (license license:llgpl)))
+
+(define-public cl-clsql
+  (package
+    (inherit (sbcl-package->cl-source-package sbcl-clsql))
+    (native-inputs
+     `(("rt" ,cl-rt)))
+    (inputs
+     `(("mysql" ,mysql)
+       ("postgresql" ,postgresql)
+       ("sqlite" ,sqlite)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("cl-postgres" ,cl-postgres)
+       ("cffi-uffi-compat" ,cl-cffi-uffi-compat)
+       ("md5" ,cl-md5)
+       ("uffi" ,cl-uffi)))
+    (arguments
+     `(#:phases
+       ;; asdf-build-system/source has its own phases and does not inherit
+       ;; from asdf-build-system/sbcl phases.
+       (modify-phases %standard-phases/source
+         (add-after 'unpack 'fix-permissions
+           (lambda _
+             (make-file-writable "doc/html.tar.gz")
+             #t)))))))
+
+(define-public sbcl-clsql-uffi
+  (package
+    (inherit sbcl-clsql)
+    (name "sbcl-clsql-uffi")
+    (inputs
+     `(("cffi-uffi-compat" ,sbcl-cffi-uffi-compat)
+       ("clsql" ,sbcl-clsql)
+       ("uffi" ,sbcl-uffi)))
+    (synopsis "UFFI helper functions for Common Lisp SQL interface library")))
+
+(define-public sbcl-clsql-sqlite3
+  (package
+    (inherit sbcl-clsql)
+    (name "sbcl-clsql-sqlite3")
+    (inputs
+     `(("clsql" ,sbcl-clsql)
+       ("clsql-uffi" ,sbcl-clsql-uffi)
+       ("sqlite" ,sqlite)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-clsql)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "db-sqlite3/sqlite3-loader.lisp"
+                 (("libsqlite3")
+                  (string-append (assoc-ref inputs "sqlite")
+                                 "/lib/libsqlite3")))
+               #t))))))
+    (synopsis "SQLite3 driver for Common Lisp SQL interface library")))
+
+(define-public sbcl-clsql-postgresql
+  (package
+    (inherit sbcl-clsql)
+    (name "sbcl-clsql-postgresql")
+    (inputs
+     `(("clsql" ,sbcl-clsql)
+       ("clsql-uffi" ,sbcl-clsql-uffi)
+       ("postgresql" ,postgresql)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-clsql)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "db-postgresql/postgresql-loader.lisp"
+                 (("libpq")
+                  (string-append (assoc-ref inputs "postgresql")
+                                 "/lib/libpq")))
+               #t))))))
+    (synopsis "PostgreSQL driver for Common Lisp SQL interface library")))
+
+(define-public sbcl-clsql-postgresql-socket3
+  (package
+    (inherit sbcl-clsql)
+    (name "sbcl-clsql-postgresql-socket3")
+    (inputs
+     `(("cl-postgres" ,sbcl-cl-postgres)
+       ("clsql" ,sbcl-clsql)
+       ("md5" ,sbcl-md5)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-clsql)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-after 'create-asd-file 'fix-asd-file
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (lib (string-append out "/lib/" (%lisp-type)))
+                      (asd (string-append lib "/clsql-postgresql-socket3.asd")))
+                 (substitute* asd
+                   (("CLSQL-POSTGRESQL-SOCKET-SYSTEM::")
+                    "")))
+               #t))))))
+    (synopsis "PostgreSQL driver for Common Lisp SQL interface library")))
+
+(define-public sbcl-clsql-mysql
+  (package
+    (inherit sbcl-clsql)
+    (name "sbcl-clsql-mysql")
+    (inputs
+     `(("mysql" ,mysql)
+       ("sbcl-clsql" ,sbcl-clsql)
+       ("sbcl-clsql-uffi" ,sbcl-clsql-uffi)
+       ("zlib" ,zlib)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-clsql)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((lib (string-append "#p\""
+                                         (assoc-ref outputs "out")
+                                         "/lib/\"")))
+                 (substitute* "clsql-mysql.asd"
+                   (("#p\"/usr/lib/clsql/clsql_mysql\\.so\"")
+                    lib))
+                 (substitute* "db-mysql/mysql-loader.lisp"
+                   (("libmysqlclient" all)
+                    (string-append (assoc-ref inputs "mysql") "/lib/" all))
+                   (("clsql-mysql-system::\\*library-file-dir\\*")
+                    lib)))
+               #t))
+           (add-before 'build 'build-helper-library
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((mysql (assoc-ref inputs "mysql"))
+                      (inc-dir (string-append mysql "/include/mysql"))
+                      (lib-dir (string-append mysql "/lib"))
+                      (shared-lib-dir (string-append (assoc-ref outputs "out")
+                                                     "/lib"))
+                      (shared-lib (string-append shared-lib-dir
+                                                 "/clsql_mysql.so")))
+                 (mkdir-p shared-lib-dir)
+                 (invoke "gcc" "-fPIC" "-shared"
+                         "-I" inc-dir
+                         "db-mysql/clsql_mysql.c"
+                         "-Wl,-soname=clsql_mysql"
+                         "-L" lib-dir "-lmysqlclient" "-lz"
+                         "-o" shared-lib)
+                 #t)))))))
+    (synopsis "MySQL driver for Common Lisp SQL interface library")))

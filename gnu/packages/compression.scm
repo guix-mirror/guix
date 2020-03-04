@@ -1580,6 +1580,7 @@ recreates the stored directory structure by default.")
   (package
     (name "zziplib")
     (version "0.13.69")
+    (replacement zziplib/fixed)
     (home-page "https://github.com/gdraheim/zziplib")
     (source (origin
               (method git-fetch)
@@ -1617,21 +1618,29 @@ recreates the stored directory structure by default.")
     ;; files carry the Zlib license; see "docs/copying.html" for details.
     (license (list license:lgpl2.0+ license:mpl1.1))))
 
+(define zziplib/fixed
+  (package
+    (inherit zziplib)
+    (source (origin
+              (inherit (package-source zziplib))
+              (patches (search-patches "zziplib-CVE-2018-16548.patch"))))))
+
 (define-public libzip
   (package
     (name "libzip")
-    (version "1.5.2")
+    (version "1.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://libzip.org/download/libzip-" version ".tar.xz"))
               (sha256
                (base32
-                "1d53shcy7nvls5db573bbdlm25lfz1iw2zshng5f00cssi5lvpmk"))))
+                "0h9nsgkw0dk4srsvmz6xy6f9l4h815xn07j8h40l8gqvcxxaqpbh"))))
     (native-inputs
      `(("perl" ,perl)))
     (inputs
      `(("gnutls" ,gnutls)
+       ("liblzma" ,xz)
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (build-system cmake-build-system)
@@ -1899,15 +1908,14 @@ decompression is a little bit slower.")
 (define-public upx
   (package
     (name "upx")
-    (version "3.94")
+    (version "3.96")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/upx/upx/releases/download/v"
-                                 version "/" name "-" version "-src.tar.xz"))
+                                 version "/upx-" version "-src.tar.xz"))
              (sha256
               (base32
-               "08anybdliqsbsl6x835iwzljahnm9i7v26icdjkcv33xmk6p5vw1"))
-             (patches (search-patches "upx-fix-CVE-2017-15056.patch"))))
+               "051pk5jk8fcfg5mpgzj43z5p4cn7jy5jbyshyn78dwjqr7slsxs7"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))
@@ -1916,36 +1924,25 @@ decompression is a little bit slower.")
        ("zlib" ,zlib)))
     (arguments
      `(#:make-flags
-       (list "all"
-             ;; CHECK_WHITESPACE does not seem to work.
-             ;; See https://git.archlinux.org/svntogit/community.git/tree/trunk/PKGBUILD?h=packages/upx.
-             "CHECK_WHITESPACE=true")
+       (list "all")
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (delete 'check)
-         (delete 'install)
+         (delete 'configure)            ; no configure script
+         (delete 'check)                ; no test suite
          (add-before 'build 'patch-exec-bin-sh
            (lambda _
-             (substitute* (find-files "Makefile")
-               (("/bin/sh") (which "sh")))
-             (substitute* "src/Makefile"
+             (substitute* (list "Makefile"
+                                "src/Makefile")
                (("/bin/sh") (which "sh")))
              #t))
-         (add-after 'build 'install-upx
+         (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                   (bin (string-append out "/bin")))
+                    (bin (string-append out "/bin")))
                (mkdir-p bin)
                (copy-file "src/upx.out" (string-append bin "/upx")))
-             #t))
-         )))
+             #t)))))
     (home-page "https://upx.github.io/")
-    ;; CVE-2017-16869 is about Mach-O files which is not of a big concern for Guix.
-    ;; See https://github.com/upx/upx/issues/146 and
-    ;; https://nvd.nist.gov/vuln/detail?vulnId=CVE-2017-16869.
-    ;; The issue will be fixed after version 3.94.
-    (properties `((lint-hidden-cve . ("CVE-2017-16869"))))
     (synopsis "Compression tool for executables")
     (description
      "The Ultimate Packer for eXecutables (UPX) is an executable file

@@ -60,7 +60,7 @@
 (define-public libmpdclient
   (package
     (name "libmpdclient")
-    (version "2.17")
+    (version "2.18")
     (source (origin
               (method url-fetch)
               (uri
@@ -69,7 +69,7 @@
                               "/libmpdclient-" version ".tar.xz"))
               (sha256
                (base32
-                "0n9mrrmk20p4mfsz782jziax9z3bn7vxlm53327mrdlmgqf8z6zf"))))
+                "1yl123xr25gcd3vlsfmn6p7gbrq029pgnxa8m6n6j0byaqgixc2c"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -92,7 +92,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
 (define-public mpd
   (package
     (name "mpd")
-    (version "0.21.18")
+    (version "0.21.20")
     (source (origin
               (method url-fetch)
               (uri
@@ -101,7 +101,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
                               "/mpd-" version ".tar.xz"))
               (sha256
                (base32
-                "0hllkq426hql1s80xxvy28ypvw3dbfrrclbjc0lckmmgsmnfd0l7"))))
+                "1q8hwl3i0a4qzdwfh44r0nh5zd2mm3rraqw5qvmz6qfrjslz0bj2"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Ddocumentation=true"))) ;the default is 'false'...
@@ -183,7 +183,7 @@ player daemon.")
 (define-public ncmpc
   (package
     (name "ncmpc")
-    (version "0.36")
+    (version "0.37")
     (source (origin
               (method url-fetch)
               (uri
@@ -192,7 +192,7 @@ player daemon.")
                               "/ncmpc-" version ".tar.xz"))
               (sha256
                (base32
-                "0b1yg93is9057p9d7vfv5nz85d11p6jq94fw07jn3zlfzhyqfcj6"))))
+                "0p31jpv1vj01bqf1589mnfpv9618cfsv259rlnbqybg1yqkvg3kw"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags

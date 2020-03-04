@@ -47,7 +47,7 @@
      `(("python2-xlib" ,python2-xlib)
        ("python2-pygtk" ,python2-pygtk)
        ("python2-rsvg" ,python2-rsvg)))
-    (home-page "http://code.google.com/p/key-mon")
+    (home-page "https://code.google.com/p/key-mon")
     (synopsis "Show keyboard and mouse status")
     (description
      "The key-mon utility displays the current keyboard and mouse status.

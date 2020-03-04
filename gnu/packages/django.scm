@@ -42,13 +42,13 @@
 (define-public python-django
   (package
     (name "python-django")
-    (version "1.11.25")
+    (version "1.11.28")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Django" version))
               (sha256
                (base32
-                "0rpgx212n8gh61nwizkyldvskna808xpcvawmavk5mc5c9cfh52k"))))
+                "1ss1jyip7mlbfjn27m0j6wx80s8h4ksg6g5annkgwigp8xgy6g5k"))))
     (build-system python-build-system)
     (arguments
      '(#:modules ((srfi srfi-1)
@@ -248,7 +248,7 @@ with arguments to the field constructor.")
        ("python-setuptools-scm" ,python-setuptools-scm)))
     (propagated-inputs
      `(("python-pytest" ,python-pytest)))
-    (home-page "http://pytest-django.readthedocs.org/")
+    (home-page "https://pytest-django.readthedocs.org/")
     (synopsis "Django plugin for py.test")
     (description "Pytest-django is a plugin for py.test that provides a set of
 useful tools for testing Django applications and projects.")
@@ -930,7 +930,7 @@ static files.")
        ("python2-pytest-catchlog" ,python2-pytest-catchlog)
        ("python2-pytest-cov" ,python2-pytest-cov)
        ("python2-factory-boy" ,python2-factory-boy)))
-    (home-page "http://pootle.translatehouse.org/")
+    (home-page "https://pootle.translatehouse.org/")
     (synopsis "Community localization server")
     (description
       "Pootle is an online translation and localization tool.  It works to

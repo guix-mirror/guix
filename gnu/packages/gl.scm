@@ -268,7 +268,7 @@ also known as DXTn or DXTC) for Mesa.")
         ("libxvmc" ,libxvmc)
         ,@(match (%current-system)
             ((or "x86_64-linux" "i686-linux")
-             `(("llvm" ,llvm)))
+             `(("llvm" ,llvm-8)))
             (_
              `()))
         ("makedepend" ,makedepend)
@@ -453,7 +453,7 @@ from software emulation to complete hardware acceleration for modern GPUs.")
      `(("libclc" ,libclc)
        ,@(package-inputs mesa)))
     (native-inputs
-     `(("clang" ,clang)
+     `(("clang" ,clang-8)
        ,@(package-native-inputs mesa)))))
 
 (define-public mesa-opencl-icd

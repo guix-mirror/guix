@@ -751,7 +751,7 @@ interfaces and processes.")
     (propagated-inputs
      `(("python-six" ,python-six)
        ("python-traceback2" ,python-traceback2)))
-    (home-page "http://pypi.python.org/pypi/unittest2")
+    (home-page "https://pypi.org/project/unittest2/")
     (synopsis "Python unit testing library")
     (description
      "Unittest2 is a replacement for the unittest module in the Python
@@ -1590,7 +1590,7 @@ the last py.test invocation.")
     (synopsis "Py.test plugin to test server connections locally")
     (description "Pytest-localserver is a plugin for the pytest testing
 framework which enables you to test server connections locally.")
-    (home-page "https://pypi.python.org/pypi/pytest-localserver")
+    (home-page "https://pypi.org/project/pytest-localserver/")
     (license license:expat)))
 
 (define-public python-pytest-xprocess
@@ -2052,7 +2052,7 @@ especially -cover-package.")
         (base32
          "0y8d0zwiqar51kxj8lzmkvwc3b8kazb04gk5zcb4nzg5k68zmhq5"))))
     (build-system python-build-system)
-    (home-page "http://pypi.python.org/pypi/discover/")
+    (home-page "https://pypi.org/project/discover/")
     (synopsis
      "Python test discovery for unittest")
     (description

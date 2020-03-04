@@ -651,9 +651,13 @@ by 'mdadm'.")
                                                   (guix combinators)))))
                     %base-services))))
 
+(define %luks-passphrase
+  ;; LUKS encryption passphrase used in tests.
+  "thepassphrase")
+
 (define %encrypted-root-installation-script
   ;; Shell script of a simple installation.
-  "\
+  (string-append "\
 . /etc/profile
 set -e -x
 guix --version
@@ -665,9 +669,9 @@ parted --script /dev/vdb mklabel gpt \\
   mkpart primary ext2 3M 1.4G \\
   set 1 boot on \\
   set 1 bios_grub on
-echo -n thepassphrase | \\
+echo -n " %luks-passphrase " | \\
   cryptsetup luksFormat --uuid=12345678-1234-1234-1234-123456789abc -q /dev/vdb2 -
-echo -n thepassphrase | \\
+echo -n " %luks-passphrase " | \\
   cryptsetup open --type luks --key-file - /dev/vdb2 the-root-device
 mkfs.ext4 -L my-root /dev/mapper/the-root-device
 mount LABEL=my-root /mnt
@@ -677,7 +681,7 @@ cp /etc/target-config.scm /mnt/etc/config.scm
 guix system build /mnt/etc/config.scm
 guix system init /mnt/etc/config.scm /mnt --no-substitutes
 sync
-reboot\n")
+reboot\n"))
 
 (define (enter-luks-passphrase marionette)
   "Return a gexp to be inserted in the basic system test running on MARIONETTE
@@ -698,7 +702,8 @@ to enter the LUKS passphrase."
             ;; when the passphrase should be entered.
             (wait-for-screen-text #$marionette passphrase-prompt?
                                   #:ocrad #$ocrad)
-            (marionette-type "thepassphrase\n" #$marionette)
+            (marionette-type #$(string-append %luks-passphrase "\n")
+                             #$marionette)
 
             ;; Now wait until we leave the boot screen.  This is necessary so
             ;; we can then be sure we match the "Enter passphrase" prompt from
@@ -714,7 +719,8 @@ to enter the LUKS passphrase."
             (wait-for-screen-text #$marionette passphrase-prompt?
                                   #:ocrad #$ocrad
                                   #:timeout 60)
-            (marionette-type "thepassphrase\n" #$marionette)
+            (marionette-type #$(string-append %luks-passphrase "\n")
+                             #$marionette)
 
             ;; Take a screenshot for debugging purposes.
             (marionette-control (string-append "screendump " #$output

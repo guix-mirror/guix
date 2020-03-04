@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
@@ -56,15 +56,15 @@
 (define-public igraph
   (package
     (name "igraph")
-    (version "0.7.1")
+    (version "0.8.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://igraph.org/nightly/get/c/igraph-"
-                           version ".tar.gz"))
+       (uri (string-append "https://github.com/igraph/igraph/releases/"
+                           "download/" version "/igraph-" version ".tar.gz"))
        (sha256
         (base32
-         "1pxh8sdlirgvbvsw8v65h6prn7hlm45bfsl1yfcgd6rn4w706y6r"))))
+         "0jcnfvahrlj08y46vnax5y5bb294v4b9n00qsy7pbx0cc0sp6qvj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -90,21 +90,36 @@ more.")
 (define-public python-igraph
   (package (inherit igraph)
     (name "python-igraph")
-    (version "0.7.1.post6")
+    (version "0.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-igraph" version))
        (sha256
         (base32
-         "0xp61zz710qlzhmzbfr65d5flvsi8zf2xy78s6rsszh719wl5sm5"))))
+         "13mbrlmnbgbzw6y8ws7wj0a3ly3in8j4l1ngi6yxvgvxxi4bprj7"))))
     (build-system python-build-system)
-    (arguments '())
+    (arguments
+     '(#:configure-flags
+       (list "--use-pkg-config")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda _
+             (invoke "python" "./setup.py" "build" "--use-pkg-config")))
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-v"))))))
     (inputs
      `(("igraph" ,igraph)))
+    (propagated-inputs
+     `(("python-texttable" ,python-texttable)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (home-page "http://pypi.python.org/pypi/python-igraph")
+     `(("pkg-config" ,pkg-config)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://pypi.org/project/python-igraph/")
     (synopsis "Python bindings for the igraph network analysis library")))
 
 (define-public r-igraph

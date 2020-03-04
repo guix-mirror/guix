@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
 ;;; Copyright © 2017, 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
@@ -110,8 +110,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.0.1")
-        (commit "50299ade040e934fa5533768aacb081eb340af3f")
-        (revision 13))
+        (commit "c2f9ea2b502a617bb69227d5f858eee9d4288a6a")
+        (revision 14))
     (package
       (name "guix")
 
@@ -127,7 +127,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "0rbnyy0vqmsl7z350cdazm5xzx74cdia3nxp0msk8xalyb76hff4"))
+                  "0hg6yrqlzqiv4gmk9liqar6m9qhhn66q75jsmh86awjwq4qmvyab"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -788,29 +788,46 @@ written entirely in Python.")))
 (define-public gwl
   (package
     (name "gwl")
-    (version "0.1.1")
+    (version "0.2.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://www.guixwl.org/releases/gwl-"
-                                  version ".tar.gz"))
+              (uri (string-append "mirror://gnu/gwl/gwl-" version ".tar.gz"))
               (sha256
                (base32
-                "06pm967mq1wyggx7l0nfapw5s0k5qc5r9lawk2v3db868br779a7"))))
+                "1ji5jvzni8aml9fmimlr11g3k8isrnlvnbzhmwgdjh72hils0alc"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-tests
+           (lambda _
+             ;; Avoid cross-device link.
+             (substitute* "tests/cache.scm"
+               (("/tmp/gwl-test-input-XXXXXX")
+                (string-append (getcwd) "/gwl-test-input-XXXXXX")))
+             #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)
+       ("graphviz" ,graphviz)))
     (inputs
-     `(("guile" ,guile-2.2)))
+     `(("guile" ,guile-3.0)))
     (propagated-inputs
-     `(("guix" ,guix)
-       ("guile-commonmark" ,guile-commonmark)))
-    (home-page "https://www.guixwl.org")
+     `(("guix" ,guile3.0-guix)
+       ("guile-commonmark" ,guile3.0-commonmark)
+       ("guile-gcrypt" ,guile3.0-gcrypt)
+       ("guile-pfds" ,guile3.0-pfds)
+       ("guile-syntax-highlight" ,guile3.0-syntax-highlight)
+       ("guile-wisp" ,guile3.0-wisp)))
+    (home-page "https://workflows.guix.info")
     (synopsis "Workflow management extension for GNU Guix")
-    (description "This project provides two subcommands to GNU Guix and
-introduces two record types that provide a workflow management extension built
-on top of GNU Guix.")
+    (description "The @dfn{Guix Workflow Language} (GWL) provides an
+extension to GNU Guix's declarative language for package management to
+automate the execution of programs in scientific workflows.  The GWL
+can use process engines to integrate with various computing
+environments.")
     ;; The Scheme modules in guix/ and gnu/ are licensed GPL3+,
     ;; the web interface modules in gwl/ are licensed AGPL3+,
     ;; and the fonts included in this package are licensed OFL1.1.
@@ -966,7 +983,7 @@ for packaging and deployment of cross-compiled Windows applications.")
 (define-public libostree
   (package
     (name "libostree")
-    (version "2019.3")
+    (version "2020.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -974,7 +991,7 @@ for packaging and deployment of cross-compiled Windows applications.")
                     (version-major+minor version) "/libostree-" version ".tar.xz"))
               (sha256
                (base32
-                "1r07yqbc9iiq0lzv1pryppd35fv695ym8r040msbfc93pmiy77y0"))))
+                "0sgx81w6skiivbr2gfhljf9nvnqfwwnwfgpqqa10fjdkjrqwvpk8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

@@ -16,7 +16,7 @@ for lang in ${langs}; do
     fi
 done
 langs=`find po/doc -type f -name 'guix-cookbook*.po' \
-        | sed -e 's,guix-manual\.,,' \
+        | sed -e 's,guix-cookbook\.,,' \
         | xargs -n 1 -I{} basename {} .po`
 for lang in ${langs}; do
     if [ ! -e "doc/guix-cookbook.${lang}.texi" ]; then

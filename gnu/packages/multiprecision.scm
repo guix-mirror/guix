@@ -131,7 +131,7 @@ correct rounding.")
 for performing arithmetic on complex numbers.  It supports arbitrarily high
 precision and correctly rounds the results.")
    (license lgpl3+)
-   (home-page "http://multiprecision.org/mpc/")))
+   (home-page "http://www.multiprecision.org/mpc/")))
 
 (define-public mpfi
   (package
