@@ -898,16 +898,15 @@ programming language.  It also contains the utility
 (define-public appstream-glib
   (package
     (name "appstream-glib")
-    (version "0.7.16")
+    (version "0.7.17")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://people.freedesktop.org/~hughsient/"
                                   "appstream-glib/releases/"
                                   "appstream-glib-" version ".tar.xz"))
-              (patches (search-patches "appstream-glib-2020.patch"))
               (sha256
                (base32
-                "14jr1psx5kxywdprgbqn79w309yz8lrqlsq7288hfrf87gbr1wh4"))))
+                "0jg58m1p5xfrh8zkpqhhg00nqs727z5i1qy6sb0a3vyc98fyk9vw"))))
     (build-system meson-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
