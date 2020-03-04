@@ -42,8 +42,8 @@
     (inherit (cross-binutils "avr"))
     (name "avr-binutils")))
 
-(define-public avr-gcc-7
-  (let ((xgcc (cross-gcc "avr" #:xgcc gcc-7 #:xbinutils avr-binutils)))
+(define avr-gcc
+  (let ((xgcc (cross-gcc "avr" #:xgcc gcc #:xbinutils avr-binutils)))
     (package
       (inherit xgcc)
       (name "avr-gcc")
@@ -95,10 +95,10 @@
               (variable "CROSS_LIBRARY_PATH")
               (files '("avr/lib")))))
       (native-inputs
-       `(("gcc" ,gcc-7)
+       `(("gcc" ,gcc)
          ,@(package-native-inputs xgcc))))))
 
-(define (avr-libc avr-gcc)
+(define avr-libc
   (package
     (name "avr-libc")
     (version "2.0.0")
@@ -123,30 +123,27 @@ for use with GCC on Atmel AVR microcontrollers.")
     (license
      (license:non-copyleft "http://www.nongnu.org/avr-libc/LICENSE.txt"))))
 
-(define (avr-toolchain avr-gcc)
+(define-public avr-toolchain
   ;; avr-libc checks the compiler version and passes "--enable-device-lib" for avr-gcc > 5.1.0.
   ;; It wouldn't install the library for atmega32u4 etc if we didn't use the corret avr-gcc.
-  (let ((avr-libc (avr-libc avr-gcc)))
-    (package
-      (name "avr-toolchain")
-      (version (package-version avr-gcc))
-      (source #f)
-      (build-system trivial-build-system)
-      (arguments '(#:builder (begin (mkdir %output) #t)))
-      (propagated-inputs
-       `(("avrdude" ,avrdude)
-         ("binutils" ,avr-binutils)
-         ("gcc" ,avr-gcc)
-         ("libc" ,avr-libc)))
-      (synopsis "Complete GCC tool chain for AVR microcontroller development")
-      (description "This package provides a complete GCC tool chain for AVR
+  (package
+    (name "avr-toolchain")
+    (version (package-version avr-gcc))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments '(#:builder (begin (mkdir %output) #t)))
+    (propagated-inputs
+     `(("avrdude" ,avrdude)
+       ("binutils" ,avr-binutils)
+       ("gcc" ,avr-gcc)
+       ("libc" ,avr-libc)))
+    (synopsis "Complete GCC tool chain for AVR microcontroller development")
+    (description "This package provides a complete GCC tool chain for AVR
 microcontroller development.  This includes the GCC AVR cross compiler and
 avrdude for firmware flashing.  The supported programming languages are C and
 C++.")
-      (home-page (package-home-page avr-libc))
-      (license (package-license avr-gcc)))))
-
-(define-public avr-toolchain-7 (avr-toolchain avr-gcc-7))
+    (home-page (package-home-page avr-libc))
+    (license (package-license avr-gcc))))
 
 (define-public microscheme
   (package
