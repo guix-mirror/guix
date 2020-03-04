@@ -3671,7 +3671,7 @@ libxml to ease remote use of the RESTful API.")
 (define-public libsoup
   (package
     (name "libsoup")
-    (version "2.68.3")
+    (version "2.68.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libsoup/"
@@ -3679,7 +3679,7 @@ libxml to ease remote use of the RESTful API.")
                                   "libsoup-" version ".tar.xz"))
               (sha256
                (base32
-                "1yxs0ax4rq3g0lgkbv7mz497rqj16iyyizddyc13gzxh6n7b0jsk"))))
+                "151j5dc84gbl6a917pxvd0b372lw5za48n63lyv6llfc48lv2l1d"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
