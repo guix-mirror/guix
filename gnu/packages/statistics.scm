@@ -590,13 +590,13 @@ and operations on them using LAPACK and SuiteSparse.")
 (define-public r-nlme
   (package
     (name "r-nlme")
-    (version "3.1-144")
+    (version "3.1-145")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "nlme" version))
        (sha256
-        (base32 "1gqyq53fdq23wsi3f4n9vg4mn5i0v18zam5lnzlpg581xifx2779"))))
+        (base32 "1i9a3afdmn2ziks0imz0j09ay9n0zb9mhrymy9mg97vvlz5diwrh"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)))
