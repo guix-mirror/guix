@@ -498,26 +498,13 @@ commit or run any Git arbitrary command.")
        (sha256
         (base32
          "1aksmr73648pvyc75pfdz28k2d4ky52rn7xiwcv7lz87q3vqld7k"))))
-    (build-system gnu-build-system)
+    (build-system copy-build-system)
     (arguments
-     `(#:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (delete 'build)
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (vimfiles (string-append out "/share/vim/vimfiles"))
-                    (autoload (string-append vimfiles "/autoload"))
-                    (doc (string-append vimfiles "/doc"))
-                    (t (string-append vimfiles "/t"))
-                    (plugin (string-append vimfiles "/plugin")))
-               (copy-recursively "autoload" autoload)
-               (copy-recursively "doc" doc)
-               (copy-recursively "plugin" plugin)
-               (copy-recursively "t" t)
-               #t))))))
+     '(#:install-plan
+       '(("autoload" "share/vim/vimfiles/")
+         ("doc" "share/vim/vimfiles/")
+         ("plugin" "share/vim/vimfiles/")
+         ("t" "share/vim/vimfiles/"))))
     (synopsis "Statusline for Vim")
     (description
      "@code{vim-airline} is an extensible statusline for Vim.
