@@ -6,6 +6,7 @@
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -439,10 +440,12 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
   (match str
     ("GNU LGPL" license:lgpl2.0)
     ("GPL" license:gpl3)
-    ((or "BSD" "BSD License") license:bsd-3)
-    ((or "MIT" "MIT license" "Expat license") license:expat)
+    ((or "BSD" "BSD-3" "BSD License") license:bsd-3)
+    ("BSD-2-Clause" license:bsd-2)
+    ((or "MIT" "MIT license" "MIT License" "Expat license") license:expat)
     ("Public domain" license:public-domain)
     ((or "Apache License, Version 2.0" "Apache 2.0") license:asl2.0)
+    ("MPL 2.0" license:mpl2.0)
     (_ #f)))
 
 (define (pypi-package? package)
