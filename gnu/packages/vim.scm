@@ -444,22 +444,11 @@ trouble using them, because you do not have to remember each snippet name.")
          (sha256
           (base32
            "0alvrfhmd91zkd9h83s8wvgyq4iakcf6rybsyjd369qbgpcqky89"))))
-      (build-system gnu-build-system)
+      (build-system copy-build-system)
       (arguments
-       `(#:tests? #f
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (delete 'build)
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (vimfiles (string-append out "/share/vim/vimfiles"))
-                      (doc (string-append vimfiles "/doc"))
-                      (autoload (string-append vimfiles "/autoload")))
-                 (copy-recursively "doc" doc)
-                 (copy-recursively "autoload" autoload)
-                 #t))))))
+       '(#:install-plan
+         '(("doc" "share/vim/vimfiles/")
+           ("autoload" "share/vim/vimfiles/"))))
       (synopsis "Context filetype library for Vim")
       (description
        "@code{vim-context-filetype} is context filetype library for Vim script.")
