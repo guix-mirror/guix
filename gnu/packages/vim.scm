@@ -417,20 +417,10 @@ trouble using them, because you do not have to remember each snippet name.")
          (sha256
           (base32
            "0ka3qbhsh8lix1vyj4678j7dnchkd8khhirrnn3aylxxf8fpqyg8"))))
-      (build-system gnu-build-system)
+      (build-system copy-build-system)
       (arguments
-       `(#:tests? #f
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (delete 'build)
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (vimfiles (string-append out "/share/vim/vimfiles"))
-                      (colors (string-append vimfiles "/colors")))
-                 (copy-recursively "colors" colors)
-                 #t))))))
+       '(#:install-plan
+         '(("colors" "share/vim/vimfiles/"))))
       (synopsis "Dark color theme for Vim")
       (description
        "@code{vim-luna} is a dark color theme for Vim.")
