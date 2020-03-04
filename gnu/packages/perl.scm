@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
-;;; Copyright © 2016, 2018 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016, 2018, 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Raoul J.P. Bonnal <ilpuccio.febo@gmail.com>
@@ -332,6 +332,33 @@ not asynchronous - it won't interrupt a running perl interpreter.
 This module implements asynchronous notifications that enable you to
 signal running perl code from another thread, asynchronously, and
 sometimes even without using a single syscall.")
+    (license (package-license perl))))
+
+(define-public perl-attribute-util
+  (package
+    (name "perl-attribute-util")
+    (version "1.07")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://cpan.metacpan.org/authors/id/D/DA/DANKOGAI/"
+                    "Attribute-Util-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1z79d845dy96lg0pxw0kr2za0gniwnpn963r7ccajfpj6k7jfw07"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/pod/Attribute::Util")
+    (synopsis "Assorted general utility attributes")
+    (description "This packages provides various utility functions.  When used
+without argument, this module provides four universally accessible attributes
+of general interest as follows:
+@itemize
+@item Abstract
+@item Alias
+@item Memoize
+@item Method
+@item SigHandler
+@end itemize")
     (license (package-license perl))))
 
 (define-public perl-autovivification
