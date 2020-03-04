@@ -3,6 +3,7 @@
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,8 +35,9 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages texinfo)
   #:use-module (guix git-download)
-  #:export (hurd-triplet?
-            hurd-target?))
+  #:export (hurd-system?
+            hurd-target?
+            hurd-triplet?))
 
 (define (hurd-triplet? triplet)
   (and (string-suffix? "-gnu" triplet)
@@ -45,7 +47,12 @@
   "Return true if the cross-compilation target or the current system is
 GNU/Hurd."
   (or (and=> (%current-target-system) hurd-triplet?)
-      (string-suffix? (%current-system) "-gnu")))
+      (and (not (%current-target-system))
+           (and=> (%current-system) hurd-triplet?))))
+
+(define (hurd-system?)
+  "Return true if the current system is the Hurd."
+  (and=> (%current-system) hurd-triplet?))
 
 (define (hurd-source-url version)
   (string-append "mirror://gnu/hurd/hurd-"
