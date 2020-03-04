@@ -17844,25 +17844,26 @@ Later you can insert it into an Org buffer using the command
 (define-public emacs-amx
   (package
     (name "emacs-amx")
-    (version "3.2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/DarwinAwardWinner/amx")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0bb8y1dmzyqkrb4mg6zndcsxppby3glridv2aap2pv05gv8kx7mj"))))
+    (version "3.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/DarwinAwardWinner/amx")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ikjzs119g57cwh2v3jmy63lggqc0ib99q5gsl93slkk4y2ihavw"))))
     (build-system emacs-build-system)
-    (propagated-inputs `(("emacs-s" ,emacs-s)))
+    (propagated-inputs
+     `(("emacs-s" ,emacs-s)))
     (home-page "https://github.com/DarwinAwardWinner/amx")
-    (synopsis "Alternative interface for M-x")
+    (synopsis "Alternative M-x interface for Emacs")
     (description "Amx is an alternative interface for M-x in Emacs.  It
 provides several enhancements over the ordinary
 @code{execute-extended-command}, such as prioritizing your most-used commands
 in the completion list and showing keyboard shortcuts, and it supports several
-completion systems for selecting commands, such as ido and ivy.")
+completion systems for selecting commands, such as Ido and Ivy.")
     (license license:gpl3+)))
 
 (define-public emacs-lorem-ipsum
