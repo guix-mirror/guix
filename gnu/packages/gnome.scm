@@ -2074,6 +2074,7 @@ dealing with different structured file formats.")
 
 (define-public librsvg
   (package
+    (replacement librsvg/fixed)
     (name "librsvg")
     (version "2.40.20")
     (source (origin
@@ -2138,6 +2139,20 @@ dealing with different structured file formats.")
 library.")
     (license license:lgpl2.0+)))
 
+(define librsvg/fixed
+  (package
+    (inherit librsvg)
+    (name "librsvg")
+    (version "2.40.21")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1fljkag2gr7c4k5mn798lgf9903xslz8h51bgvl89nnay42qjqpp"))))))
+
 (define* (computed-origin-method gexp-promise hash-algo hash
                                  #:optional (name "source")
                                  #:key (system (%current-system))
@@ -2152,7 +2167,7 @@ from forcing GEXP-PROMISE."
                       #:guile-for-build guile)))
 
 (define librsvg-next-source
-  (let* ((version         "2.46.3")
+  (let* ((version         "2.46.4")
          (upstream-source (origin
                            (method url-fetch)
                            (uri (string-append "mirror://gnome/sources/librsvg/"
@@ -2160,7 +2175,7 @@ from forcing GEXP-PROMISE."
                                                "librsvg-" version ".tar.xz"))
                            (sha256
                             (base32
-                             "1s3a96i7f4pynjwxxvhysp4b6r7kyi8nasdxfyi62hc7gm34d3kn")))))
+                             "0afc82nsxc6kw136xid4vcq9kmq4rmgzzk8bh2pvln2cnvirwnxl")))))
     (origin
       (method computed-origin-method)
       (file-name (string-append "librsvg-" version ".tar.xz"))
@@ -2180,8 +2195,6 @@ from forcing GEXP-PROMISE."
               (with-directory-excursion (string-append "librsvg-" #$version)
                 ;; The following crate(s) are needed in addition to the ones replaced:
                 (begin
-                  (substitute* "rsvg_internals/Cargo.toml"
-                    (("\"=") "\""))
                   (invoke
                    "tar" "xvf" #+(package-source rust-autocfg-0.1) "-C" "vendor")
                   (invoke
@@ -2242,10 +2255,10 @@ from forcing GEXP-PROMISE."
 ;; gdk-pixbuf-sys 0.9
                     ("generic-array" . #+(package-source rust-generic-array-0.12))
 ;; gio 0.7
-;; gio-sys 0.9
+                    ("gio-sys" . #+(package-source rust-gio-sys-0.9))
 ;; glib 0.8
-;; glib-sys 0.9
-;; gobject-sys 0.9
+                    ("glib-sys" . #+(package-source rust-glib-sys-0.9))
+                    ("gobject-sys" . #+(package-source rust-gobject-sys-0.9))
                     ("idna" . #+(package-source rust-idna-0.2))
                     ("itertools" . #+(package-source rust-itertools-0.8))
                     ("itoa" . #+(package-source rust-itoa-0.4))
@@ -2253,7 +2266,7 @@ from forcing GEXP-PROMISE."
                     ("lazy_static" . #+(package-source rust-lazy-static-1))
                     ("libc" . #+(package-source rust-libc-0.2))
                     ("libm" . #+(package-source rust-libm-0.1))
-;; locale_config 0.3
+                    ("locale_config" . #+(package-source rust-locale-config-0.3))
                     ("log" . #+(package-source rust-log-0.4))
                     ("mac" . #+(package-source rust-mac-0.1))
                     ("malloc_buf" . #+(package-source rust-malloc-buf-0.0))
@@ -2356,7 +2369,7 @@ from forcing GEXP-PROMISE."
 (define-public librsvg-next
   (package
     (name "librsvg")
-    (version "2.46.3")
+    (version "2.46.4")
     (source librsvg-next-source)
     (build-system gnu-build-system)
     (arguments
@@ -2372,6 +2385,8 @@ from forcing GEXP-PROMISE."
              (use-modules (guix build cargo-utils))
              (substitute* "librsvg/Cargo.toml"
                (("bitflags .*") "bitflags = \"1\"\n")) ; 1.2 is vendored
+             (substitute* "rsvg_internals/Cargo.toml"
+               (("\"=") "\""))
              (generate-all-checksums "vendor")
              (delete-file "Cargo.lock")
              (invoke "cargo" "generate-lockfile")))
@@ -4412,7 +4427,7 @@ which are easy to play with the aid of a mouse.")
 (define-public amtk
   (package
     (name "amtk")
-    (version "5.0.1")
+    (version "5.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/amtk/"
@@ -4420,7 +4435,7 @@ which are easy to play with the aid of a mouse.")
                                   "amtk-" version ".tar.xz"))
               (sha256
                (base32
-                "09yy95w1s83c43mh9vha1jbb780yighf5pd2j0ygjmc68sjg871d"))))
+                "11jgz2i9wjzv4alrxl1qyxiapb52w7vs5ygfgsw0qgdap8gqkk3i"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-gtk-doc")))
@@ -5742,7 +5757,7 @@ metadata in photo and video files of various formats.")
 (define-public shotwell
   (package
     (name "shotwell")
-    (version "0.30.7")
+    (version "0.30.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/shotwell/"
@@ -5750,7 +5765,7 @@ metadata in photo and video files of various formats.")
                                   "shotwell-" version ".tar.xz"))
               (sha256
                (base32
-                "1m9i8r4gyd2hzlxjjwfyck4kz7gdg2vz2k6l6d0ga9hdfq2l4p9l"))))
+                "1f7m007g6w1sz8s60w6x81ghp2rrjmik8phd958b2hy8zz92wbbj"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t

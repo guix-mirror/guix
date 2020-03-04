@@ -7247,6 +7247,30 @@ file names.")
 with file paths.")
     (license asl2.0)))
 
+(define-public perl-pdf-api2
+  (package
+    (name "perl-pdf-api2")
+    (version "2.036")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/S/SS/SSIMMS/PDF-API2-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0x0pa75wpb87pcshl92y5nh8pzikjp46ljlr2pqvdgpqzvll8107"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)
+       ("perl-test-memory-cycle" ,perl-test-memory-cycle)))
+    (propagated-inputs
+     `(("perl-font-ttf" ,perl-font-ttf)))
+    (home-page "https://metacpan.org/release/PDF-API2")
+    (synopsis "Facilitates the creation and modification of PDF files")
+    (description "This Perl module facilitates the creation and modification
+of PDF files.")
+    (license lgpl2.1)))
+
 (define-public perl-perlio-utf8_strict
   (package
     (name "perl-perlio-utf8-strict")

@@ -5,6 +5,7 @@
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 David C. Trudgian <dave@trudgian.net>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -581,6 +582,7 @@ were found."
      ((string-prefix? "btrfs" type) check-btrfs-file-system)
      ((string-suffix? "fat" type) check-fat-file-system)
      ((string-prefix? "jfs" type) check-jfs-file-system)
+     ((string-prefix? "nfs" type) (const 'pass))
      (else #f)))
 
   (if check-procedure

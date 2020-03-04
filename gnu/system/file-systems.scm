@@ -30,6 +30,7 @@
   #:export (file-system
             file-system?
             file-system-device
+            file-system-device->string
             file-system-title                     ;deprecated
             file-system-mount-point
             file-system-type
@@ -234,6 +235,20 @@ where both FILE1 and FILE2 are absolute file name.  For example:
                (and (string=? head1 head2) (loop tail1 tail2)))
               (()
                #f)))))))
+
+(define* (file-system-device->string device #:key uuid-type)
+  "Return the string representations of the DEVICE field of a <file-system>
+record.  When the device is a UUID, its representation is chosen depending on
+UUID-TYPE, a symbol such as 'dce or 'iso9660."
+  (match device
+    ((? file-system-label?)
+     (file-system-label->string device))
+    ((? uuid?)
+     (if uuid-type
+         (uuid->string (uuid-bytevector device) uuid-type)
+         (uuid->string device)))
+    ((? string?)
+     device)))
 
 (define (file-system-needed-for-boot? fs)
   "Return true if FS has the 'needed-for-boot?' flag set, or if it holds the

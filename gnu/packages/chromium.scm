@@ -247,8 +247,8 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %chromium-version "80.0.3987.122")
-(define %ungoogled-revision "6056988937ebc32f14293809487dbaaa65939834")
+(define %chromium-version "80.0.3987.132")
+(define %ungoogled-revision "7e68f18f1d16a132fe7d913a176daf79897eaa58")
 (define %debian-revision "debian/80.0.3987.116-1")
 (define package-revision "0")
 (define %package-version (string-append %chromium-version "-"
@@ -263,21 +263,18 @@ from forcing GEXP-PROMISE."
                         %chromium-version ".tar.xz"))
     (sha256
      (base32
-      "0wr487drgd030d7p84rdz1cys0c87wbgh2qg3d7qd98gqbfcpss8"))))
+      "00f2hpi2d0n15yw29dv3dli566cgi7qh55bfpziag9a6j02i401c"))))
 
 (define %ungoogled-origin
   (origin
     (method git-fetch)
-    ;; XXX: Temporarily download from a third party because the main
-    ;; ungoogled-chromium repo is stale.  Code taken from this pull
-    ;; request: https://github.com/Eloston/ungoogled-chromium/pull/942
-    (uri (git-reference (url "https://github.com/Zoraver/ungoogled-chromium")
+    (uri (git-reference (url "https://github.com/Eloston/ungoogled-chromium")
                         (commit %ungoogled-revision)))
     (file-name (git-file-name "ungoogled-chromium"
                               (string-take %ungoogled-revision 7)))
     (sha256
      (base32
-      "0s4bfj5lr49hknb6d7vp3zah70w9sq5cdhhlyihnl7f9jlrrnwsi"))))
+      "196rr3nly42pzl2bap22vzw4d8x87yl3zy1wq2fla5z8iy4x8ym1"))))
 
 (define %debian-origin
   (origin

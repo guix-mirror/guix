@@ -1663,9 +1663,24 @@ as a library for other Emacs packages.")
     (arguments
      `(#:emacs ,emacs
        #:include '("\\.el$" "^images/" "^latex/" "\\.info$")
-       #:exclude '("^tests/" "^latex/README")))
+       #:exclude '("^tests/" "^latex/README")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (etc-dir (string-append out "/share/" ,name "/"
+                                            ,version "/etc")))
+               (with-directory-excursion "doc"
+                 (setenv "HOME" (getenv  "TMPDIR")) ; for mktextfm
+                 (invoke "pdftex" "tex-ref")
+                 (install-file "tex-ref.pdf" (string-append etc-dir
+                                                            "/refcards")))
+               #t))))))
     (native-inputs
      `(("perl" ,perl)))
+    (inputs
+     `(("texlive" ,(texlive-union (list texlive-amsfonts)))))
     (home-page "https://www.gnu.org/software/auctex/")
     (synopsis "Integrated environment for TeX")
     (description
@@ -4982,16 +4997,16 @@ variants.")
 (define-public emacs-solarized-theme
   (package
     (name "emacs-solarized-theme")
-    (version "1.2.2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/bbatsov/solarized-emacs/")
-                     (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0zcj9jf8nlsj9vms888z2vs76q54n8g8r9sh381xad3x8d6lrlb3"))))
+    (version "1.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bbatsov/solarized-emacs/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "15ql8xcixgm7mbs7rsbybwszanqibq057j5b5ds89a31dw7zxf1g"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
@@ -20399,6 +20414,31 @@ displayed against a dark background (Modus Vivendi).")
 color.  Designed for 256-color terminals.  Comes in light and dark!")
       (license license:gpl3+))))
 
+(define-public emacs-spacemacs-theme
+  (let ((commit "e088bff4f190495615c29de93079aaa823e2300c")
+        (revision "0"))
+    (package
+      (name "emacs-spacemacs-theme")
+      (version (git-version "0" revision commit)) ;no release yet
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/nashamri/spacemacs-theme.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "09p5pzy3ibrl8dxmg10v8j16wxdn1fkdqpbi8l9pgfib2azmnvnc"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/nashamri/spacemacs-theme")
+      (synopsis
+       "Light and dark theme for spacemacs that supports GUI and terminal")
+      (description
+       "Spacemacs theme is an Emacs color theme that started as
+a theme for Spacemacs.  The theme comes with dark and light variants
+and it should work well with 256 color terminals.")
+      (license license:gpl3+))))
+
 (define-public emacs-elixir-mode
   (package
     (name "emacs-elixir-mode")
@@ -21667,3 +21707,25 @@ EXIF, XMP and IPTC.")
 generate random passwords and insert them into the current buffer.  It also
 supports generation of phonetic and numeric passwords.")
     (license license:artistic2.0)))
+
+(define-public emacs-csv
+  (package
+    (name "emacs-csv")
+    (version "2.1")
+    (home-page "https://gitlab.com/u11/csv.el")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "V" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1vmazjrfcsa9aa9aw8bq5sazdhqvhxyj837dyw5lmh8gk7z0xdaa"))))
+    (build-system emacs-build-system)
+    (synopsis "Elisp functions for reading and parsing CSV files")
+    (description "@code{csv.el} provides functions for reading and parsing CSV (Comma
+Separated Value) files.  It follows the format as defined in RFC 4180 \"Common
+Format and MIME Type for CSV Files\" (@url{http://tools.ietf.org/html/rfc4180}).")
+    (license license:gpl3+)))

@@ -161,29 +161,32 @@ tables, and it understands a variety of different formats.")
 (define-public gptfdisk
   (package
     (name "gptfdisk")
-    (version "1.0.4")
+    (version "1.0.5")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/gptfdisk/gptfdisk/"
-                          version "/" name "-" version ".tar.gz"))
+                          version "/gptfdisk-" version ".tar.gz"))
       (sha256
-       (base32
-        "13d7gff4prl1nsdknjigmb7bbqhn79165n01v4y9mwbnd0d3jqxn"))))
+       (base32 "0bybgp30pqxb6x5krxazkq4drca0gz4inxj89fpyr204rn3kjz8f"))))
     (build-system gnu-build-system)
     (inputs
      `(("gettext" ,gettext-minimal)
        ("ncurses" ,ncurses)
        ("popt" ,popt)
-       ("util-linux" ,util-linux))) ; libuuid
+       ("util-linux" ,util-linux)))     ; libuuid
     (arguments
      `(#:test-target "test"
        #:phases
        (modify-phases %standard-phases
-         ;; no configure script
-         (delete 'configure)
-         ;; no install target
+         (add-after 'unpack 'fix-include-directory
+           (lambda _
+             (substitute* "gptcurses.cc"
+               (("ncursesw/ncurses.h") "ncurses.h"))
+             #t))
+         (delete 'configure)            ; no configure script
          (replace 'install
+           ;; There's no ‘make install’ target.
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin"))

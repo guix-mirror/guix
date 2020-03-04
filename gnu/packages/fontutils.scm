@@ -10,6 +10,7 @@
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -774,3 +775,64 @@ tools or editing configuration files by hand.
 While designed primarily with the GNOME Desktop Environment in mind, it should
 work well with other GTK+ desktop environments.")
    (license license:gpl3+)))
+
+(define-public fntsample
+  (package
+    (name "fntsample")
+    (version "5.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/eugmes/fntsample/archive/release/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0awp4dh1g40ivzvm5xqlvcpcdw1vplrx3drjmbylr62y185vbs74"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; There are no tests.
+       #:configure-flags
+       (list (string-append
+              "-DUNICODE_BLOCKS=" (assoc-ref %build-inputs "unicode-blocks")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'set-library-path
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out      (assoc-ref outputs "out"))
+                    (pdf-api2 (assoc-ref inputs "perl-pdf-api2"))
+                    (intl     (assoc-ref inputs "perl-libintl-perl"))
+                    (perllib  (string-append pdf-api2
+                                             "/lib/perl5/site_perl/"
+                                             ,(package-version perl)
+                                             ":" intl
+                                             "/lib/perl5/site_perl/"
+                                             ,(package-version perl))))
+               (wrap-program (string-append out "/bin/pdfoutline")
+                 `("PERL5LIB" ":" prefix (,perllib)))
+               #t))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gettext" ,gettext-minimal)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("glib" ,glib)
+       ("pango" ,pango)
+       ("perl-pdf-api2" ,perl-pdf-api2)
+       ("perl-libintl-perl" ,perl-libintl-perl)
+       ("unicode-blocks"
+        ,(origin
+           (method url-fetch)
+           (uri "https://unicode.org/Public/UNIDATA/Blocks.txt")
+           (file-name "unicode-blocks.txt")
+           (sha256
+            (base32
+             "1xs8fnhh48gs41wg004r7m4r2azh9khmyjjlnvyzy9c6zrd212x2"))))))
+    (home-page "https://github.com/eugmes/fntsample")
+    (synopsis "PDF and PostScript font samples generator")
+    (description "This package provides a tool that can be used to make font
+samples that show coverage of the font and are similar in appearance to
+Unicode Charts.  It was developed for use with DejaVu Fonts project.")
+    (license license:gpl3+)))

@@ -31,6 +31,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages pcre)
@@ -6201,6 +6202,37 @@ retrieving random data from system source.")
 DWARF debugging format.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-gio-sys-0.9
+  (package
+    (name "rust-gio-sys")
+    (version "0.9.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "gio-sys" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "049rafihxp3maxg3fwj6062ni9dcfilvhfq6ibnfgsmr89925bag"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; Some test libraries not included in release.
+       #:cargo-inputs
+       (("rust-glib-sys" ,rust-glib-sys-0.9)
+        ("rust-gobject-sys" ,rust-gobject-sys-0.9)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))
+       #:cargo-development-inputs
+       (("rust-shell-words" ,rust-shell-words-0.1)
+        ("rust-tempfile" ,rust-tempfile-3.1))))
+    (inputs
+     `(("glib" ,glib)))
+    (home-page "http://gtk-rs.org/")
+    (synopsis "FFI bindings to libgio-2.0")
+    (description "This package provides FFI bindings to libgio-2.0.")
+    (license license:expat)))
+
 (define-public rust-git2-0.11
   (package
     (name "rust-git2")
@@ -6353,6 +6385,35 @@ reading and writing git repositories.")
     (description
      "Generated OpenGL bindings and wrapper for Servo.")
     (license (list license:asl2.0 license:expat))))
+
+(define-public rust-glib-sys-0.9
+  (package
+    (name "rust-glib-sys")
+    (version "0.9.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "glib-sys" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1qhnwfqqcp63mx4q9744rfkq78g6ky2j8ppsxxgw0ipl08w6z1cm"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; Some test libraries not included in release.
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))
+       #:cargo-development-inputs
+       (("rust-shell-words" ,rust-shell-words-0.1)
+        ("rust-tempfile" ,rust-tempfile-3.1))))
+    (inputs
+     `(("glib" ,glib)))
+    (home-page "http://gtk-rs.org/")
+    (synopsis "FFI bindings to libglib-2.0")
+    (description "This package provides FFI bindings to libglib-2.0.")
+    (license license:expat)))
 
 (define-public rust-glium-0.25
   (package
@@ -6651,6 +6712,36 @@ path simultaneously, and returning all of the globs that matched.")
     (synopsis "Wgl bindings for glutin")
     (description "The wgl bindings for glutin.")
     (license license:asl2.0)))
+
+(define-public rust-gobject-sys-0.9
+  (package
+    (name "rust-gobject-sys")
+    (version "0.9.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "gobject-sys" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1nakflbp3gjaas4fw7sn3p1p32khyfpcq1h06z7yqd10yq2ail9i"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; Some test libraries not included in release.
+       #:cargo-inputs
+       (("rust-glib-sys" ,rust-glib-sys-0.9)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))
+       #:cargo-development-inputs
+       (("rust-shell-words" ,rust-shell-words-0.1)
+        ("rust-tempfile" ,rust-tempfile-3.1))))
+    (inputs
+     `(("glib" ,glib)))
+    (home-page "http://gtk-rs.org/")
+    (synopsis "FFI bindings to libgobject-2.0")
+    (description "This package provides FFI bindings to libgobject-2.0.")
+    (license license:expat)))
 
 (define-public rust-goblin-0.0
   (package
@@ -8861,6 +8952,34 @@ pairs in insertion order.")
     (synopsis "Library for basic localisation")
     (description
      "This package provides a library for basic localisation.")
+    (license license:expat)))
+
+(define-public rust-locale-config-0.3
+  (package
+    (name "rust-locale-config")
+    (version "0.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "locale_config" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0d399alr1i7h7yji4vydbdbzd8hp0xaykr7h4rn3yj7l2rdw7lh8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-objc" ,rust-objc-0.2)
+        ("rust-objc-foundation" ,rust-objc-foundation-0.1)
+        ("rust-regex" ,rust-regex-1.3)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/rust-locale/locale_config/")
+    (synopsis "Maintains locale preferences for processes and threads")
+    (description
+     "Maintains locale preferences for process and thread and initialises them
+by inspecting the system for user preference.")
     (license license:expat)))
 
 (define-public rust-lock-api-0.3
@@ -15746,6 +15865,27 @@ for the serde framework.")
     (description
      "This package allows easy binding to, and loading of, shared libraries.")
     (license (list license:asl2.0 license:expat))))
+
+(define-public rust-shell-words-0.1
+  (package
+    (name "rust-shell-words")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "shell-words" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0jnrw3f174974fsi2hg48l0klpy24767ib28w0xcvi2ll5axxb1r"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/tmiasko/shell-words")
+    (synopsis
+     "Process command line according to parsing rules of UNIX shell")
+    (description
+     "Process command line according to parsing rules of UNIX shell.")
+    (license (list license:expat license:asl2.0))))
 
 (define-public rust-shlex-0.1
   (package

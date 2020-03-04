@@ -3358,14 +3358,14 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
 (define-public python-pyudev
   (package
     (name "python-pyudev")
-    (version "0.21.0")
+    (version "0.22.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pyudev" version))
         (sha256
           (base32
-            "0arz0dqp75sszsmgm6vhg92n1lsx91ihddx3m944f4ah0487ljq9"))))
+            "0xmj6l08iih2js9skjqpv4w7y0dhxyg91zmrs6v5aa65gbmipfv9"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; Tests require /sys

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
+;;; Copyright © 2020 Evan Hanson <evhan@foldling.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,14 +29,14 @@
 (define-public chicken
   (package
     (name "chicken")
-    (version "5.1.0")
+    (version "5.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://code.call-cc.org/releases/"
                                   version "/chicken-" version ".tar.gz"))
               (sha256
                (base32
-                "0jsbp3kp0134f318j3wpd1n85gf8qzh034fn198gvazsv2l024aw"))))
+                "1yl0hxm9cirgcp8jgxp6vv29lpswfvaw3zfkh6rsj0vkrv44k4c1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -59,7 +60,7 @@
        ;; Parallel builds are not supported, as noted in README.
        #:parallel-build? #f))
     (propagated-inputs `(("gcc-toolchain", gcc-toolchain)))
-    (home-page "http://www.call-cc.org/")
+    (home-page "https://www.call-cc.org/")
     (synopsis "R5RS Scheme implementation that compiles native code via C")
     (description
      "CHICKEN is a compiler for the Scheme programming language.  CHICKEN

@@ -6130,7 +6130,7 @@ SVG, EPS, PNG and terminal output.")
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("xorg-server" ,xorg-server-for-tests)))
-    (home-page "http://stanford.edu/~mwaskom/software/seaborn/")
+    (home-page "https://seaborn.pydata.org/")
     (synopsis "Statistical data visualization")
     (description
      "Seaborn is a library for making attractive and informative statistical
@@ -8314,7 +8314,7 @@ be set via config files and/or environment variables.")
         (base32
          "0j6ad6lwwyc9kv71skj098v5l7x5biyj2hs4lc5x1kcixqcr97sh"))))
     (build-system python-build-system)
-    (home-page "http://contextlib2.readthedocs.org/")
+    (home-page "https://contextlib2.readthedocs.org/")
     (synopsis "Tools for decorators and context managers")
     (description "This module is primarily a backport of the Python
 3.2 contextlib to earlier Python versions.  Like contextlib, it
@@ -9420,7 +9420,7 @@ parsing and generating vCard and vCalendar files.  Currently, iCalendar files
 are supported and well tested. vCard 3.0 files are supported, and all data
 should be imported, but only a few components are understood in a sophisticated
 way.")
-    (home-page "http://eventable.github.io/vobject/")
+    (home-page "https://eventable.github.io/vobject/")
     (license license:asl2.0)))
 
 (define-public python2-vobject
@@ -14380,7 +14380,7 @@ particularly convenient for use in tests.")
        ("python-nose" ,python-nose)))
     (propagated-inputs
      `(("python-h5py" ,python-h5py)))
-    (home-page "http://www.activepapers.org/")
+    (home-page "https://www.activepapers.org/")
     (synopsis "Executable papers for scientific computing")
     (description
      "ActivePapers is a tool for working with executable papers, which
@@ -15333,7 +15333,7 @@ Glob2 currently based on the glob code from Python 3.3.1.")
      `(("unzip" ,unzip)))
     (propagated-inputs
      `(("python-gevent" ,python-gevent)))
-    (home-page "http://gehrcke.de/gipc")
+    (home-page "https://gehrcke.de/gipc/")
     (synopsis "Child process management in the context of gevent")
     (description "Usage of Python's multiprocessing package in a
 gevent-powered application may raise problems.  With @code{gipc},

@@ -2757,7 +2757,7 @@ being idiomatic to Python.")
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2))
-    (home-page "http://py2neo.org")
+    (home-page "https://py2neo.org")
     (synopsis "Library and toolkit for working with Neo4j in Python")
     (description "This package provides a client library and toolkit for
 working with Neo4j from within Python applications and from the command

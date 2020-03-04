@@ -11549,16 +11549,16 @@ the application using Java to Lisp integration APIs.")
 (define-public java-jsonp-api
   (package
     (name "java-jsonp-api")
-    (version "1.1.5")
+    (version "1.1.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                      (url "https://github.com/eclipse-ee4j/jsonp")
-                     (commit (string-append version "-RELEASE"))))
+                     (commit (string-append "1.1-" version "-RELEASE"))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0nxq16lrx7i87hgyj5rzcwilvr67h0i299gygfn8f5vs4n7n59vy"))))
+                "0zrj03hkr3jdmqlb4ipjr37cqpp2q2814qpmxi7srlwpdqs0ibgc"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "jsonp-api.jar"
@@ -11584,7 +11584,15 @@ and allows to build a Java object model for JSON text using API classes
      `(#:jar-name "jsonp-impl.jar"
        #:tests? #f
        #:source-dir "impl/src/main/java"
-       #:test-dir "impl/src/test"))
+       #:test-dir "impl/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively
+               "impl/src/main/resources/"
+               "build/classes")
+             #t)))))
     (propagated-inputs
      `(("java-jsonp-api" ,java-jsonp-api)))
     (description "JSON Processing (JSON-P) is a Java API to process (e.g.
