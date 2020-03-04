@@ -350,34 +350,17 @@ you can fill in on the fly.")
        (sha256
         (base32
          "0k80syscmpnj38ks1fq02ds59g0r4jlg9ll7z4qc048mgi35alw5"))))
-    (build-system gnu-build-system)
+    (build-system copy-build-system)
     (arguments
-     `(#:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (delete 'build)
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (vimfiles (string-append out "/share/vim/vimfiles"))
-                    (autoload (string-append vimfiles "/autoload"))
-                    (doc (string-append vimfiles "/doc"))
-                    (ftdetect (string-append vimfiles "/ftdetect"))
-                    (ftplugin (string-append vimfiles "/ftplugin"))
-                    (indent (string-append vimfiles "/indent"))
-                    (plugin (string-append vimfiles "/plugin"))
-                    (rplugin (string-append vimfiles "/rplugin"))
-                    (syntax (string-append vimfiles "/syntax")))
-               (copy-recursively "autoload" autoload)
-               (copy-recursively "doc" doc)
-               (copy-recursively "ftdetect" ftdetect)
-               (copy-recursively "ftplugin" ftplugin)
-               (copy-recursively "indent" indent)
-               (copy-recursively "plugin" plugin)
-               (copy-recursively "rplugin" rplugin)
-               (copy-recursively "syntax" syntax)
-               #t))))))
+     '(#:install-plan
+       '(("autoload" "share/vim/vimfiles/")
+         ("doc" "share/vim/vimfiles/")
+         ("ftdetect" "share/vim/vimfiles/")
+         ("ftplugin" "share/vim/vimfiles/")
+         ("indent" "share/vim/vimfiles/")
+         ("plugin" "share/vim/vimfiles/")
+         ("rplugin" "share/vim/vimfiles/")
+         ("syntax" "share/vim/vimfiles/"))))
     (synopsis "Snippet support for Vim")
     (description
      "@code{neosnippet}, is a plugin for Vim which adds snippet support to Vim.
