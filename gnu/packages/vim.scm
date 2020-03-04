@@ -389,24 +389,12 @@ trouble using them, because you do not have to remember each snippet name.")
          (sha256
           (base32
            "1ynjr1109dxgj0lz261gmzz3wf5ap1m6j6hnvl3lcyv66a4y8pjv"))))
-      (build-system gnu-build-system)
+      (build-system copy-build-system)
       (arguments
-       `(#:tests? #f
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (delete 'build)
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (vimfiles (string-append out "/share/vim/vimfiles"))
-                      (after (string-append vimfiles "/after"))
-                      (syntax (string-append vimfiles "/syntax"))
-                      (ftplugin (string-append vimfiles "/ftplugin")))
-                 (copy-recursively "after" after)
-                 (copy-recursively "ftplugin" ftplugin)
-                 (copy-recursively "syntax" syntax)
-                 #t))))))
+       '(#:install-plan
+         '(("after" "share/vim/vimfiles/")
+           ("ftplugin" "share/vim/vimfiles/")
+           ("syntax" "share/vim/vimfiles/"))))
       (synopsis "Scheme syntax for Vim")
       (description
        "@code{vim-scheme} provides Scheme support for Vim (R7RS and CHICKEN).")
