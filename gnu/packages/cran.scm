@@ -19402,14 +19402,14 @@ analysis and natural language processing.")
 (define-public r-spacyr
   (package
     (name "r-spacyr")
-    (version "1.2")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "spacyr" version))
        (sha256
         (base32
-         "1xsiz6zx89vs6ykrkkp011d8fz4ksdgnf5nyaq5ynjr6zv865vks"))))
+         "1b2ccgwsiqkvp7w37x8k7699c676q16vfrybkrfvyczyhki4s6nw"))))
     (properties `((upstream-name . "spacyr")))
     (build-system r-build-system)
     (propagated-inputs
