@@ -508,7 +508,7 @@ by using the poppler rendering engine.")
 (define-public zathura
   (package
     (name "zathura")
-    (version "0.4.3")
+    (version "0.4.5")
     (source (origin
               (method url-fetch)
               (uri
@@ -516,7 +516,7 @@ by using the poppler rendering engine.")
                               version ".tar.xz"))
               (sha256
                (base32
-                "0hgx5x09i6d0z45llzdmh4l348fxh1y102sb1w76f2fp4r21j4ky"))))
+                "0b3nrcvykkpv2vm99kijnic2gpfzva520bsjlihaxandzfm9ff8c"))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gettext-minimal)
                      ("glib:bin" ,glib "bin")
