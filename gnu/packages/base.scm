@@ -290,14 +290,14 @@ used to apply commands with arbitrarily long arguments.")
 (define-public coreutils
   (package
    (name "coreutils")
-   (version "8.31")
+   (version "8.32")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/coreutils/coreutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1zg9m79x1i2nifj4kb0waf9x3i5h6ydkypkjnbsb9rnwis8rqypz"))))
+              "1yjcrh5hw70c0yn8zw55pd6j51dj90anpq8mmg649ps9g3gdhn24"))))
    (build-system gnu-build-system)
    (inputs `(("acl"  ,acl)                        ; TODO: add SELinux
              ("gmp"  ,gmp)                        ;bignums in 'expr', yay!
@@ -329,16 +329,6 @@ used to apply commands with arbitrarily long arguments.")
                        (("/bin/sh") (which "sh")))
                      (substitute* (find-files "tests" "\\.sh$")
                        (("#!/bin/sh") (string-append "#!" (which "sh"))))
-                     #t))
-                 (add-before 'check 'disable-broken-test
-                   (lambda _
-                     ;; This test hits the 127 character shebang limit in the build
-                     ;; environment due to the way "env -S" splits arguments into
-                     ;; shebangs.  Note that "env-S-script.sh" works around this
-                     ;; specific issue, but "env-S.pl" is not adjusted for build
-                     ;; environments with long prefixes (/tmp/guix-build-...).
-                     (substitute* "Makefile"
-                       (("^.*tests/misc/env-S.pl.*$") ""))
                      #t)))))
    (synopsis "Core GNU utilities (file, text, shell)")
    (description
