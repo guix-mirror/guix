@@ -3,6 +3,7 @@
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -290,7 +291,7 @@ analogy is that InChI is the bar-code for chemistry and chemical structures.")
                ;; Show documentation as PDF
                (("PREFERENCES\\['documentation_style'\\] = 'html'")
                 "PREFERENCES['documentation_style'] = 'pdf'") ))))))
-    (home-page "http://dirac.cnrs-orleans.fr/nMOLDYN/")
+    (home-page "http://dirac.cnrs-orleans.fr/nMOLDYN.html")
     (synopsis "Analysis software for Molecular Dynamics trajectories")
     (description "nMOLDYN is an interactive analysis program for Molecular Dynamics
 simulations.  It is especially designed for the computation and decomposition of
