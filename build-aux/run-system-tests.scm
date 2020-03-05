@@ -29,6 +29,7 @@
   #:use-module ((guix git-download) #:select (git-predicate))
   #:use-module (guix utils)
   #:use-module (guix ui)
+  #:use-module (git)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-34)
   #:use-module (ice-9 match)
@@ -52,7 +53,24 @@
                 lst)
          (lift1 reverse %store-monad))))
 
-(define (tests-for-current-guix source)
+(define (source-commit directory)
+  "Return the commit of the head of DIRECTORY or #f if it could not be
+determined."
+  (let ((repository #f))
+    (catch 'git-error
+      (lambda ()
+        (set! repository (repository-open directory))
+        (let* ((head   (repository-head repository))
+               (target (reference-target head))
+               (commit (oid->string target)))
+          (repository-close! repository)
+          commit))
+      (lambda _
+        (when repository
+          (repository-close! repository))
+        #f))))
+
+(define (tests-for-current-guix source commit)
   "Return a list of tests for perform, using Guix built from SOURCE, a channel
 instance."
   ;; Honor the 'TESTS' environment variable so that one can select a subset
@@ -60,7 +78,7 @@ instance."
   ;;
   ;;   make check-system TESTS=installed-os
   (parameterize ((current-guix-package
-                  (channel-source->package source)))
+                  (channel-source->package source #:commit commit)))
     (match (getenv "TESTS")
       (#f
        (all-system-tests))
@@ -69,11 +87,14 @@ instance."
                  (member (system-test-name test) tests))
                (all-system-tests))))))
 
-
-
 (define (run-system-tests . args)
   (define source
     (string-append (current-source-directory) "/.."))
+
+  (define commit
+    ;; Fetch the current commit ID so we can potentially build the same
+    ;; derivation as ci.guix.gnu.org.
+    (source-commit source))
 
   (with-store store
     (with-status-verbosity 2
@@ -86,7 +107,7 @@ instance."
                                                     #:select?
                                                     (or (git-predicate source)
                                                         (const #t))))
-                             (tests ->  (tests-for-current-guix source))
+                             (tests ->  (tests-for-current-guix source commit))
                              (drv (mapm %store-monad system-test-value tests))
                              (out -> (map derivation->output-path drv)))
           (format (current-error-port) "Running ~a system tests...~%"
