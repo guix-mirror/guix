@@ -1580,13 +1580,13 @@ recreates the stored directory structure by default.")
   (package
     (name "zziplib")
     (version "0.13.69")
-    (replacement zziplib/fixed)
     (home-page "https://github.com/gdraheim/zziplib")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url home-page)
                                   (commit (string-append "v" version))))
               (file-name (git-file-name name version))
+              (patches (search-patches "zziplib-CVE-2018-16548.patch"))
               (sha256
                (base32
                 "0fbk9k7ryas2wh2ykwkvm1pbi40i88rfvc3dydh9xyd7w2jcki92"))))
@@ -1617,13 +1617,6 @@ recreates the stored directory structure by default.")
     ;; zziplib is dual licensed under LGPL2.0+ and MPL1.1.  Some example source
     ;; files carry the Zlib license; see "docs/copying.html" for details.
     (license (list license:lgpl2.0+ license:mpl1.1))))
-
-(define zziplib/fixed
-  (package
-    (inherit zziplib)
-    (source (origin
-              (inherit (package-source zziplib))
-              (patches (search-patches "zziplib-CVE-2018-16548.patch"))))))
 
 (define-public libzip
   (package
