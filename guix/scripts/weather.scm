@@ -500,7 +500,12 @@ SERVER.  Display information for packages with at least THRESHOLD dependents."
                   (if file (load-manifest file) '())))))
 
   (with-error-handling
-    (parameterize ((current-terminal-columns (terminal-columns)))
+    (parameterize ((current-terminal-columns (terminal-columns))
+
+                   ;; Set grafting upfront in case the user's input depends on
+                   ;; it (e.g., a manifest or code snippet that calls
+                   ;; 'gexp->derivation').
+                   (%graft?                  #f))
       (let* ((opts     (parse-command-line args %options
                                            (list %default-options)
                                            #:build-options? #f))
@@ -513,13 +518,12 @@ SERVER.  Display information for packages with at least THRESHOLD dependents."
                          (systems systems)))
              (packages (package-list opts))
              (items    (with-store store
-                         (parameterize ((%graft? #f))
-                           (concatenate
-                            (run-with-store store
-                              (mapm %store-monad
-                                    (lambda (system)
-                                      (package-outputs packages system))
-                                    systems)))))))
+                         (concatenate
+                          (run-with-store store
+                            (mapm %store-monad
+                                  (lambda (system)
+                                    (package-outputs packages system))
+                                  systems))))))
         (for-each (lambda (server)
                     (report-server-coverage server items)
                     (match (assoc-ref opts 'coverage)
