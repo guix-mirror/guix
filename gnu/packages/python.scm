@@ -347,7 +347,7 @@ data types.")
 (define-public python-3.8
   (package (inherit python-2)
     (name "python")
-    (version "3.8.1")
+    (version "3.8.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
@@ -359,7 +359,7 @@ data types.")
                         "python-3-search-paths.patch"))
               (sha256
                (base32
-                "1s4lwn5vzsajlc88m6hkghsvnjw4d00l2dsgng0m2w6vyqbl32bm"))
+                "1ps5v323cp5czfshqjmbsqw7nvrdpcbk06f62jbzaqik4gfffii6"))
               (modules '((guix build utils)))
               (snippet
                '(begin
