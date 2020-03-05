@@ -2164,3 +2164,68 @@ selection API is verging on the insane, and there are plenty of others who
 have already lost their sanity to bring us xclip/xsel/etc.  Use one of those
 tools to complement clipnotify.")
     (license license:public-domain)))
+
+(define-public clipmenu
+  (let ((commit "a495bcc7a4ab125182a661c5808364f66938a87c")
+        (revision "1"))
+    (package
+     (name "clipmenu")
+     (version (string-append "5.6.0-"
+                             revision "." (string-take commit 7)))
+     (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/cdown/clipnotify.git")
+              (commit commit)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "12vvircdhl4psqi51cnfd6bqy85v2vwfcmdq1mimjgng727nwzys"))))
+     (build-system gnu-build-system)
+     (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-hardcoded-paths
+           (lambda _
+             (substitute* "clipmenud"
+               (("has_clipnotify=0")
+                "has_clipnotify=1")
+               (("command -v clipnotify >/dev/null 2>&1 && has_clipnotify=1")
+                "")
+               (("clipnotify \\|\\| .*")
+                (string-append (which "clipnotify") "\n"))
+               (("xsel --logfile")
+                (string-append (which "xsel") " --logfile")))
+             (substitute* "clipmenu"
+               (("xsel --logfile")
+                (string-append (which "xsel") " --logfile")))
+             #t))
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (bin  (string-append out "/bin"))
+                    (doc  (string-append %output "/share/doc/"
+                                         ,name "-" ,version)))
+               (install-file "clipdel" bin)
+               (install-file "clipmenu" bin)
+               (install-file "clipmenud" bin)
+               (install-file "README.md" doc)
+               #t))))
+       #:tests? #f))
+     (inputs
+      `(("clipnotify" ,clipnotify)
+        ("xsel" ,xsel)))
+     (home-page "https://github.com/cdown/clipmenu")
+     (synopsis "Simple clipboard manager using dmenu or rofi and xsel")
+     (description "Start @command{clipmenud}, then run @command{clipmenu} to
+select something to put on the clipboard.
+
+When @command{clipmenud} detects changes to the clipboard contents, it writes
+them out to the cache directory.  @command{clipmenu} reads the cache directory
+to find all available clips and launches @command{dmenu} (or @command{rofi},
+depending on the value of @code{CM_LAUNCHER}) to let the user select a clip.
+After selection, the clip is put onto the PRIMARY and CLIPBOARD X selections.")
+     (license license:public-domain))))
