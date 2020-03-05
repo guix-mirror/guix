@@ -60,6 +60,7 @@
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2020 Robert Smith <robertsmith@posteo.net>
 ;;; Copyright © 2020 Evan Straw <evan.straw99@gmail.com>
+;;; Copyright © 2020 Masaya Tojo <masaya@tojo.tokyo>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21732,3 +21733,49 @@ supports generation of phonetic and numeric passwords.")
 Separated Value) files.  It follows the format as defined in RFC 4180 \"Common
 Format and MIME Type for CSV Files\" (@url{http://tools.ietf.org/html/rfc4180}).")
     (license license:gpl3+)))
+
+(define-public emacs-ddskk
+  ;; XXX: Upstream adds code names to their release tags, so version and code
+  ;; name below need to be updated together.
+  (let ((version "16.3")
+        (code-name "Kutomatsunai"))
+    (package
+      (name "emacs-ddskk")
+      (version version)
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/skk-dev/ddskk")
+               (commit (string-append "ddskk-" version "_" code-name))))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0ln4x8f35z5y3kf9m718g223bn3lzcmw40jfjg2j5yi24ydf1wm9"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:modules ((guix build gnu-build-system)
+                    (guix build utils)
+                    (guix build emacs-utils))
+         #:imported-modules (,@%gnu-build-system-modules
+                             (guix build emacs-utils))
+         #:test-target "test"
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'configure
+             (lambda* (#:key outputs #:allow-other-keys)
+               (make-file-writable "SKK-MK")
+               (emacs-substitute-variables "SKK-MK"
+                 ("PREFIX" (assoc-ref outputs "out"))
+                 ("LISPDIR" '(expand-file-name "/share/emacs/site-lisp" PREFIX))
+                 ("SKK_PREFIX" "")
+                 ("SKK_INFODIR" '(expand-file-name "info" PREFIX)))
+               (for-each make-file-writable (find-files "./doc"))
+               #t)))))
+      (native-inputs
+       `(("emacs-minimal" ,emacs-minimal)))
+      (home-page "https://github.com/skk-dev/ddskk")
+      (synopsis "Simple Kana to Kanji conversion program")
+      (description
+       "Daredevil SKK is a version of @acronym{SKK, Simple Kana to Kanji
+conversion program}, a Japanese input method on Emacs.")
+      (license license:gpl2+))))
