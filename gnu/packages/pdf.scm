@@ -138,6 +138,33 @@ times.  If you have a second page, Flyer Composer can arrange it the same way
 This package contains both the commnd line tool and the gui too.")
     (license license:agpl3+)))
 
+(define-public flyer-composer-cli
+  (package/inherit flyer-composer
+    (name "flyer-composer-cli")
+    (arguments
+     `(#:tests? #f ;; TODO
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-gui
+           (lambda _
+             (delete-file-recursively "flyer_composer/gui")
+             (substitute* "setup.cfg"
+               (("^\\s+flyer-composer-gui\\s*=.*") ""))
+             #t)))))
+    (inputs
+     `(("python-pypdf2" ,python-pypdf2)))
+    (description "@command{flyer-composer} can be used to prepare one- or
+two-sided flyers for printing on one sheet of paper.
+
+Imagine you have designed a flyer in A6 format and want to print it using your
+A4 printer.  Of course, you want to print four flyers on each sheet.  This is
+where Flyer Composer steps in, creating a PDF which holds your flyer four
+times.  If you have a second page, Flyer Composer can arrange it the same way
+- even if the second page is in a separate PDF file.
+
+This package contains only the commnd line tool.  If you like to use the gui,
+please install the @code{flyer-composer-gui} package.")))
+
 (define-public poppler
   (package
    (name "poppler")
