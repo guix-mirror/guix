@@ -848,7 +848,7 @@ Unicode Charts.  It was developed for use with DejaVu Fonts project.")
        (method url-fetch)
        (uri (string-append "https://github.com/HOST-Oman/libraqm/"
                            "releases/download/v" version "/"
-                           "raqm-0.7.0.tar.gz"))
+                           "raqm-" version ".tar.gz"))
        (sha256
         (base32 "0hgry3fj2y3qaq2fnmdgd93ixkk3ns5jds4vglkiv2jfvpn7b1g2"))))
     (build-system gnu-build-system)
