@@ -671,6 +671,26 @@ API for locking files.")
 (define-public python2-lockfile
   (package-with-python2 python-lockfile))
 
+(define-public python-filelock
+  (package
+    (name "python-filelock")
+    (version "3.0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "filelock" version))
+       (sha256
+        (base32
+         "0ngzlvb5j8gqs2nxlp2b0jhzii792h66wsn694qm8kqixr225n0q"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/benediktschmitt/py-filelock")
+    (synopsis "Platform independent file lock")
+    (description "@code{filelock} contains a single module implementing
+a platform independent file lock in Python, which provides a simple way of
+inter-process communication.")
+    (license license:unlicense)))
+
 (define-public python-semantic-version
   (package
     (name "python-semantic-version")
