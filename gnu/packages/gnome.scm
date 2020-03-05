@@ -2057,9 +2057,8 @@ dealing with different structured file formats.")
 
 (define-public librsvg
   (package
-    (replacement librsvg/fixed)
     (name "librsvg")
-    (version "2.40.20")
+    (version "2.40.21")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -2067,7 +2066,7 @@ dealing with different structured file formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0ay9himvw1l1swcf3h1312d2iqzfl65kpbfgiyfykgvq7cydvx6g"))))
+                "1fljkag2gr7c4k5mn798lgf9903xslz8h51bgvl89nnay42qjqpp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -2123,20 +2122,6 @@ dealing with different structured file formats.")
      "Librsvg is a C library to render SVG files using the Cairo 2D graphics
 library.")
     (license license:lgpl2.0+)))
-
-(define librsvg/fixed
-  (package
-    (inherit librsvg)
-    (name "librsvg")
-    (version "2.40.21")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version)  "/"
-                                  name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1fljkag2gr7c4k5mn798lgf9903xslz8h51bgvl89nnay42qjqpp"))))))
 
 (define* (computed-origin-method gexp-promise hash-algo hash
                                  #:optional (name "source")
