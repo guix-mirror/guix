@@ -15776,6 +15776,46 @@ codecs for use in data storage and communication applications.")
     (description "This package draws tree structures using characters.")
     (license license:expat)))
 
+(define-public python-zarr
+  (package
+    (name "python-zarr")
+    (version "2.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "zarr" version))
+       (sha256
+        (base32
+         "026n3sjzjv2gmwx6y72b8ij0hk42bc8zdbvfj5gdqzd4i6wj3ajk"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-service-tests
+           (lambda _
+             (setenv "ZARR_TEST_ABS" "0")
+             (setenv "ZARR_TEST_MONGO" "0")
+             (setenv "ZARR_TEST_REDIS" "0")
+             #t))
+         (replace 'check
+           (lambda _
+             (invoke "pytest" "-vv" "-k" "not lmdb")
+             #t)))))
+    (propagated-inputs
+     `(("python-asciitree" ,python-asciitree)
+       ("python-fasteners" ,python-fasteners)
+       ("python-numcodecs" ,python-numcodecs)
+       ("python-numpy" ,python-numpy)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://github.com/zarr-developers/zarr-python")
+    (synopsis "Chunked, compressed, N-dimensional arrays for Python")
+    (description
+     "This package provides an implementation of chunked, compressed,
+N-dimensional arrays for Python.")
+    (license license:expat)))
+
 (define-public python-anndata
   (package
     (name "python-anndata")
