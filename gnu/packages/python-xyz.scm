@@ -7234,6 +7234,12 @@ printing of sub-tables by specifying a row range.")
                                "linker_exe='gcc',"
                                "linker_so='gcc -shared')")))
              #t))
+         (add-after 'unpack 'disable-tuning
+           (lambda _
+             (substitute* "setup.py"
+               (("cpu_flags = .*")
+                "cpu_flags = ['sse2']\n"))
+             #t))
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
              (invoke "python" "setup.py" "build"
