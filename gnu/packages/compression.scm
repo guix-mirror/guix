@@ -13,7 +13,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2019 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2016, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
@@ -275,6 +275,22 @@ file; as a result, it is often used in conjunction with \"tar\", resulting in
                   (srfi srfi-1))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'set-paths 'hide-input-bzip2
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((bzip2 (assoc-ref inputs "bzip2")))
+               (if bzip2
+                   ;; Prevent the build system from retaining a reference to
+                   ;; BZIP2 from INPUTS.
+                   (begin
+                     (setenv "LIBRARY_PATH"
+                             (string-join (delete (string-append bzip2 "/lib")
+                                                  (string-split (getenv "LIBRARY_PATH")
+                                                                #\:))
+                                          ":"))
+                     (format #t "environment variable `LIBRARY_PATH' set to `~a'~%"
+                             (getenv "LIBRARY_PATH")))
+                   (format #t "no bzip2 found, nothing done~%"))
+               #t)))
          (replace 'configure
            (lambda* (#:key target #:allow-other-keys)
              (when ,(%current-target-system)
