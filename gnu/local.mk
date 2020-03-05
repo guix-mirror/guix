@@ -1522,5 +1522,4 @@ dist_patch_DATA =						\
   %D%/packages/patches/zziplib-CVE-2018-16548.patch
 
 MISC_DISTRO_FILES =				\
-  %D%/packages/ld-wrapper.in			\
-  %D%/packages/ld-wrapper-next.in
+  %D%/packages/ld-wrapper.in
