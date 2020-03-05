@@ -475,14 +475,14 @@ NetCDF files can also be read and modified.  Python-HDF4 is a fork of
 (define-public python-h5py
   (package
     (name "python-h5py")
-    (version "2.8.0")
+    (version "2.10.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "h5py" version))
       (sha256
        (base32
-        "0mdr6wrq02ac93m1aqx9kad0ppfzmm4imlxqgyy1x4l7hmdcc9p6"))))
+        "0baipzv8n93m0dq0riyi8rfhzrjrfrfh8zqhszzp1j2xjac2fhc4"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; no test target
@@ -504,10 +504,11 @@ NetCDF files can also be read and modified.  Python-HDF4 is a fork of
      `(("python-six" ,python-six)
        ("python-numpy" ,python-numpy)))
     (inputs
-     `(("hdf5" ,hdf5)))
+     `(("hdf5" ,hdf5-1.10)))
     (native-inputs
      `(("python-cython" ,python-cython)
-       ("python-pkgconfig" ,python-pkgconfig)))
+       ("python-pkgconfig" ,python-pkgconfig)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://www.h5py.org/")
     (synopsis "Read and write HDF5 files from Python")
     (description
