@@ -167,7 +167,7 @@ different programming languages.")
 (define-public fmt
   (package
     (name "fmt")
-    (version "6.0.0")
+    (version "6.1.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -176,7 +176,7 @@ different programming languages.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0yfrw6by4h27k3psv9x1q7z2kdbz7pkwxidr494bpa6ppglij6ba"))))
+                "1ngb2fd7c2jnxi3x5kjgxmpixmyc737f77vibij43dl77ybiaihi"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
