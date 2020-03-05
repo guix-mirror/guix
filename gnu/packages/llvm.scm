@@ -164,7 +164,28 @@ of programming tools as well as libraries with equivalent functionality.")
     (arguments
      `(;; Don't use '-g' during the build to save space.
        #:build-type "Release"
-       #:tests? #f))                    ; Tests require gtest
+       #:tests? #f                      ; Tests require gtest
+       #:modules ((srfi srfi-1)
+                  (ice-9 match)
+                  ,@%cmake-build-system-modules)
+       #:phases (modify-phases (@ (guix build cmake-build-system) %standard-phases)
+                  (add-after 'set-paths 'hide-glibc
+                    ;; Work around https://issues.guix.info/issue/36882.  We need to
+                    ;; remove glibc from CPLUS_INCLUDE_PATH so that the one hardcoded
+                    ;; in GCC, at the bottom of GCC include search-path is used.
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let* ((filters '("libc"))
+                             (input-directories
+                              (filter-map (lambda (input)
+                                            (match input
+                                              ((name . dir)
+                                               (and (not (member name filters))
+                                                    dir))))
+                                          inputs)))
+                        (set-path-environment-variable "CPLUS_INCLUDE_PATH"
+                                                       '("include")
+                                                       input-directories)
+                        #t))))))
     (home-page "https://compiler-rt.llvm.org")
     (synopsis "Runtime library for Clang/LLVM")
     (description
