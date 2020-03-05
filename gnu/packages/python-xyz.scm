@@ -2398,28 +2398,30 @@ e.g. filters, callbacks and errbacks can all be promises.")
 (define-public python-virtualenv
   (package
     (name "python-virtualenv")
-    (version "16.1.0")
+    (version "20.0.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "virtualenv" version))
        (sha256
         (base32
-         "0242cg3hdq3qdvx5flyrki8lpwlgwf5k45c21ks5049fv7ygm6gq"))))
+         "096r7g5cv85vxymg9iqbn5z749613snlvd6p3rf1nxnrd386j0qz"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'disable-failing-test
-           (lambda _
-             ;; Disable failing test.  See upstream bug report
-             ;; https://github.com/pypa/virtualenv/issues/957
-             (substitute* "tests/test_virtualenv.py"
-               (("skipif.*") "skipif(True, reason=\"Guix\")\n"))
-             #t)))))
     (native-inputs
      `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)))
+       ("python-pytest" ,python-pytest)
+       ;; NOTE: guix lint remarks that "python-setuptools should probably not
+       ;; be an input at all". However, removing the input makes the build error:
+       ;; File "setup.py", line 4, in <module>
+       ;;   raise RuntimeError("setuptools >= 41 required to build")
+       ("python-setuptools" ,python-setuptools)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
+    (inputs
+     `(("python-appdirs" ,python-appdirs)
+       ("python-distlib" ,python-distlib)
+       ("python-filelock" ,python-filelock)
+       ("python-six" ,python-six)
+       ("python-importlib-metadata" ,python-importlib-metadata)))
     (home-page "https://virtualenv.pypa.io/")
     (synopsis "Virtual Python environment builder")
     (description
