@@ -3008,7 +3008,7 @@ is a library for creating graphical user interfaces.")
   (sbcl-package->cl-source-package sbcl-cl-cffi-gtk))
 
 (define-public sbcl-cl-webkit
-  (let ((commit "cd2a9008e0c152e54755e8a7f07b050fe36bab31"))
+  (let ((commit "79ad41996a1bd7fc8e53fe8d168e8f2030603b14"))
     (package
       (name "sbcl-cl-webkit")
       (version (git-version "2.4" "1" commit))
@@ -3016,12 +3016,12 @@ is a library for creating graphical user interfaces.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/jmercouris/cl-webkit")
+               (url "https://github.com/joachifm/cl-webkit")
                (commit commit)))
          (file-name (git-file-name "cl-webkit" version))
          (sha256
           (base32
-           "0f5lyn9i7xrn3g1bddga377mcbawkbxydijpg389q4n04gqj0vwf"))))
+           "1gxvmxmss5k79v2ccigx92q46zbydxh9r7plnnqh8na348pffgcs"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("cffi" ,sbcl-cffi)
@@ -3038,7 +3038,7 @@ is a library for creating graphical user interfaces.")
                  (("libwebkit2gtk" all)
                   (string-append
                    (assoc-ref inputs "webkitgtk") "/lib/" all))))))))
-      (home-page "https://github.com/jmercouris/cl-webkit")
+      (home-page "https://github.com/joachifm/cl-webkit")
       (synopsis "Binding to WebKitGTK+ for Common Lisp")
       (description
        "@command{cl-webkit} is a binding to WebKitGTK+ for Common Lisp,
