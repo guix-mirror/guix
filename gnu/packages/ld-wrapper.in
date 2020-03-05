@@ -16,6 +16,7 @@ exec @GUILE@ -c "(load-compiled \"@SELF@.go\") (apply $main (cdr (command-line))
 !#
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,7 +36,7 @@ exec @GUILE@ -c "(load-compiled \"@SELF@.go\") (apply $main (cdr (command-line))
 (define-module (gnu build-support ld-wrapper)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
-  #:autoload   (ice-9 rdelim) (read-string)
+  #:autoload   (ice-9 rdelim) (read-delimited)
   #:export (ld-wrapper))
 
 ;;; Commentary:
@@ -239,13 +240,27 @@ library outside of ~a: ~s~%"
   ;; Expand ARGS such that "response file" arguments, such as "@args.txt", are
   ;; expanded (info "(gcc) Overall Options").
   (define (response-file-arguments file)
+    (define (tokenize port)
+      ;; Return a list of all strings found in PORT.  Quote characters are
+      ;; removed, but whitespaces within quoted strings are preserved.
+      (let loop ((tokens '()))
+        (let* ((token+delimiter (read-delimited " '\"\n" port 'split))
+               (token (car token+delimiter))
+               (delim (cdr token+delimiter)))
+          (if (eof-object? token)
+              (reverse tokens)
+              (case delim
+                ((#\") (loop (cons (read-delimited "\"" port) tokens)))
+                ((#\') (loop (cons (read-delimited "'" port) tokens)))
+                (else (if (> (string-length token) 0)
+                          (loop (cons token tokens))
+                          (loop tokens))))))))
+
     (when %debug?
       (format (current-error-port)
               "ld-wrapper: attempting to read arguments from '~a'~%" file))
 
-    ;; FIXME: Options can contain whitespace if they are protected by single
-    ;; or double quotes; this is not implemented here.
-    (string-tokenize (call-with-input-file file read-string)))
+    (call-with-input-file file tokenize))
 
   (define result
     (fold-right (lambda (arg result)
