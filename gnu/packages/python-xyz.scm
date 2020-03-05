@@ -15734,6 +15734,31 @@ infrastructure at import time, runtime, or statically (using the included pycc
 tool).")
     (license license:bsd-3)))
 
+(define-public python-numcodecs
+  (package
+    (name "python-numcodecs")
+    (version "0.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "numcodecs" version))
+       (sha256
+        (base32
+         "0kbfr8pl3x9glsypbq8hzim003f16ml1b1cvgrh4w1sdvgal6j7g"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-msgpack" ,python-msgpack)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://github.com/zarr-developers/numcodecs")
+    (synopsis "Buffer compression and transformation codecs")
+    (description
+     "This Python package provides buffer compression and transformation
+codecs for use in data storage and communication applications.")
+    (license license:expat)))
+
 (define-public python-anndata
   (package
     (name "python-anndata")
