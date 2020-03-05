@@ -2353,6 +2353,12 @@ new Date();"))
                                   (string-join (string-split version #\.) "u")
                                   "-ga"))))
               (file-name (string-append name "-" version "-checkout"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete included gradle jar
+                  (delete-file-recursively "gradle/wrapper")
+                  #t))
               (sha256
                (base32
                 "0yg38mwpivswccv9n96k06x3iv82i4px1a9xg9l8dswzwmfj259f"))))
