@@ -4449,6 +4449,40 @@ by pycodestyle.")
 (define-public python2-autopep8
   (package-with-python2 python-autopep8))
 
+(define-public python-distlib
+  (package
+    (name "python-distlib")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "distlib" version ".zip"))
+       (sha256
+        (base32
+         "08fyi2r246733vharl2yckw20rilci28r91mzrnnvcr638inw5if"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'no-/bin/sh
+           (lambda _
+             (substitute* '("distlib/scripts.py" "tests/test_scripts.py")
+               (("/bin/sh") (which "sh")))
+             #t))
+         (add-before 'check 'prepare-test-env
+           (lambda _
+             (setenv "HOME" "/tmp")
+             ;; NOTE: Any value works, the variable just has to be present.
+             (setenv "SKIP_ONLINE" "1")
+             #t)))))
+    (native-inputs `(("unzip" ,unzip)))
+    (home-page "https://bitbucket.org/pypa/distlib")
+    (synopsis "Distribution utilities")
+    (description "Distlib is a library which implements low-level functions that
+relate to packaging and distribution of Python software.  It is intended to be
+used as the basis for third-party packaging tools.")
+    (license license:psfl)))
+
 (define-public python-distutils-extra
   (package
     (name "python-distutils-extra")
