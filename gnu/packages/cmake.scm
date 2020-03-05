@@ -96,7 +96,7 @@
 (define-public cmake-bootstrap
   (package
     (name "cmake-bootstrap")
-    (version "3.16.4")
+    (version "3.16.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.cmake.org/files/v"
@@ -104,7 +104,7 @@
                                   "/cmake-" version ".tar.gz"))
               (sha256
                (base32
-                "0b5c77lqzfk5l7mnnih5c78i36d3skbkw20jjnph79lx9l8qrk4v"))
+                "1z4bb8z6b4dvq5hrvajrf1hyybqay3xybyimf71w1jgcp180nxjz"))
               (modules '((guix build utils)
                          (ice-9 ftw)))
               (snippet
