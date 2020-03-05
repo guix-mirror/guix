@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2018 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -247,7 +247,7 @@ GiB).")
 (define-public meld
   (package
     (name "meld")
-    (version "3.20.1")
+    (version "3.20.2")
     (source
      (origin
        (method url-fetch)
@@ -255,7 +255,7 @@ GiB).")
                            (version-major+minor version)
                            "/meld-" version ".tar.xz"))
        (sha256
-        (base32 "0jdj7kd6vj1mdc16gvrj1kar88b2j5875ajq18fx7cbc9ny46j55"))))
+        (base32 "0a0x156zr3w2yg0rnhwy39giy3xnfm6sqcfa4xcw4i6ahvwqa2dc"))))
     (build-system python-build-system)
     (native-inputs
      `(("intltool" ,intltool)

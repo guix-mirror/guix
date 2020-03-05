@@ -3671,7 +3671,7 @@ libxml to ease remote use of the RESTful API.")
 (define-public libsoup
   (package
     (name "libsoup")
-    (version "2.68.3")
+    (version "2.68.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libsoup/"
@@ -3679,7 +3679,7 @@ libxml to ease remote use of the RESTful API.")
                                   "libsoup-" version ".tar.xz"))
               (sha256
                (base32
-                "1yxs0ax4rq3g0lgkbv7mz497rqj16iyyizddyc13gzxh6n7b0jsk"))))
+                "151j5dc84gbl6a917pxvd0b372lw5za48n63lyv6llfc48lv2l1d"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -5688,7 +5688,7 @@ wraps things up in a developer-friendly way.")
 (define-public libgee
   (package
     (name "libgee")
-    (version "0.20.2")
+    (version "0.20.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libgee/"
@@ -5696,7 +5696,7 @@ wraps things up in a developer-friendly way.")
                                   "libgee-" version ".tar.xz"))
               (sha256
                (base32
-                "0g1mhl7nidg82v4cikkk8dakzc18hg7wv0dsf2pbyijzfm5mq0wy"))))
+                "1pm525wm11dhwz24m8bpcln9547lmrigl6cxf3qsbg4cr3pyvdfh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

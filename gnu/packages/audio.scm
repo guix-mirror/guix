@@ -322,7 +322,7 @@ namespace ARDOUR { const char* revision = \"" version "\" ; }"))
        ("itstool" ,itstool)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://ardour.org")
+    (home-page "https://ardour.org")
     (synopsis "Digital audio workstation")
     (description
      "Ardour is a multi-channel digital audio workstation, allowing users to

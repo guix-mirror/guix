@@ -119,7 +119,7 @@ more.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python-pytest" ,python-pytest)))
-    (home-page "http://pypi.python.org/pypi/python-igraph")
+    (home-page "https://pypi.org/project/python-igraph/")
     (synopsis "Python bindings for the igraph network analysis library")))
 
 (define-public r-igraph

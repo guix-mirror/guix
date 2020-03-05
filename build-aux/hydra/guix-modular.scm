@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,7 +33,7 @@
 
 ;; XXX: Debugging hack: since `hydra-eval-guile-jobs' redirects the output
 ;; port to the bit bucket, let us write to the error port instead.
-(setvbuf (current-error-port) _IOLBF)
+(setvbuf (current-error-port) 'line)
 (set-current-output-port (current-error-port))
 
 (define* (build-job store source version system)

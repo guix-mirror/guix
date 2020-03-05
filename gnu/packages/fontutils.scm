@@ -11,6 +11,7 @@
 ;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +46,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages fribidi)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages sqlite)
@@ -678,7 +680,7 @@ files.  UFO is a file format that stores fonts source files.")
     (propagated-inputs
      `(("python2-fonttools" ,python2-fonttools)
        ("python2-ufolib" ,python2-ufolib)))
-    (home-page "https://pypi.python.org/pypi/defcon")
+    (home-page "https://pypi.org/project/defcon/")
     (synopsis "Flexible objects for representing @acronym{UFO, unified font object} data")
     (description
      "Defcon is a set of @acronym{UFO, unified font object} based objects
@@ -836,3 +838,37 @@ work well with other GTK+ desktop environments.")
 samples that show coverage of the font and are similar in appearance to
 Unicode Charts.  It was developed for use with DejaVu Fonts project.")
     (license license:gpl3+)))
+
+(define-public libraqm
+  (package
+    (name "libraqm")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/HOST-Oman/libraqm/"
+                           "releases/download/v" version "/"
+                           "raqm-" version ".tar.gz"))
+       (sha256
+        (base32 "0hgry3fj2y3qaq2fnmdgd93ixkk3ns5jds4vglkiv2jfvpn7b1g2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list "--disable-static")))
+    (native-inputs
+     `(("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
+    (inputs
+     `(("freetype" ,freetype)
+       ("fribidi" ,fribidi)
+       ("harfbuzz" ,harfbuzz)))
+    (home-page "https://github.com/HOST-Oman/libraqm")
+    (synopsis "Library for complex text layout")
+    (description
+     "Raqm is a small library that encapsulates the logic for complex text
+layout and provides a convenient API.
+
+It currently provides bidirectional text support (using FriBiDi),
+shaping (using HarfBuzz), and proper script itemization.  As a result, Raqm
+can support most writing systems covered by Unicode.")
+    (license license:expat)))

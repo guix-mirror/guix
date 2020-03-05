@@ -475,14 +475,14 @@ NetCDF files can also be read and modified.  Python-HDF4 is a fork of
 (define-public python-h5py
   (package
     (name "python-h5py")
-    (version "2.8.0")
+    (version "2.10.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "h5py" version))
       (sha256
        (base32
-        "0mdr6wrq02ac93m1aqx9kad0ppfzmm4imlxqgyy1x4l7hmdcc9p6"))))
+        "0baipzv8n93m0dq0riyi8rfhzrjrfrfh8zqhszzp1j2xjac2fhc4"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; no test target
@@ -504,10 +504,11 @@ NetCDF files can also be read and modified.  Python-HDF4 is a fork of
      `(("python-six" ,python-six)
        ("python-numpy" ,python-numpy)))
     (inputs
-     `(("hdf5" ,hdf5)))
+     `(("hdf5" ,hdf5-1.10)))
     (native-inputs
      `(("python-cython" ,python-cython)
-       ("python-pkgconfig" ,python-pkgconfig)))
+       ("python-pkgconfig" ,python-pkgconfig)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://www.h5py.org/")
     (synopsis "Read and write HDF5 files from Python")
     (description
@@ -748,7 +749,7 @@ other machines, such as over the network.")
     ;; One could bootstrap with an internal untested setuptools.
     (arguments
      `(#:tests? #f))
-    (home-page "https://pypi.python.org/pypi/setuptools")
+    (home-page "https://pypi.org/project/setuptools/")
     (synopsis
      "Library designed to facilitate packaging Python projects")
     (description
@@ -1111,7 +1112,7 @@ from the Python interpreter, or as a small part of a larger application.")
     (native-inputs
      `(("python-py" ,python-py)
        ("python-pytest" ,python-pytest-bootstrap)))
-    (home-page "https://pypi.python.org/pypi/six/")
+    (home-page "https://pypi.org/project/six/")
     (synopsis "Python 2 and 3 compatibility utilities")
     (description
      "Six is a Python 2 and 3 compatibility library.  It provides utility
@@ -1282,7 +1283,7 @@ Python 3.3+.")
     (arguments `(#:python ,python-2
                  #:tests? #f))                    ; invalid command "test"
     ;; Currently no offical homepage.
-    (home-page "https://pypi.python.org/pypi/dogtail/")
+    (home-page "https://pypi.org/project/dogtail/")
     (synopsis "GUI test tool and automation framework written in Python")
     (description
      "Dogtail is a GUI test tool and automation framework written in Python.
@@ -1393,7 +1394,7 @@ bug tracker.")
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2))
-    (home-page "https://pypi.python.org/pypi/enum/")
+    (home-page "https://pypi.org/project/enum/")
     (synopsis "Robust enumerated type support in Python")
     (description
      "This provides a module for robust enumerations in Python.  It has
@@ -1414,7 +1415,7 @@ compatibility.")
        (base32
         "1cgm5ng2gcfrkrm3hc22brl6chdmv67b9zvva9sfs7gn7dwc9n4a"))))
     (build-system python-build-system)
-    (home-page "https://pypi.python.org/pypi/enum34")
+    (home-page "https://pypi.org/project/enum34/")
     (synopsis "Backported Python 3.4 Enum")
     (description
      "Enum34 is the new Python stdlib enum module available in Python 3.4
@@ -1757,7 +1758,7 @@ code introspection, and logging.")
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))
-    (home-page "http://docs.openstack.org/developer/pbr/")
+    (home-page "https://docs.openstack.org/pbr/latest/")
     (synopsis "Minimal build of python-pbr used for bootstrapping")
     (description
      "Used only for bootstrapping python2-pbr, you should not need this.")
@@ -2158,7 +2159,7 @@ cutting and pasting that code over and over.")
               (base32
                "1s6cp2lv4m0f00hjckjz8p6m7d3n3v16jvg353llf5ia1iqsnsib"))))
     (build-system python-build-system)
-    (home-page "https://pypi.python.org/pypi/Unidecode")
+    (home-page "https://pypi.org/project/Unidecode/")
     (synopsis "ASCII transliterations of Unicode text")
     (description
      "Unidecode provides ASCII transliterations of Unicode text.  Unidecode is
@@ -2337,7 +2338,7 @@ environments and back.")
     (build-system python-build-system)
     (inputs
      `(("libyaml" ,libyaml)))
-    (home-page "http://pyyaml.org/wiki/PyYAML")
+    (home-page "https://pyyaml.org")
     (synopsis "YAML parser and emitter for Python")
     (description
      "PyYAML is a YAML parser and emitter for Python.  PyYAML features a
@@ -3829,7 +3830,7 @@ that client code uses to construct the grammar directly in Python code.")
      `(("python-sphinx" ,python-sphinx)))
     (native-inputs
      `(("python-nose" ,python-nose)))
-    (home-page "https://pypi.python.org/pypi/numpydoc")
+    (home-page "https://pypi.org/project/numpydoc/")
     (synopsis
      "Numpy's Sphinx extensions")
     (description
@@ -4779,7 +4780,7 @@ PNG, PostScript, PDF, and SVG file output.")
        (sha256
         (base32 "0308djallnh00v112y5b7nadl657ysmkp6vc8xn51d6yzc9zm7n3"))))
     (build-system python-build-system)
-    (home-page "https://pypi.python.org/pypi/decorator/")
+    (home-page "https://pypi.org/project/decorator/")
     (synopsis "Python module to simplify usage of decorators")
     (description
       "The aim of the decorator module is to simplify the usage of decorators
@@ -4808,7 +4809,7 @@ etc.  The core of this module is a decorator factory.")
     (arguments '(#:tests? #f))
     (native-inputs
      `(("python-nose" ,python-nose)))
-    (home-page "https://pypi.python.org/pypi/drmaa")
+    (home-page "https://pypi.org/project/drmaa/")
     (synopsis "Python bindings for the DRMAA library")
     (description
       "A Python package for Distributed Resource Management (DRM) job
@@ -5023,7 +5024,7 @@ them as the version argument or in a SCM managed file.")
     (propagated-inputs
      `(("python-scandir" ,python-scandir)
        ("python-six" ,python-six)))
-    (home-page "https://pypi.python.org/pypi/pathlib2/")
+    (home-page "https://pypi.org/project/pathlib2/")
     (synopsis "Object-oriented file system paths")
     (description "The goal of pathlib2 is to provide a backport of the
 standard @code{pathlib} module which tracks the standard library module, so
@@ -6930,7 +6931,7 @@ from an XML-based format.")
     (description "This package provides a Python library to parse, manipulate
 or create documents in LilyPond format.  A command line program ly is also
 provided that can be used to do various manipulations with LilyPond files.")
-    (home-page "https://pypi.python.org/pypi/python-ly")
+    (home-page "https://pypi.org/project/python-ly/")
     (license license:gpl2+)))
 
 (define-public python-appdirs
@@ -7035,7 +7036,7 @@ should be stored on various operating systems.")
     (description "MessagePack is a fast, compact binary serialization format,
 suitable for similar data to JSON.  This package provides CPython bindings for
 reading and writing MessagePack data.")
-    (home-page "https://pypi.python.org/pypi/msgpack/")
+    (home-page "https://pypi.org/project/msgpack/")
     (license license:asl2.0)))
 
 ;; This msgpack library's name changed from "python-msgpack" to "msgpack" with
@@ -7528,7 +7529,7 @@ a hash value.")
     (arguments
      ;; There are no tests.
      `(#:tests? #f))
-    (home-page "https://pypi.python.org/pypi/termcolor")
+    (home-page "https://pypi.org/project/termcolor/")
     (synopsis "ANSII Color formatting for terminal output")
     (description
      "This package provides ANSII Color formatting for output in terminals.")
@@ -8782,7 +8783,7 @@ for the module to work under Python 3.3.")
    (synopsis "Colored terminal text rendering for Python")
    (description "Colorama is a Python library for rendering colored terminal
 text.")
-   (home-page "https://pypi.python.org/pypi/colorama")
+   (home-page "https://pypi.org/project/colorama/")
    (license license:bsd-3)))
 
 (define-public python2-colorama
@@ -8830,7 +8831,7 @@ library as well as on the command line.")
    (synopsis "Plugin and hook calling mechanism for Python")
    (description "Pluggy is an extraction of the plugin manager as used by
 Pytest but stripped of Pytest specific details.")
-   (home-page "https://pypi.python.org/pypi/pluggy")
+   (home-page "https://pypi.org/project/pluggy/")
    (license license:expat)))
 
 (define-public python2-pluggy
@@ -9535,7 +9536,7 @@ anymore.")
     (propagated-inputs
      `(("python2-scandir" ,python2-scandir)
        ("python2-six" ,python2-six)))
-    (home-page "https://pypi.python.org/pypi/pathlib2/")
+    (home-page "https://pypi.org/project/pathlib2/")
     (synopsis "Object-oriented file system paths - backport of standard
 pathlib module")
     (description "The goal of pathlib2 is to provide a backport of standard
@@ -12328,7 +12329,7 @@ projects.")
 (define-public python-invoke
   (package
     (name "python-invoke")
-    (home-page "http://www.pyinvoke.org/")
+    (home-page "https://www.pyinvoke.org/")
     (version "1.3.0")
     (source (origin
               (method url-fetch)
@@ -13486,7 +13487,7 @@ which adds support for zone identifiers to IPv6 addresses.")
        (base32
         "192pclzs2y0yaywqkrlvd0x73740q310kvqvm6jldhi619mq59wi"))))
     (build-system python-build-system)
-    (home-page "https://pypi.python.org/pypi/rfc3987")
+    (home-page "https://pypi.org/project/rfc3987/")
     (synopsis "Parsing and validation of URIs (RFC 3986) and IRIs (RFC 3987)")
     (description "@code{rfc3987} provides routines for parsing and
 validation of URIs (see RFC 3986) and IRIs (see RFC 3987).")
@@ -15735,23 +15736,126 @@ infrastructure at import time, runtime, or statically (using the included pycc
 tool).")
     (license license:bsd-3)))
 
+(define-public python-numcodecs
+  (package
+    (name "python-numcodecs")
+    (version "0.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "numcodecs" version))
+       (sha256
+        (base32
+         "0kbfr8pl3x9glsypbq8hzim003f16ml1b1cvgrh4w1sdvgal6j7g"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-msgpack" ,python-msgpack)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://github.com/zarr-developers/numcodecs")
+    (synopsis "Buffer compression and transformation codecs")
+    (description
+     "This Python package provides buffer compression and transformation
+codecs for use in data storage and communication applications.")
+    (license license:expat)))
+
+(define-public python-asciitree
+  (package
+    (name "python-asciitree")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "asciitree" version))
+       (sha256
+        (base32
+         "0vhgri2m2xlnibhz4xwn4hpbc7xacisxjqrk6k5kyppq96vbk92a"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/mbr/asciitree")
+    (synopsis "Draws ASCII trees")
+    (description "This package draws tree structures using characters.")
+    (license license:expat)))
+
+(define-public python-zarr
+  (package
+    (name "python-zarr")
+    (version "2.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "zarr" version))
+       (sha256
+        (base32
+         "026n3sjzjv2gmwx6y72b8ij0hk42bc8zdbvfj5gdqzd4i6wj3ajk"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-service-tests
+           (lambda _
+             (setenv "ZARR_TEST_ABS" "0")
+             (setenv "ZARR_TEST_MONGO" "0")
+             (setenv "ZARR_TEST_REDIS" "0")
+             #t))
+         (replace 'check
+           (lambda _
+             (invoke "pytest" "-vv" "-k" "not lmdb")
+             #t)))))
+    (propagated-inputs
+     `(("python-asciitree" ,python-asciitree)
+       ("python-fasteners" ,python-fasteners)
+       ("python-numcodecs" ,python-numcodecs)
+       ("python-numpy" ,python-numpy)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://github.com/zarr-developers/zarr-python")
+    (synopsis "Chunked, compressed, N-dimensional arrays for Python")
+    (description
+     "This package provides an implementation of chunked, compressed,
+N-dimensional arrays for Python.")
+    (license license:expat)))
+
 (define-public python-anndata
   (package
     (name "python-anndata")
-    (version "0.6.18")
+    (version "0.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "anndata" version))
        (sha256
         (base32
-         "03x83yjaccbqszj7x4fwwmpil0ai59yx64d1zmf2691za3j03w73"))))
+         "0rnfbpr55j1a1bi2kd4mz444741hrn74kz90h5rnjr59jmpfnh09"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-inconvenient-tests
+           (lambda _
+             ;; This test depends on python-scikit-learn.
+             (delete-file "anndata/tests/test_inplace_subset.py")
+             #t))
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv"))))))
     (propagated-inputs
      `(("python-h5py" ,python-h5py)
+       ("python-importlib-metadata" ,python-importlib-metadata)
        ("python-natsort" ,python-natsort)
+       ("python-numcodecs" ,python-numcodecs)
+       ("python-packaging" ,python-packaging)
        ("python-pandas" ,python-pandas)
-       ("python-scipy" ,python-scipy)))
+       ("python-scipy" ,python-scipy)
+       ("python-zarr" ,python-zarr)))
+    (native-inputs
+     `(("python-joblib" ,python-joblib)
+       ("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://github.com/theislab/anndata")
     (synopsis "Annotated data for data analysis pipelines")
     (description "Anndata is a package for simple (functional) high-level APIs

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -23,6 +23,7 @@
   #:use-module ((gnu installer steps) #:select (&installer-step-abort))
   #:use-module (gnu installer newt page)
   #:use-module (gnu installer newt utils)
+  #:use-module (gnu installer utils)
   #:use-module (guix i18n)
   #:use-module (newt)
   #:use-module (ice-9 match)
@@ -115,6 +116,7 @@ REAL-NAME, and HOME-DIRECTORY as the initial values in the form."
                                GRID-ELEMENT-SUBGRID entry-grid
                                GRID-ELEMENT-SUBGRID button-grid)
                               title)
+
     (let ((error-page
            (lambda ()
              (run-error-page (G_ "Empty inputs are not allowed.")
@@ -230,33 +232,45 @@ administrator (\"root\").")
           (set-current-component form ok-button))
 
       (receive (exit-reason argument)
-          (run-form form)
+          (run-form-with-clients form '(add-users))
         (dynamic-wind
           (const #t)
           (lambda ()
-            (when (eq? exit-reason 'exit-component)
-              (cond
-               ((components=? argument add-button)
-                (run (cons (run-user-add-page) users)))
-               ((components=? argument del-button)
-                (let* ((current-user-key (current-listbox-entry listbox))
-                       (users
-                        (map (cut assoc-ref <> 'user)
-                             (remove (lambda (element)
-                                       (equal? (assoc-ref element 'key)
-                                               current-user-key))
-                                     listbox-elements))))
-                  (run users)))
-               ((components=? argument ok-button)
-                (when (null? users)
-                  (run-error-page (G_ "Please create at least one user.")
-                                  (G_ "No user"))
-                  (run users))
-                (reverse users))
-               ((components=? argument exit-button)
-                (raise
-                 (condition
-                  (&installer-step-abort)))))))
+            (match exit-reason
+              ('exit-component
+               (cond
+                ((components=? argument add-button)
+                 (run (cons (run-user-add-page) users)))
+                ((components=? argument del-button)
+                 (let* ((current-user-key (current-listbox-entry listbox))
+                        (users
+                         (map (cut assoc-ref <> 'user)
+                              (remove (lambda (element)
+                                        (equal? (assoc-ref element 'key)
+                                                current-user-key))
+                                      listbox-elements))))
+                   (run users)))
+                ((components=? argument ok-button)
+                 (when (null? users)
+                   (run-error-page (G_ "Please create at least one user.")
+                                   (G_ "No user"))
+                   (run users))
+                 (reverse users))
+                ((components=? argument exit-button)
+                 (raise
+                  (condition
+                   (&installer-step-abort))))))
+              ('exit-fd-ready
+               ;; Read the complete user list at once.
+               (match argument
+                 ((('user ('name names) ('real-name real-names)
+                          ('home-directory homes) ('password passwords))
+                   ..1)
+                  (map (lambda (name real-name home password)
+                         (user (name name) (real-name real-name)
+                               (home-directory home)
+                               (password password)))
+                       names real-names homes passwords))))))
           (lambda ()
             (destroy-form-and-pop form))))))
 

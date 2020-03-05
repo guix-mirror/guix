@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -253,6 +253,12 @@ the system under test."
              (number->string (object-address test) 16)))))
 
 (set-record-type-printer! <system-test> write-system-test)
+
+(define-gexp-compiler (compile-system-test (test <system-test>)
+                                           system target)
+  "Compile TEST to a derivation."
+  ;; XXX: SYSTEM and TARGET are ignored.
+  (system-test-value test))
 
 (define (test-modules)
   "Return the list of modules that define system tests."

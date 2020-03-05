@@ -812,14 +812,6 @@ build---packages, gexps, derivations, and so on."
       (for-each validate-type lst)
       lst))
 
-  ;; Note: Taken from (guix scripts refresh).
-  (define (manifest->packages manifest)
-    "Return the list of packages in MANIFEST."
-    (filter-map (lambda (entry)
-                  (let ((item (manifest-entry-item entry)))
-                    (if (package? item) item #f)))
-                (manifest-entries manifest)))
-
   (append-map (match-lambda
                 (('argument . (? string? spec))
                  (cond ((derivation-path? spec)
@@ -844,8 +836,10 @@ build---packages, gexps, derivations, and so on."
                 (('file . file)
                  (ensure-list (load* file (make-user-module '()))))
                 (('manifest . manifest)
-                 (manifest->packages
-                  (load* manifest (make-user-module '((guix profiles) (gnu))))))
+                 (map manifest-entry-item
+                      (manifest-entries
+                       (load* manifest
+                              (make-user-module '((guix profiles) (gnu)))))))
                 (('expression . str)
                  (ensure-list (read/eval str)))
                 (('argument . (? derivation? drv))
@@ -949,13 +943,21 @@ needed."
     (parse-command-line args %options
                         (list %default-options)))
 
+  (define graft?
+    (assoc-ref opts 'graft?))
+
   (with-error-handling
     (with-status-verbosity (assoc-ref opts 'verbosity)
       (with-store store
         ;; Set the build options before we do anything else.
         (set-build-options-from-command-line store opts)
 
-        (parameterize ((current-terminal-columns (terminal-columns)))
+        (parameterize ((current-terminal-columns (terminal-columns))
+
+                       ;; Set grafting upfront in case the user's input
+                       ;; depends on it (e.g., a manifest or code snippet that
+                       ;; calls 'gexp->derivation').
+                       (%graft?                  graft?))
           (let* ((mode  (assoc-ref opts 'build-mode))
                  (drv   (options->derivations store opts))
                  (urls  (map (cut string-append <> "/log")

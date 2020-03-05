@@ -308,7 +308,7 @@ structure and layout algorithms.")
        ("gtk+" ,gtk+)
        ("python-pycairo" ,python-pycairo)
        ("python-pygobject" ,python-pygobject)))
-    (home-page "https://pypi.python.org/pypi/xdot")
+    (home-page "https://pypi.org/project/xdot/")
     (synopsis "Interactive viewer for graphviz dot files")
     (description "Xdot is an interactive viewer for graphs written in
 @code{graphviz}’s dot language.  Internally, it uses the xdot output format as

@@ -504,14 +504,14 @@ code for possible problems.")
 (define-public r-foreign
   (package
     (name "r-foreign")
-    (version "0.8-75")
+    (version "0.8-76")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "foreign" version))
        (sha256
         (base32
-         "0g4mi101srjbl17ydb2hl3854m3xj0llj6861lfr30sp08nkqavl"))))
+         "1z6x2x1z12wnv0z4p74d91r5wfaq30sdz4ynwx0lncz1q45mhbh5"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/foreign")
     (synopsis "Read data stored by other statistics software")
@@ -590,13 +590,13 @@ and operations on them using LAPACK and SuiteSparse.")
 (define-public r-nlme
   (package
     (name "r-nlme")
-    (version "3.1-144")
+    (version "3.1-145")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "nlme" version))
        (sha256
-        (base32 "1gqyq53fdq23wsi3f4n9vg4mn5i0v18zam5lnzlpg581xifx2779"))))
+        (base32 "1i9a3afdmn2ziks0imz0j09ay9n0zb9mhrymy9mg97vvlz5diwrh"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)))
@@ -933,13 +933,13 @@ in which the whole-plots or split-plots or both can be freely exchangeable.")
 (define-public r-plyr
   (package
     (name "r-plyr")
-    (version "1.8.5")
+    (version "1.8.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "plyr" version))
        (sha256
-        (base32 "0x4mbb3rgv1ayxqidw0p9i10khbg51fz5r62vw4il8d7licqq07a"))))
+        (base32 "11sjjdn146w95s1vsfmmgdls082cbnm1slv98xvyjhsl2mpx4mga"))))
     (build-system r-build-system)
     (propagated-inputs `(("r-rcpp" ,r-rcpp)))
     (home-page "http://had.co.nz/plyr")

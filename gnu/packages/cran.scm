@@ -7180,13 +7180,13 @@ and coverage methods to tune the choice of threshold.")
 (define-public r-ggformula
   (package
     (name "r-ggformula")
-    (version "0.9.3")
+    (version "0.9.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggformula" version))
        (sha256
-        (base32 "1bpsfp9hx001r91pxfiwgxcn5vw5bl1gclb865wz6g9l0jqjfk2p"))))
+        (base32 "04vdhg1bbc1psrx9ggaphz7cx4fw5xsmhkqpqfcg2w4ba2bjy46f"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggforce" ,r-ggforce)
@@ -7196,8 +7196,7 @@ and coverage methods to tune the choice of threshold.")
        ("r-mosaiccore" ,r-mosaiccore)
        ("r-rlang" ,r-rlang)
        ("r-stringr" ,r-stringr)
-       ("r-tibble" ,r-tibble)
-       ("r-tidyr" ,r-tidyr)))
+       ("r-tibble" ,r-tibble)))
     (home-page "https://github.com/ProjectMOSAIC/ggformula/")
     (synopsis "Formula interface for the @code{r-ggplot2}")
     (description
@@ -8238,14 +8237,14 @@ Hothorn, Westfall, 2010, CRC Press).")
 (define-public r-emmeans
   (package
     (name "r-emmeans")
-    (version "1.4.4")
+    (version "1.4.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "emmeans" version))
        (sha256
         (base32
-         "0l1qj6x834fmcvqbj807p7yz7462df925vw91xvg50faqm19d41x"))))
+         "10fmvmd6q4zjr6b18hhc85mwrzv778qzj6lwl9kbs2fsfvsgw7mm"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-estimability" ,r-estimability)
@@ -11986,14 +11985,14 @@ users of rARPACK are advised to switch to the RSpectra package.")
 (define-public r-compositions
   (package
     (name "r-compositions")
-    (version "1.40-3")
+    (version "1.40-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "compositions" version))
        (sha256
         (base32
-         "103hbmibrf1n333pn4xpll1gqqsv4szms0n5gdq7zak31aar0bg4"))))
+         "0z40llyij3cc80ac1vzzrpykk6ysp89bn6dyyh40fbnc4anwx69a"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bayesm" ,r-bayesm)
@@ -19403,14 +19402,14 @@ analysis and natural language processing.")
 (define-public r-spacyr
   (package
     (name "r-spacyr")
-    (version "1.2")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "spacyr" version))
        (sha256
         (base32
-         "1xsiz6zx89vs6ykrkkp011d8fz4ksdgnf5nyaq5ynjr6zv865vks"))))
+         "1b2ccgwsiqkvp7w37x8k7699c676q16vfrybkrfvyczyhki4s6nw"))))
     (properties `((upstream-name . "spacyr")))
     (build-system r-build-system)
     (propagated-inputs
@@ -20136,20 +20135,22 @@ Latent regression models and plausible value imputation are also supported.")
 (define-public r-erm
   (package
     (name "r-erm")
-    (version "1.0-0")
+    (version "1.0-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "eRm" version))
        (sha256
         (base32
-         "11p8j61arq1ih2qi33wf0442vcdbp3zvknzm5aknsifwl4mbzzly"))))
+         "0njqzznnhnkvalmhiq5yq1w7gwp2myki5cv61w42ydvd27hdyyg9"))))
     (properties `((upstream-name . "eRm")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-lattice" ,r-lattice)
+     `(("r-colorspace" ,r-colorspace)
+       ("r-lattice" ,r-lattice)
        ("r-mass" ,r-mass)
-       ("r-matrix" ,r-matrix)))
+       ("r-matrix" ,r-matrix)
+       ("r-psych" ,r-psych)))
     (native-inputs `(("gfortran" ,gfortran)))
     (home-page "https://cran.r-project.org/package=eRm")
     (synopsis "Extended Rasch modeling")

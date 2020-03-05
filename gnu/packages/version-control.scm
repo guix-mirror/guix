@@ -15,7 +15,7 @@
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 André <eu@euandre.org>
-;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
@@ -534,7 +534,7 @@ everything from small to very large projects with speed and efficiency.")
 (define-public libgit2
   (package
     (name "libgit2")
-    (version "0.28.4")
+    (version "0.99.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -543,21 +543,37 @@ everything from small to very large projects with speed and efficiency.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "171b25aym4q88bidc4c76y4l6jmdwifm3q9zjqsll0wjhlkycfy1"))
-              (patches (search-patches "libgit2-avoid-python.patch"
-                                       "libgit2-mtime-0.patch"))
+                "0qxzv49ip378g1n7hrbifb9c6pys2kj1hnxcafmbb94gj3pgd9kg"))
+              (patches (search-patches "libgit2-mtime-0.patch"))
 
-              ;; Remove bundled software.
+              ;; Remove bundled software.  Keep "http-parser" because it
+              ;; contains patches that are not available in the system version.
               (snippet '(begin
-                          (delete-file-recursively "deps")
+                          (with-directory-excursion "deps"
+                            (for-each (lambda (dir)
+                                        (delete-file-recursively dir))
+                                      (lset-difference equal?
+                                                       (scandir ".")
+                                                       '("." ".." "http-parser"))))
                           #t))
-              (modules '((guix build utils)))))
+              (modules '((guix build utils)
+                         (srfi srfi-1)
+                         (ice-9 ftw)))))
     (build-system cmake-build-system)
     (outputs '("out" "debug"))
     (arguments
-     `(#:configure-flags '("-DUSE_SHA1DC=ON") ; SHA-1 collision detection
+     `(#:configure-flags '("-DUSE_NTLMCLIENT=OFF" ;TODO: package this
+                           "-DREGEX_BACKEND=pcre2")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-pcre2-reference
+           (lambda _
+             ;; Use PCRE2 with 8-bit character support, as there is no "libpcre2.pc".
+             ;; See <https://github.com/libgit2/libgit2/issues/5438>.
+             (substitute* "src/CMakeLists.txt"
+               (("\"libpcre2\"")
+                "\"libpcre2-8\""))
+             #t))
          (add-after 'unpack 'fix-hardcoded-paths
            (lambda _
              (substitute* "tests/repo/init.c"
@@ -574,14 +590,14 @@ everything from small to very large projects with speed and efficiency.")
          (replace 'check
            (lambda _ (invoke "./libgit2_clar" "-v" "-Q"))))))
     (inputs
-     `(("libssh2" ,libssh2)
-       ("http-parser" ,http-parser)))
+     `(("libssh2" ,libssh2)))
     (native-inputs
-     `(("guile" ,guile-2.2)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python)))
     (propagated-inputs
-     ;; These two libraries are in 'Requires.private' in libgit2.pc.
+     ;; These libraries are in 'Requires.private' in libgit2.pc.
      `(("openssl" ,openssl)
+       ("pcre2" ,pcre2)
        ("zlib" ,zlib)))
     (home-page "https://libgit2.github.com/")
     (synopsis "Library providing Git core methods")

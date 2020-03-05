@@ -17,7 +17,7 @@
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
-;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018, 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 swedebugia <swedebugia@riseup.net>
@@ -80,8 +80,10 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages search)
   #:use-module (gnu packages slang)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
@@ -3096,3 +3098,49 @@ currently a re-implementation of the lentes library for Clojure.  Lenses
 provide composable procedures, which can be used to focus, apply functions
 over, or update a value in arbitrary data structures.")
       (license license:gpl3+))))
+
+(define-public guile-xapian
+  (let ((commit "ede26b808188eb4d14c6b4181c933dfc09c0a22e")
+        (revision "0"))
+    (package
+      (name "guile-xapian")
+      (version (git-version "0" revision commit))
+      (home-page "https://git.systemreboot.net/guile-xapian")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference (url home-page)
+                             (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "07a9fmqi3pm6mbbpzi01mjwrqwnljs2rnc3603sq49dz4lf663gb"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:make-flags '("GUILE_AUTO_COMPILE=0"))) ; to prevent guild warnings
+      (inputs
+       `(("guile" ,guile-2.2)
+         ("xapian" ,xapian)
+         ("zlib" ,zlib)))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("autoconf-archive" ,autoconf-archive)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ("pkg-config" ,pkg-config)
+         ("swig" ,swig)))
+      (synopsis "Guile bindings for Xapian")
+      (description "@code{guile-xapian} provides Guile bindings for Xapian, a
+search engine library.  Xapian is a highly adaptable toolkit which allows
+developers to easily add advanced indexing and search facilities to their own
+applications.  It has built-in support for several families of weighting
+models and also supports a rich set of boolean query operators.")
+      (license license:gpl2+))))
+
+(define-public guile3.0-xapian
+  (package
+    (inherit guile-xapian)
+    (name "guile3.0-xapian")
+    (inputs
+     `(("guile" ,guile-next)
+       ,@(alist-delete "guile" (package-inputs guile-xapian))))))

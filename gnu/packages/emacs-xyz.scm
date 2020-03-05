@@ -60,6 +60,7 @@
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2020 Robert Smith <robertsmith@posteo.net>
 ;;; Copyright © 2020 Evan Straw <evan.straw99@gmail.com>
+;;; Copyright © 2020 Masaya Tojo <masaya@tojo.tokyo>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17258,10 +17259,10 @@ leader key in vim), and much more.")
       (license license:gpl3+))))
 
 (define-public emacs-tldr
-  (let ((commit "398b197c8d2238628b07e1b32d0f373876279f4c"))
+  (let ((commit "7203d1be3dcbf12131846ffe06601933fa874d74"))
     (package
       (name "emacs-tldr")
-      (version (git-version "0" "0" commit))
+      (version (git-version "0" "1" commit))
       (home-page "https://github.com/kuanyui/tldr.el")
       (source (origin
                 (method git-fetch)
@@ -17270,9 +17271,11 @@ leader key in vim), and much more.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0iq7qlis6c6r2qkdpncrhh5vsihkhvy5x4y1y8cjb7zxkh62w33f"))
+                  "1bw6la463l2yfm7rp76ga4makfy4kpxgwi7ni5gxk31w11g26ryk"))
                 (file-name (git-file-name name version))))
       (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-request" ,emacs-request)))
       (synopsis "Simplified and community-driven man pages for Emacs")
       (description "@code{emacs-tldr} allows the user to access tldr pages
 from within emacs.  The @code{tldr} pages are a community effort to simplify
@@ -17844,25 +17847,26 @@ Later you can insert it into an Org buffer using the command
 (define-public emacs-amx
   (package
     (name "emacs-amx")
-    (version "3.2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/DarwinAwardWinner/amx")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0bb8y1dmzyqkrb4mg6zndcsxppby3glridv2aap2pv05gv8kx7mj"))))
+    (version "3.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/DarwinAwardWinner/amx")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ikjzs119g57cwh2v3jmy63lggqc0ib99q5gsl93slkk4y2ihavw"))))
     (build-system emacs-build-system)
-    (propagated-inputs `(("emacs-s" ,emacs-s)))
+    (propagated-inputs
+     `(("emacs-s" ,emacs-s)))
     (home-page "https://github.com/DarwinAwardWinner/amx")
-    (synopsis "Alternative interface for M-x")
+    (synopsis "Alternative M-x interface for Emacs")
     (description "Amx is an alternative interface for M-x in Emacs.  It
 provides several enhancements over the ordinary
 @code{execute-extended-command}, such as prioritizing your most-used commands
 in the completion list and showing keyboard shortcuts, and it supports several
-completion systems for selecting commands, such as ido and ivy.")
+completion systems for selecting commands, such as Ido and Ivy.")
     (license license:gpl3+)))
 
 (define-public emacs-lorem-ipsum
@@ -21729,3 +21733,49 @@ supports generation of phonetic and numeric passwords.")
 Separated Value) files.  It follows the format as defined in RFC 4180 \"Common
 Format and MIME Type for CSV Files\" (@url{http://tools.ietf.org/html/rfc4180}).")
     (license license:gpl3+)))
+
+(define-public emacs-ddskk
+  ;; XXX: Upstream adds code names to their release tags, so version and code
+  ;; name below need to be updated together.
+  (let ((version "16.3")
+        (code-name "Kutomatsunai"))
+    (package
+      (name "emacs-ddskk")
+      (version version)
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/skk-dev/ddskk")
+               (commit (string-append "ddskk-" version "_" code-name))))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0ln4x8f35z5y3kf9m718g223bn3lzcmw40jfjg2j5yi24ydf1wm9"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:modules ((guix build gnu-build-system)
+                    (guix build utils)
+                    (guix build emacs-utils))
+         #:imported-modules (,@%gnu-build-system-modules
+                             (guix build emacs-utils))
+         #:test-target "test"
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'configure
+             (lambda* (#:key outputs #:allow-other-keys)
+               (make-file-writable "SKK-MK")
+               (emacs-substitute-variables "SKK-MK"
+                 ("PREFIX" (assoc-ref outputs "out"))
+                 ("LISPDIR" '(expand-file-name "/share/emacs/site-lisp" PREFIX))
+                 ("SKK_PREFIX" "")
+                 ("SKK_INFODIR" '(expand-file-name "info" PREFIX)))
+               (for-each make-file-writable (find-files "./doc"))
+               #t)))))
+      (native-inputs
+       `(("emacs-minimal" ,emacs-minimal)))
+      (home-page "https://github.com/skk-dev/ddskk")
+      (synopsis "Simple Kana to Kanji conversion program")
+      (description
+       "Daredevil SKK is a version of @acronym{SKK, Simple Kana to Kanji
+conversion program}, a Japanese input method on Emacs.")
+      (license license:gpl2+))))

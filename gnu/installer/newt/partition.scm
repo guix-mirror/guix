@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -682,6 +682,12 @@ by pressing the Exit button.~%~%")))
           #:allow-delete? #t
           #:button-text (G_ "OK")
           #:button-callback-procedure button-ok-action
+
+          ;; Consider client replies equivalent to hitting the "OK" button.
+          ;; XXX: In practice this means that clients cannot do anything but
+          ;; approve the predefined list of partitions.
+          #:client-callback-procedure (lambda (_) (button-ok-action))
+
           #:button2-text (G_ "Exit")
           #:button2-callback-procedure button-exit-action
           #:listbox-callback-procedure listbox-action

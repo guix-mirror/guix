@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -11,16 +12,20 @@
 ;;; GNU Guix is distributed in the hope that it will be useful, but
 ;;; WITHOUT ANY WARRANTY; without even the implied warranty of
 ;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-
 ;;;
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu installer newt welcome)
+  #:use-module (gnu installer steps)
   #:use-module (gnu installer utils)
+  #:use-module (gnu installer newt page)
   #:use-module (gnu installer newt utils)
   #:use-module (guix build syscalls)
   #:use-module (guix i18n)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
   #:use-module (ice-9 receive)
   #:use-module (newt)
@@ -66,24 +71,43 @@ we want this page to occupy all the screen space available."
                 GRID-ELEMENT-COMPONENT options-listbox))
          (form (make-form)))
 
+    (define (choice->item str)
+      ;; Return the item that corresponds to STR.
+      (match (find (match-lambda
+                     ((key . item)
+                      (string=? str (listbox-item->text item))))
+                   keys)
+        ((key . item) item)
+        (#f (raise (condition (&installer-step-abort))))))
+
     (set-textbox-text logo-textbox (read-all logo))
 
     (add-form-to-grid grid form #t)
     (make-wrapped-grid-window grid title)
 
     (receive (exit-reason argument)
-        (run-form form)
+        (run-form-with-clients form
+                               `(menu (title ,title)
+                                      (text ,info-text)
+                                      (items
+                                       ,(map listbox-item->text
+                                             listbox-items))))
       (dynamic-wind
         (const #t)
         (lambda ()
-          (when (eq? exit-reason 'exit-component)
-            (cond
-             ((components=? argument options-listbox)
-              (let* ((entry (current-listbox-entry options-listbox))
-                     (item (assoc-ref keys entry)))
-                (match item
-                  ((text . proc)
-                   (proc))))))))
+          (match exit-reason
+            ('exit-component
+             (let* ((entry (current-listbox-entry options-listbox))
+                    (item (assoc-ref keys entry)))
+               (match item
+                 ((text . proc)
+                  (proc)))))
+            ('exit-fd-ready
+             (let* ((choice argument)
+                    (item   (choice->item choice)))
+               (match item
+                 ((text . proc)
+                  (proc)))))))
         (lambda ()
           (destroy-form-and-pop form))))))
 

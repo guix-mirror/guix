@@ -3,6 +3,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,17 +25,23 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system scons)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
-  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages docbook)
-  #:use-module (gnu packages image)
-  #:use-module (gnu packages xml)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages libusb)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
-  #:use-module (gnu packages sqlite))
+  #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages xml))
 
 (define-public gpsbabel
   (package
@@ -204,3 +211,84 @@ coordinates as well as partial support for adjustments in global coordinate syst
      "GPXSee is a Qt-based GPS log file viewer and analyzer that supports
 all common GPS log file formats.")
     (license license:gpl3)))
+
+(define-public gpsd
+  (package
+    (name "gpsd")
+    (version "3.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download-mirror.savannah.gnu.org"
+                           "/releases/gpsd/gpsd-" version ".tar.gz"))
+       (sha256
+        (base32 "0faz2mvk82hi7ispxxih07lhpyz5dazs4gcknym9piiabga29p97"))))
+    (build-system scons-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python)))
+    (inputs
+     `(("bluez" ,bluez)
+       ("dbus" ,dbus)
+       ("libcap" ,libcap)
+       ("libusb" ,libusb)
+       ("ncurses" ,ncurses)))
+    (arguments
+     `(#:scons-flags (list (string-append "prefix=" %output)
+                            ;; TODO: Install python bindings.
+                           "python=no")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((python3 (string-append (assoc-ref inputs "python")
+                                           "/bin/python3")))
+               (substitute* '("contrib/gpsData.py"
+                              "contrib/ntpshmviz"
+                              "contrib/skyview2svg"
+                              "contrib/webgps.py"
+                              "devtools/ais.py"
+                              "devtools/aivdmtable"
+                              "devtools/cycle_analyzer"
+                              "devtools/flocktest"
+                              "devtools/identify_failing_build_options.py"
+                              "devtools/regress-builder"
+                              "devtools/regressdiff"
+                              "devtools/sizes"
+                              "devtools/striplog"
+                              "devtools/tablegen.py"
+                              "devtools/test_json_validity.py"
+                              "devtools/uninstall_cleanup.py"
+                              "gegps"
+                              "gps/gps.py"
+                              "gpscat"
+                              "gpsfake"
+                              "gpsprof"
+                              "jsongen.py"
+                              "leapsecond.py"
+                              "maskaudit.py"
+                              "test_maidenhead.py"
+                              "test_misc.py"
+                              "test_xgps_deps.py"
+                              "ubxtool"
+                              "valgrind-audit.py"
+                              "xgps"
+                              "xgpsspeed"
+                              "zerk")
+                 (("/usr/bin/python") python3)
+                 (("/usr/bin/env python") python3)))
+             #t))
+         (add-after 'fix-paths 'fix-build
+           (lambda _
+             (substitute* "SConstruct"
+               (("'PATH'")
+                "'PATH','CPATH','LIBRARY_PATH'"))
+             #t)))))
+    (synopsis "GPS service daemon")
+    (description
+     "@code{gpsd} is a service daemon that monitors one or more GPSes or AIS
+receivers attached to a host computer through serial or USB ports, making all
+data on the location/course/velocity of the sensors available to be queried on
+TCP port 2947 of the host computer.")
+    (home-page "https://gpsd.gitlab.io/gpsd/")
+    (license license:bsd-2)))
