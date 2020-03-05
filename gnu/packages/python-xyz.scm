@@ -15759,6 +15759,23 @@ tool).")
 codecs for use in data storage and communication applications.")
     (license license:expat)))
 
+(define-public python-asciitree
+  (package
+    (name "python-asciitree")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "asciitree" version))
+       (sha256
+        (base32
+         "0vhgri2m2xlnibhz4xwn4hpbc7xacisxjqrk6k5kyppq96vbk92a"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/mbr/asciitree")
+    (synopsis "Draws ASCII trees")
+    (description "This package draws tree structures using characters.")
+    (license license:expat)))
+
 (define-public python-anndata
   (package
     (name "python-anndata")
