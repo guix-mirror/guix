@@ -243,7 +243,11 @@ system.")
                                 #:key source commit system
                                 #:allow-other-keys)
                   (run-with-store store
-                    (mlet* %store-monad ((source (lower-object source))
+                    ;; SOURCE can be a lowerable object such as <local-file>
+                    ;; or a file name.  Adjust accordingly.
+                    (mlet* %store-monad ((source (if (string? source)
+                                                     (return source)
+                                                     (lower-object source)))
                                          (instance
                                           -> (checkout->channel-instance
                                               source #:commit commit)))
