@@ -148,7 +148,7 @@ powerful plugin architecture.")
      `(#:python ,python-2
        ;; No test suite
        #:tests? #f))
-    (home-page "http://dirac.cnrs-orleans.fr/DomainFinder")
+    (home-page "http://dirac.cnrs-orleans.fr/DomainFinder.html")
     (synopsis "Analysis of dynamical domains in proteins")
     (description "DomainFinder is an interactive program for the determination
 and characterization of dynamical domains in proteins.  It can infer dynamical
