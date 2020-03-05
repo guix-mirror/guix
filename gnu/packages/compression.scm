@@ -25,6 +25,7 @@
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -410,7 +411,8 @@ compatible with bzip2 – both at file format and command line level.")
        #:phases (modify-phases %standard-phases
                   (delete 'configure))  ; no configure script
        #:make-flags (list (string-append "PREFIX=" %output))))
-    (home-page "http://compression.ca/pbzip2/")
+    (home-page (string-append "https://web.archive.org/web/20180412020219/"
+                              "http://compression.ca/pbzip2/"))
     (synopsis "Parallel bzip2 implementation")
     (description
      "Pbzip2 is a parallel implementation of the bzip2 block-sorting file
