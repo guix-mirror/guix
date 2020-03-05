@@ -404,7 +404,8 @@ output), and Binutils.")
 (define-public clang-runtime
   (clang-runtime-from-llvm
    llvm
-   "0xwh79g3zggdabxgnd0bphry75asm1qz7mv3hcqihqwqr6aspgy2"))
+   "0xwh79g3zggdabxgnd0bphry75asm1qz7mv3hcqihqwqr6aspgy2"
+   '("clang-runtime-9-libsanitizer-mode-field.patch")))
 
 (define-public clang
   (clang-from-llvm llvm clang-runtime
@@ -434,7 +435,8 @@ output), and Binutils.")
 (define-public clang-runtime-8
   (clang-runtime-from-llvm
    llvm-8
-   "1c919wsm17xnv7lr8bhpq2wkq8113lzlw6hzhfr737j59x3wfddl"))
+   "1c919wsm17xnv7lr8bhpq2wkq8113lzlw6hzhfr737j59x3wfddl"
+   '("clang-runtime-9-libsanitizer-mode-field.patch")))
 
 (define-public clang-8
   (clang-from-llvm llvm-8 clang-runtime-8
@@ -458,7 +460,8 @@ output), and Binutils.")
 (define-public clang-runtime-7
   (clang-runtime-from-llvm
    llvm-7
-   "065ybd8fsc4h2hikbdyricj6pyv4r7r7kpcikhb2y5zf370xybkq"))
+   "065ybd8fsc4h2hikbdyricj6pyv4r7r7kpcikhb2y5zf370xybkq"
+   '("clang-runtime-9-libsanitizer-mode-field.patch")))
 
 (define-public clang-7
   (clang-from-llvm llvm-7 clang-runtime-7
@@ -482,7 +485,8 @@ output), and Binutils.")
 (define-public clang-runtime-6
   (clang-runtime-from-llvm
    llvm-6
-   "1fcr3jn24yr8lh36nc0c4ikli4744i2q9m1ik67p1jymwwaixkgl"))
+   "1fcr3jn24yr8lh36nc0c4ikli4744i2q9m1ik67p1jymwwaixkgl"
+   '("clang-runtime-9-libsanitizer-mode-field.patch")))
 
 (define-public clang-6
   (clang-from-llvm llvm-6 clang-runtime-6
@@ -514,7 +518,8 @@ output), and Binutils.")
   (clang-runtime-from-llvm
    llvm-3.9.1
    "16gc2gdmp5c800qvydrdhsp0bzb97s8wrakl6i8a4lgslnqnf2fk"
-   '("clang-runtime-asan-build-fixes.patch"
+   '("clang-runtime-3.9-libsanitizer-mode-field.patch"
+     "clang-runtime-asan-build-fixes.patch"
      "clang-runtime-esan-build-fixes.patch"
      "clang-3.5-libsanitizer-ustat-fix.patch")))
 
@@ -540,6 +545,7 @@ output), and Binutils.")
    llvm-3.8
    "0p0y85c7izndbpg2l816z7z7558axq11d5pwkm4h11sdw7d13w0d"
    '("clang-runtime-asan-build-fixes.patch"
+     "clang-runtime-3.8-libsanitizer-mode-field.patch"
      "clang-3.5-libsanitizer-ustat-fix.patch")))
 
 (define-public clang-3.8
@@ -563,6 +569,7 @@ output), and Binutils.")
    llvm-3.7
    "10c1mz2q4bdq9bqfgr3dirc6hz1h3sq8573srd5q5lr7m7j6jiwx"
    '("clang-runtime-asan-build-fixes.patch"
+     "clang-runtime-3.8-libsanitizer-mode-field.patch"
      "clang-3.5-libsanitizer-ustat-fix.patch")))
 
 (define-public clang-3.7
@@ -585,7 +592,7 @@ output), and Binutils.")
   (clang-runtime-from-llvm
    llvm-3.6
    "11qx8d3pbfqjaj2x207pvlvzihbs1z2xbw4crpz7aid6h1yz6bqg"
-   '("clang-runtime-asan-build-fixes.patch")))
+     '("clang-runtime-asan-build-fixes.patch")))
 
 (define-public clang-3.6
   (clang-from-llvm llvm-3.6 clang-runtime-3.6
