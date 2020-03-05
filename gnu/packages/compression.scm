@@ -810,7 +810,7 @@ time for compression ratio.")
        ("lzo" ,lzo)
        ("xz" ,xz)
        ("zlib" ,zlib)))
-    (home-page "http://squashfs.sourceforge.net/")
+    (home-page "https://github.com/plougher/squashfs-tools")
     (synopsis "Tools to create and extract squashfs file systems")
     (description
      "Squashfs is a highly compressed read-only file system for Linux.  It uses
