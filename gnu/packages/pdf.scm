@@ -16,7 +16,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Ben Sturmfels <ben@sturm.com.au>
-;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2019,2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -92,6 +92,51 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (srfi srfi-1))
+
+(define-public flyer-composer
+  (package
+    (name "flyer-composer")
+    (version "1.0rc2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "flyer-composer" version))
+       (sha256
+        (base32 "17igqb5dlcgcq4nimjw6cf9qgz6a728zdx1d0rr90r2z0llcchsv"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ;; TODO
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (qtbase (assoc-ref inputs "qtbase"))
+                    (qml "/lib/qt5/qml"))
+               (wrap-program (string-append out "/bin/flyer-composer-gui")
+                 `("QT_PLUGIN_PATH" ":" =
+                   (,(string-append qtbase "/lib/qt5/plugins")))
+                 `("QT_QPA_PLATFORM_PLUGIN_PATH" ":" =
+                   (,(string-append qtbase "/lib/qt5/plugins/platforms"))))
+               #t))))))
+    (inputs
+     `(("python-pypdf2" ,python-pypdf2)
+       ("python-pyqt" ,python-pyqt)
+       ("python-poppler-qt5" ,python-poppler-qt5)
+       ("qtbase" ,qtbase)))
+    (home-page "http://crazy-compilers.com/flyer-composer")
+    (synopsis "Rearrange PDF pages to print as flyers on one sheet")
+    (description "@command{flyer-composer} can be used to prepare one- or
+two-sided flyers for printing on one sheet of paper.
+
+Imagine you have designed a flyer in A6 format and want to print it using your
+A4 printer.  Of course, you want to print four flyers on each sheet.  This is
+where Flyer Composer steps in, creating a PDF which holds your flyer four
+times.  If you have a second page, Flyer Composer can arrange it the same way
+- even if the second page is in a separate PDF file.
+
+This package contains both the commnd line tool and the gui too.")
+    (license license:agpl3+)))
 
 (define-public poppler
   (package
