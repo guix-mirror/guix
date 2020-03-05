@@ -322,6 +322,20 @@ used to apply commands with arbitrarily long arguments.")
    (outputs '("out" "debug"))
    (arguments
     `(#:parallel-build? #f            ; help2man may be called too early
+      ,@(if (hurd-target?)
+            '(#:make-flags            ; these tests fail deterministically
+              (list (string-append "XFAIL_TESTS=tests/misc/env-S.pl"
+                                   " tests/misc/kill.sh"
+                                   " tests/misc/nice.sh"
+                                   " tests/split/fail.sh"
+                                   " test-fdutimensat"
+                                   " test-futimens"
+                                   " test-linkat"
+                                   " test-renameat"
+                                   " test-renameatu"
+                                   " test-tls"
+                                   " test-utimensat")))
+            '())
       #:phases (modify-phases %standard-phases
                  (add-before 'build 'patch-shell-references
                    (lambda _
