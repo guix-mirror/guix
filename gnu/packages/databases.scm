@@ -3368,3 +3368,38 @@ The drivers officially supported by @code{libdbi} are:
 @end itemize")
     (home-page "http://libdbi-drivers.sourceforge.net/")
     (license license:lgpl2.1+)))
+
+(define-public soci
+  (package
+    (name "soci")
+    (version "4.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/SOCI/soci/")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "06faswdxd2frqr9xnx6bxc7zwarlzsbdi3bqpz7kwdxsjvq41rnb"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("postgresql" ,postgresql)
+       ("sqlite" ,sqlite)
+       ("odbc" ,unixodbc)
+       ("boost" ,boost)
+       ("mysql" ,mysql)))
+    (arguments
+     `(#:tests? #f ; Tests may require running database management systems.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-lib-path
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("set\\(SOCI_LIBDIR \"lib64\"\\)") "")))))))
+    (synopsis "C++ Database Access Library")
+    (description
+     "SOCI is an abstraction layer for several database backends, including
+PostreSQL, SQLite, ODBC and MySQL.")
+    (home-page "http://soci.sourceforge.net/")
+    (license license:boost1.0)))
