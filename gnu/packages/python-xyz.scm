@@ -7257,7 +7257,7 @@ printing of sub-tables by specifying a row range.")
      `(("python-cython" ,python-cython)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("hdf5" ,hdf5)
+     `(("hdf5" ,hdf5-1.10)
        ("bzip2" ,bzip2)
        ("zlib" ,zlib)))
     (home-page "http://www.pytables.org/")
