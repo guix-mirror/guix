@@ -943,13 +943,21 @@ needed."
     (parse-command-line args %options
                         (list %default-options)))
 
+  (define graft?
+    (assoc-ref opts 'graft?))
+
   (with-error-handling
     (with-status-verbosity (assoc-ref opts 'verbosity)
       (with-store store
         ;; Set the build options before we do anything else.
         (set-build-options-from-command-line store opts)
 
-        (parameterize ((current-terminal-columns (terminal-columns)))
+        (parameterize ((current-terminal-columns (terminal-columns))
+
+                       ;; Set grafting upfront in case the user's input
+                       ;; depends on it (e.g., a manifest or code snippet that
+                       ;; calls 'gexp->derivation').
+                       (%graft?                  graft?))
           (let* ((mode  (assoc-ref opts 'build-mode))
                  (drv   (options->derivations store opts))
                  (urls  (map (cut string-append <> "/log")
