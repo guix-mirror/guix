@@ -7365,6 +7365,30 @@ your package is installed, via @code{pkg_resources} (part of
 @code{setuptools}).")
     (license license:gpl3+)))
 
+(define-public python-legacy-api-wrap
+  (package
+    (name "python-legacy-api-wrap")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "legacy-api-wrap" version))
+       (sha256
+        (base32
+         "06qhp0g543dy98vpa41hwdalvdbsjfc3ldk474yr9sd75mhl8jh3"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-get-version" ,python-get-version)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-black" ,python-pytest-black)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/flying-sheep/legacy-api-wrap")
+    (synopsis "Legacy API wrapper")
+    (description "This module defines a decorator to wrap legacy APIs.  The
+primary use case is APIs defined before keyword-only parameters existed.")
+    (license license:gpl3+)))
+
 (define-public python-pyasn1
   (package
     (name "python-pyasn1")
