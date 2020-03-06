@@ -273,8 +273,8 @@ used throughout the world.")
    (home-page "https://developer.gnome.org/pango/")))
 
 (define-public pango-1.42
-  (package/inherit
-   pango
+  (package
+   (inherit pango)
    (version "1.42.4")
    (source (origin
              (method url-fetch)
