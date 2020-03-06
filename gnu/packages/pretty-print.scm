@@ -182,7 +182,7 @@ different programming languages.")
      '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
     (native-inputs
      `(("unzip" ,unzip)))
-    (home-page "https://fmtlib.net/")
+    (home-page "https://fmt.dev")
     (synopsis "Small and fast C++ formatting library")
     (description
      "@code{fmt} (formerly @code{cppformat}) is a formatting library for C++.
