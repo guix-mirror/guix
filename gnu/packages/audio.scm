@@ -3930,11 +3930,17 @@ as is the case with audio plugins.")
        (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
          (add-before 'build 'set-CC-variable-and-show-features
            (lambda _
              (setenv "CC" "gcc")
              (invoke "make" "features")))
-         (delete 'configure))))
+         (add-after 'install 'make-carla-executable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (chmod (string-append out "/share/carla/carla") #o555)
+               #t)))
+         )))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("ffmpeg" ,ffmpeg)
