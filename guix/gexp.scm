@@ -2,7 +2,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -218,7 +218,7 @@ procedure to expand it; otherwise return #f."
 
 (define* (lower-object obj
                        #:optional (system (%current-system))
-                       #:key target)
+                       #:key (target 'current))
   "Return as a value in %STORE-MONAD the derivation or store item
 corresponding to OBJ for SYSTEM, cross-compiling for TARGET if TARGET is true.
 OBJ must be an object that has an associated gexp compiler, such as a
@@ -228,7 +228,10 @@ OBJ must be an object that has an associated gexp compiler, such as a
      (raise (condition (&gexp-input-error (input obj)))))
     (lower
      ;; Cache in STORE the result of lowering OBJ.
-     (mlet %store-monad ((graft? (grafting?)))
+     (mlet %store-monad ((target (if (eq? target 'current)
+                                     (current-target-system)
+                                     (return target)))
+                         (graft? (grafting?)))
        (mcached (let ((lower (lookup-compiler obj)))
                   (lower obj system target))
                 obj
@@ -779,7 +782,8 @@ derivations--e.g., code evaluated for its side effects."
                        (extensions -> (gexp-extensions exp))
                        (exts     (mapm %store-monad
                                        (lambda (obj)
-                                         (lower-object obj system))
+                                         (lower-object obj system
+                                                       #:target #f))
                                        extensions))
                        (modules+compiled (imported+compiled-modules
                                           %modules system
@@ -1549,16 +1553,19 @@ are searched for in PATH.  Return #f when MODULES and EXTENSIONS are empty."
                        #:key (guile (default-guile))
                        (module-path %load-path)
                        (system (%current-system))
-                       target)
+                       (target 'current))
   "Return an executable script NAME that runs EXP using GUILE, with EXP's
 imported modules in its search path.  Look up EXP's modules in MODULE-PATH."
-  (mlet %store-monad ((set-load-path
-                       (load-path-expression (gexp-modules exp)
-                                             module-path
-                                             #:extensions
-                                             (gexp-extensions exp)
-                                             #:system system
-                                             #:target target)))
+  (mlet* %store-monad ((target (if (eq? target 'current)
+                                   (current-target-system)
+                                   (return target)))
+                       (set-load-path
+                        (load-path-expression (gexp-modules exp)
+                                              module-path
+                                              #:extensions
+                                              (gexp-extensions exp)
+                                              #:system system
+                                              #:target target)))
     (gexp->derivation name
                       (gexp
                        (call-with-output-file (ungexp output)
@@ -1592,7 +1599,7 @@ imported modules in its search path.  Look up EXP's modules in MODULE-PATH."
                      (module-path %load-path)
                      (splice? #f)
                      (system (%current-system))
-                     target)
+                     (target 'current))
   "Return a derivation that builds a file NAME containing EXP.  When SPLICE?
 is true, EXP is considered to be a list of expressions that will be spliced in
 the resulting file.
@@ -1603,36 +1610,44 @@ Lookup EXP's modules in MODULE-PATH."
   (define modules (gexp-modules exp))
   (define extensions (gexp-extensions exp))
 
-  (if (or (not set-load-path?)
-          (and (null? modules) (null? extensions)))
-      (gexp->derivation name
-                        (gexp
-                         (call-with-output-file (ungexp output)
-                           (lambda (port)
-                             (for-each (lambda (exp)
-                                         (write exp port))
-                                       '(ungexp (if splice?
-                                                    exp
-                                                    (gexp ((ungexp exp)))))))))
-                        #:local-build? #t
-                        #:substitutable? #f
-                        #:system system
-                        #:target target)
-      (mlet %store-monad ((set-load-path
-                           (load-path-expression modules module-path
-                                                 #:extensions extensions
-                                                 #:system system
-                                                 #:target target)))
+  (mlet* %store-monad
+      ((target (if (eq? target 'current)
+                   (current-target-system)
+                   (return target)))
+       (no-load-path? -> (or (not set-load-path?)
+                             (and (null? modules)
+                                  (null? extensions))))
+       (set-load-path
+        (load-path-expression modules module-path
+                              #:extensions extensions
+                              #:system system
+                              #:target target)))
+    (if no-load-path?
+        (gexp->derivation name
+                          (gexp
+                           (call-with-output-file (ungexp output)
+                             (lambda (port)
+                               (for-each
+                                (lambda (exp)
+                                  (write exp port))
+                                '(ungexp (if splice?
+                                             exp
+                                             (gexp ((ungexp exp)))))))))
+                          #:local-build? #t
+                          #:substitutable? #f
+                          #:system system
+                          #:target target)
         (gexp->derivation name
                           (gexp
                            (call-with-output-file (ungexp output)
                              (lambda (port)
                                (write '(ungexp set-load-path) port)
-                               (for-each (lambda (exp)
-                                           (write exp port))
-                                         '(ungexp (if splice?
-                                                      exp
-                                                      (gexp ((ungexp exp)))))))))
+                               (for-each
+                                (lambda (exp)
+                                  (write exp port))
+                                '(ungexp (if splice?
+                                             exp
+                                             (gexp ((ungexp exp)))))))))
                           #:module-path module-path
                           #:local-build? #t
                           #:substitutable? #f
