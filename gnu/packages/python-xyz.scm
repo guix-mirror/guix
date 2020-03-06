@@ -7311,6 +7311,31 @@ designed to efficiently cope with extremely large amounts of data.")
 (define-public python2-tables
   (package-with-python2 python-tables))
 
+(define-public python-pytest-black
+  (package
+    (name "python-pytest-black")
+    (version "0.3.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-black" version))
+       (sha256
+        (base32
+         "04lppqydxm0f3f3x0l8hj7v0j6d8syj34jc37yzqwqcyqsnaga81"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-black" ,python-black)
+       ("python-toml" ,python-toml)))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://github.com/shopkeep/pytest-black")
+    (synopsis "Pytest plugin to enable format checking with black")
+    (description
+     "This package provides a pytest plugin to enable format checking with the
+Python code formatter \"black\".")
+    (license license:expat)))
+
 (define-public python-pyasn1
   (package
     (name "python-pyasn1")
