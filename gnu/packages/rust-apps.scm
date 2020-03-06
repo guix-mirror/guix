@@ -244,18 +244,8 @@ provides defaults for 80% of the use cases.")
                 (install-file manpage (string-append
                                         (assoc-ref outputs "out")
                                         "/share/man/man1"))))
-             #t))
-         (replace 'install
-           ;; Adapted from (guix build cargo-build-system). The flags need to
-           ;; be passed to `cargo install' too, as otherwise it will build
-           ;; another binary, without the features.
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (mkdir-p out)
-               (setenv "CARGO_TARGET_DIR" "./target")
-               (invoke "cargo" "install" "--path" "." "--root" out
-                       "--features" "pcre2")))))
-       #:cargo-build-flags '("--release" "--features" "pcre2")))
+             #t)))
+       #:features '("pcre2")))
     (native-inputs
      `(("asciidoc" ,asciidoc)
        ("pcre2" ,pcre2)

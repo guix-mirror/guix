@@ -3,6 +3,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -140,11 +141,14 @@ directory = '" port)
 
 (define* (build #:key
                 skip-build?
+                features
                 (cargo-build-flags '("--release"))
                 #:allow-other-keys)
   "Build a given Cargo package."
   (or skip-build?
-      (apply invoke `("cargo" "build" ,@cargo-build-flags))))
+      (apply invoke "cargo" "build"
+             "--features" (string-join features)
+             cargo-build-flags)))
 
 (define* (check #:key
                 tests?
@@ -152,10 +156,10 @@ directory = '" port)
                 #:allow-other-keys)
   "Run tests for a given Cargo package."
   (if tests?
-      (apply invoke `("cargo" "test" ,@cargo-test-flags))
+      (apply invoke "cargo" "test" cargo-test-flags)
       #t))
 
-(define* (install #:key inputs outputs skip-build? #:allow-other-keys)
+(define* (install #:key inputs outputs skip-build? features #:allow-other-keys)
   "Install a given Cargo package."
   (let* ((out (assoc-ref outputs "out")))
     (mkdir-p out)
@@ -168,7 +172,8 @@ directory = '" port)
     ;; otherwise cargo will raise an error.
     (or skip-build?
         (not (has-executable-target?))
-        (invoke "cargo" "install" "--path" "." "--root" out))))
+        (invoke "cargo" "install" "--path" "." "--root" out
+                "--features" (string-join features)))))
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases

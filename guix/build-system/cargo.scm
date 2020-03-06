@@ -4,6 +4,7 @@
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -76,6 +77,7 @@ to NAME and VERSION."
                       (vendor-dir "guix-vendor")
                       (cargo-build-flags ''("--release"))
                       (cargo-test-flags ''("--release"))
+                      (features ''())
                       (skip-build? #f)
                       (phases '(@ (guix build cargo-build-system)
                                   %standard-phases))
@@ -104,6 +106,7 @@ to NAME and VERSION."
                     #:vendor-dir ,vendor-dir
                     #:cargo-build-flags ,cargo-build-flags
                     #:cargo-test-flags ,cargo-test-flags
+                    #:features ,features
                     #:skip-build? ,skip-build?
                     #:tests? ,(and tests? (not skip-build?))
                     #:phases ,phases
