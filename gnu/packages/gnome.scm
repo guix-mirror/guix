@@ -46,6 +46,7 @@
 ;;; Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7425,7 +7426,7 @@ easy, safe, and automatic.")
 (define-public tracker
   (package
     (name "tracker")
-    (version "2.2.2")
+    (version "2.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/tracker/"
@@ -7433,7 +7434,7 @@ easy, safe, and automatic.")
                                   "tracker-" version ".tar.xz"))
               (sha256
                (base32
-                "1rp2c6k7ajcm553p9kpni87zgi9aplm3s01rl7pk575az5i399y6"))))
+                "1nzbnvwwsk6kv6kqbxwlz8vk70l9ai6b4r9qypw51vp4qy72ny54"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -7444,59 +7445,53 @@ easy, safe, and automatic.")
                             (assoc-ref %outputs "out") "/lib/tracker-2.0"))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'disable-broken-tests
-           (lambda _
-             ;; These fail because the SPARQL backend could not be loaded.
-             ;; That's because /etc/machine-id is missing, but
-             ;; DBUS_FATAL_WARNINGS does not help here.
-             (substitute* "tests/libtracker-sparql/meson.build"
-               (("'sparql',") ""))
-             (substitute* "tests/tracker-steroids/meson.build"
-               (("test\\(.*") ""))
-             #t))
-         ;; Two tests fail if LANG is not set.
          (add-before 'check 'pre-check
            (lambda _
-             (setenv "LANG" "en_US.UTF-8")
-             ;; For the missing /etc/machine-id.
-             (setenv "DBUS_FATAL_WARNINGS" "0")
+             ;; Some tests expect to write to $HOME.
+             (setenv "HOME" "/tmp")
              #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin")
-       ("gnome-common" ,gnome-common)
        ("gobject-introspection" ,gobject-introspection)
        ("python-pygobject" ,python-pygobject)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("dbus" ,dbus)
+     `(("dbus" ,dbus)
        ("sqlite" ,sqlite)
-       ("python" ,python)
-       ("poppler" ,poppler)
-       ("libpng" ,libpng)
-       ("libtiff" ,libtiff)
-       ("zlib" ,zlib)
        ("libxml2" ,libxml2)
-       ("libunistring" ,libunistring)
+       ("icu4c" ,icu4c)                 ; libunistring gets miner-miner-fs test to fail.
        ("json-glib" ,json-glib)
-       ("openjpeg" ,openjpeg-1)
-       ("libseccomp" ,libseccomp)
-       ("libsoup" ,libsoup)
-       ("libuuid" ,util-linux)
-       ("network-manager" ,network-manager)))
+       ("libsoup" ,libsoup)))
     (synopsis "Metadata database, indexer and search tool")
     (home-page "https://wiki.gnome.org/Projects/Tracker")
     (description
-     "Tracker is an advanced framework for first class objects with associated
-metadata and tags.  It provides a one stop solution for all metadata, tags,
-shared object databases, search tools and indexing.")
+     "Tracker is a search engine and triplestore for desktop, embedded and mobile.
+
+It is a middleware component aimed at desktop application developers who want
+their apps to browse and search user content.  It's not designed to be used
+directly by desktop users, but it provides a commandline tool named
+@command{tracker} for the adventurous.
+
+Tracker allows your application to instantly perform full-text searches across
+all documents.  This feature is used by the @{emph{search} bar in GNOME Files, for
+example.  This is achieved by indexing the user's home directory in the
+background.
+
+Tracker also allows your application to query and list content that the user
+has stored.  For example, GNOME Music displays all the music files that are
+found by Tracker.  This means that GNOME Music doesn't need to maintain a
+database of its own.
+
+If you need to go beyond simple searches, Tracker is also a linked data
+endpoint and it understands SPARQL. ")
+    ;; https://gitlab.gnome.org/GNOME/tracker/-/blob/master/COPYING:
     ;; src/libtracker-*/* and src/tracker-extract/* are covered by lgpl2.1+,
-    ;; src/gvdb/* are covered by lgpl2.0+, and the rest is gpl2+.
+    ;; libstemmer is bsd-3 and the rest is gpl2+.
     (license (list license:gpl2+
-                   license:lgpl2.1+
-                   license:lgpl2.0+))))
+                   license:bsd-3
+                   license:lgpl2.1+))))
 
 (define-public tracker-miners
   (package
