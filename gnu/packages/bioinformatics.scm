@@ -13238,18 +13238,14 @@ in RNA-seq data.")
 (define-public python-scanpy
   (package
     (name "python-scanpy")
-    (version "1.4")
-    ;; Fetch from git because the pypi tarball does not include tests.
+    (version "1.4.5.1")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/theislab/scanpy.git")
-             (commit version)))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (pypi-uri "scanpy" version))
        (sha256
         (base32
-         "0zn6x6c0cnm1a20i6isigwb51g3pr9zpjk8r1minjqnxi5yc9pm4"))))
+         "14kh1ji70xxhmri5q8sgcibsidhr6f221wxrcw8a5xvibj5da17j"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -13276,18 +13272,23 @@ in RNA-seq data.")
        ("python-igraph" ,python-igraph)
        ("python-joblib" ,python-joblib)
        ("python-louvain" ,python-louvain)
+       ("python-legacy-api-wrap" ,python-legacy-api-wrap)
        ("python-matplotlib" ,python-matplotlib)
        ("python-natsort" ,python-natsort)
        ("python-networkx" ,python-networkx)
        ("python-numba" ,python-numba)
+       ("python-packaging" ,python-packaging)
        ("python-pandas" ,python-pandas)
+       ("python-patsy" ,python-patsy)
        ("python-scikit-learn" ,python-scikit-learn)
        ("python-scipy" ,python-scipy)
        ("python-seaborn" ,python-seaborn)
        ("python-statsmodels" ,python-statsmodels)
-       ("python-tables" ,python-tables)))
+       ("python-tables" ,python-tables)
+       ("python-umap-learn" ,python-umap-learn)))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     `(("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://github.com/theislab/scanpy")
     (synopsis "Single-Cell Analysis in Python.")
     (description "Scanpy is a scalable toolkit for analyzing single-cell gene
