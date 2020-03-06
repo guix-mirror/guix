@@ -302,7 +302,7 @@ used throughout the world.")
     (build-system gnu-build-system)
     (inputs
      `(("glib" ,glib)
-       ("pango" ,pango)))
+       ("pango" ,pango-1.42)))
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
