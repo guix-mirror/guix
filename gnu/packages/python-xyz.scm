@@ -3177,14 +3177,14 @@ matching of file paths.")
 (define-public python-black
   (package
     (name "python-black")
-    (version "18.6b4")
+    (version "19.10b0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "black" version))
        (sha256
         (base32
-         "0i4sfqgz6w15vd50kbhi7g7rifgqlf8yfr8y78rypd56q64qn592"))))
+         "0f8mr0yzj78q1dx7v6ggbgfir2wv0n5z2shfbbvfdq7910xbgvf2"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -3194,16 +3194,39 @@ matching of file paths.")
              (let ((python3 (which "python3")))
                (substitute* '("tests/data/fmtonoff.py"
                               "tests/data/string_prefixes.py"
-                              "tests/data/function.py")
+                              "tests/data/function.py"
+                              "tests/data/python37.py")
                  (("#!/usr/bin/env python3(\\.[0-9]+)?" _ minor-version)
                   (string-append "#!" python3 (if (string? minor-version)
                                                   minor-version
-                                                  ""))))))))))
+                                                  "")))))
+             #t))
+         (add-after 'unpack 'disable-broken-tests
+           (lambda _
+             ;; These tests are supposed to be skipped when the blackd
+             ;; dependencies are missing, but this doesn't quite work.
+             (substitute* "tests/test_black.py"
+               (("( *)class BlackDTestCase.*" match indent)
+                (string-append indent "@unittest.skip(\"no blackd deps\")\n"
+                               indent "class BlackDTestCase(unittest.TestCase):\n"))
+               (("web.Application") "False")
+               (("@unittest_run_loop") ""))
+
+             ;; Patching the above file breaks the self test
+             (substitute* "tests/test_black.py"
+               (("( *)def test_self" match indent)
+                (string-append indent "@unittest.skip(\"guix\")\n" match)))
+             #t)))))
     (propagated-inputs
      `(("python-click" ,python-click)
        ("python-attrs" ,python-attrs)
        ("python-appdirs" ,python-appdirs)
-       ("python-toml" ,python-toml)))
+       ("python-pathspec" ,python-pathspec)
+       ("python-regex" ,python-regex)
+       ("python-toml" ,python-toml)
+       ("python-typed-ast" ,python-typed-ast)))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://github.com/ambv/black")
     (synopsis "The uncompromising code formatter")
     (description "Black is the uncompromising Python code formatter.")
