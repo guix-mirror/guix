@@ -1088,26 +1088,25 @@ using just two functions: melt and dcast (or acast).")
 (define-public r-ggplot2
   (package
     (name "r-ggplot2")
-    (version "3.2.1")
+    (version "3.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggplot2" version))
        (sha256
-        (base32 "0mjswqiqcwm0aqxll16bx2kwa6c9km3aql87bdj4347n1ali94g3"))))
+        (base32 "0j21am605kqqzlwhm45kaj0m2irnmy2vz0j7kzi9f0qdzrv3q3ij"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-digest" ,r-digest)
+       ("r-glue" ,r-glue)
        ("r-gtable" ,r-gtable)
-       ("r-lazyeval" ,r-lazyeval)
+       ("r-isoband" ,r-isoband)
        ("r-mass" ,r-mass)
        ("r-mgcv" ,r-mgcv)
        ("r-tibble" ,r-tibble)
-       ("r-reshape2" ,r-reshape2)
        ("r-rlang" ,r-rlang)
        ("r-scales" ,r-scales)
        ("r-svglite" ,r-svglite) ; Needed for 'ggsave'
-       ("r-viridislite" ,r-viridislite)
        ("r-withr" ,r-withr)))
     (home-page "https://ggplot2.tidyverse.org")
     (synopsis "An implementation of the grammar of graphics")
