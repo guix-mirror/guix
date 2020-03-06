@@ -9691,7 +9691,6 @@ higher level porcelain stuff.")
        ("json-glib" ,json-glib)
        ("libdazzle" ,libdazzle)
        ("libgee" ,libgee)
-       ("libgit2" ,libgit2) ; propagated by libgit2-glib
        ("libgit2-glib" ,libgit2-glib)
        ("libpeas" ,libpeas)
        ("libsecret" ,libsecret)
