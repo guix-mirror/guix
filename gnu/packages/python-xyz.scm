@@ -7336,6 +7336,35 @@ designed to efficiently cope with extremely large amounts of data.")
 Python code formatter \"black\".")
     (license license:expat)))
 
+(define-public python-get-version
+  (package
+    (name "python-get-version")
+    (version "2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "get_version" version))
+       (sha256
+        (base32
+         "1g15jyx33vkxavv9hwv275cs4g9bp2i1y942raw3fxamq8kbaml1"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pygments" ,python-pygments)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-black" ,python-pytest-black)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-setuptools" ,python-setuptools)
+       ("python-testpath" ,python-testpath)))
+    (home-page "https://github.com/flying-sheep/get_version")
+    (synopsis "Version helper in the spirit of versioneer")
+    (description
+     "This package provides a version helper that lets you automatically use
+the latest @code{vX.X.X} Git tag as the version in your Python package.  It
+also supports getting the version from Python source distributions or, once
+your package is installed, via @code{pkg_resources} (part of
+@code{setuptools}).")
+    (license license:gpl3+)))
+
 (define-public python-pyasn1
   (package
     (name "python-pyasn1")
