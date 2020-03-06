@@ -11,6 +11,7 @@
 ;;; Copyright © 2018, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
+;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -276,6 +277,16 @@
 
                           #t))))))
       (native-inputs `(("pkg-config" ,pkg-config)
+
+                       ;; Guile libraries are needed here for
+                       ;; cross-compilation.
+                       ("guile" ,guile-2.2)
+                       ("gnutls" ,gnutls)
+                       ("guile-gcrypt" ,guile-gcrypt)
+                       ("guile-json" ,guile-json-3)
+                       ("guile-sqlite3" ,guile-sqlite3)
+                       ("guile-ssh" ,guile-ssh)
+                       ("guile-git" ,guile-git)
 
                        ;; XXX: Keep the development inputs here even though
                        ;; they're unnecessary, just so that 'guix environment
