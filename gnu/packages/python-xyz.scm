@@ -3155,6 +3155,25 @@ used in text editing environments to provide a complete and integrated
 feature-set for programming Python effectively.")
     (license license:expat)))
 
+(define-public python-pathspec
+  (package
+    (name "python-pathspec")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pathspec" version))
+       (sha256
+        (base32
+         "15lvs4awlg8xzl0l4gk9y53xx4yqmqvsv44pglv39m70y85afajn"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/cpburnz/python-path-specification")
+    (synopsis "Utility library for gitignore style pattern matching of file paths")
+    (description
+     "This package provides a utility library for gitignore style pattern
+matching of file paths.")
+    (license license:mpl2.0)))
+
 (define-public python-black
   (package
     (name "python-black")
