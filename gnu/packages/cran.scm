@@ -20691,3 +20691,27 @@ package is adopted for computing with arbitrarily large numbers.  Every
 function has a hyperlink to its corresponding item in the @dfn{On-Line
 Encyclopedia of Integer Sequences} (OEIS) in the function help page.")
     (license license:gpl3+)))
+
+(define-public r-isoband
+  (package
+    (name "r-isoband")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "isoband" version))
+       (sha256
+        (base32
+         "1r023s73qypnvpx18znr9ymylr022m90v65mz2jasn0a1kjrfcbq"))))
+    (properties `((upstream-name . "isoband")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-testthat" ,r-testthat)))
+    (home-page "https://github.com/wilkelab/isoband")
+    (synopsis "Generate isolines and isobands from regularly spaced elevation grids")
+    (description
+     "This package provides a fast C++ implementation to generate contour
+lines (isolines) and contour polygons (isobands) from regularly spaced grids
+containing elevation data.")
+    (license license:expat)))
