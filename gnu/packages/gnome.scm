@@ -9629,13 +9629,15 @@ for usage on small and big screens.")
     (native-inputs
      `(("glib:bin" ,glib "bin") ;; For glib-mkenums
        ("gobject-introspection" ,gobject-introspection)
-       ("libssh2" ,libssh2)
        ("pkg-config" ,pkg-config)
        ("python-pygobject" ,python-pygobject)
        ("python-wrapper" ,python-wrapper)
        ("vala" ,vala)))
     (inputs
      `(("glib" ,glib)
+       ("libssh2" ,libssh2)))
+    (propagated-inputs
+     `(;; In Requires of libgit2-glib.pc.
        ("libgit2" ,libgit2)))
     (synopsis "GLib wrapper around the libgit2 Git access library")
     (description "libgit2-glib is a GLib wrapper library around the libgit2 Git
