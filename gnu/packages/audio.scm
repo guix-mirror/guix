@@ -70,6 +70,7 @@
   #:use-module (gnu packages gnunet) ; libmicrohttpd
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages libbsd)
@@ -3940,7 +3941,12 @@ as is the case with audio plugins.")
              (let ((out (assoc-ref outputs "out")))
                (chmod (string-append out "/share/carla/carla") #o555)
                #t)))
-         )))
+         (add-after 'install 'wrap-executables
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-script (string-append out "/bin/carla")
+                            `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
+               #t))))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("ffmpeg" ,ffmpeg)
@@ -3958,7 +3964,10 @@ as is the case with audio plugins.")
        ("python-wrapper" ,python-wrapper)
        ("libx11" ,libx11)
        ("qtbase" ,qtbase)
-       ("zlib" ,zlib)))
+       ("zlib" ,zlib)
+
+       ;; For WRAP-SCRIPT above.
+       ("guile" ,guile-2.2)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://kx.studio/Applications:Carla")
