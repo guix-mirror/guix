@@ -3783,21 +3783,20 @@ color scales, and color space conversion easy.  It has support for:
 (define-public python-pygit2
   (package
     (name "python-pygit2")
-    (version "0.28.2")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pygit2" version))
        (sha256
-        (base32 "11kzj5mjkspvplnpdb6bj8dcj6rgmkk986k8hjcklyg5yaxkz32d"))))
+        (base32 "1hs0pqqzn1yjxqk86nq7p0lvsklwnlyi5xwyzr7d5nrs19dmsjbg"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f))            ; tests don't run correctly in our environment
     (propagated-inputs
-     `(("python-six" ,python-six)
+     `(("python-cached-property" ,python-cached-property)
        ("python-cffi" ,python-cffi)
-       ("libgit2" ,libgit2)
-       ("python-tox" ,python-tox)))
+       ("libgit2" ,libgit2)))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/libgit2/pygit2")
@@ -3806,9 +3805,6 @@ color scales, and color space conversion easy.  It has support for:
 library, libgit2 implements Git plumbing.")
     ;; GPL2.0 only, with linking exception.
     (license license:gpl2)))
-
-(define-public python2-pygit2
-  (package-with-python2 python-pygit2))
 
 (define-public python-pyparsing
   (package
