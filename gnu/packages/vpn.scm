@@ -152,7 +152,7 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
                (for-each (lambda (script)
                            (substitute* script
                              (("^PATH=.*") "")
-                             (("(/usr|)/s?bin/") "")
+                             (("/usr/s?bin/") "")
                              (("\\[ +-x +([^]]+) +\\]" _ command)
                               (string-append "command -v >/dev/null 2>&1 "
                                              command))))
