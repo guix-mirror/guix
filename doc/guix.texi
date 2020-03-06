@@ -8022,6 +8022,25 @@ the second case, the resulting script contains a @code{(string-append
 @dots{})} expression to construct the file name @emph{at run time}.
 @end deffn
 
+@deffn {Scheme Syntax} with-parameters ((@var{parameter} @var{value}) @dots{}) @var{exp}
+This macro is similar to the @code{parameterize} form for
+dynamically-bound @dfn{parameters} (@pxref{Parameters,,, guile, GNU
+Guile Reference Manual}).  The key difference is that it takes effect
+when the file-like object returned by @var{exp} is lowered to a
+derivation or store item.
+
+A typical use of @code{with-parameters} is to force the system in effect
+for a given object:
+
+@lisp
+(with-parameters ((%current-system "i686-linux"))
+  coreutils)
+@end lisp
+
+The example above returns an object that corresponds to the i686 build
+of Coreutils, regardless of the current value of @code{%current-system}.
+@end deffn
+
 
 Of course, in addition to gexps embedded in ``host'' code, there are
 also modules containing build tools.  To make it clear that they are
