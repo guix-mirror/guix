@@ -4637,14 +4637,14 @@ original public code has been corrected.")
 (define-public r-modeltools
   (package
     (name "r-modeltools")
-    (version "0.2-22")
+    (version "0.2-23")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "modeltools" version))
        (sha256
         (base32
-         "1s9lmkac3rl0nknf4wizfhg7ryq7c8yvvyc4z619238br27hhsi5"))))
+         "1vqh69256h344sbj5affm0kmc77dakrxp6442xfdnfd0y5d8sgkb"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/modeltools")
     (synopsis "Tools and classes for statistical models")
