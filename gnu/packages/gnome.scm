@@ -9616,7 +9616,7 @@ for usage on small and big screens.")
 (define-public libgit2-glib
   (package
     (name "libgit2-glib")
-    (version "0.28.0.1")
+    (version "0.99.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -9624,12 +9624,11 @@ for usage on small and big screens.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0a0g7aw66rfgnqr4z7fgbk5zzcjq66m4rp8v4val3a212941h0g7"))))
+                "1pmrcnsa7qdda73c3dxf47733mwprmj5ljpw3acxbj6r8k27anp0"))))
     (build-system meson-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ;; For glib-mkenums
        ("gobject-introspection" ,gobject-introspection)
-       ("intltool" ,intltool)
        ("libssh2" ,libssh2)
        ("pkg-config" ,pkg-config)
        ("python-pygobject" ,python-pygobject)
