@@ -9873,3 +9873,58 @@ index files needed for Adwaita to be used outside of GNOME.")
 integrate seamlessly with the GNOME desktop.")
     (home-page "https://wiki.gnome.org/Apps/Polari")
     (license license:gpl2+)))
+
+(define-public gnome-boxes
+  (package
+    (name "gnome-boxes")
+    (version "3.35.91")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/gnome-boxes/"
+                           (version-major+minor version) "/"
+                           "gnome-boxes-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0l96spz6pc8q4l5p9a58cc0kgvdr7pbc89hy6ixn72k5pl3s7fxj"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:glib-or-gtk? #t
+       #:configure-flags (list "-Drdp=false"
+                               (string-append "-Dc_link_args=-Wl,-rpath="
+                                              (assoc-ref %outputs "out")
+                                              "/lib/gnome-boxes"))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")             ; for glib-compile-resources
+       ("gtk+:bin" ,gtk+ "bin")             ; for gtk-update-icon-cache
+       ("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
+       ("itstool" ,itstool)
+       ("intltool" ,intltool)
+       ("vala" ,vala)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libarchive" ,libarchive)
+       ("gtk" ,gtk+)
+       ("gtk-vnc" ,gtk-vnc)
+       ("libosinfo" ,libosinfo)
+       ("libsecret" ,libsecret)
+       ("libsoup" ,libsoup)
+       ("libusb" ,libusb)
+       ("libvirt" ,libvirt)
+       ("libvirt-glib" ,libvirt-glib)
+       ("libxml" ,libxml2)
+       ("spice-gtk" ,spice-gtk)
+       ("sparql-query" ,sparql-query)
+       ("vte" ,vte)
+       ("webkitgtk" ,webkitgtk)
+       ("tracker" ,tracker)
+       ("libgudev" ,libgudev)))
+    (home-page "https://wiki.gnome.org/Apps/Boxes")
+    (synopsis "View, access, and manage remote and virtual systems")
+    (description "GNOME Boxes is a simple application to view, access, and
+manage remote and virtual systems.")
+    (license (list
+              ;; For data/icons/empty-boxes.png.
+              license:cc-by2.0
+              ;; For all others.
+              license:lgpl2.0+))))
