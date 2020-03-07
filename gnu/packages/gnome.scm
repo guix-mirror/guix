@@ -5031,7 +5031,7 @@ which can read a large number of file formats.")
 (define-public rhythmbox
  (package
    (name "rhythmbox")
-   (version "3.4.3")
+   (version "3.4.4")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/rhythmbox/"
@@ -5039,7 +5039,7 @@ which can read a large number of file formats.")
                                 "rhythmbox-" version ".tar.xz"))
             (sha256
              (base32
-              "1yx3n7p9vmv23jsv98fxwq95n78awdxqm8idhyhxx2d6vk4w1hgx"))))
+              "142xcvw4l19jyr5i72nbnrihs953pvrrzcbijjn9dxmxszbv03pf"))))
    (build-system glib-or-gtk-build-system)
    (arguments
     `(#:configure-flags
