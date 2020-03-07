@@ -74,6 +74,7 @@
   #:use-module (gnu packages file)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages hurd)
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
@@ -202,6 +203,7 @@ and provides a \"top-like\" mode (monitoring).")
               (method url-fetch)
               (uri (string-append "mirror://gnu/shepherd/shepherd-"
                                   version ".tar.gz"))
+              (patches (search-patches "shepherd-hurd.patch"))
               (sha256
                (base32
                 "07j3vd0y8zab2nwbrwj0ahrfif1ldm5sjssn7m3dw4s307fsrfzx"))))
