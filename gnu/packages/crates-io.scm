@@ -12075,6 +12075,24 @@ implementation of LZMA and xz stream encoding/decoding.")
      "This package provides a collection of great and ubiqutitous macros.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-mach-o-sys-0.1
+  (package
+    (name "rust-mach-o-sys")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "mach-o-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "09l8p7nmzq37450x2h6nb7dzg1sk6dk36a5rkcrcy81zm21lb19y"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/fitzgen/mach_o_sys")
+    (synopsis "Bindings to the OSX mach-o system library")
+    (description "This package provides bindings to the OSX mach-o system
+library")
+  (license (list license:asl2.0 license:expat))))
+
 (define-public rust-make-cmd-0.1
   (package
     (name "rust-make-cmd")
