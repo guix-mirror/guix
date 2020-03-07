@@ -6367,16 +6367,13 @@ power of CXML is available when necessary.")
          (sha256
           (base32
            "0fw2q866yddbf23nk9pxphm9gsasx35vjyss82xzvndnjmzlqfl5"))))
-      ;; Inputs must be propagated or else packages depending on this won't have the necessary packages.
+      ;; Inputs must be propagated or else packages depending on this won't
+      ;; have the necessary packages.
       (propagated-inputs
        `(("alexandria" ,sbcl-alexandria)
          ("trivial-garbage" ,sbcl-trivial-garbage)
          ("babel" ,sbcl-babel)
          ("iolib" ,sbcl-iolib)
-         ("iolib+multiplex" ,(@@ (gnu packages lisp-xyz) sbcl-iolib+multiplex))
-         ("iolib+syscalls" ,(@@ (gnu packages lisp-xyz) sbcl-iolib+syscalls))
-         ("iolib+streams" ,(@@ (gnu packages lisp-xyz) sbcl-iolib+streams))
-         ("iolib+sockets" ,(@@ (gnu packages lisp-xyz) sbcl-iolib+sockets))
          ("ieee-floats" ,sbcl-ieee-floats)
          ("flexi-streams" ,sbcl-flexi-streams)
          ("cl-xmlspam" ,sbcl-cl-xmlspam)
