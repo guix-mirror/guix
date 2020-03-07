@@ -133,7 +133,7 @@ of locale data, including among others
 @itemize
 @item patterns for formatting and parsing,
 @item name translations,
-@item and various informations on languages, scripts and country-specific
+@item and various information on languages, scripts and country-specific
   conventions.
 @end itemize\n")
     (license unicode)))
