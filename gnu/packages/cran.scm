@@ -7283,6 +7283,8 @@ Processing of very large files is supported.")
       ("r-mosaicdata" ,r-mosaicdata)
       ("r-readr" ,r-readr)
       ("r-tidyr" ,r-tidyr)))
+   (native-inputs
+    `(("r-knitr" ,r-knitr)))
    (home-page "https://github.com/ProjectMOSAIC/mosaic/")
    (synopsis "Mathematics, statistics, and computation teaching utilities")
    (description
