@@ -9091,6 +9091,8 @@ number detection tools.")
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-s4vectors" ,r-s4vectors)
        ("r-zlibbioc" ,r-zlibbioc)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr))) ; for vignettes
     (inputs
      `(("zlib" ,zlib)))
     (home-page "https://github.com/al2na/methylKit")
