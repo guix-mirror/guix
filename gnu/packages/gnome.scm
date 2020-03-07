@@ -8734,15 +8734,14 @@ only know by its Unicode name or code point.")
 (define-public bluefish
   (package
     (name "bluefish")
-    (version "2.2.10")
+    (version "2.2.11")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.bennewitz.com/bluefish/stable/source/"
                            "bluefish-" version ".tar.gz"))
        (sha256
-        (base32
-         "1jw4has7lbp77lqmzvnnjmqcf0lacjfnka873lkkwdyrpzc4c1q4"))))
+        (base32 "0a7kf78q4cj2ap4igjks9kbmmr74brsrl4y2f9wbxpl0b0v2ck2x"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils)
@@ -8751,7 +8750,7 @@ only know by its Unicode name or code point.")
     (inputs
      `(("enchant" ,enchant)
        ("gtk+" ,gtk+)
-       ("python" ,python-2)
+       ("python" ,python-wrapper)
        ("xmllint" ,libxml2)
        ("gucharmap" ,gucharmap)))
     (home-page "http://bluefish.openoffice.nl")
