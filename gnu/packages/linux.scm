@@ -2031,6 +2031,7 @@ inadequately in modern network environments, and both should be deprecated.")
                               (string-append "mandir=/share/man")))))
       (native-inputs `(("gettext" ,gettext-minimal)
                        ("unzip" ,unzip)))
+      (supported-systems (delete "i586-gnu" %supported-systems))
       (synopsis "Tools for controlling the network subsystem in Linux")
       (description
        "This package includes the important tools for controlling the network

@@ -438,6 +438,7 @@ re-executing them as necessary.")
              (method url-fetch)
              (uri (string-append "mirror://gnu/inetutils/inetutils-"
                                  version ".tar.gz"))
+             (patches (search-patches "inetutils-hurd.patch"))
              (sha256
               (base32
                "05n65k4ixl85dc6rxc51b1b732gnmm8xnqi424dy9f1nz7ppb3xy"))))
@@ -449,13 +450,27 @@ re-executing them as necessary.")
                            ;; cross-compiling (by default it does not.)
                            ,@(if (%current-target-system)
                                  '("--with-path-procnet-dev=/proc/net/dev")
+                                 '())
+                           ,@(if (hurd-target?)
+                                 '("--disable-rcp"
+                                   "--disable-rexec"
+                                   "--disable-rexecd"
+                                   "--disable-rlogin"
+                                   "--disable-rlogind"
+                                   "--disable-rsh"
+                                   "--disable-rshd"
+                                   "--disable-uucpd"
+                                   "--disable-whois")
                                  '()))
        ;; On some systems, 'libls.sh' may fail with an error such as:
        ;; "Failed to tell switch -a apart from -A".
        #:parallel-tests? #f))
     (inputs `(("ncurses" ,ncurses)
               ("readline" ,readline)))        ;for 'ftp'
-    (native-inputs `(("netstat" ,net-tools))) ;for tests
+    (native-inputs (if (member (%current-system)
+                               (package-supported-systems net-tools))
+                       `(("netstat" ,net-tools))  ;for tests
+                       '()))
     (home-page "https://www.gnu.org/software/inetutils/")
     (synopsis "Basic networking utilities")
     (description
