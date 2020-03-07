@@ -306,7 +306,7 @@ This package is part of the KDE networking module.")
     (description "This program is developed for being used by beginner users,
 which don't know how to find information about their Linux system, and how the
 log files are in their computer.  But it is also designed for advanced users,
-who want to quickly see problems occuring on their server.
+who want to quickly see problems occurring on their server.
 
 This package is part of the KDE administration module.")
     (license license:gpl2+)))
