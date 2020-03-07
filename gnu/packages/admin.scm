@@ -910,8 +910,9 @@ connection alive.")
          ("file" ,file)))
 
       (inputs `(("inetutils" ,inetutils)
-                ("net-tools" ,net-tools)
-                ("iproute" ,iproute)
+                ,@(if (hurd-target?) '()
+                      `(("net-tools" ,net-tools)
+                        ("iproute" ,iproute)))
 
                 ;; isc-dhcp bundles a copy of BIND, which has proved vulnerable
                 ;; in the past.  Use a BIND-VERSION of our choosing instead.
