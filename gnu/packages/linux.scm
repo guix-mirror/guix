@@ -42,6 +42,7 @@
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2068,6 +2069,7 @@ configuration (iptunnel, ipmaddr).")
                                                    (assoc-ref %outputs "out"))
                                     "RAISE_SETFCAP=no")))
     (native-inputs `(("perl" ,perl)))
+    (supported-systems (delete "i586-gnu" %supported-systems))
     (home-page "https://sites.google.com/site/fullycapable/")
     (synopsis "Library for working with POSIX capabilities")
     (description

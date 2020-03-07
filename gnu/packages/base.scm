@@ -6,7 +6,7 @@
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2014, 2015 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016, 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2016, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2017, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -303,11 +303,13 @@ used to apply commands with arbitrarily long arguments.")
    (inputs `(("acl"  ,acl)                        ; TODO: add SELinux
              ("gmp"  ,gmp)                        ;bignums in 'expr', yay!
 
-             ;; Drop the dependency on libcap when cross-compiling since it's
-             ;; not quite cross-compilable.
-             ,@(if (%current-target-system)
-                   '()
-                   `(("libcap" ,libcap)))))  ;capability support is 'ls', etc.
+             ;; Do not use libcap when cross-compiling since it's not quite
+             ;; cross-compilable; and use it only for supported systems.
+             ,@(if (and (not (%current-target-system))
+                        (not (member (%current-system)
+                                     (package-supported-systems libcap))))
+             `(("libcap" ,libcap))  ;capability support in 'ls', etc.
+             '())))
    (native-inputs
     ;; Perl is needed to run tests in native builds, and to run the bundled
     ;; copy of help2man.  However, don't pass it when cross-compiling since
