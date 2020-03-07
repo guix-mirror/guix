@@ -41,6 +41,7 @@
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -108,6 +109,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
+  #:use-module (gnu packages hurd)
   #:use-module (gnu packages java)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages image)
@@ -7024,7 +7026,8 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
      ;; Required to build the tools (i.e. without ‘--enable-lib-only’).
      `(("c-ares" ,c-ares)
        ("jansson" ,jansson)             ; for HPACK tools
-       ("jemalloc" ,jemalloc)           ; fight nghttpd{,x} heap fragmentation
+       ,@(if (hurd-target?) '()
+             `(("jemalloc" ,jemalloc))) ; fight nghttpd{,x} heap fragmentation
        ("libev" ,libev)
        ("libxml2" ,libxml2)             ; for ‘nghttp -a’
        ("openssl" ,openssl)))
