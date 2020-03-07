@@ -171,6 +171,36 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
 
+(define-public python-tenacity
+  (package
+    (name "python-tenacity")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "tenacity" version))
+              (sha256
+               (base32
+                "1j36v9fcpmmd4985ix0cwnvcq71rkrn5cjiiv0id9vkl4kpxh0gv"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-sphinx" ,python-sphinx)
+       ("python-tornado" ,python-tornado)
+       ("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "pytest")
+                      #t)))))
+    (home-page "https://github.com/jd/tenacity")
+    (synopsis "Retrying library for python")
+    (description "Tenacity is a general-purpose python library to simplify the
+task of adding retry behavior to just about anything.")
+    (license license:asl2.0)))
+
 (define-public python-colorlog
   (package
     (name "python-colorlog")
