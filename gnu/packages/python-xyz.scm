@@ -171,6 +171,35 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
 
+(define-public python-colorlog
+  (package
+    (name "python-colorlog")
+    (version "4.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "colorlog" version))
+              (sha256
+               (base32
+                "1lpk8zmfv8vz090h5d0hzb4n39wgasxdd3x3bpn3v1x1n9dfzaih"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      ;; Extend PYTHONPATH so the built package will be found.
+                      (setenv "PYTHONPATH"
+                              (string-append (getcwd) "/build/lib:"
+                                             (getenv "PYTHONPATH")))
+                      (invoke "pytest" "-p" "no:logging")
+                      #t)))))
+    (home-page "https://github.com/borntyping/python-colorlog")
+    (synopsis "Log formatting with colors for python")
+    (description "The @code{colorlog.ColoredFormatter} is a formatter for use
+with Python's logging module that outputs records using terminal colors.")
+    (license license:expat)))
+
 (define-public python-pyprind
   (package
     (name "python-pyprind")
