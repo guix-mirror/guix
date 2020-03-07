@@ -171,6 +171,28 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
 
+(define-public python-gphoto2
+  (package
+    (name "python-gphoto2")
+    (version "2.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "gphoto2" version))
+              (sha256
+               (base32
+                "118zm25c8mlajfl0pzssnwz4b8lamj9dgymla9rn4nla7l244a0r"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libgphoto2" ,libgphoto2)))
+    (home-page "https://github.com/jim-easterbrook/python-gphoto2")
+    (synopsis "Python interface to libgphoto2")
+    (description "@code{python-gphoto2} is a comprehensive Python interface
+(or binding) to @code{libgphoto2}.  It is built using @code{SWIG} to
+automatically generate the interface code.")
+    (license license:gpl3+)))
+
 (define-public python-colour
   (package
     (name "python-colour")
