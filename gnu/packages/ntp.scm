@@ -92,9 +92,9 @@
    (description "NTP is a system designed to synchronize the clocks of
 computers over a network.")
    (license (l:x11-style
-             "http://www.eecis.udel.edu/~mills/ntp/html/copyright.html"
+             "https://www.eecis.udel.edu/~mills/ntp/html/copyright.html"
              "A non-copyleft free licence from the University of Delaware"))
-   (home-page "http://www.ntp.org")))
+   (home-page "https://www.ntp.org")))
 
 (define-public openntpd
   (package
