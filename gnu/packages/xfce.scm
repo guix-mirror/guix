@@ -389,8 +389,8 @@ applications menu, workspace switcher and more.")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
-                                  name "/" (version-major+minor version) "/"
-                                  name "-" version ".tar.bz2"))
+                                  "xfce4-clipman-plugin/" (version-major+minor version) "/"
+                                  "xfce4-clipman-plugin-" version ".tar.bz2"))
               (sha256
                (base32
                 "1liacff4wl5mpyf9dzdrfbwxzmhl95y5nsfc0jf5rgalzdgbik99"))))
