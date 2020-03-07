@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
@@ -149,13 +149,13 @@ sources.")
 (define-public python-sphinxcontrib-applehelp
   (package
     (name "python-sphinxcontrib-applehelp")
-    (version "1.0.1")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "sphinxcontrib-applehelp" version))
               (sha256
                (base32
-                "15rqmgphj4wqf4m5wnzxgmwxx5jwfzb0j0nb94ql0x5wnar0mapd"))))
+                "0n5wrn4l7x6gxvi1g7c6y72hkxgc223axz1jykipaxhfr1g76wm0"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ;XXX: circular dependency on Sphinx
