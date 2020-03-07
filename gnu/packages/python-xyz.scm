@@ -170,6 +170,27 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
 
+(define-public python-easygui
+  (package
+    (name "python-easygui")
+    (version "0.98.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "easygui" version))
+              (sha256
+               (base32
+                "1zmvmwgxyzvm83818skhn8b4wrci4kmnixaax8q3ia5cn7xrmj6v"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-tkinter" ,python "tk")))
+    (home-page "https://github.com/robertlugg/easygui")
+    (synopsis "GUI programming module for Python")
+    (description "EasyGUI is a module for very simple, very easy GUI
+programming in Python.  EasyGUI is different from other GUI generators in that
+EasyGUI is NOT event-driven.  Instead, all GUI interactions are invoked by
+simple function calls.")
+    (license license:bsd-3)))
+
 (define-public python-pymediainfo
   (package
     (name "python-pymediainfo")
