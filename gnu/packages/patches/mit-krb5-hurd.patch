@@ -1,0 +1,165 @@
+Avoid using MAXPATHLEN and MAXHOSTLEN on the Hurd.
+
+Taken from https://salsa.debian.org/debian/krb5/-/blob/master/debian/patches/debian-local/0001-Debian-HURD-compatibility.patch
+
+From: Sam Hartman <hartmans@debian.org>
+Date: Mon, 26 Dec 2011 18:05:13 -0500
+Subject: Debian: HURD compatibility
+
+HURD has no MAXPATHLEN or MAXHOSTLEN.
+
+Patch-Category: debian-local
+---
+ src/clients/ksu/ksu.h                       | 4 ++++
+ src/include/k5-int.h                        | 3 +++
+ src/kadmin/ktutil/ktutil_funcs.c            | 4 ++++
+ src/kprop/kprop_util.c                      | 4 ++++
+ src/lib/gssapi/spnego/spnego_mech.c         | 3 +++
+ src/lib/krb5/os/sn2princ.c                  | 4 ++++
+ src/plugins/kdb/db2/libdb2/include/db-int.h | 4 ++++
+ src/tests/resolve/resolve.c                 | 4 ++++
+ 8 files changed, 30 insertions(+)
+
+$ diff -u krb5-1.18/src/util/ss/help.c.orig krb5-1.18/src/util/ss/help.c
+--- krb5-1.18/src/util/ss/help.c.orig	2020-03-07 23:25:52.712418587 +0100
++++ krb5-1.18/src/util/ss/help.c	2020-03-07 23:26:25.764941122 +0100
+@@ -6,6 +6,9 @@
+  */
+ 
+ #include <sys/param.h>
++#ifndef MAXPATHLEN
++# define MAXPATHLEN 4096
++#endif
+ #include <sys/types.h>
+ #include <errno.h>
+ #include <sys/file.h>
+$ diff -u krb5-1.18/src/lib/krb5/os/hostrealm.c.orig krb5-1.18/src/lib/krb5/os/hostrealm.c
+--- krb5-1.18/src/lib/krb5/os/hostrealm.c.orig	2020-03-07 23:33:19.931420994 +0100
++++ krb5-1.18/src/lib/krb5/os/hostrealm.c	2020-03-07 23:33:58.628026424 +0100
+@@ -42,6 +42,10 @@
+ #endif
+ #endif
+ 
++#ifndef MAXHOSTNAMELEN
++#define MAXHOSTNAMELEN 256
++#endif
++
+ struct hostrealm_module_handle {
+     struct krb5_hostrealm_vtable_st vt;
+     krb5_hostrealm_moddata data;
+diff --git a/src/clients/ksu/ksu.h b/src/clients/ksu/ksu.h
+index 3bf0bd4..f680b33 100644
+--- a/src/clients/ksu/ksu.h
++++ b/src/clients/ksu/ksu.h
+@@ -56,6 +56,10 @@
+ #define MAX_CMD 2048 /* this is temp, should use realloc instead,
+                         as done in most of the code */
+ 
++#ifndef MAXPATHLEN
++# define MAXPATHLEN 4096
++#endif
++
+ 
+ extern int optind;
+ extern char * optarg;
+diff --git a/src/include/k5-int.h b/src/include/k5-int.h
+index 6522422..e4f1678 100644
+--- a/src/include/k5-int.h
++++ b/src/include/k5-int.h
+@@ -589,6 +589,9 @@ extern char *strdup (const char *);
+ #ifdef HAVE_SYS_PARAM_H
+ #include <sys/param.h>                  /* MAXPATHLEN */
+ #endif
++#ifndef MAXPATHLEN
++# define MAXPATHLEN 4096
++#endif
+ 
+ #ifdef HAVE_SYS_FILE_H
+ #include <sys/file.h>                   /* prototypes for file-related
+diff --git a/src/kadmin/ktutil/ktutil_funcs.c b/src/kadmin/ktutil/ktutil_funcs.c
+index 6d119a2..fb7fa22 100644
+--- a/src/kadmin/ktutil/ktutil_funcs.c
++++ b/src/kadmin/ktutil/ktutil_funcs.c
+@@ -34,6 +34,10 @@
+ #include <string.h>
+ #include <ctype.h>
+ 
++#ifndef MAXPATHLEN
++# define MAXPATHLEN 4096
++#endif
++
+ /*
+  * Free a kt_list
+  */
+diff --git a/src/kprop/kprop_util.c b/src/kprop/kprop_util.c
+index c32d174..d72ab18 100644
+--- a/src/kprop/kprop_util.c
++++ b/src/kprop/kprop_util.c
+@@ -32,6 +32,10 @@
+ #include <sys/types.h>
+ #include <sys/socket.h>
+ 
++#ifndef MAXHOSTNAMELEN
++#define MAXHOSTNAMELEN 256
++#endif
++
+ /*
+  * Convert an IPv4 or IPv6 socket address to a newly allocated krb5_address.
+  * There is similar code elsewhere in the tree, so this should possibly become
+diff --git a/src/lib/gssapi/spnego/spnego_mech.c b/src/lib/gssapi/spnego/spnego_mech.c
+index 9d6027c..585d8a6 100644
+--- a/src/lib/gssapi/spnego/spnego_mech.c
++++ b/src/lib/gssapi/spnego/spnego_mech.c
+@@ -65,6 +65,9 @@
+ #include	"gssapiP_spnego.h"
+ #include	<gssapi_err_generic.h>
+ 
++#ifndef MAXHOSTNAMELEN
++#define MAXHOSTNAMELEN 256
++#endif
+ 
+ #undef g_token_size
+ #undef g_verify_token_header
+diff --git a/src/lib/krb5/os/sn2princ.c b/src/lib/krb5/os/sn2princ.c
+index 5932fd9..187daa8 100644
+--- a/src/lib/krb5/os/sn2princ.c
++++ b/src/lib/krb5/os/sn2princ.c
+@@ -126,6 +126,10 @@ find_trailer(const char *hostname)
+     return p;
+ }
+ 
++#ifndef MAXHOSTNAMELEN
++# define MAXHOSTNAMELEN 256
++#endif
++
+ krb5_error_code KRB5_CALLCONV
+ krb5_sname_to_principal(krb5_context context, const char *hostname,
+                         const char *sname, krb5_int32 type,
+diff --git a/src/plugins/kdb/db2/libdb2/include/db-int.h b/src/plugins/kdb/db2/libdb2/include/db-int.h
+index 7e981d4..d83b3b6 100644
+--- a/src/plugins/kdb/db2/libdb2/include/db-int.h
++++ b/src/plugins/kdb/db2/libdb2/include/db-int.h
+@@ -280,4 +280,8 @@ void	 __dbpanic __P((DB *dbp));
+ #ifndef O_BINARY
+ #define O_BINARY	0		/* Needed for Win32 compiles */
+ #endif
++
++#ifndef MAXPATHLEN
++# define MAXPATHLEN 4096
++#endif
+ #endif /* _DB_INT_H_ */
+diff --git a/src/tests/resolve/resolve.c b/src/tests/resolve/resolve.c
+index 7339d21..38f7253 100644
+--- a/src/tests/resolve/resolve.c
++++ b/src/tests/resolve/resolve.c
+@@ -73,6 +73,10 @@ char *strchr();
+ #include <netinet/in.h>
+ #include <netdb.h>
+ 
++#ifndef MAXHOSTNAMELEN
++# define MAXHOSTNAMELEN 256
++#endif
++
+ int
+ main(argc, argv)
+     int argc;

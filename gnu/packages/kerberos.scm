@@ -9,6 +9,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +35,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages libidn)
+  #:use-module (gnu packages hurd)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages compression)
@@ -60,7 +62,8 @@
                     (string-append "https://kerberos.org/dist/krb5/"
                                    (version-major+minor version)
                                    "/krb5-" version ".tar.gz")))
-              (patches (search-patches "mit-krb5-qualify-short-hostnames.patch"))
+              (patches (search-patches "mit-krb5-qualify-short-hostnames.patch"
+                                       "mit-krb5-hurd.patch"))
               (sha256
                (base32
                 "121c5xsy3x0i4wdkrpw62yhvji6virbh6n30ypazkp0isws3k4bk"))))
