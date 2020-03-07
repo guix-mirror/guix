@@ -129,6 +129,7 @@
   #:use-module (gnu packages openstack)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-check)
@@ -169,6 +170,30 @@
   #:use-module (guix build-system trivial)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
+
+(define-public python-rawkit
+  (package
+    (name "python-rawkit")
+    (version "0.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "rawkit" version))
+              (sha256
+               (base32
+                "0vrhrpr70i61y5q5ysk341x1539ff1q1k82g59zq69lv16s0f76s"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-mock" ,python-mock)))
+    (inputs
+     `(("libraw" ,libraw)))
+    (home-page "https://rawkit.readthedocs.io")
+    (synopsis "Ctypes-based LibRaw binding for Python")
+    (description "The rawkit package provides two modules:  rawkit and libraw.
+The rawkit module provides a high-level Pythonic interface for developing raw
+photos, while the libraw module provides a CTypes based interface for
+interacting with the low-level LibRaw C APIs.")
+    (license license:expat)))
 
 (define-public python-easygui
   (package
