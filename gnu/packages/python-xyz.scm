@@ -171,6 +171,26 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
 
+(define-public python-pyprind
+  (package
+    (name "python-pyprind")
+    (version "2.11.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "PyPrind" version))
+              (sha256
+               (base32
+                "0xg6m5hr33h9bdlrr42kc58jm2m87a9zsagy7n2m4n407d2snv64"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-psutil" ,python-psutil)))
+    (home-page "https://github.com/rasbt/pyprind")
+    (synopsis "Python Progress Bar and Percent Indicator Utility")
+    (description "The PyPrind (Python Progress Indicator) module provides a
+progress bar and a percentage indicator object that let you track the progress
+of a loop structure or other iterative computation.")
+    (license license:bsd-3)))
+
 (define-public python-gphoto2
   (package
     (name "python-gphoto2")
