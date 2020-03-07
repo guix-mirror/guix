@@ -19978,7 +19978,7 @@ on a continuous-time birth-death process.")
     (home-page "http://christophergandrud.github.io/d3Network/")
     (synopsis "Create D3 JavaScript network, tree, dendrogram, and Sankey graphs")
     (description
-     "This packages is intended to make it easy to create D3 JavaScript
+     "This package is intended to make it easy to create D3 JavaScript
 network, tree, dendrogram, and Sankey graphs from R using data frames.")
     (license license:gpl3+)))
 
