@@ -11,6 +11,7 @@
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019, 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -10137,7 +10138,8 @@ that is part of the SWT Tools project.")
                                            "linux32")
                                           ((or "x86_64-linux" "aarch64-linux"
                                                "mips64el-linux")
-                                           "linux64")))))
+                                           "linux64")
+                                          (_ "unknown-kernel")))))
                (install-file "src/main/native-package/src/libjansi.so" dir))
              #t))
          (add-after 'install 'install-native
