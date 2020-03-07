@@ -169,14 +169,12 @@ different programming languages.")
     (name "fmt")
     (version "6.1.2")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/fmtlib/fmt")
-                    (commit version)))
-              (file-name (git-file-name name version))
+              (method url-fetch)
+              (uri (string-append "https://github.com/fmtlib/fmt/releases/download/"
+                                  version "/fmt-" version ".zip"))
               (sha256
                (base32
-                "1ngb2fd7c2jnxi3x5kjgxmpixmyc737f77vibij43dl77ybiaihi"))))
+                "1s1hxaby5byb07rgmrk4a0q11fxhz7b42khch7sp2qx974y0yrb3"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
