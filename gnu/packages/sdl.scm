@@ -345,7 +345,7 @@ SDL.")
          "sdl-pango-api_additions.patch"
          "sdl-pango-blit_overflow.patch"
          "sdl-pango-fillrect_crash.patch"
-         "sdl-pango-fix-explicit-SDLPango_CopyFTBitmapToSurface.patch"
+         "sdl-pango-fix-explicit-SDLPango_CopyFTBitmapTo.patch"
          "sdl-pango-matrix_declarations.patch"
          "sdl-pango-sans-serif.patch"))))
     (build-system gnu-build-system)
