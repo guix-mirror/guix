@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Mark H Weaver <mhw@netris.org>
@@ -2869,6 +2869,26 @@ to the in-kernel OOM killer.")
 device nodes from /dev/, handles hotplug events and loads drivers at boot
 time.")
     (license license:gpl2+)))
+
+;; TODO: Merge with eudev on the next rebuild cycle.
+(define-public eudev/btrfs-fix
+  (package/inherit
+   eudev
+   (version (string-append (package-version eudev) "-1"))
+   (arguments
+    (substitute-keyword-arguments (package-arguments eudev)
+      ((#:phases phases '%standard-phases)
+       `(modify-phases ,phases
+          (add-before 'configure 'patch-bindir-in-btrfs-rules
+            (lambda* (#:key outputs #:allow-other-keys)
+              ;; The "@bindir@" substitution incorrectly expands to a literal
+              ;; "${exec_prefix}" (see <https://bugs.gnu.org/39926>).  Work
+              ;; around it.
+              (let ((out (assoc-ref outputs "out")))
+                (substitute* "rules/64-btrfs.rules.in"
+                  (("@bindir@")
+                   (string-append out "/bin")))
+                #t)))))))))
 
 (define-public eudev-with-hwdb
   (deprecated-package "eudev-with-hwdb" eudev))
