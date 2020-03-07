@@ -9360,6 +9360,8 @@ analysis.")
        ("r-ggplot2" ,r-ggplot2)
        ("r-lattice" ,r-lattice)
        ("r-limma" ,r-limma)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr))) ; for vignettes
     (home-page "https://bioconductor.org/packages/release/bioc/html/vsn.html")
     (synopsis "Variance stabilization and calibration for microarray data")
     (description
