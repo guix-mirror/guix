@@ -5034,9 +5034,9 @@ which can read a large number of file formats.")
    (version "3.4.3")
    (source (origin
             (method url-fetch)
-            (uri (string-append "mirror://gnome/sources/" name "/"
+            (uri (string-append "mirror://gnome/sources/rhythmbox/"
                                 (version-major+minor version) "/"
-                                name "-" version ".tar.xz"))
+                                "rhythmbox-" version ".tar.xz"))
             (sha256
              (base32
               "1yx3n7p9vmv23jsv98fxwq95n78awdxqm8idhyhxx2d6vk4w1hgx"))))
