@@ -300,13 +300,13 @@ commands into documents, helping you to keep your command examples up to date.")
 (define-public python-sphinxcontrib-qthelp
   (package
     (name "python-sphinxcontrib-qthelp")
-    (version "1.0.2")
+    (version "1.0.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "sphinxcontrib-qthelp" version))
               (sha256
                (base32
-                "0vs09m6kf5vhiivpi5s5pks59iq0lqlsbkdycpqlysg53bhmqikr"))))
+                "0wjsp96d262shzkx7pb7pra7mmf0j8c5rz56i6x0vdsqw1z7ccsc"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ;XXX: circular dependency on Sphinx
