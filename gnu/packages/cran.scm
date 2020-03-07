@@ -15690,13 +15690,13 @@ function and interfaces to external frameworks.")
 (define-public r-covr
   (package
     (name "r-covr")
-    (version "3.4.0")
+    (version "3.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "covr" version))
        (sha256
-        (base32 "0p44kr6yz5sqza5zvq6divqglzkpv0if9pjpjmzhmdaaddjrqzg5"))))
+        (base32 "1pvr95h7jg9hqq1qq1cccy323pkxldrwafl08151cc410499k4fb"))))
     (properties `((upstream-name . "covr")))
     (build-system r-build-system)
     (propagated-inputs
@@ -15707,6 +15707,8 @@ function and interfaces to external frameworks.")
        ("r-rex" ,r-rex)
        ("r-withr" ,r-withr)
        ("r-yaml" ,r-yaml)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr))) ; for vignettes
     (home-page "https://github.com/r-lib/covr")
     (synopsis "Test coverage for R packages")
     (description
