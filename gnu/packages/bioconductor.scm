@@ -5943,14 +5943,14 @@ delete entire rows with missing data.")
 (define-public r-depecher
   (package
     (name "r-depecher")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DepecheR" version))
        (sha256
         (base32
-         "08ja6ayvbax9m3x9w3xzi72z97miiha2nbsild1gp77n6sgn5i35"))))
+         "199j2kw0xnw7y4v1gakm2jgyc7zzlj8xh0570f2yjq55gp1kggbm"))))
     (properties `((upstream-name . "DepecheR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5970,6 +5970,8 @@ delete entire rows with missing data.")
        ("r-reshape2" ,r-reshape2)
        ("r-robustbase" ,r-robustbase)
        ("r-viridis" ,r-viridis)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/DepecheR/")
     (synopsis "Identify traits of clusters in high-dimensional entities")
     (description
