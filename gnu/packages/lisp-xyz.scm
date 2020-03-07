@@ -5357,10 +5357,10 @@ and @code{kqueue(2)}), a pathname library and file-system utilities.")
              #t)))))
     (synopsis "CFFI Groveller for IOLib, a Common Lisp I/O library")))
 
-(define-public sbcl-iolib
+(define sbcl-iolib+syscalls
   (package
     (inherit sbcl-iolib.asdf)
-    (name "sbcl-iolib")
+    (name "sbcl-iolib+syscalls")
     (inputs
      `(("iolib.asdf" ,sbcl-iolib.asdf)
        ("iolib.conf" ,sbcl-iolib.conf)
@@ -5375,7 +5375,7 @@ and @code{kqueue(2)}), a pathname library and file-system utilities.")
      `(("fiveam" ,sbcl-fiveam)))
     (arguments
      '(#:asd-file "iolib.asd"
-       #:asd-system-name "iolib"
+       #:asd-system-name "iolib/syscalls"
        #:test-asd-file "iolib.tests.asd"
        #:phases
        (modify-phases %standard-phases
@@ -5392,40 +5392,57 @@ and @code{kqueue(2)}), a pathname library and file-system utilities.")
                 "")))))))
     (synopsis "Common Lisp I/O library")))
 
-(define-public cl-iolib
-  (sbcl-package->cl-source-package sbcl-iolib))
-
 (define sbcl-iolib+multiplex
   (package
-    (inherit sbcl-iolib)
+    (inherit sbcl-iolib+syscalls)
     (name "sbcl-iolib+multiplex")
+    (inputs
+     `(("iolib+syscalls" ,sbcl-iolib+syscalls)
+       ,@(package-inputs sbcl-iolib+syscalls)))
     (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-iolib)
+     (substitute-keyword-arguments (package-arguments sbcl-iolib+syscalls)
        ((#:asd-system-name _) "iolib/multiplex")))))
 
-(define sbcl-iolib+syscalls
-  (package
-    (inherit sbcl-iolib)
-    (name "sbcl-iolib+syscalls")
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-iolib)
-       ((#:asd-system-name _) "iolib/syscalls")))))
+
 
 (define sbcl-iolib+streams
   (package
-    (inherit sbcl-iolib)
+    (inherit sbcl-iolib+syscalls)
     (name "sbcl-iolib+streams")
+    (inputs
+     `(("iolib+multiplex" ,sbcl-iolib+multiplex)
+       ,@(package-inputs sbcl-iolib+syscalls)))
     (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-iolib)
+     (substitute-keyword-arguments (package-arguments sbcl-iolib+syscalls)
        ((#:asd-system-name _) "iolib/streams")))))
 
 (define sbcl-iolib+sockets
   (package
-    (inherit sbcl-iolib)
+    (inherit sbcl-iolib+syscalls)
     (name "sbcl-iolib+sockets")
+    (inputs
+     `(("iolib+syscalls" ,sbcl-iolib+syscalls)
+       ("iolib+streams" ,sbcl-iolib+streams)
+       ,@(package-inputs sbcl-iolib+syscalls)))
     (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-iolib)
+     (substitute-keyword-arguments (package-arguments sbcl-iolib+syscalls)
        ((#:asd-system-name _) "iolib/sockets")))))
+
+(define-public sbcl-iolib
+  (package
+    (inherit sbcl-iolib+syscalls)
+    (name "sbcl-iolib")
+    (inputs
+     `(("iolib+multiplex" ,sbcl-iolib+multiplex)
+       ("iolib+streams" ,sbcl-iolib+streams)
+       ("iolib+sockets" ,sbcl-iolib+sockets)
+       ,@(package-inputs sbcl-iolib+syscalls)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-iolib+syscalls)
+       ((#:asd-system-name _) "iolib")))))
+
+(define-public cl-iolib
+  (sbcl-package->cl-source-package sbcl-iolib))
 
 (define-public sbcl-ieee-floats
   (let ((commit "566b51a005e81ff618554b9b2f0b795d3b29398d")
