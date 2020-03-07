@@ -171,6 +171,27 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
 
+(define-public python-d2to1
+  (package
+    (name "python-d2to1")
+    (version "0.2.12.post1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "d2to1" version))
+              (sha256
+               (base32
+                "09fq7pq1z8d006xh5z75rm2lk61v6yn2xhy53z4gsgibhqb2vvs9"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/embray/d2to1")
+    (synopsis "Allows for distutils2-like setup.cfg files as package metadata
+in python")
+    (description "The python package d2to1 (the d is for distutils) allows
+using distutils2-like setup.cfg files for a package's metadata with a
+distribute/setuptools setup.py script.")
+    (license license:bsd-2)))
+
 (define-public python-rawkit
   (package
     (name "python-rawkit")
