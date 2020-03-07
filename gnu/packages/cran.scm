@@ -4814,6 +4814,8 @@ functions to enforce symmetric scales or add tags to facetted plots.")
        ("r-seriation" ,r-seriation)
        ("r-viridis" ,r-viridis)
        ("r-webshot" ,r-webshot)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/package=heatmaply")
     (synopsis "Interactive cluster heat maps using plotly")
     (description
