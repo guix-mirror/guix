@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,8 +26,10 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages hurd)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages base))
 
@@ -39,6 +42,7 @@
               (uri (string-append
                     "mirror://kernel.org/software/utils/pciutils/pciutils-"
                     version ".tar.xz"))
+              (patches (search-patches "pciutils-hurd-configure.patch"))
               (sha256
                (base32
                 "0mb0f2phdcmp4kfiqsszn2k6nlln0w160ffzrjjv4bbfjwrgfzzn"))))
@@ -100,7 +104,11 @@
      `(("which" ,which)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("kmod" ,kmod)
+     `(,@(if (member (or (%current-target-system)
+                         (%current-system))
+                     (package-supported-systems kmod))
+             `(("kmod" ,kmod))
+             '())
        ("zlib" ,zlib)))
     (home-page "https://mj.ucw.cz/sw/pciutils/")
     (synopsis "Programs for inspecting and manipulating PCI devices")

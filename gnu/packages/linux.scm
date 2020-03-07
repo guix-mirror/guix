@@ -2784,6 +2784,7 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
                          '("insmod" "rmmod" "lsmod" "modprobe"
                            "modinfo" "depmod"))
                #t))))))
+    (supported-systems (delete "i586-gnu" %supported-systems))
     (home-page "https://www.kernel.org/")
     (synopsis "Kernel module tools")
     (description "Kmod is a set of tools to handle common tasks with Linux
