@@ -171,6 +171,25 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
 
+(define-public python-colour
+  (package
+    (name "python-colour")
+    (version "0.1.5")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "colour" version))
+              (sha256
+               (base32
+                "1visbisfini5j14bdzgs95yssw6sm4pfzyq1n3lfvbyjxw7i485g"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-d2to1" ,python-d2to1)))
+    (home-page "https://github.com/vaab/colour")
+    (synopsis "Convert and manipulate various color representations")
+    (description "Pythonic way to manipulate color representations (HSL, RVB,
+web, X11, ...).")
+    (license license:expat)))
+
 (define-public python-d2to1
   (package
     (name "python-d2to1")
