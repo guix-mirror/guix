@@ -195,13 +195,13 @@ to code blocks.")
 (define-public python-sphinxcontrib-devhelp
   (package
     (name "python-sphinxcontrib-devhelp")
-    (version "1.0.1")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "sphinxcontrib-devhelp" version))
               (sha256
                (base32
-                "0d2a57kqxl72i55rns0ly1i044y2x234b9sdi89ajc3kjdvv0r3c"))))
+                "1r1qngsbjqbg4rj93kpj44qqy7n4x5khldkr0c3ffhlnggx1lzzz"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ;XXX: circular dependency on Sphinx
