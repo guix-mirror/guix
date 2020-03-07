@@ -7598,13 +7598,13 @@ for the reconstruction of gene regulatory networks.")
 (define-public r-pscl
   (package
     (name "r-pscl")
-    (version "1.5.2")
+    (version "1.5.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pscl" version))
        (sha256
-        (base32 "1phf3awsfr4ncqfqzin5m1pz0g7y1zhbcm2sz7358ssw914fd7rc"))))
+        (base32 "0vzf5wazs92bhqhqd66v3vwmbfmnh67gb2466g1xxawim649nk05"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mass" ,r-mass)))
