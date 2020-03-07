@@ -1,0 +1,36 @@
+Avoid usage of PATH_MAX.
+
+Submitted to bug-less@gnu.org.
+
+From ef652341ed8b2c14ac40312ccd4ed329cb69fd0c Mon Sep 17 00:00:00 2001
+From: Jan Nieuwenhuizen <janneke@gnu.org>
+Date: Sat, 7 Mar 2020 14:57:19 +0100
+Subject: [PATCH] Avoid usage of PATH_MAX.
+
+* filename.c (lrealpath): Have realpath allocate the buffer.  Fixes
+compilation on the Hurd and avoids possible buffer overflow on other
+systems.
+---
+ filename.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/filename.c b/filename.c
+index e420837..faa71b0 100644
+--- a/filename.c
++++ b/filename.c
+@@ -795,9 +795,9 @@ lrealpath(path)
+ 	char *path;
+ {
+ #if HAVE_REALPATH
+-	char rpath[PATH_MAX];
+-	if (realpath(path, rpath) != NULL)
+-		return (save(rpath));
++	char *rpath = NULL;
++	if ((rpath = realpath(path, rpath)) != NULL)
++		return (rpath);
+ #endif
+ 	return (save(path));
+ }
+-- 
+2.24.0
+

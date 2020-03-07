@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,6 +20,7 @@
 
 (define-module (gnu packages less)
   #:use-module (guix licenses)
+  #:use-module (gnu packages)
   #:use-module (gnu packages ncurses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -35,6 +37,7 @@
                                  version ".tar.gz")
                   (string-append "http://www.greenwoodsoftware.com/less/less-"
                                  version ".tar.gz")))
+       (patches (search-patches "less-hurd-path-max.patch"))
        (sha256
         (base32 "0ggyjl3yzn7c450zk1rixi9ls6asdhgqynhk34zsd0ckhmsm45pz"))))
     (build-system gnu-build-system)
