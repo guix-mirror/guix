@@ -14,6 +14,7 @@
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,6 +51,7 @@
   #:use-module (gnu packages dns)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages hurd)
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libidn)
@@ -223,7 +225,8 @@ living in the same process.")
                "debug"
                "doc"))                            ;4.1 MiB of man pages
     (native-inputs
-     `(("net-tools" ,net-tools)
+     `(,@(if (hurd-target?) '()
+             `(("net-tools" ,net-tools)))
        ("pkg-config" ,pkg-config)
        ("which" ,which)
        ("datefudge" ,datefudge)                   ;tests rely on 'datefudge'
