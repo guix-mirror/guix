@@ -3178,6 +3178,8 @@ for certain use cases.")
      `(("r-ggplot2" ,r-ggplot2)
        ("r-rcpp" ,r-rcpp)
        ("r-scales" ,r-scales)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr))) ; for vignettes
     (home-page "http://github.com/slowkow/ggrepel")
     (synopsis "Repulsive text and label geometries for ggplot2")
     (description
