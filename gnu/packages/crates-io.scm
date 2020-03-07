@@ -10004,8 +10004,8 @@ checking.")
      `(#:skip-build? #t     ; Only builds on Windows.
        #:cargo-inputs (("rust-winapi" ,rust-winapi-0.3))))
     (home-page "https://github.com/blackbeam/named_pipe")
-    (synopsis "Wrapper for overlapped (asyncronous) IO of Windows's named pipes")
-    (description "This package provides a wrapper for overlapped (asyncronous)
+    (synopsis "Wrapper for overlapped (asynchronous) IO of Windows's named pipes")
+    (description "This package provides a wrapper for overlapped (asynchronous)
 IO of Windows's named pipes.")
     (license (list license:expat license:asl2.0))))
 
