@@ -1424,6 +1424,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/scheme48-tests.patch			\
   %D%/packages/patches/scotch-build-parallelism.patch		\
   %D%/packages/patches/scotch-integer-declarations.patch	\
+  %D%/packages/patches/screen-hurd-path-max.patch		\
   %D%/packages/patches/sdl-libx11-1.6.patch			\
   %D%/packages/patches/sdl2-mesa-compat.patch			\
   %D%/packages/patches/seahorse-gkr-use-0-on-empty-flags.patch	\
