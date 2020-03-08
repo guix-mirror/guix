@@ -909,8 +909,29 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
              (replace 'disable-amd64-avx-test
                (lambda _
                  (substitute* "src/test/ui/run-pass/issues/issue-44056.rs"
-	          (("only-x86_64") "ignore-test"))
+                  (("only-x86_64") "ignore-test"))
                   #t)))))))))
+
+(define (patch-command-exec-tests-phase test-path)
+  "The command-exec.rs test moves around between releases.  We need to apply
+a Guix-specific patch to it for each release.  This function generates the phase
+that applies said patch, parametrized by the test-path.  This is done this way
+because the phase is more complex than the equivalents for other tests that
+move around."
+ `(lambda* (#:key inputs #:allow-other-keys)
+    (let ((coreutils (assoc-ref inputs "coreutils")))
+      (substitute* ,test-path
+        ;; This test suite includes some tests that the stdlib's
+        ;; `Command` execution properly handles situations where
+        ;; the environment or PATH variable are empty, but this
+        ;; fails since we don't have `echo` available in the usual
+        ;; Linux directories.
+        ;; NB: the leading space is so we don't fail a tidy check
+        ;; for trailing whitespace, and the newlines are to ensure
+        ;; we don't exceed the 100 chars tidy check as well
+        ((" Command::new\\(\"echo\"\\)")
+         (string-append "\nCommand::new(\"" coreutils "/bin/echo\")\n")))
+      #t)))
 
 (define-public rust-1.31
   (let ((base-rust
@@ -923,26 +944,14 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
          ((#:phases phases)
           `(modify-phases ,phases
              (add-after 'patch-tests 'patch-command-exec-tests
-               (lambda* (#:key inputs #:allow-other-keys)
-                 (let ((coreutils (assoc-ref inputs "coreutils")))
-                   (substitute* "src/test/run-pass/command-exec.rs"
-                     ;; This test suite includes some tests that the stdlib's
-                     ;; `Command` execution properly handles situations where
-                     ;; the environment or PATH variable are empty, but this
-                     ;; fails since we don't have `echo` available in the usual
-                     ;; Linux directories.
-                     ;; NB: the leading space is so we don't fail a tidy check
-                     ;; for trailing whitespace, and the newlines are to ensure
-                     ;; we don't exceed the 100 chars tidy check as well
-                     ((" Command::new\\(\"echo\"\\)")
-                      (string-append "\nCommand::new(\"" coreutils "/bin/echo\")\n")))
-                   #t)))
-	      ;; The test has been moved elsewhere.
-	      (replace 'disable-amd64-avx-test
-	        (lambda _
-	          (substitute* "src/test/ui/issues/issue-44056.rs"
-                   (("only-x86_64") "ignore-test"))
-                  #t))
+               ,(patch-command-exec-tests-phase
+                  "src/test/run-pass/command-exec.rs"))
+             ;; The test has been moved elsewhere.
+             (replace 'disable-amd64-avx-test
+               (lambda _
+                 (substitute* "src/test/ui/issues/issue-44056.rs"
+                  (("only-x86_64") "ignore-test"))
+                 #t))
              (add-after 'patch-tests 'patch-process-docs-rev-cmd
                (lambda* _
                  ;; Disable some doc tests which depend on the "rev" command
@@ -1084,7 +1093,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
           `(modify-phases ,phases
              (delete 'patch-process-docs-rev-cmd))))))))
 
-(define-public rust
+(define-public rust-1.37
   (let ((base-rust
          (rust-bootstrapped-package rust-1.36 "1.37.0"
            "1hrqprybhkhs6d9b5pjskfnc5z9v2l2gync7nb39qjb5s0h703hj")))
@@ -1100,3 +1109,25 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                    (mkdir-p cargo-home)
                    (setenv "CARGO_HOME" cargo-home)
                    #t))))))))))
+
+(define-public rust-1.38
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.37 "1.38.0"
+           "101dlpsfkq67p0hbwx4acqq6n90dj4bbprndizpgh1kigk566hk4")))
+    (package
+      (inherit base-rust)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (replace 'patch-command-exec-tests
+               ,(patch-command-exec-tests-phase
+                  "src/test/ui/command-exec.rs"))
+             (add-after 'patch-tests 'patch-command-uid-gid-test
+               (lambda _
+                 (substitute* "src/test/ui/command-uid-gid.rs"
+                   (("/bin/sh") (which "sh"))
+                   (("ignore-sgx") "ignore-sgx\n// ignore-tidy-linelength"))
+                 #t)))))))))
+
+(define-public rust rust-1.37)
