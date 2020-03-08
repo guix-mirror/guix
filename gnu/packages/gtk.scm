@@ -18,7 +18,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Meiyo Peng <meiyo@riseup.net>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
@@ -2021,3 +2021,79 @@ popovers.")
 library for drawing.")
     (home-page "https://wiki.gnome.org/GooCanvas")
     (license license:lgpl2.0)))
+
+(define-public gtksheet
+  (package
+    (name "gtksheet")
+    (version "4.3.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fpaquet/gtksheet")
+             (commit (string-append "V" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "10qzmdkjkkvkcadxn019cbyhwaahxcfv1apv54lc711bqvh63v8r"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list "--enable-glade"
+                               "--enable-introspection")
+       #:phases
+       (modify-phases %standard-phases
+         ;; The "configure" script is present, but otherwise the project is
+         ;; not bootstrapped properly. Delete configure so the bootstrap phase
+         ;; will take over.
+         (add-after 'unpack 'delete-configure
+           (lambda _
+             (delete-file "configure")
+             #t))
+         ;; Fix glade install directories.
+         (add-before 'bootstrap 'configure-glade-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "configure.ac"
+               (("`\\$PKG_CONFIG --variable=catalogdir gladeui-2.0`")
+                (string-append (assoc-ref outputs "out") "/share/glade/catalogs"))
+               (("`\\$PKG_CONFIG --variable=moduledir gladeui-2.0`")
+                (string-append (assoc-ref outputs "out") "/lib/glade/modules"))
+               (("`\\$PKG_CONFIG --variable=pixmapdir gladeui-2.0`")
+                (string-append (assoc-ref outputs "out") "/share/pixmaps")))
+             #t))
+         ;; Fix incorrect typelib version. This is a known upstream bug. See
+         ;; https://github.com/fpaquet/gtksheet/issues/23
+         (add-after 'install 'fix-typelib-version
+           (lambda* (#:key outputs #:allow-other-keys)
+             (with-directory-excursion (string-append (assoc-ref outputs "out")
+                                                      "/lib/girepository-1.0")
+               (rename-file "GtkSheet-4.0.typelib"
+                            (string-append "GtkSheet-" ,version ".typelib")))
+             #t)))))
+    (inputs
+     `(("glade" ,glade3)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("libxml2" ,libxml2)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gobject-introspection" ,gobject-introspection)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://fpaquet.github.io/gtksheet/")
+    (synopsis "Spreadsheet widget for GTK+")
+    (description "GtkSheet is a matrix widget for GTK+.  It consists of an
+scrollable grid of cells where you can allocate text.  Cell contents can be
+edited interactively through a specially designed entry, GtkItemEntry.  It is
+also a container subclass, allowing you to display buttons, images and any
+other widget in it.  You can also set many attributes such as border,
+foreground and background colors, text justification and more.")
+    (native-search-paths
+     (list
+      (search-path-specification
+       (variable "GLADE_CATALOG_SEARCH_PATH")
+       (files '("share/glade/catalogs")))
+      (search-path-specification
+       (variable "GLADE_MODULE_SEARCH_PATH")
+       (files '("lib/glade/modules")))))
+    (license license:lgpl2.0+)))
