@@ -5282,6 +5282,26 @@ system libraries.")
 from macros.")
     (license license:expat)))
 
+(define-public rust-docmatic-0.1
+  (package
+    (name "rust-docmatic")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "docmatic" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1hx85n266lxswqxrbbinqlhi1qcnjgd4cc7v42abg72kmz7fnn4d"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-which" ,rust-which-2.0))))
+    (home-page "https://github.com/assert-rs/docmatic")
+    (synopsis "Test Rust examples in your documentation")
+    (description "Test Rust examples in your documentation.")
+    (license license:expat)))
+
 (define-public rust-docopt-1.1
   (package
     (name "rust-docopt")
