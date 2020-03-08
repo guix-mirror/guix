@@ -11,6 +11,7 @@
 ;;; Copyright © 2019 nee <nee@cock.li>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -225,6 +226,33 @@ on the same computer; upon booting the computer, the user is presented with a
 menu to select one of the installed operating systems.")
     (license license:gpl3+)
     (properties '((cpe-name . "grub2")))))
+
+(define-public grub-minimal
+  (package
+    (inherit grub)
+    (name "grub-minimal")
+    (inputs
+     (fold alist-delete (package-inputs grub)
+           '("lvm2" "mdadm" "fuse" "console-setup")))
+    (native-inputs
+     (fold alist-delete (package-native-inputs grub)
+           '("help2man" "texinfo" "parted" "qemu" "xorriso")))
+    (arguments
+     `(#:configure-flags (list "PYTHON=true")
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-stuff
+                   (lambda* (#:key native-inputs inputs #:allow-other-keys)
+                     (substitute* "grub-core/Makefile.in"
+                       (("/bin/sh") (which "sh")))
+
+                     ;; Make the font visible.
+                     (copy-file (assoc-ref (or native-inputs inputs)
+                                           "unifont")
+                                "unifont.bdf.gz")
+                     (system* "gunzip" "unifont.bdf.gz")
+
+                     #t)))
+       #:tests? #f))))
 
 (define-public grub-efi
   (package
