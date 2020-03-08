@@ -6324,6 +6324,27 @@ variables.")
     (description "XML parser library written in C")
     (license license:expat)))
 
+(define-public rust-expectest-0.9
+  (package
+    (name "rust-expectest")
+    (version "0.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "expectest" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0f24q2a53x7sfmmrqjbwbk7pahzwkpd829fcr023kb7q5xnd6z4g"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num-traits" ,rust-num-traits-0.1))))
+    (home-page "https://github.com/zummenix/expectest")
+    (synopsis "Matchers and matcher functions for unit testing")
+    (description "This crate provides matchers and matcher functions for unit
+testing.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-fake-simd-0.1
   (package
     (name "rust-fake-simd")
