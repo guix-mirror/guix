@@ -328,7 +328,7 @@ fully fledged Spatial SQL capabilities.")
 (define-public proj
   (package
     (name "proj")
-    (version "6.2.0")
+    (version "6.3.1")
     (source
      (origin
        (method url-fetch)
@@ -336,7 +336,7 @@ fully fledged Spatial SQL capabilities.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0l1as8f4zfg74fms6h5p5psziw0lpznja1xnirzsscpnfbwc005k"))))
+         "1y46ij32j9b4x1kjnnlykcwk3kkjwkg44sfc1ziwm3a3g0ki3q3d"))))
     (build-system gnu-build-system)
     (inputs
      `(("sqlite" ,sqlite)))
