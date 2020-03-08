@@ -18860,6 +18860,34 @@ uses finite automata and guarantees linear time matching on all inputs.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-rspec-1
+  (package
+    (name "rust-rspec")
+    (version "1.0.0-beta.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rspec" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1abfzwkbxlwahb243k8d3fp6i135lx1aqmbfl79w9zlpng182ndk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t ;; TODO unpackaged dev-dependencies
+       #:cargo-inputs
+       (("rust-colored" ,rust-colored-1.9)
+        ("rust-derive-new" ,rust-derive-new-0.5)
+        ("rust-derive-builder" ,rust-derive-builder-0.5)
+        ("rust-expectest" ,rust-expectest-0.9)
+        ("rust-rayon" ,rust-rayon-0.8))
+       #:cargo-development-inputs
+       (("rust-clippy" ,rust-clippy-0.0)))) ;; requires 0.0.153
+    (home-page "https://github.com/rust-rspec/rspec")
+    (synopsis "Write Rspec-like tests with stable rust")
+    (description "This package helps writing Rspec-like tests with stable
+rust.")
+    (license license:mpl2.0)))
+
 (define-public rust-rpassword-4
   (package
     (name "rust-rpassword")
