@@ -3,7 +3,7 @@
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2019, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -54,6 +54,7 @@
             grub-bootloader
             grub-efi-bootloader
             grub-mkrescue-bootloader
+            grub-minimal-bootloader
 
             grub-configuration))
 
@@ -449,6 +450,14 @@ fi~%"))))
   (bootloader
    (name 'grub)
    (package grub)
+   (installer install-grub)
+   (configuration-file "/boot/grub/grub.cfg")
+   (configuration-file-generator grub-configuration-file)))
+
+(define grub-minimal-bootloader
+  (bootloader
+   (name 'grub)
+   (package grub-minimal)
    (installer install-grub)
    (configuration-file "/boot/grub/grub.cfg")
    (configuration-file-generator grub-configuration-file)))
