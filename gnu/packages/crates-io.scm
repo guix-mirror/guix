@@ -5390,6 +5390,31 @@ from macros.")
 parameters, associated types, and type constraints.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-dogged-0.2
+  (package
+    (name "rust-dogged")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "dogged" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0yk5l6qqidl5y935x15gi9kkd6niim1wb64r1l7kdzl9jw8dyf16"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.3))))
+    (home-page "https://github.com/nikomatsakis/dogged")
+    (synopsis "Persistent vector, similar to Clojure")
+    (description "This package experimental persistent collections in Rust.
+Based on a digit-indexed trie, as in Clojure.  Supports @code{push()},
+@code{get()}, and @code{get_mut()} as its primitive operations for now.  All
+O(1)-in-practice, if not in theory, but obviously not as fast as a
+non-persistent vector.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-draw-state-0.8
   (package
     (name "rust-draw-state")
