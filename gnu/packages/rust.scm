@@ -55,6 +55,32 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-26))
 
+;; This is the hash for the empty file, and the reason it's relevant is not
+;; the most obvious.
+;;
+;; The root of the problem is that Cargo keeps track of a file called
+;; Cargo.lock, that contains the hash of the tarball source of each dependency.
+;;
+;; However, tarball sources aren't handled well by Guix because of the need to
+;; patch shebangs in any helper scripts. This is why we use Cargo's vendoring
+;; capabilities, where instead of the tarball, a directory is provided in its
+;; place. (In the case of rustc, the source code already ships with vendored
+;; dependencies, but crates built with cargo-build-system undergo vendoring
+;; during the build.)
+;;
+;; To preserve the advantages of checksumming, vendored dependencies contain
+;; a file called .cargo-checksum.json, which contains the hash of the tarball,
+;; as well as the list of files in it, with the hash of each file.
+;;
+;; The patch-cargo-checksums phase of cargo-build-system runs after
+;; any Guix-specific patches to the vendored dependencies and regenerates the
+;; .cargo-checksum.json files, but it's hard to know the tarball checksum that
+;; should be written to the file - and taking care of any unhandled edge case
+;; would require rebuilding everything that depends on rust. This is why we lie,
+;; and say that the tarball has the hash of an empty file. It's not a problem
+;; because cargo-build-system removes the Cargo.lock file. We can't do that
+;; for rustc because of a quirk of its build system, so we modify the lock file
+;; to substitute the hash.
 (define %cargo-reference-hash
   "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")
 
@@ -1128,6 +1154,26 @@ move around."
                  (substitute* "src/test/ui/command-uid-gid.rs"
                    (("/bin/sh") (which "sh"))
                    (("ignore-sgx") "ignore-sgx\n// ignore-tidy-linelength"))
+                 #t)))))))))
+
+(define-public rust-1.39
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.38 "1.39.0"
+           "0mwkc1bnil2cfyf6nglpvbn2y0zfbv44zfhsd5qg4c9rm6vgd8dl")))
+    (package
+      (inherit base-rust)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (replace 'patch-cargo-checksums
+               ;; The Cargo.lock format changed.
+               (lambda* _
+                 (use-modules (guix build cargo-utils))
+                 (substitute* "Cargo.lock"
+                   (("(checksum = )\".*\"" all name)
+                    (string-append name "\"" ,%cargo-reference-hash "\"")))
+                 (generate-all-checksums "vendor")
                  #t)))))))))
 
 (define-public rust rust-1.37)
