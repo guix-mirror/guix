@@ -3353,6 +3353,19 @@ CMAKE environmental variable is set.")
      "The most simple way to add colors in your terminal.")
     (license license:mpl2.0)))
 
+(define-public rust-colored-1.9.1
+  (package/inherit rust-colored-1.9
+    (name "rust-colored")
+    (version "1.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "colored" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0fildacm47g86acmx44yvxx6cka8fdym5qkgfm8x8gh2hsrghc7r"))))
+    (build-system cargo-build-system)))
+
 ;; This package requires features which are unavailable
 ;; on the stable releases of Rust.
 (define-public rust-compiler-builtins-0.1
