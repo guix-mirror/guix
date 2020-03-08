@@ -9,7 +9,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
-;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017, 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -297,7 +297,8 @@ used to apply commands with arbitrarily long arguments.")
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1yjcrh5hw70c0yn8zw55pd6j51dj90anpq8mmg649ps9g3gdhn24"))))
+              "1yjcrh5hw70c0yn8zw55pd6j51dj90anpq8mmg649ps9g3gdhn24"))
+            (patches (search-patches "coreutils-ls.patch"))))
    (build-system gnu-build-system)
    (inputs `(("acl"  ,acl)                        ; TODO: add SELinux
              ("gmp"  ,gmp)                        ;bignums in 'expr', yay!
