@@ -6052,6 +6052,26 @@ is configured via an environment variable.")
        (("rust-regex" ,rust-regex-0.1)
         ("rust-log" ,rust-log-0.3))))))
 
+(define-public rust-environment-0.1
+  (package
+    (name "rust-environment")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "environment" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1vh32mcxf3z8xaibwv751zj14d08nh7iwk1vqdj90rkq17i18jqz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f)) ;; 3/6 tests fail due to missing file
+    (home-page "https://github.com/Freyskeyd/environment")
+    (synopsis "Helper to deal with environment variables")
+    (description "This package provides helper to deal with environment
+variables.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-envmnt-0.6
   (package
     (name "rust-envmnt")
