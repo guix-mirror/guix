@@ -6536,31 +6536,56 @@ Cuffdiff or Ballgown programs.")
 (define-public taxtastic
   (package
     (name "taxtastic")
-    (version "0.8.5")
+    (version "0.8.11")
     (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "taxtastic" version))
+              ;; The Pypi version does not include tests.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/fhcrc/taxtastic.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "03pysw79lsrvz4lwzis88j15067ffqbi4cid5pqhrlxmd6bh8rrk"))))
+                "1sv8mkg64jn7zdwf1jj71c16686yrwxk0apb1l8sjszy9p166g0p"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'prepare-directory
+           (lambda _
+             ;; The git checkout must be writable for tests.
+             (for-each make-file-writable (find-files "."))
+             ;; This test fails, but the error is not caught by the test
+             ;; framework, so the tests fail...
+             (substitute* "tests/test_taxit.py"
+               (("self.cmd_fails\\(''\\)")
+                "self.cmd_fails('nothing')"))
+             ;; This version file is expected to be created with git describe.
+             (mkdir-p "taxtastic/data")
+             (with-output-to-file "taxtastic/data/ver"
+               (lambda () (display ,version)))
+             #t))
+         (add-after 'unpack 'python37-compatibility
+           (lambda _
+             (substitute* "taxtastic/utils.py"
+               (("import csv") "import csv, errno")
+               (("os.errno") "errno"))
+             #t))
          (replace 'check
-           (lambda _ (invoke "python" "-m" "unittest" "discover" "-v") #t)))))
+           ;; Note, this fails to run with "-v" as it tries to write to a
+           ;; closed output stream.
+           (lambda _ (invoke "python" "-m" "unittest") #t)))))
     (propagated-inputs
-     `(("python-sqlalchemy" ,python2-sqlalchemy)
-       ("python-decorator" ,python2-decorator)
-       ("python-biopython" ,python2-biopython)
-       ("python-pandas" ,python2-pandas)
-       ("python-psycopg2" ,python2-psycopg2)
-       ("python-fastalite" ,python2-fastalite)
-       ("python-pyyaml" ,python2-pyyaml)
-       ("python-six" ,python2-six)
-       ("python-jinja2" ,python2-jinja2)
-       ("python-dendropy" ,python2-dendropy)))
+     `(("python-sqlalchemy" ,python-sqlalchemy)
+       ("python-decorator" ,python-decorator)
+       ("python-biopython" ,python-biopython)
+       ("python-pandas" ,python-pandas)
+       ("python-psycopg2" ,python-psycopg2)
+       ("python-fastalite" ,python-fastalite)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-six" ,python-six)
+       ("python-jinja2" ,python-jinja2)
+       ("python-dendropy" ,python-dendropy)))
     (home-page "https://github.com/fhcrc/taxtastic")
     (synopsis "Tools for taxonomic naming and annotation")
     (description
