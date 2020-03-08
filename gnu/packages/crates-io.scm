@@ -23202,7 +23202,7 @@ with the Unicode character database.")
 (define-public rust-unicode-normalization-0.1
   (package
     (name "rust-unicode-normalization")
-    (version "0.1.8")
+    (version "0.1.9")
     (source
      (origin
        (method url-fetch)
@@ -23210,8 +23210,7 @@ with the Unicode character database.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "09i49va90rvia1agvgni4gicnqv50y5zy1naw8mr8bcqifh3j4ql"))))
+        (base32 "1kviyqg3bmds4p5hgwf9qgihw8xxvq7ljgyrrk7ygxa2k450gj09"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
