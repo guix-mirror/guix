@@ -1880,14 +1880,14 @@ building design matrices.")
 (define-public python-statsmodels
   (package
     (name "python-statsmodels")
-    (version "0.9.0")
+    (version "0.11.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "statsmodels" version))
        (sha256
         (base32
-         "0fxs8a7sp4d7jvqlm36yi45i2d28kjfvraf9q8i9jr1chhxgjqb4"))))
+         "1w6mf8b86vizi2895j11szqryr2v1ckjig3wp9fv94aslfh3zpjv"))))
     (build-system python-build-system)
     (arguments
      `(;; The test suite is very large and rather brittle.  Tests often fail
