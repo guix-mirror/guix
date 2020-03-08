@@ -61,6 +61,7 @@
 ;;; Copyright © 2020 Robert Smith <robertsmith@posteo.net>
 ;;; Copyright © 2020 Evan Straw <evan.straw99@gmail.com>
 ;;; Copyright © 2020 Masaya Tojo <masaya@tojo.tokyo>
+;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21733,6 +21734,32 @@ supports generation of phonetic and numeric passwords.")
 Separated Value) files.  It follows the format as defined in RFC 4180 \"Common
 Format and MIME Type for CSV Files\" (@url{http://tools.ietf.org/html/rfc4180}).")
     (license license:gpl3+)))
+
+(define-public emacs-org-journal
+  (package
+    (name "emacs-org-journal")
+    (version "2.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bastibe/org-journal.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "18dqd0jy2x530lk0h4fcn9cld9qh4w7b3vxa60fpiia628vsv1dg"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/bastibe/org-journal")
+    (synopsis "Simple Org mode journaling mode")
+    (description
+     "Org Journal is a set of functions to maintain a simple personal diary /
+journal using in Emacs, adapted from
+@url{https://www.emacswiki.org/emacs/PersonalDiary}.  Convenient bindings
+allow the creation of journal records in the current daily, weekly, monthly or
+yearly file and search within all records or specified time intervals.  All
+records can be browsed and searched from the Emacs Calendar for convenience.
+All entries in a specified TODO state will be carried over to the next day.")
+    (license license:bsd-3)))
 
 (define-public emacs-ddskk
   ;; XXX: Upstream adds code names to their release tags, so version and code
