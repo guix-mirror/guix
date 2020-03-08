@@ -4026,14 +4026,14 @@ position-specific scores within R and Bioconductor.")
 (define-public r-atacseqqc
   (package
     (name "r-atacseqqc")
-    (version "1.10.2")
+    (version "1.10.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ATACseqQC" version))
        (sha256
         (base32
-         "0dzrizacy3br8fiy1vnsl5zf242lg1hqv9dyv5ayqh2n480is57f"))))
+         "18zf90iksglbs13cwr4jjwsv332a19lf4bpdmy69jz8bpwrklv22"))))
     (properties `((upstream-name . "ATACseqQC")))
     (build-system r-build-system)
     (propagated-inputs
@@ -4055,6 +4055,8 @@ position-specific scores within R and Bioconductor.")
        ("r-rsamtools" ,r-rsamtools)
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/ATACseqQC/")
     (synopsis "ATAC-seq quality control")
     (description
