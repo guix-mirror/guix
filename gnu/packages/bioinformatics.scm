@@ -13983,7 +13983,7 @@ datasets.")
 (define-public ngless
   (package
     (name "ngless")
-    (version "1.0.1")
+    (version "1.1.0")
     (source
      (origin
        (method git-fetch)
@@ -13993,7 +13993,7 @@ datasets.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "06ygv8q2zjqsnrid1302yrlhhvb8ik48nq6n0higk3i1mdc8r0dg"))))
+         "1wim8wpqyff080dfcazynrmjwqas38m24m0v350w245mmhrapdma"))))
     (build-system haskell-build-system)
     (arguments
      `(#:haddock? #f ; The haddock phase fails with: NGLess/CmdArgs.hs:20:1:
