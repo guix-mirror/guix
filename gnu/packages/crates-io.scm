@@ -11009,6 +11009,46 @@ currently supports parsing (fully conformant parser), formatting and comparing
 language tags.")
     (license license:expat)))
 
+(define-public rust-lalrpop-0.17
+  (package
+    (name "rust-lalrpop")
+    (version "0.17.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "lalrpop" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1nv7ma8cgw3r1fcma7gy06fwwlpl4fkz91mxv5kjhiaxwyc3dp34"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+      (("rust-ascii-canvas" ,rust-ascii-canvas-2)
+       ("rust-atty" ,rust-atty-0.2)
+       ("rust-bit-set" ,rust-bit-set-0.5)
+       ("rust-diff" ,rust-diff-0.1)
+       ("rust-docopt" ,rust-docopt-1.1)
+       ("rust-ena" ,rust-ena-0.13)
+       ("rust-itertools" ,rust-itertools-0.8)
+       ("rust-lalrpop-util" ,rust-lalrpop-util-0.17)
+       ("rust-petgraph" ,rust-petgraph-0.4)
+       ("rust-regex" ,rust-regex-1.3)
+       ("rust-regex-syntax" ,rust-regex-syntax-0.6)
+       ("rust-serde" ,rust-serde-1.0)
+       ("rust-serde-derive" ,rust-serde-derive-1.0)
+       ("rust-sha2" ,rust-sha2-0.8)
+       ("rust-string-cache" ,rust-string-cache-0.7)
+       ("rust-term" ,rust-term-0.5)
+       ("rust-unicode-xid" ,rust-unicode-xid-0.2))
+      #:cargo-development-inputs
+      (("rust-rand" ,rust-rand-0.6))))
+    (home-page "https://github.com/lalrpop/lalrpop")
+    (synopsis "Convenient LR(1) parser generator for Rust")
+    (description "LALRPOP is a Rust parser generator framework with usability
+as its primary goal.  You should be able to write compact, DRY, readable
+grammars.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-lalrpop-util-0.17
   (package
     (name "rust-lalrpop-util")
