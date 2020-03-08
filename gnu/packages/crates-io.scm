@@ -20889,6 +20889,35 @@ for the serde framework.")
      "Assembly implementation of SHA-1 compression function.")
     (license license:expat)))
 
+(define-public rust-sha2-0.8
+  (package
+    (name "rust-sha2")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sha2" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1827pplynq0ahxid1xq281kiv56kj2afp7gm97v7gw71sbgll117"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-block-buffer" ,rust-block-buffer-0.7)
+        ("rust-digest" ,rust-digest-0.8)
+        ("rust-fake-simd" ,rust-fake-simd-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-opaque-debug" ,rust-opaque-debug-0.2)
+        ("rust-sha2-asm" ,rust-sha2-asm-0.5))
+       #:cargo-development-inputs
+       (("rust-cc" ,rust-cc-1.0) ;; FIXME for rust-sha2-asm, why again?
+        ("rust-digest" ,rust-digest-0.8)
+        ("rust-hex-literal" ,rust-hex-literal-0.1))))
+    (home-page "https://github.com/RustCrypto/hashes")
+    (synopsis "SHA-2 hash functions")
+    (description "SHA-2 hash functions")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-sha2-asm-0.5
   (package
     (name "rust-sha2-asm")
