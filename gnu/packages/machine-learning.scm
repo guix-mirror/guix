@@ -2106,7 +2106,8 @@ These include a barrier, broadcast, and allreduce.")
          "02ada2yy6km6zgk2836kg1c97yrcpalvan34p8c57446finnpki1"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-joblib" ,python-joblib)
+       ("python-nose" ,python-nose)))
     (propagated-inputs
      `(("python-numba" ,python-numba)
        ("python-numpy" ,python-numpy)
