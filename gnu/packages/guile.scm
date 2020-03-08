@@ -292,14 +292,14 @@ without requiring the source code to be rewritten.")
   (package
     (inherit guile-2.2)
     (name "guile-next")                           ;to be renamed to "guile"
-    (version "3.0.1")
+    (version "3.0.0")
     (source (origin
               (inherit (package-source guile-2.2))
               (uri (string-append "mirror://gnu/guile/guile-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1jakps3127h8g69ixgb4zwc8v2g29dmwql1vi3pwg30kzp8fm5nn"))))
+                "0x8ca6q1qdmk29lh12gj6ngvgn7kp79w42rxfgwrpxm9jmjqs4y9"))))
     (arguments
      (substitute-keyword-arguments (package-arguments guile-2.2)
        ;; XXX: On ARMv7, work around <https://bugs.gnu.org/39208> by disabling
