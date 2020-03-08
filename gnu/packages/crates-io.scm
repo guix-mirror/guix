@@ -30,6 +30,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
@@ -872,6 +873,34 @@ to draw lines and colored text and then write them to the terminal.  It uses
 the term library to handle the ANSI nonsense and hence it works on Windows,
 Mac, and Unix.")
     (license (list license:asl2.0 license:expat))))
+
+(define-public rust-assert-cli-0.6
+  (package
+    (name "rust-assert-cli")
+    (version "0.6.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "assert-cli" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0jc1bh3cvnl66bl7s5gr1xnm0hl8d2l3gmil0pmhp5v2xp0bg6m2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f ;; requires `printenv`, but installing coreutils doesn't help
+       #:cargo-inputs
+       (("rust-colored" ,rust-colored-1.9)
+        ("rust-difference" ,rust-difference-2.0)
+        ("rust-environment" ,rust-environment-0.1)
+        ("rust-failure" ,rust-failure-0.1)
+        ("rust-failure-derive" ,rust-failure-derive-0.1)
+        ("rust-serde-json" ,rust-serde-json-1.0))
+       #:cargo-development-inputs
+       (("rust-docmatic" ,rust-docmatic-0.1))))
+    (home-page "https://github.com/assert-rs/assert_cli")
+    (synopsis "Test CLI Applications")
+    (description "This package helps testing CLI Applications.")
+    (license (list license:expat license:asl2.0))))
 
 (define-public rust-assert-matches-1.3
   (package
