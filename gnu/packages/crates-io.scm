@@ -5651,6 +5651,30 @@ floating-point primitives to an @code{io::Write}.")
 inclusion of Windows resources in the most resilient fashion imaginable.")
     (license license:expat)))
 
+(define-public rust-ena-0.13
+  (package
+    (name "rust-ena")
+    (version "0.13.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ena" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0dkggq0qwv140y2kjfd4spp77zi3v7vnpm4bfy7s7r4cla7xqi49"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-dogged" ,rust-dogged-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-petgraph" ,rust-petgraph-0.4))))
+    (home-page "https://github.com/rust-lang/ena")
+    (synopsis "Union-find, congruence closure, and other unification code")
+    (description "This package provides an implementation of union-find /
+congruence-closure in Rust.  It was extracted from rustc for independent
+experimentation.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-encode-unicode-0.3
   (package
     (name "rust-encode-unicode")
