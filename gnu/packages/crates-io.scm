@@ -5,6 +5,7 @@
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020 John Soo <jsoo1@asu.edu>
+;;; Copyright © 2019, 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Leo Famulari <leo@famulari.name>
 ;;;
@@ -846,6 +847,31 @@ standard library.")
        (("rust-quickcheck" ,rust-quickcheck-0.6)
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-test" ,rust-serde-test-1.0))))))
+
+(define-public rust-ascii-canvas-2
+  (package
+    (name "rust-ascii-canvas")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ascii-canvas" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0a9s8vrbc5jr6ry5ygjyfqmbs9gyya1v6dsxzsczpai8z4nvg3pz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t  ;; TODO: failes due to an unresolved import
+       #:cargo-inputs
+       (("rust-term" ,rust-term-0.5))))
+    (home-page "https://github.com/nikomatsakis/ascii-canvas")
+    (synopsis "Simple canvas for drawing lines and styled text and emitting to
+the terminal")
+    (description "@code{ASCII} canvas is a simple Rust library that allows you
+to draw lines and colored text and then write them to the terminal.  It uses
+the term library to handle the ANSI nonsense and hence it works on Windows,
+Mac, and Unix.")
+    (license (list license:asl2.0 license:expat))))
 
 (define-public rust-assert-matches-1.3
   (package
