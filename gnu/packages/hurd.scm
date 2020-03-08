@@ -282,14 +282,9 @@ Hurd-minimal package which are needed for both glibc and GCC.")
 (define-public hurd
   (package
     (name "hurd")
-    (version "0.9")
-    (source (origin
-              (method url-fetch)
-              (uri (hurd-source-url version))
-              (sha256
-               (base32
-                "1nw9gly0n7pyv3cpfm4mmxy4yccrx4g0lyrvd3vk2vil26jpbggw"))
-              (patches (search-patches "hurd-fix-eth-multiplexer-dependency.patch"))))
+    (version (package-version hurd-headers))
+    (source (origin (inherit (package-source hurd-headers))
+                    (patches (search-patches "hurd-cross.patch"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -308,8 +303,11 @@ Hurd-minimal package which are needed for both glibc and GCC.")
     (build-system gnu-build-system)
     (inputs `(("glibc-hurd-headers" ,glibc/hurd-headers)))
     (native-inputs
-     `(("mig" ,mig)
-       ("perl" ,perl)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("mig" ,mig)
+       ("perl" ,perl)
+       ("texinfo" ,texinfo-4)))
     (supported-systems %hurd-systems)
     (home-page "https://www.gnu.org/software/hurd/hurd.html")
     (synopsis "The kernel servers for the GNU operating system")

@@ -1,0 +1,33 @@
+This fixes linking libfstest/test-fcntl (and others).
+
+As discussed with upstream: https://lists.gnu.org/archive/html/bug-hurd/2020-03/msg00018.html
+
+From 96a9f67a8685e713f25259c18306797d54cc27a5 Mon Sep 17 00:00:00 2001
+From: Jan Nieuwenhuizen <janneke@gnu.org>
+Date: Sat, 14 Mar 2020 11:28:31 +0100
+Subject: [PATCH] build: Fix cross build on Guix.
+
+As discussed in https://lists.gnu.org/archive/html/bug-hurd/2020-03/msg00018.html.
+
+* Makeconf (lpath): Add -Wl,-rpath-link=<dir> next to -L<dir>.
+---
+ Makeconf | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/Makeconf b/Makeconf
+index 67f7ab1c..f68ff6e3 100644
+--- a/Makeconf
++++ b/Makeconf
+@@ -325,7 +325,8 @@ _libsubst=${libsubst$(patsubst %,-override,${libsubst-override})}
+ 
+ # Direct the linker where to find shared objects specified in the
+ # dependencies of other shared objects it encounters.
+-lpath := -L. $(patsubst %,-L%,$(dir $(wildcard ../lib*/lib*.so)))
++lib_dirs := $(dir $(wildcard ../lib*/lib*.so))
++lpath := -L. $(lib_dirs:%=-L%) $(lib_dirs:%=-Wl,-rpath-link=%)
+ 
+ # Main rule to link executables
+ #
+-- 
+2.24.0
+
