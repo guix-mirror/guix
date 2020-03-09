@@ -98,7 +98,7 @@ system to use the host GPU to accelerate 3D rendering.")
 (define-public spice-protocol
   (package
     (name "spice-protocol")
-    (version "0.14.0")
+    (version "0.14.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -106,7 +106,7 @@ system to use the host GPU to accelerate 3D rendering.")
                 "spice-protocol-" version ".tar.bz2"))
               (sha256
                (base32
-                "1b3f44c13pqsp7aabmcinfbmgl79038bp5548l5pjs16lcfam95n"))))
+                "0ahk5hlanwhbc64r80xmchdav3ls156cvh9l68a0l22bhdhxmrkr"))))
     (build-system gnu-build-system)
     (synopsis "Protocol headers for the SPICE protocol")
     (description "SPICE (the Simple Protocol for Independent Computing
