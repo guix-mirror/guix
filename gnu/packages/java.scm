@@ -10,7 +10,7 @@
 ;;; Copyright © 2018, 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2019 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2019, 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7476,7 +7476,7 @@ the definition of common types in osgi packages.")
     (version "1.0.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+              (uri (string-append "https://repo1.maven.org/maven2/org/osgi/"
                                   "org.osgi.namespace.contract/"
                                   version "/org.osgi.namespace.contract-"
                                   version "-sources.jar"))
