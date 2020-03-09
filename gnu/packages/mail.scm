@@ -1150,7 +1150,7 @@ MailCore 2.")
               (method url-fetch)
               (uri (string-append "https://ftp.heanet.ie/mirrors/"
                                   "ftp.xemacs.org/aux/"
-                                  name "-" version ".tar.gz"))
+                                  "compface-" version ".tar.gz"))
               (sha256
                (base32
                 "09b89wg63hg502hsz592cd2h87wdprb1dq1k1y07n89hym2q56d6"))))
