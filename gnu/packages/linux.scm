@@ -5030,7 +5030,7 @@ of flash storage.")
 (define-public libseccomp
   (package
     (name "libseccomp")
-    (version "2.4.2")
+    (version "2.4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/seccomp/libseccomp/"
@@ -5038,8 +5038,7 @@ of flash storage.")
                                   "/libseccomp-" version ".tar.gz"))
               (sha256
                (base32
-                "0nsq81acrbkdr8zairxbwa33bj2a6126npp76b4srjl472sjfkxm"))
-              (patches (search-patches "libseccomp-open-aarch64.patch"))))
+                "07crwxqzvl5k2b90a47ii9wgvi09s9hsy5b5jddw9ylp351d25fg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))
