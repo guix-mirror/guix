@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019, 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -92,4 +92,47 @@
 solutions, underpinned by a modular architecture focusing on confidentiality
 and resiliency.  It is designed to support pluggable implementations of
 different components.")
+    (license asl2.0)))
+
+(define-public hyperledger-iroha-ed25519
+  (package
+    (name "hyperledger-iroha-ed25519")
+    (version "2.0.2")
+    (home-page "https://github.com/hyperledger/iroha-ed25519")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0kr1zwah8mhnpfrpk3h6hdafyqdl3ixhs7czdfscqv6vxqfiabc4"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("googletest" ,googletest)))
+    (arguments
+     `(#:tests? #f      ; Tests don't build because CMake cannot find GTest main.
+       #:configure-flags '("-DHUNTER_ENABLED=OFF"
+                           "-DBUILD=SHARED"
+                           ;; TODO: x86_64 should use amd64-64-24k-pic but it
+                           ;; fails to link when built as a shared library.
+                           "-DEDIMPL=ref10"
+                           "-DHASH=sha3_brainhub")))
+    (synopsis "Ed25519 digital signature algorithm")
+    (description "This repository aims to provide modularized implementation
+of the Ed25519 digital signature algorithm which is is described in
+RFC8032 (@url{https://tools.ietf.org/html/rfc8032}).
+
+Originally Ed25519 consists of three modules:
+
+@itemize
+@item digital signature algorithm itself
+@item SHA512 hash function
+@item random number generator, to generate keypairs
+@end itemize
+
+This project offers at least two different C implementations for every
+module.  Every implementation can be replaced with another one at
+link-time.  New implementations can be added as well.")
     (license asl2.0)))
