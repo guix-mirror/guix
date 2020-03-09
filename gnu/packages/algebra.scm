@@ -858,8 +858,8 @@ the la4j library are:
     (version "1.6")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://search.maven.org/remotecontent?"
-                                  "filepath=pl/edu/icm/JLargeArrays/"
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "pl/edu/icm/JLargeArrays/"
                                   version "/JLargeArrays-" version
                                   "-sources.jar"))
               (file-name (string-append name "-" version ".jar"))
