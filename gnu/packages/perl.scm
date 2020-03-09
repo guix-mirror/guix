@@ -9702,14 +9702,14 @@ attribute names.")
 (define-public perl-xs-object-magic
   (package
     (name "perl-xs-object-magic")
-    (version "0.04")
+    (version "0.05")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://cpan/authors/id/F/FL/FLORA/"
+              (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                                   "XS-Object-Magic-" version ".tar.gz"))
               (sha256
                (base32
-                "03fghj7hq0fiicmfdxhmzfm4mzv7s097pgkd32ji7jnljvhm9six"))))
+                "0njyy4y0zax4zz55y82dlm9cly1pld1lcxb281s12bp9rrhf9j9x"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-extutils-depends" ,perl-extutils-depends)
