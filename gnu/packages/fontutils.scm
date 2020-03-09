@@ -296,6 +296,7 @@ fonts to/from the WOFF2 format.")
             (uri (string-append
                    "https://www.freedesktop.org/software/fontconfig/release/fontconfig-"
                    version ".tar.bz2"))
+            (patches (search-patches "fontconfig-hurd-path-max.patch"))
             (sha256 (base32
                      "0hb700a68kk0ip51wdlnjjc682kvlrmb6q920mzajykdk0mdsmgn"))))
    (build-system gnu-build-system)
