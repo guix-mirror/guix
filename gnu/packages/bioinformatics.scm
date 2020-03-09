@@ -15,6 +15,7 @@
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -12140,8 +12141,8 @@ reading, writing, and exporting phylogenetic trees.")
     (version "1.005")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://search.maven.org/remotecontent?"
-                                  "filepath=org/biojava/thirdparty/forester/"
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "org/biojava/thirdparty/forester/"
                                   version "/forester-" version "-sources.jar"))
               (file-name (string-append name "-" version ".jar"))
               (sha256
@@ -12217,7 +12218,8 @@ reading, writing, and exporting phylogenetic trees.")
            (method url-fetch)
            (uri (string-append "https://raw.githubusercontent.com/cmzmasek/forester/"
                                "29e04321615da6b35c1e15c60e52caf3f21d8e6a/"
-                               "forester/java/classes/resources/synth_look_and_feel_1.xml"))
+                               "forester/java/classes/resources/"
+                               "synth_look_and_feel_1.xml"))
            (file-name (string-append name "-synth-look-and-feel-" version ".xml"))
            (sha256
             (base32
