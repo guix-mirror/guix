@@ -1484,3 +1484,34 @@ input file (in @code{.osm} or @code{.osm.pbf} format).")
     (license (list license:gpl2+
                    license:lgpl2.1+
                    license:mpl1.1))))
+
+(define-public spatialite-tools
+  (package
+    (name "spatialite-tools")
+    (version "4.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.gaia-gis.it/gaia-sins/"
+                           "spatialite-tools-" version ".tar.gz"))
+       (sha256
+        (base32 "12fggjhi8cgwvw8f6nk76f83b8lqkc07abxyj5ap6f2gq2dqafgp"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("expat" ,expat)
+       ("freexl" ,freexl)
+       ("geos" ,geos)
+       ("libspatialite" ,libspatialite)
+       ("libxml2" ,libxml2)
+       ("proj.4" ,proj.4)
+       ("readosm" ,readosm)
+       ("sqlite" ,sqlite)
+       ("zlib" ,zlib)))
+    (synopsis "Collection of command line tools for SpatiaLite")
+    (description
+     "@code{spatialite-tools} is a collection of Command Line Interface (CLI)
+tools supporting SpatiaLite.")
+    (home-page "https://www.gaia-gis.it/fossil/spatialite-tools/index")
+    (license license:gpl3+)))
