@@ -27,19 +27,25 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages code)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages gdb)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages golang)
-  #:use-module (gnu packages code)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages ninja)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages virtualization)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
@@ -406,3 +412,66 @@ the position of the variable and allows you to modify its value.")
     ;; The library is covered by LGPLv3 or later; the application is covered
     ;; by GPLv3 or later.
     (license (list lgpl3+ gpl3+))))
+
+(define-public rr
+  (package
+    (name "rr")
+    (version "5.3.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/mozilla/rr")
+                    (commit version)))
+              (sha256
+               (base32
+                "1x6l1xsdksnhz9v50p4r7hhmr077cq20kaywqy1jzdklvkjqzf64"))
+              (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       ;; The 'rr_exec_stub' is a static binary, which leads CMake to fail
+       ;; with:
+       ;;
+       ;;   file RPATH_CHANGE could not write new RPATH:
+       ;;
+       ;; Clear CMAKE_INSTALL_RPATH to avoid that problem.
+       (list "-DCMAKE_INSTALL_RPATH="
+             ,@(if (and (not (%current-target-system))
+                        (member (%current-system)
+                                '("x86_64-linux" "aarch64-linux")))
+                   ;; The toolchain doesn't support '-m32'.
+                   '("-Ddisable32bit=ON")
+                   '()))
+
+       ;; XXX: Most tests fail with:
+       ;;
+       ;;  rr needs /proc/sys/kernel/perf_event_paranoid <= 1, but it is 2.
+       ;;
+       ;; This setting cannot be changed from the build environment, so skip
+       ;; the tests.
+       #:tests? #f
+
+       #:phases (modify-phases %standard-phases
+                  (add-before 'check 'set-home
+                    (lambda _
+                      ;; Some tests expect 'HOME' to be set.
+                      (setenv "HOME" (getcwd))
+                      #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("ninja" ,ninja)
+       ("which" ,which)))
+    (inputs
+     `(("gdb" ,gdb)
+       ("cpanproto" ,capnproto)
+       ("python" ,python)
+       ("python-pexpect" ,python-pexpect)))
+    (home-page "https://rr-project.org/")
+    (synopsis "Record and reply debugging framework")
+    (description
+     "rr is a lightweight tool for recording, replaying and debugging
+execution of applications (trees of processes and threads).  Debugging extends
+GDB with very efficient reverse-execution, which in combination with standard
+GDB/x86 features like hardware data watchpoints, makes debugging much more
+fun.")
+    (license expat)))
