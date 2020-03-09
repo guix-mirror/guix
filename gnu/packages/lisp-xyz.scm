@@ -11211,3 +11211,42 @@ interfaces as well as a functional and an object oriented interface.")
                          "-o" shared-lib)
                  #t)))))))
     (synopsis "MySQL driver for Common Lisp SQL interface library")))
+
+(define-public sbcl-sycamore
+  (let ((commit "fd2820fec165ad514493426dea209728f64e6d18"))
+    (package
+      (name "sbcl-sycamore")
+      (version "0.0.20120604")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ndantam/sycamore/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "00bv1aj89q5vldmq92zp2364jq312zjq2mbd3iyz1s2b4widzhl7"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:asd-file "src/sycamore.asd"))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-ppcre" ,sbcl-cl-ppcre)))
+      (synopsis "Purely functional data structure library in Common Lisp")
+      (description
+       "Sycamore is a fast, purely functional data structure library in Common Lisp.
+If features:
+
+@itemize
+@item Fast, purely functional weight-balanced binary trees.
+@item Leaf nodes are simple-vectors, greatly reducing tree height.
+@item Interfaces for tree Sets and Maps (dictionaries).
+@item Ropes.
+@item Purely functional pairing heaps.
+@item Purely functional amortized queue.
+@end itemize\n")
+      (home-page "http://ndantam.github.io/sycamore/")
+      (license license:bsd-3))))
+
+(define-public cl-sycamore
+  (sbcl-package->cl-source-package sbcl-sycamore))
