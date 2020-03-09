@@ -8,6 +8,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -797,6 +798,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                    (("fn finds_author_git") "#[ignore]\nfn finds_author_git")
                    (("fn finds_local_author_git") "#[ignore]\nfn finds_local_author_git"))
                  #t))
+             ;; TODO(rebuild-rust): Remove this phase in rust-1.28 when rebuilding.
              (add-after 'patch-cargo-tests 'disable-cargo-test-for-nightly-channel
                (lambda* _
                  ;; This test failed to work on "nightly" channel builds
@@ -1143,12 +1145,16 @@ move around."
                    (setenv "CARGO_HOME" cargo-home)
                    #t))))))))))
 
+;; TODO(rebuild-rust): Switch to LLVM 9 in 1.38 instead of 1.40.
 (define-public rust-1.38
   (let ((base-rust
          (rust-bootstrapped-package rust-1.37 "1.38.0"
            "101dlpsfkq67p0hbwx4acqq6n90dj4bbprndizpgh1kigk566hk4")))
     (package
       (inherit base-rust)
+      #;(inputs
+        (alist-replace "llvm" (list llvm-9)
+                       (package-inputs base-rust)))
       (arguments
        (substitute-keyword-arguments (package-arguments base-rust)
          ((#:phases phases)
@@ -1183,4 +1189,98 @@ move around."
                  (generate-all-checksums "vendor")
                  #t)))))))))
 
+(define-public rust-1.40
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.39 "1.40.0"
+           "1ba9llwhqm49w7sz3z0gqscj039m53ky9wxzhaj11z6yg1ah15yx")))
+    (package
+      (inherit base-rust)
+      (inputs
+        (alist-replace "llvm" (list llvm-9)
+                       (package-inputs base-rust)))
+      (source
+        (origin
+          (inherit (package-source base-rust))
+          ;; llvm-emscripten is no longer bundled, as that codegen backend
+          ;; got removed.
+          (snippet '(begin
+                      (delete-file-recursively "src/llvm-project")
+                      (delete-file-recursively "vendor/jemalloc-sys/jemalloc")
+                      #t))))
+      (arguments
+       ;; Rust 1.40 does not ship rustc-internal libraries by default
+       ;; (see rustc-dev-split). This means that librustc_driver.so is no
+       ;; longer available in lib/rustlib/$target/lib, which is the directory
+       ;; included in the runpath of librustc_codegen_llvm-llvm.so.
+       ;; This is detected by our validate-runpath phase as an error, but it
+       ;; is harmless as the codegen backend is loaded by librustc_driver.so
+       ;; itself, which must at that point have been already loaded.
+       ;; As such, we skip validating the runpath for Rust 1.40.
+       ;; Rust 1.41 stopped putting the codegen backend in a separate library,
+       ;; which makes this workaround only necessary for this release.
+       (cons* #:validate-runpath? #f
+         (substitute-keyword-arguments (package-arguments base-rust)
+           ((#:phases phases)
+            `(modify-phases ,phases
+               ;; We often need to patch tests with various Guix-specific paths.
+               ;; This often increases the line length and makes tidy, rustc's
+               ;; style checker, complain. We could insert additional newlines
+               ;; or add an "// ignore-tidy-linelength" comment, but as an
+               ;; ignore comment must be used, both approaches are fragile due
+               ;; to upstream formatting changes. As such, disable running the
+               ;; linter during tests, since it's intended for rustc developers
+               ;; anyway.
+               ;;
+               ;; TODO(rebuild-rust): This phase could be added earlier to
+               ;; simplify a significant amount of code, but it would require
+               ;; rebuilding the entire rusty universe.
+               (add-after 'patch-tests 'neuter-tidy
+                 (lambda _
+                   (substitute* "src/bootstrap/builder.rs"
+                     (("^.*::Tidy,") ""))
+                   #t))
+               ;; TODO(rebuild-rust): Adapt the find-files approach for
+               ;; earlier testsuite patches.
+               (replace 'patch-command-uid-gid-test
+                 (lambda _
+                   (match (find-files "src/test" "command-uid-gid\\.rs")
+                     ((file)
+                      (substitute* file
+                        (("/bin/sh") (which "sh")))))
+                   #t))
+               (replace 'patch-command-exec-tests
+                 ,(patch-command-exec-tests-phase
+                    '(match (find-files "src/test" "command-exec\\.rs")
+                       ((file) file))))
+               ;; TODO(rebuild-rust): The test in question got fixed long ago.
+               (delete 'disable-cargo-test-for-nightly-channel)
+               ;; The test got removed in commit 000fe63b6fc57b09828930cacbab20c2ee6e6d15
+               ;; "Remove painful test that is not pulling its weight"
+               (delete 'remove-unsupported-tests)))))))))
+
+(define-public rust-1.41
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.40 "1.41.1"
+           "0ws5x0fxv57fyllsa6025h3q6j9v3m8nb3syl4x0hgkddq0kvj9q")))
+    (package
+      (inherit base-rust)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:validate-runpath? _) #t))))))
+
+(define-public rust-1.42
+  (rust-bootstrapped-package rust-1.41 "1.42.0"
+    "0x9lxs82may6c0iln0b908cxyn1cv7h03n5cmbx3j1bas4qzks6j"))
+
+(define-public rust-1.43
+  (rust-bootstrapped-package rust-1.42 "1.43.0"
+    "18akhk0wz1my6y9vhardriy2ysc482z0fnjdcgs9gy59kmnarxkm"))
+
+(define-public rust-1.44
+  (rust-bootstrapped-package rust-1.43 "1.44.1"
+    "0ww4z2v3gxgn3zddqzwqya1gln04p91ykbrflnpdbmcd575n8bky"))
+
+;; NOTE: An update to LLVM 10 is coming in 1.45, make sure not to miss it.
+
+;; TODO(staging): Bump this variable to the latest packaged rust.
 (define-public rust rust-1.39)
