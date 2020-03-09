@@ -513,7 +513,17 @@ and the cross tool chain."
                                  ',%gcc-cross-include-paths)
                        (setenv "CROSS_LIBRARY_PATH"
                                (string-append kernel "/lib")) ; for Hurd's libihash
-                       #t)))))))
+                       #t)))
+                 ,@(if (hurd-triplet? target)
+                       '((add-after 'install 'augment-libc.so
+                           (lambda* (#:key outputs #:allow-other-keys)
+                             (let* ((out (assoc-ref outputs "out")))
+                               (substitute* (string-append out "/lib/libc.so")
+                                 (("/[^ ]+/lib/libc.so.0.3")
+                                  (string-append out "/lib/libc.so.0.3"
+                                                 " libmachuser.so libhurduser.so"))))
+                             #t)))
+                       '())))))
 
           ;; Shadow the native "kernel-headers" because glibc's recipe expects the
           ;; "kernel-headers" input to point to the right thing.
