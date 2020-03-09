@@ -5226,6 +5226,26 @@ Bezier Curve Drawing\".")
 both positive and negative, in various ways.")
     (license perl-license)))
 
+(define-public perl-math-vecstat
+  (package
+    (name "perl-math-vecstat")
+    (version "0.08")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/A/AS/ASPINELLI/Math-VecStat-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "03bdcl9pn2bc9b50c50nhnr7m9wafylnb3v21zlch98h9c78x6j0"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Math-VecStat")
+    (synopsis "Basic numeric stats on vectors")
+    (description "This package provides some basic statistics on numerical
+vectors.  All the subroutines can take a reference to the vector to be
+operated on.")
+    (license (package-license perl))))
+
 (define-public perl-memoize
   (package
     (name "perl-memoize")
