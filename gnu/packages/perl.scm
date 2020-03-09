@@ -15,7 +15,7 @@
 ;;; Copyright © 2017 Raoul J.P. Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2018, 2019 Oleg Pykhalov <go.wigust@gmail.com>
@@ -2309,14 +2309,14 @@ hours, minutes, seconds, and time zones.")
 (define-public perl-datetime
   (package
     (name "perl-datetime")
-    (version "1.51")
+    (version "1.52")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
                            "DateTime-" version ".tar.gz"))
        (sha256
-        (base32 "1ibfq6acz1ih28vl613yygbb3r2d8ykx6di669vajhvswl6xl8ny"))))
+        (base32 "1z1xpifh2kpyw7rlc8ivg9rl0qmabjq979gjp0s9agdjf9hqp0k7"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-cpan-meta-check" ,perl-cpan-meta-check)
