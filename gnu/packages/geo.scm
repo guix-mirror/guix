@@ -1460,3 +1460,27 @@ archive all the GPS recordings of your past trips.  It is the successor of the
 QLandkarte GT application.")
     (home-page "https://github.com/Maproom/qmapshack/wiki")
     (license license:gpl3+)))
+
+(define-public readosm
+  (package
+    (name "readosm")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.gaia-gis.it/gaia-sins/"
+                           "readosm-" version ".tar.gz"))
+       (sha256
+        (base32 "1v20pnda67imjd70fn0zw30aar525xicy3d3v49md5cvqklws265"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("expat" ,expat)
+       ("zlib" ,zlib)))
+    (synopsis "Data extractor for OpenStreetMap files")
+    (description
+     "ReadOSM is a library to extract valid data from within an OpenStreetMap
+input file (in @code{.osm} or @code{.osm.pbf} format).")
+    (home-page "https://www.gaia-gis.it/fossil/readosm/index")
+    (license (list license:gpl2+
+                   license:lgpl2.1+
+                   license:mpl1.1))))
