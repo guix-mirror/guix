@@ -2549,15 +2549,14 @@ parsing logic.")
 (define-public perl-datetime-format-strptime
   (package
     (name "perl-datetime-format-strptime")
-    (version "1.76")
+    (version "1.77")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
                            "DateTime-Format-Strptime-" version ".tar.gz"))
        (sha256
-        (base32
-         "03dmzi9n6jmnfjmf0ld5sdmi3ib6jrhz25cjzv7d58ypdr32cg2r"))))
+        (base32 "0jiy2yc9h9932ykb8x2l1j3ff8ms3p4426m947r5clygis1kr91g"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-datetime" ,perl-datetime)
