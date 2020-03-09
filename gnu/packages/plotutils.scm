@@ -75,7 +75,7 @@
               ("libxaw" ,libxaw)))
 
     (home-page
-     "http://www.gnu.org/software/plotutils/")
+     "https://www.gnu.org/software/plotutils/")
     (synopsis "Plotting utilities and library")
     (description
      "GNU Plotutils is a package for plotting and working with 2D graphics. 

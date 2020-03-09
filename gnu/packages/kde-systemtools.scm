@@ -161,7 +161,15 @@ Dolphin with the version control systems: Bzr, Git, Mercurial, Subversion.")
      `(#:tests? #f)) ;; 1/1 test fails
     (home-page "https://kde.org/applications/system/org.kde.Help")
     (synopsis "KDE documentation viewer")
-    (description "KDE documentation viewer")
+    (description "KHelpCenter uses meta data files which describe the
+documentation available in the system.  Each document is represented by a meta
+data file and shown as an entry in the KHelpCenter navigation tree view.  The
+meta data contains information about title and short description of the
+document, the location of the document and some more information like how to
+search the document and translations of title and description.  Document
+hierarchy is represented as hierarchy of the meta data files.  Directories are
+also described by a meta data file which contains the same information as a
+document meta data file.")
     (license license:gpl2+)))
 
 (define-public konsole
@@ -306,7 +314,7 @@ This package is part of the KDE networking module.")
     (description "This program is developed for being used by beginner users,
 which don't know how to find information about their Linux system, and how the
 log files are in their computer.  But it is also designed for advanced users,
-who want to quickly see problems occuring on their server.
+who want to quickly see problems occurring on their server.
 
 This package is part of the KDE administration module.")
     (license license:gpl2+)))

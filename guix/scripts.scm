@@ -237,7 +237,7 @@ THRESHOLDS is a pair (ABSOLUTE-THRESHOLD . RELATIVE-THRESHOLD)."
          (total      (* block-size (file-system-block-count stats)))
          (relative-threshold-in-bytes (* total (cadr thresholds)))
          (absolute-threshold-in-bytes (car thresholds)))
-    (when (< available (max relative-threshold-in-bytes
+    (when (< available (min relative-threshold-in-bytes
                             absolute-threshold-in-bytes))
       (warning (G_ "only ~,1f GiB of free space available on ~a~%")
                (/ available 1. GiB) (%store-prefix))

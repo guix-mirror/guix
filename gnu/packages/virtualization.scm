@@ -122,6 +122,7 @@
              (patches (search-patches "qemu-CVE-2020-1711.patch"
                                       "qemu-CVE-2020-7039.patch"
                                       "qemu-CVE-2020-7211.patch"
+                                      "qemu-CVE-2020-8608.patch"
                                       "qemu-fix-documentation-build-failure.patch"))
              (sha256
               (base32
@@ -530,14 +531,14 @@ to integrate other virtualization mechanisms if needed.")
 (define-public libvirt-glib
   (package
     (name "libvirt-glib")
-    (version "2.0.0")
+    (version "3.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://libvirt.org/libvirt/glib/"
                                   "libvirt-glib-" version ".tar.gz"))
               (sha256
                (base32
-                "0six9ckmvlwwyavyjkgc262qkpvfqgi8rjij7cyk00bmqq8c9s4l"))))
+                "1zpbv4ninc57c9rw4zmmkvvqn7154iv1qfr20kyxn8xplalqrzvz"))))
     (build-system gnu-build-system)
     (inputs
      `(("openssl" ,openssl)

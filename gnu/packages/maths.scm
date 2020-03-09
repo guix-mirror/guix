@@ -11,7 +11,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016, 2018 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2016, 2018, 2020 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -3030,7 +3030,7 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "20.01.3")
+    (version "20.02.4")
     (source
      (origin
        (method git-fetch)
@@ -3039,10 +3039,13 @@ point numbers.")
              (commit (string-append "Version-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "18fj2m1qwlbavivpixph112wq9hxy3hh7c8q07djc3bhrzf2a7v7"))))
+        (base32 "106a7jrjwfmymzj70nsv44fm3jbxngr8pmkaghhpwy0ln38lhf54"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("gettext" ,gettext-minimal)))
+     `(("gettext" ,gettext-minimal)
+       ("xorg-server" ,xorg-server-for-tests)))
+    ;; TODO: Add libomp for multithreading support.
+    ;; As of right now, enabling libomp causes the imageCells.wxm test to fail.
     (inputs
      `(("wxwidgets" ,wxwidgets)
        ("maxima" ,maxima)
@@ -3051,9 +3054,16 @@ point numbers.")
        ("gtk+" ,gtk+)
        ("shared-mime-info" ,shared-mime-info)))
     (arguments
-     `(#:tests? #f ; no check target
+     `(#:test-target "test"
        #:phases
        (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; Tests require a running X server.
+             (system "Xvfb :1 &")
+             (setenv "DISPLAY" ":1")
+             (setenv "HOME" (getcwd))
+             #t))
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (wrap-program (string-append (assoc-ref outputs "out")
@@ -3222,7 +3232,7 @@ parts of it.")
      `(("cunit" ,cunit)
        ("fortran" ,gfortran)
        ("perl" ,perl)))
-    (home-page "http://www.openblas.net/")
+    (home-page "https://www.openblas.net/")
     (synopsis "Optimized BLAS library based on GotoBLAS")
     (description
      "OpenBLAS is a BLAS library forked from the GotoBLAS2-1.13 BSD version.")
@@ -5232,7 +5242,7 @@ syntax-highlighted scrollable display and is designed to be fully used via
 keyboard.  Some distinctive features are auto-completion of functions and
 variables, a formula book, and quick insertion of constants from various
 fields of knowledge.")
-    (home-page "http://speedcrunch.org/")
+    (home-page "https://speedcrunch.org/")
     (license license:gpl2+)))
 
 (define-public minisat

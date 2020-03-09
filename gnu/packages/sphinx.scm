@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
@@ -149,13 +149,13 @@ sources.")
 (define-public python-sphinxcontrib-applehelp
   (package
     (name "python-sphinxcontrib-applehelp")
-    (version "1.0.1")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "sphinxcontrib-applehelp" version))
               (sha256
                (base32
-                "15rqmgphj4wqf4m5wnzxgmwxx5jwfzb0j0nb94ql0x5wnar0mapd"))))
+                "0n5wrn4l7x6gxvi1g7c6y72hkxgc223axz1jykipaxhfr1g76wm0"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ;XXX: circular dependency on Sphinx
@@ -195,13 +195,13 @@ to code blocks.")
 (define-public python-sphinxcontrib-devhelp
   (package
     (name "python-sphinxcontrib-devhelp")
-    (version "1.0.1")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "sphinxcontrib-devhelp" version))
               (sha256
                (base32
-                "0d2a57kqxl72i55rns0ly1i044y2x234b9sdi89ajc3kjdvv0r3c"))))
+                "1r1qngsbjqbg4rj93kpj44qqy7n4x5khldkr0c3ffhlnggx1lzzz"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ;XXX: circular dependency on Sphinx
@@ -215,13 +215,13 @@ to code blocks.")
 (define-public python-sphinxcontrib-htmlhelp
   (package
     (name "python-sphinxcontrib-htmlhelp")
-    (version "1.0.2")
+    (version "1.0.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "sphinxcontrib-htmlhelp" version))
               (sha256
                (base32
-                "08l4x8a2l4xjqdd5rhvmfsqihmlgg4prdayj9b6pigaii6gzjw26"))))
+                "16v5jdnibwrqjdr5aqchgyzpwy3rgamwhdf4kidv5nxj65zbpxg8"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ;XXX: circular dependency on Sphinx
@@ -300,13 +300,13 @@ commands into documents, helping you to keep your command examples up to date.")
 (define-public python-sphinxcontrib-qthelp
   (package
     (name "python-sphinxcontrib-qthelp")
-    (version "1.0.2")
+    (version "1.0.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "sphinxcontrib-qthelp" version))
               (sha256
                (base32
-                "0vs09m6kf5vhiivpi5s5pks59iq0lqlsbkdycpqlysg53bhmqikr"))))
+                "0wjsp96d262shzkx7pb7pra7mmf0j8c5rz56i6x0vdsqw1z7ccsc"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ;XXX: circular dependency on Sphinx
@@ -320,13 +320,13 @@ documents.")
 (define-public python-sphinxcontrib-serializinghtml
   (package
     (name "python-sphinxcontrib-serializinghtml")
-    (version "1.1.3")
+    (version "1.1.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "sphinxcontrib-serializinghtml" version))
               (sha256
                (base32
-                "09sj3nwahwr4iymg86gczbh151cfczqhf2kclbblzh2jh0zv7vy0"))))
+                "1g3pbx0g88zd9xzcrbaypa2k60axrh92vf5j76wsk0p9hv6fr87a"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ;XXX: circular dependency on Sphinx
@@ -359,13 +359,13 @@ builder does not support SVG images natively (e.g. LaTeX).")
 (define-public python-sphinxcontrib-websupport
   (package
     (name "python-sphinxcontrib-websupport")
-    (version "1.1.0")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "sphinxcontrib-websupport" version))
               (sha256
                (base32
-                "1ff3ix76xi1y6m99qxhaq5161ix9swwzydilvdya07mgbcvpzr4x"))))
+                "1smma7r0rhwcmbfvvkfs5djfz1qm8wbpcvp084ca6dmw2b9zplxs"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: Tests depend on Sphinx, which depends on this.

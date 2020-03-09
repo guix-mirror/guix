@@ -121,7 +121,7 @@
      (list (search-path-specification
             (variable "IDRIS_LIBRARY_PATH")
             (files '("lib/idris")))))
-    (home-page "http://www.idris-lang.org")
+    (home-page "https://www.idris-lang.org")
     (synopsis "General purpose language with full dependent types")
     (description "Idris is a general purpose language with full dependent
 types.  It is compiled, with eager evaluation.  Dependent types allow types to

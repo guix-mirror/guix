@@ -575,7 +575,17 @@ key-bindings and is fully configurable and extensible in Common Lisp.")
                             (format #t "~a" ,(package-version next-gtk-webkit))))
                         (invoke "make" "install-assets"
                                 (string-append "PREFIX="
-                                               (assoc-ref outputs "out"))))))))
+                                               (assoc-ref outputs "out")))))
+                    (add-after 'unpack 'fix-lambda-list
+                      ;; Starting from SBCL 2.0.2, Next 1.5.0 won't build
+                      ;; because of a weird lambda list type.
+                      (lambda _
+                        (substitute* "source/keymap.lisp"
+                          (("^\\(declaim .* define-key\\)\\)") ""))
+                        (substitute* "source/search-buffer.lisp"
+                          (("define-key :keymap keymap \"C-s\"") "define-key \"C-s\"")
+                          (("\\(update-selection-highlight-hint :follow t :scroll t\\)\\)\\)")
+                           "(update-selection-highlight-hint :follow t :scroll t)) :keymap keymap)")))))))
       (inputs
        `(("alexandria" ,sbcl-alexandria)
          ("bordeaux-threads" ,sbcl-bordeaux-threads)

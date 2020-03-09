@@ -1311,7 +1311,7 @@ spreadsheet.")
            '(#:configure-flags '("--disable-sse2")))))
     (native-inputs
      `(("perl" ,perl)))
-    (home-page "http://xerces.apache.org/xerces-c/")
+    (home-page "https://xerces.apache.org/xerces-c/")
     (synopsis "Validating XML parser library for C++")
     (description "Xerces-C++ is a validating XML parser written in a portable
 subset of C++.  Xerces-C++ makes it easy to give your application the ability

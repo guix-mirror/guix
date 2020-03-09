@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
@@ -385,6 +385,9 @@ reference the pkg-config tool."
       (tarball-needs-pkg-config? thing)
       (directory-needs-pkg-config? thing)))
 
+(define (needs-knitr? meta)
+  (member "knitr" (listify meta "VignetteBuilder")))
+
 ;; XXX adapted from (guix scripts hash)
 (define (file-hash file select? recursive?)
   ;; Compute the hash of FILE.
@@ -486,7 +489,9 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
                  `(,@(if (needs-fortran? source (not git?))
                          '("gfortran") '())
                    ,@(if (needs-pkg-config? source (not git?))
-                         '("pkg-config") '()))
+                         '("pkg-config") '())
+                   ,@(if (needs-knitr? meta)
+                         '("r-knitr") '()))
                  'native-inputs)
               (home-page ,(if (string-null? home-page)
                               (string-append base-url name)

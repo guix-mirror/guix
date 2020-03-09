@@ -2,6 +2,7 @@
 ;;; Copyright © 2019, 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -184,11 +185,11 @@ also knows about symlinks, extended attributes, and Git.")
                ;; Manpages
                (install-file "doc/fd.1" (string-append out "/share/man/man1"))
                ;; Completions
-               (install-completion "^fd.bash$" "/etc/bash-completion.d")
+               (install-completion "^fd.bash$" "/etc/bash_completion.d")
                (install-completion "^fd.fish$" "/share/fish/vendor_completions.d")
                (install-completion "^_fd$" "/share/zsh/site-functions")
-               (rename-file (string-append out "/etc/bash-completion.d/fd.bash")
-                            (string-append out "/etc/bash-completion.d/fd"))
+               (rename-file (string-append out "/etc/bash_completion.d/fd.bash")
+                            (string-append out "/etc/bash_completion.d/fd"))
                #t))))))
     (inputs `(("jemalloc" ,jemalloc)))
     (home-page "https://github.com/sharkdp/fd")

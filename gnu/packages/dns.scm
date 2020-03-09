@@ -386,14 +386,14 @@ to result in system-wide compromise.")
 (define-public unbound
   (package
     (name "unbound")
-    (version "1.9.6")
+    (version "1.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.unbound.net/downloads/unbound-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1w5aylh2gfvfvqkgrq46aw427x9c0a3hwm0f985s55wim5pgr60x"))))
+        (base32 "0mg9divpysr42sp0m693a70693dp8025v6c9dv1yabr4g1jlhbqm"))))
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (native-inputs
@@ -590,14 +590,14 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "2.9.2")
+    (version "2.9.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://secure.nic.cz/files/knot-dns/"
                            "knot-" version ".tar.xz"))
        (sha256
-        (base32 "1vmndmbzwwrqczhygkhpdn5xxljcnaa3d0z5yw6vb2bmm8rxz319"))
+        (base32 "0zm0642hkb16sqkqpa84f89f3s0bw44m837r1nia8m89swvz3bgj"))
        (modules '((guix build utils)))
        (snippet
         '(begin

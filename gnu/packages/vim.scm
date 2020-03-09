@@ -847,3 +847,28 @@ through its msgpack-rpc API.")
     (synopsis "Guix integration in Vim")
     (description "This package provides support for GNU Guix in Vim.")
     (license license:vim)))
+
+(define-public vim-asyncrun
+  (package
+    (name "vim-asyncrun")
+    (version "2.6.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/skywind3000/asyncrun.vim")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1n0yzv8psskhx8h4g7dz64h2llm9mnljhvl4hrnsjx6znkni8vwp"))))
+    (build-system copy-build-system)
+    (arguments
+     '(#:install-plan
+       '(("plugin" "share/vim/vimfiles/")
+         ("doc/" "share/vim/vimfiles/doc" #:include ("asyncrun.txt")))))
+    (home-page "https://github.com/skywind3000/asyncrun.vim")
+    (synopsis "Run Async Shell Commands in Vim")
+    (description "This plugin takes the advantage of new APIs in Vim 8 (and
+NeoVim) to enable you to run shell commands in background and read output in the
+quickfix window in realtime.")
+    (license license:expat)))

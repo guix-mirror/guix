@@ -12,7 +12,7 @@ particularly welcome help on packaging (@pxref{Packaging Guidelines}).
 We want to provide a warm, friendly, and harassment-free environment, so
 that anyone can contribute to the best of their abilities.  To this end
 our project uses a ``Contributor Covenant'', which was adapted from
-@url{http://contributor-covenant.org/}.  You can find a local version in
+@url{https://contributor-covenant.org/}.  You can find a local version in
 the @file{CODE-OF-CONDUCT} file in the source tree.
 
 Contributors are not required to use their legal name in patches and

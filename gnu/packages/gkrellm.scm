@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,15 +31,14 @@
 (define-public gkrellm
   (package
     (name "gkrellm")
-    (version "2.3.10")
+    (version "2.3.11")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://gkrellm.srcbox.net/releases/gkrellm-"
                           version ".tar.bz2"))
       (sha256
-       (base32
-        "0rnpzjr0ys0ypm078y63q4aplcgdr5nshjzhmz330n6dmnxci7lb"))))
+       (base32 "01lccz4fga40isv09j8rjgr0qy10rff9vj042n6gi6gdv4z69q0y"))))
     (build-system gnu-build-system)
     (inputs
      `(("gettext" ,gettext-minimal)

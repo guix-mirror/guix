@@ -738,7 +738,8 @@ adjust the level of difficulty.")
        (uri (string-append "https://apps.ankiweb.net/downloads/archive/anki-"
                            version "-source.tgz"))
        (sha256
-        (base32 "1gfr51rnllkyzli73p4r51h5ypzfa3m7lic3m3rzpywmqwrxs07k"))))
+        (base32 "1gfr51rnllkyzli73p4r51h5ypzfa3m7lic3m3rzpywmqwrxs07k"))
+       (patches (search-patches "anki-mpv-args.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" %output))
@@ -779,6 +780,9 @@ adjust the level of difficulty.")
                            (wrap-program program
                              `("QTWEBENGINEPROCESS_PATH" =
                                (,qtwebengineprocess))
+                             `("PATH" prefix (,(string-append
+                                                (assoc-ref inputs "mpv")
+                                                "/bin")))
                              `("PYTHONPATH" = ,site-packages)))
                          (find-files bin ".")))
              #t)))))

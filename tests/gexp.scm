@@ -1331,6 +1331,56 @@
   '#~(foo #$bar #$baz:out #$(chbouib 42) #$@(list x y z)
           #+foo #+foo:out #+(chbouib 42) #+@(list x y z)))
 
+(test-assertm "gexp->file, cross-compilation"
+  (mlet* %store-monad ((target -> "aarch64-linux-gnu")
+                       (exp    -> (gexp (list (ungexp coreutils))))
+                       (xdrv      (gexp->file "foo" exp #:target target))
+                       (refs      (references*
+                                   (derivation-file-name xdrv)))
+                       (xcu       (package->cross-derivation coreutils
+                                                             target))
+                       (cu        (package->derivation coreutils)))
+    (return (and (member (derivation-file-name xcu) refs)
+                 (not (member (derivation-file-name cu) refs))))))
+
+(test-assertm "gexp->file, cross-compilation with default target"
+  (mlet* %store-monad ((target -> "aarch64-linux-gnu")
+                       (_         (set-current-target target))
+                       (exp    -> (gexp (list (ungexp coreutils))))
+                       (xdrv      (gexp->file "foo" exp))
+                       (refs      (references*
+                                   (derivation-file-name xdrv)))
+                       (xcu       (package->cross-derivation coreutils
+                                                             target))
+                       (cu        (package->derivation coreutils)))
+    (return (and (member (derivation-file-name xcu) refs)
+                 (not (member (derivation-file-name cu) refs))))))
+
+(test-assertm "gexp->script, cross-compilation"
+  (mlet* %store-monad ((target -> "aarch64-linux-gnu")
+                       (exp    -> (gexp (list (ungexp coreutils))))
+                       (xdrv      (gexp->script "foo" exp #:target target))
+                       (refs      (references*
+                                   (derivation-file-name xdrv)))
+                       (xcu       (package->cross-derivation coreutils
+                                                             target))
+                       (cu        (package->derivation coreutils)))
+    (return (and (member (derivation-file-name xcu) refs)
+                 (not (member (derivation-file-name cu) refs))))))
+
+(test-assertm "gexp->script, cross-compilation with default target"
+  (mlet* %store-monad ((target -> "aarch64-linux-gnu")
+                       (_         (set-current-target target))
+                       (exp    -> (gexp (list (ungexp coreutils))))
+                       (xdrv      (gexp->script "foo" exp))
+                       (refs      (references*
+                                   (derivation-file-name xdrv)))
+                       (xcu       (package->cross-derivation coreutils
+                                                             target))
+                       (cu        (package->derivation coreutils)))
+    (return (and (member (derivation-file-name xcu) refs)
+                 (not (member (derivation-file-name cu) refs))))))
+
 (test-end "gexp")
 
 ;; Local Variables:

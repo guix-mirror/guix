@@ -299,6 +299,7 @@
            (start
             #~(make-forkexec-constructor
                (list #$(file-append nfs-utils "/sbin/rpc.mountd")
+                     "--foreground"
                      #$@(if (member 'mountd debug)
                             '("--debug" "all")
                             '())

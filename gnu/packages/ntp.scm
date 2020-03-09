@@ -41,7 +41,7 @@
 (define-public ntp
   (package
    (name "ntp")
-   (version "4.2.8p13")
+   (version "4.2.8p14")
    (source
      (origin
        (method url-fetch)
@@ -54,7 +54,7 @@
                     (version-major+minor version)
                     "/ntp-" version ".tar.gz")))
        (sha256
-        (base32 "0f1a4fya7v5s0426nim8ydvvlcashb8hicgs9xlm76ndrz7751r8"))
+        (base32 "1dsfbrad5adwjnm3k0y0ip8dzs7r2nmw66vjil8gvapnh7qf8q0r"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -92,9 +92,9 @@
    (description "NTP is a system designed to synchronize the clocks of
 computers over a network.")
    (license (l:x11-style
-             "http://www.eecis.udel.edu/~mills/ntp/html/copyright.html"
+             "https://www.eecis.udel.edu/~mills/ntp/html/copyright.html"
              "A non-copyleft free licence from the University of Delaware"))
-   (home-page "http://www.ntp.org")))
+   (home-page "https://www.ntp.org")))
 
 (define-public openntpd
   (package

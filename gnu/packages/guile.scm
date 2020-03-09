@@ -250,17 +250,21 @@ without requiring the source code to be rewritten.")
             (variable "GUILE_LOAD_COMPILED_PATH")
             (files '("lib/guile/2.2/site-ccache")))))))
 
-(define-public guile-2.2/bug-fix
-  ;; This variant contains a bug fix for a relatively rare crash that could
+(define-public guile-2.2.7
+  ;; This version contains a bug fix for a relatively rare crash that could
   ;; affect shepherd as PID 1: <https://bugs.gnu.org/37757>.
   (package
     (inherit guile-2.2)
-    (version (string-append (package-version guile-2.2) "-1"))
+    (version "2.2.7")
     (source (origin
               (inherit (package-source guile-2.2))
-              (patches
-               (append (search-patches "guile-finalization-crash.patch")
-                       (origin-patches (package-source guile-2.2))))))))
+              (uri (string-append "mirror://gnu/guile/guile-" version
+                                  ".tar.xz"))
+              (sha256
+               (base32
+                "013mydzhfswqci6xmyc1ajzd59pfbdak15i0b090nhr9bzm7dxyd"))))))
+
+(define-deprecated guile-2.2/bug-fix guile-2.2.7)
 
 (define-public guile-2.2/fixed
   ;; A package of Guile 2.2 that's rarely changed.  It is the one used
@@ -291,7 +295,7 @@ without requiring the source code to be rewritten.")
     (version "3.0.0")
     (source (origin
               (inherit (package-source guile-2.2))
-              (uri (string-append "ftp://ftp.gnu.org/gnu/guile/guile-"
+              (uri (string-append "mirror://gnu/guile/guile-"
                                   version ".tar.xz"))
               (sha256
                (base32

@@ -693,14 +693,14 @@ analysis.")
 (define-public r-survival
   (package
     (name "r-survival")
-    (version "3.1-8")
+    (version "3.1-11")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "survival" version))
        (sha256
         (base32
-         "15fj4y8c107bwq22amx88r5hw7qndlcbr9sapzrpkpr7iqz3kkyf"))))
+         "1fbhbm3bnpg1nmj37h1d76x813ggvwk0cp51ixmmgb3pz47i5xj4"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-matrix" ,r-matrix)))
@@ -1088,26 +1088,25 @@ using just two functions: melt and dcast (or acast).")
 (define-public r-ggplot2
   (package
     (name "r-ggplot2")
-    (version "3.2.1")
+    (version "3.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggplot2" version))
        (sha256
-        (base32 "0mjswqiqcwm0aqxll16bx2kwa6c9km3aql87bdj4347n1ali94g3"))))
+        (base32 "0j21am605kqqzlwhm45kaj0m2irnmy2vz0j7kzi9f0qdzrv3q3ij"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-digest" ,r-digest)
+       ("r-glue" ,r-glue)
        ("r-gtable" ,r-gtable)
-       ("r-lazyeval" ,r-lazyeval)
+       ("r-isoband" ,r-isoband)
        ("r-mass" ,r-mass)
        ("r-mgcv" ,r-mgcv)
        ("r-tibble" ,r-tibble)
-       ("r-reshape2" ,r-reshape2)
        ("r-rlang" ,r-rlang)
        ("r-scales" ,r-scales)
        ("r-svglite" ,r-svglite) ; Needed for 'ggsave'
-       ("r-viridislite" ,r-viridislite)
        ("r-withr" ,r-withr)))
     (home-page "https://ggplot2.tidyverse.org")
     (synopsis "An implementation of the grammar of graphics")
@@ -1651,13 +1650,13 @@ and printing capabilities than traditional data frames.")
 (define-public r-dplyr
   (package
     (name "r-dplyr")
-    (version "0.8.4")
+    (version "0.8.5")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "dplyr" version))
               (sha256
                (base32
-                "1nd0mmvqjbzbknawa520f64p9zlj9lwdlq0hh7c1mciyy7ah6641"))))
+                "0602b4a9nffxx67q57csqp87nkrv33nn9wlaw1458yys9fzx6l2p"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
@@ -1672,6 +1671,8 @@ and printing capabilities than traditional data frames.")
        ("r-rlang" ,r-rlang)
        ("r-tibble" ,r-tibble)
        ("r-tidyselect" ,r-tidyselect)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/hadley/dplyr")
     (synopsis "Tools for working with data frames in R")
     (description
@@ -1879,14 +1880,14 @@ building design matrices.")
 (define-public python-statsmodels
   (package
     (name "python-statsmodels")
-    (version "0.9.0")
+    (version "0.11.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "statsmodels" version))
        (sha256
         (base32
-         "0fxs8a7sp4d7jvqlm36yi45i2d28kjfvraf9q8i9jr1chhxgjqb4"))))
+         "1w6mf8b86vizi2895j11szqryr2v1ckjig3wp9fv94aslfh3zpjv"))))
     (build-system python-build-system)
     (arguments
      `(;; The test suite is very large and rather brittle.  Tests often fail
@@ -3608,6 +3609,8 @@ memory usage.")
      `(("r-ggplot2" ,r-ggplot2)
        ("r-gridextra" ,r-gridextra)
        ("r-viridislite" ,r-viridislite)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr))) ; for vignettes
     (home-page "https://github.com/sjmgarnier/viridis")
     (synopsis "Matplotlib default color map")
     (description
@@ -4638,14 +4641,14 @@ original public code has been corrected.")
 (define-public r-modeltools
   (package
     (name "r-modeltools")
-    (version "0.2-22")
+    (version "0.2-23")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "modeltools" version))
        (sha256
         (base32
-         "1s9lmkac3rl0nknf4wizfhg7ryq7c8yvvyc4z619238br27hhsi5"))))
+         "1vqh69256h344sbj5affm0kmc77dakrxp6442xfdnfd0y5d8sgkb"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/modeltools")
     (synopsis "Tools and classes for statistical models")
@@ -4853,14 +4856,14 @@ generally.")
 (define-public r-robust
   (package
     (name "r-robust")
-    (version "0.4-18.2")
+    (version "0.5-0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "robust" version))
        (sha256
         (base32
-         "02x7d6dgx3skiadvx5m3c44b4bhz37ycpfhc25dhhv50y1db6l3k"))))
+         "1ks5scp8bnicl9j1r8yrmz668fjs6ifdmi540zw6d2ck500bbw42"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-fit-models" ,r-fit-models)

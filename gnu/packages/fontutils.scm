@@ -257,44 +257,35 @@ work with most software requiring Type 1 fonts.")
     (license license:bsd-3)))
 
 (define-public woff2
-  (let ((commit "4e698b8c6c5e070d53c340db9ddf160e21070ede")
-        (revision "1"))
-    (package
-      (name "woff2")
-      (version (string-append "20160306-" revision "."
-                              (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/google/woff2.git")
-                      (commit commit)))
-                (file-name (string-append name "-" version ".tar.xz"))
-                (sha256
-                 (base32
-                  "0wka0yhf0cjmd4rv2jckxpyv6lb5ckj4nj0k1ajq5hrjy7f30lcp"))
-                (patches (list (search-patch "woff2-libbrotli.patch")))))
-      (build-system gnu-build-system)
-      (native-inputs
-       `(("pkg-config" ,pkg-config)))
-      (inputs
-       `(("brotli" ,brotli)))
-      (arguments
-       `(#:tests? #f                    ;no tests
-         #:phases (modify-phases %standard-phases
-                    (delete 'configure)
-                    (replace 'install
-                      (lambda* (#:key outputs #:allow-other-keys)
-                        (let* ((out (assoc-ref outputs "out"))
-                               (bin (string-append out "/bin")))
-                          (install-file "woff2_compress" bin)
-                          (install-file "woff2_decompress" bin)
-                          #t))))))
-      (synopsis "Compress TrueType fonts to WOFF2")
-      (description
-       "This package provides utilities for compressing/decompressing TrueType
+  (package
+    (name "woff2")
+    (version "1.0.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/google/woff2.git")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version ".git"))
+              (sha256
+               (base32
+                "13l4g536h0pr84ww4wxs2za439s0xp1va55g6l478rfbb1spp44y"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("google-brotli" ,google-brotli)))
+    (arguments
+     ;; package has no tests
+     `(#:tests? #f
+       ;; we can’t have both, shared libraries and binaries, so turn off the
+       ;; former
+       #:configure-flags (list "-DBUILD_SHARED_LIBS=OFF")))
+    (synopsis "Compress TrueType fonts to WOFF2")
+    (description
+     "This package provides utilities for compressing/decompressing TrueType
 fonts to/from the WOFF2 format.")
-      (license license:asl2.0)
-      (home-page "https://github.com/google/woff2"))))
+    (license license:asl2.0)
+    (home-page "https://github.com/google/woff2")))
 
 (define-public fontconfig
   (package

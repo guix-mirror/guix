@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
@@ -98,7 +98,7 @@ system to use the host GPU to accelerate 3D rendering.")
 (define-public spice-protocol
   (package
     (name "spice-protocol")
-    (version "0.14.0")
+    (version "0.14.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -106,7 +106,7 @@ system to use the host GPU to accelerate 3D rendering.")
                 "spice-protocol-" version ".tar.bz2"))
               (sha256
                (base32
-                "1b3f44c13pqsp7aabmcinfbmgl79038bp5548l5pjs16lcfam95n"))))
+                "0ahk5hlanwhbc64r80xmchdav3ls156cvh9l68a0l22bhdhxmrkr"))))
     (build-system gnu-build-system)
     (synopsis "Protocol headers for the SPICE protocol")
     (description "SPICE (the Simple Protocol for Independent Computing
@@ -191,16 +191,15 @@ which allows users to view a desktop computing environment.")
 (define-public spice
   (package
     (name "spice")
-    (version "0.14.2")
+    (version "0.14.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
                 "https://www.spice-space.org/download/releases/"
                 "spice-server/spice-" version ".tar.bz2"))
-              (patches (search-patches "spice-fix-test-armhf.patch"))
               (sha256
                (base32
-                "19r999py9v9c7md2bb8ysj809ag1hh6djl1ik8jcgx065s4b60xj"))))
+                "05512vkfayw18ypg4acqbbpr72nsnsz9bj7k8c2wyrvnl3j4n7am"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("openssl" ,openssl)

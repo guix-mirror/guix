@@ -74,6 +74,7 @@ Copyright @copyright{} 2019, 2020 Simon Tournier@*
 Copyright @copyright{} 2020 Wiktor Żelazny@*
 Copyright @copyright{} 2020 Damien Cassou@*
 Copyright @copyright{} 2020 Jakub Kądziołka@*
+Copyright @copyright{} 2020 Jack Hill@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -21008,6 +21009,10 @@ and several @code{domains}.
 Mandatory email used for registration, recovery contact, and important
 account notifications.
 
+@item @code{server} (default: @code{#f})
+Optional URL of ACME server.  Setting this overrides certbot's default,
+which is the Let's Encrypt server.
+
 @item @code{rsa-key-size} (default: @code{2048})
 Size of the RSA key.
 
@@ -22444,6 +22449,9 @@ Only evaluate specifications and build derivations once.
 @item @code{fallback?} (default: @code{#f})
 When substituting a pre-built binary fails, fall back to building
 packages locally.
+
+@item @code{extra-options} (default: @code{'()})
+Extra options to pass when running the Cuirass processes.
 
 @item @code{cuirass} (default: @code{cuirass})
 The Cuirass package to use.
@@ -25244,6 +25252,12 @@ configured to listen to.
 If set, this is the @code{getmail-retriever-configuration} object with
 which to configure getmail to fetch mail from the guix-commits mailing
 list.
+
+@item @code{extra-options} (default: @var{'()})
+Extra command line options for @code{guix-data-service}.
+
+@item @code{extra-process-jobs-options} (default: @var{'()})
+Extra command line options for @code{guix-data-service-process-jobs}.
 
 @end table
 @end deftp

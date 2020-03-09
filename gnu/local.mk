@@ -714,10 +714,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/aegisub-boost68.patch                    \
   %D%/packages/patches/agg-am_c_prototype.patch			\
   %D%/packages/patches/akonadi-paths.patch		\
-  %D%/packages/patches/akonadi-Revert-Make-installation-properly-relocatabl.patch \
+  %D%/packages/patches/akonadi-Revert-Make-installation-properly-relo.patch \
   %D%/packages/patches/akonadi-timestamps.patch		\
   %D%/packages/patches/allegro-mesa-18.2.5-and-later.patch	\
   %D%/packages/patches/amule-crypto-6.patch			\
+  %D%/packages/patches/anki-mpv-args.patch			\
   %D%/packages/patches/antiword-CVE-2014-8123.patch			\
   %D%/packages/patches/antlr3-3_1-fix-java8-compilation.patch	\
   %D%/packages/patches/antlr3-3_3-fix-java8-compilation.patch	\
@@ -979,7 +980,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/guile-2.2-skip-oom-test.patch            \
   %D%/packages/patches/guile-default-utf8.patch			\
   %D%/packages/patches/guile-gdbm-ffi-support-gdbm-1.14.patch	\
-  %D%/packages/patches/guile-finalization-crash.patch		\
   %D%/packages/patches/guile-linux-syscalls.patch		\
   %D%/packages/patches/guile-present-coding.patch		\
   %D%/packages/patches/guile-relocatable.patch			\
@@ -1114,7 +1114,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libmpeg2-global-symbol-test.patch	\
   %D%/packages/patches/libmygpo-qt-fix-qt-5.11.patch		\
   %D%/packages/patches/libmygpo-qt-missing-qt5-modules.patch	\
-  %D%/packages/patches/libseccomp-open-aarch64.patch		\
   %D%/packages/patches/libsndfile-armhf-type-checks.patch	\
   %D%/packages/patches/libsndfile-CVE-2017-8361-8363-8365.patch	\
   %D%/packages/patches/libsndfile-CVE-2017-8362.patch		\
@@ -1255,7 +1254,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/sdl-pango-api_additions.patch		\
   %D%/packages/patches/sdl-pango-blit_overflow.patch		\
   %D%/packages/patches/sdl-pango-fillrect_crash.patch		\
-  %D%/packages/patches/sdl-pango-fix-explicit-SDLPango_CopyFTBitmapToSurface.patch	\
+  %D%/packages/patches/sdl-pango-fix-explicit-SDLPango_CopyFTBitmapTo.patch	\
   %D%/packages/patches/sdl-pango-matrix_declarations.patch	\
   %D%/packages/patches/sdl-pango-sans-serif.patch		\
   %D%/packages/patches/patchutils-test-perms.patch		\
@@ -1348,6 +1347,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/qemu-CVE-2020-1711.patch			\
   %D%/packages/patches/qemu-CVE-2020-7039.patch			\
   %D%/packages/patches/qemu-CVE-2020-7211.patch			\
+  %D%/packages/patches/qemu-CVE-2020-8608.patch			\
   %D%/packages/patches/qemu-fix-documentation-build-failure.patch	\
   %D%/packages/patches/qrcodegen-cpp-make-install.patch		\
   %D%/packages/patches/qt4-ldflags.patch			\
@@ -1406,7 +1406,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/snappy-add-O2-flag-in-CmakeLists.txt.patch	\
   %D%/packages/patches/sooperlooper-build-with-wx-30.patch 	\
   %D%/packages/patches/soundconverter-remove-gconf-dependency.patch	\
-  %D%/packages/patches/spice-fix-test-armhf.patch		\
   %D%/packages/patches/steghide-fixes.patch			\
   %D%/packages/patches/suitesparse-mongoose-cmake.patch		\
   %D%/packages/patches/superlu-dist-awpm-grid.patch		\
@@ -1488,7 +1487,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/wicd-wpa2-ttls.patch			\
   %D%/packages/patches/wmctrl-64-fix.patch			\
   %D%/packages/patches/wmfire-update-for-new-gdk-versions.patch	\
-  %D%/packages/patches/woff2-libbrotli.patch			\
   %D%/packages/patches/wordnet-CVE-2008-2149.patch			\
   %D%/packages/patches/wordnet-CVE-2008-3908-pt1.patch			\
   %D%/packages/patches/wordnet-CVE-2008-3908-pt2.patch			\
