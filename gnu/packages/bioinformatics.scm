@@ -14453,6 +14453,8 @@ repeated areas between contigs.")
         (base32
          "0fgygyzqgrq32dv6a00biq1p1cwi6kbl5iqblxq1kklj6b2mzmhs"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-joblib" ,python-joblib)))
     (propagated-inputs
      `(("python-click" ,python-click)
        ("python-cython" ,python-cython)
