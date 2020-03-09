@@ -884,8 +884,8 @@ system resources, while still being visually appealing and user friendly.")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
-                                  name "/" (version-major+minor version) "/"
-                                  name "-" version ".tar.bz2"))
+                                  "xfce4-power-manager/" (version-major+minor version) "/"
+                                  "xfce4-power-manager-" version ".tar.bz2"))
               (sha256
                (base32
                 "0x3s2bdwfhp65dz5yn3k43j99ywqlsvrpz3pqmgwm0dik5wbdb8h"))))
