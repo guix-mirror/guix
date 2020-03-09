@@ -15334,20 +15334,22 @@ easily.")
 (define-public r-umap
   (package
     (name "r-umap")
-    (version "0.2.4.1")
+    (version "0.2.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "umap" version))
        (sha256
         (base32
-         "1pnh3hv8ihiz2nszqp797lkrdhhna2a6mzpizbsk0s9m8cj4wxva"))))
+         "0qp8zbh6fn8kn6q2h2lyjgmq3pr6gqwsd8ymqx25px13zjhxch9d"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-openssl" ,r-openssl)
        ("r-rcpp" ,r-rcpp)
        ("r-reticulate" ,r-reticulate)
        ("r-rspectra" ,r-rspectra)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/tkonopka/umap")
     (synopsis "Uniform manifold approximation and projection")
     (description
