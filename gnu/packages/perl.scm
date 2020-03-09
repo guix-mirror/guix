@@ -9250,15 +9250,14 @@ still work as expected.")
 (define-public perl-timedate
   (package
     (name "perl-timedate")
-    (version "2.31")
+    (version "2.32")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/A/AT/ATOOMIC/"
                            "TimeDate-" version ".tar.gz"))
        (sha256
-        (base32
-         "10ad6l4ii2iahdpw8h0xqwasc1jblan31h597q3js4j5nbnhywjw"))))
+        (base32 "1mmk9dy4a26a4d4c5rswqqhxr0295j93bjbcx91d3qkmwfcs1v1l"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/TimeDate")
     (synopsis "Date parsing/formatting subroutines")
