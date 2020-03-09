@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Danny Milosavljevic <dannym@scratchpost.org>
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -206,7 +206,7 @@ inside %DOCKER-OS."
      ;; load' must be able to store the whole image into memory, hence the
      ;; huge memory requirements.  We should avoid the volatile-root setup
      ;; instead.
-     (memory-size 3000)
+     (memory-size 3500)
      (port-forwardings '())))
 
   (define test
