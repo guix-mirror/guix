@@ -7391,8 +7391,8 @@ CIDER).")
 ;; There hasn't been a tag or release since 2016, so we take the latest
 ;; commit.
 (define-public emacs-sly
-  (let ((commit "0a3b81770e46b93b9ffd8b9ac5254e0b88d1b13d")
-        (revision "3"))
+  (let ((commit "86a63df73360be51529806c7ed9b775b3f02284d")
+        (revision "4"))
     (package
       (name "emacs-sly")
       (version (git-version "1.0.0" revision commit))
@@ -7405,7 +7405,7 @@ CIDER).")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1q5ga4mxa0ffa4zb2y0zfwmgzjggx4fn1y4bl2x7ac6ynvb32zkj"))))
+           "0sx6fdckcfcld41db0695svvlvllnfaazwx513686gnykwfd209n"))))
       (build-system emacs-build-system)
       (native-inputs
        `(("texinfo" ,texinfo)))
