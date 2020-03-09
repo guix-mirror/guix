@@ -9191,20 +9191,18 @@ address a bug.")
 (define-public r-rcppannoy
   (package
     (name "r-rcppannoy")
-    (version "0.0.15")
+    (version "0.0.16")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RcppAnnoy" version))
        (sha256
         (base32
-         "1rlw6npwwcp066midvkhnzf0xmmfkkdf6f581j3j1s2naqss3fvl"))))
+         "0bfa35lp6vc4b0h3ymvdx50br233q8vvyjml34ngi81rj0imz3fr"))))
     (properties `((upstream-name . "RcppAnnoy")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr))) ; for vignettes
     (home-page "https://cran.r-project.org/web/packages/RcppAnnoy/")
     (synopsis "Rcpp bindings for Annoy, a library for Approximate Nearest Neighbors")
     (description
