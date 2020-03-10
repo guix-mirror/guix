@@ -19,7 +19,7 @@ looking for headers and libraries.
 +            self.lib_dirs = (os.getenv('CROSS_LIBRARY_PATH', '').split(os.pathsep) +
                               sysroot_paths(('LDFLAGS', 'CC'), system_lib_dirs))
 -            self.inc_dirs = (self.compiler.include_dirs +
-+            self.inc_dirs = (os.getenv('CROSS_CPATH', '').split(os.pathsep) +
++            self.inc_dirs = (os.getenv('CROSS_C_INCLUDE_PATH', '').split(os.pathsep) +
                               sysroot_paths(('CPPFLAGS', 'CFLAGS', 'CC'),
                                             system_include_dirs))
  
