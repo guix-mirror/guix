@@ -246,6 +246,35 @@ Desktop.  It is designed to be as simple as possible and has some unique
 features to enable users to create their discs easily and quickly.")
     (license license:gpl2+)))
 
+(define-public phodav
+  (package
+   (name "phodav")
+   (version "2.4")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/" name "/"
+                                (version-major+minor version) "/"
+                                name "-" version ".tar.xz"))
+            (sha256
+             (base32
+              "1hxq8c5qfah3w7mxcyy3yhzdgswplll31a69p5mqdl04bsvw5pbx"))))
+   (build-system meson-build-system)
+   (native-inputs
+    `(("gettext" ,gettext-minimal)
+      ("glib:bin" ,glib "bin")
+      ("gtk-doc" ,gtk-doc)
+      ("pkg-config" ,pkg-config)))
+   (inputs
+    `(("avahi" ,avahi)
+      ("libgudev" ,libgudev)
+      ("libsoup" ,libsoup)))
+   (synopsis "WebDav server implementation using libsoup")
+   (description "PhoDav was initially developed as a file-sharing mechanism for Spice,
+but it is generic enough to be reused in other projects,
+in particular in the GNOME desktop.")
+   (home-page "https://wiki.gnome.org/phodav")
+   (license license:lgpl2.1+)))
+
 (define-public gnome-color-manager
   (package
    (name "gnome-color-manager")
