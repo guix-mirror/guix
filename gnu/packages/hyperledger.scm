@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019, 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,18 +20,28 @@
 
 (define-module (gnu packages hyperledger)
   #:use-module (ice-9 match)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system go)
-  #:use-module (guix build-system trivial)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix licenses)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages boost)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages docker)
   #:use-module (gnu packages golang)
-  #:use-module (gnu packages version-control))
+  #:use-module (gnu packages logging)
+  #:use-module (gnu packages machine-learning)
+  #:use-module (gnu packages popt)
+  #:use-module (gnu packages pretty-print)
+  #:use-module (gnu packages protobuf)
+  #:use-module (gnu packages tbb)
+  #:use-module (gnu packages version-control)
+  #:use-module (gnu packages web))
 
 (define-public hyperledger-fabric
   (package
@@ -135,4 +146,70 @@ Originally Ed25519 consists of three modules:
 This project offers at least two different C implementations for every
 module.  Every implementation can be replaced with another one at
 link-time.  New implementations can be added as well.")
+    (license asl2.0)))
+
+(define-public hyperledger-iroha
+  (package
+    (name "hyperledger-iroha")
+    (version "1.1.1")
+    (home-page "https://github.com/hyperledger/iroha")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url home-page)
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "014mbwq059yxwihw0mq8zgns53fsw8ckczi1lw8q9pz3pk86pa9b"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; https://github.com/hyperledger/iroha/commit/4dc710d2e9a067af866771318f673c7392797e48
+                  ;; Backport unversioned fmt dependency, remove next update:
+                  (substitute* "libs/logger/logger.hpp"
+                    (("fmt::v5") "fmt"))
+                  #t))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       '("-DTESTING=OFF"    ; The tests fail to link correctly to googletest.
+         ;; Don't install the shared libraries of the dependencies:
+         "-DENABLE_LIBS_PACKAGING=OFF")
+       #:tests? #f
+       ;; https://iroha.readthedocs.io/en/latest/build/index.html#running-tests-optional
+       #:test-target "."))
+    ;; https://github.com/hyperledger/iroha/blob/master/vcpkg/VCPKG_DEPS_LIST
+    (native-inputs
+     `(("fmt" ,fmt)
+       ("googletest" ,googletest)
+       ("rapidjson" ,rapidjson)
+       ("rxcpp" ,rxcpp)
+       ("spdlog" ,spdlog)))
+    (inputs
+     `(("boost" ,boost-1.69)
+       ("gflags" ,gflags)
+       ("grpc" ,grpc)
+       ("hyperledger-iroha-ed25519" ,hyperledger-iroha-ed25519)
+       ("postgresql" ,postgresql)
+       ("protobuf" ,protobuf)
+       ("soci" ,soci)
+       ("tbb" ,tbb)))
+    (synopsis "Simple, decentralized ledger")
+    (description "Iroha is a distributed ledger technology (DLT).  Iroha has
+essential functionality for your asset, information and identity management
+needs, at the same time being a crash fault-tolerant tool.
+
+Iroha has the following features:
+
+@itemize
+@item Creation and management of custom fungible assets, such as currencies,
+kilos of gold, etc.
+@item Management of user accounts
+@item Taxonomy of accounts based on domains in the system
+@item The system of rights and verification of user permissions for the
+execution of transactions and queries in the system
+@item Validation of business rules for transactions and queries in the system
+@item Multisignature transactions
+@end itemize\n")
     (license asl2.0)))
