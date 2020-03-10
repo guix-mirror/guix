@@ -2416,7 +2416,7 @@ e.g. filters, callbacks and errbacks can all be promises.")
        ;;   raise RuntimeError("setuptools >= 41 required to build")
        ("python-setuptools" ,python-setuptools)
        ("python-setuptools-scm" ,python-setuptools-scm)))
-    (inputs
+    (propagated-inputs
      `(("python-appdirs" ,python-appdirs)
        ("python-distlib" ,python-distlib)
        ("python-filelock" ,python-filelock)
