@@ -20727,3 +20727,26 @@ Encyclopedia of Integer Sequences} (OEIS) in the function help page.")
 lines (isolines) and contour polygons (isobands) from regularly spaced grids
 containing elevation data.")
     (license license:expat)))
+
+(define-public r-ppcor
+  (package
+    (name "r-ppcor")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ppcor" version))
+       (sha256
+        (base32
+         "1x9b2kb8s0bp92b17gby0jwzzr3i4cf3ap9c4nq7m8fav72g0y3a"))))
+    (properties `((upstream-name . "ppcor")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)))
+    (home-page "https://cran.r-project.org/web/packages/ppcor/")
+    (synopsis "Partial and semi-partial correlation")
+    (description
+     "This package provides users not only with a function to readily
+calculate the higher-order partial and semi-partial correlations but also with
+statistics and p-values of the correlation coefficients.")
+    (license license:gpl2)))
