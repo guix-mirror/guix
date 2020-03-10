@@ -71,7 +71,7 @@
        ("libpng" ,libpng)
        ("pcre" ,pcre)
        ("ncurses" ,ncurses)))
-    (home-page "http://www.jedsoft.org/slang/")
+    (home-page "https://www.jedsoft.org/slang/")
     (synopsis "Library for interactive applications and extensibility")
     (description
      "S-Lang is a multi-platform programmer's library designed to allow a

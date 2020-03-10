@@ -1310,7 +1310,7 @@ also walk each side of a merge and test those changes individually.")
     (propagated-inputs
      `(("git" ,git)
        ("openssh" ,openssh)))
-    (home-page "http://gitolite.com")
+    (home-page "https://gitolite.com")
     (synopsis "Git access control layer")
     (description
      "Gitolite is an access control layer on top of Git, providing fine access
@@ -1332,27 +1332,39 @@ control to Git repositories.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-tests
+           (lambda _
+             (substitute* '("tests/test-extdiff.t"
+                            "tests/test-logtoprocess.t"
+                            "tests/test-patchbomb.t"
+                            "tests/test-run-tests.t"
+                            "tests/test-transplant.t")
+               (("/bin/sh")
+                (which "sh")))
+             #t))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (with-directory-excursion "tests"
                ;; The following tests are known to fail.
-               (for-each (lambda (file)
-                           (delete-file file))
-                         '("test-extdiff.t"
+               (for-each delete-file
+                         '(;; XXX: This test calls 'run-tests.py --with-hg=
+                           ;; `which hg`' and fails because there is no hg on
+                           ;; PATH from before (that's why we are building it!)?
                            "test-hghave.t"
+
+                           ;; FIXME: Why does this fail in the build container, but
+                           ;; not in 'guix environment -C' (even without /bin/sh)?
+                           "test-nointerrupt.t"
+
+                           ;; TODO: the fqaddr() call fails in the build
+                           ;; container, causing these server tests to fail.
                            "test-hgwebdir.t"
                            "test-http-branchmap.t"
-                           "test-logtoprocess.t"
-                           "test-merge-combination.t"
-                           "test-nointerrupt.t"
-                           "test-patchbomb.t"
                            "test-pull-bundle.t"
                            "test-push-http.t"
-                           "test-run-tests.t"
                            "test-serve.t"
                            "test-subrepo-deep-nested-change.t"
-                           "test-subrepo-recursion.t"
-                           "test-transplant.t"))
+                           "test-subrepo-recursion.t"))
                (when tests?
                  (invoke "./run-tests.py"
                          ;; ‘make check’ does not respect ‘-j’.

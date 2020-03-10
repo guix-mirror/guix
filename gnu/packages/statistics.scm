@@ -1414,7 +1414,7 @@ emitter (http://pyyaml.org/wiki/LibYAML) for R.")
        ("r-stringr" ,r-stringr)
        ("r-xfun" ,r-xfun)
        ("r-yaml" ,r-yaml)))
-    (home-page "http://yihui.name/knitr/")
+    (home-page "https://yihui.org/knitr/")
     (synopsis "General-purpose package for dynamic report generation in R")
     (description
      "This package provides a general-purpose tool for dynamic report
@@ -3151,7 +3151,7 @@ using the multicore functionality of the parallel package.")
        ("r-jsonlite" ,r-jsonlite)
        ("r-magrittr" ,r-magrittr)
        ("r-promises" ,r-promises)))
-    (home-page "http://rstudio.github.io/DT")
+    (home-page "https://rstudio.github.io/DT")
     (synopsis "R wrapper of the DataTables JavaScript library")
     (description
      "This package allows for data objects in R to be rendered as HTML tables
@@ -3922,7 +3922,7 @@ from within R.")
     (propagated-inputs
      `(("r-lattice" ,r-lattice)
        ("r-matrix" ,r-matrix)))
-    (home-page "http://spams-devel.gforge.inria.fr")
+    (home-page "https://spams-devel.gforge.inria.fr")
     (synopsis "Toolbox for solving sparse estimation problems")
     (description "SPAMS (SPArse Modeling Software) is an optimization toolbox
 for solving various sparse estimation problems.  It includes tools for the

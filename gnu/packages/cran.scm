@@ -977,7 +977,7 @@ supports interactive trees, to enable rich, editable trees in Shiny.")
        ("r-shiny" ,r-shiny)))
     (native-inputs
      `(("uglify-js" ,uglify-js)))
-    (home-page "http://rstudio.github.io/shinydashboard/")
+    (home-page "https://rstudio.github.io/shinydashboard/")
     (synopsis "Create dashboards with shiny")
     (description "This package provides an extension to the Shiny web
 application framework for R, making it easy to create attractive dashboards.")
@@ -1028,7 +1028,7 @@ well as file saving is available.")
     (properties `((upstream-name . "shinythemes")))
     (build-system r-build-system)
     (propagated-inputs `(("r-shiny" ,r-shiny)))
-    (home-page "http://rstudio.github.io/shinythemes/")
+    (home-page "https://rstudio.github.io/shinythemes/")
     (synopsis "Themes for Shiny")
     (description
      "This package provides themes for use with Shiny.  It includes several
@@ -9534,7 +9534,7 @@ circular variables).")
          "0ddf9bw5lhj8vb0ja78jf99i0smq4rgmm842k4a4ygap41vdyn2b"))))
     (build-system r-build-system)
     (propagated-inputs `(("r-subplex" ,r-subplex)))
-    (home-page "http://kingaa.github.io/ouch/")
+    (home-page "https://kingaa.github.io/ouch/")
     (synopsis "Ornstein-Uhlenbeck models for phylogenetic comparative hypotheses")
     (description
      "This package provides tools to fit and compare Ornstein-Uhlenbeck models
@@ -11584,7 +11584,7 @@ lasso, adaptive lasso and Ridge regression based on cross-validation.")
         (base32
          "1i1nhdapyijvm58zx38q28zk01ndmi6smjivxk5xs2cx9b6v2av9"))))
     (build-system r-build-system)
-    (home-page "http://www.stat.umn.edu/geyer/mcmc/")
+    (home-page "https://www.stat.umn.edu/geyer/mcmc/")
     (synopsis "Markov chain Monte Carlo")
     (description
      "This package simulates continuous distributions of random vectors using
@@ -14319,7 +14319,7 @@ layer by layer.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-randomforest" ,r-randomforest)))
-    (home-page "http://ligarto.org/rdiaz/Software/Software.html")
+    (home-page "https://www.ligarto.org/rdiaz/software/software")
     (synopsis "Variable selection using random forests")
     (description
      "This package provides tools for the variable selection from random
@@ -16892,7 +16892,7 @@ Components.  The Lasso solution paths can be computed by the same function.")
      `(("r-elasticnet" ,r-elasticnet)
        ("r-mass" ,r-mass)
        ("r-mda" ,r-mda)))
-    (home-page "http://www.imm.dtu.dk/~lhc")
+    (home-page "https://www.imm.dtu.dk/~lkhc/")
     (synopsis "Sparse discriminant analysis")
     (description
      "This package performs sparse linear discriminant analysis for Gaussians
@@ -18003,7 +18003,7 @@ actigraphy-measured activity counts data.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-matrix" ,r-matrix)))
-    (home-page "http://www.functionaldata.org")
+    (home-page "https://www.functionaldata.org")
     (synopsis "Functional data analysis")
     (description
      "These functions were developed to support functional data analysis as
@@ -20727,3 +20727,26 @@ Encyclopedia of Integer Sequences} (OEIS) in the function help page.")
 lines (isolines) and contour polygons (isobands) from regularly spaced grids
 containing elevation data.")
     (license license:expat)))
+
+(define-public r-ppcor
+  (package
+    (name "r-ppcor")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ppcor" version))
+       (sha256
+        (base32
+         "1x9b2kb8s0bp92b17gby0jwzzr3i4cf3ap9c4nq7m8fav72g0y3a"))))
+    (properties `((upstream-name . "ppcor")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)))
+    (home-page "https://cran.r-project.org/web/packages/ppcor/")
+    (synopsis "Partial and semi-partial correlation")
+    (description
+     "This package provides users not only with a function to readily
+calculate the higher-order partial and semi-partial correlations but also with
+statistics and p-values of the correlation coefficients.")
+    (license license:gpl2)))

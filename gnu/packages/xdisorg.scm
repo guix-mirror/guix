@@ -410,7 +410,7 @@ X11 (yet).")
               ("libxinerama" ,libxinerama)
               ("libxtst" ,libxtst)
               ("libxkbcommon" ,libxkbcommon)))
-    (home-page "http://www.semicomplete.com/projects/xdotool")
+    (home-page "https://www.semicomplete.com/projects/xdotool/")
     (synopsis "Fake keyboard/mouse input, window management, and more")
     (description "Xdotool lets you simulate keyboard input and mouse activity,
 move and resize windows, etc.  It does this using X11's XTEST extension and

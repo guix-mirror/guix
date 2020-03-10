@@ -179,6 +179,7 @@ freedesktop.org project.")
     (license license:expat)))
 
 (define-public libinput
+  ;; Updating this will rebuild over 700 packages through libinput-minimal.
   (package
     (name "libinput")
     (version "1.15.2")

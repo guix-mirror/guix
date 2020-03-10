@@ -169,8 +169,12 @@
      "BCA6 89B6 3655 3801 C3C6  2150 197A 5888 235F ACAC")
     ("rhelling"
      "0154 E1B9 1CC9 D9EF 7764  8DE7 F3A7 27DB 44FC CA36")
-    ("roelj"
+    ("roelj (old)"
      "17CB 2812 EB63 3DFF 2C7F  0452 C3EC 1DCA 8430 72E1")
+    ("roelj"
+     ;; From commit cc51c03ff867d4633505354819c6d88af88bf919 (March 2020).
+     ;; See <https://lists.gnu.org/archive/html/guix-devel/2020-03/msg00070.html>.
+     "F556 FD94 FB8F 8B87 79E3  6832 CBD0 CD51 38C1 9AFC")
     ("roptat (old)"
      "B5FA E628 5B41 3728 B2A0  FAED 4311 1F45 2008 6A0C")
     ("roptat"

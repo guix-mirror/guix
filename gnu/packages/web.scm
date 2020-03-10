@@ -1381,7 +1381,7 @@ unavailable.")
                             "CC=gcc"))
        ;; No 'check' target.
        #:tests? #f))
-    (home-page "http://www.pps.univ-paris-diderot.fr/~jch/software/polipo/")
+    (home-page "https://www.pps.univ-paris-diderot.fr/~jch/software/polipo/")
     (synopsis "Small caching web proxy")
     (description
      "Polipo is a small caching web proxy (web cache, HTTP proxy, and proxy

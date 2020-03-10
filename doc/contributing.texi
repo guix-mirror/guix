@@ -98,12 +98,12 @@ following are the required packages in addition to those mentioned in the
 installation instructions (@pxref{Requirements}).
 
 @itemize
-@item @url{http://gnu.org/software/autoconf/, GNU Autoconf};
-@item @url{http://gnu.org/software/automake/, GNU Automake};
-@item @url{http://gnu.org/software/gettext/, GNU Gettext};
-@item @url{http://gnu.org/software/texinfo/, GNU Texinfo};
-@item @url{http://www.graphviz.org/, Graphviz};
-@item @url{http://www.gnu.org/software/help2man/, GNU Help2man (optional)}.
+@item @url{https://gnu.org/software/autoconf/, GNU Autoconf};
+@item @url{https://gnu.org/software/automake/, GNU Automake};
+@item @url{https://gnu.org/software/gettext/, GNU Gettext};
+@item @url{https://gnu.org/software/texinfo/, GNU Texinfo};
+@item @url{https://www.graphviz.org/, Graphviz};
+@item @url{https://www.gnu.org/software/help2man/, GNU Help2man (optional)}.
 @end itemize
 
 On Guix, extra dependencies can be added by instead running @command{guix
@@ -217,8 +217,8 @@ you want to upgrade your local source tree.
 The Perfect Setup to hack on Guix is basically the perfect setup used
 for Guile hacking (@pxref{Using Guile in Emacs,,, guile, Guile Reference
 Manual}).  First, you need more than an editor, you need
-@url{http://www.gnu.org/software/emacs, Emacs}, empowered by the
-wonderful @url{http://nongnu.org/geiser/, Geiser}.  To set that up, run:
+@url{https://www.gnu.org/software/emacs, Emacs}, empowered by the
+wonderful @url{https://nongnu.org/geiser/, Geiser}.  To set that up, run:
 
 @example
 guix package -i emacs guile emacs-geiser
@@ -250,7 +250,7 @@ s-expression, etc.
 @cindex reducing boilerplate
 We also provide templates for common git commit messages and package
 definitions in the @file{etc/snippets} directory.  These templates can
-be used with @url{http://joaotavora.github.io/yasnippet/, YASnippet} to
+be used with @url{https://joaotavora.github.io/yasnippet/, YASnippet} to
 expand short trigger strings to interactive text snippets.  You may want
 to add the snippets directory to the @var{yas-snippet-dirs} variable in
 Emacs.
@@ -385,14 +385,14 @@ needed is to review and apply the patch.
 @cindex free software
 The GNU operating system has been developed so that users can have
 freedom in their computing.  GNU is @dfn{free software}, meaning that
-users have the @url{http://www.gnu.org/philosophy/free-sw.html,four
+users have the @url{https://www.gnu.org/philosophy/free-sw.html,four
 essential freedoms}: to run the program, to study and change the program
 in source code form, to redistribute exact copies, and to distribute
 modified versions.  Packages found in the GNU distribution provide only
 software that conveys these four freedoms.
 
 In addition, the GNU distribution follow the
-@url{http://www.gnu.org/distros/free-system-distribution-guidelines.html,free
+@url{https://www.gnu.org/distros/free-system-distribution-guidelines.html,free
 software distribution guidelines}.  Among other things, these guidelines
 reject non-free firmware, recommendations of non-free software, and
 discuss ways to deal with trademarks and patents.
@@ -571,7 +571,7 @@ such as @command{guix package --show} take care of rendering it
 appropriately.
 
 Synopses and descriptions are translated by volunteers
-@uref{http://translationproject.org/domain/guix-packages.html, at the
+@uref{https://translationproject.org/domain/guix-packages.html, at the
 Translation Project} so that as many users as possible can read them in
 their native language.  User interfaces search them and display them in
 the language specified by the current locale.
@@ -838,7 +838,7 @@ especially when matching lists.
 @cindex coding style
 When writing Scheme code, we follow common wisdom among Scheme
 programmers.  In general, we follow the
-@url{http://mumble.net/~campbell/scheme/style.txt, Riastradh's Lisp
+@url{https://mumble.net/~campbell/scheme/style.txt, Riastradh's Lisp
 Style Rules}.  This document happens to describe the conventions mostly
 used in Guile’s code too.  It is very thoughtful and well written, so
 please do read it.

@@ -2054,7 +2054,7 @@ for common mesh file formats, and collision detection.")
          ("fribidi" ,fribidi)
          ("taglib" ,taglib)
          ("sfml" ,sfml)))
-      (home-page "http://marsshooter.org")
+      (home-page "http://mars-game.sourceforge.net/")
       (synopsis "2D space shooter")
       (description
        "M.A.R.S. is a 2D space shooter with pretty visual effects and

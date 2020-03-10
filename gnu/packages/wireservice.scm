@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -198,17 +199,16 @@ for xls and xlsx files support to all @code{agate.Table} instances.")))
 (define-public csvkit
   (package
     (name "csvkit")
-    (version "1.0.4")
+    (version "1.0.5")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "csvkit" version))
               (sha256
                (base32
-                "1830lb95rh1iyi3drlwxzb6y3pqkii0qiyzd40c1kvhvaf1s6lqk"))
-              (patches (search-patches "csvkit-fix-tests.patch"))))
+                "1ffmbzk4rxnl1yhqfl58v7kvl5m9cbvjm8v7xp4mvr00sgs91lvv"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-psycopg2" ,python-psycopg2) ;; Used to test PostgreSQL support.
+     `(("python-psycopg2" ,python-psycopg2) ; to test PostgreSQL support
        ("python-sphinx" ,python-sphinx)
        ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)))
     (inputs
