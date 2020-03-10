@@ -4764,6 +4764,7 @@ This package contains the basic DUNE grid classes.")
        ("openmpi" ,openmpi)
        ;; Optional
        ("metis" ,metis)
+       ("suitesparse" ,suitesparse)
        ("superlu" ,superlu)
        ("openblas" ,openblas)
        ("gmp" ,gmp)
