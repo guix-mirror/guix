@@ -412,6 +412,17 @@ the Nix package manager.")
   (package
     (inherit guix)
     (name "guile3.0-guix")
+    (native-inputs
+     `(("guile" ,guile-3.0)
+       ("gnutls" ,guile3.0-gnutls)
+       ("guile-gcrypt" ,guile3.0-gcrypt)
+       ("guile-json" ,guile3.0-json)
+       ("guile-sqlite3" ,guile3.0-sqlite3)
+       ("guile-ssh" ,guile3.0-ssh)
+       ("guile-git" ,guile3.0-git)
+       ,@(fold alist-delete (package-native-inputs guix)
+               '("guile" "gnutls" "guile-gcrypt" "guile-json"
+                 "guile-sqlite3" "guile-ssh" "guile-git"))))
     (inputs
      `(("guile" ,guile-3.0)
        ,@(alist-delete "guile" (package-inputs guix))))
