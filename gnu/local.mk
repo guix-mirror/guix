@@ -994,6 +994,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/grep-timing-sensitive-test.patch		\
   %D%/packages/patches/groovy-add-exceptionutilsgenerator.patch	\
   %D%/packages/patches/grub-efi-fat-serial-number.patch		\
+  %D%/packages/patches/grub-verifiers-Blocklist-fallout-cleanup.patch \
   %D%/packages/patches/gspell-dash-test.patch			\
   %D%/packages/patches/guile-1.8-cpp-4.5.patch			\
   %D%/packages/patches/guile-2.2-default-utf8.patch		\

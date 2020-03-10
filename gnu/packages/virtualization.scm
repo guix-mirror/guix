@@ -285,7 +285,8 @@ server and embedded PowerPC, and S390 guests.")
     (license license:gpl2)
 
     ;; Several tests fail on MIPS; see <http://hydra.gnu.org/build/117914>.
-    (supported-systems (delete "mips64el-linux" %supported-systems))))
+    (supported-systems (fold delete %supported-systems
+                             '("mips64el-linux" "i586-gnu")))))
 
 (define-public qemu-minimal
   ;; QEMU without GUI support.

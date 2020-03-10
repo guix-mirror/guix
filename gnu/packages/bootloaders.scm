@@ -91,7 +91,9 @@
              (sha256
               (base32
                "0zgp5m3hmc9jh8wpjx6czzkh5id2y8n1k823x2mjvm2sk6b28ag5"))
-             (patches (search-patches "grub-efi-fat-serial-number.patch"))))
+             (patches (search-patches
+                       "grub-efi-fat-serial-number.patch"
+                       "grub-verifiers-Blocklist-fallout-cleanup.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -152,11 +154,19 @@
 
        ;; Depend on LVM2 for libdevmapper, used by 'grub-probe' and
        ;; 'grub-install' to recognize mapped devices (LUKS, etc.)
-       ("lvm2" ,lvm2)
+       ,@(if (member (or (%current-target-system)
+                         (%current-system))
+                     (package-supported-systems lvm2))
+             `(("lvm2" ,lvm2))
+             '())
 
        ;; Depend on mdadm, which is invoked by 'grub-probe' and 'grub-install'
        ;; to determine whether the root file system is RAID.
-       ("mdadm" ,mdadm)
+       ,@(if (member (or (%current-target-system)
+                         (%current-system))
+                     (package-supported-systems mdadm))
+             `(("mdadm" ,mdadm))
+             '())
 
        ;; Console-setup's ckbcomp is invoked by grub-kbdcomp.  It is required
        ;; for generating alternative keyboard layouts.
@@ -164,7 +174,11 @@
 
        ;; Needed for ‘grub-mount’, the only reliable way to tell whether a given
        ;; file system will be readable by GRUB without rebooting.
-       ("fuse" ,fuse)
+       ,@(if (member (or (%current-target-system)
+                         (%current-system))
+                     (package-supported-systems fuse))
+             `(("fuse" ,fuse))
+             '())
 
        ("freetype" ,freetype)
        ;; ("libusb" ,libusb)
@@ -196,7 +210,9 @@
        ;; Dependencies for the test suite.  The "real" QEMU is needed here,
        ;; because several targets are used.
        ("parted" ,parted)
-       ("qemu" ,qemu-minimal)
+       ,@(if (member (%current-system) (package-supported-systems qemu-minimal))
+             `(("qemu" ,qemu-minimal))
+             '())
        ("xorriso" ,xorriso)))
     (home-page "https://www.gnu.org/software/grub/")
     (synopsis "GRand Unified Boot loader")

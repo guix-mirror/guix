@@ -2401,6 +2401,7 @@ processes currently causing I/O.")
                (("-DFUSERMOUNT_DIR=[[:graph:]]+")
                 "-DFUSERMOUNT_DIR=\\\"/var/empty\\\""))
              #t)))))
+    (supported-systems (delete "i586-gnu" %supported-systems))
     (home-page "https://github.com/libfuse/libfuse")
     (synopsis "Support file systems implemented in user space")
     (description
@@ -3009,6 +3010,7 @@ time.")
 
        ;; The tests use 'mknod', which requires root access.
        #:tests? #f))
+    (supported-systems (delete "i586-gnu" %supported-systems))
     (home-page "https://sourceware.org/lvm2/")
     (synopsis "Logical volume management for Linux")
     (description
@@ -3920,6 +3922,7 @@ MPEG-2 and audio over Linux IEEE 1394.")
          (delete 'configure))
        ;;tests must be done as root
        #:tests? #f))
+    (supported-systems (delete "i586-gnu" %supported-systems))
     (home-page "http://neil.brown.name/blog/mdadm")
     (synopsis "Tool for managing Linux Software RAID arrays")
     (description
