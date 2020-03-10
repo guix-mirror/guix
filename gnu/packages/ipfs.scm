@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -104,7 +104,7 @@ that are shared between @command{go-ipfs/commands} and its rewrite
 (define-public gx
   (package
     (name "gx")
-    (version "0.14.2")
+    (version "0.14.3")
     (source
      (origin
        (method git-fetch)
@@ -113,7 +113,7 @@ that are shared between @command{go-ipfs/commands} and its rewrite
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "048bx6khzcwxnvz3lf7kgp6fkg8mxqcqchxh0jxm9fg2iwizsi0k"))))
+        (base32 "1sk20kv3rfsnizgwmcmmr69jb1b2iwzqh9wwwd6wg6x0pnqm8swc"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/whyrusleeping/gx"))
