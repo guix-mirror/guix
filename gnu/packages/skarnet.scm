@@ -150,14 +150,14 @@ functionality with a very small amount of code.")))
 (define-public s6-dns
   (package
    (name "s6-dns")
-   (version "2.3.1.1")
+   (version "2.3.2.0")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "http://skarnet.org/software/s6-dns/s6-dns-"
                          version ".tar.gz"))
      (sha256
-      (base32 "0clib10dk3r9rcxv1yfr6gdvqqrx0arzivjpmhz9p8xaif53wpj1"))))
+      (base32 "09hyb1xv9glqq0yy7wy8hiwvlr78kwv552pags8ancgamag15di7"))))
     (build-system gnu-build-system)
     (inputs `(("skalibs" ,skalibs)))
     (arguments
